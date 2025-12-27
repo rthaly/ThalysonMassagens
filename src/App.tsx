@@ -139,10 +139,11 @@ const locations = [
     id: 'outras-cidades', 
     label: 'Cidades Vizinhas', 
     sublabel: 'Atendimento na região', 
-    fee: 0, 
+    fee: 0, // Fee 0 simboliza "A Combinar" na lógica visual
     allowsTableChoice: false, 
     estimatedTravelTime: 'A combinar', 
-    input: true 
+    input: true,
+    isPending: true // Flag para identificar pendência
   },
 ];
 
@@ -166,11 +167,11 @@ const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'
 const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘']; 
 
 const REVIEWS_DB = [
-  { t: "Cheguei travado, saí flutuando. A finalização foi absurda. Gozei litros.", a: "R.S. (Santa Fé)", r: 5 },
-  { t: "Nunca gemi tanto na minha vida. Mão pesada na medida certa.", a: "Carlos, 35", r: 5 },
+  { t: "Cheguei travado, saí flutuando. A finalização foi absurda de boa. Gozei litros.", a: "R.S. (Santa Fé)", r: 5 },
+  { t: "Nunca gemi tanto na minha vida. Mão pesada na medida certa, sabe onde tocar.", a: "Carlos, 35", r: 5 },
   { t: "Sou casado, sigilo foi total. O alívio no final é explosivo.", a: "Empresário (Casado)", r: 5 },
-  { t: "Maluco, que sensação. Tremi as pernas no final.", a: "Lucas, 22", r: 5 },
-  { t: "Toque firme, corpo quente... gozei demais.", a: "Anônimo", r: 5 },
+  { t: "Maluco, que sensação. Tremi as pernas no final quando ele acelerou.", a: "Lucas, 22", r: 5 },
+  { t: "Toque firme, corpo quente... gozei demais. Valeu cada centavo.", a: "Anônimo", r: 5 },
   { t: "Fui pro motel com ele, foi a melhor experiência. Respeitoso.", a: "M.V. (Jales)", r: 5 },
   { t: "Sem frescura. Foi direto ao ponto e me deixou leve.", a: "Paulo", r: 5 },
   { t: "Ambiente discreto, me senti um rei.", a: "Empresário", r: 5 },
@@ -180,7 +181,7 @@ const REVIEWS_DB = [
   { t: "O óleo quente, a respiração... foi intenso demais.", a: "G.H.", r: 5 },
   { t: "Atendimento vip, me senti especial. Vou voltar.", a: "M.", r: 5 },
   { t: "Relaxamento profundo seguido de um clímax insano.", a: "J.P.", r: 5 },
-  { t: "Cara gente boa, papo bom e mão melhor ainda.", a: "Vitor", r: 5 },
+  { t: "Cara gente boa, papo bom e mão melhor ainda. Serviço completo.", a: "Vitor", r: 5 },
   { t: "Saí renovado e vazio haha. Muito bom.", a: "D.S.", r: 5 },
   { t: "Melhor massagem da região. Não troco por nada.", a: "Cliente Fiel", r: 5 }
 ];
@@ -214,16 +215,15 @@ const LiveStatus = () => {
 };
 
 const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
-  // CRASH FIX: Safe Check for data
-  const spent = (data && typeof data.totalSpent === 'number') ? data.totalSpent : 0;
+  const safeSpent = (data && typeof data.totalSpent === 'number') ? data.totalSpent : 0;
   
-  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => spent >= l.min);
+  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => safeSpent >= l.min);
   const currentLevel = currentLevelIdx !== -1 ? LEVELS[LEVELS.length - 1 - currentLevelIdx] : LEVELS[0];
   const nextLevel = currentLevelIdx !== -1 && (LEVELS.length - 1 - currentLevelIdx + 1) < LEVELS.length ? LEVELS[LEVELS.length - 1 - currentLevelIdx + 1] : null;
   
   const min = currentLevel.min || 0;
   const nextMin = nextLevel ? nextLevel.min : min + 1;
-  const rawProgress = ((spent - min) / (nextMin - min)) * 100;
+  const rawProgress = ((safeSpent - min) / (nextMin - min)) * 100;
   const progress = nextLevel ? Math.min(100, Math.max(0, rawProgress)) : 100;
 
   return (
@@ -241,7 +241,7 @@ const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
                   {privacyMode ? <EyeOff className="w-3 h-3"/> : <Eye className="w-3 h-3"/>}
               </button>
               <span className={`text-[15px] font-mono text-white font-bold block transition-all duration-300 ${privacyMode ? 'blur-[6px] select-none opacity-50' : ''}`}>
-                {formatCurrency(spent)}
+                {formatCurrency(safeSpent)}
               </span>
             </div>
         </div>
@@ -253,7 +253,7 @@ const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
         <div className="flex justify-between text-[9px] text-gray-500 font-medium tracking-wide">
             <span>Benefício: <span className="text-[#32D74B]">{currentLevel.perks[1]}</span></span>
             {nextLevel ? (
-               <span>Faltam {formatCurrency(nextLevel.min - spent)} p/ {nextLevel.name}</span>
+               <span>Faltam {formatCurrency(nextLevel.min - safeSpent)} p/ {nextLevel.name}</span>
             ) : (
                <span className="text-[#FFD60A]">Nível Máximo</span>
             )}
@@ -432,7 +432,7 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v19'); 
+    const saved = localStorage.getItem('thaly_system_v20'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
@@ -454,7 +454,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v19', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v20', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -487,7 +487,7 @@ export default function App() {
     }
   };
 
-  // --- CRASH FIX: FUNCTION DEFINIDA AQUI ---
+  // --- CRASH FIX: FUNÇÃO DEFINIDA AQUI ---
   const handleReset = () => {
     setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
     setStep('home');
@@ -587,6 +587,12 @@ export default function App() {
 
     let feeVal = selection.location.fee || 0;
     let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
+    
+    // Tratamento especial para "A Combinar"
+    if(selection.location.isPending) {
+        feeType = "Taxa Deslocamento (A Combinar)";
+        feeVal = 0; 
+    }
 
     let discountVal = 0;
     if (selection.coupon) {
@@ -680,19 +686,19 @@ export default function App() {
 📍 ${locationString}
 
 *DETALHES:*
-• Serviço Base: ${formatCurrency(selection.service.basePrice)}${extrasText}${aromaText}
-${feeVal > 0 ? `• ${feeType}: ${formatCurrency(feeVal)}` : ''}
+• Serviço Base: ${formatCurrency(grossService)}${extrasText}${aromaText}
+${selection.location.isPending ? `• ${feeType}` : (feeVal > 0 ? `• ${feeType}: ${formatCurrency(feeVal)}` : '')}
 ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(discountVal)}` : ''}
-
-💰 *TOTAL CLIENTE: ${formatCurrency(finalPrice)}*
-(Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
-
-------------------------------
-💸 *LÍQUIDO (Seu Lucro): ${formatCurrency(netMasseur)}*
-------------------------------
 
 🎵 Vibe: ${selection.music}
 ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.' : ''}`;
+
+    💰 *TOTAL CLIENTE: ${selection.location.isPending ? formatCurrency(finalPrice) + ' + Taxa' : formatCurrency(finalPrice)}*
+(Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
+
+------------------------------
+💸 *Massagista recebe: ${formatCurrency(netMasseur)}*
+------------------------------
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
     setLastOrderLink(whatsappUrl); 
@@ -700,25 +706,21 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
     setStep('success');
   };
 
-  // --- COMPONENTE DE RECIBO VISUAL (NOTINHA CORRIGIDA) ---
+  // --- COMPONENTE DE RECIBO VISUAL ---
   const OrderReceipt = () => {
-    // 1. Calcula Serviço + Extras
     let grossService = selection.service.basePrice;
     if(selection.upgrade) grossService += selection.service.basePrice * 0.5;
     if(selection.useTable) grossService += 20;
     if(selection.aroma) grossService += getAromaPrice();
 
-    // 2. Taxas
     let fee = selection.location.fee || 0;
-
-    // 3. Descontos (Sobre Serviço)
     let discount = 0;
     if (selection.coupon) {
         if (selection.coupon.type === 'percent') discount = grossService * (selection.coupon.value / 100);
         else discount = selection.coupon.value;
     }
     
-    // 4. Total Visual (Sem Juros)
+    // Total Visual (Sem Juros)
     const totalVisual = grossService + fee - discount;
 
     return (
@@ -739,11 +741,19 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                 {selection.useTable && <div className="flex justify-between text-gray-600 text-xs"><span>+ Maca Portátil</span><span>R$ 20,00</span></div>}
                 {selection.aroma && <div className="flex justify-between text-gray-600 text-xs"><span>+ Aromaterapia (Vip)</span><span>{getAromaPrice() === 0 ? 'GRÁTIS' : formatCurrency(getAromaPrice())}</span></div>}
                 
-                {fee > 0 && (
+                {/* Lógica de Taxa Pendente */}
+                {selection.location.isPending ? (
                     <div className="flex justify-between text-blue-600 font-bold border-t border-dashed border-gray-200 pt-2 mt-2">
-                        <span>{selection.location.isMotel ? 'Taxa Suíte (Motel)' : 'Uber/Deslocamento'}</span>
-                        <span>{formatCurrency(fee)}</span>
+                        <span>Taxa Deslocamento</span>
+                        <span>A Combinar</span>
                     </div>
+                ) : (
+                    fee > 0 && (
+                        <div className="flex justify-between text-blue-600 font-bold border-t border-dashed border-gray-200 pt-2 mt-2">
+                            <span>{selection.location.isMotel ? 'Taxa Suíte (Motel)' : 'Uber/Deslocamento'}</span>
+                            <span>{formatCurrency(fee)}</span>
+                        </div>
+                    )
                 )}
                 
                 {discount > 0 && (
@@ -759,6 +769,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                 <div className="text-right">
                     <span className="font-bold text-2xl">{formatCurrency(selection.paymentMethod === 'credit_card' ? calcFinalPrice() : totalVisual)}</span>
                     {selection.paymentMethod === 'credit_card' && <p className="text-[10px] text-gray-500">c/ juros maquininha</p>}
+                    {selection.location.isPending && <p className="text-[10px] text-blue-600">+ Taxa a combinar</p>}
                 </div>
             </div>
             
@@ -783,8 +794,8 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
               <button onClick={() => { handleShare(); setShowMenu(false); }} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
                   <Share2 className="w-4 h-4 text-gray-400"/> Compartilhar
               </button>
-              <button onClick={handlePanic} className="px-4 py-4 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3 active:bg-red-500/20">
-                  <LogOut className="w-4 h-4"/> Sair (Pânico)
+              <button onClick={() => { handleReset(); }} className="px-4 py-4 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3 active:bg-red-500/20">
+                  <LogOut className="w-4 h-4"/> Sair 
               </button>
           </div>
       )
@@ -842,7 +853,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
 
         {/* --- HOME --- */}
         {step === 'home' && (
-          <div className="flex-1 p-6 overflow-y-auto pb-32 pt-24" ref={homeRef}>
+          <div className="flex-1 p-6 overflow-y-auto pb-32 pt-32" ref={homeRef}>
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-white tracking-tight leading-tight mb-2">Massagens Relaxantes<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA] text-2xl">em Santa Fé do Sul e Região</span></h1>
               <p className="text-gray-400 text-[15px]">{weatherHint}</p>
@@ -864,7 +875,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
 
         {/* --- IDENTITY --- */}
         {step === 'identity' && (
-          <div className="flex-1 p-6 pt-32 animate-fade-in flex flex-col h-full pb-32">
+          <div className="flex-1 p-6 pt-36 animate-fade-in flex flex-col h-full pb-32">
             {selection.service && (
                 <div className="mb-8 ios-card p-4 rounded-[20px] flex items-center justify-between border-l-2 border-l-[#0A84FF]">
                   <div>
@@ -902,7 +913,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
 
         {/* --- SERVICES --- */}
         {step === 'services' && (
-          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-32 animate-fade-in">
+          <div className="flex-1 p-6 pt-36 overflow-y-auto pb-32 animate-fade-in">
             <h2 className="text-3xl font-bold text-white mb-6">Menu</h2>
             <div className="space-y-6">
               {services.map(s => (
@@ -932,7 +943,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
 
         {/* --- CONFIGURE --- */}
         {step === 'configure' && selection.service && (
-          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-64 animate-fade-in scrollbar-hide"> 
+          <div className="flex-1 p-6 pt-36 overflow-y-auto pb-64 animate-fade-in scrollbar-hide"> 
             <div className="ios-card p-5 rounded-[22px] mb-8 flex items-center justify-between border-l-4 border-l-[#0A84FF]">
               <div>
                 <h3 className="font-bold text-white text-[17px]">{selection.service.name}</h3>
@@ -1048,8 +1059,10 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
               <div className="flex justify-between items-center mb-4 px-1">
                   <div className="flex flex-col"><span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Total Final</span></div>
                   <div className="text-right">
-                      <span className="text-[26px] font-bold text-white tracking-tight">{formatCurrency(calcFinalPrice())}</span>
-                      <p className="text-[10px] text-gray-500 leading-none mt-1">{selection.location.isMotel ? '(Inclui Taxa do Motel)' : selection.location.isUber ? '(Inclui Uber)' : 'Total Estimado'}</p>
+                      <span className="text-[26px] font-bold text-white tracking-tight">
+                        {selection.location.isPending ? formatCurrency(calcFinalPrice()) + ' + Taxa' : formatCurrency(calcFinalPrice())}
+                      </span>
+                      <p className="text-[10px] text-gray-500 leading-none mt-1">{selection.location.isMotel ? '(Inclui Taxa do Motel)' : selection.location.isUber ? '(Inclui Uber)' : selection.location.isPending ? '(Taxa de deslocamento à parte)' : 'Total Estimado'}</p>
                   </div>
               </div>
               <button disabled={!canFinalize} onClick={handleWhatsApp} className="w-full bg-[#0A84FF] hover:bg-[#007AFF] active:scale-[0.98] transition-all text-white font-bold py-4 rounded-[18px] shadow-[0_4px_20px_rgba(10,132,255,0.4)] flex justify-center items-center gap-2 text-[16px] disabled:opacity-50 disabled:shadow-none">CONFIRMAR NO WHATSAPP</button>
