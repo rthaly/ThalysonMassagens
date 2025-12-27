@@ -83,23 +83,23 @@ const CARD_RATES = [0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0
 // --- DADOS COM COPYWRITING PERSUASIVO ---
 const services = [
   { 
-    id: 'masculina', name: 'Experiência Tântrica & Vigor', type: 'sensual',
+    id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
     description: 'O ápice do prazer masculino. Massagem relaxante + contato corpo a corpo (traje sumário) e finalização Lingam manual até o clímax.', 
     labelDuration: '60 min', minutes: 60, basePrice: 115, 
-    highlight: "🔥 A ESCOLHA DOS ALFA", ratings: 5.0, reviews: 310, 
+    highlight: "🔥 A MAIS ESCOLHIDA", ratings: 5.0, reviews: 310, 
     details: ["🔥 Body-to-Body Intenso", "🩲 Visual Provocante", "🍆 Finalização Lingam Completa", "💦 Alívio de Tensão Máxima"] 
   },
   { 
-    id: 'relaxante', name: 'Descompressão Total', type: 'relax',
-    description: 'Protocolo anti-stress. Costas, braços, pernas e peitoral. Foco total em dissolver nódulos de tensão. (Sem toques íntimos/glúteos).', 
+    id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
+    description: 'Protocolo anti-stress. Costas, braços, pernas e peitoral. Foco total em relaxar (Sem toques íntimos/glúteos).', 
     labelDuration: '60 min', minutes: 60, basePrice: 80, 
     ratings: 4.9, reviews: 142, 
-    details: ["💆‍♂️ Foco Muscular Profundo", "🚫 Sem Área Íntima", "✋ Mãos Firmes e Quentes", "☮️ Silêncio Absoluto"] 
+    details: ["💆‍♂️ Relaxamento profundo", "🚫 Sem Área Íntima", "✋ Toques suaves", "☮️ A paz que precisa"] 
   },
 ];
 
 const locations = [
-  { id: 'santa-fe', label: 'Domicílio (Sigilo Total)', sublabel: 'Vou até sua casa/hotel com discrição.', fee: 40, allowsTableChoice: true, estimatedTravelTime: '15-20 min' },
+  { id: 'santa-fe', label: 'Domicílio (Sigilo Total)', sublabel: 'Vou até sua casa/hotel.', fee: 40, allowsTableChoice: true, estimatedTravelTime: '15-20 min' },
   { id: 'outras-cidades', label: 'Região (Vizinhas)', sublabel: 'Atendimento num raio de 50km.', fee: null, allowsTableChoice: false, estimatedTravelTime: 'A combinar' },
   { 
     id: 'motel', 
@@ -125,7 +125,7 @@ const LEVELS = [
 ];
 
 const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
-const musicVibes = ['Silêncio Absoluto 🤫', 'Zen Deep 🧘', 'Sons da Natureza 🌿'];
+const musicVibes = ['Silêncio🤫', 'Zen 🧘', 'Natureza 🌿'];
 const moodOptions = [
   { id: 'stressed', icon: '🤯', label: 'Estressado', desc: 'Preciso desligar a mente' },
   { id: 'needy', icon: '🥺', label: 'Carente', desc: 'Preciso de atenção e toque' },
@@ -189,8 +189,8 @@ const MasseurProfile = () => (
       <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-[#1C1C1E] animate-pulse"></div>
     </div>
     <div>
-      <h3 className="font-bold text-white text-lg">Thaly <span className="text-[10px] text-gray-400 bg-white/10 px-2 py-0.5 rounded ml-2">VERIFICADO</span></h3>
-      <p className="text-gray-400 text-sm">"Sigilo, respeito e satisfação garantida. Seu momento, suas regras."</p>
+      <h3 className="font-bold text-white text-lg">Thalyson Rodrigo <span className="text-[10px] text-gray-400 bg-white/10 px-2 py-0.5 rounded ml-2">VERIFICADO</span></h3>
+      <p className="text-gray-400 text-sm">"Sigilo, respeito e satisfação garantida. Seu momento de relaxar"</p>
     </div>
   </div>
 );
@@ -665,7 +665,7 @@ _Mensagem gerada automaticamente pelo App._`;
                 </button>
                 <button onClick={() => { triggerHaptic(); setUser({...user, isMassagemOk: !user.isMassagemOk}); }} className={`w-full p-5 rounded-[20px] border flex items-center gap-4 transition-all duration-300 ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
                   <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isMassagemOk ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-500'}`}>{user.isMassagemOk && <Check className="w-3.5 h-3.5 text-white" />}</div>
-                  <span className={`text-[17px] font-medium ${user.isMassagemOk ? 'text-white' : 'text-gray-400'}`}>Li e aceito a conduta</span>
+                  <span className={`text-[17px] font-medium ${user.isMassagemOk ? 'text-white' : 'text-gray-400'}`}>Estou liberado para a sessão</span>
                 </button>
               </div>
 
@@ -876,7 +876,7 @@ _Mensagem gerada automaticamente pelo App._`;
               <div className="space-y-5 text-[15px] text-gray-300 leading-relaxed">
                 <p>🔒 <strong>Sigilo Absoluto:</strong> Seus dados não ficam salvos. O app roda apenas no seu navegador.</p>
                 <p>🚫 <strong>Conduta:</strong> Apenas massagem terapêutica e relaxamento. Ambiente seguro e sem julgamentos.</p>
-                <p>💳 <strong>Fatura Discreta:</strong> Pagamentos no cartão não especificam o serviço.</p>
+                <p>💳 <strong>Pagamentos:</strong> Pagamentos no PIX, dinheiro e cartões até 12x.</p>
                 <div className="pt-6 border-t border-white/10">
                    <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="text-xs text-[#FF3B30] flex items-center gap-2 font-bold uppercase tracking-wider"><Trash2 className="w-3.5 h-3.5"/> Destruir Dados Locais</button>
                 </div>
