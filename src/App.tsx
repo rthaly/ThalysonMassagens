@@ -673,15 +673,134 @@ export default function App() {
       else discountVal = selection.coupon.value;
     }
 
-    // CALCULO DO LÍQUIDO (MASSAGISTA)
-    const expenses = (selection.location.isMotel ? feeVal : 0); 
-    const netMasseur = finalPrice - expenses;
+ const handleWhatsApp = () => {
+    triggerHaptic();
+    if (!canFinalize) return;
+    
+    // Verificar cupom
+    if (selection.coupon && !loyalty.inventory.includes(selection.coupon.code)) {
+      alert("Cupom inválido ou expirado.");
+      setSelection(prev => ({ ...prev, coupon: null }));
+      return;
+    }
+
+    // --- 1. CÁLCULO DO SERVIÇO (O QUE É SEU) ---
+    let grossService = selection.service.basePrice;
+    let extrasText = "";
+    
+    if (selection.upgrade) { 
+        grossService += selection.service.basePrice * 0.5; 
+        extrasText += "\n➕ +30 Minutos (Upgrade)"; 
+    }
+    if (selection.useTable) { 
+        grossService += 20; 
+        extrasText += "\n➕ Maca Portátil (+R$20)"; 
+    }
+    
+    let aromaPrice = 0;
+    let aromaText = "";
+    if (selection.aroma) {
+        aromaPrice = getAromaPrice();
+        grossService += aromaPrice;
+        aromaText = `\n➕ Aromaterapia (${aromaPrice === 0 ? 'GRÁTIS VIP' : `+${formatCurrency(aromaPrice)}`})`;
+    }
+
+    // --- 2. TAXAS DE TERCEIROS (NÃO FICA COM VOCÊ) ---
+    // (Motel R$75 ou Uber R$40)
+    let feeVal = selection.location.fee || 0;
+    let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
+
+    // --- 3. DESCONTOS ---
+    let discountVal = 0;
+    if (selection.coupon) {
+      let baseForDiscount = grossService; // Desconto aplica só no serviço
+      if (selection.coupon.type === 'percent') {
+          discountVal = baseForDiscount * (selection.coupon.value / 100);
+      } else {
+          discountVal = selection.coupon.value;
+      }
+    }
+
+    // --- 4. TOTAIS ---
+    // Valor Base (Sem juros da máquina) = Serviço + Taxas Terceiros - Desconto
+    const baseTotal = grossService + feeVal - discountVal;
+    
+    // Valor Final (Com juros se for cartão)
+    let finalPrice = baseTotal;
+    if (selection.paymentMethod === 'credit_card') {
+       const rate = CARD_RATES[selection.installments] || 0;
+       finalPrice = baseTotal / (1 - rate);
+    }
+
+    const bookingId = generateBookingId(); 
+
+    // Atualiza Inventário e Notificações (mantido igual)
+    let newInventory = [...loyalty.inventory];
+    if (selection.coupon) {
+        newInventory = newInventory.filter(c => c !== selection.coupon.code);
+    }
+
+    const oldTotal = loyalty.totalSpent;
+    const newTotal = oldTotal + selection.service.basePrice; 
+    
+    let newNotifications = [...loyalty.notifications];
+    newNotifications.unshift({
+        id: Date.now(),
+        title: 'Agendamento Confirmado',
+        message: `Sua sessão para ${selection.date.toLocaleDateString('pt-BR')} foi confirmada.`,
+        read: false,
+        timestamp: Date.now(),
+        icon: 'calendar'
+    });
+
+    const levelReached = [...LEVELS].reverse().find(l => newTotal >= l.min);
+    const oldLevel = [...LEVELS].reverse().find(l => oldTotal >= l.min);
+
+    if(levelReached && levelReached.name !== oldLevel?.name) {
+       newNotifications.unshift({
+           id: Date.now() + 1,
+           title: 'Nível VIP Alcançado!',
+           message: `Você chegou no ${levelReached.name} e ganhou novos benefícios!`,
+           read: false,
+           timestamp: Date.now(),
+           icon: 'level'
+       });
+       if(levelReached.rewardCode && !newInventory.includes(levelReached.rewardCode)) {
+           newInventory.push(levelReached.rewardCode);
+           newNotifications.unshift({
+               id: Date.now() + 2,
+               title: 'Ganhou Cupom!',
+               message: `O cupom ${levelReached.rewardCode} foi adicionado à sua carteira.`,
+               read: false,
+               timestamp: Date.now(),
+               icon: 'coupon'
+           });
+       }
+    }
+
+    setLoyalty(prev => ({ 
+      ...prev, 
+      savedName: user.name || prev.savedName, 
+      totalSpent: newTotal, 
+      totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0),
+      inventory: newInventory,
+      notifications: newNotifications
+    }));
+
+    const isToday = selection.date.getDate() === new Date().getDate();
+    const dateStr = `${selection.date.toLocaleDateString('pt-BR')}${isToday ? ' (HOJE)' : ''}`;
+    
+    // --- CORREÇÃO DO LÍQUIDO ---
+    // Agora subtrai QUALQUER taxa de local (Uber ou Motel) do valor base.
+    // Líquido = (Total s/ Juros) - (Taxa Local)
+    const expenses = feeVal; 
+    const netMasseur = baseTotal - expenses;
 
     let msg = `*NOVO PEDIDO: #${bookingId}*
 👤 ${user.name} (Liberado p/ Massagem)
 📅 ${dateStr} às ${selection.time}
 💆 ${selection.service.name} ${selection.upgrade ? '*(+30 MIN UPGRADE)*' : ''}
-📍 ${selection.location.label} ${selection.location.isMotel ? '(Vou com você)' : ''}
+📍 ${selection.location.label}
 
 *DETALHES:*
 • Serviço Base: ${formatCurrency(selection.service.basePrice)}${extrasText}${aromaText}
@@ -692,21 +811,16 @@ ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(
 (Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
 
 ------------------------------
-💸 *LÍQUIDO (Você recebe): ${formatCurrency(netMasseur)}*
+💸 *LÍQUIDO (Seu Lucro): ${formatCurrency(netMasseur)}*
 ------------------------------
 
 🎵 Vibe: ${selection.music}
-${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente (paga na saída ou a você).' : ''}`;
+${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.' : ''}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
     setLastOrderLink(whatsappUrl); 
     window.open(whatsappUrl, '_blank');
     setStep('success');
-  };
-
-  const handleReset = () => {
-    setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
-    setStep('home');
   };
 
   // --- COMPONENTE DE RECIBO VISUAL ---
@@ -836,7 +950,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente 
           <div className="flex-1 p-6 overflow-y-auto pb-32 pt-24" ref={homeRef}>
             {/* TOPO: TÍTULO */}
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-white tracking-tight leading-tight mb-2">Hora de<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA]">Relaxar.</span></h1>
+              <h1 className="text-4xl font-bold text-white tracking-tight leading-tight mb-2">Massagens relaxantes<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA]">Em Santa Fé do Sul e Região.</span></h1>
               <p className="text-gray-400 text-[15px]">{weatherHint}</p>
             </div>
 
