@@ -876,7 +876,7 @@ _Mensagem gerada automaticamente pelo App._`;
               <div className="space-y-5 text-[15px] text-gray-300 leading-relaxed">
                 <p>🔒 <strong>Sigilo Absoluto:</strong> Seus dados não ficam salvos. O app roda apenas no seu navegador.</p>
                 <p>🚫 <strong>Conduta:</strong> Apenas massagem terapêutica e relaxamento. Ambiente seguro e sem julgamentos.</p>
-                <p>💳 <strong>Pagamentos:</strong> Pagamentos no PIX, dinheiro e cartões até 12x.</p>
+                <p>💳 <strong>Pagamentos:</strong>PIX, dinheiro e cartões até 12x.</p>
                 <div className="pt-6 border-t border-white/10">
                    <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="text-xs text-[#FF3B30] flex items-center gap-2 font-bold uppercase tracking-wider"><Trash2 className="w-3.5 h-3.5"/> Destruir Dados Locais</button>
                 </div>
