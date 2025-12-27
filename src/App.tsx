@@ -6,8 +6,12 @@ import {
   LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car
 } from 'lucide-react';
 
-// --- ESTILOS GLOBAIS ---
+// ==================================================================================
+// 1. ESTILOS GLOBAIS & CONFIGURAÇÕES (VISUAL IOS 2026 DARK PREMIUM)
+// ==================================================================================
+
 const globalStyles = `
+/* Reset & Base */
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { font-size: 16px; background-color: #000000; }
 body { 
@@ -17,66 +21,114 @@ body {
   letter-spacing: -0.015em;
   color: #fff;
   background: #000;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* Scrollbar Hide */
 ::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-input, select { user-select: text; font-size: 17px; outline: none; appearance: none; }
-button { touch-action: manipulation; user-select: none; -webkit-touch-callout: none; }
 
-/* Background Premium */
+/* Inputs & Form Elements */
+input, select { user-select: text; font-size: 17px; outline: none; appearance: none; }
+button { touch-action: manipulation; user-select: none; -webkit-touch-callout: none; cursor: pointer; }
+
+/* --- BACKGROUNDS --- */
 .aurora-bg {
-  background: radial-gradient(140% 100% at 50% 0%, rgba(20, 20, 30, 0.5), transparent 50%), #000000;
+  background: 
+    radial-gradient(120% 100% at 50% 0%, rgba(10, 132, 255, 0.08), transparent 50%),
+    radial-gradient(100% 100% at 50% 100%, rgba(10, 132, 255, 0.03), transparent 60%),
+    #000000;
   background-attachment: fixed;
   background-size: cover;
+  min-height: 100vh;
 }
 
-/* Glassmorphism Refinado */
+/* --- COMPONENTS (CARDS, HEADERS) --- */
 .ios-card { 
   background: rgba(28, 28, 30, 0.65); 
   backdrop-filter: blur(40px) saturate(180%); 
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.08); 
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ios-card:active {
+  transform: scale(0.995);
 }
 
 .ios-header { 
   background: rgba(0, 0, 0, 0.85); 
   backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 0.5px solid rgba(255,255,255,0.1); 
 }
 
-/* Botões Interativos */
+/* --- BOTÕES --- */
 .ios-btn { 
   background: rgba(255, 255, 255, 0.06); 
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); 
 }
-.ios-btn:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.12); }
+.ios-btn:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.12); }
+
+.ios-btn-active { 
+  background: rgba(10, 132, 255, 0.15); 
+  color: white; 
+  box-shadow: 0 0 20px rgba(10, 132, 255, 0.25);
+  border: 1px solid #0A84FF;
+}
 
 .ios-btn-primary {
-  background: linear-gradient(180deg, #0A84FF 0%, #0056B3 100%);
+  background: linear-gradient(180deg, #007AFF 0%, #0056B3 100%);
   color: white;
   box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  border: none;
 }
 .ios-btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+.ios-btn-primary:disabled { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; }
 
-/* Inputs Customizados */
+/* --- INPUTS --- */
 .custom-input {
-  background: rgba(0,0,0,0.3);
+  background: rgba(28, 28, 30, 0.5);
   border: 1px solid rgba(255,255,255,0.1);
+  color: white;
   transition: all 0.3s ease;
 }
 .custom-input:focus { border-color: #0A84FF; box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.2); }
 
-/* Animações */
-.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* --- ANIMATIONS --- */
+.animate-fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-pulse-slow { animation: pulse 3s infinite; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 `;
 
 const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 
-// --- DADOS E CONFIGURAÇÕES ---
-const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
+// ==================================================================================
+// 2. BANCO DE DADOS (CONFIGURAÇÕES DO NEGÓCIO)
+// ==================================================================================
+
+// Taxas da Maquininha (1x a 12x)
+const CARD_RATES = [
+  0, 
+  0,        // 1x (Débito/Crédito vista assumido sem taxa no repasse visual ou ajustar conforme necessidade)
+  0.0499,   // 2x
+  0.0600,   // 3x
+  0.0700,   // 4x
+  0.0800,   // 5x
+  0.0900,   // 6x
+  0.1000,   // 7x
+  0.1050,   // 8x
+  0.1100,   // 9x
+  0.1150,   // 10x
+  0.1190,   // 11x
+  0.1238    // 12x
+];
 
 const services = [
   { 
@@ -99,18 +151,20 @@ const locations = [
   { 
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
-    sublabel: 'Vou com você (Taxa R$75 inclusa)', 
-    fee: 75, // Pago no local
+    sublabel: 'Vou com você (Pagar taxa na saída)', 
+    fee: 75, // Valor Informativo (não soma no total do massagista)
     allowsTableChoice: false, 
-    estimatedTravelTime: '10-15 min' 
+    estimatedTravelTime: '10-15 min',
+    isMotel: true
   },
   { 
     id: 'santa-fe', 
     label: 'Santa Fé do Sul', 
-    sublabel: 'No conforto do seu lar (Uber R$40)', 
-    fee: 40, // Taxa Uber
+    sublabel: 'No conforto do seu lar (+ Uber R$40)', 
+    fee: 40, // Valor Somado (Uber pago ao massagista)
     allowsTableChoice: true, 
-    estimatedTravelTime: '15-20 min' 
+    estimatedTravelTime: '15-20 min',
+    isUber: true
   },
   { 
     id: 'outras-cidades', 
@@ -133,22 +187,10 @@ const SYSTEM_COUPONS = {
 };
 
 const LEVELS = [
-  { 
-    name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', 
-    perks: ["Acesso ao App VIP", "Agendamento Digital", "Histórico Seguro", "Suporte Básico"] 
-  },
-  { 
-    name: 'Prata', min: 400, rewardCode: 'NIVELPRATA', icon: '🥈', 
-    perks: ["Cupom R$ 15 OFF (Ganhou!)", "Aromaterapia 50% OFF (Automático)", "Prioridade na Fila"] 
-  },
-  { 
-    name: 'Ouro', min: 900, rewardCode: 'NIVELOURO', icon: '🥇', 
-    perks: ["Cupom R$ 25 OFF (Ganhou!)", "Aromaterapia GRÁTIS (Automático)", "Agenda Noturna VIP"] 
-  },
-  { 
-    name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', 
-    perks: ["Cupom R$ 50 OFF (Ganhou!)", "Mimo Surpresa", "Prioridade Absoluta", "Concierge Pessoal"] 
-  },
+  { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', perks: ["Acesso App VIP", "Agendamento Rápido"] },
+  { name: 'Prata', min: 400, rewardCode: 'NIVELPRATA', icon: '🥈', perks: ["Cupom R$ 15 (Ganhou!)", "Aroma 50% OFF"] },
+  { name: 'Ouro', min: 900, rewardCode: 'NIVELOURO', icon: '🥇', perks: ["Cupom R$ 25 (Ganhou!)", "Aroma GRÁTIS"] },
+  { name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: ["Cupom R$ 50 (Ganhou!)", "Prioridade Total"] },
 ];
 
 const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
@@ -162,19 +204,19 @@ const REVIEWS_DB = [
   { t: "Sensação única. O corpo a corpo me deixou louco.", a: "Empresário Sigiloso", r: 5 }
 ];
 
-// --- UTILS ---
+// --- HELPERS ---
 const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(8); };
 const generateBookingId = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
     let result = '';
-    for (let i = 0; i < 4; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+    for (let i = 0; i < 4; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
     return result;
 };
 
-// --- COMPONENTES UI ---
+// ==================================================================================
+// 3. COMPONENTES DE UI (INTERFACE)
+// ==================================================================================
 
 const LiveStatus = () => {
   const [idx, setIdx] = useState(0);
@@ -273,8 +315,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       days.push(new Date(tempDate));
       tempDate.setDate(tempDate.getDate() + 1);
   }
-  const currentMonthName = days[0]?.toLocaleDateString('pt-BR', { month: 'long' });
-
+  
   const isTimeBlocked = (t, d) => {
     if(!d) return true;
     const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
@@ -287,7 +328,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-
       if (d.toDateString() === today.toDateString()) return 'HOJE';
       if (d.toDateString() === tomorrow.toDateString()) return 'AMANHÃ';
       return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3);
@@ -295,7 +335,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
 
   return (
     <div>
-      {currentMonthName && <h3 className="text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1">{currentMonthName}</h3>}
       <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-4">
         {days.map((d, i) => {
           const isSel = selectedDate?.getDate() === d.getDate();
@@ -402,7 +441,7 @@ const Notifications = ({ notifications, onClear }) => {
         {unread > 0 && <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-[#FF3B30] rounded-full border-2 border-[#1C1C1E]" />}
       </button>
       {open && (
-        <div className="absolute top-14 right-0 w-80 bg-[#121214] border border-white/10 shadow-2xl rounded-[20px] overflow-hidden z-[100] animate-scale">
+        <div className="absolute top-14 right-0 w-80 bg-[#121214] border border-white/10 shadow-2xl rounded-[20px] overflow-hidden z-[100] animate-slide-up">
            <div className="p-4 border-b border-white/10 bg-[#1C1C1E] flex justify-between items-center">
              <h4 className="font-semibold text-white text-sm">Notificações</h4>
              <button onClick={() => setOpen(false)} className="p-1"><X className="w-4 h-4 text-gray-400"/></button>
@@ -412,7 +451,7 @@ const Notifications = ({ notifications, onClear }) => {
                <div className="p-6 text-center text-gray-500 text-sm">Nenhuma novidade.</div>
              ) : (
                notifications.map(n => (
-                 <div key={n.id} className="p-3 mb-1 rounded-xl bg-white/5">
+                 <div key={n.id} className="p-3 mb-1 rounded-xl bg-white/5 border border-white/5">
                    <div className="flex justify-between">
                       <p className="text-sm font-semibold text-white mb-0.5">{n.title}</p>
                       <span className="text-[10px] text-gray-500">{new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
@@ -428,7 +467,10 @@ const Notifications = ({ notifications, onClear }) => {
   );
 };
 
-// --- APP PRINCIPAL ---
+// ==================================================================================
+// 4. APP PRINCIPAL
+// ==================================================================================
+
 export default function App() {
   const [step, setStep] = useState('home');
   const [loading, setLoading] = useState(true);
@@ -449,14 +491,14 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v70'); 
+    const saved = localStorage.getItem('thaly_system_v10'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
   const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
   const [selection, setSelection] = useState({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
   const [showFaq, setShowFaq] = useState(false);
-  const [privacyMode, setPrivacyMode] = useState(true); // Começa com olho fechado
+  const [privacyMode, setPrivacyMode] = useState(true); 
   const [greeting, setGreeting] = useState("");
   const [weatherHint, setWeatherHint] = useState("");
   const [lastOrderLink, setLastOrderLink] = useState(""); 
@@ -467,7 +509,7 @@ export default function App() {
   useEffect(() => { setTimeout(() => setLoading(false), 2000); }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v70', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v10', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -577,23 +619,33 @@ export default function App() {
         newInventory = newInventory.filter(c => c !== selection.coupon.code);
     }
 
-    // --- CHECK LEVEL UP E GANHAR CUPOM ---
+    // --- CHECK LEVEL UP E NOTIFICAÇÕES ---
+    let newNotifications = [...loyalty.notifications];
+    
+    // Notificação de Pedido Enviado
+    newNotifications.unshift({
+        id: Date.now(),
+        title: 'Pedido Enviado 📤',
+        message: 'Aguarde a confirmação no WhatsApp.',
+        read: false,
+        timestamp: Date.now()
+    });
+
+    // Notificação de Nível/Benefícios
     const levelReached = [...LEVELS].reverse().find(l => newTotal >= l.min);
     if(levelReached && levelReached.rewardCode) {
-        if (!newInventory.includes(levelReached.rewardCode)) {
+        if (!newInventory.includes(levelReached.rewardCode) && !loyalty.inventory.includes(levelReached.rewardCode)) {
             newInventory.push(levelReached.rewardCode);
+            newNotifications.unshift({
+                id: Date.now() + 1,
+                title: '🎉 Subiu de Nível!',
+                message: `Você ganhou o cupom ${levelReached.rewardCode} e novos benefícios!`,
+                read: false,
+                timestamp: Date.now()
+            });
         }
     }
     
-    // --- GERAR NOTIFICAÇÃO ---
-    const newNotification = {
-        id: Date.now(),
-        title: 'Pedido Enviado',
-        message: 'Aguarde a confirmação no WhatsApp para garantir seu horário.',
-        read: false,
-        timestamp: Date.now()
-    };
-
     // Loyalty Update
     setLoyalty(prev => ({ 
       ...prev, 
@@ -601,7 +653,7 @@ export default function App() {
       totalSpent: newTotal, 
       totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0) + (selection.aroma ? (10 - getAromaPrice()) : 0),
       inventory: newInventory,
-      notifications: [newNotification, ...prev.notifications]
+      notifications: newNotifications
     }));
 
     const isToday = selection.date.getDate() === new Date().getDate();
@@ -633,36 +685,35 @@ export default function App() {
     if (selection.useTable) grossService += 20;
     if (selection.aroma) grossService += getAromaPrice();
 
+    // Taxas Separadas
     let uberFee = 0;
-    if (selection.location.id === 'santa-fe') {
-        uberFee = 40; // Uber Santa Fé
-    }
+    if (selection.location.id === 'santa-fe') uberFee = 40;
 
     let motelFee = 0;
-    if (selection.location.id === 'motel') {
-        motelFee = 75; // Pago no local
-    }
+    if (selection.location.id === 'motel') motelFee = 75;
 
     // Desconto
     let discountVal = 0;
     if (selection.coupon) {
-      // Aplica desconto no valor do serviço bruto (sem uber/motel)
       if (selection.coupon.type === 'percent') discountVal = grossService * (selection.coupon.value / 100);
       else discountVal = selection.coupon.value;
     }
 
-    // Líquido Massagista = Serviço + Extras - Desconto
-    const masseurNet = grossService - discountVal;
+    // 1. O que o cliente paga para o massagista (Serviço + Extras - Desconto + Uber se houver)
+    let clientPaysToMasseur = grossService - discountVal;
+    if (uberFee > 0) clientPaysToMasseur += uberFee;
 
-    // Total Cliente Paga = Líquido Massagista + Uber (se houver)
-    let clientPaysTotal = masseurNet + uberFee;
-    
+    // 2. Líquido que SOBRA para o massagista (Tira o Uber pois é custo)
+    // Se uberFee entra, ele sai como custo. Entao Liquido = Gross - Discount.
+    let masseurNet = grossService - discountVal; 
+
+    // Cartão
+    let totalWithCard = clientPaysToMasseur;
     let cardFee = 0;
     if (selection.paymentMethod === 'credit_card') {
        const rate = CARD_RATES[selection.installments] || 0;
-       const totalWithCardFee = clientPaysTotal / (1 - rate);
-       cardFee = totalWithCardFee - clientPaysTotal;
-       clientPaysTotal = totalWithCardFee;
+       totalWithCard = clientPaysToMasseur / (1 - rate);
+       cardFee = totalWithCard - clientPaysToMasseur;
     }
 
     let msg = `✨ NOVO PEDIDO: #${bookingId}
@@ -682,7 +733,7 @@ ${uberFee > 0 ? `🚗 Taxa Uber/Deslocamento: ${formatCurrency(uberFee)}` : ''}
 ${motelFee > 0 ? `⚠️ Taxa da Suíte: ${formatCurrency(motelFee)} (Pagar na SAÍDA)` : ''}
 ${cardFee > 0 ? `💳 Taxa Máquina: ${formatCurrency(cardFee)}` : ''}
 
-💰 TOTAL CLIENTE: ${formatCurrency(clientPaysTotal)} ${paymentText}
+💰 TOTAL CLIENTE: ${formatCurrency(totalWithCard)} ${paymentText}
 (Líquido Massagista: ${formatCurrency(masseurNet)})
 
 ⏱️ Chegada estimada: ${selection.location.estimatedTravelTime || 'A combinar'}
@@ -734,31 +785,33 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
         {/* --- HOME --- */}
         {step === 'home' && (
           <div className="flex-1 p-6 overflow-y-auto pb-28 pt-12" ref={homeRef}>
-            {/* TOPO: PERFIL + FERRAMENTAS */}
+            {/* TOPO: PERFIL + FERRAMENTAS + SAIR */}
             <div className="mb-6">
-              <div className="flex justify-between items-start mb-2">
-                  <h1 className="text-2xl font-bold text-white tracking-tight">Thalyson Massagens</h1>
-                  <button onClick={handlePanic} className="w-8 h-8 rounded-full bg-[#2C1C1C] border border-red-500/20 flex items-center justify-center active:bg-red-900/40">
-                       <LogOut className="w-4 h-4 text-red-500"/> 
-                  </button>
+              <div className="flex justify-between items-center mb-2">
+                  <span className="text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full backdrop-blur-md">{weatherHint}</span>
+                  <div className="flex items-center gap-2">
+                      <Notifications notifications={loyalty.notifications} onClear={() => setLoyalty(p => ({...p, notifications: p.notifications.map(n => ({...n, read: true}))}))} />
+                      <button onClick={handlePanic} className="w-9 h-9 rounded-full bg-[#2C1C1C] border border-red-500/20 flex items-center justify-center active:bg-red-900/40">
+                           <LogOut className="w-4 h-4 text-red-500"/> 
+                      </button>
+                  </div>
               </div>
-              <p className="text-[11px] text-gray-400 uppercase tracking-[0.2em] font-bold flex items-center gap-2 mb-4">
-                  {greeting} <span className="text-lg">{loyalty.avatar}</span>
-              </p>
+              
+              <h1 className="text-3xl font-bold text-white tracking-tight mb-4">Thalyson Massagens</h1>
 
-              {/* QUICK ACTIONS ROW (ABAIXO DO CABEÇALHO) */}
-              <div className="flex gap-2">
-                  <button onClick={() => setShowFaq(true)} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333]">
+              {/* QUICK ACTIONS ROW (TOPO LIMPO) */}
+              <div className="flex gap-2 mb-6">
+                  <button onClick={() => setShowFaq(true)} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333] transition-colors">
                      <Shield className="w-3.5 h-3.5 text-gray-300"/> 
-                     <span className="text-[10px] font-bold text-gray-300">Conduta</span>
+                     <span className="text-[10px] font-bold text-gray-300 uppercase">Conduta</span>
                   </button>
-                  <button onClick={handleShare} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333]">
+                  <button onClick={handleShare} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333] transition-colors">
                      <Share2 className="w-3.5 h-3.5 text-gray-300"/> 
-                     <span className="text-[10px] font-bold text-gray-300">Compartilhar</span>
+                     <span className="text-[10px] font-bold text-gray-300 uppercase">Compartilhar</span>
                   </button>
-                   <a href="https://instagram.com/thalymassagens" target="_blank" className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333]">
+                   <a href="https://instagram.com/thalymassagens" target="_blank" className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333] transition-colors">
                      <Instagram className="w-3.5 h-3.5 text-[#E1306C]"/> 
-                     <span className="text-[10px] font-bold text-gray-300">Instagram</span>
+                     <span className="text-[10px] font-bold text-gray-300 uppercase">Instagram</span>
                   </a>
               </div>
             </div>
@@ -766,10 +819,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
             <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
             <LiveStatus />
 
-            <div className="flex justify-between items-center mb-6 px-1">
-              <span className="text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full backdrop-blur-md">{weatherHint}</span>
-            </div>
-
+            <div className="mb-2 px-1 text-[11px] font-bold text-gray-500 uppercase tracking-widest">O que dizem sobre mim</div>
             <ReviewsCarousel />
             
             {/* CTA FLUTUANTE NO FINAL DA ROLAGEM */}
@@ -1002,7 +1052,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
                   </div>
                   <div className="text-right">
                       <span className="text-[22px] font-bold text-white tracking-tight">{formatCurrency(calcFinalPrice())}</span>
-                      {selection.location.id === 'motel' && <p className="text-[9px] text-[#FFD60A] leading-none">+ Taxa Motel</p>}
+                      {selection.location.id === 'motel' && <p className="text-[9px] text-[#FFD60A] leading-none">+ Taxa Motel (Local)</p>}
                       {selection.location.id === 'santa-fe' && <p className="text-[9px] text-gray-500 leading-none">Inclui Uber R$40</p>}
                   </div>
               </div>
