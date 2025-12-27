@@ -196,10 +196,8 @@ const LiveStatus = () => {
   );
 };
 
-const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
-  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => data.totalSpent >= l.min);
-  const currentLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx];
-  const nextLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx + 1];
+// COMPONENTE CORRIGIDO: RECEBE NÍVEIS VIA PROPS PARA EVITAR ReferenceError
+const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy, currentLevel, nextLevel }) => {
   const spent = data.totalSpent || 0;
   const min = currentLevel.min || 0;
   const nextMin = nextLevel ? nextLevel.min : min + 1;
@@ -400,30 +398,25 @@ const Notifications = ({ notifications, onClear }) => {
 
   return (
     <div className="relative" onClick={e => e.stopPropagation()}>
-      <button onClick={() => { setOpen(!open); if(!open && unread > 0) onClear(); }} className="relative p-2.5 rounded-full bg-[#1C1C1E] active:bg-[#2C2C2E] transition-colors">
+      <button onClick={() => { setOpen(!open); if(!open && unread > 0) onClear(); }} className="relative p-2 rounded-full bg-[#1C1C1E] active:bg-[#2C2C2E] transition-colors">
         <Bell className="w-6 h-6 text-white" />
-        {unread > 0 && <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-[#FF3B30] rounded-full border-2 border-[#1C1C1E]" />}
+        {unread > 0 && <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#000]" />}
       </button>
       {open && (
-        <div className="absolute top-14 right-0 w-80 bg-[#121214] border border-white/10 shadow-2xl rounded-[20px] overflow-hidden z-[100] animate-fade-in">
-           <div className="p-4 border-b border-white/10 bg-[#1C1C1E] flex justify-between items-center">
-             <h4 className="font-semibold text-white text-sm">Notificações</h4>
-             <button onClick={() => setOpen(false)} className="p-1"><X className="w-4 h-4 text-gray-400"/></button>
+        <div className="absolute top-12 right-0 w-72 bg-[#1C1C1E] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
+           <div className="p-3 border-b border-white/10 flex justify-between">
+             <span className="font-bold text-sm">Notificações</span>
+             <button onClick={() => setOpen(false)}><X className="w-4 h-4 text-gray-400"/></button>
            </div>
-           <div className="max-h-64 overflow-y-auto p-2">
-             {notifications.length === 0 ? (
-               <div className="p-6 text-center text-gray-500 text-sm">Nenhuma novidade.</div>
-             ) : (
+           <div className="max-h-60 overflow-y-auto p-2">
+             {notifications.length === 0 ? <p className="text-center text-xs text-gray-500 p-4">Nada por aqui.</p> : 
                notifications.map(n => (
-                 <div key={n.id} className="p-3 mb-1 rounded-xl bg-white/5 border border-white/5">
-                   <div className="flex justify-between">
-                      <p className="text-sm font-semibold text-white mb-0.5">{n.title}</p>
-                      <span className="text-[10px] text-gray-500">{new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                   </div>
-                   <p className="text-xs text-gray-400 leading-snug">{n.message}</p>
+                 <div key={n.id} className="p-3 mb-1 rounded-xl bg-black/40">
+                   <p className="text-sm font-bold text-white mb-1">{n.title}</p>
+                   <p className="text-xs text-gray-400">{n.message}</p>
                  </div>
                ))
-             )}
+             }
            </div>
         </div>
       )}
@@ -443,7 +436,7 @@ export default function App() {
   
   // State Principal (Dados Persistentes)
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_v12'); 
+    const saved = localStorage.getItem('thaly_v14'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], levelsUnlocked: ['Bronze'] };
   });
 
@@ -465,7 +458,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_v12', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_v14', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -522,6 +515,10 @@ export default function App() {
   const getCurrentLevel = () => {
       return [...LEVELS].reverse().find(l => loyalty.totalSpent >= l.min) || LEVELS[0];
   };
+
+  const getNextLevel = () => {
+      return LEVELS.find(l => l.min > loyalty.totalSpent);
+  }
 
   const getAromaPrice = () => {
       const level = getCurrentLevel().name;
@@ -762,26 +759,14 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
                 </div>
              </div>
 
-             {/* Cartão Fidelidade */}
-             <div className="ios-card p-6 rounded-[28px] mb-6 relative overflow-hidden group">
-                <div className="flex justify-between items-start mb-6 relative z-10">
-                   <div>
-                      <p className="text-[10px] text-[#007AFF] font-black uppercase tracking-widest mb-1">CLUBE VIP</p>
-                      <h3 className="text-3xl font-bold flex items-center gap-2">{getCurrentLevel().name} {getCurrentLevel().icon}</h3>
-                   </div>
-                   <button onClick={() => setPrivacyMode(!privacyMode)} className="text-right">
-                      <div className="flex items-center justify-end gap-1 text-gray-500 mb-1"><span className="text-[10px] font-bold">INVESTIDO</span> {privacyMode ? <EyeOff className="w-3 h-3"/> : <Eye className="w-3 h-3"/>}</div>
-                      <p className={`text-xl font-mono ${privacyMode ? 'blur-md' : ''}`}>{formatCurrency(loyalty.totalSpent)}</p>
-                   </button>
-                </div>
-                <div className="h-1.5 bg-white/10 rounded-full mb-3 overflow-hidden">
-                   <div className="h-full bg-[#007AFF]" style={{width: `${Math.min(100, (loyalty.totalSpent / (getNextLevel()?.min || loyalty.totalSpent))*100)}%`}}/>
-                </div>
-                <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase">
-                   <span>Economia: {formatCurrency(loyalty.totalSaved)}</span>
-                   <span>Próx: {formatCurrency(getNextLevel()?.min || loyalty.totalSpent)}</span>
-                </div>
-             </div>
+             {/* Cartão Fidelidade (CORRIGIDO) */}
+             <LoyaltyCard 
+                data={loyalty} 
+                privacyMode={privacyMode} 
+                onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }}
+                currentLevel={getCurrentLevel()}
+                nextLevel={getNextLevel()}
+             />
 
              <LiveStatus />
              
@@ -847,29 +832,17 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
               {/* Data */}
               <div className="mb-8">
                  <h4 className="text-xs font-bold text-gray-500 uppercase mb-3">Data e Hora</h4>
-                 <div className="flex gap-2 overflow-x-auto scrollbar-hide mb-3">
-                    {[0,1,2,3,4].map(i => {
-                       const d = new Date(); d.setDate(d.getDate() + i);
-                       const isSel = selection.date?.toDateString() === d.toDateString();
-                       return (
-                          <button key={i} onClick={() => setSelection({...selection, date: d, time: ''})} className={`min-w-[70px] h-20 rounded-xl border flex flex-col items-center justify-center ${isSel ? 'bg-white text-black' : 'ios-btn'}`}>
-                             <span className="text-[10px] font-bold">{i===0?'HOJE':d.getDate()}</span>
-                             <span className="text-lg font-bold">{d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
-                          </button>
-                       )
-                    })}
-                 </div>
-                 {selection.date && (
-                    <div className="grid grid-cols-4 gap-2">
-                       {timeSlots.map(t => (
-                          <button key={t} onClick={() => setSelection({...selection, time: t})} className={`py-2 rounded-lg text-sm font-bold border ${selection.time === t ? 'bg-[#007AFF] border-[#007AFF]' : 'ios-btn'}`}>{t}</button>
-                       ))}
-                    </div>
-                 )}
+                 <div className="ios-card p-4 rounded-[22px]">
+                   <InlineDateSelector 
+                      selectedDate={selection.date} 
+                      selectedTime={selection.time} 
+                      onSelect={(d, t) => { setSelection({...selection, date: d, time: t}); if(t) scrollTo(locationRef); }} 
+                   />
+                </div>
               </div>
 
               {/* Local */}
-              <div className="mb-8">
+              <div className="mb-8" ref={locationRef}>
                  <h4 className="text-xs font-bold text-gray-500 uppercase mb-3">Local</h4>
                  {locations.map(l => (
                     <div key={l.id} onClick={() => setSelection({...selection, location: l, useTable: false})} className={`p-4 rounded-xl border mb-2 ${selection.location?.id === l.id ? 'bg-[#007AFF]/20 border-[#007AFF]' : 'ios-btn'}`}>
@@ -887,7 +860,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
               </div>
 
               {/* Extras */}
-              <div className="mb-8 space-y-3">
+              <div className="mb-8 space-y-3" ref={extrasRef}>
                  <button onClick={() => setSelection({...selection, upgrade: !selection.upgrade})} className={`w-full p-4 rounded-xl border flex justify-between items-center ${selection.upgrade ? 'bg-[#007AFF]/20 border-[#007AFF]' : 'ios-btn'}`}>
                     <span className="text-sm font-bold">Mais Tempo (+30m)</span>
                     <span className="text-[#007AFF] font-bold">+R$ 50</span>
@@ -898,10 +871,22 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
                  </button>
               </div>
 
+              {/* Vibe */}
+              <div className="mb-8" ref={vibeRef}>
+                <h4 className="text-xs font-bold text-gray-500 uppercase mb-3">Vibe Sonora</h4>
+                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                   {musicVibes.map(vibe => (
+                      <button key={vibe} onClick={() => { setSelection({...selection, music: vibe}); }} className={`px-5 py-3 rounded-[16px] border text-[13px] font-bold whitespace-nowrap flex-shrink-0 transition-all duration-300 ${selection.music === vibe ? 'bg-[#0A84FF] border-[#0A84FF] text-white scale-105' : 'ios-btn border-transparent text-gray-400'}`}>
+                        {vibe}
+                      </button>
+                   ))}
+                </div>
+              </div>
+
               <CouponInventory inventory={loyalty.inventory} appliedCoupon={selection.coupon} onApply={(c)=>setSelection({...selection, coupon: SYSTEM_COUPONS[c]})} onRemove={()=>setSelection({...selection, coupon: null})} onAddManual={(c)=>{if(!loyalty.inventory.includes(c)) setLoyalty(p=>({...p, inventory:[...p.inventory, c]}))}}/>
 
               {/* Pagamento */}
-              <div className="grid grid-cols-2 gap-2 mt-6">
+              <div className="grid grid-cols-2 gap-2 mt-6" ref={paymentRef}>
                  {['pix', 'cash', 'debit_card', 'credit_card'].map(m => (
                     <button key={m} onClick={() => setSelection({...selection, paymentMethod: m})} className={`py-4 rounded-xl border flex flex-col items-center gap-1 ${selection.paymentMethod === m ? 'bg-[#007AFF]/20 border-[#007AFF]' : 'ios-btn'}`}>
                        <span className="text-[10px] font-black uppercase">{m.replace('_',' ')}</span>
