@@ -3,7 +3,7 @@ import {
   ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
   Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car
+  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car, Sparkles
 } from 'lucide-react';
 
 // ==================================================================================
@@ -11,61 +11,140 @@ import {
 // ==================================================================================
 
 const globalStyles = `
-/* Reset & Base */
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { font-size: 16px; background-color: #000000; }
+/* --- RESET & BASE --- */
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  -webkit-tap-highlight-color: transparent; 
+}
+
+html { 
+  font-size: 16px; 
+  background-color: #000000; 
+}
+
 body { 
   overscroll-behavior-y: none; 
   touch-action: manipulation; 
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", Helvetica, Arial, sans-serif; 
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif; 
   letter-spacing: -0.02em;
   color: #fff;
   background: #000;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* --- SCROLLBAR --- */
 ::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-input, select { user-select: text; font-size: 17px; outline: none; appearance: none; }
-button { touch-action: manipulation; user-select: none; -webkit-touch-callout: none; cursor: pointer; }
 
-/* Visual Azul Elétrico Premium */
+/* --- INPUTS & FORMS --- */
+input, select { 
+  user-select: text; 
+  font-size: 17px; 
+  outline: none; 
+  appearance: none; 
+  border-radius: 0; 
+}
+
+button { 
+  touch-action: manipulation; 
+  user-select: none; 
+  -webkit-touch-callout: none; 
+  cursor: pointer; 
+  border: none;
+  font-family: inherit;
+}
+
+/* --- BACKGROUNDS --- */
+.aurora-bg {
+  background: 
+    radial-gradient(120% 100% at 50% 0%, rgba(10, 132, 255, 0.08), transparent 50%),
+    radial-gradient(100% 100% at 50% 100%, rgba(10, 132, 255, 0.03), transparent 60%),
+    #000000;
+  background-attachment: fixed;
+  background-size: cover;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* --- CARDS & GLASSMORPHISM --- */
 .ios-card { 
   background: #121212; 
   border: 1px solid rgba(255, 255, 255, 0.08); 
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s ease;
+}
+
+.ios-card:active {
+  transform: scale(0.99);
 }
 
 .ios-header { 
   background: rgba(0, 0, 0, 0.85); 
   backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 0.5px solid rgba(255,255,255,0.1); 
 }
 
+/* --- BOTÕES --- */
 .ios-btn { 
   background: #1C1C1E; 
   border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.2s ease; 
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); 
 }
-.ios-btn:active { transform: scale(0.96); background: #2C2C2E; }
+.ios-btn:active { 
+  transform: scale(0.96); 
+  background: #2C2C2E; 
+}
 
 .ios-btn-primary {
-  background: #007AFF; /* Azul das Imagens */
+  background: linear-gradient(180deg, #007AFF 0%, #0056B3 100%);
   color: white;
-  box-shadow: 0 0 20px rgba(0, 122, 255, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
   border: none;
 }
-.ios-btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+.ios-btn-primary:active { 
+  transform: scale(0.98); 
+  opacity: 0.9; 
+}
+.ios-btn-primary:disabled { 
+  filter: grayscale(1); 
+  opacity: 0.5; 
+  cursor: not-allowed; 
+  box-shadow: none;
+}
 
+/* --- INPUTS --- */
 .custom-input {
   background: #1C1C1E;
   border: 1px solid #333;
+  color: white;
   transition: all 0.3s ease;
 }
-.custom-input:focus { border-color: #007AFF; box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2); }
+.custom-input:focus { 
+  border-color: #007AFF; 
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2); 
+}
 
-/* Animações Completas */
-.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* --- ANIMAÇÕES --- */
+.animate-fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-pulse-slow { animation: pulse 3s infinite; }
+
+@keyframes fadeIn { 
+  from { opacity: 0; } 
+  to { opacity: 1; } 
+}
+@keyframes slideUp { 
+  from { opacity: 0; transform: translateY(20px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
+@keyframes pulse { 
+  0%, 100% { opacity: 1; transform: scale(1); } 
+  50% { opacity: 0.7; transform: scale(0.95); } 
+}
 `;
 
 const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#007AFF]" />;
@@ -74,10 +153,9 @@ const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#007AFF]" />;
 // 2. BANCO DE DADOS (CONFIGURAÇÕES DO NEGÓCIO)
 // ==================================================================================
 
-// Taxas da Maquininha (1x a 12x)
 const CARD_RATES = [
   0, 
-  0,        // 1x (Débito/Crédito vista assumido sem taxa no repasse visual ou ajustar conforme necessidade)
+  0,        // 1x 
   0.0499,   // 2x
   0.0600,   // 3x
   0.0700,   // 4x
@@ -196,23 +274,24 @@ const LiveStatus = () => {
   );
 };
 
-// COMPONENTE CORRIGIDO: RECEBE NÍVEIS VIA PROPS PARA EVITAR ReferenceError
+// CORRIGIDO: Recebe props em vez de calcular internamente
 const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy, currentLevel, nextLevel }) => {
+  // Safe calculation defaults
   const spent = data.totalSpent || 0;
-  const min = currentLevel.min || 0;
+  const min = currentLevel?.min || 0;
   const nextMin = nextLevel ? nextLevel.min : min + 1;
   const rawProgress = ((spent - min) / (nextMin - min)) * 100;
   const progress = nextLevel ? Math.min(100, Math.max(0, rawProgress)) : 100;
 
   return (
     <div className="ios-card p-6 rounded-[28px] relative overflow-hidden mb-6 group">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-[#0A84FF]/10 blur-[50px] rounded-full pointer-events-none group-hover:bg-[#0A84FF]/20 transition-all"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#007AFF]/10 blur-[50px] rounded-full pointer-events-none group-hover:bg-[#007AFF]/20 transition-all"></div>
       
       <div className="flex justify-between items-start mb-6 relative z-10">
         <div>
-          <p className="text-[10px] text-[#0A84FF] font-black uppercase tracking-[0.2em] mb-1">Status Vip</p>
+          <p className="text-[10px] text-[#007AFF] font-black uppercase tracking-[0.2em] mb-1">Status Vip</p>
           <h3 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
-             {currentLevel.name} {currentLevel.icon}
+             {currentLevel?.name || 'Membro'} {currentLevel?.icon || ''}
           </h3>
         </div>
         <div className="text-right">
@@ -240,9 +319,9 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy, currentLevel, nextLev
       </div>
 
       <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 gap-2">
-          {currentLevel.perks.slice(0, 4).map((perk, i) => (
+          {currentLevel?.perks?.slice(0, 4).map((perk, i) => (
               <div key={i} className="flex items-center gap-1.5 text-[10px] text-gray-400">
-                  <CheckCircle2 className="w-3 h-3 text-[#0A84FF]" /> {perk}
+                  <CheckCircle2 className="w-3 h-3 text-[#007AFF]" /> {perk}
               </div>
           ))}
       </div>
@@ -256,10 +335,10 @@ const ReviewsCarousel = () => {
   const currentReview = REVIEWS_DB[idx];
   
   return (
-    <div className="ios-card p-0 rounded-[20px] relative overflow-hidden h-28 flex items-center justify-center mb-6 border-l-2 border-l-[#0A84FF]">
+    <div className="ios-card p-0 rounded-[20px] relative overflow-hidden h-28 flex items-center justify-center mb-6 border-l-2 border-l-[#007AFF]">
       <div key={idx} className="absolute inset-0 p-5 flex flex-col items-center justify-center animate-fade-in">
         <div className="flex gap-0.5 mb-2">
-          {[...Array(5)].map((_,k) => <Star key={k} className={`w-3.5 h-3.5 ${k < currentReview.r ? 'text-[#FFD60A] fill-[#FFD60A]' : 'text-gray-700'}`}/>)}
+          {[...Array(5)].map((_,k) => <Star key={k} className={`w-3.5 h-3.5 ${k < currentReview.r ? 'text-[#FFD700] fill-[#FFD700]' : 'text-gray-700'}`}/>)}
         </div>
         <p className="text-[13px] text-gray-200 text-center font-medium leading-relaxed italic">"{currentReview.t}"</p>
         <p className="text-[10px] text-gray-500 font-bold uppercase mt-2 tracking-widest">- {currentReview.a}</p>
@@ -302,7 +381,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
           const isSel = selectedDate?.getDate() === d.getDate();
           const label = getDayLabel(d);
           return (
-            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-[18px] transition-all duration-300 ${isSel ? 'bg-[#0A84FF] text-white shadow-lg scale-105' : 'ios-btn text-gray-400'}`}>
+            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-[18px] transition-all duration-300 ${isSel ? 'bg-[#007AFF] text-white shadow-lg scale-105' : 'ios-btn text-gray-400'}`}>
               <span className={`text-[11px] uppercase font-bold tracking-wide opacity-80 ${label === 'HOJE' ? 'text-green-400' : ''}`}>{label}</span>
               <span className="text-2xl font-semibold mt-1">{d.getDate()}</span>
             </button>
@@ -315,7 +394,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
             const blocked = isTimeBlocked(t, selectedDate);
             return (
               <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
-                className={`py-3 rounded-[14px] text-[13px] font-semibold transition-all duration-200 ${selectedTime === t ? 'bg-[#0A84FF] text-white shadow-md' : blocked ? 'bg-white/5 text-gray-600' : 'ios-btn text-gray-300'}`}>
+                className={`py-3 rounded-[14px] text-[13px] font-semibold transition-all duration-200 ${selectedTime === t ? 'bg-[#007AFF] text-white shadow-md' : blocked ? 'bg-white/5 text-gray-600' : 'ios-btn text-gray-300'}`}>
                 {blocked ? <Lock className="w-3.5 h-3.5 mx-auto opacity-30" /> : t}
               </button>
             )
@@ -364,15 +443,15 @@ const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddMan
           {myCoupons.map((coupon) => {
             const isApplied = appliedCoupon?.code === coupon.code;
             return (
-              <button key={coupon.code} onClick={() => { triggerHaptic(); isApplied ? onRemove() : onApply(coupon.code); }} className={`w-full p-4 rounded-[18px] flex justify-between items-center transition-all duration-300 ${isApplied ? 'bg-[#0A84FF]/15 border border-[#0A84FF] shadow-lg' : 'ios-btn'}`}>
+              <button key={coupon.code} onClick={() => { triggerHaptic(); isApplied ? onRemove() : onApply(coupon.code); }} className={`w-full p-4 rounded-[18px] flex justify-between items-center transition-all duration-300 ${isApplied ? 'bg-[#007AFF]/15 border border-[#007AFF] shadow-lg' : 'ios-btn'}`}>
                 <div className="text-left">
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] font-bold text-white bg-[#2C2C2E] px-2 py-1 rounded-md tracking-wider">{coupon.code}</span>
-                    {isApplied && <span className="text-[10px] text-[#0A84FF] font-bold">ATIVO</span>}
+                    {isApplied && <span className="text-[10px] text-[#007AFF] font-bold">ATIVO</span>}
                   </div>
                   <p className="text-xs text-gray-400 mt-1.5">{coupon.desc}</p>
                 </div>
-                {isApplied ? <X className="w-5 h-5 text-gray-400" /> : <span className="text-[11px] bg-[#0A84FF] text-white px-3 py-1.5 rounded-full font-bold">Usar</span>}
+                {isApplied ? <X className="w-5 h-5 text-gray-400" /> : <span className="text-[11px] bg-[#007AFF] text-white px-3 py-1.5 rounded-full font-bold">Usar</span>}
               </button>
             )
           })}
@@ -436,7 +515,7 @@ export default function App() {
   
   // State Principal (Dados Persistentes)
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_v14'); 
+    const saved = localStorage.getItem('thaly_v15'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], levelsUnlocked: ['Bronze'] };
   });
 
@@ -450,7 +529,7 @@ export default function App() {
     
   const surfaceRef = useRef(null);
 
-  useEffect(() => { setTimeout(() => setLoading(false), 1500); }, []);
+  useEffect(() => { setTimeout(() => setLoading(false), 2000); }, []);
   
   // TITLE SETTING
   useEffect(() => {
@@ -458,7 +537,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_v14', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_v15', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -512,6 +591,7 @@ export default function App() {
   };
 
   // --- BENEFÍCIOS REAIS AUTOMÁTICOS ---
+  // FUNÇÕES DEFINIDAS AQUI PARA PASSAR VIA PROPS
   const getCurrentLevel = () => {
       return [...LEVELS].reverse().find(l => loyalty.totalSpent >= l.min) || LEVELS[0];
   };
@@ -724,6 +804,17 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
   return (
     <div className="min-h-screen flex justify-center bg-black text-white font-sans">
       <style>{globalStyles}</style>
+
+      {/* LOADING COM COROA PULSANTE */}
+      {loading ? (
+        <div className="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center animate-fade-in">
+          <div className="relative mb-6">
+             <div className="absolute inset-0 bg-[#007AFF] blur-[40px] opacity-30 rounded-full animate-pulse-slow"></div>
+             <Crown className="w-20 h-20 text-[#007AFF] animate-bounce relative z-10" />
+          </div>
+          <span className="text-[#007AFF] font-bold tracking-[0.3em] text-sm animate-pulse">CARREGANDO...</span>
+        </div>
+      ) : (
       <div ref={scrollRef} className="w-full max-w-[440px] h-[100dvh] flex flex-col relative overflow-y-auto scrollbar-hide bg-[#000]">
         
         {/* HEADER */}
@@ -871,18 +962,6 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
                  </button>
               </div>
 
-              {/* Vibe */}
-              <div className="mb-8" ref={vibeRef}>
-                <h4 className="text-xs font-bold text-gray-500 uppercase mb-3">Vibe Sonora</h4>
-                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                   {musicVibes.map(vibe => (
-                      <button key={vibe} onClick={() => { setSelection({...selection, music: vibe}); }} className={`px-5 py-3 rounded-[16px] border text-[13px] font-bold whitespace-nowrap flex-shrink-0 transition-all duration-300 ${selection.music === vibe ? 'bg-[#0A84FF] border-[#0A84FF] text-white scale-105' : 'ios-btn border-transparent text-gray-400'}`}>
-                        {vibe}
-                      </button>
-                   ))}
-                </div>
-              </div>
-
               <CouponInventory inventory={loyalty.inventory} appliedCoupon={selection.coupon} onApply={(c)=>setSelection({...selection, coupon: SYSTEM_COUPONS[c]})} onRemove={()=>setSelection({...selection, coupon: null})} onAddManual={(c)=>{if(!loyalty.inventory.includes(c)) setLoyalty(p=>({...p, inventory:[...p.inventory, c]}))}}/>
 
               {/* Pagamento */}
@@ -973,6 +1052,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
         )}
 
       </div>
+      )}
     </div>
   );
 }
