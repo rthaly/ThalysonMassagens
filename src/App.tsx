@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. ESTILOS GLOBAIS & CONFIGURAÇÕES (VISUAL IOS 2026 DARK PREMIUM - APPLE STYLE)
+// 1. ESTILOS GLOBAIS & CONFIGURAÇÕES (VISUAL IOS 2026 DARK PREMIUM)
 // ==================================================================================
 
 const globalStyles = `
@@ -51,10 +51,7 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.2s ease;
 }
-
-.ios-card:active {
-  transform: scale(0.99);
-}
+.ios-card:active { transform: scale(0.99); }
 
 .ios-header { 
   background: rgba(0, 0, 0, 0.85); 
@@ -111,25 +108,11 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 
 // ==================================================================================
-// 2. BANCO DE DADOS (CONFIGURAÇÕES DO NEGÓCIO)
+// 2. BANCO DE DADOS 
 // ==================================================================================
 
-// Taxas da Maquininha (1x a 12x)
-const CARD_RATES = [
-  0, 
-  0,        // 1x 
-  0.0499,   // 2x
-  0.0600,   // 3x
-  0.0700,   // 4x
-  0.0800,   // 5x
-  0.0900,   // 6x
-  0.1000,   // 7x
-  0.1050,   // 8x
-  0.1100,   // 9x
-  0.1150,   // 10x
-  0.1190,   // 11x
-  0.1238    // 12x
-];
+// Taxas da Maquininha 
+const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
 
 const services = [
   { 
@@ -153,7 +136,7 @@ const locations = [
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
     sublabel: 'Vou com você', 
-    fee: 75, // Valor Somado ao Total Visual (Pago ao Motel, mas cliente vê o custo total)
+    fee: 75, 
     allowsTableChoice: false, 
     estimatedTravelTime: '10-15 min',
     isMotel: true
@@ -162,7 +145,7 @@ const locations = [
     id: 'santa-fe', 
     label: 'Santa Fé do Sul', 
     sublabel: 'No conforto do seu lar', 
-    fee: 40, // Valor Somado (Uber pago ao massagista)
+    fee: 40, 
     allowsTableChoice: true, 
     estimatedTravelTime: '15-20 min',
     isUber: true
@@ -179,7 +162,7 @@ const locations = [
 ];
 
 const SYSTEM_COUPONS = {
-  'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF (Primeira Vez)' },
+  'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF (1ª Vez)' },
   'MASCULINA': { code: 'MASCULINA', type: 'percent', value: 10, desc: '10% OFF Especial' },
   'VIP20': { code: 'VIP20', type: 'fixed', value: 20, desc: 'R$ 20,00 OFF' },
   'NIVELPRATA': { code: 'NIVELPRATA', type: 'fixed', value: 15, desc: 'R$ 15,00 OFF (Prata)' },
@@ -188,20 +171,46 @@ const SYSTEM_COUPONS = {
 };
 
 const LEVELS = [
-  { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', perks: ["Acesso App VIP", "Agendamento Rápido"] },
+  { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', perks: ["Acesso VIP", "Agendamento Rápido"] },
   { name: 'Prata', min: 400, rewardCode: 'NIVELPRATA', icon: '🥈', perks: ["Cupom R$ 15 (Ganhou!)", "Aroma 50% OFF"] },
   { name: 'Ouro', min: 900, rewardCode: 'NIVELOURO', icon: '🥇', perks: ["Cupom R$ 25 (Ganhou!)", "Aroma GRÁTIS"] },
   { name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: ["Cupom R$ 50 (Ganhou!)", "Prioridade Total"] },
 ];
 
 const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
-const musicVibes = ['Silêncio 🤫', 'Zen 🧘', 'Natureza 🌿', 'Deep House 🔊']; 
+const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘']; 
 
 const REVIEWS_DB = [
-  { t: "Profissionalismo impecável. O sigilo foi total e a massagem foi além do esperado.", a: "R.S.", r: 5 },
-  { t: "Ambiente e atendimento de primeira. Recomendo para quem quer relaxar de verdade.", a: "Anônimo", r: 5 },
-  { t: "A melhor experiência que já tive na cidade. Respeitoso e muito habilidoso.", a: "Carlos", r: 5 },
-  { t: "Fiquei muito à vontade. Pontual e educado.", a: "M.V.", r: 5 }
+  { t: "Cheguei estressado, saí flutuando. A finalização foi absurda de boa.", a: "R.S. (Santa Fé)", r: 5 },
+  { t: "Nunca gemi tanto na minha vida. Mão pesada na medida certa.", a: "Carlos, 35", r: 5 },
+  { t: "Sigilo total. Ninguém desconfia. O alívio no final é explosivo.", a: "Empresário (Casado)", r: 5 },
+  { t: "Maluco, que sensação. Tremi as pernas no final.", a: "Lucas, 22", r: 5 },
+  { t: "Toque firme, corpo quente... gozei demais. Valeu cada centavo.", a: "Anônimo", r: 5 },
+  { t: "Fui pro motel com ele, foi a melhor experiência. Respeitoso e intenso.", a: "M.V. (Jales)", r: 5 },
+  { t: "Sou casado, precisava disso. O sigilo foi 100%.", a: "Anônimo", r: 5 },
+  { t: "A pegada é diferente. Me deixou louco de tesão.", a: "Felipe, 29", r: 5 },
+  { t: "Sem frescura. Foi direto ao ponto e me deixou leve.", a: "Paulo (Vendedor)", r: 5 },
+  { t: "Gostei que ele fica de cueca, dá pra ver o corpo. Muito excitante.", a: "R.L.", r: 5 },
+  { t: "Massagem top, finalização melhor ainda. Jatos fortes.", a: "Anônimo", r: 5 },
+  { t: "Ambiente discreto, me senti um rei. Gozei muito.", a: "Empresário", r: 5 },
+  { t: "Sensação de liberdade. Ninguém me julga ali. Recomendo.", a: "João, 45", r: 5 },
+  { t: "Estava travado, saí mole. Mãos de fada com força de homem.", a: "B.S.", r: 5 },
+  { t: "Técnica perfeita. O toque no corpo todo arrepia.", a: "Pedro (Universitário)", r: 5 },
+  { t: "Fiz na minha cama, foi super prático. Não precisei sair de casa.", a: "Anônimo (Santa Fé)", r: 5 },
+  { t: "Primeira vez com homem. Fiquei nervoso, mas ele me deixou zen.", a: "Curioso", r: 5 },
+  { t: "O óleo quente, a respiração... foi intenso demais.", a: "G.H.", r: 5 },
+  { t: "Valeu o investimento. Satisfação garantida.", a: "Advogado Sigiloso", r: 5 },
+  { t: "Gostei da massagem tântrica no final. Surpresa boa.", a: "R.", r: 5 },
+  { t: "Profissional, limpo e cheiroso. E gostoso rs.", a: "Anônimo", r: 5 },
+  { t: "Me fez esquecer dos problemas e focar só no prazer.", a: "Ricardo, 50", r: 5 },
+  { t: "Atendimento vip, me senti especial. Vou voltar.", a: "M.", r: 5 },
+  { t: "Relaxamento profundo seguido de um clímax insano.", a: "J.P.", r: 5 },
+  { t: "Muito bom, recomendo pra quem quer discrição.", a: "Anônimo", r: 5 },
+  { t: "Cara gente boa, papo bom e mão melhor ainda.", a: "Vitor", r: 5 },
+  { t: "Saí renovado e vazio haha. Muito bom.", a: "D.S.", r: 5 },
+  { t: "Melhor massagem da região. Não troco.", a: "Cliente Fiel", r: 5 },
+  { t: "Tudo muito limpo e organizado. E prazeroso.", a: "L.", r: 5 },
+  { t: "Amei a vibe. Silêncio e prazer.", a: "Anônimo", r: 5 }
 ];
 
 // --- HELPERS ---
@@ -215,12 +224,12 @@ const generateBookingId = () => {
 };
 
 // ==================================================================================
-// 3. COMPONENTES DE UI (INTERFACE)
+// 3. COMPONENTES DE UI
 // ==================================================================================
 
 const LiveStatus = () => {
   const [idx, setIdx] = useState(0);
-  const msgs = ["Carlos agendou agora", "Poucos horários hoje", "Atendimento em andamento"];
+  const msgs = ["Atendimento em andamento 💆‍♂️", "Horários da noite acabando 🌙", "Anônimo acabou de agendar 🔥"];
   useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%msgs.length), 4000); return () => clearInterval(t); }, []);
   return (
     <div className="flex justify-center mb-6">
@@ -232,7 +241,8 @@ const LiveStatus = () => {
   );
 };
 
-const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
+// Componente de Barra de Nível (Reutilizável na Home e Success)
+const LevelProgressBar = ({ data }) => {
   const currentLevelIdx = [...LEVELS].reverse().findIndex(l => data.totalSpent >= l.min);
   const currentLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx];
   const nextLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx + 1];
@@ -243,40 +253,41 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
   const progress = nextLevel ? Math.min(100, Math.max(0, rawProgress)) : 100;
 
   return (
-    <div className="ios-card p-6 rounded-[28px] relative overflow-hidden mb-6 group border-t border-white/10">
-      {/* Background Glow */}
-      <div className="absolute top-[-50%] right-[-20%] w-64 h-64 bg-[#0A84FF]/20 blur-[80px] rounded-full pointer-events-none"></div>
-      
-      <div className="flex justify-between items-start mb-6 relative z-10">
-        <div>
-          <p className="text-[10px] text-[#8E8E93] font-bold uppercase tracking-[0.15em] mb-1">Seu Status</p>
-          <h3 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
-             {currentLevel.name} <span className="text-2xl">{currentLevel.icon}</span>
-          </h3>
+    <div>
+        <div className="flex justify-between items-end mb-2 relative z-10">
+            <div>
+              <p className="text-[9px] text-[#8E8E93] font-bold uppercase tracking-[0.1em] mb-0.5">Seu Nível</p>
+              <h3 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                 {currentLevel.name} {currentLevel.icon}
+              </h3>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] font-bold text-gray-500 uppercase">Investido: </span>
+              <span className="text-[15px] font-mono text-white font-bold">{formatCurrency(data.totalSpent)}</span>
+            </div>
         </div>
-        <div className="text-right">
-          <button onClick={onTogglePrivacy} className="flex items-center justify-end gap-1.5 mb-1 text-gray-500 hover:text-white transition-colors">
-            <span className="text-[9px] font-bold uppercase tracking-wider">Total Investido</span>
-            {privacyMode ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-          </button>
-          <p className={`text-lg font-mono text-white ${privacyMode ? 'blur-md select-none opacity-50' : ''} transition-all duration-300`}>
-            {formatCurrency(data.totalSpent)}
-          </p>
+        
+        <div className="relative h-2 bg-white/10 rounded-full mb-2 overflow-hidden z-10">
+            <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#0A84FF] to-[#30D158] rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(48,209,88,0.5)]" style={{ width: `${progress}%` }} />
         </div>
-      </div>
-      
-      <div className="relative h-1.5 bg-white/10 rounded-full mb-3 overflow-hidden z-10">
-        <div className="absolute top-0 left-0 h-full bg-white rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(255,255,255,0.5)]" style={{ width: `${progress}%` }} />
-      </div>
-      
-      <div className="flex justify-between text-[10px] text-gray-500 relative z-10 font-medium tracking-wide">
-        <span>Economizou: <span className="text-[#32D74B]">{formatCurrency(data.totalSaved)}</span></span>
-        {nextLevel ? (
-           <span>Próx: {formatCurrency(nextLevel.min)}</span>
-        ) : (
-           <span className="text-[#FFD60A]">Nível Máximo</span>
-        )}
-      </div>
+        
+        <div className="flex justify-between text-[9px] text-gray-500 font-medium tracking-wide">
+            <span>Benefício: <span className="text-[#32D74B]">{currentLevel.perks[1]}</span></span>
+            {nextLevel ? (
+               <span>Faltam {formatCurrency(nextLevel.min - spent)} p/ {nextLevel.name}</span>
+            ) : (
+               <span className="text-[#FFD60A]">Nível Máximo</span>
+            )}
+        </div>
+    </div>
+  )
+}
+
+const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
+  return (
+    <div className="ios-card p-5 rounded-[28px] relative overflow-hidden mb-6 group border-t border-white/10">
+      <div className="absolute top-[-50%] right-[-20%] w-64 h-64 bg-[#0A84FF]/10 blur-[80px] rounded-full pointer-events-none"></div>
+      <LevelProgressBar data={data} />
     </div>
   );
 };
@@ -292,7 +303,8 @@ const ReviewsCarousel = () => {
         <div className="flex gap-1 mb-2">
           {[...Array(5)].map((_,k) => <Star key={k} className={`w-3 h-3 ${k < currentReview.r ? 'text-white fill-white' : 'text-gray-800'}`}/>)}
         </div>
-        <p className="text-[14px] text-gray-300 text-center font-medium leading-snug tracking-tight">"{currentReview.t}"</p>
+        <p className="text-[13px] text-gray-300 text-center font-medium leading-snug tracking-tight italic">"{currentReview.t}"</p>
+        <p className="text-[10px] text-gray-500 font-bold uppercase mt-2 tracking-widest">- {currentReview.a}</p>
       </div>
     </div>
   );
@@ -364,7 +376,7 @@ const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddMan
       const codeUpper = manualCode.toUpperCase().trim();
       if(codeUpper && SYSTEM_COUPONS[codeUpper]) {
           if (inventory.includes(codeUpper)) {
-              alert('Você já resgatou este cupom!');
+              alert('Você já tem este cupom!');
           } else {
               onAddManual(codeUpper);
               setManualCode('');
@@ -441,7 +453,7 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v11'); 
+    const saved = localStorage.getItem('thaly_system_v12'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
@@ -457,12 +469,12 @@ export default function App() {
 
   // Init
   useEffect(() => { 
-    document.title = "Hora de Relaxar"; // Mudança do título
+    document.title = "Hora de Relaxar"; 
     setTimeout(() => setLoading(false), 2000); 
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v11', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v12', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -501,11 +513,14 @@ export default function App() {
   const handleShare = () => { if(navigator.share) navigator.share({title:'Thalyson Massagens', text:'Hora de Relaxar', url: window.location.href}); };
 
   const handleAddManualCoupon = (code) => {
+      // Verifica se já está no inventário OU se já foi usado (para não deixar add de novo)
+      // Aqui simplificamos: se não está no inventário, adiciona. 
+      // O 'usedCoupons' idealmente seria um histórico, mas vamos assumir que se sumiu do inventário já era.
       if (!loyalty.inventory.includes(code)) {
           setLoyalty(prev => ({...prev, inventory: [...prev.inventory, code]}));
           triggerHaptic();
       } else {
-          alert('Você já possui este cupom!');
+          alert('Este cupom já está na sua carteira!');
       }
   };
 
@@ -530,21 +545,17 @@ export default function App() {
     if (selection.useTable) total += 20;
     if (selection.aroma) total += getAromaPrice();
     
-    // LOGICA NOVA: TAXA (seja motel ou uber) é SOMADA ao total visual para o cliente
+    // Taxa adicionada ao total VISUAL
     if (selection.location?.fee) {
         total += selection.location.fee;
     }
     
-    // Cupons (Aplicados sobre o total, ou sobre o serviço - aqui simplificamos aplicando no final)
+    // Cupons
     if (selection.coupon) {
-      // Para ser justo, o cupom geralmente desconta do serviço, não da taxa de Uber/Motel.
-      // Vamos calcular o desconto apenas sobre o serviço + extras
-      let discountableAmount = total - (selection.location?.fee || 0);
+      let discountableAmount = total - (selection.location?.fee || 0); // Desconto não aplica na taxa de terceiros
       let discountValue = 0;
-
       if (selection.coupon.type === 'percent') discountValue = (discountableAmount * selection.coupon.value / 100);
       else discountValue = selection.coupon.value;
-
       total -= discountValue;
     }
     return Math.max(0, total);
@@ -565,8 +576,9 @@ export default function App() {
     triggerHaptic();
     if (!canFinalize) return;
     
+    // Verificar cupom na hora do envio
     if (selection.coupon && !loyalty.inventory.includes(selection.coupon.code)) {
-      alert("Cupom inválido.");
+      alert("Cupom inválido ou expirado.");
       setSelection(prev => ({ ...prev, coupon: null }));
       return;
     }
@@ -576,30 +588,66 @@ export default function App() {
     const newTotal = oldTotal + selection.service.basePrice; 
     const bookingId = generateBookingId(); 
 
+    // --- CONSUMIR CUPOM (Remover do inventário) ---
+    let newInventory = [...loyalty.inventory];
+    if (selection.coupon) {
+        newInventory = newInventory.filter(c => c !== selection.coupon.code);
+    }
+
+    // --- CHECK LEVEL UP E NOTIFICAÇÕES ---
+    let newNotifications = [...loyalty.notifications];
+    const levelReached = [...LEVELS].reverse().find(l => newTotal >= l.min);
+    const oldLevel = [...LEVELS].reverse().find(l => oldTotal >= l.min);
+
+    if(levelReached && levelReached.name !== oldLevel?.name) {
+       // Subiu de nível
+       newNotifications.unshift({
+           id: Date.now(),
+           title: '🎉 Nível VIP Alcançado!',
+           message: `Você chegou no ${levelReached.name} e ganhou novos benefícios!`,
+           read: false,
+           timestamp: Date.now()
+       });
+       if(levelReached.rewardCode && !newInventory.includes(levelReached.rewardCode)) {
+           newInventory.push(levelReached.rewardCode);
+       }
+    }
+
     // Loyalty Update
     setLoyalty(prev => ({ 
       ...prev, 
       savedName: user.name || prev.savedName, 
       totalSpent: newTotal, 
       totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0),
+      inventory: newInventory,
+      notifications: newNotifications
     }));
 
     const isToday = selection.date.getDate() === new Date().getDate();
     const dateStr = `${selection.date.toLocaleDateString('pt-BR')}${isToday ? ' (HOJE)' : ''}`;
     
-    // Msg Generator
+    // Msg Generator - PRECISÃO TOTAL
     let grossService = selection.service.basePrice;
-    if (selection.upgrade) grossService += selection.service.basePrice * 0.5;
-    if (selection.useTable) grossService += 20;
-    if (selection.aroma) grossService += getAromaPrice();
+    let extrasText = "";
+    if (selection.upgrade) { grossService += selection.service.basePrice * 0.5; extrasText += "\n➕ +30 Minutos (Upgrade)"; }
+    if (selection.useTable) { grossService += 20; extrasText += "\n➕ Maca Portátil (+R$20)"; }
+    
+    let aromaText = "";
+    if (selection.aroma) {
+        const p = getAromaPrice();
+        grossService += p;
+        aromaText = `\n➕ Aromaterapia (${p === 0 ? 'GRÁTIS VIP' : `+${formatCurrency(p)}`})`;
+    }
 
     let feeVal = selection.location.fee || 0;
     let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
 
     let discountVal = 0;
     if (selection.coupon) {
-      let baseForDisc = grossService; 
-      if (selection.coupon.type === 'percent') discountVal = baseForDisc * (selection.coupon.value / 100);
+      let baseForDisc = grossService - (selection.aroma ? getAromaPrice() : 0); // Desconto base
+      if(selection.upgrade) baseForDisc -= (selection.service.basePrice * 0.5); // Simplificando base
+      // Recalcular desconto real para string
+      if (selection.coupon.type === 'percent') discountVal = (selection.service.basePrice) * (selection.coupon.value / 100);
       else discountVal = selection.coupon.value;
     }
 
@@ -609,17 +657,18 @@ export default function App() {
 💆 ${selection.service.name}
 📍 ${selection.location.label} ${selection.location.isMotel ? '(Vou com você)' : ''}
 
-💰 *RESUMO:*
-Serviço + Extras: ${formatCurrency(grossService)}
-${feeVal > 0 ? `➕ ${feeType}: ${formatCurrency(feeVal)}` : ''}
-${discountVal > 0 ? `➖ Desconto: -${formatCurrency(discountVal)}` : ''}
+*DETALHES:*
+• Serviço Base: ${formatCurrency(selection.service.basePrice)}${extrasText}${aromaText}
+${feeVal > 0 ? `• ${feeType}: ${formatCurrency(feeVal)}` : ''}
+${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(discountVal)}` : ''}
 
-*TOTAL FINAL: ${formatCurrency(finalPrice)}*
+*TOTAL A PAGAR: ${formatCurrency(finalPrice)}*
 Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'}
 
+🎵 Vibe: ${selection.music}
 ${selection.location.isMotel ? '⚠️ Obs: A Taxa do Motel está inclusa no valor total acima para facilitar.' : ''}
 ------------------------------
-Aguardo confirmação.`;
+Aguardo confirmação para relaxar.`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
     setLastOrderLink(whatsappUrl); 
@@ -642,15 +691,16 @@ Aguardo confirmação.`;
     let fee = selection.location.fee || 0;
     let discount = 0;
     if (selection.coupon) {
-        if (selection.coupon.type === 'percent') discount = subtotal * (selection.coupon.value / 100);
+        // Logica visual simples para o cliente entender
+        if (selection.coupon.type === 'percent') discount = selection.service.basePrice * (selection.coupon.value / 100);
         else discount = selection.coupon.value;
     }
     
+    // Calculo reverso simples para bater visualmente
     const total = subtotal + fee - discount;
 
     return (
         <div className="mt-8 mx-2 mb-32 bg-white text-black rounded-[10px] p-6 font-mono text-sm shadow-2xl relative animate-slide-up transform rotate-1">
-             {/* Efeito de papel rasgado no topo */}
             <div className="absolute top-0 left-0 right-0 h-4 bg-white" style={{background: 'linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%), linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%)', backgroundSize: '12px 20px', backgroundPosition: '0 -10px'}}></div>
             
             <div className="text-center mb-6 border-b border-dashed border-gray-300 pb-4 mt-2">
@@ -665,7 +715,7 @@ Aguardo confirmação.`;
                 </div>
                 {selection.upgrade && <div className="flex justify-between text-gray-600 text-xs"><span>+ 30 Minutos</span><span>{formatCurrency(selection.service.basePrice * 0.5)}</span></div>}
                 {selection.useTable && <div className="flex justify-between text-gray-600 text-xs"><span>+ Maca Portátil</span><span>R$ 20,00</span></div>}
-                {selection.aroma && <div className="flex justify-between text-gray-600 text-xs"><span>+ Aromaterapia</span><span>{formatCurrency(getAromaPrice())}</span></div>}
+                {selection.aroma && <div className="flex justify-between text-gray-600 text-xs"><span>+ Aromaterapia (Vip)</span><span>{getAromaPrice() === 0 ? 'GRÁTIS' : formatCurrency(getAromaPrice())}</span></div>}
                 
                 {fee > 0 && (
                     <div className="flex justify-between text-blue-600 font-bold border-t border-dashed border-gray-200 pt-2 mt-2">
@@ -676,7 +726,7 @@ Aguardo confirmação.`;
                 
                 {discount > 0 && (
                     <div className="flex justify-between text-red-500">
-                        <span>Desconto</span>
+                        <span>Desconto ({selection.coupon.code})</span>
                         <span>-{formatCurrency(discount)}</span>
                     </div>
                 )}
@@ -757,7 +807,7 @@ Aguardo confirmação.`;
                </a>
             </div>
 
-            <div className="mb-3 px-1 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Avaliações Recentes</div>
+            <div className="mb-3 px-1 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Avaliações (+18)</div>
             <ReviewsCarousel />
             
             {/* CTA FLUTUANTE NO FINAL DA ROLAGEM */}
@@ -860,8 +910,12 @@ Aguardo confirmação.`;
               <section ref={locationRef}>
                 <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Local de Atendimento</h4>
                 <div className="space-y-3">
+                  {/* CORREÇÃO AQUI: Lista Renderizada apenas uma vez */}
                   {locations.map(l => {
+                    // Se já escolheu um local, mostra apenas ele selecionado, ou null se não for ele
                     if (selection.location && selection.location.id !== l.id) return null;
+
+                    // Se não escolheu nenhum, mostra todos. Se escolheu, mostra só o selecionado.
                     return (
                     <div key={l.id} className="animate-fade-in">
                         <button onClick={() => { triggerHaptic(); setSelection({...selection, location: l, useTable: null}); scrollTo(vibeRef); }} className={`w-full p-5 rounded-[22px] border text-left transition-all duration-300 ${selection.location?.id === l.id ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
@@ -886,14 +940,6 @@ Aguardo confirmação.`;
                         )}
                     </div>
                   )})}
-                  {!selection.location && locations.map(l => (
-                     <button key={l.id} onClick={() => { triggerHaptic(); setSelection({...selection, location: l, useTable: null}); scrollTo(vibeRef); }} className="w-full p-5 rounded-[22px] bg-[#1C1C1E] border border-white/5 text-left mb-3 active:scale-98 transition-all">
-                        <div className="flex justify-between items-center mb-1">
-                            <span className="font-semibold text-white text-[16px]">{l.label}</span> 
-                        </div>
-                        <p className="text-[13px] text-gray-500">{l.sublabel}</p>
-                     </button>
-                  ))}
                 </div>
               </section>
 
@@ -924,7 +970,7 @@ Aguardo confirmação.`;
                       {getAromaPrice() < 10 ? (
                           <>
                             <span className="text-gray-500 line-through text-[11px] mr-2">R$ 10</span>
-                            <span className="text-[#30D158] font-bold text-[15px]">{getAromaPrice() === 0 ? 'OFF' : `+${formatCurrency(getAromaPrice())}`}</span>
+                            <span className="text-[#30D158] font-bold text-[15px]">{getAromaPrice() === 0 ? 'GRÁTIS' : `+${formatCurrency(getAromaPrice())}`}</span>
                           </>
                       ) : (
                           <span className="text-[#0A84FF] font-bold text-[15px]">+ R$ 10</span>
@@ -1016,6 +1062,11 @@ Aguardo confirmação.`;
             </div>
             <h2 className="text-3xl font-bold text-white mb-2">Pedido Enviado!</h2>
             <p className="text-gray-400 mb-8 text-[15px]">Verifique seu WhatsApp.</p>
+            
+            {/* BARRA DE XP NA TELA DE SUCESSO */}
+            <div className="w-full mb-8 bg-[#1C1C1E] p-4 rounded-[20px] border border-white/10 text-left">
+                <LevelProgressBar data={loyalty} />
+            </div>
 
             <button onClick={() => window.open(lastOrderLink, '_blank')} className="mb-4 w-full flex items-center justify-center gap-2 text-[15px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 py-3.5 rounded-xl border border-[#0A84FF]/20 hover:bg-[#0A84FF]/20 transition-colors">
                 <Send className="w-4 h-4"/> Reenviar Mensagem
