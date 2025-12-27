@@ -3,10 +3,10 @@ import {
   ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
   Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, FlaskConical, Pencil, Moon, Sun, BatteryCharging
+  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, FlaskConical, Pencil
 } from 'lucide-react';
 
-// --- ESTILOS GLOBAIS (IOS 2026 GOLD MASTER - DARK ELEGANCE) ---
+// --- ESTILOS GLOBAIS (IOS 2026 GOLD MASTER) ---
 const globalStyles = `
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { font-size: 16px; background-color: #000000; }
@@ -23,19 +23,19 @@ body {
 input, select { user-select: text; font-size: 17px; outline: none; appearance: none; }
 button { touch-action: manipulation; user-select: none; -webkit-touch-callout: none; }
 
-/* Background Atmosférico - Ajustado para tom mais sóbrio/masculino */
+/* Background Atmosférico */
 .aurora-bg {
   background: 
-    radial-gradient(140% 100% at 50% 0%, rgba(20, 20, 25, 1), transparent 50%),
-    radial-gradient(100% 100% at 50% 100%, rgba(10, 80, 180, 0.08), transparent 60%),
+    radial-gradient(140% 100% at 50% 0%, rgba(10, 132, 255, 0.1), transparent 50%),
+    radial-gradient(100% 100% at 50% 100%, rgba(10, 132, 255, 0.05), transparent 60%),
     #000000;
   background-attachment: fixed;
   background-size: cover;
 }
 
-/* Glassmorphism Refinado */
+/* Glassmorphism Refinado (Cards Gerais) */
 .ios-card { 
-  background: rgba(28, 28, 30, 0.75); 
+  background: rgba(28, 28, 30, 0.65); 
   backdrop-filter: blur(40px) saturate(180%); 
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.08); 
@@ -43,7 +43,7 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 }
 
 .ios-header { 
-  background: rgba(0, 0, 0, 0.90); 
+  background: rgba(0, 0, 0, 0.85); 
   backdrop-filter: blur(20px); 
   border-bottom: 0.5px solid rgba(255,255,255,0.1); 
 }
@@ -56,8 +56,15 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 }
 .ios-btn:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.12); }
 
+.ios-btn-active { 
+  background: rgba(10, 132, 255, 0.15); 
+  color: white; 
+  box-shadow: 0 0 20px rgba(10, 132, 255, 0.25);
+  border: 1px solid #0A84FF;
+}
+
 .ios-btn-primary {
-  background: linear-gradient(180deg, #0A84FF 0%, #0056B3 100%);
+  background: linear-gradient(180deg, #007AFF 0%, #0056B3 100%);
   color: white;
   box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
 }
@@ -65,10 +72,6 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 
 .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Toast Customizado */
-.toast-enter { animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-@keyframes toastIn { from { opacity: 0; transform: translateY(-20px) translateX(-50%); } to { opacity: 1; transform: translateY(0) translateX(-50%); } }
 
 /* Inputs Customizados */
 .custom-input {
@@ -85,31 +88,30 @@ const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 
 const CARD_RATES = [0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1210, 0.1238];
 
-// --- DADOS ATUALIZADOS PARA PÚBLICO MASCULINO 30+ ---
 const services = [
   { 
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
-    description: 'Para o homem moderno que precisa desligar. Um momento de conexão, toque envolvente e alívio de tensões acumuladas. Sinta-se vivo novamente.', 
+    description: 'Experiência sensorial completa. Conexão e renovação.', 
     labelDuration: '60 min', minutes: 60, basePrice: 110, 
-    highlight: "🔥 PREFERIDA DELES", ratings: 5.0, reviews: 310, 
-    details: ["🔥 Toque firme e envolvente", "🧠 Desligue a mente", "🍑 Atenção glúteos e pernas", "💦 Finalização Manual Inclusa", "🔒 Totalmente Sigiloso"] 
+    highlight: "🔥 A MAIS PEDIDA", ratings: 5.0, reviews: 310, 
+    details: ["🔥 Toque envolvente", "🍑 Atenção aos glúteos", "🦵 Relaxamento virilha", "💦 Finalização Manual"] 
   },
   { 
-    id: 'relaxante', name: 'Relaxante Premium', type: 'relax',
-    description: 'A carga está pesada? Essa sessão é para zerar o estresse do trabalho e da rotina. Foco total em dores nas costas e ombros.', 
+    id: 'relaxante', name: 'Relaxante Clássica', type: 'relax',
+    description: 'Tire o peso do mundo das costas. Alívio profundo.', 
     labelDuration: '60 min', minutes: 60, basePrice: 70, 
     ratings: 4.9, reviews: 142, 
-    details: ["💆‍♂️ Foco Ombros e Lombar", "🛌 Ambiente Climatizado", "🎧 Música Zen", "🙌 Mãos firmes", "🚫 Sem toques íntimos"] 
+    details: ["💆‍♂️ Ombros e Costas", "💪 Mãos firmes", "✋ Alívio muscular", "🛌 Ambiente seguro", "🚫 Sem toques íntimos"] 
   },
 ];
 
 const locations = [
-  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'Vou até sua residência', fee: 40, allowsTableChoice: true, estimatedTravelTime: '15-20 min' },
-  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Jales, Três Fronteiras, etc.', fee: null, allowsTableChoice: false, estimatedTravelTime: 'A combinar' },
+  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', fee: 40, allowsTableChoice: true, estimatedTravelTime: '15-20 min' },
+  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: null, allowsTableChoice: false, estimatedTravelTime: 'A combinar' },
   { 
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
-    sublabel: 'Encontro discreto na suíte', 
+    sublabel: 'Vou com você (Sem taxa Uber)', 
     fee: 75, // Valor SOMADO no APP
     allowsTableChoice: false, 
     estimatedTravelTime: '10-15 min' 
@@ -117,9 +119,8 @@ const locations = [
 ];
 
 const SYSTEM_COUPONS = {
-  'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF - Primeira Vez' },
+  'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF' },
   'MASCULINA': { code: 'MASCULINA', type: 'percent', value: 10, desc: '10% OFF Especial' },
-  'DISCRETO': { code: 'DISCRETO', type: 'fixed', value: 15, desc: 'R$ 15,00 OFF - Sigilo' },
   'VIP20': { code: 'VIP20', type: 'fixed', value: 20, desc: 'R$ 20,00 OFF' },
 };
 
@@ -127,51 +128,22 @@ const LEVELS = [
   { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉' },
   { name: 'Prata', min: 300, rewardCode: 'NIVELPRATA', icon: '🥈' },
   { name: 'Ouro', min: 600, rewardCode: 'NIVELOURO', icon: '🥇' },
-  { name: 'Diamante', min: 1200, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: "Prioridade na Agenda" },
+  { name: 'Diamante', min: 1200, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: "Prioridade + Mimo" },
 ];
 
-const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
-const musicVibes = ['Zen 🧘', 'Natureza 🌿', 'Silêncio 🤫', 'Jazz Suave 🎷']; 
+const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
+// AJUSTE: Vibe Sonora apenas as 3 solicitadas e na ordem correta
+const musicVibes = ['Silêncio 🤫', 'Zen 🧘', 'Natureza 🌿']; 
 
-// --- 30+ REVIEWS REALISTAS E VARIADOS ---
 const REVIEWS_DB = [
-  { t: "Sigilo absoluto. Cara super profissional, me deixou à vontade.", a: "Carlos, 42", r: 5 },
-  { t: "Mãos firmes, tirou o peso das minhas costas. Recomendo.", a: "André, 35", r: 5 },
-  { t: "A massagem masculina é top. Finalização perfeita.", a: "Anônimo", r: 5 },
-  { t: "Atrasou uns 5 minutos, mas o atendimento compensou demais.", a: "Roberto, 50", r: 4 },
-  { t: "Primeira vez fazendo, estava nervoso, mas foi tranquilo.", a: "Júnior, 29", r: 5 },
-  { t: "Ambiente do motel ajudou muito a relaxar. Gostei.", a: "M., Casado", r: 5 },
-  { t: "O cara entende do assunto. Volto semana que vem.", a: "Fernando, 38", r: 5 },
-  { t: "Muito bom, mas achei a música um pouco alta no começo.", a: "Paulo, 45", r: 4 },
-  { t: "Sensação de limpeza e cuidado. Nota 10.", a: "Ricardo, 55", r: 5 },
-  { t: "Melhor investimento da semana. Estava precisando.", a: "Lucas, 31", r: 5 },
-  { t: "Discreto mesmo. Ninguém desconfiou. Valeu!", a: "Anônimo", r: 5 },
-  { t: "Toque muito bom, respeitoso e excitante na medida.", a: "G., 40", r: 5 },
-  { t: "Queria horário mais tarde da noite, mas consegui às 21h.", a: "Sérgio, 48", r: 4 },
-  { t: "Profissional, educado e gato. Serviço completo.", a: "Felipe, 33", r: 5 },
-  { t: "Sofro de ansiedade e me ajudou muito a acalmar.", a: "Bruno, 36", r: 5 },
-  { t: "Massagem nos pés foi o diferencial. Recomendo.", a: "Antônio, 60", r: 5 },
-  { t: "Rápido no agendamento, sem enrolação.", a: "Marcos, 39", r: 5 },
-  { t: "Podia aceitar cartão sem taxa, mas entendo.", a: "L., 34", r: 4 },
-  { t: "Experiência sensorial incrível. O aroma ajuda muito.", a: "Gustavo, 28", r: 5 },
-  { t: "Mãos de fada e pegada forte quando precisa.", a: "Eduardo, 41", r: 5 },
-  { t: "Me senti renovado. O valor é justo pelo que entrega.", a: "Renato, 52", r: 5 },
-  { t: "Fiz a relaxante simples, muito boa para dores lombares.", a: "Cláudio, 47", r: 5 },
-  { t: "Bom papo, gente fina, massagem excelente.", a: "Anônimo", r: 5 },
-  { t: "A maca portátil é confortável mesmo. Valeu a pena.", a: "Vitor, 30", r: 5 },
-  { t: "Sai de lá leve. O estresse sumiu.", a: "Hélio, 58", r: 5 },
-  { t: "Poucas vagas, tive que agendar com antecedência.", a: "R., 37", r: 4 },
-  { t: "O cara é discreto, chegou no horário no hotel.", a: "Viajante, 44", r: 5 },
-  { t: "Adorei a atenção aos detalhes. Muito higiênico.", a: "Danilo, 32", r: 5 },
-  { t: "Relaxamento profundo, quase dormi na maca.", a: "Breno, 49", r: 5 },
-  { t: "Serviço de homem pra homem, sem frescura. Top.", a: "Alex, 40", r: 5 },
-  { t: "Gostei da playlist. Atendimento nota mil.", a: "Caio, 27", r: 5 },
+  { t: "Sigilo total, gostei muito.", a: "Anônimo", r: 5 },
+  { t: "Mãos firmes, aliviou tudo.", a: "Ricardo", r: 5 },
+  { t: "A massagem masculina é top.", a: "Marcos", r: 5 }
 ];
 
 // --- UTILS ---
 const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(10); }; // Haptic leve
-const triggerSuccessHaptic = () => { if (navigator.vibrate) navigator.vibrate([50, 30, 50]); }; // Haptic sucesso
+const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(8); };
 const generateBookingId = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
     let result = '';
@@ -183,27 +155,9 @@ const generateBookingId = () => {
 
 // --- COMPONENTES UI ---
 
-// [NOVO] Componente de Toast (Notificação flutuante)
-const Toast = ({ message, onClose }) => {
-  useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, []);
-  return (
-    <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-[300] bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 toast-enter">
-      <CheckCircle2 className="w-5 h-5 text-green-400" />
-      <span className="text-sm font-semibold tracking-wide">{message}</span>
-    </div>
-  );
-};
-
 const LiveStatus = () => {
   const [idx, setIdx] = useState(0);
-  // Copywriting ajustado para gerar senso de urgência e comunidade
-  const msgs = [
-    "Carlos (42) agendou Massagem Masculina", 
-    "Últimas 2 vagas para hoje à noite", 
-    "Anônimo avaliou com 5 estrelas ⭐",
-    "Ricardo acabou de entrar no Clube VIP",
-    "Atendimento em Suíte finalizado com sucesso"
-  ];
+  const msgs = ["Carlos agendou Massagem Masculina", "Vagas da noite acabando", "Atendimento em Suíte finalizado"];
   useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%msgs.length), 4000); return () => clearInterval(t); }, []);
   return (
     <div className="flex justify-center mb-8">
@@ -235,10 +189,9 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
         <div className="text-right">
           <div className="flex items-center justify-end gap-2 mb-1">
             <p className="text-[10px] text-gray-400 font-bold uppercase">Investido</p>
-            <button onClick={onTogglePrivacy} className="text-gray-500 hover:text-white transition-colors">
-              {privacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
+            <button onClick={onTogglePrivacy} className="text-gray-500 hover:text-white transition-colors"><Eye className="w-4 h-4" /></button>
           </div>
+          {/* CORREÇÃO DO BLUR: Aplicando classes tailwind diretas e select-none */}
           <p className={`text-xl font-semibold text-white ${privacyMode ? 'blur-md select-none opacity-50' : ''} transition-all duration-300`}>
             {formatCurrency(data.totalSpent)}
           </p>
@@ -259,33 +212,17 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
   );
 };
 
-// [MELHORIA] Carousel que mistura reviews de 5 e 4 estrelas aleatoriamente
 const ReviewsCarousel = () => {
   const [idx, setIdx] = useState(0);
-  const [randomReviews, setRandomReviews] = useState([]);
-
-  useEffect(() => {
-    // Embaralha reviews para mostrar variedade
-    const shuffled = [...REVIEWS_DB].sort(() => 0.5 - Math.random());
-    setRandomReviews(shuffled.slice(0, 10)); // Pega 10 aleatórios
-  }, []);
-
-  useEffect(() => { 
-    if(randomReviews.length === 0) return;
-    const t = setInterval(() => setIdx(i => (i+1)%randomReviews.length), 6000); 
-    return () => clearInterval(t); 
-  }, [randomReviews]);
-
-  if(randomReviews.length === 0) return null;
-  const currentReview = randomReviews[idx];
-
+  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 5000); return () => clearInterval(t); }, []);
+  const currentReview = REVIEWS_DB[idx];
   return (
-    <div className="ios-card p-0 rounded-[20px] relative overflow-hidden h-36 flex items-center justify-center mb-8">
+    <div className="ios-card p-0 rounded-[20px] relative overflow-hidden h-32 flex items-center justify-center mb-8">
       <div key={idx} className="absolute inset-0 p-6 flex flex-col items-center justify-center animate-fade-in">
         <div className="flex gap-1 mb-3">
           {[...Array(5)].map((_,k) => <Star key={k} className={`w-4 h-4 ${k < currentReview.r ? 'text-[#FFD60A] fill-[#FFD60A]' : 'text-gray-700'}`}/>)}
         </div>
-        <p className="text-[14px] text-gray-200 text-center font-medium leading-relaxed italic">"{currentReview.t}"</p>
+        <p className="text-[15px] text-gray-200 text-center font-medium leading-relaxed">"{currentReview.t}"</p>
         <p className="text-[11px] text-gray-500 font-bold uppercase mt-3 tracking-widest">- {currentReview.a}</p>
       </div>
     </div>
@@ -293,15 +230,33 @@ const ReviewsCarousel = () => {
 };
 
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
-  const days = Array.from({length: 14}, (_, i) => { const d = new Date(); d.setDate(new Date().getDate() + i); return d; });
+  // AJUSTE: Cálculo dos dias restantes do mês atual
   const now = new Date();
-  
+  const currentMonth = now.getMonth();
+  const days = [];
+  let tempDate = new Date(now);
+  while (tempDate.getMonth() === currentMonth) {
+      days.push(new Date(tempDate));
+      tempDate.setDate(tempDate.getDate() + 1);
+  }
+
   const isTimeBlocked = (t, d) => {
     if(!d) return true;
     const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
     if (!isToday) return false;
     const [h] = t.split(':').map(Number);
-    return h <= now.getHours(); // Bloqueia horas passadas
+    return h <= now.getHours();
+  };
+
+  // AJUSTE: Função para determinar o label (HOJE, AMANHÃ ou dia da semana)
+  const getDayLabel = (d) => {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      if (d.toDateString() === today.toDateString()) return 'HOJE';
+      if (d.toDateString() === tomorrow.toDateString()) return 'AMANHÃ';
+      return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3);
   };
 
   return (
@@ -309,16 +264,11 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-4">
         {days.map((d, i) => {
           const isSel = selectedDate?.getDate() === d.getDate();
-          const isToday = d.getDate() === now.getDate();
-          const isTomorrow = d.getDate() === now.getDate() + 1;
-          
+          const label = getDayLabel(d);
           return (
-            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`flex flex-col items-center justify-center min-w-[68px] h-[80px] rounded-[18px] transition-all duration-300 relative ${isSel ? 'bg-[#0A84FF] text-white shadow-lg scale-105' : 'ios-btn text-gray-400'}`}>
-               {/* [NOVO] Badge de Hoje/Amanhã */}
-               {isToday && <span className="absolute -top-2 bg-green-500 text-[9px] font-bold px-1.5 py-0.5 rounded text-black uppercase">Hoje</span>}
-               {isTomorrow && <span className="absolute -top-2 bg-white/20 text-[9px] font-bold px-1.5 py-0.5 rounded text-white uppercase">Amanhã</span>}
-              
-              <span className="text-[11px] uppercase font-bold tracking-wide opacity-80">{d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3)}</span>
+            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-[18px] transition-all duration-300 ${isSel ? 'bg-[#0A84FF] text-white shadow-lg scale-105' : 'ios-btn text-gray-400'}`}>
+              {/* AJUSTE: Exibição correta do label HOJE/AMANHÃ sem sobreposição */}
+              <span className={`text-[11px] uppercase font-bold tracking-wide opacity-80 ${label === 'HOJE' ? 'text-green-400' : ''}`}>{label}</span>
               <span className="text-2xl font-semibold mt-1">{d.getDate()}</span>
             </button>
           )
@@ -328,13 +278,9 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
         <div className="grid grid-cols-4 gap-3 animate-fade-in">
           {timeSlots.map(t => {
             const blocked = isTimeBlocked(t, selectedDate);
-            // [NOVO] Highlight para horários nobres (18h+)
-            const isPrimeTime = parseInt(t.split(':')[0]) >= 18;
-            
             return (
               <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
-                className={`py-3 rounded-[14px] text-[13px] font-semibold transition-all duration-200 relative overflow-hidden ${selectedTime === t ? 'bg-[#0A84FF] text-white shadow-md' : blocked ? 'bg-white/5 text-gray-600' : 'ios-btn text-gray-300'}`}>
-                {isPrimeTime && !blocked && !selectedTime && <div className="absolute top-0 right-0 w-2 h-2 bg-[#FFD60A] rounded-full m-1 opacity-70" title="Horário Nobre"></div>}
+                className={`py-3 rounded-[14px] text-[13px] font-semibold transition-all duration-200 ${selectedTime === t ? 'bg-[#0A84FF] text-white shadow-md' : blocked ? 'bg-white/5 text-gray-600' : 'ios-btn text-gray-300'}`}>
                 {blocked ? <Lock className="w-3.5 h-3.5 mx-auto opacity-30" /> : t}
               </button>
             )
@@ -369,12 +315,12 @@ const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddMan
       <div className="flex justify-between items-center ml-1 mb-2">
         <h4 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide">Cupons & Descontos</h4>
       </div>
-      
+       
       <div className="flex gap-2 mb-3">
           <input 
             value={manualCode}
             onChange={(e) => setManualCode(e.target.value)}
-            placeholder="Digite o código (ex: DISCRETO)..." 
+            placeholder="Digite o código (ex: VIP20)..." 
             className="w-full custom-input text-white text-[15px] rounded-[16px] p-4 placeholder:text-gray-600"
           />
           <button onClick={handleManualAdd} className="bg-[#2C2C2E] border border-white/10 text-white px-6 rounded-[16px] font-bold text-[13px] hover:bg-[#3A3A3C] transition-colors">Adicionar</button>
@@ -421,6 +367,7 @@ const Notifications = ({ notifications, onClear }) => {
       </button>
 
       {open && (
+        // CORREÇÃO: Fundo sólido BG-[#121214] para garantir legibilidade
         <div className="absolute top-14 right-0 w-80 bg-[#121214] border border-white/10 shadow-2xl rounded-[20px] overflow-hidden z-[100] animate-scale">
            <div className="p-4 border-b border-white/10 bg-[#1C1C1E] flex justify-between items-center">
              <h4 className="font-semibold text-white text-sm">Notificações</h4>
@@ -451,8 +398,7 @@ const Notifications = ({ notifications, onClear }) => {
 export default function App() {
   const [step, setStep] = useState('home');
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState(null); // [NOVO] Estado para Toast
-  
+   
   // Refs
   const locationRef = useRef(null);
   const vibeRef = useRef(null);
@@ -466,11 +412,12 @@ export default function App() {
       ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 300); 
   };
-  
+   
   // State
   const [loyalty, setLoyalty] = useState(() => {
     const saved = localStorage.getItem('thaly_system_v70'); 
-    return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO', 'MASCULINA', 'DISCRETO'], notifications: [], history: [] };
+    // AJUSTE: Inventário inicial apenas com 'BEMVINDO'
+    return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
   const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
@@ -479,7 +426,7 @@ export default function App() {
   const [privacyMode, setPrivacyMode] = useState(true);
   const [greeting, setGreeting] = useState("");
   const [weatherHint, setWeatherHint] = useState("");
-  
+   
   const surfaceRef = useRef(null);
 
   // Init
@@ -492,12 +439,10 @@ export default function App() {
     }
   }, [loyalty]);
 
-  // [MELHORIA] Saudação mais complexa
   useEffect(() => {
     const hr = new Date().getHours();
-    setGreeting(hr < 12 ? "Bom dia, chefe" : hr < 18 ? "Boa tarde, guerreiro" : "Boa noite para relaxar");
-    // [MELHORIA] Clima fictício para imersão
-    setWeatherHint(hr < 18 ? "☀️ Clima quente, ideal para tirar o estresse." : "🌙 Noite tranquila, perfeita para desligar."); 
+    setGreeting(hr < 12 ? "Bom dia" : hr < 18 ? "Boa tarde" : "Boa noite");
+    setWeatherHint(hr < 18 ? "☀️ Dia ideal para relaxar, vamos?" : "🌙 Noite perfeita para relaxar, vamos?"); 
   }, []);
 
   useEffect(() => {
@@ -513,13 +458,9 @@ export default function App() {
   }, [step]);
 
   // Actions
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
-  };
-
   const handleQuickSchedule = () => {
     triggerHaptic();
+    // LOGICA INTELIGENTE: Se já tem nome salvo, pula identificação
     if (loyalty.savedName) {
         setStep('services');
     } else {
@@ -527,18 +468,13 @@ export default function App() {
     }
   };
 
-  const handlePanic = () => { window.location.href = "https://www.google.com/search?q=noticias+esporte"; }; // [NOVO] Redireciona para algo inócuo
-  const handleCopyPix = () => { 
-      navigator.clipboard.writeText("62922530000144"); 
-      showToast("CNPJ Pix Copiado!"); 
-      triggerSuccessHaptic();
-  }; 
+  const handlePanic = () => { window.location.href = "https://google.com"; };
+  const handleCopyPix = () => { navigator.clipboard.writeText("62922530000144"); alert("CNPJ Pix Copiado!"); }; 
 
   const handleAddManualCoupon = (code) => {
       if (!loyalty.inventory.includes(code)) {
           setLoyalty(prev => ({...prev, inventory: [...prev.inventory, code]}));
           triggerHaptic();
-          showToast(`Cupom ${code} adicionado!`);
       } else {
           alert('Você já possui este cupom!');
       }
@@ -583,10 +519,7 @@ export default function App() {
 
   const handleWhatsApp = () => {
     triggerHaptic();
-    if (!canFinalize) {
-        showToast("Preencha todos os campos!");
-        return;
-    }
+    if (!canFinalize) return;
     
     if (selection.coupon && !loyalty.inventory.includes(selection.coupon.code)) {
       alert("Cupom inválido.");
@@ -642,7 +575,7 @@ export default function App() {
     
     let surfaceText = "";
     if (selection.location.allowsTableChoice) surfaceText = selection.useTable ? "✅ Levar Maca Portátil (+R$20)" : "🛏 Na Cama do Cliente";
-    else if (selection.location.id === 'motel') surfaceText = "🏨 Suíte de Motel"; 
+    else if (selection.location.id === 'motel') surfaceText = ""; 
     else surfaceText = `🛏 Cama/Sofá em ${selection.city}`;
 
     let paymentText = "";
@@ -695,16 +628,15 @@ export default function App() {
         }
     }
 
-    let msg = `🐺 NOVO PEDIDO: #${bookingId}
+    let msg = `✨ NOVO PEDIDO: #${bookingId}
 👤 Cliente: ${user.name}
-✅ Maior de 18 | ✅ Termos Aceitos
+✅ Maior de 18 | ✅ Liberado p/ Massagem
 📅 ${dateStr} às ${selection.time}
 💆 ${selection.service.name}
 ⏱ Duração: ${finalDuration}
 📍 Local: ${selection.location.label}
 ${surfaceText ? surfaceText : ''}
 ${selection.aroma ? '🌸 Com Aromaterapia' : ''}
-🎶 Vibe: ${selection.music}
 
 💰 RESUMO FINANCEIRO:
 ➡️ Serviço Massagista: ${formatCurrency(serviceValOnly)}
@@ -716,12 +648,11 @@ ${cardFeeLine}
 💰 TOTAL PREVISTO: ${selection.location.id === 'outras-cidades' ? 'A definir (+ Deslocamento)' : formatCurrency(finalPrice)} ${paymentText}
 ⏱️ Chegada estimada: ${selection.location.estimatedTravelTime || 'A combinar'}
 ------------------------------
-Olá, aguardo confirmação para relaxar. (App Beta)`;
+Olá, aguardo confirmação para relaxar. (Via App Beta)`;
 
     msg = msg.replace(/^\s*[\r\n]/gm, "");
     window.open(`https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`, '_blank');
     setStep('success');
-    triggerSuccessHaptic();
   };
 
   const handleReset = () => {
@@ -732,14 +663,12 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
   return (
     <div className="min-h-screen flex justify-center p-0 sm:p-6 font-sans text-gray-200 bg-black">
       <style>{globalStyles}</style>
-      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
 
       {loading ? (
         <div className="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center animate-fade-in">
           <div className="w-24 h-24 bg-gradient-to-tr from-[#0A84FF] to-[#5E5CE6] rounded-[24px] flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(10,132,255,0.4)] animate-pulse">
-            <div className="text-4xl">🐺</div>
+            <div className="text-4xl">💆‍♂️</div>
           </div>
-          <p className="text-gray-500 text-sm tracking-widest uppercase">Carregando...</p>
         </div>
       ) : (
       <div className="w-full max-w-[440px] bg-[#000] sm:rounded-[40px] shadow-2xl flex flex-col relative overflow-hidden sm:border border-white/10 h-screen sm:h-[92vh] aurora-bg">
@@ -747,23 +676,22 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
         {/* HEADER FIXO */}
         {step !== 'home' && step !== 'success' && (
           <div className="absolute top-0 w-full z-30 ios-header px-6 pt-12 pb-4 flex justify-between items-center">
-             {step === 'services' && loyalty.savedName ? (
-                <div className="flex items-center gap-1">
-                    <button onClick={() => setStep('home')} className="p-2 -ml-2 rounded-full active:bg-white/10"><IconBack /></button>
-                </div>
-             ) : (
-                <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10"><IconBack /></button>
-             )}
-             
-             <div className="flex items-center gap-3">
-               {/* [NOVO] Badge de progresso */}
-               <div className="flex gap-1">
-                   {[1,2,3].map(i => (
-                       <div key={i} className={`w-1.5 h-1.5 rounded-full ${((step === 'identity' && i===1) || (step === 'services' && i<=2) || (step === 'configure' && i<=3)) ? 'bg-[#0A84FF]' : 'bg-gray-700'}`}></div>
-                   ))}
+            {step === 'services' && loyalty.savedName ? (
+               <div className="flex items-center gap-1">
+                   <button onClick={() => setStep('home')} className="p-2 -ml-2 rounded-full active:bg-white/10"><IconBack /></button>
                </div>
-               <Notifications notifications={loyalty.notifications} onClear={() => setLoyalty(p => ({...p, notifications: p.notifications.map(n => ({...n, read: true}))}))} />
-             </div>
+            ) : (
+               <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10"><IconBack /></button>
+            )}
+            
+            <div className="flex items-center gap-3">
+              <span className="px-2 py-0.5 rounded-full bg-[#0A84FF]/10 text-[#0A84FF] text-[10px] font-bold border border-[#0A84FF]/20 animate-pulse">BETA</span>
+              <div className="flex items-center gap-2">
+                  <span className="font-semibold text-white text-[15px]">{user.name || loyalty.savedName || 'Visitante'}</span>
+                  {loyalty.savedName && <button onClick={() => setStep('identity')} className="p-1 text-gray-500 hover:text-white"><Edit3 className="w-3.5 h-3.5"/></button>}
+              </div>
+              <Notifications notifications={loyalty.notifications} onClear={() => setLoyalty(p => ({...p, notifications: p.notifications.map(n => ({...n, read: true}))}))} />
+            </div>
           </div>
         )}
 
@@ -778,11 +706,9 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
                 <h1 className="text-3xl font-bold text-white tracking-tight">{loyalty.savedName || 'Bem-vindo'}</h1>
               </div>
               <div className="flex items-center gap-3">
-                {/* [NOVO] Botão de Pânico Discreto */}
-                <button onClick={handlePanic} className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-red-900/30 flex items-center justify-center active:scale-95 transition-transform"><LogOut className="w-4 h-4 text-red-500" /></button>
-                
                 <button onClick={() => setShowFaq(true)} className="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center active:scale-95 transition-transform"><HelpCircle className="w-5 h-5 text-gray-300" /></button>
                 <a href="https://www.instagram.com/thalymassagens/" target="_blank" className="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center active:scale-95 transition-transform"><Instagram className="w-5 h-5 text-[#FF2D55]" /></a>
+                <button onClick={() => { if(navigator.share) navigator.share({title:'Thaly Massagens', text:'Agende sua sessão!', url: window.location.href}) }} className="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center active:scale-95 transition-transform"><Share2 className="w-5 h-5 text-gray-300" /></button>
               </div>
             </div>
 
@@ -807,16 +733,16 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
         {step === 'identity' && (
           <div className="flex-1 p-6 pt-32 animate-slide-right flex flex-col h-full">
             <h2 className="text-3xl font-bold text-white mb-2">Identificação</h2>
-            <p className="text-gray-400 text-[15px] mb-8">Como devo te chamar? Seus dados ficam salvos apenas no seu aparelho.</p>
+            <p className="text-gray-400 text-[15px] mb-8">Precisamos saber quem é você para confirmar.</p>
             
             <div className="space-y-6 flex-1">
               <div className="ios-card p-5 rounded-[22px]">
-                <label className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-wider block mb-2">Seu Nome / Apelido</label>
+                <label className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-wider block mb-2">Seu Nome</label>
                 <input value={user.name} onChange={e => setUser({...user, name: e.target.value})} className="w-full bg-transparent text-white text-[19px] font-medium placeholder:text-gray-600 border-b border-white/10 py-2 focus:border-[#0A84FF] transition-colors" placeholder="Digite seu nome..." />
               </div>
               
               <div className="grid grid-cols-4 gap-3">
-                {['😎','🤠','🐺','🦁'].map(emoji => (
+                {['😎','🤠','🦊','🦁'].map(emoji => (
                   <button key={emoji} onClick={() => { triggerHaptic(); setLoyalty(p => ({...p, avatar: emoji})); }} className={`h-16 rounded-[18px] flex items-center justify-center text-3xl transition-all duration-300 ${loyalty.avatar === emoji ? 'bg-[#0A84FF]/20 border border-[#0A84FF]' : 'ios-btn'}`}>{emoji}</button>
                 ))}
               </div>
@@ -824,12 +750,12 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
               <div className="space-y-3">
                 <button onClick={() => { triggerHaptic(); setUser({...user, isAdult: !user.isAdult}); }} className={`w-full p-5 rounded-[20px] border flex items-center gap-4 transition-all duration-300 ${user.isAdult ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
                   <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isAdult ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-500'}`}>{user.isAdult && <Check className="w-3.5 h-3.5 text-white" />}</div>
-                  <span className={`text-[17px] font-medium ${user.isAdult ? 'text-white' : 'text-gray-400'}`}>Sou maior de 18 anos</span>
+                  <span className={`text-[17px] font-medium ${user.isAdult ? 'text-white' : 'text-gray-400'}`}>Maior de 18 anos</span>
                 </button>
                 
                 <button onClick={() => { triggerHaptic(); setUser({...user, isMassagemOk: !user.isMassagemOk}); }} className={`w-full p-5 rounded-[20px] border flex items-center gap-4 transition-all duration-300 ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
                   <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isMassagemOk ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-500'}`}>{user.isMassagemOk && <Check className="w-3.5 h-3.5 text-white" />}</div>
-                  <span className={`text-[17px] font-medium ${user.isMassagemOk ? 'text-white' : 'text-gray-400'}`}>Procuro relaxamento terapêutico</span>
+                  <span className={`text-[17px] font-medium ${user.isMassagemOk ? 'text-white' : 'text-gray-400'}`}>Liberado p/ Massagem</span>
                 </button>
               </div>
 
@@ -854,7 +780,7 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
             </div>
             <div className="space-y-5">
               {services.map(s => (
-                <div key={s.id} onClick={() => { triggerHaptic(); setSelection({...selection, service: s}); setStep('configure'); }} className={`ios-card p-5 rounded-[24px] active:scale-98 transition-transform group ${s.id === 'masculina' ? 'border-[#0A84FF] shadow-[0_0_25px_rgba(10,132,255,0.15)]' : ''}`}>
+                <div key={s.id} onClick={() => { triggerHaptic(); setSelection({...selection, service: s}); setStep('configure'); }} className={`ios-card p-5 rounded-[24px] active:scale-98 transition-transform group ${s.id === 'masculina' ? 'border-[#0A84FF] shadow-[0_0_25px_rgba(10,132,255,0.2)]' : ''}`}>
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="font-bold text-white text-[20px]">{s.name}</h3>
                     <span className="text-[#0A84FF] font-bold text-[17px] bg-[#0A84FF]/10 px-2 py-1 rounded-md">{formatCurrency(s.basePrice)}</span>
@@ -888,7 +814,7 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
             <div className="space-y-8">
               <section>
                 <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide">Data & Hora</h4>
+                  <h4 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide">Quando? (Max 21h)</h4>
                 </div>
                 <div className="ios-card p-4 rounded-[22px]">
                    <InlineDateSelector 
@@ -901,9 +827,9 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
 
               <section ref={locationRef}>
                 <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide">Local</h4>
+                  <h4 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide">Onde?</h4>
                   {selection.location && (
-                    <button onClick={() => setSelection({...selection, location: null, useTable: null, city: ''})} className="text-[11px] font-bold text-[#0A84FF] flex items-center gap-1 bg-[#0A84FF]/10 px-2 py-1 rounded-md"><Edit3 className="w-3 h-3"/> EDITAR</button>
+                    <button onClick={() => setSelection({...selection, location: null, useTable: null, city: ''})} className="text-[11px] font-bold text-[#0A84FF] flex items-center gap-1 bg-[#0A84FF]/10 px-2 py-1 rounded-md"><Edit3 className="w-3 h-3"/> TROCAR</button>
                   )}
                 </div>
                 
@@ -948,14 +874,14 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
               </div>
 
               <div className="space-y-3" ref={extrasRef}>
-                <h4 className="text-[13px] font-semibold text-gray-400 uppercase mb-1 tracking-wide mt-4">UPGRADES</h4>
+                <h4 className="text-[13px] font-semibold text-gray-400 uppercase mb-1 tracking-wide mt-4">EXTRAS</h4>
                 <button onClick={() => { triggerHaptic(); setSelection({...selection, upgrade: !selection.upgrade}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.upgrade ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">+30 Minutos</p><p className="text-[11px] text-gray-500">Para não ter pressa</p></div>
+                  <div className="text-left"><p className="text-white font-bold text-[15px]">+30 Minutos</p><p className="text-[11px] text-gray-500">Mais tempo para curtir</p></div>
                   <span className="text-[#0A84FF] font-bold text-[15px]">+{formatCurrency(selection.service.basePrice * 0.5)}</span>
                 </button>
 
                 <button onClick={() => { triggerHaptic(); setSelection({...selection, aroma: !selection.aroma}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.aroma ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia 🌿</p><p className="text-[11px] text-gray-500">Óleos essenciais para acalmar</p></div>
+                  <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia 🌿</p><p className="text-[11px] text-gray-500">Cheiro suave que acalma a mente e o corpo</p></div>
                   <span className="text-[#0A84FF] font-bold text-[15px]">+R$ 10,00</span>
                 </button>
               </div>
@@ -1004,7 +930,7 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
                   </div>
                 )}
 
-                {/* --- RECEIPT (RESUMO DO PEDIDO) --- */}
+                {/* --- RECEIPT (RESUMO DO PEDIDO) - BLINDADO --- */}
                 <div className="mt-8 mb-4 ios-card p-5 rounded-[22px] border border-white/5 bg-[#121214]">
                     <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/5">
                         <Receipt className="w-4 h-4 text-gray-400" />
@@ -1070,9 +996,10 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
           </div>
         )}
 
-        {/* FOOTER FIXO (Configure) */}
+        {/* FOOTER FIXO (Configure) - VISUAL IDÊNTICO ÀS IMAGENS */}
         {step === 'configure' && selection.location && (
           <div className="absolute bottom-0 w-full p-0 z-30">
+            {/* Gradiente de proteção para o scroll */}
             <div className="h-10 bg-gradient-to-t from-[#000] to-transparent pointer-events-none"></div>
             
             <div className="bg-[#1C1C1E]/95 backdrop-blur-xl rounded-t-[32px] p-6 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
@@ -1105,30 +1032,30 @@ Olá, aguardo confirmação para relaxar. (App Beta)`;
         {step === 'success' && (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
             <div className="w-24 h-24 bg-[#30D158] rounded-full flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(48,209,88,0.4)] animate-scale">
-              <Check className="w-12 h-12 text-white drop-shadow-md"/>
+                <Check className="w-12 h-12 text-white drop-shadow-md"/>
             </div>
             <h2 className="text-3xl font-bold text-white mb-3">Tudo certo, {user.name}!</h2>
-            <p className="text-gray-400 mb-10 text-[17px] leading-relaxed">Pedido gerado. Aguarde minha confirmação no WhatsApp para garantir o sigilo.</p>
+            <p className="text-gray-400 mb-10 text-[17px] leading-relaxed">Pedido gerado. Aguarde a confirmação no WhatsApp, Obrigado!</p>
             <button onClick={handleCopyPix} className="mb-6 flex items-center gap-2 text-[15px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 px-6 py-3 rounded-xl border border-[#0A84FF]/20 hover:bg-[#0A84FF]/20 transition-colors"><Copy className="w-4 h-4"/> Copiar Chave Pix</button>
             <button onClick={handleReset} className="w-full ios-btn py-4 rounded-[18px] text-white font-bold">Voltar ao Início</button>
           </div>
         )}
 
-        {/* FAQ MODAL ATUALIZADO */}
+        {/* FAQ MODAL */}
         {showFaq && (
           <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-5">
             <div className="bg-[#1C1C1E] w-full max-w-sm rounded-[32px] p-8 border border-white/10 shadow-2xl animate-scale">
-              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3"><Shield className="w-7 h-7 text-[#0A84FF]" /> Segurança & Sigilo</h3>
+              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3"><HelpCircle className="w-7 h-7 text-[#0A84FF]" /> Informações</h3>
               <div className="space-y-5 text-[15px] text-gray-300 leading-relaxed">
-                <p>🔒 <strong>Sigilo Total:</strong> O que acontece na sessão, fica na sessão. Respeito sua privacidade.</p>
-                <p>🚫 <strong>Conduta:</strong> Apenas massagem terapêutica e relaxante. Ambiente seguro e livre de julgamentos.</p>
-                <p>💰 <strong>Pagamento:</strong> Pix, Débito, Dinheiro ou Crédito. Sem taxas escondidas (exceto motel/uber).</p>
-                <p>📍 <strong>Atendimento:</strong> Vou até você ou em motéis parceiros da região.</p>
+                <p>🚫 <strong>Conduta:</strong> Sem sexo, sem penetração, sem oral. Apenas massagem terapêutica. Um espaço seguro para relaxar sem julgamentos.</p>
+                <p>💰 <strong>Pagamento:</strong> Pix, Débito, Dinheiro ou Crédito.</p>
+                <p>📍 <strong>Locais:</strong> Atendo em domicílio ou motéis (suítes).</p>
+                <p>🧪 <strong>Versão Beta:</strong> App em fase de testes. Relate qualquer erro.</p>
                 <div className="pt-6 border-t border-white/10">
-                   <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="text-xs text-[#FF3B30] flex items-center gap-2"><Trash2 className="w-3.5 h-3.5"/> Limpar meus dados do App</button>
+                   <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="text-xs text-[#FF3B30] flex items-center gap-2"><Trash2 className="w-3.5 h-3.5"/> Resetar App</button>
                 </div>
               </div>
-              <button onClick={() => setShowFaq(false)} className="mt-8 w-full bg-[#2C2C2E] text-white py-4 rounded-[18px] font-bold">Entendi</button>
+              <button onClick={() => setShowFaq(false)} className="mt-8 w-full bg-[#2C2C2E] text-white py-4 rounded-[18px] font-bold">Fechar</button>
             </div>
           </div>
         )}
