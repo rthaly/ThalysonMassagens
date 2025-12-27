@@ -693,7 +693,7 @@ ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(
 (Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
 
 ------------------------------
-💸 *LÍQUIDO (Seu Lucro): ${formatCurrency(netMasseur)}*
+💸 *Massagista recebe: ${formatCurrency(netMasseur)}*
 ------------------------------
 
 🎵 Vibe: ${selection.music}
@@ -785,7 +785,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
       return (
           <div className="absolute top-16 right-6 w-52 bg-[#1C1C1E] border border-white/10 rounded-2xl shadow-2xl z-[60] flex flex-col overflow-hidden animate-slide-up origin-top-right">
               <button onClick={() => { setShowFaq(true); setShowMenu(false); }} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
-                  <HelpCircle className="w-4 h-4 text-gray-400"/> Ajuda / Conduta
+                  <HelpCircle className="w-4 h-4 text-gray-400"/> Informações
               </button>
               <a href="https://instagram.com/thalymassagens" target="_blank" onClick={() => setShowMenu(false)} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
                   <Instagram className="w-4 h-4 text-[#E1306C]"/> Instagram
@@ -794,7 +794,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                   <Share2 className="w-4 h-4 text-gray-400"/> Compartilhar
               </button>
               <button onClick={() => { handleReset(); }} className="px-4 py-4 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3 active:bg-red-500/20">
-                  <LogOut className="w-4 h-4"/> Sair (Pânico)
+                  <LogOut className="w-4 h-4"/> Sair 
               </button>
           </div>
       )
@@ -1093,7 +1093,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                 <div><h4 className="font-bold text-white mb-1 flex items-center gap-2"><MapPin className="w-4 h-4 text-gray-400"/> Locais</h4><p className="text-sm">Atendimento em Suítes (Motel), Domicílio (Santa Fé) ou Cidades Vizinhas (a combinar).</p></div>
                 <div><h4 className="font-bold text-white mb-1 flex items-center gap-2"><Tag className="w-4 h-4 text-gray-400"/> Cupons & Descontos</h4><p className="text-sm">Cupons são de uso único. Descontos de nível (Aromaterapia) são aplicados automaticamente.</p></div>
                 <div className="pt-6 border-t border-white/10">
-                    <p className="text-xs text-gray-500 mb-3">⚠️ Atenção: Limpar dados apagará seu progresso e nível.</p>
+                    <p className="text-xs text-gray-500 mb-3">⚠️APP em fase BETA. ⚠️Atenção: Limpar dados apagará seu progresso e nível.</p>
                     <button onClick={() => { if(window.confirm("Tem certeza? Você perderá todo o seu progresso e nível VIP.")) { localStorage.clear(); window.location.reload(); }}} className="w-full py-3 rounded-xl bg-red-500/10 text-red-500 text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-500/20 transition-colors"><Trash2 className="w-4 h-4"/> Limpar Dados do App</button>
                 </div>
               </div>
