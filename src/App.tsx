@@ -782,7 +782,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente 
   // --- HEADER GLOBAL FIXO (ICONES SEMPRE NO TOPO) ---
   const GlobalHeader = () => (
       <div className="absolute top-0 w-full z-50 px-6 pt-12 pb-4 flex justify-between items-center pointer-events-none">
-          {/* Lado Esquerdo: Botão Voltar (se não for Home/Success) ou Data (se for Home) */}
+          {/* Lado Esquerdo: Botão Voltar ou Data */}
           <div className="pointer-events-auto">
              {step !== 'home' && step !== 'success' ? (
                 <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10 bg-black/20 backdrop-blur-md border border-white/5"><IconBack /></button>
@@ -791,8 +791,20 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente 
              )}
           </div>
 
-          {/* Lado Direito: Notificações (Sino) APENAS */}
-          <div className="flex items-center gap-3 pointer-events-auto">
+          {/* Lado Direito: GRUPO DE ÍCONES (Ajuda, Insta, Notificação, Sair) */}
+          <div className="flex items-center gap-2 pointer-events-auto">
+              
+              {/* Ajuda / Conduta */}
+              <button onClick={() => setShowFaq(true)} className="w-10 h-10 rounded-full bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 active:scale-95 transition-all">
+                  <HelpCircle className="w-5 h-5"/>
+              </button>
+
+              {/* Instagram */}
+              <a href="https://instagram.com/thalymassagens" target="_blank" className="w-10 h-10 rounded-full bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-[#E1306C] active:scale-95 transition-all">
+                  <Instagram className="w-5 h-5"/>
+              </a>
+
+              {/* Notificações */}
               <button onClick={() => setShowNotifications(true)} className="relative w-10 h-10 rounded-full bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 active:scale-95 transition-all">
                   <Bell className="w-5 h-5"/>
                   {loyalty.notifications.filter(n => !n.read).length > 0 && (
@@ -800,6 +812,11 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente 
                           {loyalty.notifications.filter(n => !n.read).length}
                       </span>
                   )}
+              </button>
+              
+              {/* Sair / Pânico */}
+              <button onClick={handlePanic} className="w-10 h-10 rounded-full bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-red-500/80 active:scale-95 transition-all">
+                  <LogOut className="w-5 h-5 ml-0.5"/> 
               </button>
           </div>
       </div>
@@ -1142,9 +1159,6 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente 
             <button onClick={handleReset} className="w-full py-4 text-gray-500 text-[14px] font-medium">Voltar ao Início</button>
           </div>
         )}
-
-        {/* --- MENU FLUTUANTE (DOCK) - VISÍVEL EM TODAS AS TELAS --- */}
-        <FloatingMenu />
 
         {/* FAQ MODAL (AGORA "AJUDA") */}
         {showFaq && (
