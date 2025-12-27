@@ -17,97 +17,57 @@ html { font-size: 16px; background-color: #000000; }
 body { 
   overscroll-behavior-y: none; 
   touch-action: manipulation; 
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif; 
-  letter-spacing: -0.015em;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", Helvetica, Arial, sans-serif; 
+  letter-spacing: -0.02em;
   color: #fff;
   background: #000;
-  -webkit-font-smoothing: antialiased;
 }
-
-/* Scrollbar Hide */
 ::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* Inputs & Form Elements */
 input, select { user-select: text; font-size: 17px; outline: none; appearance: none; }
 button { touch-action: manipulation; user-select: none; -webkit-touch-callout: none; cursor: pointer; }
 
-/* --- BACKGROUNDS --- */
-.aurora-bg {
-  background: 
-    radial-gradient(120% 100% at 50% 0%, rgba(10, 132, 255, 0.08), transparent 50%),
-    radial-gradient(100% 100% at 50% 100%, rgba(10, 132, 255, 0.03), transparent 60%),
-    #000000;
-  background-attachment: fixed;
-  background-size: cover;
-  min-height: 100vh;
-}
-
-/* --- COMPONENTS (CARDS, HEADERS) --- */
+/* Visual Azul Elétrico Premium */
 .ios-card { 
-  background: rgba(28, 28, 30, 0.65); 
-  backdrop-filter: blur(40px) saturate(180%); 
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  background: #121212; 
   border: 1px solid rgba(255, 255, 255, 0.08); 
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.ios-card:active {
-  transform: scale(0.995);
 }
 
 .ios-header { 
   background: rgba(0, 0, 0, 0.85); 
   backdrop-filter: blur(20px); 
-  -webkit-backdrop-filter: blur(20px);
   border-bottom: 0.5px solid rgba(255,255,255,0.1); 
 }
 
-/* --- BOTÕES --- */
 .ios-btn { 
-  background: rgba(255, 255, 255, 0.06); 
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); 
+  background: #1C1C1E; 
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease; 
 }
-.ios-btn:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.12); }
-
-.ios-btn-active { 
-  background: rgba(10, 132, 255, 0.15); 
-  color: white; 
-  box-shadow: 0 0 20px rgba(10, 132, 255, 0.25);
-  border: 1px solid #0A84FF;
-}
+.ios-btn:active { transform: scale(0.96); background: #2C2C2E; }
 
 .ios-btn-primary {
-  background: linear-gradient(180deg, #007AFF 0%, #0056B3 100%);
+  background: #007AFF; /* Azul das Imagens */
   color: white;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  box-shadow: 0 0 20px rgba(0, 122, 255, 0.4);
   border: none;
 }
 .ios-btn-primary:active { transform: scale(0.98); opacity: 0.9; }
-.ios-btn-primary:disabled { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; }
 
-/* --- INPUTS --- */
 .custom-input {
-  background: rgba(28, 28, 30, 0.5);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: white;
+  background: #1C1C1E;
+  border: 1px solid #333;
   transition: all 0.3s ease;
 }
-.custom-input:focus { border-color: #0A84FF; box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.2); }
+.custom-input:focus { border-color: #007AFF; box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2); }
 
-/* --- ANIMATIONS --- */
-.animate-fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.animate-pulse-slow { animation: pulse 3s infinite; }
-
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 `;
 
-const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
+const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#007AFF]" />;
 
 // ==================================================================================
 // 2. BANCO DE DADOS (CONFIGURAÇÕES DO NEGÓCIO)
@@ -136,7 +96,7 @@ const services = [
     description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
     labelDuration: '60 min', minutes: 60, basePrice: 100, 
     highlight: "🔥 A MAIS PEDIDA", ratings: 5.0, reviews: 310, 
-    details: ["🔥 Relaxante + Body-to-Body", "🩲 Massagista de Cueca", "🍆 Lingam / Finalização Manual", "💦 Alívio Completo"] 
+    details: ["🔥 Body-to-Body", "🩲 Massagista de Cueca", "🍆 Lingam / Finalização Manual", "💦 Alívio Completo"] 
   },
   { 
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
@@ -151,20 +111,18 @@ const locations = [
   { 
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
-    sublabel: 'Vou com você (Pagar taxa na saída)', 
-    fee: 75, // Valor Informativo (não soma no total do massagista)
+    sublabel: 'Vou com você (+ Taxa R$75)', 
+    fee: 75, // SOMA NO TOTAL
     allowsTableChoice: false, 
-    estimatedTravelTime: '10-15 min',
-    isMotel: true
+    estimatedTravelTime: '10-15 min' 
   },
   { 
     id: 'santa-fe', 
     label: 'Santa Fé do Sul', 
     sublabel: 'No conforto do seu lar (+ Uber R$40)', 
-    fee: 40, // Valor Somado (Uber pago ao massagista)
+    fee: 40, // SOMA NO TOTAL
     allowsTableChoice: true, 
-    estimatedTravelTime: '15-20 min',
-    isUber: true
+    estimatedTravelTime: '15-20 min' 
   },
   { 
     id: 'outras-cidades', 
@@ -201,18 +159,27 @@ const REVIEWS_DB = [
   { t: "Nunca senti nada igual. Gemi sem vergonha nenhuma, que alívio!", a: "Anônimo", r: 5 },
   { t: "Toque macio e firme ao mesmo tempo. A explosão no final foi incrível.", a: "Carlos", r: 5 },
   { t: "Mãos de fada. Fiquei muito à vontade, gozei muito no final.", a: "M.V.", r: 5 },
-  { t: "Sensação única. O corpo a corpo me deixou louco.", a: "Empresário Sigiloso", r: 5 }
+  { t: "Sensação única. O corpo a corpo me deixou louco.", a: "Empresário Sigiloso", r: 5 },
+  { t: "Fui no motel e foi perfeito. O Thaly entende o que homem precisa.", a: "João", r: 5 },
+  { t: "Estava travado de stress, saí flutuando e leve.", a: "P.H.", r: 5 },
+  { t: "Melhor massagem da região. O final é inesquecível.", a: "Visitante", r: 5 },
+  { t: "Discrição total, o que é fundamental pra mim. Recomendo.", a: "Casado, 45", r: 5 },
+  { t: "A massagem tântrica dele é de verdade. Energia pura.", a: "L.A.", r: 5 },
+  { t: "Vale cada centavo. Saí renovado e satisfeito.", a: "Anônimo", r: 5 },
+  { t: "O toque dele arrepia até a alma. Voltarei sempre.", a: "Ricardo", r: 5 },
+  { t: "Ambiente super seguro. Me senti rei.", a: "Felipe", r: 5 },
+  { t: "Técnica perfeita. Demorei pra voltar pro chão depois.", a: "G.T.", r: 5 },
+  { t: "Sem pressa, muito atencioso. A melhor finalização.", a: "Anônimo", r: 5 },
+  { t: "Experiência completa. Relaxamento e prazer na medida.", a: "B.C.", r: 5 },
+  { t: "Sou exigente e gostei muito. Profissional e safado na medida certa.", a: "Diretor", r: 5 },
+  { t: "Sensacional. O sigilo me deixou tranquilo para curtir tudo.", a: "M.J.", r: 5 },
+  { t: "Massagem top. O corpo a corpo é quente demais.", a: "Anônimo", r: 5 },
+  { t: "Alívio imediato. Precisava muito disso.", a: "R.R.", r: 5 }
 ];
 
-// --- HELPERS ---
 const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(8); };
-const generateBookingId = () => {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
-    let result = '';
-    for (let i = 0; i < 4; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
-    return result;
-};
+const generateBookingId = () => Math.random().toString(36).substr(2, 4).toUpperCase();
 
 // ==================================================================================
 // 3. COMPONENTES DE UI (INTERFACE)
@@ -441,7 +408,7 @@ const Notifications = ({ notifications, onClear }) => {
         {unread > 0 && <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-[#FF3B30] rounded-full border-2 border-[#1C1C1E]" />}
       </button>
       {open && (
-        <div className="absolute top-14 right-0 w-80 bg-[#121214] border border-white/10 shadow-2xl rounded-[20px] overflow-hidden z-[100] animate-slide-up">
+        <div className="absolute top-14 right-0 w-80 bg-[#121214] border border-white/10 shadow-2xl rounded-[20px] overflow-hidden z-[100] animate-fade-in">
            <div className="p-4 border-b border-white/10 bg-[#1C1C1E] flex justify-between items-center">
              <h4 className="font-semibold text-white text-sm">Notificações</h4>
              <button onClick={() => setOpen(false)} className="p-1"><X className="w-4 h-4 text-gray-400"/></button>
@@ -474,25 +441,14 @@ const Notifications = ({ notifications, onClear }) => {
 export default function App() {
   const [step, setStep] = useState('home');
   const [loading, setLoading] = useState(true);
+  const scrollRef = useRef(null);
+  const summaryRef = useRef(null);
   
-  // Refs
-  const locationRef = useRef(null);
-  const vibeRef = useRef(null);
-  const extrasRef = useRef(null);
-  const couponRef = useRef(null);
-  const paymentRef = useRef(null);
-  const homeRef = useRef(null);
-
-  const scrollTo = (ref) => {
-    setTimeout(() => {
-      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 300); 
-  };
-    
-  // State
+  // State Principal (Dados Persistentes)
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v10'); 
-    return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
+    const saved = localStorage.getItem('thaly_v12'); 
+    // levelsUnlocked: Array para garantir que não ganhe o mesmo cupom 2x
+    return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], levelsUnlocked: ['Bronze'] };
   });
 
   const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
@@ -505,11 +461,10 @@ export default function App() {
     
   const surfaceRef = useRef(null);
 
-  // Init
-  useEffect(() => { setTimeout(() => setLoading(false), 2000); }, []);
-
+  useEffect(() => { setTimeout(() => setLoading(false), 1500); }, []);
+  
   useEffect(() => {
-    localStorage.setItem('thaly_system_v10', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_v12', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -529,9 +484,15 @@ export default function App() {
 
   useEffect(() => {
     if (step === 'home') {
-      homeRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [step]);
+
+  useEffect(() => {
+      if(step === 'configure' && selection.paymentMethod) {
+          setTimeout(() => summaryRef.current?.scrollIntoView({behavior: 'smooth', block: 'end'}), 200);
+      }
+  }, [selection.paymentMethod]);
 
   // Actions
   const handleQuickSchedule = () => {
@@ -563,9 +524,9 @@ export default function App() {
 
   const getAromaPrice = () => {
       const level = getCurrentLevel().name;
-      if (level === 'Ouro' || level === 'Diamante') return 0; // Grátis
-      if (level === 'Prata') return 5; // 50% OFF
-      return 10; // Normal
+      if (level === 'Ouro' || level === 'Diamante') return 0;
+      if (level === 'Prata') return 5;
+      return 10;
   };
 
   // Calculations
@@ -577,7 +538,7 @@ export default function App() {
     if (selection.upgrade) total += selection.service.basePrice * 0.5;
     if (selection.useTable) total += 20;
     if (selection.aroma) total += getAromaPrice();
-    if (selection.location?.fee && selection.location.id === 'santa-fe') total += selection.location.fee; // Uber entra no total cliente
+    if (selection.location?.fee && selection.location.id !== 'motel') total += selection.location.fee; // Motel soma separado
     
     // Cupons
     if (selection.coupon) {
@@ -589,6 +550,9 @@ export default function App() {
 
   const calcFinalPrice = () => {
     let base = calcBaseTotal();
+    // Se for Motel, soma a taxa de 75 no total visual do APP (conforme pedido)
+    if (selection.location?.id === 'motel') base += 75;
+
     if (selection.paymentMethod === 'credit_card') {
        const rate = CARD_RATES[selection.installments] || 0;
        return base / (1 - rate);
@@ -614,13 +578,36 @@ export default function App() {
     const bookingId = generateBookingId(); 
 
     // --- LOGICA DE CUPOM (Consumir Cupom) ---
+    // Remove o cupom do inventário ao usar
     let newInventory = [...loyalty.inventory];
     if (selection.coupon) {
         newInventory = newInventory.filter(c => c !== selection.coupon.code);
     }
 
-    // --- CHECK LEVEL UP E NOTIFICAÇÕES ---
+    // --- CHECK LEVEL UP E GANHAR CUPOM ---
+    // Agora verifica se o nível já foi desbloqueado antes usando levelsUnlocked
+    let updatedLevelsUnlocked = loyalty.levelsUnlocked ? [...loyalty.levelsUnlocked] : ['Bronze'];
+    const currentLevel = [...LEVELS].reverse().find(l => newTotal >= l.min);
+    
     let newNotifications = [...loyalty.notifications];
+    
+    // Se atingiu um nível novo que não estava desbloqueado
+    if(currentLevel && !updatedLevelsUnlocked.includes(currentLevel.name)) {
+        updatedLevelsUnlocked.push(currentLevel.name);
+        
+        if (currentLevel.rewardCode) {
+            // Adiciona o cupom no inventário
+            newInventory.push(currentLevel.rewardCode);
+            // Notifica
+            newNotifications.unshift({
+                id: Date.now() + 1,
+                title: '🎉 Subiu de Nível!',
+                message: `Parabéns! Você atingiu o nível ${currentLevel.name} e ganhou o cupom ${currentLevel.rewardCode}!`,
+                read: false,
+                timestamp: Date.now()
+            });
+        }
+    }
     
     // Notificação de Pedido Enviado
     newNotifications.unshift({
@@ -631,29 +618,14 @@ export default function App() {
         timestamp: Date.now()
     });
 
-    // Notificação de Nível/Benefícios
-    const levelReached = [...LEVELS].reverse().find(l => newTotal >= l.min);
-    if(levelReached && levelReached.rewardCode) {
-        if (!newInventory.includes(levelReached.rewardCode) && !loyalty.inventory.includes(levelReached.rewardCode)) {
-            newInventory.push(levelReached.rewardCode);
-            newNotifications.unshift({
-                id: Date.now() + 1,
-                title: '🎉 Subiu de Nível!',
-                message: `Você ganhou o cupom ${levelReached.rewardCode} e novos benefícios!`,
-                read: false,
-                timestamp: Date.now()
-            });
-        }
-    }
-    
-    // Loyalty Update
     setLoyalty(prev => ({ 
-      ...prev, 
-      savedName: user.name || prev.savedName, 
-      totalSpent: newTotal, 
-      totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0) + (selection.aroma ? (10 - getAromaPrice()) : 0),
-      inventory: newInventory,
-      notifications: newNotifications
+        ...prev, 
+        savedName: user.name || prev.savedName, 
+        totalSpent: newTotal, 
+        totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0) + (selection.aroma ? (10 - getAromaPrice()) : 0),
+        inventory: newInventory,
+        notifications: newNotifications,
+        levelsUnlocked: updatedLevelsUnlocked
     }));
 
     const isToday = selection.date.getDate() === new Date().getDate();
@@ -699,21 +671,19 @@ export default function App() {
       else discountVal = selection.coupon.value;
     }
 
-    // 1. O que o cliente paga para o massagista (Serviço + Extras - Desconto + Uber se houver)
-    let clientPaysToMasseur = grossService - discountVal;
-    if (uberFee > 0) clientPaysToMasseur += uberFee;
-
-    // 2. Líquido que SOBRA para o massagista (Tira o Uber pois é custo)
-    // Se uberFee entra, ele sai como custo. Entao Liquido = Gross - Discount.
-    let masseurNet = grossService - discountVal; 
+    // 1. Total Cliente Paga
+    let totalClientPays = grossService - discountVal + uberFee + motelFee; 
+    
+    // 2. Líquido Massagista (O que entra na sua mao, sem motel, com uber pra reembolso)
+    let masseurNet = grossService - discountVal + uberFee; 
 
     // Cartão
-    let totalWithCard = clientPaysToMasseur;
+    let totalWithCard = totalClientPays;
     let cardFee = 0;
     if (selection.paymentMethod === 'credit_card') {
        const rate = CARD_RATES[selection.installments] || 0;
-       totalWithCard = clientPaysToMasseur / (1 - rate);
-       cardFee = totalWithCard - clientPaysToMasseur;
+       totalWithCard = totalClientPays / (1 - rate);
+       cardFee = totalWithCard - totalClientPays;
     }
 
     let msg = `✨ NOVO PEDIDO: #${bookingId}
@@ -754,388 +724,269 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
   };
 
   return (
-    <div className="min-h-screen flex justify-center p-0 sm:p-6 font-sans text-gray-200 bg-black">
+    <div className="min-h-screen flex justify-center bg-black text-white font-sans">
       <style>{globalStyles}</style>
-
-      {loading ? (
-        <div className="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center animate-fade-in">
-          <div className="w-24 h-24 bg-gradient-to-tr from-[#0A84FF] to-[#5E5CE6] rounded-[24px] flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(10,132,255,0.4)] animate-pulse">
-            <div className="text-4xl">💆‍♂️</div>
-          </div>
-        </div>
-      ) : (
-      <div className="w-full max-w-[440px] bg-[#000] sm:rounded-[40px] shadow-2xl flex flex-col relative overflow-hidden sm:border border-white/10 h-screen sm:h-[92vh] aurora-bg">
+      <div ref={scrollRef} className="w-full max-w-[440px] h-[100dvh] flex flex-col relative overflow-y-auto scrollbar-hide bg-[#000]">
         
-        {/* HEADER FIXO */}
+        {/* HEADER */}
         {step !== 'home' && step !== 'success' && (
-          <div className="absolute top-0 w-full z-30 ios-header px-6 pt-12 pb-4 flex justify-between items-center">
+          <div className="sticky top-0 z-30 ios-header px-5 py-4 flex justify-between items-center">
              <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10"><IconBack /></button>
-            
-            <div className="flex items-center gap-3">
-              <span className="px-2 py-0.5 rounded-full bg-[#0A84FF]/10 text-[#0A84FF] text-[10px] font-bold border border-[#0A84FF]/20 animate-pulse">BETA</span>
-              <div className="flex items-center gap-2">
-                  <span className="font-semibold text-white text-[15px]">{user.name || loyalty.savedName || 'Visitante'}</span>
-                  {loyalty.savedName && <button onClick={() => setStep('identity')} className="p-1 text-gray-500 hover:text-white"><Edit3 className="w-3.5 h-3.5"/></button>}
-              </div>
-              <Notifications notifications={loyalty.notifications} onClear={() => setLoyalty(p => ({...p, notifications: p.notifications.map(n => ({...n, read: true}))}))} />
-            </div>
+             <div className="flex items-center gap-3">
+               <span className="text-sm font-bold">{user.name || 'Visitante'}</span>
+               <Notifications notifications={loyalty.notifications} onClear={() => setLoyalty(p=>({...p, notifications: p.notifications.map(n=>({...n, read:true}))}))} />
+             </div>
           </div>
         )}
 
-        {/* --- HOME --- */}
+        {/* HOME */}
         {step === 'home' && (
-          <div className="flex-1 p-6 overflow-y-auto pb-28 pt-12" ref={homeRef}>
-            {/* TOPO: PERFIL + FERRAMENTAS + SAIR */}
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-2">
-                  <span className="text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full backdrop-blur-md">{weatherHint}</span>
-                  <div className="flex items-center gap-2">
-                      <Notifications notifications={loyalty.notifications} onClear={() => setLoyalty(p => ({...p, notifications: p.notifications.map(n => ({...n, read: true}))}))} />
-                      <button onClick={handlePanic} className="w-9 h-9 rounded-full bg-[#2C1C1C] border border-red-500/20 flex items-center justify-center active:bg-red-900/40">
-                           <LogOut className="w-4 h-4 text-red-500"/> 
-                      </button>
-                  </div>
-              </div>
-              
-              <h1 className="text-3xl font-bold text-white tracking-tight mb-4">Thalyson Massagens</h1>
+          <div className="p-6 pb-32 pt-8">
+             {/* Topo Limpo */}
+             <div className="flex justify-between items-start mb-6">
+                <div>
+                   <div className="flex items-center gap-2 mb-1">
+                      <span className="bg-white/10 px-2 py-0.5 rounded-full text-[10px] font-bold text-gray-300 flex items-center gap-1"><Info className="w-3 h-3"/> Dia ideal para relaxar</span>
+                   </div>
+                   <h1 className="text-2xl font-bold tracking-tight">Thalyson Massagens</h1>
+                </div>
+                
+                {/* Barra de Ferramentas */}
+                <div className="flex bg-[#1C1C1E] rounded-full p-1 border border-white/10">
+                   <button onClick={() => setShowFaq(true)} className="p-2 rounded-full hover:bg-white/10 text-gray-400"><Shield className="w-5 h-5"/></button>
+                   <a href="https://instagram.com/thalymassagens" target="_blank" className="p-2 rounded-full hover:bg-white/10 text-[#E1306C]"><Instagram className="w-5 h-5"/></a>
+                   <button onClick={handleShare} className="p-2 rounded-full hover:bg-white/10 text-blue-400"><Share2 className="w-5 h-5"/></button>
+                   <div className="w-px h-6 bg-white/10 mx-1 self-center"/>
+                   <button onClick={handlePanic} className="p-2 rounded-full hover:bg-red-900/30 text-red-500"><LogOut className="w-5 h-5"/></button>
+                </div>
+             </div>
 
-              {/* QUICK ACTIONS ROW (TOPO LIMPO) */}
-              <div className="flex gap-2 mb-6">
-                  <button onClick={() => setShowFaq(true)} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333] transition-colors">
-                     <Shield className="w-3.5 h-3.5 text-gray-300"/> 
-                     <span className="text-[10px] font-bold text-gray-300 uppercase">Conduta</span>
-                  </button>
-                  <button onClick={handleShare} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333] transition-colors">
-                     <Share2 className="w-3.5 h-3.5 text-gray-300"/> 
-                     <span className="text-[10px] font-bold text-gray-300 uppercase">Compartilhar</span>
-                  </button>
-                   <a href="https://instagram.com/thalymassagens" target="_blank" className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333] transition-colors">
-                     <Instagram className="w-3.5 h-3.5 text-[#E1306C]"/> 
-                     <span className="text-[10px] font-bold text-gray-300 uppercase">Instagram</span>
-                  </a>
-              </div>
-            </div>
+             {/* Cartão Fidelidade */}
+             <div className="ios-card p-6 rounded-[28px] mb-6 relative overflow-hidden group">
+                <div className="flex justify-between items-start mb-6 relative z-10">
+                   <div>
+                      <p className="text-[10px] text-[#007AFF] font-black uppercase tracking-widest mb-1">CLUBE VIP</p>
+                      <h3 className="text-3xl font-bold flex items-center gap-2">{getCurrentLevel().name} {getCurrentLevel().icon}</h3>
+                   </div>
+                   <button onClick={() => setPrivacyMode(!privacyMode)} className="text-right">
+                      <div className="flex items-center justify-end gap-1 text-gray-500 mb-1"><span className="text-[10px] font-bold">INVESTIDO</span> {privacyMode ? <EyeOff className="w-3 h-3"/> : <Eye className="w-3 h-3"/>}</div>
+                      <p className={`text-xl font-mono ${privacyMode ? 'blur-md' : ''}`}>{formatCurrency(loyalty.totalSpent)}</p>
+                   </button>
+                </div>
+                <div className="h-1.5 bg-white/10 rounded-full mb-3 overflow-hidden">
+                   <div className="h-full bg-[#007AFF]" style={{width: `${Math.min(100, (loyalty.totalSpent / (getNextLevel()?.min || loyalty.totalSpent))*100)}%`}}/>
+                </div>
+                <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase">
+                   <span>Economia: {formatCurrency(loyalty.totalSaved)}</span>
+                   <span>Próx: {formatCurrency(getNextLevel()?.min || loyalty.totalSpent)}</span>
+                </div>
+             </div>
 
-            <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
-            <LiveStatus />
+             <LiveStatus />
+             
+             {/* Avaliações Carrossel */}
+             <div className="mb-6 flex overflow-x-auto gap-3 scrollbar-hide pb-2 snap-x">
+                {REVIEWS_DB.map((r, i) => (
+                   <div key={i} className="snap-center min-w-[260px] ios-card p-4 rounded-2xl border-l-2 border-[#007AFF]">
+                      <div className="flex gap-1 mb-2 text-[#FFD700]"><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/></div>
+                      <p className="text-sm text-gray-300 italic mb-2">"{r.t}"</p>
+                      <p className="text-[10px] font-bold text-gray-500 uppercase">- {r.a}</p>
+                   </div>
+                ))}
+             </div>
 
-            <div className="mb-2 px-1 text-[11px] font-bold text-gray-500 uppercase tracking-widest">O que dizem sobre mim</div>
-            <ReviewsCarousel />
-            
-            {/* CTA FLUTUANTE NO FINAL DA ROLAGEM */}
-            <div className="mt-4">
-              <button onClick={handleQuickSchedule} className="w-full ios-btn-primary font-bold py-4 rounded-[22px] shadow-lg flex justify-center items-center gap-2 text-[17px]">
-                Agendar Sessão <ArrowRight className="w-5 h-5" />
-              </button>
-            </div>
+             <button onClick={() => { triggerHaptic(); setStep(loyalty.savedName ? 'services' : 'identity'); }} className="w-full h-14 ios-btn-primary rounded-2xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg">
+                Agendar Sessão <ChevronRight className="w-5 h-5"/>
+             </button>
           </div>
         )}
 
-        {/* --- IDENTITY --- */}
+        {/* IDENTITY */}
         {step === 'identity' && (
-          <div className="flex-1 p-6 pt-32 animate-fade-in flex flex-col h-full">
-            <h2 className="text-3xl font-bold text-white mb-2">Identificação</h2>
-            <p className="text-gray-400 text-[15px] mb-8">Precisamos saber quem é você para confirmar.</p>
-            
-            <div className="space-y-6 flex-1">
-              <div className="ios-card p-5 rounded-[22px]">
-                <label className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-wider block mb-2">Seu Nome</label>
-                <input value={user.name} onChange={e => setUser({...user, name: e.target.value})} className="w-full bg-transparent text-white text-[19px] font-medium placeholder:text-gray-600 border-b border-white/10 py-2 focus:border-[#0A84FF] transition-colors" placeholder="Digite seu nome..." />
+           <div className="p-6 pt-10 h-full flex flex-col animate-fade-in">
+              <h2 className="text-2xl font-bold mb-6">Identificação</h2>
+              <div className="space-y-4 flex-1">
+                 <input value={user.name} onChange={e => setUser({...user, name: e.target.value})} placeholder="Seu Nome" className="w-full custom-input p-4 rounded-xl text-lg text-white" />
+                 <div className="flex gap-3">
+                    <button onClick={() => setUser({...user, isAdult: !user.isAdult})} className={`flex-1 p-4 rounded-xl border flex flex-col items-center gap-2 ${user.isAdult ? 'border-[#007AFF] bg-[#007AFF]/10' : 'border-white/10'}`}>
+                       {user.isAdult ? <CheckCircle2 className="w-6 h-6 text-[#007AFF]"/> : <div className="w-6 h-6 rounded-full border border-gray-500"/>}
+                       <span className="text-xs font-bold text-gray-400">+18 Anos</span>
+                    </button>
+                    <button onClick={() => setUser({...user, isMassagemOk: !user.isMassagemOk})} className={`flex-1 p-4 rounded-xl border flex flex-col items-center gap-2 ${user.isMassagemOk ? 'border-[#007AFF] bg-[#007AFF]/10' : 'border-white/10'}`}>
+                       {user.isMassagemOk ? <CheckCircle2 className="w-6 h-6 text-[#007AFF]"/> : <div className="w-6 h-6 rounded-full border border-gray-500"/>}
+                       <span className="text-xs font-bold text-gray-400">Liberado</span>
+                    </button>
+                 </div>
               </div>
-
-              <div className="space-y-3">
-                <button onClick={() => { triggerHaptic(); setUser({...user, isAdult: !user.isAdult}); }} className={`w-full p-5 rounded-[20px] border flex items-center gap-4 transition-all duration-300 ${user.isAdult ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isAdult ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-500'}`}>{user.isAdult && <Check className="w-3.5 h-3.5 text-white" />}</div>
-                  <span className={`text-[17px] font-medium ${user.isAdult ? 'text-white' : 'text-gray-400'}`}>Maior de 18 anos</span>
-                </button>
-                
-                <button onClick={() => { triggerHaptic(); setUser({...user, isMassagemOk: !user.isMassagemOk}); }} className={`w-full p-5 rounded-[20px] border flex items-center gap-4 transition-all duration-300 ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isMassagemOk ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-500'}`}>{user.isMassagemOk && <Check className="w-3.5 h-3.5 text-white" />}</div>
-                  <span className={`text-[17px] font-medium ${user.isMassagemOk ? 'text-white' : 'text-gray-400'}`}>Liberado p/ Massagem</span>
-                </button>
-              </div>
-
-              <button 
-                disabled={!user.name || !user.isAdult || !user.isMassagemOk} 
-                onClick={() => { triggerHaptic(); setStep('services'); }} 
-                className="w-full ios-btn-primary font-bold py-4 rounded-[22px] text-[17px] disabled:opacity-50 shadow-lg mt-4"
-              >
-                Continuar
-              </button>
-            </div>
-          </div>
+              <button disabled={!user.name || !user.isAdult || !user.isMassagemOk} onClick={() => { triggerHaptic(); setStep('services'); }} className="w-full h-14 ios-btn-primary rounded-2xl font-bold disabled:opacity-50">Continuar</button>
+           </div>
         )}
 
-        {/* --- SERVICES --- */}
+        {/* SERVICES */}
         {step === 'services' && (
-          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-28 animate-fade-in">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-white">Serviços</h2>
-            </div>
-            <div className="space-y-5">
+           <div className="p-6 pt-10 animate-fade-in">
+              <h2 className="text-2xl font-bold mb-6">Serviços</h2>
               {services.map(s => (
-                <div key={s.id} onClick={() => { triggerHaptic(); setSelection({...selection, service: s}); setStep('configure'); }} className={`ios-card p-5 rounded-[24px] active:scale-98 transition-transform group ${s.id === 'masculina' ? 'border-[#0A84FF] shadow-[0_0_25px_rgba(10,132,255,0.2)]' : ''}`}>
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-bold text-white text-[20px]">{s.name}</h3>
-                    <span className="text-[#0A84FF] font-bold text-[17px] bg-[#0A84FF]/10 px-2 py-1 rounded-md">{formatCurrency(s.basePrice)}</span>
-                  </div>
-                  {s.highlight && <span className="text-[10px] font-bold text-black bg-[#FFD60A] px-2 py-0.5 rounded mb-2 inline-block">{s.highlight}</span>}
-                  <p className="text-[15px] text-gray-300 leading-relaxed mb-4">{s.description}</p>
-                  <ul className="space-y-2 mb-4">
-                    {s.details.map((d, idx) => (<li key={idx} className="text-[13px] text-gray-400 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#0A84FF]"></div> {d}</li>))}
-                  </ul>
-                  <div className="flex justify-between items-center pt-4 border-t border-white/5">
-                    <span className="text-[12px] bg-white/5 px-3 py-1.5 rounded-full text-gray-300 flex items-center gap-1.5 font-medium"><Clock className="w-3.5 h-3.5"/> {s.labelDuration}</span>
-                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center"><ChevronRight className="w-5 h-5 text-gray-400" /></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* --- CONFIGURE --- */}
-        {step === 'configure' && selection.service && (
-          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-64 animate-fade-in"> 
-            <div className="ios-card p-5 rounded-[22px] mb-8 flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-white text-[19px]">{selection.service.name}</h3>
-                <p className="text-[13px] text-gray-400 mt-0.5">{selection.service.labelDuration}</p>
-              </div>
-              <span className="text-[19px] font-bold text-[#0A84FF]">{formatCurrency(selection.service.basePrice)}</span>
-            </div>
-
-            <div className="space-y-8">
-              <section>
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide">Quando? (Max 21h)</h4>
-                </div>
-                <div className="ios-card p-4 rounded-[22px]">
-                   <InlineDateSelector 
-                      selectedDate={selection.date} 
-                      selectedTime={selection.time} 
-                      onSelect={(d, t) => { setSelection({...selection, date: d, time: t}); if(t) scrollTo(locationRef); }} 
-                   />
-                </div>
-              </section>
-
-              <section ref={locationRef}>
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide">Onde?</h4>
-                  {selection.location && (
-                    <button onClick={() => setSelection({...selection, location: null, useTable: null, city: ''})} className="text-[11px] font-bold text-[#0A84FF] flex items-center gap-1 bg-[#0A84FF]/10 px-2 py-1 rounded-md"><Edit3 className="w-3 h-3"/> TROCAR</button>
-                  )}
-                </div>
-                
-                <div className="space-y-3">
-                  {locations.map(l => {
-                    if (selection.location && selection.location.id !== l.id) return null;
-
-                    return (
-                    <div key={l.id} className="animate-fade-in">
-                        <button onClick={() => { triggerHaptic(); setSelection({...selection, location: l, useTable: null}); scrollTo(vibeRef); }} className={`w-full p-5 rounded-[22px] border text-left transition-all duration-300 ${selection.location?.id === l.id ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="font-semibold text-white text-[17px]">{l.label}</span> 
-                            {l.fee > 0 && <span className="text-[11px] font-bold text-gray-300 bg-white/10 px-2 py-1 rounded">+ {formatCurrency(l.fee)}</span>}
-                          </div>
-                          <p className="text-[13px] text-gray-500">{l.sublabel}</p>
-                        </button>
-                        
-                        {selection.location?.id === l.id && l.id === 'santa-fe' && l.allowsTableChoice && (
-                          <div ref={surfaceRef} className="mt-3 grid grid-cols-2 gap-3 animate-fade-in">
-                            <button onClick={() => { setSelection({...selection, useTable: false}); scrollTo(vibeRef); }} className={`p-4 rounded-[18px] border text-[13px] font-bold transition-all ${selection.useTable === false ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'ios-btn border-transparent text-gray-400'}`}>🛏 Na Cama</button>
-                            <button onClick={() => { setSelection({...selection, useTable: true}); scrollTo(vibeRef); }} className={`p-4 rounded-[18px] border text-[13px] font-bold transition-all ${selection.useTable === true ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'ios-btn border-transparent text-gray-400'}`}>💆‍♂️ Levar Maca (+20)</button>
-                          </div>
-                        )}
-
-                        {selection.location?.id === l.id && l.id === 'outras-cidades' && (
-                            <input value={selection.city} onChange={e => setSelection({...selection, city: e.target.value})} placeholder="Digite o nome da cidade..." className="mt-3 w-full bg-[#1C1C1E] p-4 rounded-[18px] border border-white/10 text-white placeholder:text-gray-600 focus:border-[#0A84FF] transition-all animate-fade-in" />
-                        )}
+                 <div key={s.id} onClick={() => { setSelection({...selection, service: s}); setStep('configure'); }} className="ios-card p-5 rounded-2xl mb-4 active:scale-95 transition-transform relative overflow-hidden">
+                    {s.highlight && <div className="absolute top-0 right-0 bg-[#FFD700] text-black text-[10px] font-black px-3 py-1 rounded-bl-xl">{s.highlight}</div>}
+                    <div className="flex justify-between items-end mb-2">
+                       <h3 className="text-xl font-bold">{s.name}</h3>
+                       <span className="text-[#007AFF] font-bold text-lg">{formatCurrency(s.basePrice)}</span>
                     </div>
-                  )})}
-                </div>
-              </section>
-
-              <div className="mt-4" ref={vibeRef}>
-                <h4 className="text-[13px] font-semibold text-gray-400 uppercase mb-3 tracking-wide">Vibe Sonora 🎵</h4>
-                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                   {musicVibes.map(vibe => (
-                      <button key={vibe} onClick={() => { setSelection({...selection, music: vibe}); scrollTo(extrasRef); }} className={`px-5 py-3 rounded-[16px] border text-[13px] font-bold whitespace-nowrap flex-shrink-0 transition-all duration-300 ${selection.music === vibe ? 'bg-[#0A84FF] border-[#0A84FF] text-white scale-105' : 'ios-btn border-transparent text-gray-400'}`}>
-                        {vibe}
-                      </button>
-                   ))}
-                </div>
-              </div>
-
-              <div className="space-y-3" ref={extrasRef}>
-                <h4 className="text-[13px] font-semibold text-gray-400 uppercase mb-1 tracking-wide mt-4">EXTRAS</h4>
-                <button onClick={() => { triggerHaptic(); setSelection({...selection, upgrade: !selection.upgrade}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.upgrade ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">+30 Minutos</p><p className="text-[11px] text-gray-500">Mais tempo para curtir</p></div>
-                  <span className="text-[#0A84FF] font-bold text-[15px]">+{formatCurrency(selection.service.basePrice * 0.5)}</span>
-                </button>
-
-                <button onClick={() => { triggerHaptic(); setSelection({...selection, aroma: !selection.aroma}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.aroma ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className="text-left">
-                      <p className="text-white font-bold text-[15px]">Aromaterapia 🌿</p>
-                      <p className="text-[11px] text-gray-500">Cheiro suave que acalma</p>
-                  </div>
-                  <div className="text-right">
-                      {getAromaPrice() < 10 ? (
-                          <>
-                            <span className="text-gray-500 line-through text-[11px] mr-2">R$ 10,00</span>
-                            <span className="text-[#30D158] font-bold text-[15px]">{getAromaPrice() === 0 ? 'GRÁTIS' : `+${formatCurrency(getAromaPrice())}`}</span>
-                          </>
-                      ) : (
-                          <span className="text-[#0A84FF] font-bold text-[15px]">+R$ 10,00</span>
-                      )}
-                  </div>
-                </button>
-              </div>
-
-              <CouponInventory inventory={loyalty.inventory} appliedCoupon={selection.coupon} onApply={(code) => { setSelection({...selection, coupon: SYSTEM_COUPONS[code]}); scrollTo(paymentRef); }} onRemove={() => setSelection({...selection, coupon: null})} onAddManual={handleAddManualCoupon}/>
-
-              <div className="mt-6" ref={paymentRef}>
-                <h4 className="text-[13px] font-semibold text-gray-400 uppercase mb-3 tracking-wide">Pagamento</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'pix'})} className={`h-24 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'pix' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <QrCode className="w-6 h-6 text-[#0A84FF]" />
-                    <span className="text-[13px] font-bold text-white">Pix</span>
-                  </button>
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'cash'})} className={`h-24 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'cash' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <Banknote className="w-6 h-6 text-[#30D158]" />
-                    <span className="text-[13px] font-bold text-white">Dinheiro</span>
-                  </button>
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'debit_card'})} className={`h-24 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'debit_card' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <CreditCard className="w-6 h-6 text-[#0A84FF]" />
-                    <span className="text-[13px] font-bold text-white">Débito</span>
-                  </button>
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'credit_card'})} className={`h-24 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'credit_card' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <CreditCard className="w-6 h-6 text-[#FFD60A]" />
-                    <span className="text-[13px] font-bold text-white">Crédito</span>
-                  </button>
-                </div>
-                
-                {selection.paymentMethod === 'credit_card' && (
-                  <div className="mt-3 ios-card p-3 rounded-[16px] animate-fade-in">
-                    <label className="text-[12px] text-gray-400 block mb-1 font-bold ml-1">Parcelas (c/ taxa):</label>
-                    <select 
-                      value={selection.installments} 
-                      onChange={(e) => setSelection({...selection, installments: parseInt(e.target.value)})}
-                      className="w-full bg-[#1C1C1E] border border-white/10 text-white text-[15px] rounded-lg p-3 focus:border-[#0A84FF]"
-                    >
-                      {CARD_RATES.map((rate, i) => i > 0 && (
-                          <option key={i} value={i}>{i}x de {formatCurrency(calcFinalPrice()/i)}</option>
-                      ))}
-                    </select>
-                    <p className="text-[10px] text-gray-500 mt-2 ml-1 flex items-center gap-1"><Info className="w-3 h-3"/> Taxa da máquina aplicada no parcelamento.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+                    <p className="text-sm text-gray-400 mb-3">{s.description}</p>
+                    <div className="flex gap-2 flex-wrap">{s.details.map((d,i) => <span key={i} className="text-[10px] bg-white/5 px-2 py-1 rounded text-gray-300">{d}</span>)}</div>
+                 </div>
+              ))}
+           </div>
         )}
 
-        {/* FOOTER FIXO (NOVO LAYOUT INTUITIVO) */}
+        {/* CONFIGURE */}
+        {step === 'configure' && selection.service && (
+           <div className="p-6 pt-6 pb-64 animate-fade-in">
+              {/* Data */}
+              <div className="mb-8">
+                 <h4 className="text-xs font-bold text-gray-500 uppercase mb-3">Data e Hora</h4>
+                 <div className="flex gap-2 overflow-x-auto scrollbar-hide mb-3">
+                    {[0,1,2,3,4].map(i => {
+                       const d = new Date(); d.setDate(d.getDate() + i);
+                       const isSel = selection.date?.toDateString() === d.toDateString();
+                       return (
+                          <button key={i} onClick={() => setSelection({...selection, date: d, time: ''})} className={`min-w-[70px] h-20 rounded-xl border flex flex-col items-center justify-center ${isSel ? 'bg-white text-black' : 'ios-btn'}`}>
+                             <span className="text-[10px] font-bold">{i===0?'HOJE':d.getDate()}</span>
+                             <span className="text-lg font-bold">{d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
+                          </button>
+                       )
+                    })}
+                 </div>
+                 {selection.date && (
+                    <div className="grid grid-cols-4 gap-2">
+                       {timeSlots.map(t => (
+                          <button key={t} onClick={() => setSelection({...selection, time: t})} className={`py-2 rounded-lg text-sm font-bold border ${selection.time === t ? 'bg-[#007AFF] border-[#007AFF]' : 'ios-btn'}`}>{t}</button>
+                       ))}
+                    </div>
+                 )}
+              </div>
+
+              {/* Local */}
+              <div className="mb-8">
+                 <h4 className="text-xs font-bold text-gray-500 uppercase mb-3">Local</h4>
+                 {locations.map(l => (
+                    <div key={l.id} onClick={() => setSelection({...selection, location: l, useTable: false})} className={`p-4 rounded-xl border mb-2 ${selection.location?.id === l.id ? 'bg-[#007AFF]/20 border-[#007AFF]' : 'ios-btn'}`}>
+                       <div className="flex justify-between font-bold text-sm"><span>{l.label}</span> {l.fee>0 && <span className="text-gray-400">+{formatCurrency(l.fee)}</span>}</div>
+                       <p className="text-xs text-gray-500">{l.sublabel}</p>
+                       {selection.location?.id === l.id && l.id === 'santa-fe' && (
+                          <div className="flex gap-2 mt-3">
+                             <button onClick={(e)=>{e.stopPropagation(); setSelection({...selection, useTable: false})}} className={`flex-1 py-2 rounded text-xs border ${!selection.useTable ? 'bg-white text-black' : 'border-white/10'}`}>Na Cama</button>
+                             <button onClick={(e)=>{e.stopPropagation(); setSelection({...selection, useTable: true})}} className={`flex-1 py-2 rounded text-xs border ${selection.useTable ? 'bg-white text-black' : 'border-white/10'}`}>Maca (+20)</button>
+                          </div>
+                       )}
+                       {selection.location?.id === l.id && l.input && <input onChange={e=>setSelection({...selection, city: e.target.value})} placeholder="Cidade..." className="w-full mt-2 bg-black p-2 rounded text-sm"/>}
+                    </div>
+                 ))}
+              </div>
+
+              {/* Extras */}
+              <div className="mb-8 space-y-3">
+                 <button onClick={() => setSelection({...selection, upgrade: !selection.upgrade})} className={`w-full p-4 rounded-xl border flex justify-between items-center ${selection.upgrade ? 'bg-[#007AFF]/20 border-[#007AFF]' : 'ios-btn'}`}>
+                    <span className="text-sm font-bold">Mais Tempo (+30m)</span>
+                    <span className="text-[#007AFF] font-bold">+R$ 50</span>
+                 </button>
+                 <button onClick={() => setSelection({...selection, aroma: !selection.aroma})} className={`w-full p-4 rounded-xl border flex justify-between items-center ${selection.aroma ? 'bg-[#007AFF]/20 border-[#007AFF]' : 'ios-btn'}`}>
+                    <div className="text-left"><p className="text-sm font-bold">Aromaterapia</p><p className="text-[10px] text-gray-500">Óleos essenciais</p></div>
+                    <span className={`${getAromaPrice() === 0 ? 'text-green-500' : 'text-[#007AFF]'} font-bold`}>{getAromaPrice() === 0 ? 'GRÁTIS (VIP)' : `+R$ ${getAromaPrice()}`}</span>
+                 </button>
+              </div>
+
+              <CouponInventory inventory={loyalty.inventory} appliedCoupon={selection.coupon} onApply={(c)=>setSelection({...selection, coupon: SYSTEM_COUPONS[c]})} onRemove={()=>setSelection({...selection, coupon: null})} onAddManual={(c)=>{if(!loyalty.inventory.includes(c)) setLoyalty(p=>({...p, inventory:[...p.inventory, c]}))}}/>
+
+              {/* Pagamento */}
+              <div className="grid grid-cols-2 gap-2 mt-6">
+                 {['pix', 'cash', 'debit_card', 'credit_card'].map(m => (
+                    <button key={m} onClick={() => setSelection({...selection, paymentMethod: m})} className={`py-4 rounded-xl border flex flex-col items-center gap-1 ${selection.paymentMethod === m ? 'bg-[#007AFF]/20 border-[#007AFF]' : 'ios-btn'}`}>
+                       <span className="text-[10px] font-black uppercase">{m.replace('_',' ')}</span>
+                    </button>
+                 ))}
+              </div>
+              {selection.paymentMethod === 'credit_card' && (
+                 <select onChange={e=>setSelection({...selection, installments: e.target.value})} className="w-full mt-3 bg-[#1C1C1E] p-3 rounded-xl text-white outline-none">
+                    {CARD_RATES.map((r,i)=> i>0 && <option key={i} value={i}>{i}x (c/ taxa)</option>)}
+                 </select>
+              )}
+
+              {/* RESUMO DO PEDIDO VISUAL (ATUALIZADO) */}
+              <div ref={summaryRef} className="mt-8 ios-card p-5 rounded-[22px] bg-[#1C1C1E] border border-white/10">
+                 <div className="flex items-center gap-2 mb-4 border-b border-white/10 pb-3">
+                    <Receipt className="w-5 h-5 text-[#007AFF]"/>
+                    <h4 className="text-sm font-bold uppercase tracking-wider">Resumo do Pedido</h4>
+                 </div>
+                 <div className="space-y-2 text-sm text-gray-300">
+                    <div className="flex justify-between">
+                       <span>{selection.service.name}</span>
+                       <span>{formatCurrency(selection.service.basePrice)}</span>
+                    </div>
+                    {selection.upgrade && <div className="flex justify-between text-[#007AFF]"><span>+ Tempo Extra</span><span>{formatCurrency(selection.service.basePrice * 0.5)}</span></div>}
+                    {selection.useTable && <div className="flex justify-between text-[#007AFF]"><span>+ Maca</span><span>R$ 20,00</span></div>}
+                    {selection.aroma && <div className="flex justify-between text-[#007AFF]"><span>+ Aroma</span><span>{getAromaPrice()===0 ? 'GRÁTIS' : formatCurrency(getAromaPrice())}</span></div>}
+                    {selection.location?.fee > 0 && <div className="flex justify-between text-[#FFD700]"><span>+ Taxa Local ({selection.location.id === 'motel' ? 'Motel' : 'Uber'})</span><span>{formatCurrency(selection.location.fee)}</span></div>}
+                    {selection.coupon && <div className="flex justify-between text-green-500"><span>Desconto</span><span>-{formatCurrency(calculateTotals().discount)}</span></div>}
+                    <div className="border-t border-white/10 mt-3 pt-3 flex justify-between font-bold text-white text-lg">
+                       <span>TOTAL FINAL</span>
+                       <span>{formatCurrency(calculateTotals().totalWithCard)}</span>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        )}
+
+        {/* FOOTER TOTAL */}
         {step === 'configure' && selection.location && (
-          <div className="absolute bottom-0 w-full p-0 z-30">
-            <div className="h-10 bg-gradient-to-t from-[#000] to-transparent pointer-events-none"></div>
-            
-            <div className="bg-[#1C1C1E]/95 backdrop-blur-xl rounded-t-[32px] p-5 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
-              
-              {/* RESUMO INTELIGENTE NO TOPO DO BOTÃO */}
-              <div className="flex justify-between items-center mb-3 px-1">
-                  <div className="flex flex-col">
-                      <span className="text-[11px] text-gray-400 font-medium flex items-center gap-1">
-                          <Clock className="w-3 h-3"/> 60 Minutos
-                          {selection.paymentMethod && <span>• {selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'}</span>}
-                      </span>
-                  </div>
-                  <div className="text-right">
-                      <span className="text-[22px] font-bold text-white tracking-tight">{formatCurrency(calcFinalPrice())}</span>
-                      {selection.location.id === 'motel' && <p className="text-[9px] text-[#FFD60A] leading-none">+ Taxa Motel (Local)</p>}
-                      {selection.location.id === 'santa-fe' && <p className="text-[9px] text-gray-500 leading-none">Inclui Uber R$40</p>}
-                  </div>
+           <div className="fixed bottom-0 w-full max-w-[440px] bg-[#121212] border-t border-white/10 p-5 rounded-t-[30px] z-20 shadow-2xl">
+              <div className="flex justify-between items-end mb-4">
+                 <div>
+                    <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Total Cliente</p>
+                    <p className="text-3xl font-bold tracking-tighter text-white">{formatCurrency(calculateTotals().totalWithCard)}</p>
+                 </div>
+                 {selection.location.id === 'motel' && <span className="text-[10px] text-[#FFD700] bg-[#FFD700]/10 px-2 py-1 rounded font-bold">+ Taxa Motel Inclusa</span>}
+                 {selection.location.id === 'santa-fe' && <span className="text-[10px] text-gray-500 bg-white/5 px-2 py-1 rounded">Inclui Uber R$40</span>}
               </div>
-
-              <button 
-                disabled={!canFinalize} 
-                onClick={handleWhatsApp} 
-                className="w-full bg-[#0A84FF] hover:bg-[#007AFF] active:scale-[0.98] transition-all text-white font-bold py-4 rounded-[18px] shadow-[0_4px_20px_rgba(10,132,255,0.4)] flex justify-center items-center gap-2 text-[16px] disabled:opacity-50 disabled:shadow-none"
-              >
-                {canFinalize ? 'CONFIRMAR NO WHATSAPP' : 'Preencha tudo para continuar'} <MessageCircle className="w-5 h-5"/>
+              <button disabled={!selection.date || !selection.time || !selection.paymentMethod} onClick={handleWhatsApp} className="w-full h-14 ios-btn-primary rounded-xl font-bold text-lg flex items-center justify-center gap-2 disabled:opacity-50">
+                 Confirmar no WhatsApp <MessageCircle className="w-5 h-5"/>
               </button>
-            </div>
-          </div>
+           </div>
         )}
 
-        {/* TELA SUCESSO (COM PROGRESSO REAL E GAMIFICAÇÃO) */}
+        {/* SUCCESS SCREEN */}
         {step === 'success' && (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-            <div className="w-24 h-24 bg-[#30D158] rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(48,209,88,0.4)] animate-scale">
-                <Check className="w-12 h-12 text-white drop-shadow-md"/>
-            </div>
-            <h2 className="text-3xl font-bold text-white mb-2">Pedido Enviado!</h2>
-            <p className="text-gray-400 mb-8 text-[15px] leading-relaxed">Aguarde a confirmação no WhatsApp.</p>
+           <div className="flex-1 flex flex-col items-center justify-center p-8 animate-fade-in text-center">
+              <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(34,197,94,0.4)]"><Check className="w-10 h-10 text-white"/></div>
+              <h2 className="text-3xl font-bold mb-2">Pedido Enviado!</h2>
+              <p className="text-gray-400 mb-8">Aguarde a confirmação no WhatsApp.</p>
+              
+              <div className="bg-[#1C1C1E] p-5 rounded-2xl w-full border border-white/10 mb-4">
+                 <div className="flex justify-between text-xs font-bold text-gray-500 mb-2"><span>Nível Atual</span><span>Próximo</span></div>
+                 <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-2"><div className="h-full bg-[#007AFF]" style={{width: `${(loyalty.totalSpent/1800)*100}%`}}/></div>
+                 <p className="text-xs text-white">Falta pouco para o próximo benefício!</p>
+              </div>
 
-            {/* BARRA DE XP REAL (SINCRONIZADA COM A HOME) */}
-            <div className="w-full bg-[#1C1C1E] p-5 rounded-[22px] border border-white/10 mb-6 relative overflow-hidden">
-                <div className="flex justify-between text-[11px] font-bold uppercase text-gray-500 mb-2 relative z-10">
-                    <span>Nível {LEVELS.find(l => loyalty.totalSpent >= l.min).name}</span>
-                    <span>Próximo: {LEVELS.find(l => l.min > loyalty.totalSpent)?.name || 'Máximo'}</span>
-                </div>
-                
-                {/* CÁLCULO DE PROGRESSO EXATO */}
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-3 relative z-10">
-                    <div className="h-full bg-gradient-to-r from-[#0A84FF] to-[#30D158]" style={{
-                        width: `${(() => {
-                            const currentLvl = LEVELS.slice().reverse().find(l => loyalty.totalSpent >= l.min);
-                            const nextLvl = LEVELS.find(l => l.min > loyalty.totalSpent);
-                            if(!nextLvl) return 100;
-                            return Math.max(5, ((loyalty.totalSpent - currentLvl.min) / (nextLvl.min - currentLvl.min)) * 100);
-                        })()}%`
-                    }}></div>
-                </div>
-                
-                <p className="text-[12px] text-gray-300 relative z-10">
-                    Faltam <strong>{formatCurrency((LEVELS.find(l => l.min > loyalty.totalSpent)?.min || loyalty.totalSpent) - loyalty.totalSpent)}</strong> para ganhar novos benefícios.
-                </p>
-                
-                {/* Background Decorativo */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/10 blur-[30px] rounded-full"></div>
-            </div>
-
-            <button onClick={() => window.open(lastOrderLink, '_blank')} className="mb-4 w-full flex items-center justify-center gap-2 text-[15px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 py-3 rounded-xl border border-[#0A84FF]/20 hover:bg-[#0A84FF]/20 transition-colors">
-                <Send className="w-4 h-4"/> Reenviar Pedido
-            </button>
-
-            <button onClick={handleCopyPix} className="mb-6 w-full flex items-center justify-center gap-2 text-[15px] font-bold text-gray-300 bg-[#1C1C1E] py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-colors">
-                <Copy className="w-4 h-4"/> Copiar Chave Pix
-            </button>
-            
-            <button onClick={handleReset} className="w-full ios-btn py-4 rounded-[18px] text-white font-bold">Voltar ao Início</button>
-          </div>
+              <button onClick={() => window.open(lastOrderLink, '_blank')} className="w-full py-3 mb-3 text-[#007AFF] bg-[#007AFF]/10 rounded-xl font-bold text-sm">Reenviar Pedido</button>
+              <button onClick={() => {setStep('home'); setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });}} className="w-full py-3 bg-[#1C1C1E] rounded-xl text-white font-bold text-sm">Voltar ao Início</button>
+           </div>
         )}
 
-        {/* FAQ MODAL */}
+        {/* FAQ */}
         {showFaq && (
-          <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-5">
-            <div className="bg-[#1C1C1E] w-full max-w-sm rounded-[32px] p-8 border border-white/10 shadow-2xl animate-scale">
-              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3"><HelpCircle className="w-7 h-7 text-[#0A84FF]" /> Informações</h3>
-              <div className="space-y-5 text-[15px] text-gray-300 leading-relaxed">
-                <p>🚫 <strong>Conduta:</strong> Sem sexo, sem penetração, sem oral. Apenas massagem terapêutica. Um espaço seguro para relaxar sem julgamentos.</p>
-                <p>💰 <strong>Pagamento:</strong> Pix, Débito, Dinheiro ou Crédito.</p>
-                <p>📍 <strong>Locais:</strong> Atendo em domicílio ou motéis (suítes).</p>
-                <div className="pt-6 border-t border-white/10">
-                    <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="text-xs text-[#FF3B30] flex items-center gap-2"><Trash2 className="w-3.5 h-3.5"/> Resetar App</button>
-                </div>
-              </div>
-              <button onClick={() => setShowFaq(false)} className="mt-8 w-full bg-[#2C2C2E] text-white py-4 rounded-[18px] font-bold">Fechar</button>
-            </div>
-          </div>
+           <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl p-6 flex flex-col justify-center animate-fade-in">
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-2"><Shield className="w-6 h-6 text-[#007AFF]"/> Conduta</h3>
+              <ul className="space-y-4 text-sm text-gray-300 list-disc pl-5">
+                 <li>Sigilo Absoluto.</li>
+                 <li>Sem sexo/penetração.</li>
+                 <li>Pagamento Pix/Dinheiro/Cartão.</li>
+              </ul>
+              <button onClick={() => setShowFaq(false)} className="mt-8 py-4 bg-[#1C1C1E] rounded-xl font-bold">Fechar</button>
+           </div>
         )}
 
       </div>
-      )}
     </div>
   );
 }
