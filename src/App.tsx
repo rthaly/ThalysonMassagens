@@ -78,18 +78,19 @@ const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 // --- DADOS E CONFIGURAÇÕES ---
 const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
 
+// PREÇOS ATUALIZADOS CONFORME SOLICITADO
 const services = [
   { 
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
     description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
-    labelDuration: '60 min', minutes: 60, basePrice: 115, 
+    labelDuration: '60 min', minutes: 60, basePrice: 100, // R$ 100
     highlight: "🔥 A MAIS PEDIDA", ratings: 5.0, reviews: 310, 
     details: ["🔥 Relaxante + Body-to-Body", "🩲 Massagista de Cueca", "🍆 Lingam / Finalização Manual", "💦 Alívio Completo"] 
   },
   { 
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
     description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos e sem glúteos).', 
-    labelDuration: '60 min', minutes: 60, basePrice: 80, 
+    labelDuration: '60 min', minutes: 60, basePrice: 75, // R$ 75
     ratings: 4.9, reviews: 142, 
     details: ["💆‍♂️ Corpo Inteiro", "🚫 Sem Glúteos/Íntimo", "✋ Toque Terapêutico", "☮️ Relaxamento Puro"] 
   },
@@ -108,13 +109,16 @@ const locations = [
   { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: 0, allowsTableChoice: false, estimatedTravelTime: 'A combinar', input: true },
 ];
 
+// DICIONÁRIO DE CUPONS (Incluindo os de Nível)
 const SYSTEM_COUPONS = {
-  'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF' },
+  'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF (Primeira Vez)' },
   'MASCULINA': { code: 'MASCULINA', type: 'percent', value: 10, desc: '10% OFF Especial' },
   'VIP20': { code: 'VIP20', type: 'fixed', value: 20, desc: 'R$ 20,00 OFF' },
+  'NIVELPRATA': { code: 'NIVELPRATA', type: 'fixed', value: 15, desc: 'R$ 15,00 OFF (Prata)' },
+  'NIVELOURO': { code: 'NIVELOURO', type: 'fixed', value: 25, desc: 'R$ 25,00 OFF (Ouro)' },
+  'NIVELDIAMANTE': { code: 'NIVELDIAMANTE', type: 'fixed', value: 50, desc: 'R$ 50,00 OFF (Diamante)' },
 };
 
-// --- SISTEMA DE NÍVEIS COM 20 BENEFÍCIOS ---
 const LEVELS = [
   { 
     name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', 
@@ -122,15 +126,15 @@ const LEVELS = [
   },
   { 
     name: 'Prata', min: 400, rewardCode: 'NIVELPRATA', icon: '🥈', 
-    perks: ["Prioridade na Fila", "Cupom 10% OFF", "Aromaterapia (50% OFF)", "Sem taxa cancelamento (1x)"] 
+    perks: ["Cupom R$ 15 OFF (Ganhou!)", "Aromaterapia 50% OFF (Automático)", "Prioridade na Fila"] 
   },
   { 
     name: 'Ouro', min: 900, rewardCode: 'NIVELOURO', icon: '🥇', 
-    perks: ["Aromaterapia Grátis", "Agenda Noturna VIP", "Upgrade Tempo (Ocasional)", "Grupo Exclusivo"] 
+    perks: ["Cupom R$ 25 OFF (Ganhou!)", "Aromaterapia GRÁTIS (Automático)", "Agenda Noturna VIP"] 
   },
   { 
     name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', 
-    perks: ["Mimo Surpresa", "Prioridade Absoluta", "Atendimento Feriados", "Cashback em Créditos", "Concierge Pessoal"] 
+    perks: ["Cupom R$ 50 OFF (Ganhou!)", "Mimo Surpresa", "Prioridade Absoluta", "Concierge Pessoal"] 
   },
 ];
 
@@ -218,7 +222,6 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
         )}
       </div>
 
-      {/* Exibição dos Benefícios do Nível Atual */}
       <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 gap-2">
           {currentLevel.perks.slice(0, 4).map((perk, i) => (
               <div key={i} className="flex items-center gap-1.5 text-[10px] text-gray-400">
@@ -498,6 +501,18 @@ export default function App() {
       }
   };
 
+  // --- BENEFÍCIOS REAIS AUTOMÁTICOS ---
+  const getCurrentLevel = () => {
+      return [...LEVELS].reverse().find(l => loyalty.totalSpent >= l.min) || LEVELS[0];
+  };
+
+  const getAromaPrice = () => {
+      const level = getCurrentLevel().name;
+      if (level === 'Ouro' || level === 'Diamante') return 0; // Grátis
+      if (level === 'Prata') return 5; // 50% OFF
+      return 10; // Normal
+  };
+
   // Calculations
   const calcBaseTotal = () => {
     if (!selection.service) return 0;
@@ -507,7 +522,9 @@ export default function App() {
     if (selection.location?.fee) total += selection.location.fee; // 75 do motel é somado aqui
     if (selection.upgrade) total += selection.service.basePrice * 0.5;
     if (selection.useTable) total += 20;
-    if (selection.aroma) total += 10;
+    
+    // Aroma Dinâmico
+    if (selection.aroma) total += getAromaPrice();
     
     // Cupons
     if (selection.coupon) {
@@ -549,10 +566,14 @@ export default function App() {
         newInventory = newInventory.filter(c => c !== selection.coupon.code);
     }
 
-    // --- CHECK LEVEL UP ---
-    const nextLevel = LEVELS.find(l => newTotal >= l.min && oldTotal < l.min);
-    if(nextLevel && nextLevel.rewardCode && !newInventory.includes(nextLevel.rewardCode)) {
-        newInventory.push(nextLevel.rewardCode);
+    // --- CHECK LEVEL UP E GANHAR CUPOM ---
+    // Verifica se subiu de nível e adiciona o cupom daquele nível
+    const levelReached = [...LEVELS].reverse().find(l => newTotal >= l.min);
+    if(levelReached && levelReached.rewardCode) {
+        // Se ainda não tem no inventário, adiciona
+        if (!newInventory.includes(levelReached.rewardCode)) {
+            newInventory.push(levelReached.rewardCode);
+        }
     }
     
     // Loyalty Update
@@ -560,7 +581,7 @@ export default function App() {
       ...prev, 
       savedName: user.name || prev.savedName, 
       totalSpent: newTotal, 
-      totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0),
+      totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0) + (selection.aroma ? (10 - getAromaPrice()) : 0),
       inventory: newInventory 
     }));
 
@@ -592,7 +613,7 @@ export default function App() {
     if (selection.location?.fee && selection.location.id !== 'motel') grossBase += selection.location.fee; 
     if (selection.upgrade) grossBase += selection.service.basePrice * 0.5;
     if (selection.useTable) grossBase += 20;
-    if (selection.aroma) grossBase += 10;
+    if (selection.aroma) grossBase += getAromaPrice(); // Valor dinâmico
 
     let motelFee = 0;
     if (selection.location.id === 'motel') {
@@ -602,7 +623,7 @@ export default function App() {
     let serviceVal = selection.service.basePrice;
     if (selection.upgrade) serviceVal += (selection.service.basePrice * 0.5);
     if (selection.useTable) serviceVal += 20;
-    if (selection.aroma) serviceVal += 10;
+    if (selection.aroma) serviceVal += getAromaPrice();
     if (selection.location.fee && selection.location.id !== 'motel') serviceVal += selection.location.fee; 
 
     let discountVal = 0;
@@ -630,7 +651,7 @@ export default function App() {
 ⏱ Duração: ${finalDuration}
 📍 Local: ${selection.location.label}
 ${surfaceText ? surfaceText : ''}
-${selection.aroma ? '🌸 Com Aromaterapia' : ''}
+${selection.aroma ? `🌸 Com Aromaterapia (${getAromaPrice() === 0 ? 'Grátis VIP' : formatCurrency(getAromaPrice())})` : ''}
 
 💰 RESUMO FINANCEIRO:
 ➡️ Serviço Massagista: ${formatCurrency(serviceVal)}
@@ -800,7 +821,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
 
         {/* --- CONFIGURE --- */}
         {step === 'configure' && selection.service && (
-          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-64 animate-fade-in"> {/* PADDING BOTTOM AUMENTADO PARA NÃO CORTAR CONTEÚDO */}
+          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-64 animate-fade-in"> 
             <div className="ios-card p-5 rounded-[22px] mb-8 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-white text-[19px]">{selection.service.name}</h3>
@@ -879,8 +900,20 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
                 </button>
 
                 <button onClick={() => { triggerHaptic(); setSelection({...selection, aroma: !selection.aroma}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.aroma ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia 🌿</p><p className="text-[11px] text-gray-500">Cheiro suave que acalma a mente e o corpo</p></div>
-                  <span className="text-[#0A84FF] font-bold text-[15px]">+R$ 10,00</span>
+                  <div className="text-left">
+                      <p className="text-white font-bold text-[15px]">Aromaterapia 🌿</p>
+                      <p className="text-[11px] text-gray-500">Cheiro suave que acalma</p>
+                  </div>
+                  <div className="text-right">
+                      {getAromaPrice() < 10 ? (
+                          <>
+                            <span className="text-gray-500 line-through text-[11px] mr-2">R$ 10,00</span>
+                            <span className="text-[#30D158] font-bold text-[15px]">{getAromaPrice() === 0 ? 'GRÁTIS' : `+${formatCurrency(getAromaPrice())}`}</span>
+                          </>
+                      ) : (
+                          <span className="text-[#0A84FF] font-bold text-[15px]">+R$ 10,00</span>
+                      )}
+                  </div>
                 </button>
               </div>
 
