@@ -143,7 +143,7 @@ const locations = [
     allowsTableChoice: false, 
     estimatedTravelTime: 'A combinar', 
     input: true,
-    isPending: true // Flag para identificar pendência
+    isPending: true 
   },
 ];
 
@@ -432,7 +432,7 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v21'); 
+    const saved = localStorage.getItem('thaly_system_v22'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
@@ -454,7 +454,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v21', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v22', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -487,12 +487,6 @@ export default function App() {
     }
   };
 
-  // --- CRASH FIX: FUNÇÃO DEFINIDA AQUI (IMPORTANTE) ---
-  const handleReset = () => {
-    setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
-    setStep('home');
-  };
-
   const handleCopyPix = () => { navigator.clipboard.writeText("62922530000144"); alert("CNPJ Pix Copiado!"); }; 
   const handlePanic = () => { window.location.href = "https://google.com"; };
   const handleShare = () => { if(navigator.share) navigator.share({title:'Thalyson Massagens', text:'Massagens Relaxantes em Santa Fé do Sul', url: window.location.href}); };
@@ -504,6 +498,19 @@ export default function App() {
       } else {
           alert('Este cupom já está na sua carteira!');
       }
+  };
+
+  // --- FUNÇÃO DE LOGOUT REAL ---
+  const handleLogout = () => {
+      if(window.confirm("Deseja realmente sair e limpar seus dados?")) {
+          localStorage.clear();
+          window.location.reload();
+      }
+  };
+
+  const handleReset = () => {
+    setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
+    setStep('home');
   };
 
   // --- LOGICA DE PREÇOS ---
@@ -521,18 +528,11 @@ export default function App() {
   const calcBaseTotal = () => {
     if (!selection.service) return 0;
     let total = selection.service.basePrice;
-    
-    // Adicionais
     if (selection.upgrade) total += selection.service.basePrice * 0.5;
     if (selection.useTable) total += 20;
     if (selection.aroma) total += getAromaPrice();
+    if (selection.location?.fee) total += selection.location.fee;
     
-    // Taxa adicionada ao total VISUAL
-    if (selection.location?.fee) {
-        total += selection.location.fee;
-    }
-    
-    // Cupons
     if (selection.coupon) {
       let discountableAmount = total - (selection.location?.fee || 0); 
       let discountValue = 0;
@@ -564,46 +564,51 @@ export default function App() {
       return;
     }
 
-    // --- CÁLCULO SEGURO ---
-    let grossService = selection.service.basePrice;
+    // --- 1. CÁLCULO DO SERVIÇO PARA FIDELIDADE (E LÍQUIDO) ---
+    // Soma: Base + Upgrade + Maca + Aroma (Sem taxas de terceiros)
+    let serviceValueForLoyalty = selection.service.basePrice;
     let extrasText = "";
     
     if (selection.upgrade) { 
-        grossService += selection.service.basePrice * 0.5; 
-        extrasText += "\n➕ +30 Minutos (Upgrade)"; 
+        const upgradePrice = selection.service.basePrice * 0.5;
+        serviceValueForLoyalty += upgradePrice; 
+        extrasText += `\n➕ +30 Minutos (+${formatCurrency(upgradePrice)})`; 
     }
     if (selection.useTable) { 
-        grossService += 20; 
-        extrasText += "\n➕ Maca Portátil (+R$20)"; 
+        serviceValueForLoyalty += 20; 
+        extrasText += "\n➕ Maca Portátil (+R$ 20,00)"; 
     }
     
     let aromaPrice = 0;
     let aromaText = "";
     if (selection.aroma) {
         aromaPrice = getAromaPrice();
-        grossService += aromaPrice;
+        serviceValueForLoyalty += aromaPrice;
         aromaText = `\n➕ Aromaterapia (${aromaPrice === 0 ? 'GRÁTIS VIP' : `+${formatCurrency(aromaPrice)}`})`;
     }
 
+    // --- 2. TAXAS DE TERCEIROS ---
     let feeVal = selection.location.fee || 0;
     let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
-    
     if(selection.location.isPending) {
         feeType = "Taxa Deslocamento (A Combinar)";
         feeVal = 0; 
     }
 
+    // --- 3. DESCONTOS ---
     let discountVal = 0;
     if (selection.coupon) {
-      let baseForDiscount = grossService; 
       if (selection.coupon.type === 'percent') {
-          discountVal = baseForDiscount * (selection.coupon.value / 100);
+          discountVal = serviceValueForLoyalty * (selection.coupon.value / 100);
       } else {
           discountVal = selection.coupon.value;
       }
     }
 
-    const baseTotal = grossService + feeVal - discountVal;
+    // --- 4. TOTAIS ---
+    // Base Total = (Serviço Completo + Taxas) - Desconto
+    const baseTotal = serviceValueForLoyalty + feeVal - discountVal;
+    
     let finalPrice = baseTotal;
     if (selection.paymentMethod === 'credit_card') {
        const rate = CARD_RATES[selection.installments] || 0;
@@ -618,11 +623,11 @@ export default function App() {
         newInventory = newInventory.filter(c => c !== selection.coupon.code);
     }
 
-    // Atualiza Nível e Notificações
+    // Atualiza Nível (Soma apenas o valor do serviço/produtos, não taxas de terceiros)
     const oldTotal = loyalty.totalSpent || 0;
-    const newTotal = oldTotal + selection.service.basePrice; 
-    let newNotifications = [...loyalty.notifications];
+    const newTotal = oldTotal + serviceValueForLoyalty; 
     
+    let newNotifications = [...loyalty.notifications];
     newNotifications.unshift({
         id: Date.now(),
         title: 'Agendamento Confirmado',
@@ -669,14 +674,13 @@ export default function App() {
     const isToday = selection.date.getDate() === new Date().getDate();
     const dateStr = `${selection.date.toLocaleDateString('pt-BR')}${isToday ? ' (HOJE)' : ''}`;
     
-    // --- LÓGICA DA LOCALIZAÇÃO ---
     let locationString = selection.location.label;
     if(selection.location.isMotel) locationString += " (Vou com você)";
     if(selection.location.id === 'outras-cidades' && selection.city) locationString += ` (${selection.city})`;
 
-    // --- CORREÇÃO DO LÍQUIDO ---
-    const expenses = feeVal; 
-    const netMasseur = baseTotal - expenses;
+    // --- CÁLCULO LÍQUIDO (Corrigido para bater com os extras) ---
+    // Líquido = (Serviço + Extras) - Descontos. (Ignora taxas de terceiros pois entram e saem)
+    const netMasseur = serviceValueForLoyalty - discountVal;
 
     let msg = `*NOVO PEDIDO: #${bookingId}*
 👤 ${user.name} (Liberado p/ Massagem)
@@ -685,7 +689,7 @@ export default function App() {
 📍 ${locationString}
 
 *DETALHES:*
-• Serviço Base: ${formatCurrency(grossService)}${extrasText}${aromaText}
+• Serviço Base: ${formatCurrency(selection.service.basePrice)}${extrasText}${aromaText}
 ${selection.location.isPending ? `• ${feeType}` : (feeVal > 0 ? `• ${feeType}: ${formatCurrency(feeVal)}` : '')}
 ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(discountVal)}` : ''}
 
@@ -693,7 +697,7 @@ ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(
 (Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
 
 ------------------------------
-💸 *Massagista recebe: ${formatCurrency(netMasseur)}*
+💸 *LÍQUIDO (Seu Lucro): ${formatCurrency(netMasseur)}*
 ------------------------------
 
 🎵 Vibe: ${selection.music}
@@ -723,7 +727,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
     const totalVisual = grossService + fee - discount;
 
     return (
-        <div className="mt-8 mx-2 mb-64 bg-white text-black rounded-[10px] p-6 font-mono text-sm shadow-2xl relative animate-slide-up transform rotate-1">
+        <div className="mt-8 mx-2 mb-32 bg-white text-black rounded-[10px] p-6 font-mono text-sm shadow-2xl relative animate-slide-up transform rotate-1">
             <div className="absolute top-0 left-0 right-0 h-4 bg-white" style={{background: 'linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%), linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%)', backgroundSize: '12px 20px', backgroundPosition: '0 -10px'}}></div>
             
             <div className="text-center mb-6 border-b border-dashed border-gray-300 pb-4 mt-2">
@@ -740,7 +744,6 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                 {selection.useTable && <div className="flex justify-between text-gray-600 text-xs"><span>+ Maca Portátil</span><span>R$ 20,00</span></div>}
                 {selection.aroma && <div className="flex justify-between text-gray-600 text-xs"><span>+ Aromaterapia (Vip)</span><span>{getAromaPrice() === 0 ? 'GRÁTIS' : formatCurrency(getAromaPrice())}</span></div>}
                 
-                {/* Lógica de Taxa Pendente */}
                 {selection.location.isPending ? (
                     <div className="flex justify-between text-blue-600 font-bold border-t border-dashed border-gray-200 pt-2 mt-2">
                         <span>Taxa Deslocamento</span>
@@ -785,7 +788,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
       return (
           <div className="absolute top-16 right-6 w-52 bg-[#1C1C1E] border border-white/10 rounded-2xl shadow-2xl z-[60] flex flex-col overflow-hidden animate-slide-up origin-top-right">
               <button onClick={() => { setShowFaq(true); setShowMenu(false); }} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
-                  <HelpCircle className="w-4 h-4 text-gray-400"/> Informações
+                  <HelpCircle className="w-4 h-4 text-gray-400"/> Ajuda / Conduta
               </button>
               <a href="https://instagram.com/thalymassagens" target="_blank" onClick={() => setShowMenu(false)} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
                   <Instagram className="w-4 h-4 text-[#E1306C]"/> Instagram
@@ -793,8 +796,8 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
               <button onClick={() => { handleShare(); setShowMenu(false); }} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
                   <Share2 className="w-4 h-4 text-gray-400"/> Compartilhar
               </button>
-              <button onClick={() => { handleReset(); }} className="px-4 py-4 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3 active:bg-red-500/20">
-                  <LogOut className="w-4 h-4"/> Sair 
+              <button onClick={() => { handleLogout(); }} className="px-4 py-4 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3 active:bg-red-500/20">
+                  <LogOut className="w-4 h-4"/> Sair
               </button>
           </div>
       )
@@ -1093,7 +1096,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                 <div><h4 className="font-bold text-white mb-1 flex items-center gap-2"><MapPin className="w-4 h-4 text-gray-400"/> Locais</h4><p className="text-sm">Atendimento em Suítes (Motel), Domicílio (Santa Fé) ou Cidades Vizinhas (a combinar).</p></div>
                 <div><h4 className="font-bold text-white mb-1 flex items-center gap-2"><Tag className="w-4 h-4 text-gray-400"/> Cupons & Descontos</h4><p className="text-sm">Cupons são de uso único. Descontos de nível (Aromaterapia) são aplicados automaticamente.</p></div>
                 <div className="pt-6 border-t border-white/10">
-                    <p className="text-xs text-gray-500 mb-3">⚠️APP em fase BETA. ⚠️Atenção: Limpar dados apagará seu progresso e nível.</p>
+                    <p className="text-xs text-gray-500 mb-3">⚠️ Atenção: Limpar dados apagará seu progresso e nível.</p>
                     <button onClick={() => { if(window.confirm("Tem certeza? Você perderá todo o seu progresso e nível VIP.")) { localStorage.clear(); window.location.reload(); }}} className="w-full py-3 rounded-xl bg-red-500/10 text-red-500 text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-500/20 transition-colors"><Trash2 className="w-4 h-4"/> Limpar Dados do App</button>
                 </div>
               </div>
