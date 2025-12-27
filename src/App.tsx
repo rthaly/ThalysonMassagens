@@ -453,13 +453,14 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v12'); 
+    const saved = localStorage.getItem('thaly_system_v13'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
   const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
   const [selection, setSelection] = useState({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
   const [showFaq, setShowFaq] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(true); 
   const [greeting, setGreeting] = useState("");
   const [weatherHint, setWeatherHint] = useState("");
@@ -474,7 +475,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v12', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v13', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -596,20 +597,40 @@ export default function App() {
 
     // --- CHECK LEVEL UP E NOTIFICAÇÕES ---
     let newNotifications = [...loyalty.notifications];
+    
+    // Notificação de Agendamento
+    newNotifications.unshift({
+        id: Date.now(),
+        title: 'Agendamento Confirmado ✅',
+        message: `Sua sessão para ${selection.date.toLocaleDateString('pt-BR')} foi confirmada.`,
+        read: false,
+        timestamp: Date.now(),
+        icon: 'calendar'
+    });
+
     const levelReached = [...LEVELS].reverse().find(l => newTotal >= l.min);
     const oldLevel = [...LEVELS].reverse().find(l => oldTotal >= l.min);
 
     if(levelReached && levelReached.name !== oldLevel?.name) {
        // Subiu de nível
        newNotifications.unshift({
-           id: Date.now(),
+           id: Date.now() + 1,
            title: '🎉 Nível VIP Alcançado!',
            message: `Você chegou no ${levelReached.name} e ganhou novos benefícios!`,
            read: false,
-           timestamp: Date.now()
+           timestamp: Date.now(),
+           icon: 'level'
        });
        if(levelReached.rewardCode && !newInventory.includes(levelReached.rewardCode)) {
            newInventory.push(levelReached.rewardCode);
+           newNotifications.unshift({
+               id: Date.now() + 2,
+               title: '🎁 Ganhou Cupom!',
+               message: `O cupom ${levelReached.rewardCode} foi adicionado à sua carteira.`,
+               read: false,
+               timestamp: Date.now(),
+               icon: 'coupon'
+           });
        }
     }
 
@@ -652,7 +673,7 @@ export default function App() {
     }
 
     let msg = `*NOVO PEDIDO: #${bookingId}*
-👤 ${user.name}
+👤 ${user.name} (Liberado p/ Massagem)
 📅 ${dateStr} às ${selection.time}
 💆 ${selection.service.name}
 📍 ${selection.location.label} ${selection.location.isMotel ? '(Vou com você)' : ''}
@@ -784,6 +805,15 @@ Aguardo confirmação para relaxar.`;
               <div className="flex justify-between items-center mb-4">
                   <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">{new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric'})}</span>
                   <div className="flex items-center gap-3">
+                      {/* ÍCONE DE NOTIFICAÇÕES REAL */}
+                      <button onClick={() => setShowNotifications(true)} className="relative w-8 h-8 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400">
+                          <Bell className="w-4 h-4"/>
+                          {loyalty.notifications.filter(n => !n.read).length > 0 && (
+                              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-[8px] font-bold flex items-center justify-center text-white">
+                                  {loyalty.notifications.filter(n => !n.read).length}
+                              </span>
+                          )}
+                      </button>
                       <button onClick={handlePanic} className="w-8 h-8 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400"><LogOut className="w-4 h-4"/></button>
                   </div>
               </div>
@@ -796,18 +826,19 @@ Aguardo confirmação para relaxar.`;
             <LiveStatus />
 
             <div className="flex gap-2 mb-8 overflow-x-auto scrollbar-hide pb-2">
-               <button onClick={() => setShowFaq(true)} className="flex-shrink-0 bg-[#1C1C1E] border border-white/10 px-5 py-3 rounded-xl flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-gray-400"/> <span className="text-[12px] font-bold text-gray-300">Conduta</span>
+               {/* BOTÕES UNIFORMIZADOS IGUAL AO DE FUGA */}
+               <button onClick={() => setShowFaq(true)} className="w-12 h-12 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400 active:bg-white/10 transition-all group">
+                  <HelpCircle className="w-5 h-5 group-hover:text-white transition-colors"/>
                </button>
-               <button onClick={handleShare} className="flex-shrink-0 bg-[#1C1C1E] border border-white/10 px-5 py-3 rounded-xl flex items-center gap-2">
-                  <Share2 className="w-4 h-4 text-gray-400"/> <span className="text-[12px] font-bold text-gray-300">Compartilhar</span>
+               <button onClick={handleShare} className="w-12 h-12 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400 active:bg-white/10 transition-all group">
+                  <Share2 className="w-5 h-5 group-hover:text-white transition-colors"/>
                </button>
-               <a href="https://instagram.com/thalymassagens" target="_blank" className="flex-shrink-0 bg-[#1C1C1E] border border-white/10 px-5 py-3 rounded-xl flex items-center gap-2">
-                  <Instagram className="w-4 h-4 text-[#E1306C]"/> <span className="text-[12px] font-bold text-gray-300">Instagram</span>
+               <a href="https://instagram.com/thalymassagens" target="_blank" className="w-12 h-12 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-[#E1306C] active:bg-white/10 transition-all group">
+                  <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform"/>
                </a>
             </div>
 
-            <div className="mb-3 px-1 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Avaliações (+18)</div>
+            <div className="mb-3 px-1 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Resumo das Sessões</div>
             <ReviewsCarousel />
             
             {/* CTA FLUTUANTE NO FINAL DA ROLAGEM */}
@@ -819,9 +850,21 @@ Aguardo confirmação para relaxar.`;
           </div>
         )}
 
-        {/* --- IDENTITY --- */}
+        {/* --- IDENTITY (TELA 02) --- */}
         {step === 'identity' && (
           <div className="flex-1 p-6 pt-32 animate-fade-in flex flex-col h-full">
+            
+            {/* RESUMO DO SERVIÇO SELECIONADO */}
+            {selection.service && (
+                <div className="mb-8 ios-card p-4 rounded-[20px] flex items-center justify-between border-l-2 border-l-[#0A84FF]">
+                  <div>
+                    <h3 className="font-bold text-white text-[15px]">{selection.service.name}</h3>
+                    <p className="text-[11px] text-gray-400 mt-0.5">{selection.service.labelDuration}</p>
+                  </div>
+                  <span className="text-[15px] font-bold text-[#0A84FF]">{formatCurrency(selection.service.basePrice)}</span>
+                </div>
+            )}
+
             <h2 className="text-3xl font-bold text-white mb-2">Quem é você?</h2>
             <p className="text-gray-400 text-[15px] mb-8">Para manter a segurança e exclusividade.</p>
             
@@ -839,7 +882,8 @@ Aguardo confirmação para relaxar.`;
                 
                 <button onClick={() => { triggerHaptic(); setUser({...user, isMassagemOk: !user.isMassagemOk}); }} className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
                   <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isMassagemOk ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-600'}`}>{user.isMassagemOk && <Check className="w-3.5 h-3.5 text-white" />}</div>
-                  <span className={`text-[16px] font-medium ${user.isMassagemOk ? 'text-white' : 'text-gray-400'}`}>Concordo com a conduta</span>
+                  {/* ALTERAÇÃO DO TEXTO DO BOTÃO */}
+                  <span className={`text-[16px] font-medium ${user.isMassagemOk ? 'text-white' : 'text-gray-400'}`}>Liberado para massagem</span>
                 </button>
               </div>
 
@@ -1076,19 +1120,62 @@ Aguardo confirmação para relaxar.`;
           </div>
         )}
 
-        {/* FAQ MODAL */}
+        {/* FAQ MODAL (AGORA "AJUDA") */}
         {showFaq && (
           <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-xl flex items-center justify-center p-5">
             <div className="bg-[#1C1C1E] w-full max-w-sm rounded-[32px] p-8 border border-white/10 shadow-2xl animate-scale">
-              <h3 className="text-2xl font-bold text-white mb-6">Informações</h3>
+              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2"><HelpCircle className="w-6 h-6 text-[#0A84FF]"/> Ajuda & Informações</h3>
               <div className="space-y-5 text-[15px] text-gray-300 leading-relaxed">
-                <p>🚫 <strong>Conduta:</strong> Apenas massagem terapêutica. Sem sexo, sem oral. Respeito acima de tudo.</p>
-                <p>💰 <strong>Pagamento:</strong> Aceito todas as formas de pagamento informadas.</p>
+                <div>
+                    <h4 className="font-bold text-white mb-1 flex items-center gap-2"><Shield className="w-4 h-4 text-gray-400"/> Conduta</h4>
+                    <p className="text-sm">Apenas massagem terapêutica e relaxante. Sem sexo, sem oral. Respeito acima de tudo.</p>
+                </div>
+                <div>
+                    <h4 className="font-bold text-white mb-1 flex items-center gap-2"><MapPin className="w-4 h-4 text-gray-400"/> Locais</h4>
+                    <p className="text-sm">Atendimento em Suítes (Motel), Domicílio (Santa Fé) ou Cidades Vizinhas (a combinar).</p>
+                </div>
+                <div>
+                    <h4 className="font-bold text-white mb-1 flex items-center gap-2"><Tag className="w-4 h-4 text-gray-400"/> Cupons & Descontos</h4>
+                    <p className="text-sm">Cupons são de uso único. Descontos de nível (Aromaterapia) são aplicados automaticamente.</p>
+                </div>
+                
                 <div className="pt-6 border-t border-white/10">
-                    <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="text-xs text-[#FF3B30] flex items-center gap-2"><Trash2 className="w-3.5 h-3.5"/> Resetar App</button>
+                    <p className="text-xs text-gray-500 mb-3">⚠️ Atenção: Limpar dados apagará seu progresso e nível.</p>
+                    <button onClick={() => { if(window.confirm("Tem certeza? Você perderá todo o seu progresso e nível VIP.")) { localStorage.clear(); window.location.reload(); }}} className="w-full py-3 rounded-xl bg-red-500/10 text-red-500 text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-500/20 transition-colors"><Trash2 className="w-4 h-4"/> Limpar Dados do App</button>
                 </div>
               </div>
-              <button onClick={() => setShowFaq(false)} className="mt-8 w-full bg-[#3A3A3C] text-white py-4 rounded-[18px] font-bold">Fechar</button>
+              <button onClick={() => setShowFaq(false)} className="mt-6 w-full bg-[#3A3A3C] text-white py-4 rounded-[18px] font-bold hover:bg-[#4A4A4C] transition-colors">Fechar</button>
+            </div>
+          </div>
+        )}
+
+        {/* NOTIFICATIONS MODAL (NOVO) */}
+        {showNotifications && (
+          <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-xl flex items-end sm:items-center justify-center p-0 sm:p-5" onClick={() => setShowNotifications(false)}>
+            <div className="bg-[#1C1C1E] w-full sm:max-w-sm rounded-t-[32px] sm:rounded-[32px] p-6 border-t sm:border border-white/10 shadow-2xl animate-slide-up h-[70vh] sm:h-auto flex flex-col" onClick={e => e.stopPropagation()}>
+              <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-2xl font-bold text-white flex items-center gap-2"><Bell className="w-6 h-6 text-[#0A84FF]"/> Notificações</h3>
+                  <button onClick={() => { setLoyalty(p => ({...p, notifications: p.notifications.map(n => ({...n, read: true}))})); setShowNotifications(false); }} className="p-2 bg-white/5 rounded-full text-gray-400 hover:text-white transition-colors"><X className="w-5 h-5"/></button>
+              </div>
+              
+              <div className="space-y-3 overflow-y-auto flex-1 scrollbar-hide">
+                {loyalty.notifications.length === 0 ? (
+                    <div className="text-center text-gray-500 py-10">Nenhuma notificação.</div>
+                ) : (
+                    loyalty.notifications.map(n => (
+                        <div key={n.id} className={`p-4 rounded-[20px] border ${n.read ? 'bg-white/5 border-transparent' : 'bg-[#0A84FF]/10 border-[#0A84FF]/30'} flex items-start gap-3`}>
+                            <div className={`p-2 rounded-full ${n.read ? 'bg-white/10 text-gray-400' : 'bg-[#0A84FF]/20 text-[#0A84FF]'}`}>
+                                {n.icon === 'calendar' ? <Calendar className="w-4 h-4"/> : n.icon === 'level' ? <Crown className="w-4 h-4"/> : n.icon === 'coupon' ? <Tag className="w-4 h-4"/> : <Bell className="w-4 h-4"/>}
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-white text-[15px] mb-1">{n.title}</h4>
+                                <p className="text-[13px] text-gray-300 leading-snug">{n.message}</p>
+                                <span className="text-[10px] text-gray-500 mt-2 block">{new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            </div>
+                        </div>
+                    ))
+                )}
+              </div>
             </div>
           </div>
         )}
