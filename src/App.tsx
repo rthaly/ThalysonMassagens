@@ -112,7 +112,6 @@ const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 // 2. BANCO DE DADOS 
 // ==================================================================================
 
-// Taxas da Maquininha 
 const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
 
 const services = [
@@ -458,7 +457,7 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v15'); 
+    const saved = localStorage.getItem('thaly_system_v16'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
@@ -480,7 +479,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v15', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v16', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -555,7 +554,7 @@ export default function App() {
     
     // Cupons
     if (selection.coupon) {
-      let discountableAmount = total - (selection.location?.fee || 0); // Desconto não aplica na taxa de terceiros
+      let discountableAmount = total - (selection.location?.fee || 0); 
       let discountValue = 0;
       if (selection.coupon.type === 'percent') discountValue = (discountableAmount * selection.coupon.value / 100);
       else discountValue = selection.coupon.value;
@@ -579,105 +578,6 @@ export default function App() {
     triggerHaptic();
     if (!canFinalize) return;
     
-    // Verificar cupom na hora do envio
-    if (selection.coupon && !loyalty.inventory.includes(selection.coupon.code)) {
-      alert("Cupom inválido ou expirado.");
-      setSelection(prev => ({ ...prev, coupon: null }));
-      return;
-    }
-
-    const finalPrice = calcFinalPrice();
-    const oldTotal = loyalty.totalSpent;
-    const newTotal = oldTotal + selection.service.basePrice; 
-    const bookingId = generateBookingId(); 
-
-    // --- CONSUMIR CUPOM (Remover do inventário) ---
-    let newInventory = [...loyalty.inventory];
-    if (selection.coupon) {
-        newInventory = newInventory.filter(c => c !== selection.coupon.code);
-    }
-
-    // --- CHECK LEVEL UP E NOTIFICAÇÕES ---
-    let newNotifications = [...loyalty.notifications];
-    
-    // Notificação de Agendamento
-    newNotifications.unshift({
-        id: Date.now(),
-        title: 'Agendamento Confirmado',
-        message: `Sua sessão para ${selection.date.toLocaleDateString('pt-BR')} foi confirmada.`,
-        read: false,
-        timestamp: Date.now(),
-        icon: 'calendar'
-    });
-
-    const levelReached = [...LEVELS].reverse().find(l => newTotal >= l.min);
-    const oldLevel = [...LEVELS].reverse().find(l => oldTotal >= l.min);
-
-    if(levelReached && levelReached.name !== oldLevel?.name) {
-       // Subiu de nível
-       newNotifications.unshift({
-           id: Date.now() + 1,
-           title: 'Nível VIP Alcançado!',
-           message: `Você chegou no ${levelReached.name} e ganhou novos benefícios!`,
-           read: false,
-           timestamp: Date.now(),
-           icon: 'level'
-       });
-       if(levelReached.rewardCode && !newInventory.includes(levelReached.rewardCode)) {
-           newInventory.push(levelReached.rewardCode);
-           newNotifications.unshift({
-               id: Date.now() + 2,
-               title: 'Ganhou Cupom!',
-               message: `O cupom ${levelReached.rewardCode} foi adicionado à sua carteira.`,
-               read: false,
-               timestamp: Date.now(),
-               icon: 'coupon'
-           });
-       }
-    }
-
-    // Loyalty Update
-    setLoyalty(prev => ({ 
-      ...prev, 
-      savedName: user.name || prev.savedName, 
-      totalSpent: newTotal, 
-      totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0),
-      inventory: newInventory,
-      notifications: newNotifications
-    }));
-
-    const isToday = selection.date.getDate() === new Date().getDate();
-    const dateStr = `${selection.date.toLocaleDateString('pt-BR')}${isToday ? ' (HOJE)' : ''}`;
-    
-    // Msg Generator - FINANCEIRO DETALHADO
-    let grossService = selection.service.basePrice;
-    let extrasText = "";
-    if (selection.upgrade) { grossService += selection.service.basePrice * 0.5; extrasText += "\n➕ +30 Minutos (Upgrade)"; }
-    if (selection.useTable) { grossService += 20; extrasText += "\n➕ Maca Portátil (+R$20)"; }
-    
-    let aromaText = "";
-    if (selection.aroma) {
-        const p = getAromaPrice();
-        grossService += p;
-        aromaText = `\n➕ Aromaterapia (${p === 0 ? 'GRÁTIS VIP' : `+${formatCurrency(p)}`})`;
-    }
-
-    let feeVal = selection.location.fee || 0;
-    let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
-
-    let discountVal = 0;
-    if (selection.coupon) {
-      let baseForDisc = grossService - (selection.aroma ? getAromaPrice() : 0); 
-      if(selection.upgrade) baseForDisc -= (selection.service.basePrice * 0.5); 
-      if (selection.coupon.type === 'percent') discountVal = (selection.service.basePrice) * (selection.coupon.value / 100);
-      else discountVal = selection.coupon.value;
-    }
-
- const handleWhatsApp = () => {
-    triggerHaptic();
-    if (!canFinalize) return;
-    
-    // Verificar cupom
     if (selection.coupon && !loyalty.inventory.includes(selection.coupon.code)) {
       alert("Cupom inválido ou expirado.");
       setSelection(prev => ({ ...prev, coupon: null }));
@@ -705,15 +605,14 @@ export default function App() {
         aromaText = `\n➕ Aromaterapia (${aromaPrice === 0 ? 'GRÁTIS VIP' : `+${formatCurrency(aromaPrice)}`})`;
     }
 
-    // --- 2. TAXAS DE TERCEIROS (NÃO FICA COM VOCÊ) ---
-    // (Motel R$75 ou Uber R$40)
+    // --- 2. TAXAS DE TERCEIROS ---
     let feeVal = selection.location.fee || 0;
     let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
 
     // --- 3. DESCONTOS ---
     let discountVal = 0;
     if (selection.coupon) {
-      let baseForDiscount = grossService; // Desconto aplica só no serviço
+      let baseForDiscount = grossService; 
       if (selection.coupon.type === 'percent') {
           discountVal = baseForDiscount * (selection.coupon.value / 100);
       } else {
@@ -722,10 +621,8 @@ export default function App() {
     }
 
     // --- 4. TOTAIS ---
-    // Valor Base (Sem juros da máquina) = Serviço + Taxas Terceiros - Desconto
     const baseTotal = grossService + feeVal - discountVal;
     
-    // Valor Final (Com juros se for cartão)
     let finalPrice = baseTotal;
     if (selection.paymentMethod === 'credit_card') {
        const rate = CARD_RATES[selection.installments] || 0;
@@ -734,7 +631,6 @@ export default function App() {
 
     const bookingId = generateBookingId(); 
 
-    // Atualiza Inventário e Notificações (mantido igual)
     let newInventory = [...loyalty.inventory];
     if (selection.coupon) {
         newInventory = newInventory.filter(c => c !== selection.coupon.code);
@@ -790,9 +686,12 @@ export default function App() {
     const isToday = selection.date.getDate() === new Date().getDate();
     const dateStr = `${selection.date.toLocaleDateString('pt-BR')}${isToday ? ' (HOJE)' : ''}`;
     
+    // --- LÓGICA DA LOCALIZAÇÃO NA MENSAGEM ---
+    let locationString = selection.location.label;
+    if(selection.location.isMotel) locationString += " (Vou com você)";
+    if(selection.location.id === 'outras-cidades' && selection.city) locationString += ` (${selection.city})`;
+
     // --- CORREÇÃO DO LÍQUIDO ---
-    // Agora subtrai QUALQUER taxa de local (Uber ou Motel) do valor base.
-    // Líquido = (Total s/ Juros) - (Taxa Local)
     const expenses = feeVal; 
     const netMasseur = baseTotal - expenses;
 
@@ -800,7 +699,7 @@ export default function App() {
 👤 ${user.name} (Liberado p/ Massagem)
 📅 ${dateStr} às ${selection.time}
 💆 ${selection.service.name} ${selection.upgrade ? '*(+30 MIN UPGRADE)*' : ''}
-📍 ${selection.location.label}
+📍 ${locationString}
 
 *DETALHES:*
 • Serviço Base: ${formatCurrency(selection.service.basePrice)}${extrasText}${aromaText}
@@ -840,7 +739,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
     const total = subtotal + fee - discount;
 
     return (
-        <div className="mt-8 mx-2 mb-48 bg-white text-black rounded-[10px] p-6 font-mono text-sm shadow-2xl relative animate-slide-up transform rotate-1">
+        <div className="mt-8 mx-2 mb-64 bg-white text-black rounded-[10px] p-6 font-mono text-sm shadow-2xl relative animate-slide-up transform rotate-1">
             <div className="absolute top-0 left-0 right-0 h-4 bg-white" style={{background: 'linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%), linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%)', backgroundSize: '12px 20px', backgroundPosition: '0 -10px'}}></div>
             
             <div className="text-center mb-6 border-b border-dashed border-gray-300 pb-4 mt-2">
@@ -950,7 +849,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
           <div className="flex-1 p-6 overflow-y-auto pb-32 pt-24" ref={homeRef}>
             {/* TOPO: TÍTULO */}
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-white tracking-tight leading-tight mb-2">Massagens relaxantes<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA]">Em Santa Fé do Sul e Região.</span></h1>
+              <h1 className="text-4xl font-bold text-white tracking-tight leading-tight mb-2">Hora de<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA]">Relaxar.</span></h1>
               <p className="text-gray-400 text-[15px]">{weatherHint}</p>
             </div>
 
