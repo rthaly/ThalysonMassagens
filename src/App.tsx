@@ -139,7 +139,7 @@ const locations = [
     id: 'outras-cidades', 
     label: 'Cidades Vizinhas', 
     sublabel: 'Atendimento na região', 
-    fee: 0, // Fee 0 simboliza "A Combinar" na lógica visual
+    fee: 0, 
     allowsTableChoice: false, 
     estimatedTravelTime: 'A combinar', 
     input: true,
@@ -432,7 +432,7 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v20'); 
+    const saved = localStorage.getItem('thaly_system_v21'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
@@ -454,7 +454,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v20', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v21', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -487,7 +487,7 @@ export default function App() {
     }
   };
 
-  // --- CRASH FIX: FUNÇÃO DEFINIDA AQUI ---
+  // --- CRASH FIX: FUNÇÃO DEFINIDA AQUI (IMPORTANTE) ---
   const handleReset = () => {
     setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
     setStep('home');
@@ -588,7 +588,6 @@ export default function App() {
     let feeVal = selection.location.fee || 0;
     let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
     
-    // Tratamento especial para "A Combinar"
     if(selection.location.isPending) {
         feeType = "Taxa Deslocamento (A Combinar)";
         feeVal = 0; 
@@ -690,15 +689,15 @@ export default function App() {
 ${selection.location.isPending ? `• ${feeType}` : (feeVal > 0 ? `• ${feeType}: ${formatCurrency(feeVal)}` : '')}
 ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(discountVal)}` : ''}
 
-🎵 Vibe: ${selection.music}
-${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.' : ''}`;
-
-    💰 *TOTAL CLIENTE: ${selection.location.isPending ? formatCurrency(finalPrice) + ' + Taxa' : formatCurrency(finalPrice)}*
+💰 *TOTAL CLIENTE: ${selection.location.isPending ? formatCurrency(finalPrice) + ' + Taxa' : formatCurrency(finalPrice)}*
 (Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
 
 ------------------------------
-💸 *Massagista recebe: ${formatCurrency(netMasseur)}*
+💸 *LÍQUIDO (Seu Lucro): ${formatCurrency(netMasseur)}*
 ------------------------------
+
+🎵 Vibe: ${selection.music}
+${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.' : ''}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
     setLastOrderLink(whatsappUrl); 
@@ -706,7 +705,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
     setStep('success');
   };
 
-  // --- COMPONENTE DE RECIBO VISUAL ---
+  // --- COMPONENTE DE RECIBO VISUAL (NOTINHA CORRIGIDA) ---
   const OrderReceipt = () => {
     let grossService = selection.service.basePrice;
     if(selection.upgrade) grossService += selection.service.basePrice * 0.5;
@@ -795,7 +794,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                   <Share2 className="w-4 h-4 text-gray-400"/> Compartilhar
               </button>
               <button onClick={() => { handleReset(); }} className="px-4 py-4 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3 active:bg-red-500/20">
-                  <LogOut className="w-4 h-4"/> Sair 
+                  <LogOut className="w-4 h-4"/> Sair (Pânico)
               </button>
           </div>
       )
