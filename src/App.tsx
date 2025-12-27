@@ -3,7 +3,7 @@ import {
   ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
   Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp
+  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car
 } from 'lucide-react';
 
 // --- ESTILOS GLOBAIS ---
@@ -78,19 +78,18 @@ const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 // --- DADOS E CONFIGURAÇÕES ---
 const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
 
-// PREÇOS ATUALIZADOS CONFORME SOLICITADO
 const services = [
   { 
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
     description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
-    labelDuration: '60 min', minutes: 60, basePrice: 100, // R$ 100
+    labelDuration: '60 min', minutes: 60, basePrice: 100, 
     highlight: "🔥 A MAIS PEDIDA", ratings: 5.0, reviews: 310, 
     details: ["🔥 Relaxante + Body-to-Body", "🩲 Massagista de Cueca", "🍆 Lingam / Finalização Manual", "💦 Alívio Completo"] 
   },
   { 
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
     description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos e sem glúteos).', 
-    labelDuration: '60 min', minutes: 60, basePrice: 75, // R$ 75
+    labelDuration: '60 min', minutes: 60, basePrice: 75, 
     ratings: 4.9, reviews: 142, 
     details: ["💆‍♂️ Corpo Inteiro", "🚫 Sem Glúteos/Íntimo", "✋ Toque Terapêutico", "☮️ Relaxamento Puro"] 
   },
@@ -101,15 +100,29 @@ const locations = [
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
     sublabel: 'Vou com você (Taxa R$75 inclusa)', 
-    fee: 75, 
+    fee: 75, // Pago no local
     allowsTableChoice: false, 
     estimatedTravelTime: '10-15 min' 
   },
-  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', fee: 40, allowsTableChoice: true, estimatedTravelTime: '15-20 min' },
-  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: 0, allowsTableChoice: false, estimatedTravelTime: 'A combinar', input: true },
+  { 
+    id: 'santa-fe', 
+    label: 'Santa Fé do Sul', 
+    sublabel: 'No conforto do seu lar (Uber R$40)', 
+    fee: 40, // Taxa Uber
+    allowsTableChoice: true, 
+    estimatedTravelTime: '15-20 min' 
+  },
+  { 
+    id: 'outras-cidades', 
+    label: 'Cidades Vizinhas', 
+    sublabel: 'Atendimento na região', 
+    fee: 0, 
+    allowsTableChoice: false, 
+    estimatedTravelTime: 'A combinar', 
+    input: true 
+  },
 ];
 
-// DICIONÁRIO DE CUPONS (Incluindo os de Nível)
 const SYSTEM_COUPONS = {
   'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF (Primeira Vez)' },
   'MASCULINA': { code: 'MASCULINA', type: 'percent', value: 10, desc: '10% OFF Especial' },
@@ -518,13 +531,11 @@ export default function App() {
     if (!selection.service) return 0;
     let total = selection.service.basePrice;
     
-    // Adicionais
-    if (selection.location?.fee) total += selection.location.fee; // 75 do motel é somado aqui
+    // Adicionais (EXCETO UBER DO TOTAL FINAL DE SERVIÇO)
     if (selection.upgrade) total += selection.service.basePrice * 0.5;
     if (selection.useTable) total += 20;
-    
-    // Aroma Dinâmico
     if (selection.aroma) total += getAromaPrice();
+    if (selection.location?.fee && selection.location.id === 'santa-fe') total += selection.location.fee; // Uber entra no total cliente
     
     // Cupons
     if (selection.coupon) {
@@ -567,22 +578,30 @@ export default function App() {
     }
 
     // --- CHECK LEVEL UP E GANHAR CUPOM ---
-    // Verifica se subiu de nível e adiciona o cupom daquele nível
     const levelReached = [...LEVELS].reverse().find(l => newTotal >= l.min);
     if(levelReached && levelReached.rewardCode) {
-        // Se ainda não tem no inventário, adiciona
         if (!newInventory.includes(levelReached.rewardCode)) {
             newInventory.push(levelReached.rewardCode);
         }
     }
     
+    // --- GERAR NOTIFICAÇÃO ---
+    const newNotification = {
+        id: Date.now(),
+        title: 'Pedido Enviado',
+        message: 'Aguarde a confirmação no WhatsApp para garantir seu horário.',
+        read: false,
+        timestamp: Date.now()
+    };
+
     // Loyalty Update
     setLoyalty(prev => ({ 
       ...prev, 
       savedName: user.name || prev.savedName, 
       totalSpent: newTotal, 
       totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0) + (selection.aroma ? (10 - getAromaPrice()) : 0),
-      inventory: newInventory 
+      inventory: newInventory,
+      notifications: [newNotification, ...prev.notifications]
     }));
 
     const isToday = selection.date.getDate() === new Date().getDate();
@@ -608,39 +627,42 @@ export default function App() {
         paymentText = `(${selection.installments}x de ${formatCurrency(parcelValue)})`;
     }
 
-    // Calculations for WhatsApp
-    let grossBase = selection.service.basePrice;
-    if (selection.location?.fee && selection.location.id !== 'motel') grossBase += selection.location.fee; 
-    if (selection.upgrade) grossBase += selection.service.basePrice * 0.5;
-    if (selection.useTable) grossBase += 20;
-    if (selection.aroma) grossBase += getAromaPrice(); // Valor dinâmico
+    // --- CÁLCULOS DETALHADOS PARA WHATSAPP ---
+    let grossService = selection.service.basePrice;
+    if (selection.upgrade) grossService += selection.service.basePrice * 0.5;
+    if (selection.useTable) grossService += 20;
+    if (selection.aroma) grossService += getAromaPrice();
+
+    let uberFee = 0;
+    if (selection.location.id === 'santa-fe') {
+        uberFee = 40; // Uber Santa Fé
+    }
 
     let motelFee = 0;
     if (selection.location.id === 'motel') {
-        motelFee = 75;
+        motelFee = 75; // Pago no local
     }
-    
-    let serviceVal = selection.service.basePrice;
-    if (selection.upgrade) serviceVal += (selection.service.basePrice * 0.5);
-    if (selection.useTable) serviceVal += 20;
-    if (selection.aroma) serviceVal += getAromaPrice();
-    if (selection.location.fee && selection.location.id !== 'motel') serviceVal += selection.location.fee; 
 
+    // Desconto
     let discountVal = 0;
     if (selection.coupon) {
-      const baseForDisc = serviceVal + motelFee; 
-      if (selection.coupon.type === 'percent') discountVal = baseForDisc * (selection.coupon.value / 100);
+      // Aplica desconto no valor do serviço bruto (sem uber/motel)
+      if (selection.coupon.type === 'percent') discountVal = grossService * (selection.coupon.value / 100);
       else discountVal = selection.coupon.value;
     }
 
-    const totalWithMotel = serviceVal + motelFee - discountVal;
-    let cardFee = 0;
-    let totalToPay = totalWithMotel;
+    // Líquido Massagista = Serviço + Extras - Desconto
+    const masseurNet = grossService - discountVal;
 
+    // Total Cliente Paga = Líquido Massagista + Uber (se houver)
+    let clientPaysTotal = masseurNet + uberFee;
+    
+    let cardFee = 0;
     if (selection.paymentMethod === 'credit_card') {
        const rate = CARD_RATES[selection.installments] || 0;
-       totalToPay = totalWithMotel / (1 - rate);
-       cardFee = totalToPay - totalWithMotel;
+       const totalWithCardFee = clientPaysTotal / (1 - rate);
+       cardFee = totalWithCardFee - clientPaysTotal;
+       clientPaysTotal = totalWithCardFee;
     }
 
     let msg = `✨ NOVO PEDIDO: #${bookingId}
@@ -654,12 +676,15 @@ ${surfaceText ? surfaceText : ''}
 ${selection.aroma ? `🌸 Com Aromaterapia (${getAromaPrice() === 0 ? 'Grátis VIP' : formatCurrency(getAromaPrice())})` : ''}
 
 💰 RESUMO FINANCEIRO:
-➡️ Serviço Massagista: ${formatCurrency(serviceVal)}
-${motelFee > 0 ? `⚠️ Taxa da Suíte: ${formatCurrency(motelFee)} (Pagar na SAÍDA)` : ''}
+➡️ Valor Serviço + Extras: ${formatCurrency(grossService)}
 ${discountVal > 0 ? `🎫 Desconto Cupom: -${formatCurrency(discountVal)}` : ''}
+${uberFee > 0 ? `🚗 Taxa Uber/Deslocamento: ${formatCurrency(uberFee)}` : ''}
+${motelFee > 0 ? `⚠️ Taxa da Suíte: ${formatCurrency(motelFee)} (Pagar na SAÍDA)` : ''}
 ${cardFee > 0 ? `💳 Taxa Máquina: ${formatCurrency(cardFee)}` : ''}
 
-💰 TOTAL PREVISTO: ${formatCurrency(totalToPay)} ${paymentText}
+💰 TOTAL CLIENTE: ${formatCurrency(clientPaysTotal)} ${paymentText}
+(Líquido Massagista: ${formatCurrency(masseurNet)})
+
 ⏱️ Chegada estimada: ${selection.location.estimatedTravelTime || 'A combinar'}
 ------------------------------
 Olá, aguardo confirmação para relaxar. (Via App Beta)`;
@@ -709,37 +734,37 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
         {/* --- HOME --- */}
         {step === 'home' && (
           <div className="flex-1 p-6 overflow-y-auto pb-28 pt-12" ref={homeRef}>
-            {/* TOPO: PERFIL + PÂNICO */}
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <p className="text-[11px] text-gray-400 uppercase tracking-[0.2em] font-bold flex items-center gap-2 mb-1">
-                  {greeting} <span className="text-lg">{loyalty.avatar}</span>
-                </p>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Thalyson Massagens</h1>
+            {/* TOPO: PERFIL + FERRAMENTAS */}
+            <div className="mb-6">
+              <div className="flex justify-between items-start mb-2">
+                  <h1 className="text-2xl font-bold text-white tracking-tight">Thalyson Massagens</h1>
+                  <button onClick={handlePanic} className="w-8 h-8 rounded-full bg-[#2C1C1C] border border-red-500/20 flex items-center justify-center active:bg-red-900/40">
+                       <LogOut className="w-4 h-4 text-red-500"/> 
+                  </button>
               </div>
-              <button onClick={handlePanic} className="w-10 h-10 rounded-full bg-[#2C1C1C] border border-red-500/20 flex items-center justify-center active:bg-red-900/40">
-                   <LogOut className="w-4 h-4 text-red-500"/> 
-              </button>
+              <p className="text-[11px] text-gray-400 uppercase tracking-[0.2em] font-bold flex items-center gap-2 mb-4">
+                  {greeting} <span className="text-lg">{loyalty.avatar}</span>
+              </p>
+
+              {/* QUICK ACTIONS ROW (ABAIXO DO CABEÇALHO) */}
+              <div className="flex gap-2">
+                  <button onClick={() => setShowFaq(true)} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333]">
+                     <Shield className="w-3.5 h-3.5 text-gray-300"/> 
+                     <span className="text-[10px] font-bold text-gray-300">Conduta</span>
+                  </button>
+                  <button onClick={handleShare} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333]">
+                     <Share2 className="w-3.5 h-3.5 text-gray-300"/> 
+                     <span className="text-[10px] font-bold text-gray-300">Compartilhar</span>
+                  </button>
+                   <a href="https://instagram.com/thalymassagens" target="_blank" className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-2.5 rounded-lg gap-2 active:bg-[#333]">
+                     <Instagram className="w-3.5 h-3.5 text-[#E1306C]"/> 
+                     <span className="text-[10px] font-bold text-gray-300">Instagram</span>
+                  </a>
+              </div>
             </div>
 
             <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
             <LiveStatus />
-
-            {/* QUICK ACTIONS (LADO A LADO) */}
-            <div className="flex gap-2 mb-6">
-                <button onClick={() => setShowFaq(true)} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-3 rounded-xl gap-2 active:bg-[#333]">
-                   <Shield className="w-4 h-4 text-gray-300"/> 
-                   <span className="text-[11px] font-bold text-gray-300">Conduta</span>
-                </button>
-                <button onClick={handleShare} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-3 rounded-xl gap-2 active:bg-[#333]">
-                   <Share2 className="w-4 h-4 text-gray-300"/> 
-                   <span className="text-[11px] font-bold text-gray-300">Compartilhar</span>
-                </button>
-                 <a href="https://instagram.com/thalymassagens" target="_blank" className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-3 rounded-xl gap-2 active:bg-[#333]">
-                   <Instagram className="w-4 h-4 text-[#E1306C]"/> 
-                   <span className="text-[11px] font-bold text-gray-300">Instagram</span>
-                </a>
-            </div>
 
             <div className="flex justify-between items-center mb-6 px-1">
               <span className="text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full backdrop-blur-md">{weatherHint}</span>
@@ -978,6 +1003,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
                   <div className="text-right">
                       <span className="text-[22px] font-bold text-white tracking-tight">{formatCurrency(calcFinalPrice())}</span>
                       {selection.location.id === 'motel' && <p className="text-[9px] text-[#FFD60A] leading-none">+ Taxa Motel</p>}
+                      {selection.location.id === 'santa-fe' && <p className="text-[9px] text-gray-500 leading-none">Inclui Uber R$40</p>}
                   </div>
               </div>
 
