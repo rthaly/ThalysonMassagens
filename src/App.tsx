@@ -242,10 +242,14 @@ const LiveStatus = () => {
 };
 
 const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
-  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => data.totalSpent >= l.min);
-  const currentLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx];
-  const nextLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx + 1];
-  const spent = data.totalSpent || 0;
+  // CORREÇÃO ANTI-CRASH: Garante que totalSpent seja um número
+  const spent = typeof data.totalSpent === 'number' ? data.totalSpent : 0;
+  
+  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => spent >= l.min);
+  // Fallback se não encontrar nível (evita crash)
+  const currentLevel = currentLevelIdx >= 0 ? LEVELS[LEVELS.length - 1 - currentLevelIdx] : LEVELS[0];
+  const nextLevel = currentLevelIdx >= 0 && (LEVELS.length - 1 - currentLevelIdx + 1) < LEVELS.length ? LEVELS[LEVELS.length - 1 - currentLevelIdx + 1] : null;
+  
   const min = currentLevel.min || 0;
   const nextMin = nextLevel ? nextLevel.min : min + 1;
   const rawProgress = ((spent - min) / (nextMin - min)) * 100;
@@ -266,7 +270,7 @@ const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
                   {privacyMode ? <EyeOff className="w-3 h-3"/> : <Eye className="w-3 h-3"/>}
               </button>
               <span className={`text-[15px] font-mono text-white font-bold block transition-all duration-300 ${privacyMode ? 'blur-[6px] select-none opacity-50' : ''}`}>
-                {formatCurrency(data.totalSpent)}
+                {formatCurrency(spent)}
               </span>
             </div>
         </div>
@@ -457,7 +461,7 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v16'); 
+    const saved = localStorage.getItem('thaly_system_v17'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
@@ -479,7 +483,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v16', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v17', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -554,7 +558,7 @@ export default function App() {
     
     // Cupons
     if (selection.coupon) {
-      let discountableAmount = total - (selection.location?.fee || 0); 
+      let discountableAmount = total - (selection.location?.fee || 0); // Desconto não aplica na taxa de terceiros
       let discountValue = 0;
       if (selection.coupon.type === 'percent') discountValue = (discountableAmount * selection.coupon.value / 100);
       else discountValue = selection.coupon.value;
@@ -584,7 +588,7 @@ export default function App() {
       return;
     }
 
-    // --- 1. CÁLCULO DO SERVIÇO (O QUE É SEU) ---
+    // --- CÁLCULO SEGURO E DETALHADO ---
     let grossService = selection.service.basePrice;
     let extrasText = "";
     
@@ -605,11 +609,9 @@ export default function App() {
         aromaText = `\n➕ Aromaterapia (${aromaPrice === 0 ? 'GRÁTIS VIP' : `+${formatCurrency(aromaPrice)}`})`;
     }
 
-    // --- 2. TAXAS DE TERCEIROS ---
     let feeVal = selection.location.fee || 0;
     let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
 
-    // --- 3. DESCONTOS ---
     let discountVal = 0;
     if (selection.coupon) {
       let baseForDiscount = grossService; 
@@ -620,9 +622,8 @@ export default function App() {
       }
     }
 
-    // --- 4. TOTAIS ---
+    // Totais
     const baseTotal = grossService + feeVal - discountVal;
-    
     let finalPrice = baseTotal;
     if (selection.paymentMethod === 'credit_card') {
        const rate = CARD_RATES[selection.installments] || 0;
@@ -631,15 +632,17 @@ export default function App() {
 
     const bookingId = generateBookingId(); 
 
+    // Atualiza Inventário
     let newInventory = [...loyalty.inventory];
     if (selection.coupon) {
         newInventory = newInventory.filter(c => c !== selection.coupon.code);
     }
 
-    const oldTotal = loyalty.totalSpent;
+    // Atualiza Nível e Notificações
+    const oldTotal = loyalty.totalSpent || 0;
     const newTotal = oldTotal + selection.service.basePrice; 
-    
     let newNotifications = [...loyalty.notifications];
+    
     newNotifications.unshift({
         id: Date.now(),
         title: 'Agendamento Confirmado',
@@ -652,7 +655,7 @@ export default function App() {
     const levelReached = [...LEVELS].reverse().find(l => newTotal >= l.min);
     const oldLevel = [...LEVELS].reverse().find(l => oldTotal >= l.min);
 
-    if(levelReached && levelReached.name !== oldLevel?.name) {
+    if(levelReached && (!oldLevel || levelReached.name !== oldLevel.name)) {
        newNotifications.unshift({
            id: Date.now() + 1,
            title: 'Nível VIP Alcançado!',
@@ -678,7 +681,7 @@ export default function App() {
       ...prev, 
       savedName: user.name || prev.savedName, 
       totalSpent: newTotal, 
-      totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0),
+      totalSaved: (prev.totalSaved || 0) + (selection.coupon ? 10 : 0),
       inventory: newInventory,
       notifications: newNotifications
     }));
@@ -686,7 +689,7 @@ export default function App() {
     const isToday = selection.date.getDate() === new Date().getDate();
     const dateStr = `${selection.date.toLocaleDateString('pt-BR')}${isToday ? ' (HOJE)' : ''}`;
     
-    // --- LÓGICA DA LOCALIZAÇÃO NA MENSAGEM ---
+    // --- NOME DO LOCAL COM CIDADE ---
     let locationString = selection.location.label;
     if(selection.location.isMotel) locationString += " (Vou com você)";
     if(selection.location.id === 'outras-cidades' && selection.city) locationString += ` (${selection.city})`;
@@ -1084,7 +1087,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
           </div>
         )}
 
-        {/* FOOTER FIXO (PAGAMENTO) - CORRIGIDO */}
+        {/* FOOTER FIXO (PAGAMENTO) */}
         {step === 'configure' && selection.location && (
           <div className="absolute bottom-0 w-full p-0 z-40">
             <div className="h-12 bg-gradient-to-t from-[#000] to-transparent pointer-events-none"></div>
