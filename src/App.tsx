@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. ESTILOS GLOBAIS (VISUAL IOS 2026 DARK PREMIUM)
+// 1. ESTILOS GLOBAIS
 // ==================================================================================
 
 const globalStyles = `
@@ -166,29 +166,21 @@ const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'
 const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘']; 
 
 const REVIEWS_DB = [
-  { t: "Cheguei travado, saí flutuando. A finalização foi absurda de boa. Gozei litros.", a: "R.S. (Santa Fé)", r: 5 },
-  { t: "Nunca gemi tanto na minha vida. Mão pesada na medida certa, sabe onde tocar.", a: "Carlos, 35", r: 5 },
+  { t: "Cheguei travado, saí flutuando. A finalização foi absurda. Gozei litros.", a: "R.S. (Santa Fé)", r: 5 },
+  { t: "Nunca gemi tanto na minha vida. Mão pesada na medida certa.", a: "Carlos, 35", r: 5 },
   { t: "Sou casado, sigilo foi total. O alívio no final é explosivo.", a: "Empresário (Casado)", r: 5 },
-  { t: "Maluco, que sensação. Tremi as pernas no final quando ele acelerou.", a: "Lucas, 22", r: 5 },
-  { t: "Toque firme, corpo quente... gozei demais. Valeu cada centavo.", a: "Anônimo", r: 5 },
-  { t: "Fui pro motel com ele, foi a melhor experiência. Respeitoso e intenso.", a: "M.V. (Jales)", r: 5 },
-  { t: "A pegada é diferente. Me deixou louco de tesão do começo ao fim.", a: "Felipe, 29", r: 5 },
-  { t: "Sem frescura. Foi direto ao ponto e me deixou leve e vazio rs.", a: "Paulo", r: 5 },
-  { t: "Gostei que ele fica de cueca, dá pra ver o corpo. Muito excitante.", a: "R.L.", r: 5 },
-  { t: "Ambiente discreto, me senti um rei. Gozei muito no final.", a: "Empresário", r: 5 },
-  { t: "Sensação de liberdade. Ninguém me julga ali. Recomendo pra quem é curioso.", a: "João, 45", r: 5 },
-  { t: "Estava travado, saí mole. Mãos de fada com força de homem.", a: "B.S.", r: 5 },
-  { t: "Técnica perfeita. O toque no corpo todo arrepia até a alma.", a: "Pedro", r: 5 },
+  { t: "Maluco, que sensação. Tremi as pernas no final.", a: "Lucas, 22", r: 5 },
+  { t: "Toque firme, corpo quente... gozei demais.", a: "Anônimo", r: 5 },
+  { t: "Fui pro motel com ele, foi a melhor experiência. Respeitoso.", a: "M.V. (Jales)", r: 5 },
+  { t: "Sem frescura. Foi direto ao ponto e me deixou leve.", a: "Paulo", r: 5 },
+  { t: "Ambiente discreto, me senti um rei.", a: "Empresário", r: 5 },
+  { t: "Técnica perfeita. O toque no corpo todo arrepia.", a: "Pedro", r: 5 },
   { t: "Fiz na minha cama, foi super prático. O vizinho nem percebeu.", a: "Anônimo", r: 5 },
-  { t: "Primeira vez com homem. Fiquei nervoso, mas ele me deixou zen e excitado.", a: "Curioso", r: 5 },
-  { t: "O óleo quente, a respiração... foi intenso demais. Jato forte.", a: "G.H.", r: 5 },
-  { t: "Valeu o investimento. Satisfação garantida e sigilo absoluto.", a: "Advogado", r: 5 },
-  { t: "Gostei da massagem tântrica no final. Surpresa boa que eu precisava.", a: "R.", r: 5 },
-  { t: "Profissional, limpo e cheiroso. E muito gostoso rs.", a: "Anônimo", r: 5 },
-  { t: "Me fez esquecer dos problemas e focar só no prazer. Gozei rápido.", a: "Ricardo, 50", r: 5 },
-  { t: "Atendimento vip, me senti especial. Vou voltar com certeza.", a: "M.", r: 5 },
-  { t: "Relaxamento profundo seguido de um clímax insano. Recomendo.", a: "J.P.", r: 5 },
-  { t: "Cara gente boa, papo bom e mão melhor ainda. Serviço completo.", a: "Vitor", r: 5 },
+  { t: "Primeira vez com homem. Fiquei nervoso, mas ele me deixou zen.", a: "Curioso", r: 5 },
+  { t: "O óleo quente, a respiração... foi intenso demais.", a: "G.H.", r: 5 },
+  { t: "Atendimento vip, me senti especial. Vou voltar.", a: "M.", r: 5 },
+  { t: "Relaxamento profundo seguido de um clímax insano.", a: "J.P.", r: 5 },
+  { t: "Cara gente boa, papo bom e mão melhor ainda.", a: "Vitor", r: 5 },
   { t: "Saí renovado e vazio haha. Muito bom.", a: "D.S.", r: 5 },
   { t: "Melhor massagem da região. Não troco por nada.", a: "Cliente Fiel", r: 5 }
 ];
@@ -222,15 +214,16 @@ const LiveStatus = () => {
 };
 
 const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
-  const safeSpent = typeof data?.totalSpent === 'number' ? data.totalSpent : 0;
+  // CRASH FIX: Safe Check for data
+  const spent = (data && typeof data.totalSpent === 'number') ? data.totalSpent : 0;
   
-  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => safeSpent >= l.min);
+  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => spent >= l.min);
   const currentLevel = currentLevelIdx !== -1 ? LEVELS[LEVELS.length - 1 - currentLevelIdx] : LEVELS[0];
   const nextLevel = currentLevelIdx !== -1 && (LEVELS.length - 1 - currentLevelIdx + 1) < LEVELS.length ? LEVELS[LEVELS.length - 1 - currentLevelIdx + 1] : null;
   
   const min = currentLevel.min || 0;
   const nextMin = nextLevel ? nextLevel.min : min + 1;
-  const rawProgress = ((safeSpent - min) / (nextMin - min)) * 100;
+  const rawProgress = ((spent - min) / (nextMin - min)) * 100;
   const progress = nextLevel ? Math.min(100, Math.max(0, rawProgress)) : 100;
 
   return (
@@ -248,7 +241,7 @@ const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
                   {privacyMode ? <EyeOff className="w-3 h-3"/> : <Eye className="w-3 h-3"/>}
               </button>
               <span className={`text-[15px] font-mono text-white font-bold block transition-all duration-300 ${privacyMode ? 'blur-[6px] select-none opacity-50' : ''}`}>
-                {formatCurrency(safeSpent)}
+                {formatCurrency(spent)}
               </span>
             </div>
         </div>
@@ -260,7 +253,7 @@ const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
         <div className="flex justify-between text-[9px] text-gray-500 font-medium tracking-wide">
             <span>Benefício: <span className="text-[#32D74B]">{currentLevel.perks[1]}</span></span>
             {nextLevel ? (
-               <span>Faltam {formatCurrency(nextLevel.min - safeSpent)} p/ {nextLevel.name}</span>
+               <span>Faltam {formatCurrency(nextLevel.min - spent)} p/ {nextLevel.name}</span>
             ) : (
                <span className="text-[#FFD60A]">Nível Máximo</span>
             )}
@@ -439,7 +432,7 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v18'); 
+    const saved = localStorage.getItem('thaly_system_v19'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
@@ -447,7 +440,7 @@ export default function App() {
   const [selection, setSelection] = useState({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
   const [showFaq, setShowFaq] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showMenu, setShowMenu] = useState(false); // Estado para o menu hambúrguer
+  const [showMenu, setShowMenu] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(true); 
   const [weatherHint, setWeatherHint] = useState("");
   const [lastOrderLink, setLastOrderLink] = useState(""); 
@@ -461,7 +454,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v18', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v19', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -494,9 +487,15 @@ export default function App() {
     }
   };
 
+  // --- CRASH FIX: FUNCTION DEFINIDA AQUI ---
+  const handleReset = () => {
+    setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
+    setStep('home');
+  };
+
   const handleCopyPix = () => { navigator.clipboard.writeText("62922530000144"); alert("CNPJ Pix Copiado!"); }; 
   const handlePanic = () => { window.location.href = "https://google.com"; };
-  const handleShare = () => { if(navigator.share) navigator.share({title:'Thalyson Massagens', text:'Hora de Relaxar', url: window.location.href}); };
+  const handleShare = () => { if(navigator.share) navigator.share({title:'Thalyson Massagens', text:'Massagens Relaxantes em Santa Fé do Sul', url: window.location.href}); };
 
   const handleAddManualCoupon = (code) => {
       if (!loyalty.inventory.includes(code)) {
@@ -509,7 +508,7 @@ export default function App() {
 
   // --- LOGICA DE PREÇOS ---
   const getCurrentLevel = () => {
-      return [...LEVELS].reverse().find(l => loyalty.totalSpent >= l.min) || LEVELS[0];
+      return [...LEVELS].reverse().find(l => (loyalty.totalSpent || 0) >= l.min) || LEVELS[0];
   };
 
   const getAromaPrice = () => {
@@ -565,7 +564,7 @@ export default function App() {
       return;
     }
 
-    // --- 1. CÁLCULO DO SERVIÇO ---
+    // --- CÁLCULO SEGURO ---
     let grossService = selection.service.basePrice;
     let extrasText = "";
     
@@ -586,11 +585,9 @@ export default function App() {
         aromaText = `\n➕ Aromaterapia (${aromaPrice === 0 ? 'GRÁTIS VIP' : `+${formatCurrency(aromaPrice)}`})`;
     }
 
-    // --- 2. TAXAS DE TERCEIROS ---
     let feeVal = selection.location.fee || 0;
     let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
 
-    // --- 3. DESCONTOS ---
     let discountVal = 0;
     if (selection.coupon) {
       let baseForDiscount = grossService; 
@@ -601,10 +598,7 @@ export default function App() {
       }
     }
 
-    // --- 4. TOTAIS ---
-    // Total Base (Sem juros) = Serviço + Extras + Taxas - Desconto
     const baseTotal = grossService + feeVal - discountVal;
-    
     let finalPrice = baseTotal;
     if (selection.paymentMethod === 'credit_card') {
        const rate = CARD_RATES[selection.installments] || 0;
@@ -619,7 +613,7 @@ export default function App() {
         newInventory = newInventory.filter(c => c !== selection.coupon.code);
     }
 
-    // Atualiza Nível
+    // Atualiza Nível e Notificações
     const oldTotal = loyalty.totalSpent || 0;
     const newTotal = oldTotal + selection.service.basePrice; 
     let newNotifications = [...loyalty.notifications];
@@ -658,7 +652,6 @@ export default function App() {
        }
     }
 
-    // Atualiza Estado Loyalty
     setLoyalty(prev => ({ 
       ...prev, 
       savedName: user.name || prev.savedName, 
@@ -676,8 +669,9 @@ export default function App() {
     if(selection.location.isMotel) locationString += " (Vou com você)";
     if(selection.location.id === 'outras-cidades' && selection.city) locationString += ` (${selection.city})`;
 
-    // --- LÍQUIDO DO MASSAGISTA (Serviço + Extras - Desconto) - SEM TAXAS DE TERCEIROS ---
-    const netMasseur = (grossService - discountVal);
+    // --- CORREÇÃO DO LÍQUIDO ---
+    const expenses = feeVal; 
+    const netMasseur = baseTotal - expenses;
 
     let msg = `*NOVO PEDIDO: #${bookingId}*
 👤 ${user.name} (Liberado p/ Massagem)
@@ -686,7 +680,7 @@ export default function App() {
 📍 ${locationString}
 
 *DETALHES:*
-• Serviço Base + Extras: ${formatCurrency(grossService)}${extrasText}${aromaText}
+• Serviço Base: ${formatCurrency(selection.service.basePrice)}${extrasText}${aromaText}
 ${feeVal > 0 ? `• ${feeType}: ${formatCurrency(feeVal)}` : ''}
 ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(discountVal)}` : ''}
 
@@ -717,7 +711,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
     // 2. Taxas
     let fee = selection.location.fee || 0;
 
-    // 3. Descontos
+    // 3. Descontos (Sobre Serviço)
     let discount = 0;
     if (selection.coupon) {
         if (selection.coupon.type === 'percent') discount = grossService * (selection.coupon.value / 100);
@@ -732,7 +726,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
             <div className="absolute top-0 left-0 right-0 h-4 bg-white" style={{background: 'linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%), linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%)', backgroundSize: '12px 20px', backgroundPosition: '0 -10px'}}></div>
             
             <div className="text-center mb-6 border-b border-dashed border-gray-300 pb-4 mt-2">
-                <h3 className="font-bold text-lg uppercase tracking-wider">Hora de Relaxar</h3>
+                <h3 className="font-bold text-lg uppercase tracking-wider">Massagens Relaxantes</h3>
                 <p className="text-xs text-gray-500">Resumo do Pedido</p>
             </div>
 
@@ -779,24 +773,24 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
   const HamburgerMenu = () => {
       if(!showMenu) return null;
       return (
-          <div className="absolute top-16 right-6 w-48 bg-[#1C1C1E] border border-white/10 rounded-2xl shadow-2xl z-[60] flex flex-col overflow-hidden animate-slide-up origin-top-right">
-              <button onClick={() => { setShowFaq(true); setShowMenu(false); }} className="px-4 py-3 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5">
+          <div className="absolute top-16 right-6 w-52 bg-[#1C1C1E] border border-white/10 rounded-2xl shadow-2xl z-[60] flex flex-col overflow-hidden animate-slide-up origin-top-right">
+              <button onClick={() => { setShowFaq(true); setShowMenu(false); }} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
                   <HelpCircle className="w-4 h-4 text-gray-400"/> Ajuda / Conduta
               </button>
-              <a href="https://instagram.com/thalymassagens" target="_blank" onClick={() => setShowMenu(false)} className="px-4 py-3 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5">
+              <a href="https://instagram.com/thalymassagens" target="_blank" onClick={() => setShowMenu(false)} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
                   <Instagram className="w-4 h-4 text-[#E1306C]"/> Instagram
               </a>
-              <button onClick={() => { handleShare(); setShowMenu(false); }} className="px-4 py-3 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5">
+              <button onClick={() => { handleShare(); setShowMenu(false); }} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
                   <Share2 className="w-4 h-4 text-gray-400"/> Compartilhar
               </button>
-              <button onClick={handlePanic} className="px-4 py-3 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3">
+              <button onClick={handlePanic} className="px-4 py-4 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3 active:bg-red-500/20">
                   <LogOut className="w-4 h-4"/> Sair (Pânico)
               </button>
           </div>
       )
   }
 
-  // --- HEADER GLOBAL FIXO (COM MENU E SINO) ---
+  // --- HEADER GLOBAL FIXO (COM MENU BURGER) ---
   const GlobalHeader = () => (
       <div className="absolute top-0 w-full z-50 px-6 pt-12 pb-8 flex justify-between items-center pointer-events-none bg-gradient-to-b from-black/90 via-black/60 to-transparent">
           <div className="pointer-events-auto">
