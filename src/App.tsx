@@ -519,7 +519,7 @@ export default function App() {
 
   const handleCopyPix = () => { navigator.clipboard.writeText("62922530000144"); alert("CNPJ Pix Copiado!"); }; 
   const handlePanic = () => { window.location.href = "https://google.com"; };
-  const handleShare = () => { if(navigator.share) navigator.share({title:'Thalyson Massagens', text:'Hora de Relaxar', url: window.location.href}); };
+  const handleShare = () => { if(navigator.share) navigator.share({title:'Thalyson Massagens', text:'Massagens relaxantes em Santa Fé do Sul e Região', url: window.location.href}); };
 
   const handleAddManualCoupon = (code) => {
       if (!loyalty.inventory.includes(code)) {
@@ -729,6 +729,59 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente 
         else discount = selection.coupon.value;
     }
     
+    // Cálculo do total para bater com o botão
+    const total = subtotal + fee - discount;
+
+    return (
+        // AQUI ESTÁ A CORREÇÃO: mb-48 (Margem inferior grande para não esconder atrás do botão)
+        <div className="mt-8 mx-2 mb-48 bg-white text-black rounded-[10px] p-6 font-mono text-sm shadow-2xl relative animate-slide-up transform rotate-1">
+            {/* Efeito de papel rasgado */}
+            <div className="absolute top-0 left-0 right-0 h-4 bg-white" style={{background: 'linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%), linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%)', backgroundSize: '12px 20px', backgroundPosition: '0 -10px'}}></div>
+            
+            <div className="text-center mb-6 border-b border-dashed border-gray-300 pb-4 mt-2">
+                <h3 className="font-bold text-lg uppercase tracking-wider">Hora de Relaxar</h3>
+                <p className="text-xs text-gray-500">Resumo do Pedido</p>
+            </div>
+
+            <div className="space-y-3 mb-6">
+                <div className="flex justify-between">
+                    <span>{selection.service.name}</span>
+                    <span>{formatCurrency(selection.service.basePrice)}</span>
+                </div>
+                {selection.upgrade && <div className="flex justify-between text-gray-600 text-xs"><span>+ 30 Minutos</span><span>{formatCurrency(selection.service.basePrice * 0.5)}</span></div>}
+                {selection.useTable && <div className="flex justify-between text-gray-600 text-xs"><span>+ Maca Portátil</span><span>R$ 20,00</span></div>}
+                {selection.aroma && <div className="flex justify-between text-gray-600 text-xs"><span>+ Aromaterapia (Vip)</span><span>{getAromaPrice() === 0 ? 'GRÁTIS' : formatCurrency(getAromaPrice())}</span></div>}
+                
+                {fee > 0 && (
+                    <div className="flex justify-between text-blue-600 font-bold border-t border-dashed border-gray-200 pt-2 mt-2">
+                        <span>{selection.location.isMotel ? 'Taxa Suíte (Motel)' : 'Uber/Deslocamento'}</span>
+                        <span>{formatCurrency(fee)}</span>
+                    </div>
+                )}
+                
+                {discount > 0 && (
+                    <div className="flex justify-between text-red-500">
+                        <span>Desconto ({selection.coupon.code})</span>
+                        <span>-{formatCurrency(discount)}</span>
+                    </div>
+                )}
+            </div>
+
+            <div className="border-t-2 border-black pt-4 flex justify-between items-end">
+                <span className="font-bold text-xl">TOTAL</span>
+                <div className="text-right">
+                    <span className="font-bold text-2xl">{formatCurrency(selection.paymentMethod === 'credit_card' ? calcFinalPrice() : total)}</span>
+                    {selection.paymentMethod === 'credit_card' && <p className="text-[10px] text-gray-500">c/ juros maquininha</p>}
+                </div>
+            </div>
+            
+            <div className="mt-6 text-center text-[10px] text-gray-400 uppercase">
+                Obrigado pela preferência
+            </div>
+        </div>
+    )
+  }
+    
     const total = subtotal + fee - discount;
 
     return (
@@ -780,19 +833,21 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente 
   }
 
   // --- HEADER GLOBAL FIXO (ICONES SEMPRE NO TOPO) ---
+  // --- HEADER GLOBAL FIXO (COM DEGRADÊ PARA O CONTEÚDO PASSAR POR TRÁS) ---
   const GlobalHeader = () => (
-      <div className="absolute top-0 w-full z-50 px-6 pt-12 pb-4 flex justify-between items-center pointer-events-none">
+      // ADICIONEI: bg-gradient-to-b from-black/90 via-black/50 to-transparent
+      <div className="absolute top-0 w-full z-50 px-6 pt-12 pb-8 flex justify-between items-center pointer-events-none bg-gradient-to-b from-black/90 via-black/60 to-transparent">
           {/* Lado Esquerdo: Botão Voltar ou Data */}
           <div className="pointer-events-auto">
              {step !== 'home' && step !== 'success' ? (
                 <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10 bg-black/20 backdrop-blur-md border border-white/5"><IconBack /></button>
              ) : (
-                <span className="text-[12px] font-bold text-gray-500 uppercase tracking-widest">{new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric'})}</span>
+                <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/5">{new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric'})}</span>
              )}
           </div>
 
-          {/* Lado Direito: GRUPO DE ÍCONES (Ajuda, Insta, Notificação, Sair) */}
-          <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Lado Direito: GRUPO DE ÍCONES */}
+          <div className="flex items-center gap-3 pointer-events-auto">
               
               {/* Ajuda / Conduta */}
               <button onClick={() => setShowFaq(true)} className="w-10 h-10 rounded-full bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 active:scale-95 transition-all">
@@ -1109,12 +1164,13 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente 
           </div>
         )}
 
-        {/* FOOTER FIXO (PAGAMENTO) */}
+        {/* FOOTER FIXO (PAGAMENTO) - CORRIGIDO */}
         {step === 'configure' && selection.location && (
-          <div className="absolute bottom-[80px] w-full p-0 z-30">
-            <div className="h-10 bg-gradient-to-t from-[#000] to-transparent pointer-events-none"></div>
+          <div className="absolute bottom-0 w-full p-0 z-40">
+            {/* Degradê preto para suavizar o topo do botão */}
+            <div className="h-12 bg-gradient-to-t from-[#000] to-transparent pointer-events-none"></div>
             
-            <div className="bg-[#1C1C1E]/90 backdrop-blur-xl rounded-t-[32px] p-5 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+            <div className="bg-[#1C1C1E] rounded-t-[32px] p-5 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
               <div className="flex justify-between items-center mb-4 px-1">
                   <div className="flex flex-col">
                       <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Total Final</span>
@@ -1126,6 +1182,17 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente 
                       </p>
                   </div>
               </div>
+
+              <button 
+                disabled={!canFinalize} 
+                onClick={handleWhatsApp} 
+                className="w-full bg-[#0A84FF] hover:bg-[#007AFF] active:scale-[0.98] transition-all text-white font-bold py-4 rounded-[18px] shadow-[0_4px_20px_rgba(10,132,255,0.4)] flex justify-center items-center gap-2 text-[16px] disabled:opacity-50 disabled:shadow-none"
+              >
+                CONFIRMAR NO WHATSAPP
+              </button>
+            </div>
+          </div>
+        )}
 
               <button 
                 disabled={!canFinalize} 
