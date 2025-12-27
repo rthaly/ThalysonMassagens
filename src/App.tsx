@@ -63,6 +63,7 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 }
 .custom-input:focus { border-color: #007AFF; box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2); }
 
+/* Animações Completas */
 .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 `;
@@ -96,7 +97,7 @@ const services = [
     description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
     labelDuration: '60 min', minutes: 60, basePrice: 100, 
     highlight: "🔥 A MAIS PEDIDA", ratings: 5.0, reviews: 310, 
-    details: ["🔥 Body-to-Body", "🩲 Massagista de Cueca", "🍆 Lingam / Finalização Manual", "💦 Alívio Completo"] 
+    details: ["🔥 Relaxante + Body-to-Body", "🩲 Massagista de Cueca", "🍆 Lingam / Finalização Manual", "💦 Alívio Completo"] 
   },
   { 
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
@@ -162,24 +163,20 @@ const REVIEWS_DB = [
   { t: "Sensação única. O corpo a corpo me deixou louco.", a: "Empresário Sigiloso", r: 5 },
   { t: "Fui no motel e foi perfeito. O Thaly entende o que homem precisa.", a: "João", r: 5 },
   { t: "Estava travado de stress, saí flutuando e leve.", a: "P.H.", r: 5 },
-  { t: "Melhor massagem da região. O final é inesquecível.", a: "Visitante", r: 5 },
-  { t: "Discrição total, o que é fundamental pra mim. Recomendo.", a: "Casado, 45", r: 5 },
-  { t: "A massagem tântrica dele é de verdade. Energia pura.", a: "L.A.", r: 5 },
-  { t: "Vale cada centavo. Saí renovado e satisfeito.", a: "Anônimo", r: 5 },
-  { t: "O toque dele arrepia até a alma. Voltarei sempre.", a: "Ricardo", r: 5 },
-  { t: "Ambiente super seguro. Me senti rei.", a: "Felipe", r: 5 },
-  { t: "Técnica perfeita. Demorei pra voltar pro chão depois.", a: "G.T.", r: 5 },
-  { t: "Sem pressa, muito atencioso. A melhor finalização.", a: "Anônimo", r: 5 },
-  { t: "Experiência completa. Relaxamento e prazer na medida.", a: "B.C.", r: 5 },
-  { t: "Sou exigente e gostei muito. Profissional e safado na medida certa.", a: "Diretor", r: 5 },
-  { t: "Sensacional. O sigilo me deixou tranquilo para curtir tudo.", a: "M.J.", r: 5 },
-  { t: "Massagem top. O corpo a corpo é quente demais.", a: "Anônimo", r: 5 },
-  { t: "Alívio imediato. Precisava muito disso.", a: "R.R.", r: 5 }
+  { t: "Melhor massagem da região. O final é inesquecível.", a: "Visitante", r: 5 }
 ];
 
+// --- UTILS ---
 const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(8); };
-const generateBookingId = () => Math.random().toString(36).substr(2, 4).toUpperCase();
+const generateBookingId = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
+    let result = '';
+    for (let i = 0; i < 4; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+};
 
 // ==================================================================================
 // 3. COMPONENTES DE UI (INTERFACE)
@@ -447,7 +444,6 @@ export default function App() {
   // State Principal (Dados Persistentes)
   const [loyalty, setLoyalty] = useState(() => {
     const saved = localStorage.getItem('thaly_v12'); 
-    // levelsUnlocked: Array para garantir que não ganhe o mesmo cupom 2x
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], levelsUnlocked: ['Bronze'] };
   });
 
@@ -463,6 +459,11 @@ export default function App() {
 
   useEffect(() => { setTimeout(() => setLoading(false), 1500); }, []);
   
+  // TITLE SETTING
+  useEffect(() => {
+      document.title = "Hora de Relaxar";
+  }, []);
+
   useEffect(() => {
     localStorage.setItem('thaly_v12', JSON.stringify(loyalty));
     if (loyalty.savedName) {
@@ -946,7 +947,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
                     <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Total Cliente</p>
                     <p className="text-3xl font-bold tracking-tighter text-white">{formatCurrency(calculateTotals().totalWithCard)}</p>
                  </div>
-                 {selection.location.id === 'motel' && <span className="text-[10px] text-[#FFD700] bg-[#FFD700]/10 px-2 py-1 rounded font-bold">+ Taxa Motel Inclusa</span>}
+                 {selection.location.id === 'motel' && <span className="text-[10px] text-[#FFD700] bg-[#FFD700]/10 px-2 py-1 rounded font-bold">Taxa Motel Inclusa</span>}
                  {selection.location.id === 'santa-fe' && <span className="text-[10px] text-gray-500 bg-white/5 px-2 py-1 rounded">Inclui Uber R$40</span>}
               </div>
               <button disabled={!selection.date || !selection.time || !selection.paymentMethod} onClick={handleWhatsApp} className="w-full h-14 ios-btn-primary rounded-xl font-bold text-lg flex items-center justify-center gap-2 disabled:opacity-50">
