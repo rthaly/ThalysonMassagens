@@ -91,17 +91,17 @@ const CARD_RATES = [0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0
 const services = [
   { 
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
-    description: 'Experiência sensorial completa. Conexão e renovação.', 
-    labelDuration: '60 min', minutes: 60, basePrice: 110, 
+    description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
+    labelDuration: '60 min', minutes: 60, basePrice: 115, 
     highlight: "🔥 A MAIS PEDIDA", ratings: 5.0, reviews: 310, 
-    details: ["🔥 Toque envolvente", "🍑 Atenção aos glúteos", "🦵 Relaxamento virilha", "💦 Finalização Manual"] 
+    details: ["🔥 Relaxante + Body-to-Body", "🩲 Massagista de Cueca", "🍆 Lingam / Finalização Manual", "💦 Alívio Completo"] 
   },
   { 
     id: 'relaxante', name: 'Relaxante Clássica', type: 'relax',
-    description: 'Tire o peso do mundo das costas. Alívio profundo.', 
-    labelDuration: '60 min', minutes: 60, basePrice: 70, 
+    description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos e sem glúteos).', 
+    labelDuration: '60 min', minutes: 60, basePrice: 80, 
     ratings: 4.9, reviews: 142, 
-    details: ["💆‍♂️ Ombros e Costas", "💪 Mãos firmes", "✋ Alívio muscular", "🛌 Ambiente seguro", "🚫 Sem toques íntimos"] 
+    details: ["💆‍♂️ Corpo Inteiro", "🚫 Sem Glúteos/Íntimo", "✋ Toque Terapêutico", "☮️ Relaxamento Puro"] 
   },
 ];
 
@@ -132,7 +132,6 @@ const LEVELS = [
 ];
 
 const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
-// AJUSTE: Vibe Sonora apenas as 3 solicitadas e na ordem correta
 const musicVibes = ['Silêncio 🤫', 'Zen 🧘', 'Natureza 🌿']; 
 
 const REVIEWS_DB = [
@@ -191,7 +190,6 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
             <p className="text-[10px] text-gray-400 font-bold uppercase">Investido</p>
             <button onClick={onTogglePrivacy} className="text-gray-500 hover:text-white transition-colors"><Eye className="w-4 h-4" /></button>
           </div>
-          {/* CORREÇÃO DO BLUR: Aplicando classes tailwind diretas e select-none */}
           <p className={`text-xl font-semibold text-white ${privacyMode ? 'blur-md select-none opacity-50' : ''} transition-all duration-300`}>
             {formatCurrency(data.totalSpent)}
           </p>
@@ -230,7 +228,6 @@ const ReviewsCarousel = () => {
 };
 
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
-  // AJUSTE: Cálculo dos dias restantes do mês atual
   const now = new Date();
   const currentMonth = now.getMonth();
   const days = [];
@@ -239,6 +236,9 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       days.push(new Date(tempDate));
       tempDate.setDate(tempDate.getDate() + 1);
   }
+  
+  // NOME DO MÊS PARA O LABEL
+  const currentMonthName = days[0]?.toLocaleDateString('pt-BR', { month: 'long' });
 
   const isTimeBlocked = (t, d) => {
     if(!d) return true;
@@ -248,7 +248,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
     return h <= now.getHours();
   };
 
-  // AJUSTE: Função para determinar o label (HOJE, AMANHÃ ou dia da semana)
   const getDayLabel = (d) => {
       const today = new Date();
       const tomorrow = new Date(today);
@@ -261,13 +260,19 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
 
   return (
     <div>
+      {/* LABEL DO MÊS */}
+      {currentMonthName && (
+        <h3 className="text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1">
+          {currentMonthName}
+        </h3>
+      )}
+
       <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-4">
         {days.map((d, i) => {
           const isSel = selectedDate?.getDate() === d.getDate();
           const label = getDayLabel(d);
           return (
             <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-[18px] transition-all duration-300 ${isSel ? 'bg-[#0A84FF] text-white shadow-lg scale-105' : 'ios-btn text-gray-400'}`}>
-              {/* AJUSTE: Exibição correta do label HOJE/AMANHÃ sem sobreposição */}
               <span className={`text-[11px] uppercase font-bold tracking-wide opacity-80 ${label === 'HOJE' ? 'text-green-400' : ''}`}>{label}</span>
               <span className="text-2xl font-semibold mt-1">{d.getDate()}</span>
             </button>
@@ -367,7 +372,6 @@ const Notifications = ({ notifications, onClear }) => {
       </button>
 
       {open && (
-        // CORREÇÃO: Fundo sólido BG-[#121214] para garantir legibilidade
         <div className="absolute top-14 right-0 w-80 bg-[#121214] border border-white/10 shadow-2xl rounded-[20px] overflow-hidden z-[100] animate-scale">
            <div className="p-4 border-b border-white/10 bg-[#1C1C1E] flex justify-between items-center">
              <h4 className="font-semibold text-white text-sm">Notificações</h4>
@@ -416,7 +420,6 @@ export default function App() {
   // State
   const [loyalty, setLoyalty] = useState(() => {
     const saved = localStorage.getItem('thaly_system_v70'); 
-    // AJUSTE: Inventário inicial apenas com 'BEMVINDO'
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
@@ -460,7 +463,6 @@ export default function App() {
   // Actions
   const handleQuickSchedule = () => {
     triggerHaptic();
-    // LOGICA INTELIGENTE: Se já tem nome salvo, pula identificação
     if (loyalty.savedName) {
         setStep('services');
     } else {
