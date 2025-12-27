@@ -3,7 +3,7 @@ import {
   ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
   Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren
+  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send
 } from 'lucide-react';
 
 // --- ESTILOS GLOBAIS ---
@@ -95,7 +95,6 @@ const services = [
   },
 ];
 
-// ORDEM ALTERADA: MOTEL -> CASA -> OUTRAS
 const locations = [
   { 
     id: 'motel', 
@@ -125,7 +124,6 @@ const LEVELS = [
 const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
 const musicVibes = ['Silêncio 🤫', 'Zen 🧘', 'Natureza 🌿']; 
 
-// AVALIAÇÕES REALISTAS (20+)
 const REVIEWS_DB = [
   { t: "Sou casado, sigilo foi absoluto. A finalização foi de tremer as pernas.", a: "R.S.", r: 5 },
   { t: "Nunca senti nada igual. Gemi sem vergonha nenhuma, que alívio!", a: "Anônimo", r: 5 },
@@ -170,9 +168,9 @@ const LiveStatus = () => {
   useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%msgs.length), 4000); return () => clearInterval(t); }, []);
   return (
     <div className="flex justify-center mb-6">
-      <div className="animate-fade-in flex items-center gap-3 bg-[#1C1C1E] border border-white/5 rounded-full px-5 py-2 shadow-xl">
-        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-        <span className="text-[12px] text-gray-300 font-medium tracking-wide">{msgs[idx]}</span>
+      <div className="animate-fade-in flex items-center gap-2 bg-[#1C1C1E] border border-white/5 rounded-full px-4 py-1.5 shadow-xl">
+        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+        <span className="text-[11px] text-gray-400 font-medium tracking-wide">{msgs[idx]}</span>
       </div>
     </div>
   );
@@ -189,33 +187,39 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
   const progress = nextLevel ? Math.min(100, Math.max(0, rawProgress)) : 100;
 
   return (
-    <div className="ios-card p-6 rounded-[28px] relative overflow-hidden mb-8">
+    <div className="ios-card p-6 rounded-[28px] relative overflow-hidden mb-6 group">
+      {/* Efeito de brilho de fundo */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#0A84FF]/10 blur-[50px] rounded-full pointer-events-none group-hover:bg-[#0A84FF]/20 transition-all"></div>
+      
       <div className="flex justify-between items-start mb-6 relative z-10">
         <div>
-          <p className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-[0.15em] mb-1">Clube Vip {currentLevel.icon}</p>
-          <h3 className="text-3xl font-semibold text-white tracking-tight">{currentLevel.name}</h3>
+          <p className="text-[10px] text-[#0A84FF] font-black uppercase tracking-[0.2em] mb-1">Status Vip</p>
+          <h3 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
+             {currentLevel.name} {currentLevel.icon}
+          </h3>
         </div>
         <div className="text-right">
-          <div className="flex items-center justify-end gap-2 mb-1">
-            <p className="text-[10px] text-gray-400 font-bold uppercase">Investido</p>
-            <button onClick={onTogglePrivacy} className="text-gray-500 hover:text-white transition-colors">
-                {privacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-          <p className={`text-xl font-semibold text-white ${privacyMode ? 'blur-md select-none opacity-50' : ''} transition-all duration-300`}>
+          <button onClick={onTogglePrivacy} className="flex items-center justify-end gap-1.5 mb-1 text-gray-500 hover:text-white transition-colors">
+            <span className="text-[10px] font-bold uppercase tracking-wider">Investido</span>
+            {privacyMode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+          </button>
+          <p className={`text-xl font-mono text-white ${privacyMode ? 'blur-md select-none opacity-50' : ''} transition-all duration-300`}>
             {formatCurrency(data.totalSpent)}
           </p>
         </div>
       </div>
-      <div className="relative h-2 bg-white/10 rounded-full mb-4 overflow-hidden z-10">
-        <div className="absolute top-0 left-0 h-full bg-[#0A84FF] rounded-full" style={{ width: `${progress}%` }} />
+      
+      {/* Barra de Progresso */}
+      <div className="relative h-1.5 bg-white/10 rounded-full mb-3 overflow-hidden z-10">
+        <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#007AFF] to-[#5AC8FA] rounded-full transition-all duration-1000 ease-out" style={{ width: `${progress}%` }} />
       </div>
-      <div className="flex justify-between text-xs text-gray-400 relative z-10 font-medium">
+      
+      <div className="flex justify-between text-[11px] text-gray-500 relative z-10 font-medium">
         <span>Economia: <span className="text-green-500">{formatCurrency(data.totalSaved)}</span></span>
         {nextLevel ? (
             <span>Próximo: {formatCurrency(nextLevel.min)}</span>
         ) : (
-            <span className="text-[#FFD60A] animate-pulse">👑 {currentLevel.perks}</span>
+            <span className="text-[#FFD60A] animate-pulse">👑 Nível Máximo</span>
         )}
       </div>
     </div>
@@ -228,13 +232,13 @@ const ReviewsCarousel = () => {
   const currentReview = REVIEWS_DB[idx];
   
   return (
-    <div className="ios-card p-0 rounded-[20px] relative overflow-hidden h-32 flex items-center justify-center mb-8 border-l-4 border-l-[#0A84FF]">
-      <div key={idx} className="absolute inset-0 p-6 flex flex-col items-center justify-center animate-fade-in">
-        <div className="flex gap-1 mb-3">
-          {[...Array(5)].map((_,k) => <Star key={k} className={`w-4 h-4 ${k < currentReview.r ? 'text-[#FFD60A] fill-[#FFD60A]' : 'text-gray-700'}`}/>)}
+    <div className="ios-card p-0 rounded-[20px] relative overflow-hidden h-28 flex items-center justify-center mb-6 border-l-2 border-l-[#0A84FF]">
+      <div key={idx} className="absolute inset-0 p-5 flex flex-col items-center justify-center animate-fade-in">
+        <div className="flex gap-0.5 mb-2">
+          {[...Array(5)].map((_,k) => <Star key={k} className={`w-3.5 h-3.5 ${k < currentReview.r ? 'text-[#FFD60A] fill-[#FFD60A]' : 'text-gray-700'}`}/>)}
         </div>
-        <p className="text-[15px] text-gray-200 text-center font-medium leading-relaxed">"{currentReview.t}"</p>
-        <p className="text-[11px] text-gray-500 font-bold uppercase mt-3 tracking-widest">- {currentReview.a}</p>
+        <p className="text-[13px] text-gray-200 text-center font-medium leading-relaxed italic">"{currentReview.t}"</p>
+        <p className="text-[10px] text-gray-500 font-bold uppercase mt-2 tracking-widest">- {currentReview.a}</p>
       </div>
     </div>
   );
@@ -329,12 +333,12 @@ const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddMan
           <input 
             value={manualCode}
             onChange={(e) => setManualCode(e.target.value)}
-            placeholder="Digite o código (ex: VIP20)..." 
+            placeholder="Cód. Promocional" 
             className="w-full custom-input text-white text-[15px] rounded-[16px] p-4 placeholder:text-gray-600"
           />
           <button onClick={handleManualAdd} className="bg-[#2C2C2E] border border-white/10 text-white px-6 rounded-[16px] font-bold text-[13px] hover:bg-[#3A3A3C] transition-colors">Adicionar</button>
       </div>
-      {myCoupons.length > 0 && (
+      {myCoupons.length > 0 ? (
         <div className="space-y-3">
           {myCoupons.map((coupon) => {
             const isApplied = appliedCoupon?.code === coupon.code;
@@ -352,6 +356,11 @@ const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddMan
             )
           })}
         </div>
+      ) : (
+          <div className="p-4 rounded-[18px] border border-dashed border-white/10 text-center">
+              <p className="text-[12px] text-gray-500">Seu inventário de cupons está vazio.</p>
+              <p className="text-[10px] text-gray-600">Suba de nível para ganhar novos cupons.</p>
+          </div>
       )}
     </div>
   );
@@ -430,6 +439,7 @@ export default function App() {
   const [privacyMode, setPrivacyMode] = useState(true); // Começa com olho fechado
   const [greeting, setGreeting] = useState("");
   const [weatherHint, setWeatherHint] = useState("");
+  const [lastOrderLink, setLastOrderLink] = useState(""); // Para botão reenviar
     
   const surfaceRef = useRef(null);
 
@@ -472,7 +482,7 @@ export default function App() {
   };
 
   const handleCopyPix = () => { navigator.clipboard.writeText("62922530000144"); alert("CNPJ Pix Copiado!"); }; 
-  const handlePanic = () => { window.location.href = "https://www.google.com"; };
+  const handlePanic = () => { window.location.href = "https://google.com"; };
   const handleShare = () => { if(navigator.share) navigator.share({title:'Thalyson Massagens', text:'Agende agora', url: window.location.href}); };
 
   const handleAddManualCoupon = (code) => {
@@ -528,13 +538,28 @@ export default function App() {
     const oldTotal = loyalty.totalSpent;
     const newTotal = oldTotal + selection.service.basePrice; 
     const bookingId = generateBookingId(); 
+
+    // --- LOGICA DE CUPOM (Consumir Cupom) ---
+    let newInventory = [...loyalty.inventory];
+    if (selection.coupon) {
+        // Remove o cupom usado
+        newInventory = newInventory.filter(c => c !== selection.coupon.code);
+    }
+
+    // --- CHECK LEVEL UP ---
+    // Simples check para adicionar novo cupom se subir de nível
+    const nextLevel = LEVELS.find(l => newTotal >= l.min && oldTotal < l.min);
+    if(nextLevel && nextLevel.rewardCode && !newInventory.includes(nextLevel.rewardCode)) {
+        newInventory.push(nextLevel.rewardCode);
+    }
     
     // Loyalty Update
     setLoyalty(prev => ({ 
       ...prev, 
       savedName: user.name || prev.savedName, 
       totalSpent: newTotal, 
-      totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0) // Simplificado
+      totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0),
+      inventory: newInventory // Salva inventário atualizado
     }));
 
     const isToday = selection.date.getDate() === new Date().getDate();
@@ -583,7 +608,7 @@ export default function App() {
     // Discount
     let discountVal = 0;
     if (selection.coupon) {
-      const baseForDisc = serviceVal + motelFee; // Cupom aplica no total? Vamos assumir no serviço + motel
+      const baseForDisc = serviceVal + motelFee; 
       if (selection.coupon.type === 'percent') discountVal = baseForDisc * (selection.coupon.value / 100);
       else discountVal = selection.coupon.value;
     }
@@ -622,7 +647,10 @@ ${cardFee > 0 ? `💳 Taxa Máquina: ${formatCurrency(cardFee)}` : ''}
 Olá, aguardo confirmação para relaxar. (Via App Beta)`;
 
     msg = msg.replace(/^\s*[\r\n]/gm, "");
-    window.open(`https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`, '_blank');
+    
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
+    setLastOrderLink(whatsappUrl); // Salva link para reenviar
+    window.open(whatsappUrl, '_blank');
     setStep('success');
   };
 
@@ -663,36 +691,37 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
         {/* --- HOME --- */}
         {step === 'home' && (
           <div className="flex-1 p-6 overflow-y-auto pb-28 pt-12" ref={homeRef}>
-            <div className="flex justify-between items-center mb-8">
+            {/* TOPO: PERFIL + PÂNICO */}
+            <div className="flex justify-between items-center mb-6">
               <div>
                 <p className="text-[11px] text-gray-400 uppercase tracking-[0.2em] font-bold flex items-center gap-2 mb-1">
                   {greeting} <span className="text-lg">{loyalty.avatar}</span>
                 </p>
-                <h1 className="text-3xl font-bold text-white tracking-tight">Thalyson Massagens</h1>
+                <h1 className="text-2xl font-bold text-white tracking-tight">Thalyson Massagens</h1>
               </div>
-              <div className="flex items-center gap-3">
-                <button onClick={() => setShowFaq(true)} className="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center active:scale-95 transition-transform"><HelpCircle className="w-5 h-5 text-gray-300" /></button>
-              </div>
+              <button onClick={handlePanic} className="w-10 h-10 rounded-full bg-[#2C1C1C] border border-red-500/20 flex items-center justify-center active:bg-red-900/40">
+                   <LogOut className="w-4 h-4 text-red-500"/> 
+              </button>
             </div>
 
             <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
             <LiveStatus />
 
-            {/* BOTÕES TOPO (CONDUTA, COMPARTILHAR, FULGA) */}
-            <div className="grid grid-cols-3 gap-3 mb-6">
-                <button onClick={() => setShowFaq(true)} className="flex flex-col items-center justify-center bg-[#1C1C1E] border border-white/10 p-3 rounded-xl gap-1.5 active:bg-[#333]">
-                   <Shield className="w-5 h-5 text-gray-300"/> 
+            {/* QUICK ACTIONS (LADO A LADO) */}
+            <div className="flex gap-2 mb-6">
+                <button onClick={() => setShowFaq(true)} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-3 rounded-xl gap-2 active:bg-[#333]">
+                   <Shield className="w-4 h-4 text-gray-300"/> 
                    <span className="text-[11px] font-bold text-gray-300">Conduta</span>
                 </button>
-                <button onClick={handleShare} className="flex flex-col items-center justify-center bg-[#1C1C1E] border border-white/10 p-3 rounded-xl gap-1.5 active:bg-[#333]">
-                   <Share2 className="w-5 h-5 text-gray-300"/> 
+                <button onClick={handleShare} className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-3 rounded-xl gap-2 active:bg-[#333]">
+                   <Share2 className="w-4 h-4 text-gray-300"/> 
                    <span className="text-[11px] font-bold text-gray-300">Compartilhar</span>
                 </button>
-                <button onClick={handlePanic} className="flex flex-col items-center justify-center bg-[#2C1C1C] border border-red-500/20 p-3 rounded-xl gap-1.5 active:bg-red-900/40">
-                   <LogOut className="w-5 h-5 text-red-500"/> 
-                   <span className="text-[11px] font-bold text-red-500">Sair/Fuga</span>
-                </button>
-             </div>
+                 <a href="https://instagram.com/thalymassagens" target="_blank" className="flex-1 flex items-center justify-center bg-[#1C1C1E] border border-white/10 py-3 rounded-xl gap-2 active:bg-[#333]">
+                   <Instagram className="w-4 h-4 text-[#E1306C]"/> 
+                   <span className="text-[11px] font-bold text-gray-300">Instagram</span>
+                </a>
+            </div>
 
             <div className="flex justify-between items-center mb-6 px-1">
               <span className="text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full backdrop-blur-md">{weatherHint}</span>
@@ -700,15 +729,11 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
 
             <ReviewsCarousel />
             
-            <div className="mt-auto">
+            {/* CTA FLUTUANTE NO FINAL DA ROLAGEM */}
+            <div className="mt-4">
               <button onClick={handleQuickSchedule} className="w-full ios-btn-primary font-bold py-4 rounded-[22px] shadow-lg flex justify-center items-center gap-2 text-[17px]">
                 Agendar Sessão <ArrowRight className="w-5 h-5" />
               </button>
-              
-              {/* INSTAGRAM NO RODAPÉ */}
-              <a href="https://instagram.com/thalymassagens" target="_blank" className="mt-4 w-full bg-[#1C1C1E] border border-white/10 p-3 rounded-xl flex items-center justify-center gap-2 text-[13px] font-medium text-[#E1306C] hover:bg-white/5 transition-colors">
-                   <Instagram className="w-4 h-4"/> Siga no Instagram
-              </a>
             </div>
           </div>
         )}
@@ -737,7 +762,6 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
                 </button>
               </div>
 
-              {/* Botão reposicionado próximo */}
               <button 
                 disabled={!user.name || !user.isAdult || !user.isMassagemOk} 
                 onClick={() => { triggerHaptic(); setStep('services'); }} 
@@ -779,7 +803,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
 
         {/* --- CONFIGURE --- */}
         {step === 'configure' && selection.service && (
-          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-48 animate-fade-in">
+          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-56 animate-fade-in"> {/* PADDING BOTTOM 56 PARA CORRIGIR BOTAO */}
             <div className="ios-card p-5 rounded-[22px] mb-8 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-white text-[19px]">{selection.service.name}</h3>
@@ -936,15 +960,35 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
           </div>
         )}
 
-        {/* TELA SUCESSO */}
+        {/* TELA SUCESSO (COM PROGRESSO E REENVIAR) */}
         {step === 'success' && (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-            <div className="w-24 h-24 bg-[#30D158] rounded-full flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(48,209,88,0.4)] animate-scale">
+            <div className="w-24 h-24 bg-[#30D158] rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(48,209,88,0.4)] animate-scale">
                 <Check className="w-12 h-12 text-white drop-shadow-md"/>
             </div>
-            <h2 className="text-3xl font-bold text-white mb-3">Tudo certo, {user.name}!</h2>
-            <p className="text-gray-400 mb-10 text-[17px] leading-relaxed">Pedido gerado. Aguarde a confirmação no WhatsApp, Obrigado!</p>
-            <button onClick={handleCopyPix} className="mb-6 flex items-center gap-2 text-[15px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 px-6 py-3 rounded-xl border border-[#0A84FF]/20 hover:bg-[#0A84FF]/20 transition-colors"><Copy className="w-4 h-4"/> Copiar Chave Pix</button>
+            <h2 className="text-3xl font-bold text-white mb-2">Pedido Enviado!</h2>
+            <p className="text-gray-400 mb-8 text-[15px] leading-relaxed">Aguarde a confirmação no WhatsApp.</p>
+
+            {/* BARRA DE XP POS-PEDIDO */}
+            <div className="w-full bg-[#1C1C1E] p-5 rounded-[22px] border border-white/10 mb-6">
+                <div className="flex justify-between text-[11px] font-bold uppercase text-gray-500 mb-2">
+                    <span>Nível {LEVELS.find(l => loyalty.totalSpent >= l.min).name}</span>
+                    <span>Próximo Nível</span>
+                </div>
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-2">
+                    <div className="h-full bg-[#0A84FF]" style={{width: `${Math.min(100, (loyalty.totalSpent / 1200) * 100)}%`}}></div>
+                </div>
+                <p className="text-[12px] text-white">Você está investindo no seu bem-estar.</p>
+            </div>
+
+            <button onClick={() => window.open(lastOrderLink, '_blank')} className="mb-4 w-full flex items-center justify-center gap-2 text-[15px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 py-3 rounded-xl border border-[#0A84FF]/20 hover:bg-[#0A84FF]/20 transition-colors">
+                <Send className="w-4 h-4"/> Reenviar para WhatsApp
+            </button>
+
+            <button onClick={handleCopyPix} className="mb-6 w-full flex items-center justify-center gap-2 text-[15px] font-bold text-gray-300 bg-[#1C1C1E] py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-colors">
+                <Copy className="w-4 h-4"/> Copiar Chave Pix
+            </button>
+            
             <button onClick={handleReset} className="w-full ios-btn py-4 rounded-[18px] text-white font-bold">Voltar ao Início</button>
           </div>
         )}
