@@ -788,7 +788,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
       return (
           <div className="absolute top-16 right-6 w-52 bg-[#1C1C1E] border border-white/10 rounded-2xl shadow-2xl z-[60] flex flex-col overflow-hidden animate-slide-up origin-top-right">
               <button onClick={() => { setShowFaq(true); setShowMenu(false); }} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
-                  <HelpCircle className="w-4 h-4 text-gray-400"/> Informações
+                  <HelpCircle className="w-4 h-4 text-gray-400"/> Ajuda / Conduta
               </button>
               <a href="https://instagram.com/thalymassagens" target="_blank" onClick={() => setShowMenu(false)} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
                   <Instagram className="w-4 h-4 text-[#E1306C]"/> Instagram
@@ -796,7 +796,8 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
               <button onClick={() => { handleShare(); setShowMenu(false); }} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
                   <Share2 className="w-4 h-4 text-gray-400"/> Compartilhar
               </button>
-              <button onClick={() => { handleLogout(); }} className="px-4 py-4 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3 active:bg-red-500/20">
+              {/* CORREÇÃO AQUI: Chama handlePanic (Google) e não apaga nada */}
+              <button onClick={handlePanic} className="px-4 py-4 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3 active:bg-red-500/20">
                   <LogOut className="w-4 h-4"/> Sair
               </button>
           </div>
