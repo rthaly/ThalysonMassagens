@@ -3,7 +3,7 @@ import {
   ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
   Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car
+  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car, Menu
 } from 'lucide-react';
 
 // ==================================================================================
@@ -22,6 +22,7 @@ body {
   color: #fff;
   background: #000;
   -webkit-font-smoothing: antialiased;
+  padding-bottom: 80px; /* Espaço para o Menu Dock */
 }
 
 /* Scrollbar Hide */
@@ -242,7 +243,6 @@ const LiveStatus = () => {
   );
 };
 
-// Componente de Barra de Nível (Reutilizável na Home e Success)
 const LevelProgressBar = ({ data }) => {
   const currentLevelIdx = [...LEVELS].reverse().findIndex(l => data.totalSpent >= l.min);
   const currentLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx];
@@ -293,18 +293,19 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
   );
 };
 
+// --- AVALIAÇÕES COM UI REFINADA ---
 const ReviewsCarousel = () => {
   const [idx, setIdx] = useState(0);
   useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 5000); return () => clearInterval(t); }, []);
   const currentReview = REVIEWS_DB[idx];
   
   return (
-    <div className="relative h-24 flex items-center justify-center mb-8">
-      <div key={idx} className="absolute inset-0 flex flex-col items-center justify-center animate-fade-in px-4">
+    <div className="relative h-28 flex items-center justify-center mb-8">
+      <div key={idx} className="absolute inset-0 flex flex-col items-center justify-center animate-fade-in px-4 bg-[#1C1C1E] rounded-[24px] border border-white/5 shadow-xl">
         <div className="flex gap-1 mb-2">
-          {[...Array(5)].map((_,k) => <Star key={k} className={`w-3 h-3 ${k < currentReview.r ? 'text-white fill-white' : 'text-gray-800'}`}/>)}
+          {[...Array(5)].map((_,k) => <Star key={k} className={`w-3.5 h-3.5 ${k < currentReview.r ? 'text-[#FFD60A] fill-[#FFD60A]' : 'text-gray-800'}`}/>)}
         </div>
-        <p className="text-[13px] text-gray-300 text-center font-medium leading-snug tracking-tight italic">"{currentReview.t}"</p>
+        <p className="text-[13px] text-gray-200 text-center font-medium leading-relaxed tracking-tight italic">"{currentReview.t}"</p>
         <p className="text-[10px] text-gray-500 font-bold uppercase mt-2 tracking-widest">- {currentReview.a}</p>
       </div>
     </div>
@@ -454,7 +455,7 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v13'); 
+    const saved = localStorage.getItem('thaly_system_v14'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
@@ -476,7 +477,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v13', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v14', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -523,7 +524,7 @@ export default function App() {
       }
   };
 
-  // --- LOGICA DE PREÇOS (ATUALIZADA) ---
+  // --- LOGICA DE PREÇOS ---
   const getCurrentLevel = () => {
       return [...LEVELS].reverse().find(l => loyalty.totalSpent >= l.min) || LEVELS[0];
   };
@@ -645,7 +646,7 @@ export default function App() {
     const isToday = selection.date.getDate() === new Date().getDate();
     const dateStr = `${selection.date.toLocaleDateString('pt-BR')}${isToday ? ' (HOJE)' : ''}`;
     
-    // Msg Generator - PRECISÃO TOTAL
+    // Msg Generator - FINANCEIRO DETALHADO
     let grossService = selection.service.basePrice;
     let extrasText = "";
     if (selection.upgrade) { grossService += selection.service.basePrice * 0.5; extrasText += "\n➕ +30 Minutos (Upgrade)"; }
@@ -663,17 +664,23 @@ export default function App() {
 
     let discountVal = 0;
     if (selection.coupon) {
-      let baseForDisc = grossService - (selection.aroma ? getAromaPrice() : 0); // Desconto base
-      if(selection.upgrade) baseForDisc -= (selection.service.basePrice * 0.5); // Simplificando base
-      // Recalcular desconto real para string
+      let baseForDisc = grossService - (selection.aroma ? getAromaPrice() : 0); 
+      if(selection.upgrade) baseForDisc -= (selection.service.basePrice * 0.5); 
       if (selection.coupon.type === 'percent') discountVal = (selection.service.basePrice) * (selection.coupon.value / 100);
       else discountVal = selection.coupon.value;
     }
 
+    // CALCULO DO LÍQUIDO (MASSAGISTA)
+    // Liquido = Total Pago - Taxas que não vão pro massagista (Motel)
+    // Se for Uber, conta como receita do massagista (reembolso), então entra no liquido.
+    // Se for Motel, o cliente paga na saida ou pro motel, mas aqui está somado no total. Vamos supor que desconta.
+    const expenses = (selection.location.isMotel ? feeVal : 0); 
+    const netMasseur = finalPrice - expenses;
+
     let msg = `*NOVO PEDIDO: #${bookingId}*
 👤 ${user.name} (Liberado p/ Massagem)
 📅 ${dateStr} às ${selection.time}
-💆 ${selection.service.name}
+💆 ${selection.service.name} ${selection.upgrade ? '*(+30 MIN UPGRADE)*' : ''}
 📍 ${selection.location.label} ${selection.location.isMotel ? '(Vou com você)' : ''}
 
 *DETALHES:*
@@ -681,13 +688,15 @@ export default function App() {
 ${feeVal > 0 ? `• ${feeType}: ${formatCurrency(feeVal)}` : ''}
 ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(discountVal)}` : ''}
 
-*TOTAL A PAGAR: ${formatCurrency(finalPrice)}*
-Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'}
+💰 *TOTAL CLIENTE: ${formatCurrency(finalPrice)}*
+(Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
+
+------------------------------
+💸 *LÍQUIDO (Você recebe): ${formatCurrency(netMasseur)}*
+------------------------------
 
 🎵 Vibe: ${selection.music}
-${selection.location.isMotel ? '⚠️ Obs: A Taxa do Motel está inclusa no valor total acima para facilitar.' : ''}
-------------------------------
-Aguardo confirmação para relaxar.`;
+${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente (paga na saída ou a você).' : ''}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
     setLastOrderLink(whatsappUrl); 
@@ -710,12 +719,10 @@ Aguardo confirmação para relaxar.`;
     let fee = selection.location.fee || 0;
     let discount = 0;
     if (selection.coupon) {
-        // Logica visual simples para o cliente entender
         if (selection.coupon.type === 'percent') discount = selection.service.basePrice * (selection.coupon.value / 100);
         else discount = selection.coupon.value;
     }
     
-    // Calculo reverso simples para bater visualmente
     const total = subtotal + fee - discount;
 
     return (
@@ -778,7 +785,7 @@ Aguardo confirmação para relaxar.`;
              )}
           </div>
 
-          {/* Lado Direito: Notificações + Sair (SEMPRE VISÍVEIS) */}
+          {/* Lado Direito: Notificações (Sino) APENAS */}
           <div className="flex items-center gap-3 pointer-events-auto">
               <button onClick={() => setShowNotifications(true)} className="relative w-10 h-10 rounded-full bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 active:scale-95 transition-all">
                   <Bell className="w-5 h-5"/>
@@ -788,10 +795,36 @@ Aguardo confirmação para relaxar.`;
                       </span>
                   )}
               </button>
+          </div>
+      </div>
+  );
+
+  // --- MENU FLUTUANTE (DOCK) ---
+  const FloatingMenu = () => (
+      <div className="fixed bottom-6 left-0 right-0 flex justify-center z-[150] pointer-events-none animate-slide-up">
+          <div className="bg-[#1C1C1E]/90 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 flex items-center gap-6 shadow-2xl pointer-events-auto">
+              <button onClick={() => setShowFaq(true)} className="flex flex-col items-center gap-1 group">
+                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-white group-hover:bg-white/10 transition-all">
+                      <HelpCircle className="w-5 h-5"/>
+                  </div>
+              </button>
               
-              <button onClick={handlePanic} className="w-10 h-10 rounded-full bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 active:scale-95 transition-all">
-                  <LogOut className="w-5 h-5 ml-0.5"/> 
-                  {/* Ícone de Seta/Porta simulando o do print */}
+              <a href="https://instagram.com/thalymassagens" target="_blank" className="flex flex-col items-center gap-1 group">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#E1306C] to-[#C13584] flex items-center justify-center text-white shadow-lg transform -translate-y-2 border-4 border-black group-active:scale-95 transition-all">
+                      <Instagram className="w-6 h-6"/>
+                  </div>
+              </a>
+
+              <button onClick={handleShare} className="flex flex-col items-center gap-1 group">
+                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-white group-hover:bg-white/10 transition-all">
+                      <Share2 className="w-5 h-5"/>
+                  </div>
+              </button>
+
+               <button onClick={handlePanic} className="flex flex-col items-center gap-1 group">
+                  <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 group-hover:bg-red-500/20 transition-all">
+                      <LogOut className="w-5 h-5 ml-0.5"/>
+                  </div>
               </button>
           </div>
       </div>
@@ -817,7 +850,7 @@ Aguardo confirmação para relaxar.`;
 
         {/* --- HOME --- */}
         {step === 'home' && (
-          <div className="flex-1 p-6 overflow-y-auto pb-28 pt-24" ref={homeRef}>
+          <div className="flex-1 p-6 overflow-y-auto pb-32 pt-24" ref={homeRef}>
             {/* TOPO: TÍTULO */}
             <div className="mb-8">
               <h1 className="text-4xl font-bold text-white tracking-tight leading-tight mb-2">Hora de<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA]">Relaxar.</span></h1>
@@ -826,19 +859,6 @@ Aguardo confirmação para relaxar.`;
 
             <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
             <LiveStatus />
-
-            {/* BOTÕES CIRCULARES DA HOME (CORRIGIDOS) */}
-            <div className="flex gap-4 justify-center mb-8">
-               <button onClick={() => setShowFaq(true)} className="w-14 h-14 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400 active:bg-white/10 transition-all group shadow-lg">
-                  <HelpCircle className="w-6 h-6 group-hover:text-white transition-colors"/>
-               </button>
-               <button onClick={handleShare} className="w-14 h-14 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400 active:bg-white/10 transition-all group shadow-lg">
-                  <Share2 className="w-6 h-6 group-hover:text-white transition-colors"/>
-               </button>
-               <a href="https://instagram.com/thalymassagens" target="_blank" className="w-14 h-14 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-[#E1306C] active:bg-white/10 transition-all group shadow-lg">
-                  <Instagram className="w-6 h-6 group-hover:scale-110 transition-transform"/>
-               </a>
-            </div>
 
             <div className="mb-3 px-1 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Resumo das Sessões</div>
             <ReviewsCarousel />
@@ -854,7 +874,7 @@ Aguardo confirmação para relaxar.`;
 
         {/* --- IDENTITY (TELA 02) --- */}
         {step === 'identity' && (
-          <div className="flex-1 p-6 pt-32 animate-fade-in flex flex-col h-full">
+          <div className="flex-1 p-6 pt-32 animate-fade-in flex flex-col h-full pb-32">
             
             {/* RESUMO DO SERVIÇO SELECIONADO */}
             {selection.service && (
@@ -901,7 +921,7 @@ Aguardo confirmação para relaxar.`;
 
         {/* --- SERVICES --- */}
         {step === 'services' && (
-          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-28 animate-fade-in">
+          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-32 animate-fade-in">
             <h2 className="text-3xl font-bold text-white mb-6">Menu</h2>
             <div className="space-y-6">
               {services.map(s => (
@@ -955,12 +975,8 @@ Aguardo confirmação para relaxar.`;
               <section ref={locationRef}>
                 <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Local de Atendimento</h4>
                 <div className="space-y-3">
-                  {/* CORREÇÃO AQUI: Lista Renderizada apenas uma vez */}
                   {locations.map(l => {
-                    // Se já escolheu um local, mostra apenas ele selecionado, ou null se não for ele
                     if (selection.location && selection.location.id !== l.id) return null;
-
-                    // Se não escolheu nenhum, mostra todos. Se escolheu, mostra só o selecionado.
                     return (
                     <div key={l.id} className="animate-fade-in">
                         <button onClick={() => { triggerHaptic(); setSelection({...selection, location: l, useTable: null}); scrollTo(vibeRef); }} className={`w-full p-5 rounded-[22px] border text-left transition-all duration-300 ${selection.location?.id === l.id ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
@@ -1070,9 +1086,9 @@ Aguardo confirmação para relaxar.`;
           </div>
         )}
 
-        {/* FOOTER FIXO */}
+        {/* FOOTER FIXO (PAGAMENTO) */}
         {step === 'configure' && selection.location && (
-          <div className="absolute bottom-0 w-full p-0 z-30">
+          <div className="absolute bottom-[80px] w-full p-0 z-30">
             <div className="h-10 bg-gradient-to-t from-[#000] to-transparent pointer-events-none"></div>
             
             <div className="bg-[#1C1C1E]/90 backdrop-blur-xl rounded-t-[32px] p-5 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
@@ -1101,7 +1117,7 @@ Aguardo confirmação para relaxar.`;
 
         {/* TELA SUCESSO */}
         {step === 'success' && (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in pb-32">
             <div className="w-24 h-24 bg-[#32D74B] rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(50,215,75,0.4)] animate-scale">
                 <Check className="w-10 h-10 text-white stroke-[3px]"/>
             </div>
@@ -1121,9 +1137,12 @@ Aguardo confirmação para relaxar.`;
           </div>
         )}
 
+        {/* --- MENU FLUTUANTE (DOCK) - VISÍVEL EM TODAS AS TELAS --- */}
+        <FloatingMenu />
+
         {/* FAQ MODAL (AGORA "AJUDA") */}
         {showFaq && (
-          <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-xl flex items-center justify-center p-5">
+          <div className="absolute inset-0 z-[200] bg-black/60 backdrop-blur-xl flex items-center justify-center p-5">
             <div className="bg-[#1C1C1E] w-full max-w-sm rounded-[32px] p-8 border border-white/10 shadow-2xl animate-scale">
               <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2"><HelpCircle className="w-6 h-6 text-[#0A84FF]"/> Ajuda & Informações</h3>
               <div className="space-y-5 text-[15px] text-gray-300 leading-relaxed">
@@ -1152,7 +1171,7 @@ Aguardo confirmação para relaxar.`;
 
         {/* NOTIFICATIONS MODAL (ESTILO DO PRINT) */}
         {showNotifications && (
-          <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-xl flex items-end sm:items-center justify-center p-0 sm:p-5" onClick={() => setShowNotifications(false)}>
+          <div className="absolute inset-0 z-[200] bg-black/60 backdrop-blur-xl flex items-end sm:items-center justify-center p-0 sm:p-5" onClick={() => setShowNotifications(false)}>
             <div className="bg-[#1C1C1E] w-full sm:max-w-sm rounded-t-[32px] sm:rounded-[32px] p-6 border-t sm:border border-white/10 shadow-2xl animate-slide-up h-[75vh] sm:h-[600px] flex flex-col" onClick={e => e.stopPropagation()}>
               <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-white flex items-center gap-2">Notificações</h3>
