@@ -3,7 +3,7 @@ import {
   ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
   Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send
+  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp
 } from 'lucide-react';
 
 // --- ESTILOS GLOBAIS ---
@@ -114,11 +114,24 @@ const SYSTEM_COUPONS = {
   'VIP20': { code: 'VIP20', type: 'fixed', value: 20, desc: 'R$ 20,00 OFF' },
 };
 
+// --- SISTEMA DE NÍVEIS COM 20 BENEFÍCIOS ---
 const LEVELS = [
-  { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉' },
-  { name: 'Prata', min: 300, rewardCode: 'NIVELPRATA', icon: '🥈' },
-  { name: 'Ouro', min: 600, rewardCode: 'NIVELOURO', icon: '🥇' },
-  { name: 'Diamante', min: 1200, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: "Prioridade + Mimo" },
+  { 
+    name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', 
+    perks: ["Acesso ao App VIP", "Agendamento Digital", "Histórico Seguro", "Suporte Básico"] 
+  },
+  { 
+    name: 'Prata', min: 400, rewardCode: 'NIVELPRATA', icon: '🥈', 
+    perks: ["Prioridade na Fila", "Cupom 10% OFF", "Aromaterapia (50% OFF)", "Sem taxa cancelamento (1x)"] 
+  },
+  { 
+    name: 'Ouro', min: 900, rewardCode: 'NIVELOURO', icon: '🥇', 
+    perks: ["Aromaterapia Grátis", "Agenda Noturna VIP", "Upgrade Tempo (Ocasional)", "Grupo Exclusivo"] 
+  },
+  { 
+    name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', 
+    perks: ["Mimo Surpresa", "Prioridade Absoluta", "Atendimento Feriados", "Cashback em Créditos", "Concierge Pessoal"] 
+  },
 ];
 
 const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
@@ -129,23 +142,7 @@ const REVIEWS_DB = [
   { t: "Nunca senti nada igual. Gemi sem vergonha nenhuma, que alívio!", a: "Anônimo", r: 5 },
   { t: "Toque macio e firme ao mesmo tempo. A explosão no final foi incrível.", a: "Carlos", r: 5 },
   { t: "Mãos de fada. Fiquei muito à vontade, gozei muito no final.", a: "M.V.", r: 5 },
-  { t: "Sensação única. O corpo a corpo me deixou louco.", a: "Empresário Sigiloso", r: 5 },
-  { t: "Fui no motel e foi perfeito. O Thaly entende o que homem precisa.", a: "João", r: 5 },
-  { t: "Estava travado de stress, saí flutuando e leve.", a: "P.H.", r: 5 },
-  { t: "Melhor massagem da região. O final é inesquecível.", a: "Visitante", r: 5 },
-  { t: "Discrição total, o que é fundamental pra mim. Recomendo.", a: "Casado, 45", r: 5 },
-  { t: "A massagem tântrica dele é de verdade. Energia pura.", a: "L.A.", r: 5 },
-  { t: "Vale cada centavo. Saí renovado e satisfeito.", a: "Anônimo", r: 5 },
-  { t: "O toque dele arrepia até a alma. Voltarei sempre.", a: "Ricardo", r: 5 },
-  { t: "Ambiente super seguro. Me senti rei.", a: "Felipe", r: 5 },
-  { t: "Técnica perfeita. Demorei pra voltar pro chão depois.", a: "G.T.", r: 5 },
-  { t: "Sem pressa, muito atencioso. A melhor finalização.", a: "Anônimo", r: 5 },
-  { t: "Experiência completa. Relaxamento e prazer na medida.", a: "B.C.", r: 5 },
-  { t: "Sou exigente e gostei muito. Profissional e safado na medida certa.", a: "Diretor", r: 5 },
-  { t: "Sensacional. O sigilo me deixou tranquilo para curtir tudo.", a: "M.J.", r: 5 },
-  { t: "Massagem top. O corpo a corpo é quente demais.", a: "Anônimo", r: 5 },
-  { t: "Alívio imediato. Precisava muito disso.", a: "R.R.", r: 5 },
-  { t: "Serviço VIP de verdade. Tratamento diferenciado.", a: "Advogado", r: 5 }
+  { t: "Sensação única. O corpo a corpo me deixou louco.", a: "Empresário Sigiloso", r: 5 }
 ];
 
 // --- UTILS ---
@@ -188,7 +185,6 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
 
   return (
     <div className="ios-card p-6 rounded-[28px] relative overflow-hidden mb-6 group">
-      {/* Efeito de brilho de fundo */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-[#0A84FF]/10 blur-[50px] rounded-full pointer-events-none group-hover:bg-[#0A84FF]/20 transition-all"></div>
       
       <div className="flex justify-between items-start mb-6 relative z-10">
@@ -209,7 +205,6 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
         </div>
       </div>
       
-      {/* Barra de Progresso */}
       <div className="relative h-1.5 bg-white/10 rounded-full mb-3 overflow-hidden z-10">
         <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#007AFF] to-[#5AC8FA] rounded-full transition-all duration-1000 ease-out" style={{ width: `${progress}%` }} />
       </div>
@@ -221,6 +216,15 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
         ) : (
             <span className="text-[#FFD60A] animate-pulse">👑 Nível Máximo</span>
         )}
+      </div>
+
+      {/* Exibição dos Benefícios do Nível Atual */}
+      <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 gap-2">
+          {currentLevel.perks.slice(0, 4).map((perk, i) => (
+              <div key={i} className="flex items-center gap-1.5 text-[10px] text-gray-400">
+                  <CheckCircle2 className="w-3 h-3 text-[#0A84FF]" /> {perk}
+              </div>
+          ))}
       </div>
     </div>
   );
@@ -439,7 +443,7 @@ export default function App() {
   const [privacyMode, setPrivacyMode] = useState(true); // Começa com olho fechado
   const [greeting, setGreeting] = useState("");
   const [weatherHint, setWeatherHint] = useState("");
-  const [lastOrderLink, setLastOrderLink] = useState(""); // Para botão reenviar
+  const [lastOrderLink, setLastOrderLink] = useState(""); 
     
   const surfaceRef = useRef(null);
 
@@ -542,12 +546,10 @@ export default function App() {
     // --- LOGICA DE CUPOM (Consumir Cupom) ---
     let newInventory = [...loyalty.inventory];
     if (selection.coupon) {
-        // Remove o cupom usado
         newInventory = newInventory.filter(c => c !== selection.coupon.code);
     }
 
     // --- CHECK LEVEL UP ---
-    // Simples check para adicionar novo cupom se subir de nível
     const nextLevel = LEVELS.find(l => newTotal >= l.min && oldTotal < l.min);
     if(nextLevel && nextLevel.rewardCode && !newInventory.includes(nextLevel.rewardCode)) {
         newInventory.push(nextLevel.rewardCode);
@@ -559,7 +561,7 @@ export default function App() {
       savedName: user.name || prev.savedName, 
       totalSpent: newTotal, 
       totalSaved: prev.totalSaved + (selection.coupon ? 10 : 0),
-      inventory: newInventory // Salva inventário atualizado
+      inventory: newInventory 
     }));
 
     const isToday = selection.date.getDate() === new Date().getDate();
@@ -587,25 +589,22 @@ export default function App() {
 
     // Calculations for WhatsApp
     let grossBase = selection.service.basePrice;
-    if (selection.location?.fee && selection.location.id !== 'motel') grossBase += selection.location.fee; // Motel somado depois visualmente
+    if (selection.location?.fee && selection.location.id !== 'motel') grossBase += selection.location.fee; 
     if (selection.upgrade) grossBase += selection.service.basePrice * 0.5;
     if (selection.useTable) grossBase += 20;
     if (selection.aroma) grossBase += 10;
 
-    // Motel Logic specific calculation
     let motelFee = 0;
     if (selection.location.id === 'motel') {
         motelFee = 75;
     }
     
-    // Re-calc for WhatsApp lines
     let serviceVal = selection.service.basePrice;
     if (selection.upgrade) serviceVal += (selection.service.basePrice * 0.5);
     if (selection.useTable) serviceVal += 20;
     if (selection.aroma) serviceVal += 10;
-    if (selection.location.fee && selection.location.id !== 'motel') serviceVal += selection.location.fee; // Add uber if not motel
+    if (selection.location.fee && selection.location.id !== 'motel') serviceVal += selection.location.fee; 
 
-    // Discount
     let discountVal = 0;
     if (selection.coupon) {
       const baseForDisc = serviceVal + motelFee; 
@@ -613,9 +612,7 @@ export default function App() {
       else discountVal = selection.coupon.value;
     }
 
-    // Final calculations
     const totalWithMotel = serviceVal + motelFee - discountVal;
-    
     let cardFee = 0;
     let totalToPay = totalWithMotel;
 
@@ -649,7 +646,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
     msg = msg.replace(/^\s*[\r\n]/gm, "");
     
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
-    setLastOrderLink(whatsappUrl); // Salva link para reenviar
+    setLastOrderLink(whatsappUrl); 
     window.open(whatsappUrl, '_blank');
     setStep('success');
   };
@@ -803,7 +800,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
 
         {/* --- CONFIGURE --- */}
         {step === 'configure' && selection.service && (
-          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-56 animate-fade-in"> {/* PADDING BOTTOM 56 PARA CORRIGIR BOTAO */}
+          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-64 animate-fade-in"> {/* PADDING BOTTOM AUMENTADO PARA NÃO CORTAR CONTEÚDO */}
             <div className="ios-card p-5 rounded-[22px] mb-8 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-white text-[19px]">{selection.service.name}</h3>
@@ -930,29 +927,31 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
           </div>
         )}
 
-        {/* FOOTER FIXO (Configure) */}
+        {/* FOOTER FIXO (NOVO LAYOUT INTUITIVO) */}
         {step === 'configure' && selection.location && (
           <div className="absolute bottom-0 w-full p-0 z-30">
             <div className="h-10 bg-gradient-to-t from-[#000] to-transparent pointer-events-none"></div>
             
-            <div className="bg-[#1C1C1E]/95 backdrop-blur-xl rounded-t-[32px] p-6 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+            <div className="bg-[#1C1C1E]/95 backdrop-blur-xl rounded-t-[32px] p-5 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
               
-              <div className="flex justify-between items-end mb-4 px-1">
-                <div className='flex flex-col'>
-                  <span className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">TOTAL PREVISTO</span>
-                  <div className="flex items-end gap-3">
-                    <span className="text-4xl font-bold text-white tracking-tighter leading-none">
-                        {formatCurrency(calcFinalPrice())}
-                    </span>
+              {/* RESUMO INTELIGENTE NO TOPO DO BOTÃO */}
+              <div className="flex justify-between items-center mb-3 px-1">
+                  <div className="flex flex-col">
+                      <span className="text-[11px] text-gray-400 font-medium flex items-center gap-1">
+                          <Clock className="w-3 h-3"/> 60 Minutos
+                          {selection.paymentMethod && <span>• {selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'}</span>}
+                      </span>
                   </div>
-                  {selection.location.id === 'motel' && <span className="text-[10px] text-[#FFD60A] mt-1 ml-0.5">⚠️ Incluso Taxa Motel R$75</span>}
-                </div>
+                  <div className="text-right">
+                      <span className="text-[22px] font-bold text-white tracking-tight">{formatCurrency(calcFinalPrice())}</span>
+                      {selection.location.id === 'motel' && <p className="text-[9px] text-[#FFD60A] leading-none">+ Taxa Motel</p>}
+                  </div>
               </div>
 
               <button 
                 disabled={!canFinalize} 
                 onClick={handleWhatsApp} 
-                className="w-full bg-[#0A84FF] hover:bg-[#007AFF] active:scale-[0.98] transition-all text-white font-bold py-4 rounded-[20px] shadow-[0_4px_20px_rgba(10,132,255,0.4)] flex justify-center items-center gap-2 text-[17px] disabled:opacity-50 disabled:shadow-none"
+                className="w-full bg-[#0A84FF] hover:bg-[#007AFF] active:scale-[0.98] transition-all text-white font-bold py-4 rounded-[18px] shadow-[0_4px_20px_rgba(10,132,255,0.4)] flex justify-center items-center gap-2 text-[16px] disabled:opacity-50 disabled:shadow-none"
               >
                 {canFinalize ? 'CONFIRMAR NO WHATSAPP' : 'Preencha tudo para continuar'} <MessageCircle className="w-5 h-5"/>
               </button>
@@ -960,7 +959,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
           </div>
         )}
 
-        {/* TELA SUCESSO (COM PROGRESSO E REENVIAR) */}
+        {/* TELA SUCESSO (COM PROGRESSO REAL E GAMIFICAÇÃO) */}
         {step === 'success' && (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
             <div className="w-24 h-24 bg-[#30D158] rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(48,209,88,0.4)] animate-scale">
@@ -969,20 +968,35 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
             <h2 className="text-3xl font-bold text-white mb-2">Pedido Enviado!</h2>
             <p className="text-gray-400 mb-8 text-[15px] leading-relaxed">Aguarde a confirmação no WhatsApp.</p>
 
-            {/* BARRA DE XP POS-PEDIDO */}
-            <div className="w-full bg-[#1C1C1E] p-5 rounded-[22px] border border-white/10 mb-6">
-                <div className="flex justify-between text-[11px] font-bold uppercase text-gray-500 mb-2">
+            {/* BARRA DE XP REAL (SINCRONIZADA COM A HOME) */}
+            <div className="w-full bg-[#1C1C1E] p-5 rounded-[22px] border border-white/10 mb-6 relative overflow-hidden">
+                <div className="flex justify-between text-[11px] font-bold uppercase text-gray-500 mb-2 relative z-10">
                     <span>Nível {LEVELS.find(l => loyalty.totalSpent >= l.min).name}</span>
-                    <span>Próximo Nível</span>
+                    <span>Próximo: {LEVELS.find(l => l.min > loyalty.totalSpent)?.name || 'Máximo'}</span>
                 </div>
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-2">
-                    <div className="h-full bg-[#0A84FF]" style={{width: `${Math.min(100, (loyalty.totalSpent / 1200) * 100)}%`}}></div>
+                
+                {/* CÁLCULO DE PROGRESSO EXATO */}
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-3 relative z-10">
+                    <div className="h-full bg-gradient-to-r from-[#0A84FF] to-[#30D158]" style={{
+                        width: `${(() => {
+                            const currentLvl = LEVELS.slice().reverse().find(l => loyalty.totalSpent >= l.min);
+                            const nextLvl = LEVELS.find(l => l.min > loyalty.totalSpent);
+                            if(!nextLvl) return 100;
+                            return Math.max(5, ((loyalty.totalSpent - currentLvl.min) / (nextLvl.min - currentLvl.min)) * 100);
+                        })()}%`
+                    }}></div>
                 </div>
-                <p className="text-[12px] text-white">Você está investindo no seu bem-estar.</p>
+                
+                <p className="text-[12px] text-gray-300 relative z-10">
+                    Faltam <strong>{formatCurrency((LEVELS.find(l => l.min > loyalty.totalSpent)?.min || loyalty.totalSpent) - loyalty.totalSpent)}</strong> para ganhar novos benefícios.
+                </p>
+                
+                {/* Background Decorativo */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/10 blur-[30px] rounded-full"></div>
             </div>
 
             <button onClick={() => window.open(lastOrderLink, '_blank')} className="mb-4 w-full flex items-center justify-center gap-2 text-[15px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 py-3 rounded-xl border border-[#0A84FF]/20 hover:bg-[#0A84FF]/20 transition-colors">
-                <Send className="w-4 h-4"/> Reenviar para WhatsApp
+                <Send className="w-4 h-4"/> Reenviar Pedido
             </button>
 
             <button onClick={handleCopyPix} className="mb-6 w-full flex items-center justify-center gap-2 text-[15px] font-bold text-gray-300 bg-[#1C1C1E] py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-colors">
