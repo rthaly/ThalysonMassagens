@@ -58,6 +58,7 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
   backdrop-filter: blur(20px); 
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 0.5px solid rgba(255,255,255,0.08); 
+  z-index: 50;
 }
 
 /* --- BOTÕES --- */
@@ -181,36 +182,36 @@ const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'
 const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘']; 
 
 const REVIEWS_DB = [
-  { t: "Cheguei estressado, saí flutuando. A finalização foi absurda de boa.", a: "R.S. (Santa Fé)", r: 5 },
-  { t: "Nunca gemi tanto na minha vida. Mão pesada na medida certa.", a: "Carlos, 35", r: 5 },
-  { t: "Sigilo total. Ninguém desconfia. O alívio no final é explosivo.", a: "Empresário (Casado)", r: 5 },
-  { t: "Maluco, que sensação. Tremi as pernas no final.", a: "Lucas, 22", r: 5 },
+  { t: "Cheguei travado de stress, saí flutuando. A finalização foi absurda de boa. Gozei litros.", a: "R.S. (Santa Fé)", r: 5 },
+  { t: "Nunca gemi tanto na minha vida. Mão pesada na medida certa, sabe onde tocar.", a: "Carlos, 35", r: 5 },
+  { t: "Sou casado, sigilo foi total. Ninguém desconfia. O alívio no final é explosivo.", a: "Empresário (Casado)", r: 5 },
+  { t: "Massagem top, mas atrasou uns 10 minutos pra chegar. O resto compensou.", a: "F.L.", r: 4 },
+  { t: "Maluco, que sensação. Tremi as pernas no final quando ele acelerou.", a: "Lucas, 22", r: 5 },
   { t: "Toque firme, corpo quente... gozei demais. Valeu cada centavo.", a: "Anônimo", r: 5 },
   { t: "Fui pro motel com ele, foi a melhor experiência. Respeitoso e intenso.", a: "M.V. (Jales)", r: 5 },
-  { t: "Sou casado, precisava disso. O sigilo foi 100%.", a: "Anônimo", r: 5 },
-  { t: "A pegada é diferente. Me deixou louco de tesão.", a: "Felipe, 29", r: 5 },
-  { t: "Sem frescura. Foi direto ao ponto e me deixou leve.", a: "Paulo (Vendedor)", r: 5 },
+  { t: "O ar condicionado da sala tava muito gelado, mas a massagem esquentou.", a: "Ricardo", r: 4 },
+  { t: "A pegada é diferente. Me deixou louco de tesão do começo ao fim.", a: "Felipe, 29", r: 5 },
+  { t: "Sem frescura. Foi direto ao ponto e me deixou leve e vazio rs.", a: "Paulo (Vendedor)", r: 5 },
   { t: "Gostei que ele fica de cueca, dá pra ver o corpo. Muito excitante.", a: "R.L.", r: 5 },
-  { t: "Massagem top, finalização melhor ainda. Jatos fortes.", a: "Anônimo", r: 5 },
-  { t: "Ambiente discreto, me senti um rei. Gozei muito.", a: "Empresário", r: 5 },
-  { t: "Sensação de liberdade. Ninguém me julga ali. Recomendo.", a: "João, 45", r: 5 },
+  { t: "Técnica boa, mas achei a música um pouco alta no começo. Depois relaxei.", a: "Anônimo", r: 4 },
+  { t: "Ambiente discreto, me senti um rei. Gozei muito no final.", a: "Empresário", r: 5 },
+  { t: "Sensação de liberdade. Ninguém me julga ali. Recomendo pra quem é curioso.", a: "João, 45", r: 5 },
   { t: "Estava travado, saí mole. Mãos de fada com força de homem.", a: "B.S.", r: 5 },
-  { t: "Técnica perfeita. O toque no corpo todo arrepia.", a: "Pedro (Universitário)", r: 5 },
-  { t: "Fiz na minha cama, foi super prático. Não precisei sair de casa.", a: "Anônimo (Santa Fé)", r: 5 },
-  { t: "Primeira vez com homem. Fiquei nervoso, mas ele me deixou zen.", a: "Curioso", r: 5 },
-  { t: "O óleo quente, a respiração... foi intenso demais.", a: "G.H.", r: 5 },
-  { t: "Valeu o investimento. Satisfação garantida.", a: "Advogado Sigiloso", r: 5 },
-  { t: "Gostei da massagem tântrica no final. Surpresa boa.", a: "R.", r: 5 },
-  { t: "Profissional, limpo e cheiroso. E gostoso rs.", a: "Anônimo", r: 5 },
-  { t: "Me fez esquecer dos problemas e focar só no prazer.", a: "Ricardo, 50", r: 5 },
-  { t: "Atendimento vip, me senti especial. Vou voltar.", a: "M.", r: 5 },
-  { t: "Relaxamento profundo seguido de um clímax insano.", a: "J.P.", r: 5 },
-  { t: "Muito bom, recomendo pra quem quer discrição.", a: "Anônimo", r: 5 },
-  { t: "Cara gente boa, papo bom e mão melhor ainda.", a: "Vitor", r: 5 },
+  { t: "Técnica perfeita. O toque no corpo todo arrepia até a alma.", a: "Pedro (Universitário)", r: 5 },
+  { t: "Fiz na minha cama, foi super prático. O vizinho nem percebeu.", a: "Anônimo (Santa Fé)", r: 5 },
+  { t: "Demorou um pouco pra responder no whats, mas pessoalmente o atendimento é 10.", a: "Cliente", r: 4 },
+  { t: "Primeira vez com homem. Fiquei nervoso, mas ele me deixou zen e excitado.", a: "Curioso", r: 5 },
+  { t: "O óleo quente, a respiração... foi intenso demais. Jato forte.", a: "G.H.", r: 5 },
+  { t: "Valeu o investimento. Satisfação garantida e sigilo absoluto.", a: "Advogado", r: 5 },
+  { t: "Gostei da massagem tântrica no final. Surpresa boa que eu precisava.", a: "R.", r: 5 },
+  { t: "Profissional, limpo e cheiroso. E muito gostoso rs.", a: "Anônimo", r: 5 },
+  { t: "Me fez esquecer dos problemas e focar só no prazer. Gozei rápido.", a: "Ricardo, 50", r: 5 },
+  { t: "Atendimento vip, me senti especial. Vou voltar com certeza.", a: "M.", r: 5 },
+  { t: "Relaxamento profundo seguido de um clímax insano. Recomendo.", a: "J.P.", r: 5 },
+  { t: "Muito bom, mas o horário da noite é difícil de conseguir vaga.", a: "Anônimo", r: 4 },
+  { t: "Cara gente boa, papo bom e mão melhor ainda. Serviço completo.", a: "Vitor", r: 5 },
   { t: "Saí renovado e vazio haha. Muito bom.", a: "D.S.", r: 5 },
-  { t: "Melhor massagem da região. Não troco.", a: "Cliente Fiel", r: 5 },
-  { t: "Tudo muito limpo e organizado. E prazeroso.", a: "L.", r: 5 },
-  { t: "Amei a vibe. Silêncio e prazer.", a: "Anônimo", r: 5 }
+  { t: "Melhor massagem da região. Não troco por nada.", a: "Cliente Fiel", r: 5 }
 ];
 
 // --- HELPERS ---
@@ -514,9 +515,6 @@ export default function App() {
   const handleShare = () => { if(navigator.share) navigator.share({title:'Thalyson Massagens', text:'Hora de Relaxar', url: window.location.href}); };
 
   const handleAddManualCoupon = (code) => {
-      // Verifica se já está no inventário OU se já foi usado (para não deixar add de novo)
-      // Aqui simplificamos: se não está no inventário, adiciona. 
-      // O 'usedCoupons' idealmente seria um histórico, mas vamos assumir que se sumiu do inventário já era.
       if (!loyalty.inventory.includes(code)) {
           setLoyalty(prev => ({...prev, inventory: [...prev.inventory, code]}));
           triggerHaptic();
@@ -601,7 +599,7 @@ export default function App() {
     // Notificação de Agendamento
     newNotifications.unshift({
         id: Date.now(),
-        title: 'Agendamento Confirmado ✅',
+        title: 'Agendamento Confirmado',
         message: `Sua sessão para ${selection.date.toLocaleDateString('pt-BR')} foi confirmada.`,
         read: false,
         timestamp: Date.now(),
@@ -615,7 +613,7 @@ export default function App() {
        // Subiu de nível
        newNotifications.unshift({
            id: Date.now() + 1,
-           title: '🎉 Nível VIP Alcançado!',
+           title: 'Nível VIP Alcançado!',
            message: `Você chegou no ${levelReached.name} e ganhou novos benefícios!`,
            read: false,
            timestamp: Date.now(),
@@ -625,7 +623,7 @@ export default function App() {
            newInventory.push(levelReached.rewardCode);
            newNotifications.unshift({
                id: Date.now() + 2,
-               title: '🎁 Ganhou Cupom!',
+               title: 'Ganhou Cupom!',
                message: `O cupom ${levelReached.rewardCode} foi adicionado à sua carteira.`,
                read: false,
                timestamp: Date.now(),
@@ -768,6 +766,37 @@ Aguardo confirmação para relaxar.`;
     )
   }
 
+  // --- HEADER GLOBAL FIXO (ICONES SEMPRE NO TOPO) ---
+  const GlobalHeader = () => (
+      <div className="absolute top-0 w-full z-50 px-6 pt-12 pb-4 flex justify-between items-center pointer-events-none">
+          {/* Lado Esquerdo: Botão Voltar (se não for Home/Success) ou Data (se for Home) */}
+          <div className="pointer-events-auto">
+             {step !== 'home' && step !== 'success' ? (
+                <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10 bg-black/20 backdrop-blur-md border border-white/5"><IconBack /></button>
+             ) : (
+                <span className="text-[12px] font-bold text-gray-500 uppercase tracking-widest">{new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric'})}</span>
+             )}
+          </div>
+
+          {/* Lado Direito: Notificações + Sair (SEMPRE VISÍVEIS) */}
+          <div className="flex items-center gap-3 pointer-events-auto">
+              <button onClick={() => setShowNotifications(true)} className="relative w-10 h-10 rounded-full bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 active:scale-95 transition-all">
+                  <Bell className="w-5 h-5"/>
+                  {loyalty.notifications.filter(n => !n.read).length > 0 && (
+                      <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 rounded-full text-[9px] font-bold flex items-center justify-center text-white border-2 border-[#1C1C1E]">
+                          {loyalty.notifications.filter(n => !n.read).length}
+                      </span>
+                  )}
+              </button>
+              
+              <button onClick={handlePanic} className="w-10 h-10 rounded-full bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 active:scale-95 transition-all">
+                  <LogOut className="w-5 h-5 ml-0.5"/> 
+                  {/* Ícone de Seta/Porta simulando o do print */}
+              </button>
+          </div>
+      </div>
+  );
+
   return (
     <div className="min-h-screen flex justify-center p-0 sm:p-6 font-sans text-gray-200 bg-black">
       <style>{globalStyles}</style>
@@ -783,41 +812,14 @@ Aguardo confirmação para relaxar.`;
       ) : (
       <div className="w-full max-w-[440px] bg-[#000] sm:rounded-[40px] shadow-2xl flex flex-col relative overflow-hidden sm:border border-white/10 h-screen sm:h-[92vh] aurora-bg">
         
-        {/* HEADER FIXO */}
-        {step !== 'home' && step !== 'success' && (
-          <div className="absolute top-0 w-full z-30 ios-header px-6 pt-12 pb-4 flex justify-between items-center">
-             <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10"><IconBack /></button>
-            
-            <div className="flex items-center gap-3">
-              <span className="px-2 py-0.5 rounded-full bg-white/10 text-white text-[9px] font-bold uppercase tracking-wider">App Beta</span>
-              <div className="flex items-center gap-2">
-                  <span className="font-semibold text-white text-[15px]">{user.name || loyalty.savedName || 'Visitante'}</span>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* HEADER GLOBAL FIXO */}
+        <GlobalHeader />
 
         {/* --- HOME --- */}
         {step === 'home' && (
-          <div className="flex-1 p-6 overflow-y-auto pb-28 pt-12" ref={homeRef}>
-            {/* TOPO: PERFIL + FERRAMENTAS */}
+          <div className="flex-1 p-6 overflow-y-auto pb-28 pt-24" ref={homeRef}>
+            {/* TOPO: TÍTULO */}
             <div className="mb-8">
-              <div className="flex justify-between items-center mb-4">
-                  <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">{new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric'})}</span>
-                  <div className="flex items-center gap-3">
-                      {/* ÍCONE DE NOTIFICAÇÕES REAL */}
-                      <button onClick={() => setShowNotifications(true)} className="relative w-8 h-8 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400">
-                          <Bell className="w-4 h-4"/>
-                          {loyalty.notifications.filter(n => !n.read).length > 0 && (
-                              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-[8px] font-bold flex items-center justify-center text-white">
-                                  {loyalty.notifications.filter(n => !n.read).length}
-                              </span>
-                          )}
-                      </button>
-                      <button onClick={handlePanic} className="w-8 h-8 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400"><LogOut className="w-4 h-4"/></button>
-                  </div>
-              </div>
-              
               <h1 className="text-4xl font-bold text-white tracking-tight leading-tight mb-2">Hora de<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA]">Relaxar.</span></h1>
               <p className="text-gray-400 text-[15px]">{weatherHint}</p>
             </div>
@@ -825,16 +827,16 @@ Aguardo confirmação para relaxar.`;
             <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
             <LiveStatus />
 
-            <div className="flex gap-2 mb-8 overflow-x-auto scrollbar-hide pb-2">
-               {/* BOTÕES UNIFORMIZADOS IGUAL AO DE FUGA */}
-               <button onClick={() => setShowFaq(true)} className="w-12 h-12 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400 active:bg-white/10 transition-all group">
-                  <HelpCircle className="w-5 h-5 group-hover:text-white transition-colors"/>
+            {/* BOTÕES CIRCULARES DA HOME (CORRIGIDOS) */}
+            <div className="flex gap-4 justify-center mb-8">
+               <button onClick={() => setShowFaq(true)} className="w-14 h-14 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400 active:bg-white/10 transition-all group shadow-lg">
+                  <HelpCircle className="w-6 h-6 group-hover:text-white transition-colors"/>
                </button>
-               <button onClick={handleShare} className="w-12 h-12 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400 active:bg-white/10 transition-all group">
-                  <Share2 className="w-5 h-5 group-hover:text-white transition-colors"/>
+               <button onClick={handleShare} className="w-14 h-14 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-gray-400 active:bg-white/10 transition-all group shadow-lg">
+                  <Share2 className="w-6 h-6 group-hover:text-white transition-colors"/>
                </button>
-               <a href="https://instagram.com/thalymassagens" target="_blank" className="w-12 h-12 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-[#E1306C] active:bg-white/10 transition-all group">
-                  <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform"/>
+               <a href="https://instagram.com/thalymassagens" target="_blank" className="w-14 h-14 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-[#E1306C] active:bg-white/10 transition-all group shadow-lg">
+                  <Instagram className="w-6 h-6 group-hover:scale-110 transition-transform"/>
                </a>
             </div>
 
@@ -882,7 +884,6 @@ Aguardo confirmação para relaxar.`;
                 
                 <button onClick={() => { triggerHaptic(); setUser({...user, isMassagemOk: !user.isMassagemOk}); }} className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
                   <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isMassagemOk ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-600'}`}>{user.isMassagemOk && <Check className="w-3.5 h-3.5 text-white" />}</div>
-                  {/* ALTERAÇÃO DO TEXTO DO BOTÃO */}
                   <span className={`text-[16px] font-medium ${user.isMassagemOk ? 'text-white' : 'text-gray-400'}`}>Liberado para massagem</span>
                 </button>
               </div>
@@ -1122,7 +1123,7 @@ Aguardo confirmação para relaxar.`;
 
         {/* FAQ MODAL (AGORA "AJUDA") */}
         {showFaq && (
-          <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-xl flex items-center justify-center p-5">
+          <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-xl flex items-center justify-center p-5">
             <div className="bg-[#1C1C1E] w-full max-w-sm rounded-[32px] p-8 border border-white/10 shadow-2xl animate-scale">
               <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2"><HelpCircle className="w-6 h-6 text-[#0A84FF]"/> Ajuda & Informações</h3>
               <div className="space-y-5 text-[15px] text-gray-300 leading-relaxed">
@@ -1149,28 +1150,34 @@ Aguardo confirmação para relaxar.`;
           </div>
         )}
 
-        {/* NOTIFICATIONS MODAL (NOVO) */}
+        {/* NOTIFICATIONS MODAL (ESTILO DO PRINT) */}
         {showNotifications && (
-          <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-xl flex items-end sm:items-center justify-center p-0 sm:p-5" onClick={() => setShowNotifications(false)}>
-            <div className="bg-[#1C1C1E] w-full sm:max-w-sm rounded-t-[32px] sm:rounded-[32px] p-6 border-t sm:border border-white/10 shadow-2xl animate-slide-up h-[70vh] sm:h-auto flex flex-col" onClick={e => e.stopPropagation()}>
+          <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-xl flex items-end sm:items-center justify-center p-0 sm:p-5" onClick={() => setShowNotifications(false)}>
+            <div className="bg-[#1C1C1E] w-full sm:max-w-sm rounded-t-[32px] sm:rounded-[32px] p-6 border-t sm:border border-white/10 shadow-2xl animate-slide-up h-[75vh] sm:h-[600px] flex flex-col" onClick={e => e.stopPropagation()}>
               <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-white flex items-center gap-2"><Bell className="w-6 h-6 text-[#0A84FF]"/> Notificações</h3>
+                  <h3 className="text-2xl font-bold text-white flex items-center gap-2">Notificações</h3>
                   <button onClick={() => { setLoyalty(p => ({...p, notifications: p.notifications.map(n => ({...n, read: true}))})); setShowNotifications(false); }} className="p-2 bg-white/5 rounded-full text-gray-400 hover:text-white transition-colors"><X className="w-5 h-5"/></button>
               </div>
               
               <div className="space-y-3 overflow-y-auto flex-1 scrollbar-hide">
                 {loyalty.notifications.length === 0 ? (
-                    <div className="text-center text-gray-500 py-10">Nenhuma notificação.</div>
+                    <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                        <Bell className="w-12 h-12 mb-4 opacity-20"/>
+                        <p>Nenhuma notificação recente.</p>
+                    </div>
                 ) : (
                     loyalty.notifications.map(n => (
-                        <div key={n.id} className={`p-4 rounded-[20px] border ${n.read ? 'bg-white/5 border-transparent' : 'bg-[#0A84FF]/10 border-[#0A84FF]/30'} flex items-start gap-3`}>
-                            <div className={`p-2 rounded-full ${n.read ? 'bg-white/10 text-gray-400' : 'bg-[#0A84FF]/20 text-[#0A84FF]'}`}>
-                                {n.icon === 'calendar' ? <Calendar className="w-4 h-4"/> : n.icon === 'level' ? <Crown className="w-4 h-4"/> : n.icon === 'coupon' ? <Tag className="w-4 h-4"/> : <Bell className="w-4 h-4"/>}
+                        <div key={n.id} className="p-4 rounded-[20px] bg-[#2C2C2E] border border-white/5 flex items-start gap-4">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${n.icon === 'level' ? 'bg-[#FFD60A]/20 text-[#FFD60A]' : n.icon === 'coupon' ? 'bg-[#FF375F]/20 text-[#FF375F]' : 'bg-[#0A84FF]/20 text-[#0A84FF]'}`}>
+                                {n.icon === 'calendar' ? <Calendar className="w-5 h-5"/> : n.icon === 'level' ? <Crown className="w-5 h-5"/> : n.icon === 'coupon' ? <Tag className="w-5 h-5"/> : <CheckCircle2 className="w-5 h-5"/>}
                             </div>
-                            <div>
-                                <h4 className="font-bold text-white text-[15px] mb-1">{n.title}</h4>
-                                <p className="text-[13px] text-gray-300 leading-snug">{n.message}</p>
-                                <span className="text-[10px] text-gray-500 mt-2 block">{new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                    <h4 className="font-bold text-white text-[15px] mb-1">{n.title}</h4>
+                                    {!n.read && <div className="w-2 h-2 bg-red-500 rounded-full mt-1.5"></div>}
+                                </div>
+                                <p className="text-[13px] text-gray-400 leading-snug">{n.message}</p>
+                                <span className="text-[10px] text-gray-600 mt-2 block">{new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                             </div>
                         </div>
                     ))
