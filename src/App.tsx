@@ -243,7 +243,7 @@ const LiveStatus = () => {
   );
 };
 
-const LevelProgressBar = ({ data }) => {
+const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
   const currentLevelIdx = [...LEVELS].reverse().findIndex(l => data.totalSpent >= l.min);
   const currentLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx];
   const nextLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx + 1];
@@ -263,8 +263,14 @@ const LevelProgressBar = ({ data }) => {
               </h3>
             </div>
             <div className="text-right">
-              <span className="text-[10px] font-bold text-gray-500 uppercase">Investido: </span>
-              <span className="text-[15px] font-mono text-white font-bold">{formatCurrency(data.totalSpent)}</span>
+              {/* BOTÃO DE OLHO FUNCIONAL + TEXTO BORRADO */}
+              <button onClick={onTogglePrivacy} className="flex items-center justify-end gap-1.5 mb-0.5 ml-auto text-gray-500 hover:text-white transition-colors">
+                  <span className="text-[10px] font-bold uppercase">Investido</span>
+                  {privacyMode ? <EyeOff className="w-3 h-3"/> : <Eye className="w-3 h-3"/>}
+              </button>
+              <span className={`text-[15px] font-mono text-white font-bold block transition-all duration-300 ${privacyMode ? 'blur-[6px] select-none opacity-50' : ''}`}>
+                {formatCurrency(data.totalSpent)}
+              </span>
             </div>
         </div>
         
@@ -288,7 +294,7 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
   return (
     <div className="ios-card p-5 rounded-[28px] relative overflow-hidden mb-6 group border-t border-white/10">
       <div className="absolute top-[-50%] right-[-20%] w-64 h-64 bg-[#0A84FF]/10 blur-[80px] rounded-full pointer-events-none"></div>
-      <LevelProgressBar data={data} />
+      <LevelProgressBar data={data} privacyMode={privacyMode} onTogglePrivacy={onTogglePrivacy} />
     </div>
   );
 };
@@ -1125,9 +1131,9 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente 
             <p className="text-gray-400 mb-8 text-[15px]">Verifique seu WhatsApp.</p>
             
             {/* BARRA DE XP NA TELA DE SUCESSO */}
-            <div className="w-full mb-8 bg-[#1C1C1E] p-4 rounded-[20px] border border-white/10 text-left">
-                <LevelProgressBar data={loyalty} />
-            </div>
+<div className="w-full mb-8 bg-[#1C1C1E] p-4 rounded-[20px] border border-white/10 text-left">
+    <LevelProgressBar data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
+</div>
 
             <button onClick={() => window.open(lastOrderLink, '_blank')} className="mb-4 w-full flex items-center justify-center gap-2 text-[15px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 py-3.5 rounded-xl border border-[#0A84FF]/20 hover:bg-[#0A84FF]/20 transition-colors">
                 <Send className="w-4 h-4"/> Reenviar Mensagem
