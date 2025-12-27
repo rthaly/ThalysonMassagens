@@ -3,10 +3,10 @@ import {
   ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
   Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2
+  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren
 } from 'lucide-react';
 
-// --- ESTILOS GLOBAIS (DESIGN SYSTEM RESTAURADO) ---
+// --- ESTILOS GLOBAIS ---
 const globalStyles = `
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { font-size: 16px; background-color: #000000; }
@@ -95,17 +95,18 @@ const services = [
   },
 ];
 
+// ORDEM ALTERADA: MOTEL -> CASA -> OUTRAS
 const locations = [
-  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', fee: 40, allowsTableChoice: true, estimatedTravelTime: '15-20 min' },
-  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: 0, allowsTableChoice: false, estimatedTravelTime: 'A combinar', input: true },
   { 
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
     sublabel: 'Vou com você (Taxa R$75 inclusa)', 
-    fee: 75, // Valor SOMADO no APP conforme pedido
+    fee: 75, 
     allowsTableChoice: false, 
     estimatedTravelTime: '10-15 min' 
   },
+  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', fee: 40, allowsTableChoice: true, estimatedTravelTime: '15-20 min' },
+  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: 0, allowsTableChoice: false, estimatedTravelTime: 'A combinar', input: true },
 ];
 
 const SYSTEM_COUPONS = {
@@ -124,11 +125,29 @@ const LEVELS = [
 const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
 const musicVibes = ['Silêncio 🤫', 'Zen 🧘', 'Natureza 🌿']; 
 
+// AVALIAÇÕES REALISTAS (20+)
 const REVIEWS_DB = [
-  { t: "Sigilo total, gostei muito.", a: "Anônimo", r: 5 },
-  { t: "Mãos firmes, aliviou tudo.", a: "Ricardo", r: 5 },
-  { t: "A massagem masculina é top.", a: "Marcos", r: 5 },
-  { t: "Atendimento no motel foi excelente.", a: "J.P.", r: 5 }
+  { t: "Sou casado, sigilo foi absoluto. A finalização foi de tremer as pernas.", a: "R.S.", r: 5 },
+  { t: "Nunca senti nada igual. Gemi sem vergonha nenhuma, que alívio!", a: "Anônimo", r: 5 },
+  { t: "Toque macio e firme ao mesmo tempo. A explosão no final foi incrível.", a: "Carlos", r: 5 },
+  { t: "Mãos de fada. Fiquei muito à vontade, gozei muito no final.", a: "M.V.", r: 5 },
+  { t: "Sensação única. O corpo a corpo me deixou louco.", a: "Empresário Sigiloso", r: 5 },
+  { t: "Fui no motel e foi perfeito. O Thaly entende o que homem precisa.", a: "João", r: 5 },
+  { t: "Estava travado de stress, saí flutuando e leve.", a: "P.H.", r: 5 },
+  { t: "Melhor massagem da região. O final é inesquecível.", a: "Visitante", r: 5 },
+  { t: "Discrição total, o que é fundamental pra mim. Recomendo.", a: "Casado, 45", r: 5 },
+  { t: "A massagem tântrica dele é de verdade. Energia pura.", a: "L.A.", r: 5 },
+  { t: "Vale cada centavo. Saí renovado e satisfeito.", a: "Anônimo", r: 5 },
+  { t: "O toque dele arrepia até a alma. Voltarei sempre.", a: "Ricardo", r: 5 },
+  { t: "Ambiente super seguro. Me senti rei.", a: "Felipe", r: 5 },
+  { t: "Técnica perfeita. Demorei pra voltar pro chão depois.", a: "G.T.", r: 5 },
+  { t: "Sem pressa, muito atencioso. A melhor finalização.", a: "Anônimo", r: 5 },
+  { t: "Experiência completa. Relaxamento e prazer na medida.", a: "B.C.", r: 5 },
+  { t: "Sou exigente e gostei muito. Profissional e safado na medida certa.", a: "Diretor", r: 5 },
+  { t: "Sensacional. O sigilo me deixou tranquilo para curtir tudo.", a: "M.J.", r: 5 },
+  { t: "Massagem top. O corpo a corpo é quente demais.", a: "Anônimo", r: 5 },
+  { t: "Alívio imediato. Precisava muito disso.", a: "R.R.", r: 5 },
+  { t: "Serviço VIP de verdade. Tratamento diferenciado.", a: "Advogado", r: 5 }
 ];
 
 // --- UTILS ---
@@ -143,7 +162,7 @@ const generateBookingId = () => {
     return result;
 };
 
-// --- COMPONENTES UI (RESTAURADOS) ---
+// --- COMPONENTES UI ---
 
 const LiveStatus = () => {
   const [idx, setIdx] = useState(0);
@@ -203,7 +222,6 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
   );
 };
 
-// Reviews agora rodam sozinhas
 const ReviewsCarousel = () => {
   const [idx, setIdx] = useState(0);
   useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 4000); return () => clearInterval(t); }, []);
@@ -454,6 +472,8 @@ export default function App() {
   };
 
   const handleCopyPix = () => { navigator.clipboard.writeText("62922530000144"); alert("CNPJ Pix Copiado!"); }; 
+  const handlePanic = () => { window.location.href = "https://www.google.com"; };
+  const handleShare = () => { if(navigator.share) navigator.share({title:'Thalyson Massagens', text:'Agende agora', url: window.location.href}); };
 
   const handleAddManualCoupon = (code) => {
       if (!loyalty.inventory.includes(code)) {
@@ -481,16 +501,6 @@ export default function App() {
       else total -= selection.coupon.value;
     }
     return Math.max(0, total);
-  }
-
-  const calcOriginalPrice = () => {
-    if (!selection.service) return 0;
-    let total = selection.service.basePrice;
-    if (selection.location?.fee) total += selection.location.fee;
-    if (selection.upgrade) total += selection.service.basePrice * 0.5;
-    if (selection.useTable) total += 20;
-    if (selection.aroma) total += 10;
-    return total;
   }
 
   const calcFinalPrice = () => {
@@ -668,13 +678,20 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
             <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
             <LiveStatus />
 
-            <div className="flex gap-3 mb-6">
-                <button onClick={() => setShowFaq(true)} className="flex-1 bg-[#1C1C1E] border border-white/10 p-3 rounded-xl flex items-center justify-center gap-2 text-[13px] font-medium text-gray-300">
-                   <Shield className="w-4 h-4"/> Conduta
+            {/* BOTÕES TOPO (CONDUTA, COMPARTILHAR, FULGA) */}
+            <div className="grid grid-cols-3 gap-3 mb-6">
+                <button onClick={() => setShowFaq(true)} className="flex flex-col items-center justify-center bg-[#1C1C1E] border border-white/10 p-3 rounded-xl gap-1.5 active:bg-[#333]">
+                   <Shield className="w-5 h-5 text-gray-300"/> 
+                   <span className="text-[11px] font-bold text-gray-300">Conduta</span>
                 </button>
-                <a href="https://instagram.com/thalymassagens" target="_blank" className="flex-1 bg-[#1C1C1E] border border-white/10 p-3 rounded-xl flex items-center justify-center gap-2 text-[13px] font-medium text-[#E1306C]">
-                   <Instagram className="w-4 h-4"/> Instagram
-                </a>
+                <button onClick={handleShare} className="flex flex-col items-center justify-center bg-[#1C1C1E] border border-white/10 p-3 rounded-xl gap-1.5 active:bg-[#333]">
+                   <Share2 className="w-5 h-5 text-gray-300"/> 
+                   <span className="text-[11px] font-bold text-gray-300">Compartilhar</span>
+                </button>
+                <button onClick={handlePanic} className="flex flex-col items-center justify-center bg-[#2C1C1C] border border-red-500/20 p-3 rounded-xl gap-1.5 active:bg-red-900/40">
+                   <LogOut className="w-5 h-5 text-red-500"/> 
+                   <span className="text-[11px] font-bold text-red-500">Sair/Fuga</span>
+                </button>
              </div>
 
             <div className="flex justify-between items-center mb-6 px-1">
@@ -687,6 +704,11 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
               <button onClick={handleQuickSchedule} className="w-full ios-btn-primary font-bold py-4 rounded-[22px] shadow-lg flex justify-center items-center gap-2 text-[17px]">
                 Agendar Sessão <ArrowRight className="w-5 h-5" />
               </button>
+              
+              {/* INSTAGRAM NO RODAPÉ */}
+              <a href="https://instagram.com/thalymassagens" target="_blank" className="mt-4 w-full bg-[#1C1C1E] border border-white/10 p-3 rounded-xl flex items-center justify-center gap-2 text-[13px] font-medium text-[#E1306C] hover:bg-white/5 transition-colors">
+                   <Instagram className="w-4 h-4"/> Siga no Instagram
+              </a>
             </div>
           </div>
         )}
@@ -846,19 +868,19 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
               <div className="mt-6" ref={paymentRef}>
                 <h4 className="text-[13px] font-semibold text-gray-400 uppercase mb-3 tracking-wide">Pagamento</h4>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'pix'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'pix' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
+                  <button onClick={() => setSelection({...selection, paymentMethod: 'pix'})} className={`h-24 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'pix' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
                     <QrCode className="w-6 h-6 text-[#0A84FF]" />
                     <span className="text-[13px] font-bold text-white">Pix</span>
                   </button>
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'cash'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'cash' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
+                  <button onClick={() => setSelection({...selection, paymentMethod: 'cash'})} className={`h-24 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'cash' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
                     <Banknote className="w-6 h-6 text-[#30D158]" />
                     <span className="text-[13px] font-bold text-white">Dinheiro</span>
                   </button>
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'debit_card'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'debit_card' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
+                  <button onClick={() => setSelection({...selection, paymentMethod: 'debit_card'})} className={`h-24 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'debit_card' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
                     <CreditCard className="w-6 h-6 text-[#0A84FF]" />
                     <span className="text-[13px] font-bold text-white">Débito</span>
                   </button>
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'credit_card'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'credit_card' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
+                  <button onClick={() => setSelection({...selection, paymentMethod: 'credit_card'})} className={`h-24 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'credit_card' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
                     <CreditCard className="w-6 h-6 text-[#FFD60A]" />
                     <span className="text-[13px] font-bold text-white">Crédito</span>
                   </button>
@@ -914,7 +936,7 @@ Olá, aguardo confirmação para relaxar. (Via App Beta)`;
           </div>
         )}
 
-        {/* TELA SUCESSO (Com botão voltar mantendo sessão) */}
+        {/* TELA SUCESSO */}
         {step === 'success' && (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
             <div className="w-24 h-24 bg-[#30D158] rounded-full flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(48,209,88,0.4)] animate-scale">
