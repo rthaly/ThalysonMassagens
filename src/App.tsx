@@ -811,9 +811,6 @@ ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(
 ${priceDisplay}
 (Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
 ------------------------------
-
-💸 *Líquido Massagista: ${formatCurrency(netMasseur)}*
-
 🎵 Vibe: ${selection.music}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
