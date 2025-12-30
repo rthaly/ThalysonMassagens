@@ -16,29 +16,36 @@
                             
 
               <script>
-                              // ==================================================================================
-// 1. ESTILOS GLOBAIS E CONFIGURAÇÕES INICIAIS
-// ==================================================================================
-const globalStyles = `
-/* Reset & Base */
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { font-size: 16px; background-color: #000000; }
-body {
-  overscroll-behavior-y: none;
-  touch-action: manipulation;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  letter-spacing: -0.02em;
-  color: #fff;
-  background: #000;
-  -webkit-font-smoothing: antialiased;
-}
-/* Scrollbar Hide */
-::-webkit-scrollbar { display: none; }
-`;
+                              // @ts-nocheck
+import { useState, useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
+import {
+  Heart,
+  Bell,
+  Menu,
+  X,
+  ChevronRight,
+  Check,
+  Plus,
+  Minus,
+  ArrowLeft,
+  Star,
+  Sparkles,
+  Award,
+  MapPin,
+  Clock,
+  Music,
+  Calendar,
+  User,
+  Phone,
+  Home,
+  Truck,
+  CreditCard,
+  Gift,
+  DollarSign,
+  CheckCircle,
+} from "lucide-react";
 
-// ==================================================================================
-// 2. CENTRAL DE PREÇOS E DADOS
-// ==================================================================================
 const CONFIG = {
   PRICES: {
     MACA: 20,
@@ -122,9 +129,6 @@ const SYSTEM_COUPONS = {
   MASCULINA: { code: "MASCULINA", type: "percent", value: 10, desc: "10% OFF Especial" },
 };
 
-// ==================================================================================
-// 3. LÓGICA DO SISTEMA
-// ==================================================================================
 const formatCurrency = (val) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
 
@@ -150,9 +154,6 @@ const validateFields = (selection, user) => {
 
 const generateBookingId = () => `#${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-// ==================================================================================
-// 4. COMPONENTES REATIVOS
-// ==================================================================================
 const App = () => {
   const [user, setUser] = useState({ name: "", isAdult: false });
   const [step, setStep] = useState("home");
@@ -327,9 +328,6 @@ ${
   );
 };
 
-// ==================================================================================
-// 5. COMPONENTES INDIVIDUAIS
-// ==================================================================================
 const HomeScreen = ({ setStep }) => (
   <div className="flex flex-col items-center justify-center h-screen">
     <h1 className="text-4xl font-bold text-white mb-8">Agendamento Online</h1>
@@ -422,9 +420,6 @@ const SuccessScreen = ({ handleWhatsApp, loyalty }) => (
   </div>
 );
 
-// ==================================================================================
-// 6. COMPONENTES AUXILIARES
-// ==================================================================================
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   const DAYS_TO_SHOW = 16;
   const days = [];
@@ -593,9 +588,6 @@ const LevelProgressBar = ({ data }) => (
   </div>
 );
 
-// ==================================================================================
-// RENDERIZAÇÃO FINAL
-// ==================================================================================
 ReactDOM.render(<App />, document.getElementById("root"));
 
 
