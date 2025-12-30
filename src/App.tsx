@@ -3,39 +3,34 @@ import {
   ChevronLeft, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
   Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car, Menu, Smartphone, Sparkles, Settings, MoreHorizontal
+  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, 
+  AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, 
+  Car, Menu, Smartphone, Sparkles, Settings, MoreHorizontal
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. INFRAESTRUTURA DE SEGURANÇA & ARMAZENAMENTO
+// 1. INFRAESTRUTURA & SEGURANÇA
 // ==================================================================================
 
 const SecureStorage = {
-  SECRET: 'THALY_FINAL_ULTIMATE_V4_',
-  encrypt: (data) => {
-    try { return btoa(encodeURIComponent(JSON.stringify(data))); } catch (e) { return null; }
-  },
-  decrypt: (cipher) => {
-    try { return JSON.parse(decodeURIComponent(atob(cipher))); } catch (e) { return null; }
-  },
+  SECRET: 'THALY_FINAL_V5_',
+  encrypt: (data) => { try { return btoa(encodeURIComponent(JSON.stringify(data))); } catch (e) { return null; } },
+  decrypt: (cipher) => { try { return JSON.parse(decodeURIComponent(atob(cipher))); } catch (e) { return null; } },
   set: (key, data) => {
     const cipher = SecureStorage.encrypt(data);
     if (cipher) localStorage.setItem(SecureStorage.SECRET + key, cipher);
   },
   get: (key) => {
     const cipher = localStorage.getItem(SecureStorage.SECRET + key);
-    // Fallback para recuperar dados antigos do usuário se existirem
     if (!cipher) {
+        // Tenta recuperar dados antigos
         const old = localStorage.getItem('thaly_system_v22');
         if(old) { try { return JSON.parse(old); } catch(e) { return null; } }
         return null;
     }
     return cipher ? SecureStorage.decrypt(cipher) : null;
   },
-  clear: () => {
-      localStorage.removeItem('thaly_system_v22'); 
-      localStorage.clear();
-  }
+  clear: () => { localStorage.clear(); }
 };
 
 const generateBookingId = () => {
@@ -57,105 +52,47 @@ const generateCalendarLink = (serviceName, date, time) => {
 };
 
 // ==================================================================================
-// 2. ESTILOS GLOBAIS (CSS IN JS)
+// 2. ESTILOS GLOBAIS
 // ==================================================================================
 
 const globalStyles = `
-/* Reset & Base */
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { font-size: 16px; background-color: #000000; }
-body { 
-  overscroll-behavior-y: none; touch-action: manipulation; 
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif; 
-  letter-spacing: -0.02em; color: #fff; background: #000; -webkit-font-smoothing: antialiased;
-}
-::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* Aurora Background */
-.aurora-bg {
-  background: radial-gradient(140% 100% at 50% 0%, rgba(20, 20, 22, 1), #000000 60%), radial-gradient(100% 100% at 50% 100%, rgba(10, 132, 255, 0.04), transparent 50%);
-  background-attachment: fixed; background-size: cover; min-height: 100vh;
-}
-
-/* UI Elements */
-.ios-card { 
-  background: rgba(28, 28, 30, 0.55); backdrop-filter: blur(50px);
-  border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  transition: transform 0.2s ease;
-}
+body { overscroll-behavior-y: none; touch-action: manipulation; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; color: #fff; background: #000; -webkit-font-smoothing: antialiased; }
+::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.aurora-bg { background: radial-gradient(140% 100% at 50% 0%, rgba(20, 20, 22, 1), #000000 60%), radial-gradient(100% 100% at 50% 100%, rgba(10, 132, 255, 0.04), transparent 50%); background-attachment: fixed; background-size: cover; min-height: 100vh; }
+.ios-card { background: rgba(28, 28, 30, 0.55); backdrop-filter: blur(50px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); transition: transform 0.2s ease; }
 .ios-card:active { transform: scale(0.99); }
-
-.ios-btn-primary {
-  background: #007AFF; color: white; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); border: none;
-}
+.ios-btn-primary { background: #007AFF; color: white; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); border: none; }
 .ios-btn-primary:active { transform: scale(0.98); opacity: 0.9; }
-.ios-btn-primary:disabled { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; }
-
-.custom-input {
-  background: rgba(28, 28, 30, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white; transition: all 0.3s ease;
-}
+.ios-btn-primary:disabled { filter: grayscale(1); opacity: 0.5; }
+.custom-input { background: rgba(28, 28, 30, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white; transition: all 0.3s ease; }
 .custom-input:focus { border-color: #0A84FF; box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.2); }
-
-/* 3D FLIP CARD */
 .flip-container { perspective: 1000px; }
-.flip-card { 
-  position: relative; width: 100%; height: 100%; text-align: center; 
-  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; 
-}
+.flip-card { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
 .flip-card.flipped { transform: rotateY(180deg); }
-.flip-front, .flip-back { 
-  position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; 
-  border-radius: 28px; overflow: hidden;
-}
+.flip-front, .flip-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 28px; overflow: hidden; }
 .flip-back { transform: rotateY(180deg); background: #1C1C1E; border: 1px solid rgba(255,255,255,0.1); }
-
-/* TOASTS */
 .toast-container { position: fixed; top: 10px; left: 0; right: 0; z-index: 9999; display: flex; flex-col; align-items: center; gap: 8px; pointer-events: none; }
-.toast { pointer-events: auto; background: rgba(30,30,30,0.95); backdrop-filter: blur(12px); color: white; padding: 12px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; items-center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); animation: slideDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.toast.error { border-left: 4px solid #FF3B30; }
-.toast.success { border-left: 4px solid #32D74B; }
-.toast.info { border-left: 4px solid #0A84FF; }
-
-/* ANIMATIONS */
+.toast { pointer-events: auto; background: rgba(30,30,30,0.95); backdrop-filter: blur(12px); color: white; padding: 12px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; items-center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); animation: slideDown 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+@keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .animate-fade-in { animation: fadeIn 0.6s ease forwards; }
-.animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.animate-pulse-slow { animation: pulse 3s infinite; }
-.animate-spin-slow { animation: spin 1.5s linear infinite; }
+.animate-slide-up { animation: slideUp 0.6s ease forwards; }
 .animate-float { animation: float 3s ease-in-out infinite; }
 `;
 
-const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
-
 // ==================================================================================
-// 3. DADOS DO SISTEMA (COMPLETOS)
+// 3. DADOS
 // ==================================================================================
 
-const CONFIG = {
-  PRICES: { MACA: 20, AROMA_FULL: 10, AROMA_DISCOUNT: 5, UPGRADE_PCT: 0.5 }
-};
+const CONFIG = { PRICES: { MACA: 20, AROMA_FULL: 10, AROMA_DISCOUNT: 5, UPGRADE_PCT: 0.5 } };
 
 const services = [
-  { 
-    id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
-    description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
-    labelDuration: '60 min', minutes: 60, basePrice: 140, 
-    highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
-    details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] 
-  },
-  { 
-    id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
-    description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', 
-    labelDuration: '60 min', minutes: 60, basePrice: 90, 
-    ratings: 4.9, reviews: 142, 
-    details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] 
-  },
+  { id: 'masculina', name: 'Massagem Masculina', type: 'sensual', description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', labelDuration: '60 min', basePrice: 140, highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] },
+  { id: 'relaxante', name: 'Massagem Relaxante', type: 'relax', description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', labelDuration: '60 min', basePrice: 90, ratings: 4.9, reviews: 142, details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] },
 ];
 
 const locations = [
@@ -174,33 +111,28 @@ const SYSTEM_COUPONS = {
 };
 
 const LEVELS = [
-  { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', perks: ["Acesso VIP", "Agendamento Rápido"] },
-  { name: 'Prata', min: 400, rewardCode: 'NIVELPRATA', icon: '🥈', perks: ["Cupom R$ 15 (Ganhou!)", "Aroma 50% OFF"] },
-  { name: 'Ouro', min: 900, rewardCode: 'NIVELOURO', icon: '🥇', perks: ["Cupom R$ 25 (Ganhou!)", "Aroma GRÁTIS"] },
-  { name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: ["Cupom R$ 50 (Ganhou!)", "Prioridade Total"] },
+  { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', perks: ["Acesso VIP", "Agendamento"] },
+  { name: 'Prata', min: 400, rewardCode: 'NIVELPRATA', icon: '🥈', perks: ["Cupom R$ 15", "Aroma 50% OFF"] },
+  { name: 'Ouro', min: 900, rewardCode: 'NIVELOURO', icon: '🥇', perks: ["Cupom R$ 25", "Aroma GRÁTIS"] },
+  { name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: ["Cupom R$ 50", "Prioridade Total"] },
 ];
 
 const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
-const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘', 'Lofi HipHop ☕']; 
-
+const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘', 'Lofi ☕']; 
 const REVIEWS_DB = [
   { t: "Sou casado, o sigilo foi total. A massagem tântrica me surpreendeu.", a: "Sigiloso (44 anos)", r: 5 },
-  { t: "Nunca tinha feito tântrica. A sensibilidade que ele desperta no corpo é absurda.", a: "R.S. (Santa Fé)", r: 5 },
-  { t: "Mão leve e firme ao mesmo tempo. A manipulação no lingam me levou às alturas.", a: "Anônimo", r: 5 },
-  { t: "Profissionalismo puro. Massagem relaxante de verdade, com um final feliz incrível.", a: "D.S.", r: 5 },
-  { t: "Discrição garantida. Para quem é casado e quer relaxar sem preocupação.", a: "Empresário", r: 5 },
-  { t: "Primeira vez recebendo massagem no lingam. Foi uma descoberta.", a: "Pedro (24 anos)", r: 5 },
-  { t: "Gozei tanto que fiquei sem pernas. Vergonha rs, mas foi muito bom.", a: "Safado", r: 5 },
-  { t: "O toque de cueca roçando... excitante demais.", a: "Curioso (30)", r: 5 },
-  { t: "Experiência completa. Banho, tântrica e alívio manual. Nota 10.", a: "M.S.", r: 5 }
+  { t: "Nunca tinha feito tântrica. Sensibilidade absurda.", a: "R.S. (Santa Fé)", r: 5 },
+  { t: "Mão leve e firme. A manipulação no lingam me levou às alturas.", a: "Anônimo", r: 5 },
+  { t: "Profissionalismo puro. Massagem relaxante de verdade.", a: "D.S.", r: 5 },
+  { t: "Discrição garantida. O lugar é perfeito.", a: "Empresário", r: 5 },
+  { t: "Gozei tanto que fiquei sem pernas. Vergonha rs, mas foi muito bom.", a: "Safado", r: 5 }
 ];
-
 const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
 const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(5); };
 
 // ==================================================================================
-// 4. COMPONENTES DE UI
+// 4. COMPONENTES
 // ==================================================================================
 
 const InstallPrompt = () => {
@@ -214,10 +146,7 @@ const InstallPrompt = () => {
   return (
     <div className="fixed bottom-6 left-6 right-6 z-50 animate-slide-up">
       <div className="bg-[#1C1C1E] p-4 rounded-2xl border border-white/10 shadow-2xl flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#0A84FF] rounded-lg flex items-center justify-center"><Smartphone className="text-white w-6 h-6"/></div>
-          <div><p className="text-white font-bold text-sm">Instalar App</p><p className="text-gray-400 text-xs">Acesso rápido e offline</p></div>
-        </div>
+        <div className="flex items-center gap-3"><div className="w-10 h-10 bg-[#0A84FF] rounded-lg flex items-center justify-center"><Smartphone className="text-white w-6 h-6"/></div><div><p className="text-white font-bold text-sm">Instalar App</p><p className="text-gray-400 text-xs">Acesso rápido e offline</p></div></div>
         <button onClick={() => setShow(false)} className="p-2 bg-white/10 rounded-full"><X className="w-4 h-4"/></button>
       </div>
     </div>
@@ -226,7 +155,7 @@ const InstallPrompt = () => {
 
 const LiveStatus = () => {
   const [idx, setIdx] = useState(0);
-  const msgs = ["Atendimento em andamento 💆‍♂️", "Horários da noite acabando 🌙", "Anônimo acabou de agendar 🔥", "Segurança garantida 🔒"];
+  const msgs = ["Atendimento em andamento 💆‍♂️", "Horários da noite acabando 🌙", "Anônimo acabou de agendar 🔥"];
   useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%msgs.length), 4000); return () => clearInterval(t); }, []);
   return (
     <div className="flex justify-center mb-6">
@@ -240,13 +169,10 @@ const LiveStatus = () => {
 
 const LoyaltyFlipCard = ({ data, privacyMode, onTogglePrivacy }) => {
   const [flipped, setFlipped] = useState(false);
-  const safeSpent = (data && typeof data.totalSpent === 'number') ? data.totalSpent : 0;
-  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => safeSpent >= l.min);
-  const currentLevel = currentLevelIdx !== -1 ? LEVELS[LEVELS.length - 1 - currentLevelIdx] : LEVELS[0];
-  const nextLevel = currentLevelIdx !== -1 && (LEVELS.length - 1 - currentLevelIdx + 1) < LEVELS.length ? LEVELS[LEVELS.length - 1 - currentLevelIdx + 1] : null;
-  const min = currentLevel.min || 0;
-  const nextMin = nextLevel ? nextLevel.min : min + 1;
-  const progress = nextLevel ? Math.min(100, Math.max(0, ((safeSpent - min) / (nextMin - min)) * 100)) : 100;
+  const safeSpent = data.totalSpent || 0;
+  const currentLevel = [...LEVELS].reverse().find(l => safeSpent >= l.min) || LEVELS[0];
+  const nextLevel = LEVELS[LEVELS.indexOf(currentLevel) + 1];
+  const progress = nextLevel ? Math.min(100, Math.max(0, ((safeSpent - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100)) : 100;
 
   return (
     <div className="flip-container h-48 mb-6" onClick={() => { triggerHaptic(); setFlipped(!flipped); }}>
@@ -254,32 +180,18 @@ const LoyaltyFlipCard = ({ data, privacyMode, onTogglePrivacy }) => {
         <div className="flip-front ios-card p-5 relative bg-gradient-to-br from-[#1C1C1E] to-[#000]">
           <div className="absolute top-0 right-0 p-4 opacity-50"><MoreHorizontal className="w-5 h-5 text-gray-400"/></div>
           <div className="flex flex-col h-full justify-between">
-            <div className='text-left'>
-              <p className="text-[10px] uppercase tracking-widest text-[#0A84FF] font-bold mb-1">Thalyson Rewards</p>
-              <h3 className="text-2xl font-bold text-white flex items-center gap-2">{currentLevel.name} {currentLevel.icon}</h3>
-            </div>
+            <div className='text-left'><p className="text-[10px] uppercase tracking-widest text-[#0A84FF] font-bold mb-1">Thalyson Rewards</p><h3 className="text-2xl font-bold text-white flex items-center gap-2">{currentLevel.name} {currentLevel.icon}</h3></div>
             <div>
-              <div className="flex justify-between items-end mb-2">
-                <span className="text-xs text-gray-400">{privacyMode ? '••••' : formatCurrency(safeSpent)} investidos</span>
-                <span className="text-xs font-bold text-[#32D74B]">{progress.toFixed(0)}%</span>
-              </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[#0A84FF] to-[#32D74B] transition-all duration-1000" style={{ width: `${progress}%` }}/>
-              </div>
-              <div className="flex justify-between text-[9px] text-gray-500 font-medium tracking-wide mt-2">
-                <span>Benefício: <span className="text-[#32D74B]">{currentLevel.perks[1]}</span></span>
-                {nextLevel ? (<span>Faltam {formatCurrency(nextLevel.min - safeSpent)}</span>) : (<span className="text-[#FFD60A]">Nível Máximo</span>)}
-              </div>
+              <div className="flex justify-between items-end mb-2"><span className="text-xs text-gray-400">{privacyMode ? '••••' : formatCurrency(safeSpent)} investidos</span><span className="text-xs font-bold text-[#32D74B]">{progress.toFixed(0)}%</span></div>
+              <div className="h-2 bg-white/10 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-[#0A84FF] to-[#32D74B] transition-all duration-1000" style={{ width: `${progress}%` }}/></div>
+              <div className="flex justify-between text-[9px] text-gray-500 font-medium tracking-wide mt-2"><span>Benefício: <span className="text-[#32D74B]">{currentLevel.perks[1]}</span></span>{nextLevel ? (<span>Faltam {formatCurrency(nextLevel.min - safeSpent)}</span>) : (<span className="text-[#FFD60A]">Nível Máximo</span>)}</div>
             </div>
           </div>
         </div>
         <div className="flip-back flex flex-col items-center justify-center p-5 relative bg-[#111]">
           <div className="absolute top-4 left-4 text-[10px] text-gray-500 uppercase font-bold">Seu ID de Membro</div>
-          <div className="bg-white p-2 rounded-xl">
-            <QrCode className="w-24 h-24 text-black"/>
-          </div>
-          <p className="text-gray-400 text-xs mt-3 font-mono tracking-widest">MEMBER-{data.savedName ? data.savedName.slice(0,3).toUpperCase() : 'GUEST'}-{Math.floor(Math.random()*999)}</p>
-          <p className="text-[10px] text-[#0A84FF] mt-2 animate-pulse">Apresente para Check-in</p>
+          <div className="bg-white p-2 rounded-xl"><QrCode className="w-24 h-24 text-black"/></div>
+          <p className="text-gray-400 text-xs mt-3 font-mono tracking-widest">MEMBER-{data.savedName ? data.savedName.slice(0,3).toUpperCase() : 'GUEST'}</p>
         </div>
       </div>
     </div>
@@ -311,17 +223,11 @@ const SmartDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       const slotDate = new Date(date);
       const [h, m] = timeStr.split(':').map(Number);
       slotDate.setHours(h, m, 0, 0);
-      
       const nowTime = new Date();
-      // Se a data do slot for anterior a agora, bloqueia
-      if (slotDate < nowTime) return true;
-
-      // Calcula diferença em minutos
+      if (slotDate < nowTime) return true; // Já passou
       const diffMs = slotDate - nowTime;
       const diffMins = diffMs / 1000 / 60; 
-
-      // Regra: Bloqueia se faltar menos de 40 minutos para o horário
-      return diffMins < 40; 
+      return diffMins < 40; // Bloqueia se faltar menos de 40 minutos
   };
 
   const getDayLabel = (d) => {
@@ -335,8 +241,6 @@ const SmartDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   return (
     <div className="w-full select-none">
       <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1">Data & Horário</h4>
-      
-      {/* Scroll de Dias */}
       <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide px-1">
         {days.map((d, i) => {
           const isSel = selectedDate?.getDate() === d.getDate() && selectedDate?.getMonth() === d.getMonth();
@@ -350,8 +254,6 @@ const SmartDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
           )
         })}
       </div>
-
-      {/* Grid de Horários */}
       {selectedDate && (
         <div className="animate-slide-up mt-2">
            <div className="grid grid-cols-4 gap-3">
@@ -367,10 +269,7 @@ const SmartDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
                    )
                })}
            </div>
-           <div className="mt-4 flex items-center gap-2 text-gray-500 text-[11px] bg-[#1C1C1E] p-3 rounded-xl border border-white/5">
-                <Clock className="w-3.5 h-3.5"/>
-                <span>Disponível com 40 min de antecedência.</span>
-           </div>
+           <div className="mt-4 flex items-center gap-2 text-gray-500 text-[11px] bg-[#1C1C1E] p-3 rounded-xl border border-white/5"><Clock className="w-3.5 h-3.5"/><span>Mínimo 40 min de antecedência.</span></div>
         </div>
       )}
     </div>
@@ -380,16 +279,13 @@ const SmartDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
 const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddManual, addToast }) => {
   const [manualCode, setManualCode] = useState('');
   const myCoupons = inventory.map((c) => SYSTEM_COUPONS[c]).filter(Boolean);
-
   const handleManualAdd = () => {
       const codeUpper = manualCode.toUpperCase().trim();
       if(codeUpper && SYSTEM_COUPONS[codeUpper]) {
-          if(!inventory.includes(codeUpper)) {
-             onAddManual(codeUpper); setManualCode(''); triggerHaptic(); addToast('Cupom adicionado!', 'success');
-          } else addToast('Você já tem este cupom.', 'info');
+          if(!inventory.includes(codeUpper)) { onAddManual(codeUpper); setManualCode(''); triggerHaptic(); addToast('Cupom adicionado!', 'success'); } 
+          else addToast('Você já tem este cupom.', 'info');
       } else addToast('Cupom inválido.', 'error');
   };
-
   return (
     <div className="space-y-4 mt-8">
       <div className="flex justify-between items-center ml-1 mb-2"><h4 className="text-[12px] font-semibold text-gray-500 uppercase tracking-wide">Cupons</h4></div>
@@ -449,11 +345,8 @@ export default function App() {
   const [privacyMode, setPrivacyMode] = useState(true);
 
   // Init
-  useEffect(() => { document.title = "Massagens Relaxantes"; setTimeout(() => setLoading(false), 2000); }, []);
-  useEffect(() => { SecureStorage.set('DATA', loyalty); if (loyalty.savedName) { setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true})); } }, [loyalty]);
-  useEffect(() => { const hr = new Date().getHours(); setWeatherHint(hr < 18 ? "☀️ Dia ideal para relaxar" : "🌙 Noite perfeita para relaxar"); }, []);
-  useEffect(() => { if (selection.location?.allowsTableChoice && step === 'configure') { setTimeout(() => surfaceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300); } }, [selection.location, step]);
-  useEffect(() => { if (step === 'home') { homeRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); } }, [step]);
+  useEffect(() => { setTimeout(() => setLoading(false), 1500); if(loyalty.savedName) setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true})); }, []);
+  useEffect(() => { SecureStorage.set('DATA', loyalty); }, [loyalty]);
 
   const addToast = (msg, type = 'info') => {
     const id = Date.now(); setToasts(prev => [...prev, { id, msg, type }]);
@@ -508,7 +401,7 @@ export default function App() {
                       (selection.location.requiresAddress ? (selection.address.street && selection.address.number && selection.address.district) : true);
 
   const handlePreFinalize = () => {
-    if (!canFinalize) { addToast("Preencha todos os campos obrigatórios (incluindo endereço).", "error"); return; }
+    if (!canFinalize) { addToast("Preencha todos os campos obrigatórios!", "error"); return; }
     if (selection.coupon && !loyalty.inventory.includes(selection.coupon.code)) { addToast("Cupom inválido.", "error"); setSelection(prev => ({ ...prev, coupon: null })); return; }
     
     if (!selection.upgrade && !selection.aroma) {
