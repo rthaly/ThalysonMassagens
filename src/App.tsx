@@ -461,7 +461,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
     </div>
   );
 };
-
       {/* SELETOR DE HORÁRIOS */}
       {selectedDate && (
         <div className="animate-fade-in space-y-5">
