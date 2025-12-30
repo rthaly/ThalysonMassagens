@@ -310,12 +310,13 @@ const ReviewsCarousel = () => {
 
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   const now = new Date();
-  const currentMonth = now.getMonth();
+  
+  // 1. MELHORIA: Gera sempre os próximos 14 dias (independente de virar o mês)
   const days = [];
-  let tempDate = new Date(now);
-  while (tempDate.getMonth() === currentMonth) {
-      days.push(new Date(tempDate));
-      tempDate.setDate(tempDate.getDate() + 1);
+  for (let i = 0; i < 14; i++) {
+      const d = new Date(now);
+      d.setDate(now.getDate() + i);
+      days.push(d);
   }
    
   const isTimeBlocked = (t, d) => {
@@ -323,43 +324,98 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
     const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
     if (!isToday) return false;
     const [h] = t.split(':').map(Number);
-    return h <= now.getHours();
+    return h <= now.getHours() + 1; // +1 para dar tempo de antecedência
   };
 
   const getDayLabel = (d) => {
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      // Compara dia/mês/ano para ser preciso
       if (d.toDateString() === today.toDateString()) return 'HOJE';
       if (d.toDateString() === tomorrow.toDateString()) return 'AMANHÃ';
-      return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3);
+      
+      // Retorna dia da semana (Seg, Ter...)
+      return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3).replace('.','');
   };
+
+  const getMonthLabel = (d) => {
+      return d.toLocaleDateString('pt-BR', {month: 'short'}).slice(0,3).toUpperCase();
+  }
+
+  // 2. MELHORIA: Agrupamento de horários
+  const periods = [
+      { label: 'Manhã ☀️', slots: ['09:00', '10:00', '11:00'] },
+      { label: 'Tarde 🌤️', slots: ['13:00', '14:00', '15:00', '16:00', '17:00'] },
+      { label: 'Noite 🌙', slots: ['18:00', '19:00', '20:00', '21:00'] }
+  ];
 
   return (
     <div>
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-4">
+      {/* SELETOR DE DIAS (Carrossel) */}
+      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-6 px-1">
         {days.map((d, i) => {
-          const isSel = selectedDate?.getDate() === d.getDate();
+          const isSel = selectedDate?.toDateString() === d.toDateString();
           const label = getDayLabel(d);
+          const month = getMonthLabel(d); // Pega o mês (DEZ, JAN)
+          
           return (
-            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-[18px] transition-all duration-300 ${isSel ? 'bg-[#0A84FF] text-white shadow-lg scale-105' : 'bg-[#2C2C2E] text-gray-400 border border-white/5'}`}>
-              <span className={`text-[10px] uppercase font-bold tracking-wide opacity-80 ${label === 'HOJE' ? 'text-[#32D74B]' : ''}`}>{label}</span>
-              <span className="text-2xl font-semibold mt-1 font-mono">{d.getDate()}</span>
+            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`relative flex flex-col items-center justify-center min-w-[70px] h-[85px] rounded-[20px] transition-all duration-300 border ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 hover:bg-[#3A3A3C]'}`}>
+              {/* Dia da Semana */}
+              <span className={`text-[10px] uppercase font-bold tracking-wide mb-1 ${label === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/80' : 'opacity-60'}`}>{label}</span>
+              
+              {/* Número do Dia */}
+              <span className="text-2xl font-bold font-mono tracking-tight">{d.getDate()}</span>
+              
+              {/* Mês (Pequeno em baixo) */}
+              <span className={`text-[9px] uppercase font-bold mt-1 ${isSel ? 'text-white/60' : 'text-gray-600'}`}>{month}</span>
+              
+              {/* Bolinha se estiver selecionado */}
+              {isSel && <div className="absolute -bottom-1.5 w-1 h-1 rounded-full bg-white/50"></div>}
             </button>
           )
         })}
       </div>
+
+      {/* SELETOR DE HORÁRIOS (Agrupado) */}
       {selectedDate && (
-        <div className="grid grid-cols-4 gap-2 animate-fade-in">
-          {timeSlots.map(t => {
-            const blocked = isTimeBlocked(t, selectedDate);
-            return (
-              <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
-                className={`py-3 rounded-[12px] text-[13px] font-semibold transition-all duration-200 ${selectedTime === t ? 'bg-[#0A84FF] text-white shadow-md' : blocked ? 'bg-white/5 text-gray-600 opacity-40' : 'bg-[#2C2C2E] text-gray-300 hover:bg-[#3A3A3C]'}`}>
-                {blocked ? <span className="opacity-50 line-through decoration-white/30">{t}</span> : t}
-              </button>
-            )
-          })}
+        <div className="animate-fade-in space-y-5">
+           {periods.map((period, idx) => {
+               // Verifica se tem algum horário disponível nesse período para não mostrar título vazio
+               const hasSlots = period.slots.some(t => !isTimeBlocked(t, selectedDate));
+               
+               return (
+                   <div key={idx} className={`transition-opacity ${hasSlots ? 'opacity-100' : 'opacity-40 grayscale'}`}>
+                       <h5 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
+                           {period.label}
+                           <div className="h-[1px] flex-1 bg-white/5"></div>
+                       </h5>
+                       <div className="grid grid-cols-4 gap-2">
+                           {period.slots.map(t => {
+                               const blocked = isTimeBlocked(t, selectedDate);
+                               const isSelected = selectedTime === t;
+                               
+                               return (
+                                  <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
+                                    className={`py-2.5 rounded-[12px] text-[13px] font-semibold transition-all duration-200 relative overflow-hidden
+                                    ${isSelected ? 'bg-[#0A84FF] text-white shadow-lg scale-[1.02]' : blocked ? 'bg-white/5 text-gray-600 opacity-30 cursor-not-allowed' : 'bg-[#2C2C2E] text-gray-300 hover:bg-[#3A3A3C] border border-white/5'}`}>
+                                    {blocked && <div className="absolute inset-0 bg-black/20"></div>}
+                                    {t}
+                                  </button>
+                               )
+                           })}
+                       </div>
+                   </div>
+               )
+           })}
+           
+           <div className="mt-4 p-3 bg-[#FFD60A]/10 rounded-xl border border-[#FFD60A]/20 flex items-start gap-3">
+              <Info className="w-4 h-4 text-[#FFD60A] mt-0.5 flex-shrink-0" />
+              <p className="text-[11px] text-[#FFD60A]/90 leading-relaxed">
+                  Horários noturnos (após 19h) e fins de semana esgotam rápido. Reserve com antecedência.
+              </p>
+           </div>
         </div>
       )}
     </div>
