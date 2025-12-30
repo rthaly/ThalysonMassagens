@@ -342,7 +342,6 @@ const ReviewsCarousel = () => {
 };
 
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
-  // 1. Gera datas até o fim do próximo mês
   const days = [];
   const now = new Date();
   const currentYear = now.getFullYear();
@@ -388,20 +387,22 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full select-none"> {/* select-none evita selecionar texto sem querer */}
       
-      {/* --- ÁREA DO SCROLL HORIZONTAL (MODO NUCLEAR) --- */}
+      {/* --- SCROLL HORIZONTAL COM CSS GRID (A SOLUÇÃO DEFINITIVA) --- */}
       <div 
         className="scrollbar-hide"
         style={{ 
-            display: 'flex', 
-            overflowX: 'auto',           // Força o scroll horizontal
-            gap: '12px',                 // Espaçamento entre botões
-            padding: '0 4px 20px 4px',   // Padding extra embaixo pro scroll não cortar sombra
+            display: 'grid',               // MUDANÇA: Grid em vez de Flex
+            gridAutoFlow: 'column',        // Itens fluem para o lado
+            gridAutoColumns: 'max-content',// Tamanho baseado no conteúdo (não espreme)
+            gap: '12px',
+            overflowX: 'auto',             // Força rolagem
+            overscrollBehaviorX: 'contain',// O PULO DO GATO: Trava o scroll aqui dentro
+            padding: '4px 4px 20px 4px',
             width: '100%',
-            whiteSpace: 'nowrap',        // Impede quebra de linha
-            WebkitOverflowScrolling: 'touch', // Essencial pra iOS deslizar liso
-            touchAction: 'pan-x'         // OBRIGA o navegador a aceitar o dedo pro lado
+            touchAction: 'pan-x',          // Permite arrastar apenas para os lados
+            WebkitOverflowScrolling: 'touch' 
         }}
       >
         {days.map((d, i) => {
@@ -412,9 +413,8 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
           return (
             <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} 
               style={{
-                  flex: '0 0 auto',   // NÃO ENCOLHER, NÃO CRESCER, BASE AUTOMÁTICA
-                  minWidth: '76px',   // Largura forçada
-                  height: '90px'
+                  width: '76px',   // Largura Fixa
+                  height: '90px'   // Altura Fixa
               }}
               className={`relative flex flex-col items-center justify-center rounded-[22px] transition-all duration-200 border 
               ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 active:bg-[#3A3A3C]'}`}>
@@ -427,8 +427,8 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
             </button>
           )
         })}
-        {/* Espaçador pra não travar no fim */}
-        <div style={{ flex: '0 0 auto', width: '20px' }}></div>
+        {/* Espaçador final */}
+        <div style={{ width: '20px', height: '1px' }}></div>
       </div>
 
       {/* SELETOR DE HORÁRIOS */}
@@ -469,7 +469,8 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       )}
     </div>
   );
-};
+}; 
+
 const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddManual }) => {
   const [manualCode, setManualCode] = useState('');
   const myCoupons = inventory.map((c) => SYSTEM_COUPONS[c]).filter(Boolean);
@@ -929,14 +930,23 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
       )
   }
 
-  // --- HEADER GLOBAL FIXO (COM MENU BURGER) ---
+  // --- HEADER GLOBAL FIXO (COM DATA E CLIMA) ---
   const GlobalHeader = () => (
       <div className="absolute top-0 w-full z-50 px-6 pt-12 pb-8 flex justify-between items-center pointer-events-none bg-gradient-to-b from-black/90 via-black/60 to-transparent">
           <div className="pointer-events-auto">
              {step !== 'home' && step !== 'success' ? (
                 <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10 bg-black/20 backdrop-blur-md border border-white/5"><IconBack /></button>
              ) : (
-                <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/5">{new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric'})}</span>
+                <div className="flex flex-col items-start animate-fade-in">
+                    {/* DATA (Pequena e azul) */}
+                    <span className="text-[10px] font-bold text-[#0A84FF] uppercase tracking-widest mb-0.5">
+                        {new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric'})}
+                    </span>
+                    {/* CLIMA (Frase embaixo) */}
+                    <span className="text-[13px] font-bold text-gray-200 leading-tight">
+                        {weatherHint}
+                    </span>
+                </div>
              )}
           </div>
 
