@@ -342,17 +342,13 @@ const ReviewsCarousel = () => {
 };
 
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
-  // 1. LÓGICA DE DATA: Vai até o final do próximo mês
+  // 1. Gera datas até o fim do próximo mês
   const days = [];
   const now = new Date();
-  
-  // Calcula o último dia do próximo mês
-  // (Mês atual + 2, dia 0 = Último dia do mês seguinte)
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
   const endDate = new Date(currentYear, currentMonth + 2, 0); 
 
-  // Loop que preenche dia por dia
   let tempDate = new Date(now);
   while (tempDate <= endDate) {
       days.push(new Date(tempDate));
@@ -372,7 +368,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
       
-      // Zerar horas para comparação justa
       d.setHours(0,0,0,0);
       today.setHours(0,0,0,0);
       tomorrow.setHours(0,0,0,0);
@@ -394,23 +389,34 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
 
   return (
     <div className="w-full">
-      {/* SELETOR DE DIAS */}
-      {/* Adicionado style para forçar rolagem suave no iOS */}
+      
+      {/* --- ÁREA DO SCROLL HORIZONTAL (MODO NUCLEAR) --- */}
       <div 
-        className="flex gap-3 overflow-x-auto pb-6 px-1 w-full touch-pan-x"
-        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        className="scrollbar-hide"
+        style={{ 
+            display: 'flex', 
+            overflowX: 'auto',           // Força o scroll horizontal
+            gap: '12px',                 // Espaçamento entre botões
+            padding: '0 4px 20px 4px',   // Padding extra embaixo pro scroll não cortar sombra
+            width: '100%',
+            whiteSpace: 'nowrap',        // Impede quebra de linha
+            WebkitOverflowScrolling: 'touch', // Essencial pra iOS deslizar liso
+            touchAction: 'pan-x'         // OBRIGA o navegador a aceitar o dedo pro lado
+        }}
       >
         {days.map((d, i) => {
-          // Comparação segura de datas
           const isSel = selectedDate?.getDate() === d.getDate() && selectedDate?.getMonth() === d.getMonth();
           const label = getDayLabel(d);
           const month = getMonthLabel(d);
           
           return (
             <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} 
-              // min-w-[76px] garante tamanho fixo
-              // flex-shrink-0 impede encolhimento
-              className={`flex-shrink-0 relative flex flex-col items-center justify-center min-w-[76px] w-[76px] h-[90px] rounded-[22px] transition-all duration-200 border 
+              style={{
+                  flex: '0 0 auto',   // NÃO ENCOLHER, NÃO CRESCER, BASE AUTOMÁTICA
+                  minWidth: '76px',   // Largura forçada
+                  height: '90px'
+              }}
+              className={`relative flex flex-col items-center justify-center rounded-[22px] transition-all duration-200 border 
               ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 active:bg-[#3A3A3C]'}`}>
               
               <span className={`text-[10px] uppercase font-bold tracking-wide mb-1 ${label === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/80' : 'opacity-60'}`}>{label}</span>
@@ -421,8 +427,8 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
             </button>
           )
         })}
-        {/* Espaçador final para garantir que o último item seja clicável facilmente */}
-        <div className="min-w-[20px] h-full flex-shrink-0"></div>
+        {/* Espaçador pra não travar no fim */}
+        <div style={{ flex: '0 0 auto', width: '20px' }}></div>
       </div>
 
       {/* SELETOR DE HORÁRIOS */}
@@ -464,7 +470,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
     </div>
   );
 };
-
 const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddManual }) => {
   const [manualCode, setManualCode] = useState('');
   const myCoupons = inventory.map((c) => SYSTEM_COUPONS[c]).filter(Boolean);
