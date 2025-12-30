@@ -113,7 +113,7 @@ const services = [
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
     description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
     labelDuration: '60 min', minutes: 60, 
-    basePrice: 140, 
+    basePrice: 100, 
     highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
     details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] 
   },
@@ -121,7 +121,7 @@ const services = [
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
     description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', 
     labelDuration: '60 min', minutes: 60, 
-    basePrice: 90, 
+    basePrice: 75, 
     ratings: 4.9, reviews: 142, 
     details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] 
   },
@@ -579,7 +579,12 @@ export default function App() {
     }
   }, [selection.location, step]);
 
+  // Efeito para rolar para o topo sempre que mudar de tela (step)
   useEffect(() => {
+    // Força a janela do navegador a ir para o topo (0,0)
+    window.scrollTo(0, 0);
+    
+    // Se for a Home, também garante que o container interno suba
     if (step === 'home') {
       homeRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -617,6 +622,7 @@ export default function App() {
 
   const handleReset = () => {
     setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
+    window.scrollTo(0, 0); 
     setStep('home');
   };
 
@@ -774,6 +780,7 @@ export default function App() {
       totalSaved: (prev.totalSaved || 0) + (selection.coupon ? 10 : 0),
       inventory: newInventory,
       notifications: newNotifications
+      
     }));
 
     const isToday = selection.date.getDate() === new Date().getDate();
@@ -786,7 +793,6 @@ export default function App() {
     const netMasseur = serviceValueForLoyalty - discountVal;
     
     // --- LÓGICA DE TEXTO MELHORADA PARA NÃO ASSUSTAR O CLIENTE ---
-    // Se tiver taxa de local, a gente separa as linhas para mostrar que o serviço é mais barato.
     let priceDisplay = "";
     
     if (feeVal > 0) {
@@ -806,93 +812,17 @@ ${feeType}: ${formatCurrency(feeVal)}
 *DETALHES:*
 • Serviço Base: ${formatCurrency(selection.service.basePrice)}${extrasText}${aromaText}
 ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(discountVal)}` : ''}
-
+🎵 Vibe: ${selection.music}`;
 ------------------------------
 ${priceDisplay}
 (Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
-------------------------------
 
-💸 *Líquido Massagista: ${formatCurrency(netMasseur)}*
-
-🎵 Vibe: ${selection.music}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
     setLastOrderLink(whatsappUrl); 
     window.open(whatsappUrl, '_blank');
     setStep('success');
   };
-
-  // --- COMPONENTE DE RECIBO VISUAL ---
-  const OrderReceipt = () => {
-    let grossService = selection.service.basePrice;
-    if(selection.upgrade) grossService += selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
-    if(selection.useTable) grossService += CONFIG.PRICES.MACA;
-    if(selection.aroma) grossService += getAromaPrice();
-
-    let fee = selection.location.fee || 0;
-    let discount = 0;
-    if (selection.coupon) {
-        if (selection.coupon.type === 'percent') discount = grossService * (selection.coupon.value / 100);
-        else discount = selection.coupon.value;
-    }
-    
-    const totalVisual = grossService + fee - discount;
-
-    return (
-        <div className="mt-8 mx-2 mb-32 bg-white text-black rounded-[10px] p-6 font-mono text-sm shadow-2xl relative animate-slide-up transform rotate-1">
-            <div className="absolute top-0 left-0 right-0 h-4 bg-white" style={{background: 'linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%), linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%)', backgroundSize: '12px 20px', backgroundPosition: '0 -10px'}}></div>
-            
-            <div className="text-center mb-6 border-b border-dashed border-gray-300 pb-4 mt-2">
-                <h3 className="font-bold text-lg uppercase tracking-wider">Massagens Relaxantes</h3>
-                <p className="text-xs text-gray-500">Resumo do Pedido</p>
-            </div>
-
-            <div className="space-y-3 mb-6">
-                <div className="flex justify-between">
-                    <span>{selection.service.name}</span>
-                    <span>{formatCurrency(selection.service.basePrice)}</span>
-                </div>
-                {selection.upgrade && <div className="flex justify-between text-gray-600 text-xs"><span>+ 30 Minutos</span><span>{formatCurrency(selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT)}</span></div>}
-                {selection.useTable && <div className="flex justify-between text-gray-600 text-xs"><span>+ Maca Portátil</span><span>{formatCurrency(CONFIG.PRICES.MACA)}</span></div>}
-                {selection.aroma && <div className="flex justify-between text-gray-600 text-xs"><span>+ Aromaterapia (Vip)</span><span>{getAromaPrice() === 0 ? 'GRÁTIS' : formatCurrency(getAromaPrice())}</span></div>}
-                
-                {selection.location.isPending ? (
-                    <div className="flex justify-between text-blue-600 font-bold border-t border-dashed border-gray-200 pt-2 mt-2">
-                        <span>Taxa Deslocamento</span>
-                        <span>A Combinar</span>
-                    </div>
-                ) : (
-                    fee > 0 && (
-                        <div className="flex justify-between text-blue-600 font-bold border-t border-dashed border-gray-200 pt-2 mt-2">
-                            <span>{selection.location.isMotel ? 'Taxa Suíte (Motel)' : 'Uber/Deslocamento'}</span>
-                            <span>{formatCurrency(fee)}</span>
-                        </div>
-                    )
-                )}
-                
-                {discount > 0 && (
-                    <div className="flex justify-between text-red-500">
-                        <span>Desconto ({selection.coupon.code})</span>
-                        <span>-{formatCurrency(discount)}</span>
-                    </div>
-                )}
-            </div>
-
-            <div className="border-t-2 border-black pt-4 flex justify-between items-end">
-                <span className="font-bold text-xl">TOTAL</span>
-                <div className="text-right">
-                    <span className="font-bold text-2xl">{formatCurrency(selection.paymentMethod === 'credit_card' ? calcFinalPrice() : totalVisual)}</span>
-                    {selection.paymentMethod === 'credit_card' && <p className="text-[10px] text-gray-500">c/ juros maquininha</p>}
-                    {selection.location.isPending && <p className="text-[10px] text-blue-600">+ Taxa a combinar</p>}
-                </div>
-            </div>
-            
-            <div className="mt-6 text-center text-[10px] text-gray-400 uppercase">
-                Obrigado pela preferência
-            </div>
-        </div>
-    )
-  }
 
   // --- MENU HAMBURGUER (MODAL) ---
   const HamburgerMenu = () => {
@@ -1012,7 +942,7 @@ ${priceDisplay}
 
               <div className="space-y-3">
                 <button onClick={() => { triggerHaptic(); setUser({...user, isAdult: !user.isAdult}); }} className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user.isAdult ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
-                  <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isAdult ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-600'}`}>{user.isAdult && <Check className="w-3.5 h-3.5 text-white" />}</div>
+                  <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isAdult ? 'bg-[#0A84FF] border-[#0A84FF] : 'border-gray-600'}`}>{user.isAdult && <Check className="w-3.5 h-3.5 text-white" />}</div>
                   <span className={`text-[16px] font-medium ${user.isAdult ? 'text-white' : 'text-gray-400'}`}>Maior de 18 anos</span>
                 </button>
                 <button onClick={() => { triggerHaptic(); setUser({...user, isMassagemOk: !user.isMassagemOk}); }} className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
