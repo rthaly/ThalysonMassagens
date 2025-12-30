@@ -3,45 +3,86 @@ import {
   ChevronLeft, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Bell, Tag, AlertCircle, ArrowRight, Eye, EyeOff, Share2, 
   LogOut, Star, Instagram, Menu, Send, CreditCard, Banknote, QrCode, 
-  CheckCircle2, Info, ChevronRight, Crown, Trash2
+  CheckCircle2, Info, ChevronRight, Crown, Trash2, Siren, Flame
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONSTANTES & UTILITÁRIOS (Separation of Concerns)
+// 1. ESTILOS GLOBAIS & CONFIGURAÇÃO
 // ==================================================================================
+
+const globalStyles = `
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { font-size: 16px; background-color: #000000; }
+body { 
+  overscroll-behavior-y: none; 
+  touch-action: manipulation; 
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; 
+  color: #fff; background: #000; -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+input, select { user-select: text; font-size: 17px; outline: none; appearance: none; }
+button { touch-action: manipulation; user-select: none; cursor: pointer; }
+
+/* Aurora Background & Cards */
+.aurora-bg {
+  background: 
+    radial-gradient(140% 100% at 50% 0%, rgba(20, 20, 22, 1), #000000 60%),
+    radial-gradient(100% 100% at 50% 100%, rgba(10, 132, 255, 0.04), transparent 50%);
+  background-attachment: fixed; background-size: cover; min-height: 100vh;
+}
+.ios-card { 
+  background: rgba(28, 28, 30, 0.55); backdrop-filter: blur(50px); 
+  border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.ios-card:active { transform: scale(0.98); }
+.ios-btn-primary {
+  background: #007AFF; color: white; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); border: none;
+}
+.animate-fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+`;
 
 const CONFIG = {
   PRICES: { MACA: 20, AROMA_FULL: 10, AROMA_DISCOUNT: 5, UPGRADE_PCT: 0.5 },
   CONTACT: { PHONE: '5517991360413', PIX: '62922530000144' },
+  // Taxas maquininha (Index = nº parcelas)
   RATES: [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238]
 };
+
+// ==================================================================================
+// 2. BANCOS DE DADOS SIMULADOS
+// ==================================================================================
 
 const SERVICES_DB = [
   { 
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
-    description: 'Massagem Relaxante + Toques corpo a corpo com finalização manual.', 
-    labelDuration: '60 min', basePrice: 140, highlight: "MAIS PEDIDA 🔥", 
+    description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
+    labelDuration: '60 min', basePrice: 140, highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
     details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Finalização Manual", "Alívio Completo"] 
   },
   { 
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
-    description: 'Corpo inteiro: Costas, braços, pernas e pés. (Sem toques íntimos).', 
-    labelDuration: '60 min', basePrice: 90, ratings: 4.9,
+    description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', 
+    labelDuration: '60 min', basePrice: 90, ratings: 4.9, reviews: 142, 
     details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] 
   },
 ];
 
 const LOCATIONS_DB = [
-  { id: 'motel', label: 'Suíte Privada (Motel)', sublabel: 'Vou com você', fee: 75, allowsTable: false, isMotel: true },
-  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', fee: 40, allowsTable: true, isUber: true },
-  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: 0, allowsTable: false, isPending: true, input: true },
+  { id: 'motel', label: 'Suíte Privada (Motel)', sublabel: 'Vou com você', fee: 75, allowsTableChoice: false, isMotel: true },
+  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', fee: 40, allowsTableChoice: true, isUber: true },
+  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: 0, allowsTableChoice: false, estimatedTravelTime: 'A combinar', input: true, isPending: true },
 ];
 
 const LEVELS = [
   { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', perks: ["Acesso VIP", "Agendamento Rápido"] },
-  { name: 'Prata', min: 400, rewardCode: 'NIVELPRATA', icon: '🥈', perks: ["Cupom R$ 15", "Aroma 50% OFF"] },
-  { name: 'Ouro', min: 900, rewardCode: 'NIVELOURO', icon: '🥇', perks: ["Cupom R$ 25", "Aroma GRÁTIS"] },
-  { name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: ["Cupom R$ 50", "Prioridade Total"] },
+  { name: 'Prata', min: 400, rewardCode: 'NIVELPRATA', icon: '🥈', perks: ["Cupom R$ 15 (Ganhou!)", "Aroma 50% OFF"] },
+  { name: 'Ouro', min: 900, rewardCode: 'NIVELOURO', icon: '🥇', perks: ["Cupom R$ 25 (Ganhou!)", "Aroma GRÁTIS"] },
+  { name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: ["Cupom R$ 50 (Ganhou!)", "Prioridade Total"] },
 ];
 
 const SYSTEM_COUPONS = {
@@ -53,19 +94,26 @@ const SYSTEM_COUPONS = {
   'NIVELDIAMANTE': { code: 'NIVELDIAMANTE', type: 'fixed', value: 50, desc: 'R$ 50,00 OFF (Diamante)' },
 };
 
+const MUSIC_VIBES = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘'];
+
+// ==================================================================================
+// 3. UTILS & HELPERS
+// ==================================================================================
+
 const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-const triggerHaptic = () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10); };
+const triggerHaptic = () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(5); };
+const generateBookingId = () => Math.random().toString(36).substring(2, 6).toUpperCase();
 
 // ==================================================================================
-// 2. CONTEXTS (State Management)
+// 4. CONTEXTOS E HOOKS (O Motor Senior)
 // ==================================================================================
 
+// Toast Context (Para evitar prop drilling de alertas)
 const ToastContext = createContext();
 const useToast = () => useContext(ToastContext);
 
 const ToastProvider = ({ children }) => {
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
-  
   const showToast = useCallback((message, type = 'success') => {
     setToast({ show: true, message, type });
     setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
@@ -85,142 +133,224 @@ const ToastProvider = ({ children }) => {
   );
 };
 
-// ==================================================================================
-// 3. HOOKS PERSONALIZADOS
-// ==================================================================================
-
-// Hook de Persistência
+// Hook de Persistência Local Storage
 const usePersistedState = (key, initialValue) => {
   const [state, setState] = useState(() => {
     try {
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      return initialValue;
-    }
+    } catch (error) { return initialValue; }
   });
-
-  useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(state));
-  }, [key, state]);
-
+  useEffect(() => { localStorage.setItem(key, JSON.stringify(state)); }, [key, state]);
   return [state, setState];
 };
 
-// Hook de Cálculo de Preço (Memoizado)
+// Hook de Cálculo de Preço (Core Logic)
 const usePriceCalculator = (selection, loyalty) => {
   return useMemo(() => {
-    if (!selection.service) return { total: 0, visualTotal: 0 };
+    if (!selection.service) return { total: 0, visualTotal: 0, fee: 0, discount: 0, aromaPrice: 0 };
 
-    let total = selection.service.basePrice;
+    let base = selection.service.basePrice;
     
-    // Add-ons
-    if (selection.upgrade) total += selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
-    if (selection.useTable) total += CONFIG.PRICES.MACA;
+    // Upgrades
+    let upgradePrice = 0;
+    if (selection.upgrade) {
+      upgradePrice = selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
+      base += upgradePrice;
+    }
     
-    // Aroma Logic
+    // Table
+    let tablePrice = 0;
+    if (selection.useTable) {
+      tablePrice = CONFIG.PRICES.MACA;
+      base += tablePrice;
+    }
+    
+    // Aroma (Logic baseada no Nível)
     const currentLevel = [...LEVELS].reverse().find(l => (loyalty.totalSpent || 0) >= l.min) || LEVELS[0];
     let aromaPrice = CONFIG.PRICES.AROMA_FULL;
     if (currentLevel.name === 'Prata') aromaPrice = CONFIG.PRICES.AROMA_DISCOUNT;
     if (currentLevel.name === 'Ouro' || currentLevel.name === 'Diamante') aromaPrice = 0;
     
-    if (selection.aroma) total += aromaPrice;
-
-    // Fees & Discounts
-    const fee = selection.location?.fee || 0;
-    let discount = 0;
-    if (selection.coupon) {
-       const baseForDiscount = total; 
-       if (selection.coupon.type === 'percent') discount = baseForDiscount * (selection.coupon.value / 100);
-       else discount = selection.coupon.value;
+    let appliedAromaCost = 0;
+    if (selection.aroma) {
+      appliedAromaCost = aromaPrice;
+      base += aromaPrice;
     }
 
-    const visualTotal = total + fee - discount; // Dinheiro/Pix
+    // Taxas de Local
+    const fee = selection.location?.fee || 0;
+    const feeLabel = selection.location?.isPending ? "A Combinar" : formatCurrency(fee);
     
-    // Credit Card Logic
+    // Descontos (Cupom) - Não aplicável sobre taxas
+    let discount = 0;
+    if (selection.coupon) {
+       // O desconto incide sobre o serviço, não sobre a taxa de deslocamento
+       const discountableAmount = base; 
+       if (selection.coupon.type === 'percent') discount = discountableAmount * (selection.coupon.value / 100);
+       else discount = selection.coupon.value;
+       base -= discount;
+    }
+
+    // Total final em dinheiro/pix (Serviço + Taxas)
+    const visualTotal = Math.max(0, base + fee); 
+    
+    // Total Cartão (com juros)
     let creditTotal = visualTotal;
     if (selection.paymentMethod === 'credit_card') {
-      const rate = CONFIG.RATES[selection.installments] || 0;
+      const rate = CONFIG.RATES[selection.installments || 1] || 0;
       creditTotal = visualTotal / (1 - rate);
     }
 
-    return { total: visualTotal, creditTotal, fee, discount, aromaPrice };
+    return { 
+      total: visualTotal, 
+      creditTotal, 
+      fee, 
+      feeLabel,
+      discount, 
+      appliedAromaCost, 
+      regularAromaPrice: CONFIG.PRICES.AROMA_FULL,
+      upgradePrice,
+      tablePrice
+    };
   }, [selection, loyalty]);
 };
 
 // ==================================================================================
-// 4. COMPONENTES MENORES (UI Kits)
+// 5. COMPONENTES UI (Separados para organização)
 // ==================================================================================
 
 const Card = ({ children, className = "", onClick }) => (
-  <div onClick={onClick} className={`ios-card rounded-[22px] border border-white/10 ${className}`}>
+  <div onClick={onClick} className={`ios-card rounded-[24px] border border-white/10 ${className}`}>
     {children}
   </div>
 );
 
-const Button = ({ children, variant = 'primary', className = "", ...props }) => {
-  const base = "w-full font-bold py-4 rounded-[18px] flex justify-center items-center gap-2 transition-all active:scale-[0.98]";
+const Button = ({ children, variant = 'primary', className = "", disabled, onClick, loading }) => {
+  const base = "w-full font-bold py-4 rounded-[18px] flex justify-center items-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 disabled:cursor-not-allowed";
   const styles = {
-    primary: "ios-btn-primary shadow-lg text-white",
+    primary: "bg-[#007AFF] text-white shadow-[0_4px_20px_rgba(0,122,255,0.4)]",
     secondary: "bg-[#2C2C2E] border border-white/10 hover:bg-[#3A3A3C] text-white",
-    outline: "border border-[#0A84FF] text-[#0A84FF] bg-[#0A84FF]/10",
-    danger: "bg-red-500/10 text-red-500 hover:bg-red-500/20"
+    ghost: "bg-transparent text-[#0A84FF]"
   };
-  return <button className={`${base} ${styles[variant]} ${className}`} {...props}>{children}</button>;
+  return (
+    <button onClick={onClick} disabled={disabled || loading} className={`${base} ${styles[variant]} ${className}`}>
+      {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/> : children}
+    </button>
+  );
 };
 
-const Header = ({ title, showBack, onBack, rightAction }) => (
-  <div className="flex items-center justify-between mb-6 pt-2">
-    <div className="flex items-center gap-3">
-      {showBack && <button onClick={onBack} className="p-2 -ml-2 rounded-full bg-white/5"><ChevronLeft className="w-6 h-6 text-[#0A84FF]" /></button>}
-      {title && <h2 className="text-2xl font-bold text-white tracking-tight">{title}</h2>}
+const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
+  const safeSpent = data.totalSpent || 0;
+  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => safeSpent >= l.min);
+  const currentLevel = currentLevelIdx !== -1 ? LEVELS[LEVELS.length - 1 - currentLevelIdx] : LEVELS[0];
+  const nextLevel = LEVELS[LEVELS.indexOf(currentLevel) + 1];
+  
+  const min = currentLevel.min || 0;
+  const nextMin = nextLevel ? nextLevel.min : min + 100; // fallback
+  const progress = nextLevel ? Math.min(100, Math.max(0, ((safeSpent - min) / (nextMin - min)) * 100)) : 100;
+
+  return (
+    <div className="relative z-10">
+        <div className="flex justify-between items-end mb-2">
+            <div>
+              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">Seu Nível</p>
+              <h3 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                 {currentLevel.name} {currentLevel.icon}
+              </h3>
+            </div>
+            <div className="text-right">
+              <button onClick={onTogglePrivacy} className="flex items-center justify-end gap-1.5 mb-0.5 ml-auto text-gray-500 hover:text-white transition-colors">
+                  <span className="text-[10px] font-bold uppercase">Investido</span>
+                  {privacyMode ? <EyeOff className="w-3 h-3"/> : <Eye className="w-3 h-3"/>}
+              </button>
+              <span className={`text-[15px] font-mono text-white font-bold block transition-all ${privacyMode ? 'blur-[5px] select-none opacity-50' : ''}`}>
+                {formatCurrency(safeSpent)}
+              </span>
+            </div>
+        </div>
+        <div className="relative h-2 bg-white/10 rounded-full mb-2 overflow-hidden">
+            <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#0A84FF] to-[#30D158] transition-all duration-1000 ease-out" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="flex justify-between text-[9px] text-gray-500 font-medium tracking-wide">
+            <span>Benefício: <span className="text-[#32D74B]">{currentLevel.perks[1]}</span></span>
+            {nextLevel ? <span>Faltam {formatCurrency(nextLevel.min - safeSpent)}</span> : <span className="text-[#FFD60A]">Nível Máximo</span>}
+        </div>
     </div>
-    {rightAction}
-  </div>
-);
+  )
+}
 
 // ==================================================================================
-// 5. TELAS DO FLUXO (Componentização)
+// 6. COMPONENTES DO FLUXO (Views)
 // ==================================================================================
 
-const IdentityStep = ({ user, setUser, onNext }) => (
-  <div className="animate-fade-in space-y-6">
-    <Header title="Identificação" />
-    <p className="text-gray-400 text-sm">Necessário para manter a segurança e exclusividade.</p>
-    
-    <div className="bg-[#1C1C1E] p-6 rounded-[24px] border border-white/10">
-      <label className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-wider block mb-2">Seu Nome</label>
-      <input 
-        value={user.name} 
-        onChange={e => setUser({...user, name: e.target.value})} 
-        className="w-full bg-transparent text-white text-[22px] font-medium placeholder:text-gray-600 border-b border-white/10 py-2 focus:border-[#0A84FF] transition-colors outline-none" 
-        placeholder="Digite seu nome..." 
-      />
-    </div>
+const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
+  const days = Array.from({length: 14}, (_, i) => {
+    const d = new Date(); d.setDate(new Date().getDate() + i); return d;
+  });
 
-    <div className="space-y-3">
-      {[
-        { key: 'isAdult', label: 'Maior de 18 anos' },
-        { key: 'isMassagemOk', label: 'Ciente que é massagem terapêutica' }
-      ].map((item) => (
-        <button key={item.key} onClick={() => { triggerHaptic(); setUser({...user, [item.key]: !user[item.key]}); }} 
-          className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user[item.key] ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
-          <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user[item.key] ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-600'}`}>
-            {user[item.key] && <Check className="w-3.5 h-3.5 text-white" />}
-          </div>
-          <span className={`text-[15px] font-medium ${user[item.key] ? 'text-white' : 'text-gray-400'}`}>{item.label}</span>
-        </button>
-      ))}
-    </div>
+  const periods = [
+      { label: 'Manhã ☀️', slots: ['09:00', '10:00', '11:00'] },
+      { label: 'Tarde 🌤️', slots: ['13:00', '14:00', '15:00', '16:00', '17:00'] },
+      { label: 'Noite 🌙', slots: ['18:00', '19:00', '20:00', '21:00'] }
+  ];
 
-    <Button disabled={!user.name || !user.isAdult || !user.isMassagemOk} onClick={onNext} className="mt-4 disabled:opacity-50">
-      Continuar
-    </Button>
-  </div>
-);
+  const isTimeBlocked = (t, d) => {
+    if(!d) return true;
+    const now = new Date();
+    const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
+    if (!isToday) return false;
+    const [h] = t.split(':').map(Number);
+    return h <= now.getHours() + 1; // Bloqueia horários passados ou muito próximos
+  };
+
+  return (
+    <div className="w-full select-none">
+      <div className="flex justify-between items-end mb-4 px-1">
+        <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Data</h4>
+      </div>
+      
+      {/* Scroll Horizontal de Datas */}
+      <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
+        {days.map((d, i) => {
+          const isSel = selectedDate?.getDate() === d.getDate();
+          const label = i === 0 ? 'HOJE' : i === 1 ? 'AMANHÃ' : d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3).replace('.','');
+          return (
+            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} 
+              className={`flex-shrink-0 w-[72px] h-[84px] rounded-[18px] flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF] text-white shadow-lg scale-105' : 'bg-[#1C1C1E] border-white/5 text-gray-400'}`}>
+              <span className={`text-[9px] font-bold uppercase mb-1 ${label==='HOJE' ? 'text-green-400' : ''}`}>{label}</span>
+              <span className="text-xl font-bold">{d.getDate()}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {selectedDate && (
+        <div className="animate-slide-up space-y-5 pt-2 border-t border-white/5 mt-2">
+           {periods.map((period, idx) => (
+               <div key={idx}>
+                   <h5 className="text-[10px] font-bold text-gray-600 uppercase mb-2 flex items-center gap-2">{period.label}<div className="h-px bg-white/5 flex-1"/></h5>
+                   <div className="grid grid-cols-4 gap-2">
+                       {period.slots.map(t => {
+                           const blocked = isTimeBlocked(t, selectedDate);
+                           return (
+                               <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
+                                 className={`py-2 rounded-xl text-[13px] font-bold border transition-all ${selectedTime === t ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : blocked ? 'bg-white/5 border-transparent text-gray-700 opacity-50 cursor-not-allowed' : 'bg-[#2C2C2E] border-transparent text-gray-300'}`}>
+                                 {t}
+                               </button>
+                           )
+                       })}
+                   </div>
+               </div>
+           ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ==================================================================================
-// 6. APP PRINCIPAL (Refatorado com useReducer)
+// 7. MÁQUINA DE ESTADO (Reducer)
 // ==================================================================================
 
 const initialState = {
@@ -243,207 +373,316 @@ function bookingReducer(state, action) {
   switch (action.type) {
     case 'SET_STEP': return { ...state, step: action.payload };
     case 'SELECT_SERVICE': return { ...state, service: action.payload, step: 'configure' };
-    case 'UPDATE_SELECTION': return { ...state, ...action.payload };
+    case 'UPDATE': return { ...state, ...action.payload };
     case 'RESET': return initialState;
     default: return state;
   }
 }
 
+// ==================================================================================
+// 8. APP PRINCIPAL
+// ==================================================================================
+
 export default function App() {
   const [state, dispatch] = useReducer(bookingReducer, initialState);
-  const [loyalty, setLoyalty] = usePersistedState('thaly_system_v3_senior', { 
-    savedName: '', totalSpent: 0, inventory: ['BEMVINDO'], notifications: [] 
-  });
+  const [loyalty, setLoyalty] = usePersistedState('thaly_system_v3_senior', { savedName: '', totalSpent: 0, inventory: ['BEMVINDO'], notifications: [] });
   const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
   const [privacyMode, setPrivacyMode] = useState(true);
-  
-  // Efeito para carregar usuário salvo
+  const [showMenu, setShowMenu] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Carregar usuário salvo
   useEffect(() => {
     if (loyalty.savedName && !user.name) {
       setUser(prev => ({ ...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true }));
     }
   }, [loyalty.savedName]);
 
-  // Pricing Logic Hook
+  // Pricing Logic (Memoized)
   const pricing = usePriceCalculator(state, loyalty);
 
-  const handleFinalize = () => {
-    // Aqui entra a lógica de envio (simplificada para o exemplo)
-    const msg = `*NOVO PEDIDO DO APP* \nCliente: ${user.name}\nServiço: ${state.service.name}\nTotal: ${formatCurrency(pricing.total)}`;
-    const url = `https://api.whatsapp.com/send?phone=${CONFIG.CONTACT.PHONE}&text=${encodeURIComponent(msg)}`;
-    
-    // Atualiza Loyalty
-    const newSpent = (loyalty.totalSpent || 0) + pricing.total;
-    let newInventory = [...loyalty.inventory];
-    if(state.coupon) newInventory = newInventory.filter(c => c !== state.coupon.code);
+  // Refs para Scroll Automático
+  const locationRef = useRef(null);
+  const musicRef = useRef(null);
+  const extrasRef = useRef(null);
+  const payRef = useRef(null);
 
-    setLoyalty(prev => ({ ...prev, totalSpent: newSpent, inventory: newInventory }));
-    window.open(url, '_blank');
-    dispatch({ type: 'SET_STEP', payload: 'success' });
+  const scrollTo = (ref) => setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+
+  // Handlers
+  const handleNextStep = () => {
+    if (!user.name) { dispatch({ type: 'SET_STEP', payload: 'identity' }); }
+    else if (!state.service) { dispatch({ type: 'SET_STEP', payload: 'home' }); } // Should pick service first
+    else { dispatch({ type: 'SET_STEP', payload: 'configure' }); }
   };
+
+  const handleIdentitySubmit = () => {
+    setLoyalty(prev => ({...prev, savedName: user.name}));
+    if (state.service) dispatch({ type: 'SET_STEP', payload: 'configure' });
+    else dispatch({ type: 'SET_STEP', payload: 'home' });
+  };
+
+  const handleFinalize = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+        // Gera mensagem
+        const dateStr = state.date.toLocaleDateString('pt-BR');
+        let locStr = state.location.label;
+        if(state.location.isMotel) locStr += " (Vou com você)";
+        if(state.city) locStr += ` (${state.city})`;
+
+        const msg = `*PEDIDO #${generateBookingId()}*\n👤 ${user.name}\n💆 ${state.service.name}\n📅 ${dateStr} às ${state.time}\n📍 ${locStr}\n\n*Detalhes Financeiros:*\nTotal: ${formatCurrency(pricing.total)} (${state.paymentMethod === 'credit_card' ? 'Cartão' : 'Pix/Dinheiro'})\n\n🔗 _Gerado via App Web_`;
+        
+        const url = `https://api.whatsapp.com/send?phone=${CONFIG.CONTACT.PHONE}&text=${encodeURIComponent(msg)}`;
+        
+        // Atualiza Dados
+        const newSpent = (loyalty.totalSpent || 0) + pricing.total; // Adiciona valor ao loyalty
+        let newInventory = [...loyalty.inventory];
+        if(state.coupon) newInventory = newInventory.filter(c => c !== state.coupon.code);
+
+        setLoyalty(prev => ({ ...prev, totalSpent: newSpent, inventory: newInventory }));
+        
+        window.open(url, '_blank');
+        dispatch({ type: 'SET_STEP', payload: 'success' });
+        setIsProcessing(false);
+    }, 1500);
+  };
+
+  const canFinalize = state.service && state.location && state.date && state.time && state.paymentMethod && 
+                      (state.location.allowsTableChoice ? state.useTable !== null : true) && 
+                      (state.location.input ? state.city.length > 3 : true);
 
   return (
     <ToastProvider>
-      <div className="min-h-screen flex justify-center bg-black font-sans text-gray-200">
-        <style>{`
-          .aurora-bg { background: radial-gradient(140% 100% at 50% 0%, rgba(20, 20, 22, 1), #000000 60%), radial-gradient(100% 100% at 50% 100%, rgba(10, 132, 255, 0.04), transparent 50%); background-attachment: fixed; }
-          .ios-card { background: rgba(28, 28, 30, 0.55); backdrop-filter: blur(50px); border: 1px solid rgba(255,255,255,0.08); }
-          .scrollbar-hide::-webkit-scrollbar { display: none; }
-          .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        `}</style>
+      <div className="min-h-screen flex justify-center bg-black font-sans text-gray-200" onClick={() => showMenu && setShowMenu(false)}>
+        <style>{globalStyles}</style>
 
         <div className="w-full max-w-[440px] aurora-bg min-h-screen sm:h-[95vh] sm:my-4 sm:rounded-[40px] sm:border border-white/10 shadow-2xl relative overflow-hidden flex flex-col">
           
-          {/* HEADER CONDICIONAL */}
-          <div className="pt-12 px-6 pb-4 flex justify-between items-center z-20">
-             {state.step !== 'home' ? (
-               <button onClick={() => dispatch({ type: 'SET_STEP', payload: 'home' })} className="p-2 bg-white/10 rounded-full"><ChevronLeft/></button>
-             ) : (
-               <div className="flex flex-col">
-                 <span className="text-xs text-[#0A84FF] font-bold tracking-widest uppercase">Bem-vindo</span>
-                 <span className="text-sm font-bold text-gray-200">{user.name || 'Visitante'}</span>
-               </div>
-             )}
-             <div className="flex gap-3">
-                <div className="bg-white/10 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                  <Crown className="w-3 h-3 text-[#FFD60A]"/> 
-                  {LEVELS.reverse().find(l => loyalty.totalSpent >= l.min)?.name || 'Bronze'}
-                </div>
+          {/* --- HEADER --- */}
+          <div className="absolute top-0 w-full z-50 px-6 pt-12 pb-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+             <div className="pointer-events-auto">
+                {state.step !== 'home' && state.step !== 'success' ? (
+                   <button onClick={() => dispatch({ type: 'SET_STEP', payload: state.step === 'identity' ? 'home' : 'home' })} className="p-2 -ml-2 rounded-full bg-white/10 backdrop-blur-md"><ChevronLeft className="w-6 h-6 text-[#0A84FF]"/></button>
+                ) : (
+                   <div className="flex flex-col animate-fade-in">
+                      <span className="text-[10px] font-bold text-[#0A84FF] uppercase tracking-widest">Bem-vindo</span>
+                      <span className="text-[14px] font-bold text-gray-200">{user.name || 'Visitante'}</span>
+                   </div>
+                )}
+             </div>
+             <div className="flex gap-3 pointer-events-auto">
+                 <button onClick={() => setShowMenu(!showMenu)} className="w-10 h-10 rounded-full bg-[#1C1C1E]/80 border border-white/10 flex items-center justify-center backdrop-blur-md">
+                    <Menu className="w-5 h-5 text-gray-400"/>
+                 </button>
              </div>
           </div>
 
-          {/* CONTEÚDO PRINCIPAL (RENDERIZAÇÃO CONDICIONAL LIMPA) */}
-          <div className="flex-1 overflow-y-auto px-6 pb-32 scrollbar-hide">
+          {/* --- MENU MODAL --- */}
+          {showMenu && (
+             <div className="absolute top-20 right-6 w-48 bg-[#1C1C1E] border border-white/10 rounded-2xl shadow-2xl z-[60] overflow-hidden animate-slide-up origin-top-right">
+                <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="w-full px-4 py-3 text-left text-sm text-red-500 hover:bg-white/5 flex items-center gap-2">
+                   <LogOut className="w-4 h-4"/> Sair / Reset
+                </button>
+             </div>
+          )}
+
+          {/* --- CONTENT AREA --- */}
+          <div className="flex-1 overflow-y-auto pt-28 px-6 pb-32 scrollbar-hide">
             
             {state.step === 'home' && (
               <div className="animate-fade-in space-y-8">
-                <div className="text-center mt-4 mb-8">
-                  <h1 className="text-3xl font-bold text-white mb-1">Massagens <span className="text-[#0A84FF]">Premium</span></h1>
-                  <p className="text-gray-400 text-sm">Santa Fé do Sul e Região</p>
+                <div>
+                   <h1 className="text-3xl font-bold text-white leading-tight">Relaxe &<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA]">Renove as Energias</span></h1>
                 </div>
-                
-                {/* Cartão de Fidelidade Mini */}
-                <Card className="p-5 bg-gradient-to-br from-[#1C1C1E] to-[#000]">
-                   <div className="flex justify-between items-end">
-                      <div>
-                        <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Total Investido</p>
-                        <h3 className="text-2xl font-mono font-bold text-white mt-1">
-                          {privacyMode ? '••••' : formatCurrency(loyalty.totalSpent)}
-                        </h3>
-                      </div>
-                      <button onClick={() => setPrivacyMode(!privacyMode)} className="text-gray-500">
-                        {privacyMode ? <EyeOff size={20}/> : <Eye size={20}/>}
-                      </button>
-                   </div>
+
+                {/* Card Fidelidade */}
+                <Card className="p-5 relative overflow-hidden group">
+                   <div className="absolute top-[-50%] right-[-20%] w-48 h-48 bg-[#0A84FF]/20 blur-[60px] rounded-full pointer-events-none"/>
+                   <LevelProgressBar data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => setPrivacyMode(!privacyMode)} />
                 </Card>
 
+                {/* Lista Serviços */}
                 <div>
-                   <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Escolha seu Serviço</h3>
+                   <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 ml-1">Menu de Massagens</h3>
                    <div className="space-y-4">
-                     {SERVICES_DB.map(service => (
-                       <Card key={service.id} onClick={() => {
-                         if(!user.name) dispatch({ type: 'SET_STEP', payload: 'identity' });
-                         else dispatch({ type: 'SELECT_SERVICE', payload: service });
-                       }} className="p-5 active:scale-95 transition-transform cursor-pointer relative overflow-hidden group">
-                          {service.highlight && <div className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[9px] font-bold px-3 py-1 rounded-bl-xl">{service.highlight}</div>}
-                          <div className="flex justify-between items-start mb-2">
-                             <h4 className="text-lg font-bold text-white">{service.name}</h4>
-                             <span className="text-[#0A84FF] font-bold">{formatCurrency(service.basePrice)}</span>
-                          </div>
-                          <p className="text-sm text-gray-400 leading-relaxed">{service.description}</p>
-                       </Card>
-                     ))}
+                      {SERVICES_DB.map(s => (
+                         <div key={s.id} onClick={() => { triggerHaptic(); dispatch({ type: 'SELECT_SERVICE', payload: s }); if(!user.name) dispatch({ type: 'SET_STEP', payload: 'identity' }); }} 
+                              className="ios-card p-5 rounded-[26px] active:scale-[0.98] transition-all cursor-pointer relative overflow-hidden">
+                             {s.highlight && <div className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[9px] font-bold px-3 py-1.5 rounded-bl-[18px]">{s.highlight}</div>}
+                             <div className="flex justify-between items-start mb-2">
+                                <h3 className="text-xl font-bold text-white">{s.name}</h3>
+                                <span className="text-[#0A84FF] font-bold">{formatCurrency(s.basePrice)}</span>
+                             </div>
+                             <p className="text-sm text-gray-400 leading-relaxed mb-4">{s.description}</p>
+                             <div className="flex flex-wrap gap-2">
+                                {s.details.slice(0,3).map((d,i) => (
+                                   <span key={i} className="text-[10px] bg-white/5 text-gray-300 px-2 py-1 rounded-md border border-white/5">{d}</span>
+                                ))}
+                             </div>
+                         </div>
+                      ))}
                    </div>
                 </div>
               </div>
             )}
 
             {state.step === 'identity' && (
-              <IdentityStep 
-                user={user} 
-                setUser={setUser} 
-                onNext={() => {
-                   setLoyalty(prev => ({...prev, savedName: user.name}));
-                   dispatch({ type: 'SET_STEP', payload: state.service ? 'configure' : 'home' });
-                }} 
-              />
+              <div className="animate-fade-in space-y-6">
+                 <h2 className="text-2xl font-bold text-white">Identificação</h2>
+                 <div className="bg-[#1C1C1E] p-6 rounded-[24px] border border-white/10">
+                    <label className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-wider block mb-2">Seu Nome</label>
+                    <input 
+                      value={user.name} 
+                      onChange={e => setUser({...user, name: e.target.value})} 
+                      className="w-full bg-transparent text-white text-[22px] font-medium placeholder:text-gray-600 border-b border-white/10 py-2 focus:border-[#0A84FF] transition-colors" 
+                      placeholder="Como devo te chamar?" 
+                    />
+                 </div>
+                 <div className="space-y-3">
+                    <button onClick={() => setUser({...user, isAdult: !user.isAdult})} className={`w-full p-4 rounded-[20px] border flex items-center gap-3 transition-all ${user.isAdult ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
+                       <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${user.isAdult ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-600'}`}>{user.isAdult && <Check className="w-3 h-3 text-white"/>}</div>
+                       <span className={user.isAdult ? 'text-white' : 'text-gray-400'}>Maior de 18 anos</span>
+                    </button>
+                    <button onClick={() => setUser({...user, isMassagemOk: !user.isMassagemOk})} className={`w-full p-4 rounded-[20px] border flex items-center gap-3 transition-all ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
+                       <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${user.isMassagemOk ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-600'}`}>{user.isMassagemOk && <Check className="w-3 h-3 text-white"/>}</div>
+                       <span className={user.isMassagemOk ? 'text-white' : 'text-gray-400'}>Ciente dos termos</span>
+                    </button>
+                 </div>
+                 <Button onClick={handleIdentitySubmit} disabled={!user.name || !user.isAdult || !user.isMassagemOk}>Continuar</Button>
+              </div>
             )}
 
             {state.step === 'configure' && state.service && (
-              <div className="animate-fade-in space-y-8">
-                 <Header title="Configurar" />
-                 
-                 {/* 1. Data e Hora Simplificada */}
-                 <section>
-                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Data</h4>
-                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                       {[...Array(14)].map((_, i) => {
-                          const d = new Date(); d.setDate(d.getDate() + i);
-                          const isSel = state.date?.getDate() === d.getDate();
-                          return (
-                            <button key={i} onClick={() => dispatch({ type: 'UPDATE_SELECTION', payload: { date: d } })} 
-                              className={`min-w-[70px] h-[80px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#1C1C1E] border-white/5 text-gray-400'}`}>
-                               <span className="text-[10px] uppercase font-bold">{d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3)}</span>
-                               <span className="text-xl font-bold">{d.getDate()}</span>
-                            </button>
-                          )
-                       })}
-                    </div>
-                    {state.date && (
-                       <div className="grid grid-cols-4 gap-2 mt-4 animate-fade-in">
-                          {['09:00','10:00','14:00','16:00','18:00','20:00'].map(t => (
-                             <button key={t} onClick={() => dispatch({ type: 'UPDATE_SELECTION', payload: { time: t } })}
-                               className={`py-2 rounded-xl text-sm font-bold border ${state.time === t ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-gray-400 border-white/5'}`}>
-                               {t}
-                             </button>
-                          ))}
-                       </div>
-                    )}
-                 </section>
-
-                 {/* 2. Local */}
-                 <section>
-                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Local</h4>
-                    <div className="space-y-3">
-                       {LOCATIONS_DB.map(loc => (
-                          <button key={loc.id} onClick={() => dispatch({ type: 'UPDATE_SELECTION', payload: { location: loc, useTable: null } })}
-                             className={`w-full p-4 rounded-2xl border text-left flex justify-between items-center transition-all ${state.location?.id === loc.id ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-white/5'}`}>
-                             <div>
-                               <p className="font-bold text-white text-sm">{loc.label}</p>
-                               <p className="text-xs text-gray-500">{loc.sublabel}</p>
-                             </div>
-                             {loc.fee > 0 && <span className="text-xs font-bold text-[#FFD60A]">+ {formatCurrency(loc.fee)}</span>}
-                          </button>
-                       ))}
-                    </div>
-                 </section>
-
-                 {/* Resumo Financeiro (Footer fixo simulado aqui por simplicidade) */}
-                 <div className="pt-4 border-t border-white/10">
-                    <div className="flex justify-between items-end mb-4">
-                       <span className="text-gray-400 text-sm">Total Estimado</span>
-                       <span className="text-2xl font-bold text-white">{formatCurrency(pricing.total)}</span>
-                    </div>
-                    <Button onClick={handleFinalize} disabled={!state.date || !state.time || !state.location}>
-                       Agendar no WhatsApp
-                    </Button>
-                 </div>
-              </div>
-            )}
-            
-            {state.step === 'success' && (
-               <div className="h-full flex flex-col items-center justify-center animate-fade-in pt-20">
-                  <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(34,197,94,0.4)]">
-                     <Check className="w-10 h-10 text-white stroke-[3px]"/>
+               <div className="animate-fade-in space-y-10">
+                  <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                     <div>
+                        <h2 className="text-xl font-bold text-white">{state.service.name}</h2>
+                        <p className="text-xs text-gray-500 mt-1">{state.service.labelDuration} • Personalização</p>
+                     </div>
+                     <span className="text-[#0A84FF] font-bold text-lg">{formatCurrency(state.service.basePrice)}</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">Pedido Criado!</h2>
-                  <p className="text-gray-400 text-center mb-8">Finalize a conversa no WhatsApp para confirmar.</p>
-                  <Button variant="secondary" onClick={() => dispatch({ type: 'RESET' })}>Voltar ao Início</Button>
+
+                  {/* 1. DATA */}
+                  <InlineDateSelector selectedDate={state.date} selectedTime={state.time} onSelect={(d, t) => {
+                     dispatch({ type: 'UPDATE', payload: { date: d, time: t } });
+                     if(t) scrollTo(locationRef);
+                  }} />
+
+                  {/* 2. LOCAL */}
+                  <div ref={locationRef}>
+                     <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Local</h4>
+                     <div className="space-y-3">
+                        {LOCATIONS_DB.map(loc => (
+                           <div key={loc.id}>
+                              <button onClick={() => { dispatch({ type: 'UPDATE', payload: { location: loc, useTable: null, city: '' } }); scrollTo(musicRef); }}
+                                 className={`w-full p-4 rounded-[20px] border text-left flex justify-between items-center transition-all ${state.location?.id === loc.id ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
+                                 <div><p className="font-bold text-sm text-white">{loc.label}</p><p className="text-xs text-gray-500">{loc.sublabel}</p></div>
+                                 {loc.fee > 0 && <span className="text-[10px] font-bold text-[#FFD60A] bg-[#FFD60A]/10 px-2 py-1 rounded">+ {formatCurrency(loc.fee)}</span>}
+                              </button>
+                              
+                              {/* Sub-opções de Local */}
+                              {state.location?.id === loc.id && loc.allowsTableChoice && (
+                                 <div className="grid grid-cols-2 gap-3 mt-3 animate-fade-in pl-4 border-l border-white/10">
+                                    <button onClick={() => { dispatch({ type: 'UPDATE', payload: { useTable: false } }); scrollTo(musicRef); }} className={`p-3 rounded-xl border text-xs font-bold ${state.useTable === false ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#2C2C2E] border-transparent text-gray-400'}`}>🛏 Na Cama</button>
+                                    <button onClick={() => { dispatch({ type: 'UPDATE', payload: { useTable: true } }); scrollTo(musicRef); }} className={`p-3 rounded-xl border text-xs font-bold ${state.useTable === true ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#2C2C2E] border-transparent text-gray-400'}`}>💆‍♂️ Maca (+{formatCurrency(CONFIG.PRICES.MACA)})</button>
+                                 </div>
+                              )}
+                              {state.location?.id === loc.id && loc.input && (
+                                 <input value={state.city} onChange={e => dispatch({ type: 'UPDATE', payload: { city: e.target.value } })} placeholder="Qual cidade?" className="mt-3 w-full bg-[#2C2C2E] p-3 rounded-xl text-sm text-white focus:border-[#0A84FF] border border-transparent outline-none animate-fade-in" />
+                              )}
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+
+                  {/* 3. VIBE */}
+                  <div ref={musicRef}>
+                     <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Som Ambiente</h4>
+                     <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                        {MUSIC_VIBES.map(v => (
+                           <button key={v} onClick={() => { dispatch({ type: 'UPDATE', payload: { music: v } }); scrollTo(extrasRef); }} className={`px-5 py-3 rounded-xl border text-xs font-bold whitespace-nowrap transition-all ${state.music === v ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] border-transparent text-gray-400'}`}>{v}</button>
+                        ))}
+                     </div>
+                  </div>
+
+                  {/* 4. EXTRAS */}
+                  <div ref={extrasRef} className="space-y-3">
+                     <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Adicionais</h4>
+                     <button onClick={() => dispatch({ type: 'UPDATE', payload: { upgrade: !state.upgrade } })} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${state.upgrade ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
+                        <div className="text-left"><p className="text-white font-bold text-sm">+30 Minutos</p><p className="text-[10px] text-gray-500">Sessão estendida</p></div>
+                        <span className="text-[#0A84FF] font-bold text-sm">+ {formatCurrency(state.service.basePrice * CONFIG.PRICES.UPGRADE_PCT)}</span>
+                     </button>
+                     <button onClick={() => dispatch({ type: 'UPDATE', payload: { aroma: !state.aroma } })} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${state.aroma ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
+                        <div className="text-left"><p className="text-white font-bold text-sm">Aromaterapia</p><p className="text-[10px] text-gray-500">Óleos essenciais</p></div>
+                        <div className="text-right">
+                           {pricing.appliedAromaCost < pricing.regularAromaPrice ? (
+                              <><span className="text-gray-500 line-through text-[10px] mr-2">{formatCurrency(pricing.regularAromaPrice)}</span><span className="text-[#30D158] font-bold text-sm">{pricing.appliedAromaCost === 0 ? 'GRÁTIS' : `+${formatCurrency(pricing.appliedAromaCost)}`}</span></>
+                           ) : (<span className="text-[#0A84FF] font-bold text-sm">+ {formatCurrency(pricing.regularAromaPrice)}</span>)}
+                        </div>
+                     </button>
+                  </div>
+
+                  {/* 5. PAGAMENTO */}
+                  <div ref={payRef}>
+                     <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Pagamento</h4>
+                     <div className="grid grid-cols-2 gap-3 mb-4">
+                        {['pix', 'cash', 'debit_card', 'credit_card'].map(m => (
+                           <button key={m} onClick={() => dispatch({ type: 'UPDATE', payload: { paymentMethod: m } })} 
+                              className={`h-20 rounded-[18px] border flex flex-col items-center justify-center gap-1 transition-all ${state.paymentMethod === m ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
+                              {m === 'pix' && <QrCode className="w-5 h-5 text-[#0A84FF]"/>}
+                              {m === 'cash' && <Banknote className="w-5 h-5 text-[#30D158]"/>}
+                              {m === 'debit_card' && <CreditCard className="w-5 h-5 text-white"/>}
+                              {m === 'credit_card' && <CreditCard className="w-5 h-5 text-[#FFD60A]"/>}
+                              <span className="text-[11px] font-bold text-gray-300 uppercase">{m.replace('_', ' ')}</span>
+                           </button>
+                        ))}
+                     </div>
+                     {state.paymentMethod === 'credit_card' && (
+                        <select onChange={e => dispatch({ type: 'UPDATE', payload: { installments: parseInt(e.target.value) } })} className="w-full bg-[#1C1C1E] text-white p-3 rounded-xl border border-white/10 text-sm animate-fade-in">
+                           {CONFIG.RATES.map((r, i) => i > 0 && <option key={i} value={i}>{i}x de {formatCurrency((pricing.total / (1-r)) / i)}</option>)}
+                        </select>
+                     )}
+                  </div>
+                  
+                  <div className="h-24"></div> {/* Spacer */}
                </div>
             )}
 
+            {state.step === 'success' && (
+               <div className="flex flex-col items-center justify-center pt-20 animate-fade-in text-center">
+                  <div className="w-24 h-24 bg-[#32D74B] rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(50,215,75,0.4)] mb-6">
+                     <Check className="w-10 h-10 text-white stroke-[3px]"/>
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Pedido Criado!</h2>
+                  <p className="text-gray-400 mb-8 max-w-[200px]">Finalize a conversa no WhatsApp para confirmar.</p>
+                  <Button variant="secondary" onClick={() => dispatch({ type: 'SET_STEP', payload: 'home' })}>Voltar ao Início</Button>
+               </div>
+            )}
           </div>
+
+          {/* --- FOOTER (CHECKOUT) --- */}
+          {state.step === 'configure' && state.location && (
+             <div className="absolute bottom-0 w-full bg-[#1C1C1E] rounded-t-[32px] p-5 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] z-50 animate-slide-up">
+                <div className="flex justify-between items-end mb-4 px-1">
+                   <div>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total Estimado</p>
+                      <div className="flex flex-col">
+                         <span className="text-2xl font-bold text-white tracking-tight">{formatCurrency(pricing.total)}</span>
+                         {state.paymentMethod === 'credit_card' && <span className="text-[10px] text-[#FFD60A] font-bold">💳 {state.installments}x no Cartão</span>}
+                      </div>
+                   </div>
+                   <div className="text-right text-[10px] text-gray-500">
+                      {pricing.fee > 0 && <p>{pricing.feeLabel} de taxa incl.</p>}
+                      {pricing.discount > 0 && <p className="text-red-500">-{formatCurrency(pricing.discount)} desc.</p>}
+                   </div>
+                </div>
+                <Button onClick={handleFinalize} disabled={!canFinalize} loading={isProcessing}>
+                   {isProcessing ? 'PROCESSANDO...' : 'AGENDAR NO WHATSAPP'}
+                </Button>
+             </div>
+          )}
+
         </div>
       </div>
     </ToastProvider>
