@@ -8,30 +8,37 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. UTILITÁRIOS E CONFIGURAÇÕES (Lógica Pura)
+// 1. UTILITÁRIOS E CONFIGURAÇÕES (Lógica Pura & Segurança)
 // ==================================================================================
 
-// 🛡️ SAFE STORAGE: Impede o app de quebrar em aba anônima/privada
+// 🛡️ SAFE STORAGE: Blinda o app contra falhas em Aba Anônima do iPhone/Android
 const safeStorage = {
   getItem: (key) => {
-    try { return localStorage.getItem(key); } catch (e) { return null; }
+    try { 
+      if (typeof window !== 'undefined') return localStorage.getItem(key);
+    } catch (e) { return null; }
+    return null;
   },
   setItem: (key, value) => {
-    try { localStorage.setItem(key, value); } catch (e) { /* falha silenciosa */ }
+    try { 
+      if (typeof window !== 'undefined') localStorage.setItem(key, value);
+    } catch (e) { /* Silencia erro de cota ou bloqueio */ }
   },
   clear: () => {
-    try { localStorage.clear(); } catch (e) { /* falha silenciosa */ }
+    try { 
+      if (typeof window !== 'undefined') localStorage.clear();
+    } catch (e) { }
   }
 };
 
 const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-const triggerHaptic = () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(5); };
-const generateBookingId = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+const triggerHaptic = () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10); };
+const generateBookingId = () => Math.random().toString(36).substring(2, 7).toUpperCase();
 
 // 🛠️ CONFIGURAÇÕES DE PREÇO
 const CONFIG = {
-  WHATSAPP_NUM: "5517991360413", // Seu número
-  PIX_KEY: "62922530000144",     // Sua chave Pix
+  WHATSAPP_NUM: "5517991360413", 
+  PIX_KEY: "62922530000144",
   PRICES: {
     MACA: 20,
     AROMA_FULL: 10,
@@ -62,9 +69,9 @@ const services = [
 
 // 📍 LOCAIS
 const locations = [
-  { id: 'motel', label: 'Suíte Privada (Motel)', sublabel: 'Vou com você', fee: 75, allowsTableChoice: false, isMotel: true },
-  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', fee: 40, allowsTableChoice: true, isUber: true },
-  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: 0, allowsTableChoice: false, input: true, isPending: true },
+  { id: 'motel', label: 'Suíte Privada (Motel)', sublabel: 'Vou com você', fee: 75, allowsTableChoice: false, isMotel: true, estimatedTravelTime: '10-15 min' },
+  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', fee: 40, allowsTableChoice: true, isUber: true, estimatedTravelTime: '15-20 min' },
+  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: 0, allowsTableChoice: false, input: true, isPending: true, estimatedTravelTime: 'A combinar' },
 ];
 
 const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
@@ -88,15 +95,60 @@ const LEVELS = [
 const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘', 'Deep House 🎧']; 
 
 const REVIEWS_DB = [
-  { t: "Sou casado, o sigilo foi total. A massagem tântrica me surpreendeu.", a: "Sigiloso (44 anos)", r: 5 },
-  { t: "Nunca tinha feito tântrica. A sensibilidade que ele desperta é absurda.", a: "R.S. (Santa Fé)", r: 5 },
-  { t: "Ambiente discreto. O toque íntimo foi feito com muito respeito.", a: "Curioso", r: 5 },
-  { t: "Gostei da massagem, relaxou bem os músculos.", a: "Paulo", r: 4 },
-  { t: "Mão leve e firme ao mesmo tempo. A manipulação foi perfeita.", a: "Anônimo", r: 5 },
+  { t: "Sou casado, o sigilo foi total. A massagem tântrica me surpreendeu, finalização manual perfeita.", a: "Sigiloso (44 anos)", r: 5 },
+  { t: "Nunca tinha feito tântrica. A sensibilidade que ele desperta no corpo é absurda. Gozei muito no final.", a: "R.S. (Santa Fé)", r: 5 },
+  { t: "Ambiente discreto. O toque íntimo foi feito com muito respeito e técnica. Alívio imediato.", a: "Curioso", r: 5 },
+  { t: "Gostei da massagem, relaxou bem os músculos. A parte tântrica poderia durar mais tempo.", a: "Paulo", r: 4 },
+  { t: "Mão leve e firme ao mesmo tempo. A manipulação no lingam me levou às alturas. Recomendo.", a: "Anônimo", r: 5 },
+  { t: "Fui tenso e saí leve. O respeito durante a massagem íntima me deixou muito à vontade.", a: "M.V. (Jales)", r: 5 },
+  { t: "Local simples, mas a técnica é ótima. Faltou só um som ambiente melhor.", a: "Lucas", r: 4 },
+  { t: "Minha esposa nem desconfia. Foi meu momento de escape. A descarga de energia foi intensa.", a: "Casado (Jales)", r: 5 },
+  { t: "Cara profissional. Focou no meu prazer sem ultrapassar os limites combinados. Gozei litros.", a: "Vitor", r: 5 },
+  { t: "Atrasou um pouco, mas a massagem compensou. O toque corpo a corpo é viciante.", a: "Cliente", r: 4 },
+  { t: "Sensação única. O óleo morno e a respiração... o final manual foi explosivo.", a: "J.P.", r: 5 },
+  { t: "Profissionalismo puro. Massagem relaxante de verdade, com um final feliz incrível.", a: "D.S.", r: 5 },
+  { t: "Muito relaxante. A estimulação foi crescendo até eu não aguentar mais. Top.", a: "Anônimo", r: 5 },
+  { t: "Gostei, mas achei o ar condicionado muito forte. A massagem em si foi nota 10.", a: "R.", r: 4 },
+  { t: "Discrição garantida. Para quem é casado e quer relaxar sem preocupação, é o lugar.", a: "Empresário", r: 5 },
+  { t: "Primeira vez recebendo massagem no lingam. Foi uma descoberta, prazer muito diferente.", a: "Pedro (24 anos)", r: 5 },
+  { t: "Serviço honesto. Relaxamento muscular e alívio da tensão. Voltarei.", a: "Fernando", r: 4 },
+  { t: "Me deixou leve. A massagem nas pernas e virilha preparou bem pro final.", a: "G.H.", r: 5 },
+  { t: "Já fui em outros, mas a técnica manual dele é diferenciada. Sabe controlar o tempo.", a: "Cliente Fiel", r: 5 },
+  { t: "Fizemos num local reservado. O sigilo foi mantido. O prazer foi intenso.", a: "Sigilo Total", r: 5 },
+  { t: "Achei difícil de estacionar perto, mas o atendimento valeu a pena.", a: "M.", r: 4 },
+  { t: "Gozei bastante. O toque dele é provocante na medida certa. Tântrica de verdade.", a: "Anônimo", r: 5 },
+  { t: "Muito limpo e educado. Me senti seguro. A finalização foi no capricho.", a: "Advogado", r: 5 },
+  { t: "Bom, mas queria ter ficado mais tempo na parte relaxante antes da íntima.", a: "L.F.", r: 4 },
+  { t: "O toque de cueca roçando... excitante demais. Gozei só com a massagem.", a: "Curioso (30)", r: 5 },
+  { t: "Sou hétero, foi minha primeira vez. Respeitou e focou só no meu relaxamento. Gostei.", a: "Anônimo", r: 5 },
+  { t: "Tirou todo o estresse do trabalho. O clímax no final foi necessário pra renovar.", a: "Beto", r: 5 },
+  { t: "Local tranquilo. O atendimento foi impecável do início ao fim.", a: "S.O.", r: 5 },
+  { t: "Tudo certo. Só senti falta de toalhas extras, mas levei a minha.", a: "K.", r: 4 },
+  { t: "A química foi boa. O toque na região pélvica é de quem entende do assunto.", a: "Jovem", r: 5 },
+  { t: "Sou caminhoneiro, parei pra relaxar. Melhor coisa que fiz. Alívio total.", a: "Rodoviário", r: 5 },
+  { t: "Relaxamento profundo. Esqueci dos problemas e da rotina de casado por 1 hora.", a: "Casado Estressado", r: 5 },
+  { t: "Bom atendimento. O óleo tem um cheiro bom, ajudou a relaxar.", a: "Felipe", r: 4 },
+  { t: "Gozei tanto que fiquei sem pernas. Vergonha rs, mas foi muito bom.", a: "Safado", r: 5 },
+  { t: "O massagista tem pegada. A massagem prostática externa foi novidade e gostei.", a: "Anônimo", r: 5 },
+  { t: "Pontual e discreto. Ninguém na cidade ficou sabendo. Perfeito.", a: "Vizinho (Urânia)", r: 5 },
+  { t: "Preço justo pelo nível da tântrica. Com certeza voltarei.", a: "T.M.", r: 4 },
+  { t: "Toque suave no começo e intenso no final. Me levou ao limite do prazer.", a: "G.", r: 5 },
+  { t: "Ambiente climatizado. Me senti num spa. A finalização foi a cereja do bolo.", a: "Empresário", r: 5 },
+  { t: "Massagem relaxante ok, mas a íntima foi o destaque. Mão de veludo.", a: "R.J.", r: 4 },
+  { t: "Fiz escondido. O sigilo dele me passou muita segurança. Gozei tranquilo.", a: "Comprometido", r: 5 },
+  { t: "Saí renovado. Foi uma das melhores gozadas que tive ultimamente. Só manual.", a: "L.", r: 5 },
+  { t: "Sem enrolação. Focou onde eu queria e me fez relaxar absurdamente.", a: "Direto", r: 5 },
+  { t: "Gostei, mas a iluminação estava um pouco clara pro clima tântrico.", a: "H.", r: 4 },
+  { t: "Sensacional. O corpo a corpo (body) é quente demais. Recomendo.", a: "Anônimo", r: 5 },
+  { t: "Me tratou super bem. A massagem perineal ajudou muito na potência.", a: "C.A.", r: 5 },
+  { t: "Fiquei com receio, mas ele é super profissional. Relaxei e gozei muito.", a: "Iniciante", r: 5 },
+  { t: "Muito bom. Aliviou a tensão e o tesão acumulado.", a: "Trabalhador", r: 4 },
+  { t: "Experiência completa. Banho, tântrica e alívio manual. Nota 10.", a: "M.S.", r: 5 },
+  { t: "O melhor da região. Técnica apurada, sabe levar ao clímax sem pressa.", a: "Cliente Vip", r: 5 }
 ];
 
 // ==================================================================================
-// 2. ESTILOS GLOBAIS (CSS IN JS OTIMIZADO)
+// 2. ESTILOS GLOBAIS (Otimizados para Mobile)
 // ==================================================================================
 
 const globalStyles = `
@@ -139,7 +191,7 @@ button { touch-action: manipulation; user-select: none; cursor: pointer; }
   border: 1px solid rgba(255, 255, 255, 0.08); 
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  transform: translateZ(0); /* Aceleração de Hardware */
+  transform: translateZ(0);
 }
 .ios-card:active { transform: scale(0.98) translateZ(0); }
 
@@ -165,7 +217,7 @@ button { touch-action: manipulation; user-select: none; cursor: pointer; }
 `;
 
 // ==================================================================================
-// 3. COMPONENTES AUXILIARES
+// 3. COMPONENTES DE UI
 // ==================================================================================
 
 const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
@@ -186,9 +238,12 @@ const LiveStatus = () => {
 
 const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
   const safeSpent = (data && typeof data.totalSpent === 'number') ? data.totalSpent : 0;
+  
+  // Lógica segura de nível
   const currentLevelIdx = [...LEVELS].reverse().findIndex(l => safeSpent >= l.min);
   const currentLevel = currentLevelIdx !== -1 ? LEVELS[LEVELS.length - 1 - currentLevelIdx] : LEVELS[0];
   const nextLevel = currentLevelIdx !== -1 && (LEVELS.length - 1 - currentLevelIdx + 1) < LEVELS.length ? LEVELS[LEVELS.length - 1 - currentLevelIdx + 1] : null;
+  
   const min = currentLevel.min || 0;
   const nextMin = nextLevel ? nextLevel.min : min + 1;
   const rawProgress = ((safeSpent - min) / (nextMin - min)) * 100;
@@ -243,6 +298,7 @@ const ReviewsCarousel = () => {
 
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   const DAYS_TO_SHOW = 16;
+  // OTIMIZAÇÃO: useMemo impede que as datas sejam recalculadas a cada render
   const days = useMemo(() => {
     const arr = [];
     const now = new Date();
@@ -252,7 +308,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
         arr.push(d);
     }
     return arr;
-  }, []); // Só calcula uma vez na montagem
+  }, []); 
    
   const now = new Date();
   
@@ -261,7 +317,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
     const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
     if (!isToday) return false;
     const [h] = t.split(':').map(Number);
-    return h <= now.getHours() + 1; // Bloqueia 1h de antecedência
+    return h <= now.getHours() + 1;
   };
 
   const getDayLabel = (d) => {
@@ -326,6 +382,10 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
                    </div>
                )
            })}
+           <div className="mt-4 p-3 bg-[#FFD60A]/10 rounded-xl border border-[#FFD60A]/20 flex items-start gap-3">
+              <Info className="w-4 h-4 text-[#FFD60A] mt-0.5 flex-shrink-0" />
+              <p className="text-[11px] text-[#FFD60A]/90 leading-relaxed">Horários noturnos e fins de semana esgotam rápido.</p>
+           </div>
         </div>
       )}
     </div>
@@ -333,14 +393,14 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
 };
 
 // ==================================================================================
-// 4. APP PRINCIPAL
+// 4. APP PRINCIPAL (LÓGICA CONSOLIDADA)
 // ==================================================================================
 
 export default function App() {
   const [step, setStep] = useState('home');
   const [loading, setLoading] = useState(true);
   
-  // Refs para Scroll Automático
+  // Refs para Scroll Automático (Melhor UX)
   const refs = {
     location: useRef(null), vibe: useRef(null), extras: useRef(null), 
     coupon: useRef(null), payment: useRef(null), home: useRef(null), receipt: useRef(null), surface: useRef(null)
@@ -348,17 +408,23 @@ export default function App() {
 
   const scrollTo = (refKey) => setTimeout(() => refs[refKey].current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
 
+  // Inicialização Segura do Estado
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = safeStorage.getItem('thaly_system_v22'); 
-    return saved ? JSON.parse(saved) : { savedName: '', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
+    try {
+      const saved = safeStorage.getItem('thaly_system_v22'); 
+      return saved ? JSON.parse(saved) : { savedName: '', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
+    } catch {
+      return { savedName: '', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
+    }
   });
 
   const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
   const [selection, setSelection] = useState({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
   
+  // Estado de UI separado para evitar re-renders desnecessários na lógica de preço
   const [uiState, setUiState] = useState({ showFaq: false, showNotifications: false, showMenu: false, privacyMode: true, weatherHint: '' });
 
-  // Init
+  // Init Effects
   useEffect(() => { 
     setTimeout(() => setLoading(false), 1500); 
     const hr = new Date().getHours();
@@ -367,7 +433,7 @@ export default function App() {
 
   useEffect(() => {
     safeStorage.setItem('thaly_system_v22', JSON.stringify(loyalty));
-    if (loyalty.savedName) setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
+    if (loyalty.savedName && !user.name) setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
   }, [loyalty]);
 
   useEffect(() => {
@@ -396,10 +462,12 @@ export default function App() {
               setLoyalty(prev => ({...prev, inventory: [...prev.inventory, codeUpper]}));
               triggerHaptic();
           }
-      } else alert('Cupom inválido.');
+      } else if (codeUpper) {
+        alert('Cupom inválido.');
+      }
   };
 
-  // --- CÁLCULOS DE PREÇO (MEMOIZED) ---
+  // --- CÁLCULOS DE PREÇO (MEMOIZED PARA PERFORMANCE) ---
   const priceData = useMemo(() => {
       if (!selection.service) return { base: 0, final: 0, discount: 0, fee: 0 };
 
@@ -460,7 +528,7 @@ export default function App() {
       notifications: newNotif 
     }));
 
-    // Mensagem
+    // Mensagem Formatada
     const isToday = selection.date.getDate() === new Date().getDate();
     let locStr = selection.location.label;
     if(selection.location.isMotel) locStr += " (Vou com você)";
@@ -492,6 +560,8 @@ ${selection.aroma ? '🌿 Aromaterapia' : ''}`;
     window.open(url, '_blank');
     setStep('success');
   };
+  
+  const [lastOrderLink, setLastOrderLink] = useState("");
 
   // --- RENDER ---
   return (
