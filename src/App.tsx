@@ -780,7 +780,6 @@ export default function App() {
       totalSaved: (prev.totalSaved || 0) + (selection.coupon ? 10 : 0),
       inventory: newInventory,
       notifications: newNotifications
-      
     }));
 
     const isToday = selection.date.getDate() === new Date().getDate();
@@ -812,11 +811,15 @@ ${feeType}: ${formatCurrency(feeVal)}
 *DETALHES:*
 • Serviço Base: ${formatCurrency(selection.service.basePrice)}${extrasText}${aromaText}
 ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(discountVal)}` : ''}
-🎵 Vibe: ${selection.music}`;
+
 ------------------------------
 ${priceDisplay}
 (Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
+------------------------------
 
+💸 *Líquido Massagista: ${formatCurrency(netMasseur)}*
+
+🎵 Vibe: ${selection.music}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
     setLastOrderLink(whatsappUrl); 
