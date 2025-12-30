@@ -342,14 +342,21 @@ const ReviewsCarousel = () => {
 };
 
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
+  // 1. LÓGICA DE DATA: Vai até o final do próximo mês
+  const days = [];
   const now = new Date();
   
-  // Gera os próximos 14 dias
-  const days = [];
-  for (let i = 0; i < 14; i++) {
-      const d = new Date(now);
-      d.setDate(now.getDate() + i);
-      days.push(d);
+  // Calcula o último dia do próximo mês
+  // (Mês atual + 2, dia 0 = Último dia do mês seguinte)
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const endDate = new Date(currentYear, currentMonth + 2, 0); 
+
+  // Loop que preenche dia por dia
+  let tempDate = new Date(now);
+  while (tempDate <= endDate) {
+      days.push(new Date(tempDate));
+      tempDate.setDate(tempDate.getDate() + 1);
   }
    
   const isTimeBlocked = (t, d) => {
@@ -364,8 +371,14 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      if (d.toDateString() === today.toDateString()) return 'HOJE';
-      if (d.toDateString() === tomorrow.toDateString()) return 'AMANHÃ';
+      
+      // Zerar horas para comparação justa
+      d.setHours(0,0,0,0);
+      today.setHours(0,0,0,0);
+      tomorrow.setHours(0,0,0,0);
+
+      if (d.getTime() === today.getTime()) return 'HOJE';
+      if (d.getTime() === tomorrow.getTime()) return 'AMANHÃ';
       return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3).replace('.','');
   };
 
@@ -381,17 +394,24 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
 
   return (
     <div className="w-full">
-      {/* SELETOR DE DIAS (Carrossel BLINDADO) */}
-      <div className="w-full flex flex-nowrap gap-3 overflow-x-auto pb-6 px-1 snap-x snap-mandatory touch-pan-x scrollbar-hide">
+      {/* SELETOR DE DIAS */}
+      {/* Adicionado style para forçar rolagem suave no iOS */}
+      <div 
+        className="flex gap-3 overflow-x-auto pb-6 px-1 w-full touch-pan-x"
+        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
         {days.map((d, i) => {
-          const isSel = selectedDate?.toDateString() === d.toDateString();
+          // Comparação segura de datas
+          const isSel = selectedDate?.getDate() === d.getDate() && selectedDate?.getMonth() === d.getMonth();
           const label = getDayLabel(d);
           const month = getMonthLabel(d);
           
           return (
             <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} 
-              // AQUI ESTÁ O SEGREDO: min-w (largura minima) + flex-shrink-0 (nao encolher)
-              className={`snap-center flex-shrink-0 relative flex flex-col items-center justify-center min-w-[74px] w-[74px] h-[88px] rounded-[22px] transition-all duration-300 border ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 hover:bg-[#3A3A3C]'}`}>
+              // min-w-[76px] garante tamanho fixo
+              // flex-shrink-0 impede encolhimento
+              className={`flex-shrink-0 relative flex flex-col items-center justify-center min-w-[76px] w-[76px] h-[90px] rounded-[22px] transition-all duration-200 border 
+              ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 active:bg-[#3A3A3C]'}`}>
               
               <span className={`text-[10px] uppercase font-bold tracking-wide mb-1 ${label === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/80' : 'opacity-60'}`}>{label}</span>
               <span className="text-2xl font-bold font-mono tracking-tight">{d.getDate()}</span>
@@ -401,7 +421,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
             </button>
           )
         })}
-        {/* Espaçador invisível no final pra dar um respiro no scroll */}
+        {/* Espaçador final para garantir que o último item seja clicável facilmente */}
         <div className="min-w-[20px] h-full flex-shrink-0"></div>
       </div>
 
@@ -436,7 +456,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
            <div className="mt-4 p-3 bg-[#FFD60A]/10 rounded-xl border border-[#FFD60A]/20 flex items-start gap-3">
               <Info className="w-4 h-4 text-[#FFD60A] mt-0.5 flex-shrink-0" />
               <p className="text-[11px] text-[#FFD60A]/90 leading-relaxed">
-                  Horários noturnos (após 19h) e fins de semana esgotam rápido. Reserve com antecedência.
+                  Horários noturnos e fins de semana esgotam rápido.
               </p>
            </div>
         </div>
