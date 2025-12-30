@@ -3,7 +3,7 @@ import {
   ChevronLeft, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Bell, Tag, AlertCircle, ArrowRight, Eye, EyeOff, Share2, 
   LogOut, Star, Instagram, Menu, Send, CreditCard, Banknote, QrCode, 
-  CheckCircle2, Info, ChevronRight, Crown, Trash2, Siren, Flame
+  CheckCircle2, Info, ChevronRight, Crown, Trash2, Siren, Flame, Map
 } from 'lucide-react';
 
 // ==================================================================================
@@ -49,12 +49,11 @@ button { touch-action: manipulation; user-select: none; cursor: pointer; }
 const CONFIG = {
   PRICES: { MACA: 20, AROMA_FULL: 10, AROMA_DISCOUNT: 5, UPGRADE_PCT: 0.5 },
   CONTACT: { PHONE: '5517991360413', PIX: '62922530000144' },
-  // Taxas maquininha (Index = nº parcelas)
   RATES: [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238]
 };
 
 // ==================================================================================
-// 2. BANCOS DE DADOS SIMULADOS
+// 2. BANCOS DE DADOS
 // ==================================================================================
 
 const SERVICES_DB = [
@@ -74,8 +73,8 @@ const SERVICES_DB = [
 
 const LOCATIONS_DB = [
   { id: 'motel', label: 'Suíte Privada (Motel)', sublabel: 'Vou com você', fee: 75, allowsTableChoice: false, isMotel: true },
-  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', fee: 40, allowsTableChoice: true, isUber: true },
-  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: 0, allowsTableChoice: false, estimatedTravelTime: 'A combinar', input: true, isPending: true },
+  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', fee: 40, allowsTableChoice: true, askAddress: true, isUber: true },
+  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', fee: 0, allowsTableChoice: false, estimatedTravelTime: 'A combinar', inputCity: true, isPending: true },
 ];
 
 const LEVELS = [
@@ -85,14 +84,15 @@ const LEVELS = [
   { name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: ["Cupom R$ 50 (Ganhou!)", "Prioridade Total"] },
 ];
 
-const SYSTEM_COUPONS = {
-  'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF (1ª Vez)' },
-  'MASCULINA': { code: 'MASCULINA', type: 'percent', value: 10, desc: '10% OFF Especial' },
-  'VIP20': { code: 'VIP20', type: 'fixed', value: 20, desc: 'R$ 20,00 OFF' },
-  'NIVELPRATA': { code: 'NIVELPRATA', type: 'fixed', value: 15, desc: 'R$ 15,00 OFF (Prata)' },
-  'NIVELOURO': { code: 'NIVELOURO', type: 'fixed', value: 25, desc: 'R$ 25,00 OFF (Ouro)' },
-  'NIVELDIAMANTE': { code: 'NIVELDIAMANTE', type: 'fixed', value: 50, desc: 'R$ 50,00 OFF (Diamante)' },
-};
+const REVIEWS_DB = [
+  { t: "Sou casado, o sigilo foi total. A massagem tântrica me surpreendeu.", a: "Sigiloso (44 anos)", r: 5 },
+  { t: "A sensibilidade que ele desperta no corpo é absurda. Recomendo.", a: "R.S. (Santa Fé)", r: 5 },
+  { t: "Ambiente discreto e toque muito profissional.", a: "Curioso", r: 5 },
+  { t: "Fui tenso e saí leve. O respeito durante a massagem foi total.", a: "M.V. (Jales)", r: 5 },
+  { t: "Minha esposa nem desconfia. Foi meu momento de escape.", a: "Casado (Jales)", r: 5 },
+  { t: "Cara profissional. Focou no meu prazer.", a: "Vitor", r: 5 },
+  { t: "Sensação única. O óleo morno e a respiração...", a: "J.P.", r: 5 },
+];
 
 const MUSIC_VIBES = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘'];
 
@@ -105,10 +105,9 @@ const triggerHaptic = () => { if (typeof navigator !== 'undefined' && navigator.
 const generateBookingId = () => Math.random().toString(36).substring(2, 6).toUpperCase();
 
 // ==================================================================================
-// 4. CONTEXTOS E HOOKS (O Motor Senior)
+// 4. CONTEXTOS E HOOKS
 // ==================================================================================
 
-// Toast Context (Para evitar prop drilling de alertas)
 const ToastContext = createContext();
 const useToast = () => useContext(ToastContext);
 
@@ -133,7 +132,6 @@ const ToastProvider = ({ children }) => {
   );
 };
 
-// Hook de Persistência Local Storage
 const usePersistedState = (key, initialValue) => {
   const [state, setState] = useState(() => {
     try {
@@ -145,28 +143,24 @@ const usePersistedState = (key, initialValue) => {
   return [state, setState];
 };
 
-// Hook de Cálculo de Preço (Core Logic)
 const usePriceCalculator = (selection, loyalty) => {
   return useMemo(() => {
     if (!selection.service) return { total: 0, visualTotal: 0, fee: 0, discount: 0, aromaPrice: 0 };
 
     let base = selection.service.basePrice;
     
-    // Upgrades
     let upgradePrice = 0;
     if (selection.upgrade) {
       upgradePrice = selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
       base += upgradePrice;
     }
     
-    // Table
     let tablePrice = 0;
     if (selection.useTable) {
       tablePrice = CONFIG.PRICES.MACA;
       base += tablePrice;
     }
     
-    // Aroma (Logic baseada no Nível)
     const currentLevel = [...LEVELS].reverse().find(l => (loyalty.totalSpent || 0) >= l.min) || LEVELS[0];
     let aromaPrice = CONFIG.PRICES.AROMA_FULL;
     if (currentLevel.name === 'Prata') aromaPrice = CONFIG.PRICES.AROMA_DISCOUNT;
@@ -178,46 +172,31 @@ const usePriceCalculator = (selection, loyalty) => {
       base += aromaPrice;
     }
 
-    // Taxas de Local
     const fee = selection.location?.fee || 0;
     const feeLabel = selection.location?.isPending ? "A Combinar" : formatCurrency(fee);
     
-    // Descontos (Cupom) - Não aplicável sobre taxas
     let discount = 0;
     if (selection.coupon) {
-       // O desconto incide sobre o serviço, não sobre a taxa de deslocamento
        const discountableAmount = base; 
        if (selection.coupon.type === 'percent') discount = discountableAmount * (selection.coupon.value / 100);
        else discount = selection.coupon.value;
        base -= discount;
     }
 
-    // Total final em dinheiro/pix (Serviço + Taxas)
     const visualTotal = Math.max(0, base + fee); 
     
-    // Total Cartão (com juros)
     let creditTotal = visualTotal;
     if (selection.paymentMethod === 'credit_card') {
       const rate = CONFIG.RATES[selection.installments || 1] || 0;
       creditTotal = visualTotal / (1 - rate);
     }
 
-    return { 
-      total: visualTotal, 
-      creditTotal, 
-      fee, 
-      feeLabel,
-      discount, 
-      appliedAromaCost, 
-      regularAromaPrice: CONFIG.PRICES.AROMA_FULL,
-      upgradePrice,
-      tablePrice
-    };
+    return { total: visualTotal, creditTotal, fee, feeLabel, discount, appliedAromaCost, regularAromaPrice: CONFIG.PRICES.AROMA_FULL, upgradePrice, tablePrice };
   }, [selection, loyalty]);
 };
 
 // ==================================================================================
-// 5. COMPONENTES UI (Separados para organização)
+// 5. COMPONENTES UI
 // ==================================================================================
 
 const Card = ({ children, className = "", onClick }) => (
@@ -231,7 +210,6 @@ const Button = ({ children, variant = 'primary', className = "", disabled, onCli
   const styles = {
     primary: "bg-[#007AFF] text-white shadow-[0_4px_20px_rgba(0,122,255,0.4)]",
     secondary: "bg-[#2C2C2E] border border-white/10 hover:bg-[#3A3A3C] text-white",
-    ghost: "bg-transparent text-[#0A84FF]"
   };
   return (
     <button onClick={onClick} disabled={disabled || loading} className={`${base} ${styles[variant]} ${className}`}>
@@ -245,9 +223,8 @@ const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
   const currentLevelIdx = [...LEVELS].reverse().findIndex(l => safeSpent >= l.min);
   const currentLevel = currentLevelIdx !== -1 ? LEVELS[LEVELS.length - 1 - currentLevelIdx] : LEVELS[0];
   const nextLevel = LEVELS[LEVELS.indexOf(currentLevel) + 1];
-  
   const min = currentLevel.min || 0;
-  const nextMin = nextLevel ? nextLevel.min : min + 100; // fallback
+  const nextMin = nextLevel ? nextLevel.min : min + 100; 
   const progress = nextLevel ? Math.min(100, Math.max(0, ((safeSpent - min) / (nextMin - min)) * 100)) : 100;
 
   return (
@@ -280,6 +257,24 @@ const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
   )
 }
 
+const ReviewsCarousel = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 5000); return () => clearInterval(t); }, []);
+  const currentReview = REVIEWS_DB[idx];
+  
+  return (
+    <div className="relative h-28 flex items-center justify-center mb-8">
+      <div key={idx} className="absolute inset-0 flex flex-col items-center justify-center animate-fade-in px-4 bg-[#1C1C1E] rounded-[24px] border border-white/5 shadow-xl mx-1">
+        <div className="flex gap-1 mb-2">
+          {[...Array(5)].map((_,k) => <Star key={k} className={`w-3.5 h-3.5 ${k < currentReview.r ? 'text-[#FFD60A] fill-[#FFD60A]' : 'text-gray-800'}`}/>)}
+        </div>
+        <p className="text-[13px] text-gray-200 text-center font-medium leading-relaxed tracking-tight italic">"{currentReview.t}"</p>
+        <p className="text-[10px] text-gray-500 font-bold uppercase mt-2 tracking-widest">- {currentReview.a}</p>
+      </div>
+    </div>
+  );
+};
+
 // ==================================================================================
 // 6. COMPONENTES DO FLUXO (Views)
 // ==================================================================================
@@ -301,7 +296,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
     const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
     if (!isToday) return false;
     const [h] = t.split(':').map(Number);
-    return h <= now.getHours() + 1; // Bloqueia horários passados ou muito próximos
+    return h <= now.getHours() + 1;
   };
 
   return (
@@ -309,8 +304,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       <div className="flex justify-between items-end mb-4 px-1">
         <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Data</h4>
       </div>
-      
-      {/* Scroll Horizontal de Datas */}
       <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
         {days.map((d, i) => {
           const isSel = selectedDate?.getDate() === d.getDate();
@@ -324,7 +317,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
           )
         })}
       </div>
-
       {selectedDate && (
         <div className="animate-slide-up space-y-5 pt-2 border-t border-white/5 mt-2">
            {periods.map((period, idx) => (
@@ -350,17 +342,18 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
 };
 
 // ==================================================================================
-// 7. MÁQUINA DE ESTADO (Reducer)
+// 7. MÁQUINA DE ESTADO
 // ==================================================================================
 
 const initialState = {
   step: 'home',
   service: null,
   location: null,
+  address: '', // NOVO CAMPO
+  city: '',
   date: null,
   time: '',
   useTable: null,
-  city: '',
   coupon: null,
   upgrade: false,
   music: null,
@@ -391,30 +384,21 @@ export default function App() {
   const [showMenu, setShowMenu] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Carregar usuário salvo
   useEffect(() => {
     if (loyalty.savedName && !user.name) {
       setUser(prev => ({ ...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true }));
     }
   }, [loyalty.savedName]);
 
-  // Pricing Logic (Memoized)
   const pricing = usePriceCalculator(state, loyalty);
 
-  // Refs para Scroll Automático
+  // Refs para Scroll
   const locationRef = useRef(null);
   const musicRef = useRef(null);
   const extrasRef = useRef(null);
   const payRef = useRef(null);
 
   const scrollTo = (ref) => setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
-
-  // Handlers
-  const handleNextStep = () => {
-    if (!user.name) { dispatch({ type: 'SET_STEP', payload: 'identity' }); }
-    else if (!state.service) { dispatch({ type: 'SET_STEP', payload: 'home' }); } // Should pick service first
-    else { dispatch({ type: 'SET_STEP', payload: 'configure' }); }
-  };
 
   const handleIdentitySubmit = () => {
     setLoyalty(prev => ({...prev, savedName: user.name}));
@@ -425,18 +409,22 @@ export default function App() {
   const handleFinalize = () => {
     setIsProcessing(true);
     setTimeout(() => {
-        // Gera mensagem
         const dateStr = state.date.toLocaleDateString('pt-BR');
         let locStr = state.location.label;
         if(state.location.isMotel) locStr += " (Vou com você)";
         if(state.city) locStr += ` (${state.city})`;
+        
+        // NOVO: Adiciona Endereço na mensagem
+        let addressStr = "";
+        if(state.location.askAddress && state.address) {
+            addressStr = `\n🏠 Endereço: ${state.address}`;
+        }
 
-        const msg = `*PEDIDO #${generateBookingId()}*\n👤 ${user.name}\n💆 ${state.service.name}\n📅 ${dateStr} às ${state.time}\n📍 ${locStr}\n\n*Detalhes Financeiros:*\nTotal: ${formatCurrency(pricing.total)} (${state.paymentMethod === 'credit_card' ? 'Cartão' : 'Pix/Dinheiro'})\n\n🔗 _Gerado via App Web_`;
+        const msg = `*PEDIDO #${generateBookingId()}*\n👤 ${user.name}\n💆 ${state.service.name}\n📅 ${dateStr} às ${state.time}\n📍 ${locStr}${addressStr}\n\n*Detalhes Financeiros:*\nTotal: ${formatCurrency(pricing.total)} (${state.paymentMethod === 'credit_card' ? 'Cartão' : 'Pix/Dinheiro'})\n\n🔗 _Gerado via App Web_`;
         
         const url = `https://api.whatsapp.com/send?phone=${CONFIG.CONTACT.PHONE}&text=${encodeURIComponent(msg)}`;
         
-        // Atualiza Dados
-        const newSpent = (loyalty.totalSpent || 0) + pricing.total; // Adiciona valor ao loyalty
+        const newSpent = (loyalty.totalSpent || 0) + pricing.total;
         let newInventory = [...loyalty.inventory];
         if(state.coupon) newInventory = newInventory.filter(c => c !== state.coupon.code);
 
@@ -450,7 +438,8 @@ export default function App() {
 
   const canFinalize = state.service && state.location && state.date && state.time && state.paymentMethod && 
                       (state.location.allowsTableChoice ? state.useTable !== null : true) && 
-                      (state.location.input ? state.city.length > 3 : true);
+                      (state.location.inputCity ? state.city.length > 3 : true) &&
+                      (state.location.askAddress ? state.address.length > 5 : true); // Validação de Endereço
 
   return (
     <ToastProvider>
@@ -488,7 +477,7 @@ export default function App() {
           )}
 
           {/* --- CONTENT AREA --- */}
-          <div className="flex-1 overflow-y-auto pt-28 px-6 pb-32 scrollbar-hide">
+          <div className="flex-1 overflow-y-auto pt-28 px-6 pb-40 scrollbar-hide">
             
             {state.step === 'home' && (
               <div className="animate-fade-in space-y-8">
@@ -496,13 +485,17 @@ export default function App() {
                    <h1 className="text-3xl font-bold text-white leading-tight">Relaxe &<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA]">Renove as Energias</span></h1>
                 </div>
 
-                {/* Card Fidelidade */}
                 <Card className="p-5 relative overflow-hidden group">
                    <div className="absolute top-[-50%] right-[-20%] w-48 h-48 bg-[#0A84FF]/20 blur-[60px] rounded-full pointer-events-none"/>
                    <LevelProgressBar data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => setPrivacyMode(!privacyMode)} />
                 </Card>
 
-                {/* Lista Serviços */}
+                {/* Reviews de volta */}
+                <div>
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 ml-1">O que dizem</h3>
+                  <ReviewsCarousel />
+                </div>
+
                 <div>
                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 ml-1">Menu de Massagens</h3>
                    <div className="space-y-4">
@@ -575,21 +568,42 @@ export default function App() {
                      <div className="space-y-3">
                         {LOCATIONS_DB.map(loc => (
                            <div key={loc.id}>
-                              <button onClick={() => { dispatch({ type: 'UPDATE', payload: { location: loc, useTable: null, city: '' } }); scrollTo(musicRef); }}
+                              <button onClick={() => { dispatch({ type: 'UPDATE', payload: { location: loc, useTable: null, city: '', address: '' } }); scrollTo(musicRef); }}
                                  className={`w-full p-4 rounded-[20px] border text-left flex justify-between items-center transition-all ${state.location?.id === loc.id ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
                                  <div><p className="font-bold text-sm text-white">{loc.label}</p><p className="text-xs text-gray-500">{loc.sublabel}</p></div>
                                  {loc.fee > 0 && <span className="text-[10px] font-bold text-[#FFD60A] bg-[#FFD60A]/10 px-2 py-1 rounded">+ {formatCurrency(loc.fee)}</span>}
                               </button>
                               
                               {/* Sub-opções de Local */}
-                              {state.location?.id === loc.id && loc.allowsTableChoice && (
-                                 <div className="grid grid-cols-2 gap-3 mt-3 animate-fade-in pl-4 border-l border-white/10">
-                                    <button onClick={() => { dispatch({ type: 'UPDATE', payload: { useTable: false } }); scrollTo(musicRef); }} className={`p-3 rounded-xl border text-xs font-bold ${state.useTable === false ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#2C2C2E] border-transparent text-gray-400'}`}>🛏 Na Cama</button>
-                                    <button onClick={() => { dispatch({ type: 'UPDATE', payload: { useTable: true } }); scrollTo(musicRef); }} className={`p-3 rounded-xl border text-xs font-bold ${state.useTable === true ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#2C2C2E] border-transparent text-gray-400'}`}>💆‍♂️ Maca (+{formatCurrency(CONFIG.PRICES.MACA)})</button>
-                                 </div>
-                              )}
-                              {state.location?.id === loc.id && loc.input && (
-                                 <input value={state.city} onChange={e => dispatch({ type: 'UPDATE', payload: { city: e.target.value } })} placeholder="Qual cidade?" className="mt-3 w-full bg-[#2C2C2E] p-3 rounded-xl text-sm text-white focus:border-[#0A84FF] border border-transparent outline-none animate-fade-in" />
+                              {state.location?.id === loc.id && (
+                                <div className="mt-3 animate-fade-in pl-4 border-l-2 border-white/10 space-y-3">
+                                   
+                                   {/* Opção Maca/Cama */}
+                                   {loc.allowsTableChoice && (
+                                     <div className="grid grid-cols-2 gap-3">
+                                        <button onClick={() => { dispatch({ type: 'UPDATE', payload: { useTable: false } }); }} className={`p-3 rounded-xl border text-xs font-bold ${state.useTable === false ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#2C2C2E] border-transparent text-gray-400'}`}>🛏 Na Cama</button>
+                                        <button onClick={() => { dispatch({ type: 'UPDATE', payload: { useTable: true } }); }} className={`p-3 rounded-xl border text-xs font-bold ${state.useTable === true ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#2C2C2E] border-transparent text-gray-400'}`}>💆‍♂️ Maca (+{formatCurrency(CONFIG.PRICES.MACA)})</button>
+                                     </div>
+                                   )}
+                                   
+                                   {/* Endereço Santa Fé */}
+                                   {loc.askAddress && (
+                                     <div className="relative">
+                                        <MapPin className="absolute top-3 left-3 w-4 h-4 text-gray-500"/>
+                                        <input 
+                                          value={state.address} 
+                                          onChange={e => dispatch({ type: 'UPDATE', payload: { address: e.target.value } })} 
+                                          placeholder="Rua, Número e Bairro..." 
+                                          className="w-full bg-[#2C2C2E] p-3 pl-10 rounded-xl text-sm text-white focus:border-[#0A84FF] border border-transparent outline-none" 
+                                        />
+                                     </div>
+                                   )}
+
+                                   {/* Input Outras Cidades */}
+                                   {loc.inputCity && (
+                                     <input value={state.city} onChange={e => dispatch({ type: 'UPDATE', payload: { city: e.target.value } })} placeholder="Qual cidade?" className="w-full bg-[#2C2C2E] p-3 rounded-xl text-sm text-white focus:border-[#0A84FF] border border-transparent outline-none" />
+                                   )}
+                                </div>
                               )}
                            </div>
                         ))}
