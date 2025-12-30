@@ -699,7 +699,7 @@ export default function App() {
     }
 
     let feeVal = selection.location.fee || 0;
-    let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
+    let feeType = selection.location.isMotel ? "🏨 Taxa Motel (Suíte)" : selection.location.isUber ? "🚗 Taxa Uber" : "";
     if(selection.location.isPending) {
         feeType = "Taxa Deslocamento (A Combinar)";
         feeVal = 0; 
@@ -784,6 +784,18 @@ export default function App() {
     if(selection.location.id === 'outras-cidades' && selection.city) locationString += ` (${selection.city})`;
 
     const netMasseur = serviceValueForLoyalty - discountVal;
+    
+    // --- LÓGICA DE TEXTO MELHORADA PARA NÃO ASSUSTAR O CLIENTE ---
+    // Se tiver taxa de local, a gente separa as linhas para mostrar que o serviço é mais barato.
+    let priceDisplay = "";
+    
+    if (feeVal > 0) {
+        priceDisplay = `💆 Valor Sessão: ${formatCurrency(netMasseur)}
+${feeType}: ${formatCurrency(feeVal)}
+💰 *TOTAL FINAL: ${formatCurrency(finalPrice)}*`;
+    } else {
+        priceDisplay = `💰 *TOTAL CLIENTE: ${selection.location.isPending ? formatCurrency(finalPrice) + ' + Taxa' : formatCurrency(finalPrice)}*`;
+    }
 
     let msg = `*NOVO PEDIDO: #${bookingId}*
 👤 ${user.name} (Liberado p/ Massagem)
@@ -793,18 +805,16 @@ export default function App() {
 
 *DETALHES:*
 • Serviço Base: ${formatCurrency(selection.service.basePrice)}${extrasText}${aromaText}
-${selection.location.isPending ? `• ${feeType}` : (feeVal > 0 ? `• ${feeType}: ${formatCurrency(feeVal)}` : '')}
 ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(discountVal)}` : ''}
 
-💰 *TOTAL CLIENTE: ${selection.location.isPending ? formatCurrency(finalPrice) + ' + Taxa' : formatCurrency(finalPrice)}*
+------------------------------
+${priceDisplay}
 (Pagamento: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
-
-------------------------------
-💸 *Massagista recebe: ${formatCurrency(netMasseur)}*
 ------------------------------
 
-🎵 Vibe: ${selection.music}
-${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.' : ''}`;
+💸 *Líquido Massagista: ${formatCurrency(netMasseur)}*
+
+🎵 Vibe: ${selection.music}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`;
     setLastOrderLink(whatsappUrl); 
