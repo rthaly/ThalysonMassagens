@@ -380,10 +380,9 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   ];
 
   return (
-    <div>
-      {/* SELETOR DE DIAS (Carrossel) */}
-      {/* Adicionado: touch-pan-x para garantir que o dedo funcione bem no celular */}
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-6 px-1 touch-pan-x">
+    <div className="w-full">
+      {/* SELETOR DE DIAS (Carrossel BLINDADO) */}
+      <div className="w-full flex flex-nowrap gap-3 overflow-x-auto pb-6 px-1 snap-x snap-mandatory touch-pan-x scrollbar-hide">
         {days.map((d, i) => {
           const isSel = selectedDate?.toDateString() === d.toDateString();
           const label = getDayLabel(d);
@@ -391,9 +390,8 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
           
           return (
             <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} 
-              // AQUI ESTÁ A CORREÇÃO PRINCIPAL: "flex-shrink-0"
-              // Isso impede que o botão encolha, forçando a rolagem acontecer.
-              className={`relative flex flex-col items-center justify-center min-w-[70px] h-[85px] rounded-[20px] transition-all duration-300 border flex-shrink-0 ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 hover:bg-[#3A3A3C]'}`}>
+              // AQUI ESTÁ O SEGREDO: min-w (largura minima) + flex-shrink-0 (nao encolher)
+              className={`snap-center flex-shrink-0 relative flex flex-col items-center justify-center min-w-[74px] w-[74px] h-[88px] rounded-[22px] transition-all duration-300 border ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 hover:bg-[#3A3A3C]'}`}>
               
               <span className={`text-[10px] uppercase font-bold tracking-wide mb-1 ${label === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/80' : 'opacity-60'}`}>{label}</span>
               <span className="text-2xl font-bold font-mono tracking-tight">{d.getDate()}</span>
@@ -403,6 +401,8 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
             </button>
           )
         })}
+        {/* Espaçador invisível no final pra dar um respiro no scroll */}
+        <div className="min-w-[20px] h-full flex-shrink-0"></div>
       </div>
 
       {/* SELETOR DE HORÁRIOS */}
