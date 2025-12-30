@@ -311,7 +311,7 @@ const ReviewsCarousel = () => {
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   const now = new Date();
   
-  // 1. MELHORIA: Gera sempre os próximos 14 dias (independente de virar o mês)
+  // Gera os próximos 14 dias
   const days = [];
   for (let i = 0; i < 14; i++) {
       const d = new Date(now);
@@ -324,7 +324,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
     const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
     if (!isToday) return false;
     const [h] = t.split(':').map(Number);
-    return h <= now.getHours() + 1; // +1 para dar tempo de antecedência
+    return h <= now.getHours() + 1; 
   };
 
   const getDayLabel = (d) => {
@@ -332,11 +332,9 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
       
-      // Compara dia/mês/ano para ser preciso
       if (d.toDateString() === today.toDateString()) return 'HOJE';
       if (d.toDateString() === tomorrow.toDateString()) return 'AMANHÃ';
       
-      // Retorna dia da semana (Seg, Ter...)
       return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3).replace('.','');
   };
 
@@ -344,7 +342,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       return d.toLocaleDateString('pt-BR', {month: 'short'}).slice(0,3).toUpperCase();
   }
 
-  // 2. MELHORIA: Agrupamento de horários
   const periods = [
       { label: 'Manhã ☀️', slots: ['09:00', '10:00', '11:00'] },
       { label: 'Tarde 🌤️', slots: ['13:00', '14:00', '15:00', '16:00', '17:00'] },
@@ -353,36 +350,30 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
 
   return (
     <div>
-      {/* SELETOR DE DIAS (Carrossel) */}
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-6 px-1">
+      {/* CORREÇÃO AQUI: Adicionei 'touch-pan-x' para garantir que o dedo funcione */}
+      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-6 px-1 touch-pan-x w-full">
         {days.map((d, i) => {
           const isSel = selectedDate?.toDateString() === d.toDateString();
           const label = getDayLabel(d);
-          const month = getMonthLabel(d); // Pega o mês (DEZ, JAN)
+          const month = getMonthLabel(d);
           
           return (
-            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`relative flex flex-col items-center justify-center min-w-[70px] h-[85px] rounded-[20px] transition-all duration-300 border ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 hover:bg-[#3A3A3C]'}`}>
-              {/* Dia da Semana */}
+            // CORREÇÃO AQUI: Adicionei 'flex-shrink-0' para o botão não encolher
+            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`flex-shrink-0 relative flex flex-col items-center justify-center min-w-[70px] h-[85px] rounded-[20px] transition-all duration-300 border ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 hover:bg-[#3A3A3C]'}`}>
+              
               <span className={`text-[10px] uppercase font-bold tracking-wide mb-1 ${label === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/80' : 'opacity-60'}`}>{label}</span>
-              
-              {/* Número do Dia */}
               <span className="text-2xl font-bold font-mono tracking-tight">{d.getDate()}</span>
-              
-              {/* Mês (Pequeno em baixo) */}
               <span className={`text-[9px] uppercase font-bold mt-1 ${isSel ? 'text-white/60' : 'text-gray-600'}`}>{month}</span>
               
-              {/* Bolinha se estiver selecionado */}
               {isSel && <div className="absolute -bottom-1.5 w-1 h-1 rounded-full bg-white/50"></div>}
             </button>
           )
         })}
       </div>
 
-      {/* SELETOR DE HORÁRIOS (Agrupado) */}
       {selectedDate && (
         <div className="animate-fade-in space-y-5">
            {periods.map((period, idx) => {
-               // Verifica se tem algum horário disponível nesse período para não mostrar título vazio
                const hasSlots = period.slots.some(t => !isTimeBlocked(t, selectedDate));
                
                return (
@@ -413,7 +404,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
            <div className="mt-4 p-3 bg-[#FFD60A]/10 rounded-xl border border-[#FFD60A]/20 flex items-start gap-3">
               <Info className="w-4 h-4 text-[#FFD60A] mt-0.5 flex-shrink-0" />
               <p className="text-[11px] text-[#FFD60A]/90 leading-relaxed">
-                  Horários noturnos (após 19h) e fins de semana esgotam rápido. Reserve com antecedência.
+                  Horários noturnos (após 19h) e fins de semana esgotam rápido.
               </p>
            </div>
         </div>
