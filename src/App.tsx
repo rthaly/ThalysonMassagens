@@ -1,9 +1,11 @@
+'use client';
+
 import { useState, useEffect, useRef } from 'react';
 import {
-  ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
-  Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
-  Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car, Menu
+  ChevronLeft, Check, X, HelpCircle, MapPin, Calendar, 
+  Shield, Star, Instagram, 
+  Bell, Tag, ArrowRight, Eye, EyeOff, Share2, 
+  LogOut, Crown, CreditCard, Banknote, QrCode, Info, CheckCircle2, Send, Menu
 } from 'lucide-react';
 
 // ==================================================================================
@@ -240,7 +242,7 @@ const REVIEWS_DB = [
 
 // --- HELPERS ---
 const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(5); };
+const triggerHaptic = () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(5); };
 const generateBookingId = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
     let result = '';
@@ -540,8 +542,12 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v22'); 
-    return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
+    // Check if window is defined (client-side) to avoid SSR errors
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('thaly_system_v22'); 
+      return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
+    }
+    return { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
   const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
@@ -562,7 +568,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v22', JSON.stringify(loyalty));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('thaly_system_v22', JSON.stringify(loyalty));
+    }
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -581,10 +589,9 @@ export default function App() {
 
   // Efeito para rolar para o topo sempre que mudar de tela (step)
   useEffect(() => {
-    // Força a janela do navegador a ir para o topo (0,0)
-    window.scrollTo(0, 0);
-    
-    // Se for a Home, também garante que o container interno suba
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
     if (step === 'home') {
       homeRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -848,7 +855,7 @@ ${priceDisplay}
       )
   }
 
-  // --- HEADER GLOBAL (AGORA DENTRO DO APP) ---
+  // --- HEADER GLOBAL ---
   const GlobalHeader = () => (
       <div className="absolute top-0 w-full z-50 px-6 pt-12 pb-8 flex justify-between items-center pointer-events-none bg-gradient-to-b from-black/90 via-black/60 to-transparent">
           <div className="pointer-events-auto">
@@ -945,7 +952,7 @@ ${priceDisplay}
 
               <div className="space-y-3">
                 <button onClick={() => { triggerHaptic(); setUser({...user, isAdult: !user.isAdult}); }} className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user.isAdult ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
-                  <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isAdult ? 'bg-[#0A84FF] border-[#0A84FF] : 'border-gray-600'}`}>{user.isAdult && <Check className="w-3.5 h-3.5 text-white" />}</div>
+                  <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isAdult ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-600'}`}>{user.isAdult && <Check className="w-3.5 h-3.5 text-white" />}</div>
                   <span className={`text-[16px] font-medium ${user.isAdult ? 'text-white' : 'text-gray-400'}`}>Maior de 18 anos</span>
                 </button>
                 <button onClick={() => { triggerHaptic(); setUser({...user, isMassagemOk: !user.isMassagemOk}); }} className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
