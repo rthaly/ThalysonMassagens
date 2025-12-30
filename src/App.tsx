@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. ESTILOS GLOBAIS (ATUALIZADO PARA PREMIUM DARK / STEALTH)
+// 1. ESTILOS GLOBAIS (PREMIUM DARK / STEALTH)
 // ==================================================================================
 
 const globalStyles = `
@@ -103,11 +103,10 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 `;
 
-// Trocando a cor de destaque para Dourado/Premium
 const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#D4AF37]" />;
 
 // ==================================================================================
-// 2. CENTRAL DE PREÇOS E DADOS (MANTIDOS INTEGRALMENTE)
+// 2. CONFIGURAÇÃO (DADOS)
 // ==================================================================================
 
 const CONFIG = {
@@ -125,7 +124,7 @@ const services = [
     description: 'Conexão profunda. Relaxante + Toques bioelétricos corpo a corpo (traje sumário) e finalização Lingam.', 
     labelDuration: '60 min', minutes: 60, 
     basePrice: 140, 
-    highlight: "PREMIUM 🔥", ratings: 5.0, reviews: 310, 
+    highlight: "EXCLUSIVA 🔥", ratings: 5.0, reviews: 310, 
     details: ["Relaxante + Body-to-Body", "Traje Sumário", "Finalização Manual", "Alívio Completo"] 
   },
   { 
@@ -171,10 +170,6 @@ const locations = [
 
 const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
 
-// ==================================================================================
-// 3. LÓGICA DO SISTEMA (MANTIDA INTEGRALMENTE)
-// ==================================================================================
-
 const SYSTEM_COUPONS = {
   'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF (1ª Vez)' },
   'MASCULINA': { code: 'MASCULINA', type: 'percent', value: 10, desc: '10% OFF Especial' },
@@ -200,6 +195,8 @@ const REVIEWS_DB = [
   { t: "Ambiente discreto. Toque íntimo com muito respeito e técnica.", a: "Curioso", r: 5 },
   { t: "Gostei da massagem, relaxou bem os músculos.", a: "Paulo", r: 4 },
   { t: "Mão leve e firme. A manipulação foi perfeita.", a: "Anônimo", r: 5 },
+  { t: "Para quem busca relaxamento de verdade, sem pressa.", a: "Cliente VIP", r: 5 },
+  { t: "Achei o local super limpo e o atendimento impecável.", a: "M.V.", r: 5 }
 ];
 
 // --- HELPERS ---
@@ -213,7 +210,7 @@ const generateBookingId = () => {
 };
 
 // ==================================================================================
-// 4. COMPONENTES DE UI (VISUAL ATUALIZADO PARA PREMIUM/STEALTH)
+// 3. COMPONENTES DE UI
 // ==================================================================================
 
 const LiveStatus = () => {
@@ -225,6 +222,25 @@ const LiveStatus = () => {
       <div className="animate-fade-in flex items-center gap-3 bg-[#111] border border-white/5 rounded-full px-5 py-2 shadow-lg backdrop-blur-md">
         <div className="w-1.5 h-1.5 bg-[#D4AF37] rounded-full animate-pulse" />
         <span className="text-[10px] text-gray-400 font-bold tracking-widest uppercase">{msgs[idx]}</span>
+      </div>
+    </div>
+  );
+};
+
+// Novo Componente de Reviews (Carrossel)
+const ReviewsCarousel = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 5000); return () => clearInterval(t); }, []);
+  const currentReview = REVIEWS_DB[idx];
+  
+  return (
+    <div className="relative h-24 flex items-center justify-center mb-6">
+      <div key={idx} className="absolute inset-0 flex flex-col items-center justify-center animate-fade-in px-4 bg-[#111] rounded-[16px] border border-white/5 shadow-xl">
+        <div className="flex gap-1 mb-2">
+          {[...Array(5)].map((_,k) => <Star key={k} className={`w-3 h-3 ${k < currentReview.r ? 'text-[#D4AF37] fill-[#D4AF37]' : 'text-gray-800'}`}/>)}
+        </div>
+        <p className="text-[12px] text-gray-300 text-center font-medium leading-relaxed italic">"{currentReview.t}"</p>
+        <p className="text-[9px] text-gray-500 font-bold uppercase mt-2 tracking-widest">- {currentReview.a}</p>
       </div>
     </div>
   );
@@ -284,7 +300,6 @@ const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
   );
 };
 
-// --- COMPONENTE DE DATA EM GRADE (GRID) - ESTILO CALENDÁRIO SÓBRIO ---
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   const DAYS_TO_SHOW = 12;
   const days = [];
@@ -320,7 +335,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   return (
     <div className="w-full select-none">
       <div className="flex justify-between items-end mb-4 px-1">
-        <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Agenda Disponível</h4>
+        <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Disponibilidade</h4>
       </div>
 
       <div className="grid grid-cols-4 gap-2 mb-6 animate-fade-in">
@@ -423,13 +438,13 @@ const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddMan
 };
 
 // ==================================================================================
-// 5. APP PRINCIPAL
+// 4. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
   const [step, setStep] = useState('home');
   const [loading, setLoading] = useState(true);
-  const [privacyBlur, setPrivacyBlur] = useState(false); // NOVO: MODO DISCRETO
+  const [privacyBlur, setPrivacyBlur] = useState(false);
   
   // Refs
   const locationRef = useRef(null);
@@ -503,10 +518,8 @@ export default function App() {
     }
   };
 
-  const handleCopyPix = () => { navigator.clipboard.writeText("62922530000144"); alert("Chave copiada."); }; 
   const handlePanic = () => { window.location.href = "https://google.com"; };
-  const handleShare = () => { if(navigator.share) navigator.share({title:'Thalyson Terapia', text:'Massagens Relaxantes em Santa Fé do Sul', url: window.location.href}); };
-
+  
   const handleAddManualCoupon = (code) => {
       if (!loyalty.inventory.includes(code)) {
           setLoyalty(prev => ({...prev, inventory: [...prev.inventory, code]}));
@@ -516,19 +529,12 @@ export default function App() {
       }
   };
 
-  const handleLogout = () => {
-      if(window.confirm("Limpar seus dados locais?")) {
-          localStorage.clear();
-          window.location.reload();
-      }
-  };
-
   const handleReset = () => {
     setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
     setStep('home');
   };
 
-  // --- LOGICA DE PREÇOS (CENTRALIZADA) ---
+  // --- LOGICA DE PREÇOS ---
   const getCurrentLevel = () => {
       return [...LEVELS].reverse().find(l => (loyalty.totalSpent || 0) >= l.min) || LEVELS[0];
   };
@@ -544,12 +550,8 @@ export default function App() {
     if (!selection.service) return 0;
     let total = selection.service.basePrice;
     
-    // Config: Upgrade Percentage
     if (selection.upgrade) total += selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
-    
-    // Config: Table Fee
     if (selection.useTable) total += CONFIG.PRICES.MACA;
-    
     if (selection.aroma) total += getAromaPrice();
     if (selection.location?.fee) total += selection.location.fee;
     
@@ -584,7 +586,7 @@ export default function App() {
       return;
     }
 
-    // --- CÁLCULO DO SERVIÇO ---
+    // --- CÁLCULO ---
     let serviceValueForLoyalty = selection.service.basePrice;
     let extrasText = "";
     
@@ -685,7 +687,6 @@ export default function App() {
 
     const netMasseur = serviceValueForLoyalty - discountVal;
     
-    // --- LÓGICA DE TEXTO MELHORADA PARA CLIENTE HIGH TICKET ---
     let priceDisplay = "";
     
     if (feeVal > 0) {
@@ -718,7 +719,7 @@ ${priceDisplay}
     setStep('success');
   };
 
-  // --- COMPONENTE DE RECIBO VISUAL (ATUALIZADO PARA PREMIUM) ---
+  // --- COMPONENTE DE RECIBO VISUAL ---
   const OrderReceipt = () => {
     let grossService = selection.service.basePrice;
     if(selection.upgrade) grossService += selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
@@ -794,7 +795,7 @@ ${priceDisplay}
       )
   }
 
-  // --- HEADER GLOBAL (ATUALIZADO) ---
+  // --- HEADER GLOBAL ---
   const GlobalHeader = () => (
       <div className="absolute top-0 w-full z-50 px-6 pt-10 pb-6 flex justify-between items-center pointer-events-none bg-gradient-to-b from-black/90 to-transparent">
           <div className="pointer-events-auto">
@@ -854,7 +855,7 @@ ${priceDisplay}
         {/* --- HOME --- */}
         {step === 'home' && (
           <div className="flex-1 p-6 overflow-y-auto pb-32 pt-32 scrollbar-hide" ref={homeRef}>
-            <div className="mb-10 text-center">
+            <div className="mb-8 text-center">
               <h1 className="text-3xl font-bold text-white tracking-tight leading-tight mb-2">Protocolos de<br/><span className="text-[#D4AF37]">Relaxamento Profundo</span></h1>
               <p className="text-sm text-gray-500 max-w-[200px] mx-auto">Atendimento individual e exclusivo em Santa Fé do Sul.</p>
             </div>
@@ -862,7 +863,11 @@ ${priceDisplay}
             <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
             <LiveStatus />
             
-            <div className="mt-8">
+            {/* Avaliações no Início */}
+            <div className="mt-2 mb-2 px-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest text-center">O que dizem os clientes</div>
+            <ReviewsCarousel />
+            
+            <div className="mt-4">
               <button onClick={handleQuickSchedule} className="w-full bg-[#E0E0E0] text-black font-bold py-5 rounded-[16px] shadow-[0_5px_30px_rgba(255,255,255,0.1)] flex justify-center items-center gap-3 text-[15px] uppercase tracking-wider hover:bg-white transition-colors">
                 Iniciar Agendamento <ArrowRight className="w-4 h-4" />
               </button>
@@ -884,7 +889,7 @@ ${priceDisplay}
           </div>
         )}
 
-        {/* --- IDENTITY (NOVO LAYOUT CONCIERGE) --- */}
+        {/* --- IDENTITY --- */}
         {step === 'identity' && (
           <div className="flex-1 p-6 pt-32 animate-fade-in flex flex-col h-full pb-32">
             <div className="mb-8">
@@ -909,16 +914,21 @@ ${priceDisplay}
                 </button>
               </div>
 
-              <button disabled={!user.name || !user.isAdult || !user.isMassagemOk} onClick={() => { triggerHaptic(); setStep('services'); }} className="w-full ios-btn-primary py-5 rounded-[16px] text-[15px] uppercase tracking-wider disabled:opacity-30 shadow-lg mt-8">Ver Cardápio</button>
+              <button disabled={!user.name || !user.isAdult || !user.isMassagemOk} onClick={() => { triggerHaptic(); setStep('services'); }} className="w-full ios-btn-primary py-5 rounded-[16px] text-[15px] uppercase tracking-wider disabled:opacity-30 shadow-lg mt-8">Ver Experiências</button>
             </div>
           </div>
         )}
 
-        {/* --- SERVICES (NOVO LAYOUT CARD) --- */}
+        {/* --- SERVICES (SELEÇÃO DA EXPERIÊNCIA) --- */}
         {step === 'services' && (
           <div className="flex-1 p-6 pt-32 overflow-y-auto pb-32 animate-fade-in scrollbar-hide">
-            <h2 className="text-2xl font-bold text-white mb-6">Menu de Experiências</h2>
-            <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white mb-2">Experiências</h2>
+            <p className="text-gray-500 text-[13px] mb-6">Escolha o protocolo ideal para você.</p>
+            
+            {/* Avaliações aqui também */}
+            <ReviewsCarousel />
+
+            <div className="space-y-6 mt-4">
               {services.map(s => (
                 <div key={s.id} onClick={() => { triggerHaptic(); setSelection({...selection, service: s}); setStep('configure'); }} className={`ios-card p-6 rounded-[24px] active:scale-98 transition-transform group relative overflow-hidden cursor-pointer`}>
                   {s.highlight && <div className="absolute top-0 right-0 bg-[#D4AF37] text-black text-[9px] font-bold px-3 py-1.5 uppercase tracking-widest">{s.highlight}</div>}
@@ -941,7 +951,7 @@ ${priceDisplay}
           </div>
         )}
 
-        {/* --- CONFIGURE (AGENDAMENTO) --- */}
+        {/* --- CONFIGURE (AGENDAMENTO) - DATA PRIMEIRO --- */}
         {step === 'configure' && selection.service && (
           <div className="flex-1 p-6 pt-32 overflow-y-auto pb-48 animate-fade-in scrollbar-hide"> 
             <div className="mb-8">
@@ -950,8 +960,15 @@ ${priceDisplay}
             </div>
 
             <div className="space-y-10">
+              
+              {/* SEÇÃO 1: DATA E HORA (Agora é a primeira) */}
               <section>
-                <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Escolha o Local</h4>
+                <InlineDateSelector selectedDate={selection.date} selectedTime={selection.time} onSelect={(d, t) => { setSelection({...selection, date: d, time: t}); if(t) scrollTo(locationRef); }} />
+              </section>
+
+              {/* SEÇÃO 2: LOCAL */}
+              <section ref={locationRef}>
+                <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Defina o Local</h4>
                 <div className="space-y-3">
                   {locations.map(l => {
                     if (selection.location && selection.location.id !== l.id) return null;
@@ -980,10 +997,6 @@ ${priceDisplay}
                     </div>
                   )})}
                 </div>
-              </section>
-
-              <section>
-                <InlineDateSelector selectedDate={selection.date} selectedTime={selection.time} onSelect={(d, t) => { setSelection({...selection, date: d, time: t}); if(t) scrollTo(locationRef); }} />
               </section>
 
               <div ref={vibeRef}>
@@ -1044,7 +1057,7 @@ ${priceDisplay}
           </div>
         )}
 
-        {/* FOOTER FIXO (ATUALIZADO) */}
+        {/* FOOTER FIXO */}
         {step === 'configure' && selection.location && (
           <div className="absolute bottom-0 w-full p-0 z-40">
             <div className="h-16 bg-gradient-to-t from-[#000] to-transparent pointer-events-none"></div>
@@ -1062,7 +1075,7 @@ ${priceDisplay}
           </div>
         )}
 
-        {/* TELA SUCESSO (ATUALIZADA) */}
+        {/* TELA SUCESSO */}
         {step === 'success' && (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in pb-32">
             <div className="w-24 h-24 rounded-full border-2 border-[#D4AF37] flex items-center justify-center mb-6 animate-pulse"><Check className="w-10 h-10 text-[#D4AF37]"/></div>
@@ -1074,7 +1087,7 @@ ${priceDisplay}
           </div>
         )}
 
-        {/* FAQ MODAL (ATUALIZADO) */}
+        {/* FAQ MODAL */}
         {showFaq && (
           <div className="absolute inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
             <div className="bg-[#111] w-full max-w-sm rounded-[24px] p-8 border border-white/10 shadow-2xl animate-fade-in">
@@ -1092,7 +1105,7 @@ ${priceDisplay}
           </div>
         )}
 
-        {/* NOTIFICATIONS MODAL (ATUALIZADO) */}
+        {/* NOTIFICATIONS MODAL */}
         {showNotifications && (
           <div className="absolute inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-5" onClick={() => setShowNotifications(false)}>
             <div className="bg-[#111] w-full sm:max-w-sm rounded-t-[32px] sm:rounded-[24px] p-6 border-t sm:border border-white/10 shadow-2xl animate-slide-up h-[70vh] sm:h-[600px] flex flex-col" onClick={e => e.stopPropagation()}>
