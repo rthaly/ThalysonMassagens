@@ -94,34 +94,46 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 
 // ==================================================================================
-// 2. BANCO DE DADOS 
+// 2. CENTRAL DE PREÇOS E DADOS (EDITE AQUI!!!)
 // ==================================================================================
 
-const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
+// 🛠️ CONFIGURAÇÕES GERAIS DE PREÇO (Mude aqui para afetar todo o app)
+const CONFIG = {
+  PRICES: {
+    MACA: 20,           // Valor cobrado pela Maca Portátil
+    AROMA_FULL: 10,     // Valor cheio da Aromaterapia
+    AROMA_DISCOUNT: 5,  // Valor da Aromaterapia para Nível Prata
+    UPGRADE_PCT: 0.5    // 0.5 significa 50% a mais no valor. (Ex: 100 vira 150)
+  }
+};
 
+// 💆‍♂️ MENU DE SERVIÇOS
 const services = [
   { 
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
     description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
-    labelDuration: '60 min', minutes: 60, basePrice: 100, 
+    labelDuration: '60 min', minutes: 60, 
+    basePrice: 100, // <--- PREÇO BASE AQUI
     highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
     details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] 
   },
   { 
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
     description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', 
-    labelDuration: '60 min', minutes: 60, basePrice: 75, 
+    labelDuration: '60 min', minutes: 60, 
+    basePrice: 75, // <--- PREÇO BASE AQUI
     ratings: 4.9, reviews: 142, 
     details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] 
   },
 ];
 
+// 📍 LOCAIS DE ATENDIMENTO
 const locations = [
   { 
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
     sublabel: 'Vou com você', 
-    fee: 75, 
+    fee: 75, // <--- TAXA DO MOTEL AQUI
     allowsTableChoice: false, 
     estimatedTravelTime: '10-15 min',
     isMotel: true
@@ -130,7 +142,7 @@ const locations = [
     id: 'santa-fe', 
     label: 'Santa Fé do Sul', 
     sublabel: 'No conforto do seu lar', 
-    fee: 40, 
+    fee: 40, // <--- TAXA UBER/DESLOCAMENTO AQUI
     allowsTableChoice: true, 
     estimatedTravelTime: '15-20 min',
     isUber: true
@@ -139,13 +151,20 @@ const locations = [
     id: 'outras-cidades', 
     label: 'Cidades Vizinhas', 
     sublabel: 'Atendimento na região', 
-    fee: 0, 
+    fee: 0, // <--- TAXA BASE (Geralmente 0 pq é "A combinar")
     allowsTableChoice: false, 
     estimatedTravelTime: 'A combinar', 
     input: true,
     isPending: true 
   },
 ];
+
+// 💳 TAXAS DO CARTÃO (Se mudar a maquininha, mude aqui)
+const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
+
+// ==================================================================================
+// 3. LÓGICA DO SISTEMA (NÃO PRECISA MEXER MUITO ABAIXO)
+// ==================================================================================
 
 const SYSTEM_COUPONS = {
   'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF (1ª Vez)' },
@@ -197,7 +216,7 @@ const generateBookingId = () => {
 };
 
 // ==================================================================================
-// 3. COMPONENTES DE UI
+// 4. COMPONENTES DE UI
 // ==================================================================================
 
 const LiveStatus = () => {
@@ -216,11 +235,11 @@ const LiveStatus = () => {
 
 const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
   const safeSpent = (data && typeof data.totalSpent === 'number') ? data.totalSpent : 0;
-  
+   
   const currentLevelIdx = [...LEVELS].reverse().findIndex(l => safeSpent >= l.min);
   const currentLevel = currentLevelIdx !== -1 ? LEVELS[LEVELS.length - 1 - currentLevelIdx] : LEVELS[0];
   const nextLevel = currentLevelIdx !== -1 && (LEVELS.length - 1 - currentLevelIdx + 1) < LEVELS.length ? LEVELS[LEVELS.length - 1 - currentLevelIdx + 1] : null;
-  
+   
   const min = currentLevel.min || 0;
   const nextMin = nextLevel ? nextLevel.min : min + 1;
   const rawProgress = ((safeSpent - min) / (nextMin - min)) * 100;
@@ -275,7 +294,7 @@ const ReviewsCarousel = () => {
   const [idx, setIdx] = useState(0);
   useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 5000); return () => clearInterval(t); }, []);
   const currentReview = REVIEWS_DB[idx];
-  
+   
   return (
     <div className="relative h-28 flex items-center justify-center mb-8">
       <div key={idx} className="absolute inset-0 flex flex-col items-center justify-center animate-fade-in px-4 bg-[#1C1C1E] rounded-[24px] border border-white/5 shadow-xl">
@@ -298,7 +317,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
       days.push(new Date(tempDate));
       tempDate.setDate(tempDate.getDate() + 1);
   }
-  
+   
   const isTimeBlocked = (t, d) => {
     if(!d) return true;
     const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
@@ -408,7 +427,7 @@ const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddMan
 };
 
 // ==================================================================================
-// 4. APP PRINCIPAL
+// 5. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
@@ -500,7 +519,6 @@ export default function App() {
       }
   };
 
-  // --- FUNÇÃO DE LOGOUT REAL ---
   const handleLogout = () => {
       if(window.confirm("Deseja realmente sair e limpar seus dados?")) {
           localStorage.clear();
@@ -513,7 +531,7 @@ export default function App() {
     setStep('home');
   };
 
-  // --- LOGICA DE PREÇOS ---
+  // --- LOGICA DE PREÇOS (CENTRALIZADA AGORA) ---
   const getCurrentLevel = () => {
       return [...LEVELS].reverse().find(l => (loyalty.totalSpent || 0) >= l.min) || LEVELS[0];
   };
@@ -521,15 +539,20 @@ export default function App() {
   const getAromaPrice = () => {
       const level = getCurrentLevel().name;
       if (level === 'Ouro' || level === 'Diamante') return 0;
-      if (level === 'Prata') return 5;
-      return 10;
+      if (level === 'Prata') return CONFIG.PRICES.AROMA_DISCOUNT;
+      return CONFIG.PRICES.AROMA_FULL;
   };
 
   const calcBaseTotal = () => {
     if (!selection.service) return 0;
     let total = selection.service.basePrice;
-    if (selection.upgrade) total += selection.service.basePrice * 0.5;
-    if (selection.useTable) total += 20;
+    
+    // Config: Upgrade Percentage
+    if (selection.upgrade) total += selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
+    
+    // Config: Table Fee
+    if (selection.useTable) total += CONFIG.PRICES.MACA;
+    
     if (selection.aroma) total += getAromaPrice();
     if (selection.location?.fee) total += selection.location.fee;
     
@@ -570,13 +593,13 @@ export default function App() {
     let extrasText = "";
     
     if (selection.upgrade) { 
-        const upgradePrice = selection.service.basePrice * 0.5;
+        const upgradePrice = selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
         serviceValueForLoyalty += upgradePrice; 
         extrasText += `\n➕ +30 Minutos (+${formatCurrency(upgradePrice)})`; 
     }
     if (selection.useTable) { 
-        serviceValueForLoyalty += 20; 
-        extrasText += "\n➕ Maca Portátil (+R$ 20,00)"; 
+        serviceValueForLoyalty += CONFIG.PRICES.MACA; 
+        extrasText += `\n➕ Maca Portátil (+${formatCurrency(CONFIG.PRICES.MACA)})`; 
     }
     
     let aromaPrice = 0;
@@ -678,8 +701,7 @@ export default function App() {
     if(selection.location.isMotel) locationString += " (Vou com você)";
     if(selection.location.id === 'outras-cidades' && selection.city) locationString += ` (${selection.city})`;
 
-    // --- CÁLCULO LÍQUIDO (Corrigido para bater com os extras) ---
-    // Líquido = (Serviço + Extras) - Descontos. (Ignora taxas de terceiros pois entram e saem)
+    // --- CÁLCULO LÍQUIDO ---
     const netMasseur = serviceValueForLoyalty - discountVal;
 
     let msg = `*NOVO PEDIDO: #${bookingId}*
@@ -709,11 +731,11 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
     setStep('success');
   };
 
-  // --- COMPONENTE DE RECIBO VISUAL (NOTINHA CORRIGIDA) ---
+  // --- COMPONENTE DE RECIBO VISUAL ---
   const OrderReceipt = () => {
     let grossService = selection.service.basePrice;
-    if(selection.upgrade) grossService += selection.service.basePrice * 0.5;
-    if(selection.useTable) grossService += 20;
+    if(selection.upgrade) grossService += selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
+    if(selection.useTable) grossService += CONFIG.PRICES.MACA;
     if(selection.aroma) grossService += getAromaPrice();
 
     let fee = selection.location.fee || 0;
@@ -740,8 +762,8 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                     <span>{selection.service.name}</span>
                     <span>{formatCurrency(selection.service.basePrice)}</span>
                 </div>
-                {selection.upgrade && <div className="flex justify-between text-gray-600 text-xs"><span>+ 30 Minutos</span><span>{formatCurrency(selection.service.basePrice * 0.5)}</span></div>}
-                {selection.useTable && <div className="flex justify-between text-gray-600 text-xs"><span>+ Maca Portátil</span><span>R$ 20,00</span></div>}
+                {selection.upgrade && <div className="flex justify-between text-gray-600 text-xs"><span>+ 30 Minutos</span><span>{formatCurrency(selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT)}</span></div>}
+                {selection.useTable && <div className="flex justify-between text-gray-600 text-xs"><span>+ Maca Portátil</span><span>{formatCurrency(CONFIG.PRICES.MACA)}</span></div>}
                 {selection.aroma && <div className="flex justify-between text-gray-600 text-xs"><span>+ Aromaterapia (Vip)</span><span>{getAromaPrice() === 0 ? 'GRÁTIS' : formatCurrency(getAromaPrice())}</span></div>}
                 
                 {selection.location.isPending ? (
@@ -796,7 +818,6 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
               <button onClick={() => { handleShare(); setShowMenu(false); }} className="px-4 py-4 text-left text-[14px] text-white hover:bg-white/10 flex items-center gap-3 border-b border-white/5 active:bg-white/20">
                   <Share2 className="w-4 h-4 text-gray-400"/> Compartilhar
               </button>
-              {/* CORREÇÃO AQUI: Chama handlePanic (Google) e não apaga nada */}
               <button onClick={handlePanic} className="px-4 py-4 text-left text-[14px] text-red-500 hover:bg-red-500/10 flex items-center gap-3 active:bg-red-500/20">
                   <LogOut className="w-4 h-4"/> Sair
               </button>
@@ -925,8 +946,8 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                   <div className="mb-4">
                     <h3 className="font-bold text-white text-[22px] leading-tight mb-1">{s.name}</h3>
                     <div className="flex items-center gap-2">
-                       <span className="text-[#0A84FF] font-bold text-[18px]">{formatCurrency(s.basePrice)}</span>
-                       <span className="text-gray-500 text-[13px]">• {s.labelDuration}</span>
+                        <span className="text-[#0A84FF] font-bold text-[18px]">{formatCurrency(s.basePrice)}</span>
+                        <span className="text-gray-500 text-[13px]">• {s.labelDuration}</span>
                     </div>
                   </div>
                   <p className="text-[15px] text-gray-300 leading-relaxed mb-5 opacity-90">{s.description}</p>
@@ -978,7 +999,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                         {selection.location?.id === l.id && l.id === 'santa-fe' && l.allowsTableChoice && (
                           <div ref={surfaceRef} className="mt-3 grid grid-cols-2 gap-3 animate-fade-in">
                             <button onClick={() => { setSelection({...selection, useTable: false}); scrollTo(vibeRef); }} className={`p-4 rounded-[18px] border text-[13px] font-bold transition-all ${selection.useTable === false ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#1C1C1E] border-transparent text-gray-400'}`}>🛏 Na Cama</button>
-                            <button onClick={() => { setSelection({...selection, useTable: true}); scrollTo(vibeRef); }} className={`p-4 rounded-[18px] border text-[13px] font-bold transition-all ${selection.useTable === true ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#1C1C1E] border-transparent text-gray-400'}`}>💆‍♂️ Maca (+20)</button>
+                            <button onClick={() => { setSelection({...selection, useTable: true}); scrollTo(vibeRef); }} className={`p-4 rounded-[18px] border text-[13px] font-bold transition-all ${selection.useTable === true ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#1C1C1E] border-transparent text-gray-400'}`}>💆‍♂️ Maca (+{formatCurrency(CONFIG.PRICES.MACA)})</button>
                           </div>
                         )}
                         {selection.location?.id === l.id && l.id === 'outras-cidades' && (
@@ -1007,15 +1028,15 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                 <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4 mt-8">Extras Premium</h4>
                 <button onClick={() => { triggerHaptic(); setSelection({...selection, upgrade: !selection.upgrade}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.upgrade ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
                   <div className="text-left"><p className="text-white font-bold text-[15px]">+30 Minutos</p><p className="text-[11px] text-gray-500">Mais tempo para curtir</p></div>
-                  <span className="text-[#0A84FF] font-bold text-[15px]">+ {formatCurrency(selection.service.basePrice * 0.5)}</span>
+                  <span className="text-[#0A84FF] font-bold text-[15px]">+ {formatCurrency(selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT)}</span>
                 </button>
 
                 <button onClick={() => { triggerHaptic(); setSelection({...selection, aroma: !selection.aroma}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.aroma ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
                   <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia</p><p className="text-[11px] text-gray-500">Óleos essenciais</p></div>
                   <div className="text-right">
-                      {getAromaPrice() < 10 ? (
-                          <><span className="text-gray-500 line-through text-[11px] mr-2">R$ 10</span><span className="text-[#30D158] font-bold text-[15px]">{getAromaPrice() === 0 ? 'GRÁTIS' : `+${formatCurrency(getAromaPrice())}`}</span></>
-                      ) : (<span className="text-[#0A84FF] font-bold text-[15px]">+ R$ 10</span>)}
+                      {getAromaPrice() < CONFIG.PRICES.AROMA_FULL ? (
+                          <><span className="text-gray-500 line-through text-[11px] mr-2">{formatCurrency(CONFIG.PRICES.AROMA_FULL)}</span><span className="text-[#30D158] font-bold text-[15px]">{getAromaPrice() === 0 ? 'GRÁTIS' : `+${formatCurrency(getAromaPrice())}`}</span></>
+                      ) : (<span className="text-[#0A84FF] font-bold text-[15px]">+ {formatCurrency(CONFIG.PRICES.AROMA_FULL)}</span>)}
                   </div>
                 </button>
               </div>
