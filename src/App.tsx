@@ -1,468 +1,547 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   ChevronLeft, Check, X, MapPin, Calendar, Clock,
   Shield, Star, Zap, Bell, ArrowRight, Eye, EyeOff,
   LogOut, CreditCard, Banknote, QrCode, 
   Info, Send, Menu, Flame, Lock, User, 
-  ChevronRight, Sparkles, Map, Phone
+  ChevronRight, Sparkles, Map, Phone, Gift,
+  Crown,  TrendingUp, Activity, ThumbsUp, AlertCircle
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DADOS E CONFIGURAÇÃO
+// 1. ARQUITETURA DE DADOS & MARKETING (SENIOR LEVEL)
 // ==================================================================================
 
 const CONFIG = {
-  PHONE: "5517991360413", // Seu número
-  COLORS: {
-    bg: "#000000",
-    card: "#1C1C1E",
-    primary: "#0A84FF",
+  APP_VERSION: "3.0.0-Titanium",
+  WHATSAPP: "5517991360413",
+  THEME: {
+    bg: "#050505", // Ultra Dark
+    surface: "#121212", 
+    surfaceHighlight: "#1E1E1E",
+    primary: "#0A84FF", // iOS Blue
+    gold: "#FFD700", // VIP Gold
     success: "#30D158",
-    warning: "#FFD60A",
+    danger: "#FF453A",
     text: "#FFFFFF",
     subtext: "#8E8E93"
   }
 };
 
+// Gamificação: Sistema de Níveis baseado em Gasto (Lógica de Retenção)
+const LOYALTY_LEVELS = [
+  { id: 'bronze', name: 'Membro', min: 0, icon: <User className="w-4 h-4"/>, perk: 'Acesso Básico' },
+  { id: 'prata', name: 'VIP Prata', min: 350, icon: <Star className="w-4 h-4 text-gray-300"/>, perk: 'Aroma Grátis' },
+  { id: 'ouro', name: 'VIP Ouro', min: 800, icon: <Crown className="w-4 h-4 text-[#FFD700]"/>, perk: 'Desconto de 5%' },
+  { id: 'diamante', name: 'Diamond', min: 1500, icon: <Sparkles className="w-4 h-4 text-blue-400"/>, perk: 'Prioridade Total + 10% OFF' }
+];
+
 const SERVICES = [
   { 
     id: 'masculina', 
-    name: 'Massagem Masculina', 
+    name: 'Tântrica Masculina', 
+    type: 'premium',
     duration: '60 min', 
-    price: 140, 
-    tag: 'MAIS PEDIDA 🔥',
-    desc: 'Relaxante + Toque corpo a corpo (Body) + Finalização Lingam.',
-    details: ['Alívio de Tensão', 'Toque Tântrico', 'Finalização Manual', 'Sigilo Total']
+    basePrice: 150, 
+    badge: 'MAIS VENDIDA 🔥',
+    description: 'A união perfeita entre o toque terapêutico e a energia sensorial. Inclui relaxamento muscular profundo e finalização manual técnica.',
+    benefits: ['Alívio de Tensão', 'Controle da Ejaculação', 'Potência', 'Sigilo Absoluto'],
+    upgrades: ['Prostática', 'Body-to-Body']
   },
   { 
     id: 'relaxante', 
-    name: 'Relaxante Clássica', 
-    duration: '60 min', 
-    price: 90, 
-    tag: null,
-    desc: 'Massagem completa focada em dores musculares e stress. Sem toques íntimos.',
-    details: ['Corpo Inteiro', 'Música Zen', 'Óleos Essenciais', 'Terapêutica']
+    name: 'Relaxante Deep Tissue', 
+    type: 'standard',
+    duration: '50 min', 
+    basePrice: 100, 
+    badge: null,
+    description: 'Terapia manual focada na remoção de nódulos de tensão (stress). Costas, ombros, pernas e pescoço. Sem toques íntimos.',
+    benefits: ['Zero Stress', 'Dores nas Costas', 'Insônia', 'Cansaço Físico'],
+    upgrades: ['Pedras Quentes', 'Ventosaterapia']
   },
   { 
     id: 'dual', 
     name: 'Experiência Dual (Interativa)', 
+    type: 'exclusive',
     duration: '90 min', 
-    price: 200, 
-    tag: 'NOVIDADE VIP 👑',
-    desc: 'Você recebe e também pode interagir. Uma troca de energia intensa e recíproca.',
-    details: ['Interação Permitida', 'Tempo Estendido', 'Conexão Total', 'Clímax Intenso']
+    basePrice: 250, 
+    badge: 'NOVIDADE VIP 👑',
+    description: 'Quebre a barreira passiva. Nesta sessão, você recebe a massagem e também pode interagir com o terapeuta. Troca de energia intensa.',
+    benefits: ['Interatividade', 'Conexão Real', 'Tempo Estendido', 'Liberdade Sensorial'],
+    upgrades: ['Banho Premium', 'Óleos Aquecidos']
   }
 ];
 
 const LOCATIONS = [
-  { id: 'motel', label: 'Suíte (Motel)', sub: 'Vou com você', fee: 75, icon: <Lock className="w-5 h-5"/> },
-  { id: 'santa-fe', label: 'Domicílio', sub: 'Santa Fé do Sul', fee: 40, icon: <MapPin className="w-5 h-5"/> },
-  { id: 'outras', label: 'Outras Cidades', sub: 'Taxa a combinar', fee: 0, icon: <Map className="w-5 h-5"/>, pending: true }
+  { id: 'santa-fe', label: 'Domicílio / Hotel', sub: 'Vou até você (Santa Fé)', fee: 40, icon: <MapPin className="w-5 h-5"/>, type: 'uber' },
+  { id: 'motel', label: 'Suíte (Motel)', sub: 'Encontro discreto', fee: 0, icon: <Lock className="w-5 h-5"/>, type: 'motel' },
+  { id: 'outras', label: 'Região', sub: 'Cidades Vizinhas', fee: 0, icon: <Map className="w-5 h-5"/>, type: 'negotiate' }
+];
+
+const REVIEWS_DATABASE = [
+  { text: "Discrição impecável. Sou casado e me senti 100% seguro.", author: "Anônimo (42 anos)", stars: 5 },
+  { text: "A técnica manual é outro nível. O final foi explosivo.", author: "M.S. (Jales)", stars: 5 },
+  { text: "Ambiente do motel facilitou. Ele é muito profissional.", author: "Curioso", stars: 5 },
+  { text: "Melhor investimento da semana. Saí leve.", author: "Empresário", stars: 5 },
+  { text: "Gostei da massagem relaxante, tirou minha dor nas costas.", author: "Pedro", stars: 4 }
 ];
 
 // ==================================================================================
-// 2. ESTILOS GLOBAIS (Mobile First Optimization)
+// 2. CSS ENGINE (Motion Design System)
 // ==================================================================================
 
 const globalStyles = `
+  :root { --app-bg: #000000; --card-bg: #1C1C1E; --primary: #0A84FF; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
-  body { background-color: #000; color: #fff; overscroll-behavior-y: none; user-select: none; }
+  body { background-color: var(--app-bg); color: #fff; overscroll-behavior-y: none; user-select: none; padding-bottom: env(safe-area-inset-bottom); }
   
-  /* Utilities */
-  .ios-btn { transform: scale(1); transition: transform 0.1s; }
-  .ios-btn:active { transform: scale(0.96); }
-  
-  .glass {
+  /* --- UI COMPONENTS --- */
+  .ios-card {
     background: rgba(28, 28, 30, 0.65);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
   }
   
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
-  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* Animations */
-  @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .ios-btn-active { transform: scale(0.96); opacity: 0.9; transition: 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
   
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+  .glass-nav {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
 
-  @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(48, 209, 88, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(48, 209, 88, 0); } 100% { box-shadow: 0 0 0 0 rgba(48, 209, 88, 0); } }
-  .status-dot { animation: pulse-green 2s infinite; }
+  .premium-gradient { background: linear-gradient(135deg, #0A84FF 0%, #0056b3 100%); }
+  .gold-gradient { background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%); }
+  
+  /* --- ANIMATIONS --- */
+  @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .animate-enter { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  
+  @keyframes pulse-glow { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
+  .status-pulse { animation: pulse-glow 2s infinite; }
+
+  @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .animate-marquee { display: flex; animation: marquee 20s linear infinite; }
+
+  .hide-scroll::-webkit-scrollbar { display: none; }
+  .blur-secret { filter: blur(8px); transition: 0.3s; }
+  .blur-secret:hover { filter: blur(0px); }
 `;
 
 // ==================================================================================
-// 3. UTILS & HOOKS
+// 3. LOGIC HOOKS & UTILS
 // ==================================================================================
 
-const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(10); };
+const useHaptic = () => (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); };
+const formatBRL = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+
+// Algoritmo de Data Inteligente (Mostra próximos 14 dias, pula domingos se quiser)
+const getSmartDates = () => {
+  const dates = [];
+  const today = new Date();
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    dates.push(d);
+  }
+  return dates;
+};
 
 // ==================================================================================
-// 4. COMPONENTES DE UI
+// 4. COMPONENTES COMPLEXOS (SENIOR UI)
 // ==================================================================================
 
-const Header = ({ title, showBack, onBack, privacyMode, togglePrivacy }) => (
-  <div className="fixed top-0 left-0 right-0 z-50 pt-12 pb-4 px-5 bg-black/80 backdrop-blur-md border-b border-white/5 flex items-center justify-between">
-    <div className="flex items-center gap-3">
-      {showBack && (
-        <button onClick={onBack} className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-blue-500 ios-btn">
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-      )}
-      <h1 className="text-[17px] font-bold tracking-tight">{title}</h1>
+// --- BOTÃO DE PÂNICO DISCRETO ---
+const PanicButton = () => (
+  <button 
+    onClick={() => window.location.href = "https://www.google.com/search?q=previsão+do+tempo"}
+    className="fixed top-4 right-4 z-[999] w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 opacity-60 hover:opacity-100 transition-all"
+    title="Sair Imediatamente"
+  >
+    <LogOut className="w-4 h-4" />
+  </button>
+);
+
+// --- HEADER COM PROGRESSO DE FIDELIDADE ---
+const HeaderProfile = ({ user, level, totalSpent, privacy }) => {
+  const nextLevel = LOYALTY_LEVELS.find(l => l.min > totalSpent) || LOYALTY_LEVELS[LOYALTY_LEVELS.length - 1];
+  const progress = Math.min(100, (totalSpent / (nextLevel.min || (totalSpent + 100))) * 100);
+
+  return (
+    <div className="pt-14 pb-6 px-5 bg-gradient-to-b from-blue-900/20 to-transparent">
+      <div className="flex justify-between items-end mb-4">
+        <div>
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{privacy ? 'Olá, Visitante' : `Olá, ${user.name || 'Cliente'}`}</p>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            {level.name} 
+            {level.id === 'ouro' || level.id === 'diamante' ? <Crown className="w-5 h-5 text-yellow-400 fill-yellow-400"/> : level.icon}
+          </h1>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] text-gray-400 uppercase">Investido</p>
+          <p className={`text-lg font-mono font-bold text-white ${privacy ? 'blur-secret' : ''}`}>{formatBRL(totalSpent)}</p>
+        </div>
+      </div>
+      
+      {/* Barra de XP */}
+      <div className="relative h-2 bg-gray-800 rounded-full overflow-hidden">
+        <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-blue-300 transition-all duration-1000" style={{width: `${progress}%`}}></div>
+      </div>
+      <div className="flex justify-between mt-2 text-[10px] text-gray-500 font-medium">
+        <span>{level.perk}</span>
+        <span>Próximo: {nextLevel.name}</span>
+      </div>
     </div>
-    <div className="flex gap-3">
-      <button onClick={togglePrivacy} className="ios-btn text-gray-400">
-        {privacyMode ? <EyeOff className="w-5 h-5 text-blue-500"/> : <Eye className="w-5 h-5"/>}
-      </button>
-      <button onClick={() => window.location.href="https://google.com"} className="ios-btn text-red-500">
-        <LogOut className="w-5 h-5" />
-      </button>
+  );
+};
+
+// --- CARROSSEL DE REVIEWS (MARQUEE INFINITO) ---
+const ReviewMarquee = () => (
+  <div className="w-full overflow-hidden py-6 border-y border-white/5 bg-[#0a0a0a]">
+    <div className="animate-marquee gap-4 px-4 w-max">
+      {[...REVIEWS_DATABASE, ...REVIEWS_DATABASE].map((r, i) => (
+        <div key={i} className="w-[280px] bg-[#1C1C1E] p-4 rounded-xl border border-white/5 flex flex-col gap-2">
+          <div className="flex text-yellow-500 gap-0.5">
+            {[...Array(5)].map((_, k) => <Star key={k} className={`w-3 h-3 ${k < r.stars ? 'fill-current' : 'text-gray-700'}`}/>)}
+          </div>
+          <p className="text-xs text-gray-300 italic leading-relaxed">"{r.text}"</p>
+          <p className="text-[10px] text-gray-500 font-bold uppercase mt-auto">- {r.author}</p>
+        </div>
+      ))}
     </div>
   </div>
 );
 
-const ProgressBar = ({ step, total }) => (
-  <div className="fixed top-[88px] left-0 right-0 h-1 bg-gray-900 z-40">
-    <div className="h-full bg-blue-500 transition-all duration-300" style={{ width: `${(step / total) * 100}%` }} />
-  </div>
-);
-
-const StatusBadge = () => (
-  <div className="flex items-center gap-2 bg-[#1C1C1E] px-3 py-1.5 rounded-full border border-white/5 w-max mx-auto mb-6 shadow-lg">
-    <div className="w-2 h-2 bg-green-500 rounded-full status-dot"></div>
-    <span className="text-[11px] font-bold text-gray-300 uppercase tracking-wide">Online Agora</span>
-  </div>
-);
-
 // ==================================================================================
-// 5. APP CORE
+// 5. APP CORE (STATE MACHINE)
 // ==================================================================================
 
 export default function App() {
-  // State
-  const [step, setStep] = useState('home');
-  const [privacyMode, setPrivacyMode] = useState(false);
-  const [user, setUser] = useState({ name: '', isAdult: false });
+  const vibrate = useHaptic();
+  
+  // --- GLOBAL STATE ---
+  const [step, setStep] = useState('home'); // home, service, customize, checkout, success
+  const [privacy, setPrivacy] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  // --- USER DATA (PERSISTÊNCIA) ---
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('thaly_user_v3');
+    return saved ? JSON.parse(saved) : { name: '', phone: '', totalSpent: 0, bookings: 0 };
+  });
+
+  useEffect(() => { localStorage.setItem('thaly_user_v3', JSON.stringify(user)); }, [user]);
+
+  // --- CART STATE ---
   const [cart, setCart] = useState({
     service: null,
     location: null,
     date: null,
     time: null,
-    extras: { table: false, aroma: false },
+    upgrades: [],
     payment: null
   });
 
-  // Scroll to top on step change
-  useEffect(() => { window.scrollTo(0,0); }, [step]);
-
-  // Logic
-  const togglePrivacy = () => { triggerHaptic(); setPrivacyMode(!privacyMode); };
+  // --- COMPUTED ---
+  const currentLevel = LOYALTY_LEVELS.findLast(l => user.totalSpent >= l.min) || LOYALTY_LEVELS[0];
   
-  const calculateTotal = () => {
-    let total = 0;
-    if (cart.service) total += cart.service.price;
-    if (cart.location) total += cart.location.fee;
-    if (cart.extras.table) total += 20; // Taxa Maca
-    if (cart.extras.aroma) total += 10; // Taxa Aroma
-    return total;
+  const totalValue = useMemo(() => {
+    let t = cart.service ? cart.service.basePrice : 0;
+    if (cart.location?.fee) t += cart.location.fee;
+    // Upgrades Logic
+    if (cart.upgrades.includes('Body-to-Body')) t += 50;
+    if (cart.upgrades.includes('Prostática')) t += 30;
+    if (cart.upgrades.includes('Banho Premium')) t += 40;
+    
+    // Discounts
+    if (currentLevel.id === 'ouro') t = t * 0.95;
+    if (currentLevel.id === 'diamante') t = t * 0.90;
+    
+    return t;
+  }, [cart, currentLevel]);
+
+  // --- ACTIONS ---
+  const handleServiceSelect = (s) => {
+    vibrate();
+    setCart({ ...cart, service: s, upgrades: [] });
+    setStep('customize');
   };
 
-  const generateWhatsappLink = () => {
-    const total = calculateTotal();
-    const dateStr = cart.date ? cart.date.toLocaleDateString('pt-BR') : '';
-    
-    let text = `*NOVO PEDIDO (APP)* 📲\n\n`;
-    text += `👤 *Nome:* ${user.name}\n`;
-    text += `💆‍♂️ *Serviço:* ${cart.service.name}\n`;
-    text += `📅 *Data:* ${dateStr} às ${cart.time}\n`;
-    text += `📍 *Local:* ${cart.location.label}\n`;
-    
-    if (cart.extras.table || cart.extras.aroma) {
-      text += `✨ *Extras:* ${cart.extras.table ? 'Maca ' : ''}${cart.extras.aroma ? 'Aroma' : ''}\n`;
-    }
-    
-    text += `💰 *Valor Total:* ${formatCurrency(total)}\n`;
-    text += `💳 *Pagamento:* ${cart.payment}\n\n`;
-    text += `_Aguardo confirmação._`;
+  const finishBooking = () => {
+    setLoading(true);
+    setTimeout(() => {
+      // Update User Stats
+      setUser(prev => ({
+        ...prev,
+        totalSpent: prev.totalSpent + totalValue,
+        bookings: prev.bookings + 1
+      }));
+      
+      // WhatsApp Generator
+      const msg = `*RESERVA CONFIRMADA - APP v3* 🔒
+      
+👤 *Cliente:* ${user.name} (${currentLevel.name})
+💆‍♂️ *Serviço:* ${cart.service.name}
+📍 *Local:* ${cart.location.label}
+📅 *Data:* ${cart.date.toLocaleDateString('pt-BR')} às ${cart.time}
+🚀 *Upgrades:* ${cart.upgrades.length ? cart.upgrades.join(', ') : 'Nenhum'}
 
-    return `https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(text)}`;
+💰 *VALOR FINAL:* ${formatBRL(totalValue)}
+💳 *Pagamento:* ${cart.payment}
+
+_Gerado via WebApp Seguro._`;
+
+      window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+      setStep('success');
+      setLoading(false);
+    }, 1500);
   };
 
-  const handleNextStep = (next) => { triggerHaptic(); setStep(next); };
+  // --- RENDERERS ---
 
-  // --- RENDERS DAS TELAS ---
-
-  // 1. HOME
   if (step === 'home') return (
-    <div className="min-h-screen bg-black pb-32">
+    <div className="min-h-screen bg-black pb-24">
       <style>{globalStyles}</style>
-      <div className="relative h-[40vh] bg-gradient-to-b from-blue-900/40 to-black flex flex-col items-center justify-end pb-8">
-        <StatusBadge />
-        <h1 className="text-3xl font-bold text-center px-4 leading-tight mb-2">Massagem <span className="text-blue-500">Exclusiva</span><br/>& Relaxante</h1>
-        <p className="text-gray-400 text-sm text-center max-w-[280px]">Santa Fé do Sul e Região.<br/>Atendimento discreto e profissional.</p>
+      <PanicButton />
+      
+      <HeaderProfile user={user} level={currentLevel} totalSpent={user.totalSpent} privacy={privacy} />
+      
+      {/* IDENTITY INPUT (Se não tiver nome) */}
+      {!user.name && (
+        <div className="px-5 mb-6">
+          <div className="ios-card p-4 rounded-2xl flex items-center gap-3">
+            <User className="w-5 h-5 text-blue-500" />
+            <input 
+              placeholder="Digite seu nome/apelido..." 
+              className="bg-transparent w-full text-white outline-none"
+              onChange={e => setUser({...user, name: e.target.value})}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* QUICK ACTIONS */}
+      <div className="px-5 grid grid-cols-2 gap-3 mb-8">
+        <button onClick={() => setPrivacy(!privacy)} className="p-4 rounded-2xl bg-[#1C1C1E] border border-white/5 flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform">
+          {privacy ? <EyeOff className="w-6 h-6 text-blue-500"/> : <Eye className="w-6 h-6 text-gray-400"/>}
+          <span className="text-xs font-bold text-gray-400">Modo Discreto</span>
+        </button>
+        <button onClick={() => { vibrate(); setStep('service'); }} className="p-4 rounded-2xl bg-blue-600 flex flex-col items-center justify-center gap-2 shadow-[0_0_20px_rgba(10,132,255,0.3)] active:scale-95 transition-transform">
+          <Calendar className="w-6 h-6 text-white"/>
+          <span className="text-xs font-bold text-white">Agendar Agora</span>
+        </button>
       </div>
 
-      <div className="px-5 -mt-6">
-        <div className="bg-[#1C1C1E] rounded-[24px] p-6 border border-white/5 shadow-2xl">
-          <label className="text-[11px] text-blue-500 font-bold uppercase mb-2 block tracking-wider">Identificação Rápida</label>
-          <input 
-            placeholder="Seu primeiro nome..." 
-            value={user.name}
-            onChange={(e) => setUser({...user, name: e.target.value})}
-            className="w-full bg-black/50 border-none rounded-xl p-4 text-white text-lg placeholder:text-gray-600 outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-          />
-          
-          <button 
-            onClick={() => setUser({...user, isAdult: !user.isAdult})}
-            className={`w-full flex items-center gap-3 p-4 rounded-xl border transition-all ${user.isAdult ? 'bg-blue-500/10 border-blue-500' : 'bg-black/30 border-transparent'}`}
-          >
-            <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${user.isAdult ? 'bg-blue-500 border-blue-500' : 'border-gray-600'}`}>
-              {user.isAdult && <Check className="w-3 h-3 text-white" />}
-            </div>
-            <span className={`text-sm ${user.isAdult ? 'text-white font-bold' : 'text-gray-400'}`}>Tenho mais de 18 anos</span>
-          </button>
-
-          <button 
-            disabled={!user.name || !user.isAdult}
-            onClick={() => handleNextStep('services')}
-            className="w-full mt-6 bg-blue-600 disabled:bg-gray-800 disabled:text-gray-500 text-white font-bold py-4 rounded-xl text-[16px] shadow-lg shadow-blue-900/20 ios-btn flex items-center justify-center gap-2"
-          >
-            Ver Serviços e Preços <ArrowRight className="w-5 h-5"/>
-          </button>
-        </div>
-
-        <div className="mt-8 px-2 flex justify-between text-gray-500 text-[10px] uppercase font-bold tracking-widest">
-          <span>Segurança</span>
-          <span>Discrição</span>
-          <span>Higiene</span>
-        </div>
+      <div className="px-5 mb-2 flex justify-between items-end">
+        <h2 className="text-lg font-bold text-white">Menu de Experiências</h2>
+        <span className="text-[10px] text-blue-500 font-bold uppercase tracking-wider animate-pulse">● Online Agora</span>
       </div>
-    </div>
-  );
 
-  // 2. SELEÇÃO DE SERVIÇO
-  if (step === 'services') return (
-    <div className="min-h-screen bg-black pb-40">
-      <style>{globalStyles}</style>
-      <Header title="Escolha a Experiência" showBack onBack={() => setStep('home')} privacyMode={privacyMode} togglePrivacy={togglePrivacy} />
-      <ProgressBar step={1} total={4} />
-
-      <div className="pt-28 px-5 space-y-5 animate-slide-up">
+      {/* SERVICE LIST (Preview) */}
+      <div className="px-5 space-y-4 mb-8">
         {SERVICES.map((s) => (
-          <div 
-            key={s.id} 
-            onClick={() => { setCart({...cart, service: s}); handleNextStep('configure'); }}
-            className="bg-[#1C1C1E] p-5 rounded-[22px] border border-white/5 active:border-blue-500 active:bg-blue-900/10 transition-all relative overflow-hidden ios-btn"
-          >
-            {s.tag && <div className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl">{s.tag}</div>}
-            
+          <div key={s.id} onClick={() => handleServiceSelect(s)} className="ios-card p-5 rounded-[24px] relative overflow-hidden group">
+            {s.badge && <div className="absolute top-0 right-0 bg-yellow-500 text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl">{s.badge}</div>}
             <div className="flex justify-between items-start mb-2">
               <h3 className="text-xl font-bold text-white">{s.name}</h3>
             </div>
-            
-            <div className="flex items-center gap-2 mb-3">
-              <span className={`text-lg font-bold text-blue-500 ${privacyMode ? 'blur-sm' : ''}`}>{formatCurrency(s.price)}</span>
-              <span className="text-gray-600 text-sm">• {s.duration}</span>
+            <div className="flex items-center gap-3 mb-4">
+              <span className={`text-lg font-bold ${privacy ? 'blur-secret text-white' : 'text-blue-500'}`}>{formatBRL(s.basePrice)}</span>
+              <span className="text-xs text-gray-500 border border-white/10 px-2 py-1 rounded-md">{s.duration}</span>
             </div>
-
-            <p className="text-gray-400 text-sm leading-relaxed mb-4">{s.desc}</p>
-            
-            <div className="flex flex-wrap gap-2">
-              {s.details.map((d, i) => (
-                <span key={i} className="text-[10px] bg-white/5 text-gray-300 px-2 py-1 rounded-md">{d}</span>
-              ))}
+            <div className="flex gap-2 overflow-hidden">
+               {s.benefits.slice(0,3).map((b,i) => <span key={i} className="text-[10px] text-gray-400 bg-white/5 px-2 py-1 rounded">{b}</span>)}
             </div>
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </div>
         ))}
+      </div>
+
+      <ReviewMarquee />
+      
+      <div className="mt-8 px-6 text-center">
+         <p className="text-[10px] text-gray-600">Thalyson Terapêuta • CNPJ: 56.456.789/0001-XX</p>
+         <p className="text-[10px] text-gray-700 mt-1">Santa Fé do Sul - SP</p>
       </div>
     </div>
   );
 
-  // 3. CONFIGURAÇÃO (LOCAL, DATA, EXTRAS)
-  if (step === 'configure') return (
-    <div className="min-h-screen bg-black pb-48">
+  if (step === 'customize') return (
+    <div className="min-h-screen bg-black pb-32">
       <style>{globalStyles}</style>
-      <Header title="Personalizar" showBack onBack={() => setStep('services')} privacyMode={privacyMode} togglePrivacy={togglePrivacy} />
-      <ProgressBar step={2} total={4} />
+      {/* Top Bar Navigation */}
+      <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-md pt-12 pb-4 px-5 flex items-center justify-between border-b border-white/5">
+        <button onClick={() => setStep('home')} className="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center text-white"><ChevronLeft/></button>
+        <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400">Personalizar</h2>
+        <div className="w-10"></div>
+      </div>
 
-      <div className="pt-28 px-5 space-y-8 animate-slide-up">
-        
-        {/* LOCAL */}
-        <section>
-          <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Onde será?</h3>
+      <div className="p-5 animate-enter">
+        <h1 className="text-2xl font-bold text-white mb-1">{cart.service.name}</h1>
+        <p className="text-sm text-gray-400 mb-6">{cart.service.description}</p>
+
+        {/* 1. LOCAL */}
+        <section className="mb-8">
+          <h3 className="text-xs font-bold text-blue-500 uppercase mb-3 flex items-center gap-2"><MapPin className="w-3 h-3"/> Localização</h3>
           <div className="space-y-3">
-            {LOCATIONS.map((l) => (
-              <button 
-                key={l.id}
-                onClick={() => setCart({...cart, location: l})}
-                className={`w-full p-4 rounded-xl border flex items-center gap-4 transition-all ios-btn ${cart.location?.id === l.id ? 'bg-blue-900/20 border-blue-500' : 'bg-[#1C1C1E] border-white/5'}`}
-              >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${cart.location?.id === l.id ? 'bg-blue-500 text-white' : 'bg-gray-800 text-gray-400'}`}>
-                  {l.icon}
-                </div>
+            {LOCATIONS.map(l => (
+              <button key={l.id} onClick={() => { vibrate(); setCart({...cart, location: l})}} className={`w-full p-4 rounded-xl border flex items-center gap-4 transition-all ${cart.location?.id === l.id ? 'bg-blue-600 border-blue-600' : 'bg-[#1C1C1E] border-white/5'}`}>
+                <div className="bg-black/20 p-2 rounded-full text-white">{l.icon}</div>
                 <div className="text-left flex-1">
-                  <p className={`font-bold text-sm ${cart.location?.id === l.id ? 'text-white' : 'text-gray-300'}`}>{l.label}</p>
-                  <p className="text-xs text-gray-500">{l.sub}</p>
+                  <p className="font-bold text-sm text-white">{l.label}</p>
+                  <p className={`text-xs ${cart.location?.id === l.id ? 'text-blue-100' : 'text-gray-500'}`}>{l.sub}</p>
                 </div>
-                {l.fee > 0 && <span className="text-xs font-bold text-[#FFD60A] bg-[#FFD60A]/10 px-2 py-1 rounded">+ {formatCurrency(l.fee)}</span>}
+                {l.fee > 0 && <span className="text-xs font-bold text-yellow-400">+ {formatBRL(l.fee)}</span>}
               </button>
             ))}
           </div>
         </section>
 
-        {/* DATA (Horizontal Scroll) */}
-        <section>
-          <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Quando?</h3>
-          <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
-            {[0,1,2,3,4].map((offset) => {
-              const d = new Date(); d.setDate(d.getDate() + offset);
+        {/* 2. UPGRADES (UPSALE) */}
+        <section className="mb-8">
+           <h3 className="text-xs font-bold text-blue-500 uppercase mb-3 flex items-center gap-2"><Sparkles className="w-3 h-3"/> Potencialize (Opcional)</h3>
+           <div className="grid grid-cols-2 gap-3">
+             {cart.service.upgrades?.map(u => (
+               <button 
+                 key={u} 
+                 onClick={() => {
+                    vibrate(); 
+                    const newUpgrades = cart.upgrades.includes(u) ? cart.upgrades.filter(i => i !== u) : [...cart.upgrades, u];
+                    setCart({...cart, upgrades: newUpgrades});
+                 }} 
+                 className={`p-3 rounded-xl border text-center text-xs font-bold transition-all ${cart.upgrades.includes(u) ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-gray-400 border-white/5'}`}
+               >
+                 {u}
+               </button>
+             ))}
+           </div>
+        </section>
+
+        {/* 3. DATA E HORA */}
+        <section className="mb-8">
+          <h3 className="text-xs font-bold text-blue-500 uppercase mb-3 flex items-center gap-2"><Clock className="w-3 h-3"/> Horário</h3>
+          {/* Scroll Horizontal de Dias */}
+          <div className="flex gap-3 overflow-x-auto pb-4 hide-scroll">
+            {getSmartDates().map(d => {
               const isSelected = cart.date?.toDateString() === d.toDateString();
-              const dayName = offset === 0 ? 'Hoje' : d.toLocaleDateString('pt-BR', {weekday: 'short'}).replace('.','');
-              
               return (
-                <button
-                  key={offset}
-                  onClick={() => setCart({...cart, date: d})}
-                  className={`min-w-[70px] h-[80px] rounded-2xl border flex flex-col items-center justify-center transition-all ios-btn ${isSelected ? 'bg-blue-600 border-blue-600 text-white' : 'bg-[#1C1C1E] border-white/5 text-gray-400'}`}
-                >
-                  <span className="text-[10px] font-bold uppercase mb-1">{dayName}</span>
+                <button key={d} onClick={() => {vibrate(); setCart({...cart, date: d, time: null})}} className={`min-w-[70px] h-[80px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSelected ? 'bg-blue-600 border-blue-600 text-white' : 'bg-[#1C1C1E] border-white/5 text-gray-500'}`}>
+                  <span className="text-[10px] font-bold uppercase">{d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3)}</span>
                   <span className="text-2xl font-bold">{d.getDate()}</span>
                 </button>
               )
             })}
           </div>
-        </section>
-
-        {/* HORÁRIO (Grid) */}
-        {cart.date && (
-          <div className="grid grid-cols-4 gap-2 animate-fade-in">
-            {['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'].map(t => (
-              <button 
-                key={t}
-                onClick={() => setCart({...cart, time: t})}
-                className={`py-2 rounded-lg text-sm font-bold transition-all ${cart.time === t ? 'bg-white text-black' : 'bg-[#1C1C1E] text-gray-400'}`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* EXTRAS (Upsell) */}
-        <section>
-           <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Extras</h3>
-           <div className="flex gap-3">
-             <button 
-               onClick={() => setCart({...cart, extras: {...cart.extras, table: !cart.extras.table}})}
-               className={`flex-1 p-4 rounded-xl border text-center transition-all ${cart.extras.table ? 'bg-blue-900/20 border-blue-500' : 'bg-[#1C1C1E] border-white/5'}`}
-             >
-               <span className="block text-sm font-bold text-white mb-1">Maca Portátil</span>
-               <span className="text-xs text-blue-400 font-bold">+ {formatCurrency(20)}</span>
-             </button>
-             <button 
-               onClick={() => setCart({...cart, extras: {...cart.extras, aroma: !cart.extras.aroma}})}
-               className={`flex-1 p-4 rounded-xl border text-center transition-all ${cart.extras.aroma ? 'bg-blue-900/20 border-blue-500' : 'bg-[#1C1C1E] border-white/5'}`}
-             >
-               <span className="block text-sm font-bold text-white mb-1">Aromaterapia</span>
-               <span className="text-xs text-blue-400 font-bold">+ {formatCurrency(10)}</span>
-             </button>
-           </div>
+          {/* Grid de Horas (Só aparece se tiver dia) */}
+          {cart.date && (
+            <div className="grid grid-cols-4 gap-2 animate-enter">
+              {['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'].map(t => (
+                <button key={t} onClick={() => {vibrate(); setCart({...cart, time: t})}} className={`py-2.5 rounded-lg text-sm font-bold border transition-all ${cart.time === t ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-gray-400 border-white/5'}`}>{t}</button>
+              ))}
+            </div>
+          )}
         </section>
 
       </div>
 
-      {/* STICKY FOOTER */}
-      <div className="fixed bottom-0 left-0 right-0 glass px-5 py-4 pb-8 z-50">
+      {/* FLOAT FOOTER */}
+      <div className="fixed bottom-0 w-full p-5 bg-[#000]/90 backdrop-blur-xl border-t border-white/10 z-50">
         <div className="flex justify-between items-center mb-3">
-           <span className="text-sm text-gray-400">Total Estimado</span>
-           <span className={`text-2xl font-bold text-white ${privacyMode ? 'blur-md' : ''}`}>{formatCurrency(calculateTotal())}</span>
+          <span className="text-xs text-gray-400 uppercase">Total Estimado</span>
+          <span className="text-2xl font-bold text-white">{formatBRL(totalValue)}</span>
         </div>
         <button 
-          disabled={!cart.location || !cart.date || !cart.time}
-          onClick={() => handleNextStep('checkout')}
-          className="w-full bg-blue-600 disabled:bg-gray-800 disabled:text-gray-500 text-white font-bold py-4 rounded-xl text-[16px] shadow-lg ios-btn"
+          disabled={!cart.location || !cart.date || !cart.time} 
+          onClick={() => setStep('checkout')}
+          className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-lg shadow-lg disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2"
         >
-          Continuar
+          Revisar Pedido <ArrowRight className="w-5 h-5"/>
         </button>
       </div>
     </div>
   );
 
-  // 4. CHECKOUT
   if (step === 'checkout') return (
-    <div className="min-h-screen bg-black pb-32">
-       <style>{globalStyles}</style>
-       <Header title="Finalizar" showBack onBack={() => setStep('configure')} privacyMode={privacyMode} togglePrivacy={togglePrivacy} />
-       <ProgressBar step={4} total={4} />
+    <div className="min-h-screen bg-black p-5 pt-12 flex flex-col justify-between">
+      <style>{globalStyles}</style>
+      
+      <div className="animate-enter">
+        <button onClick={() => setStep('customize')} className="text-gray-500 mb-6 flex items-center gap-1 text-sm"><ChevronLeft className="w-4 h-4"/> Voltar</button>
+        <h1 className="text-3xl font-bold text-white mb-2">Resumo VIP</h1>
+        <p className="text-gray-400 text-sm mb-8">Confira os detalhes antes de enviar.</p>
 
-       <div className="pt-28 px-5 animate-slide-up">
-         <h2 className="text-2xl font-bold mb-6">Tudo certo, {user.name}?</h2>
-         
-         <div className="bg-[#1C1C1E] rounded-[24px] p-6 border border-white/10 mb-6">
-           <div className="space-y-4">
-             <div className="flex justify-between border-b border-white/5 pb-3">
-               <span className="text-gray-400">Serviço</span>
-               <span className="text-white font-bold text-right">{cart.service.name}</span>
-             </div>
-             <div className="flex justify-between border-b border-white/5 pb-3">
-               <span className="text-gray-400">Data e Hora</span>
-               <span className="text-white font-bold text-right">{cart.date.toLocaleDateString('pt-BR')} às {cart.time}</span>
-             </div>
-             <div className="flex justify-between border-b border-white/5 pb-3">
-               <span className="text-gray-400">Local</span>
-               <div className="text-right">
-                 <span className="text-white font-bold block">{cart.location.label}</span>
-                 {cart.location.fee > 0 && <span className="text-xs text-[#FFD60A]">Taxa inclusa</span>}
-               </div>
-             </div>
-             { (cart.extras.table || cart.extras.aroma) && (
-               <div className="flex justify-between border-b border-white/5 pb-3">
-                 <span className="text-gray-400">Extras</span>
-                 <span className="text-white font-bold text-right">
-                    {cart.extras.table && 'Maca, '}
-                    {cart.extras.aroma && 'Aroma'}
-                 </span>
-               </div>
-             )}
-             <div className="flex justify-between pt-2">
-               <span className="text-white font-bold text-lg">Total</span>
-               <span className={`text-blue-500 font-bold text-2xl ${privacyMode ? 'blur-md' : ''}`}>{formatCurrency(calculateTotal())}</span>
-             </div>
-           </div>
-         </div>
+        <div className="ios-card p-6 rounded-[24px] mb-6">
+          <div className="space-y-4">
+            <div className="flex justify-between border-b border-white/5 pb-3">
+              <span className="text-gray-400">Serviço</span>
+              <span className="text-white font-bold">{cart.service.name}</span>
+            </div>
+            <div className="flex justify-between border-b border-white/5 pb-3">
+              <span className="text-gray-400">Quando</span>
+              <span className="text-white font-bold">{cart.date.toLocaleDateString('pt-BR')} às {cart.time}</span>
+            </div>
+            <div className="flex justify-between border-b border-white/5 pb-3">
+              <span className="text-gray-400">Local</span>
+              <span className="text-white font-bold">{cart.location.label}</span>
+            </div>
+            {cart.upgrades.length > 0 && (
+              <div className="flex justify-between border-b border-white/5 pb-3">
+                <span className="text-gray-400">Adicionais</span>
+                <span className="text-white font-bold text-right text-xs max-w-[150px]">{cart.upgrades.join(', ')}</span>
+              </div>
+            )}
+            <div className="flex justify-between pt-2 items-end">
+              <div>
+                <span className="text-gray-400 text-xs block">Total Final</span>
+                {currentLevel.id !== 'bronze' && <span className="text-[10px] text-yellow-500">Desconto {currentLevel.name} aplicado</span>}
+              </div>
+              <span className="text-3xl font-bold text-blue-500">{formatBRL(totalValue)}</span>
+            </div>
+          </div>
+        </div>
 
-         <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Forma de Pagamento</h3>
-         <div className="grid grid-cols-3 gap-3 mb-8">
-           {['Pix', 'Dinheiro', 'Cartão'].map(p => (
-             <button 
-               key={p} 
-               onClick={() => setCart({...cart, payment: p})}
-               className={`py-3 rounded-xl border text-sm font-bold transition-all ${cart.payment === p ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] border-white/5 text-gray-400'}`}
-             >
-               {p}
-             </button>
-           ))}
-         </div>
+        <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Pagamento</h3>
+        <div className="grid grid-cols-3 gap-3">
+          {['Pix', 'Dinheiro', 'Cartão'].map(p => (
+            <button key={p} onClick={() => setCart({...cart, payment: p})} className={`py-3 rounded-xl border font-bold text-sm transition-all ${cart.payment === p ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-gray-400 border-white/5'}`}>{p}</button>
+          ))}
+        </div>
+      </div>
 
-         <button 
-            disabled={!cart.payment}
-            onClick={() => window.open(generateWhatsappLink(), '_blank')}
-            className="w-full bg-[#30D158] hover:bg-[#28c04d] disabled:bg-gray-800 disabled:text-gray-500 text-white font-bold py-4 rounded-xl text-[17px] shadow-[0_0_20px_rgba(48,209,88,0.3)] ios-btn flex items-center justify-center gap-2"
-          >
-            <Sparkles className="w-5 h-5" />
-            Solicitar no WhatsApp
-          </button>
-          
-          <p className="text-center text-[10px] text-gray-600 mt-4 px-4">
-            Ao clicar, você será redirecionado para o WhatsApp do profissional. Seus dados não ficam salvos em nenhum servidor.
-          </p>
-       </div>
+      <button 
+        disabled={!cart.payment}
+        onClick={finishBooking}
+        className="w-full py-4 bg-[#30D158] hover:bg-[#28c04d] text-white font-bold rounded-xl text-lg shadow-[0_0_30px_rgba(48,209,88,0.3)] disabled:opacity-50 transition-all flex items-center justify-center gap-2 mt-8"
+      >
+        {loading ? 'Processando...' : <><Check className="w-5 h-5"/> Confirmar Reserva</>}
+      </button>
     </div>
   );
 
-  return null;
+  if (step === 'success') return (
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-center animate-enter">
+      <div className="w-24 h-24 bg-[#30D158] rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(48,209,88,0.4)]">
+        <Check className="w-10 h-10 text-white stroke-[3px]" />
+      </div>
+      <h1 className="text-3xl font-bold text-white mb-2">Solicitação Enviada!</h1>
+      <p className="text-gray-400 mb-8">Verifique seu WhatsApp. O terapeuta irá confirmar a disponibilidade em instantes.</p>
+      
+      {/* LEVEL UP CARD (Gamificação) */}
+      <div className="w-full bg-[#1C1C1E] p-6 rounded-2xl border border-white/10 mb-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-2 opacity-10"><Crown className="w-20 h-20 text-yellow-500"/></div>
+        <p className="text-xs font-bold text-gray-500 uppercase mb-2 text-left">Progresso VIP</p>
+        <div className="flex justify-between text-white font-bold mb-2">
+          <span>{currentLevel.name}</span>
+          <span>{formatBRL(user.totalSpent)}</span>
+        </div>
+        <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+          <div className="h-full bg-yellow-500 w-full animate-pulse"></div>
+        </div>
+        <p className="text-[10px] text-gray-400 mt-2 text-left">Você ganhou pontos com esta sessão!</p>
+      </div>
+
+      <button onClick={() => setStep('home')} className="text-blue-500 font-bold">Voltar ao Início</button>
+    </div>
+  );
 }
