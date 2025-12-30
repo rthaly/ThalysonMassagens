@@ -324,17 +324,15 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
     const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
     if (!isToday) return false;
     const [h] = t.split(':').map(Number);
-    return h <= now.getHours() + 1; 
+    return h <= now.getHours() + 1;
   };
 
   const getDayLabel = (d) => {
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      
       if (d.toDateString() === today.toDateString()) return 'HOJE';
       if (d.toDateString() === tomorrow.toDateString()) return 'AMANHÃ';
-      
       return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3).replace('.','');
   };
 
@@ -350,16 +348,19 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
 
   return (
     <div>
-      {/* CORREÇÃO AQUI: Adicionei 'touch-pan-x' para garantir que o dedo funcione */}
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-6 px-1 touch-pan-x w-full">
+      {/* SELETOR DE DIAS (Carrossel) */}
+      {/* Adicionado: touch-pan-x para garantir que o dedo funcione bem no celular */}
+      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-6 px-1 touch-pan-x">
         {days.map((d, i) => {
           const isSel = selectedDate?.toDateString() === d.toDateString();
           const label = getDayLabel(d);
           const month = getMonthLabel(d);
           
           return (
-            // CORREÇÃO AQUI: Adicionei 'flex-shrink-0' para o botão não encolher
-            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`flex-shrink-0 relative flex flex-col items-center justify-center min-w-[70px] h-[85px] rounded-[20px] transition-all duration-300 border ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 hover:bg-[#3A3A3C]'}`}>
+            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} 
+              // AQUI ESTÁ A CORREÇÃO PRINCIPAL: "flex-shrink-0"
+              // Isso impede que o botão encolha, forçando a rolagem acontecer.
+              className={`relative flex flex-col items-center justify-center min-w-[70px] h-[85px] rounded-[20px] transition-all duration-300 border flex-shrink-0 ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 hover:bg-[#3A3A3C]'}`}>
               
               <span className={`text-[10px] uppercase font-bold tracking-wide mb-1 ${label === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/80' : 'opacity-60'}`}>{label}</span>
               <span className="text-2xl font-bold font-mono tracking-tight">{d.getDate()}</span>
@@ -371,11 +372,11 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
         })}
       </div>
 
+      {/* SELETOR DE HORÁRIOS */}
       {selectedDate && (
         <div className="animate-fade-in space-y-5">
            {periods.map((period, idx) => {
                const hasSlots = period.slots.some(t => !isTimeBlocked(t, selectedDate));
-               
                return (
                    <div key={idx} className={`transition-opacity ${hasSlots ? 'opacity-100' : 'opacity-40 grayscale'}`}>
                        <h5 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
@@ -386,7 +387,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
                            {period.slots.map(t => {
                                const blocked = isTimeBlocked(t, selectedDate);
                                const isSelected = selectedTime === t;
-                               
                                return (
                                   <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
                                     className={`py-2.5 rounded-[12px] text-[13px] font-semibold transition-all duration-200 relative overflow-hidden
@@ -400,11 +400,10 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
                    </div>
                )
            })}
-           
            <div className="mt-4 p-3 bg-[#FFD60A]/10 rounded-xl border border-[#FFD60A]/20 flex items-start gap-3">
               <Info className="w-4 h-4 text-[#FFD60A] mt-0.5 flex-shrink-0" />
               <p className="text-[11px] text-[#FFD60A]/90 leading-relaxed">
-                  Horários noturnos (após 19h) e fins de semana esgotam rápido.
+                  Horários noturnos (após 19h) e fins de semana esgotam rápido. Reserve com antecedência.
               </p>
            </div>
         </div>
