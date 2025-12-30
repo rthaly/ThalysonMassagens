@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
-  ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
-  Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
-  Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car, Menu, Sparkles, Navigation, PartyPopper
+  ChevronLeft, Check, X, HelpCircle, MapPin, Calendar, Clock,
+  Shield, Star, Instagram, Bell, Tag, ArrowRight, Lock, Eye, EyeOff, 
+  LogOut, Zap, Crown, Trash2, CreditCard, Banknote, QrCode, 
+  CheckCircle2, Siren, Send, Menu, Sparkles, Navigation
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. ESTILOS GLOBAIS AVANÇADOS (SENIOR UI/UX)
+// 1. ESTILOS GLOBAIS (DESIGN SENIOR: "MIDNIGHT LUXURY")
 // ==================================================================================
 
 const globalStyles = `
@@ -32,7 +32,7 @@ body {
 input, select { user-select: text; font-size: 17px; outline: none; appearance: none; }
 button { touch-action: manipulation; user-select: none; -webkit-touch-callout: none; cursor: pointer; }
 
-/* --- BACKGROUNDS PREMIUM (THEME: MIDNIGHT LUXURY) --- */
+/* --- BACKGROUNDS PREMIUM --- */
 .midnight-bg {
   background: 
     radial-gradient(circle at 50% 0%, #15151a 0%, #000000 70%),
@@ -43,7 +43,7 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
   min-height: 100vh;
 }
 
-/* --- GLASSMORPHISM 3.0 --- */
+/* --- GLASSMORPHISM --- */
 .glass-panel { 
   background: rgba(28, 28, 30, 0.65); 
   backdrop-filter: blur(25px) saturate(180%); 
@@ -77,26 +77,15 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 .btn-primary:active::after { opacity: 1; }
 .btn-primary:disabled { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; }
 
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.08); 
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.2s;
-}
-.btn-secondary:active { background: rgba(255, 255, 255, 0.15); }
-
-/* --- ANIMATIONS (SENIOR LEVEL) --- */
+/* --- ANIMATIONS --- */
 .animate-enter { animation: enterUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
+.animate-pulse-slow { animation: pulse 3s infinite; }
+.animate-spin-slow { animation: spin 1.5s linear infinite; }
 
 @keyframes enterUp {
   from { opacity: 0; transform: translateY(30px) scale(0.98); } 
   to { opacity: 1; transform: translateY(0) scale(1); } 
 }
-
-.animate-pulse-slow { animation: pulse 3s infinite; }
-.animate-spin-slow { animation: spin 1.5s linear infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
@@ -109,20 +98,16 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
   animation: shine 3s linear infinite;
 }
 @keyframes shine { to { background-position: 200% center; } }
-
-/* --- UTILS --- */
-.blur-content { filter: blur(8px); user-select: none; pointer-events: none; }
 `;
 
 // ==================================================================================
-// 2. CENTRAL DE DADOS ROBUSTA (MANTENDO O ORIGINAL + EXTRAS)
+// 2. CENTRAL DE DADOS (SEUS DADOS ORIGINAIS)
 // ==================================================================================
 
-// 🛠️ CONFIGURAÇÕES FINANCEIRAS
 const CONFIG = {
   PRICES: {
     MACA: 20,            
-    AROMA_FULL: 15, // Ajustado para mercado premium      
+    AROMA_FULL: 10,      
     AROMA_DISCOUNT: 5,  
     UPGRADE_PCT: 0.5    
   },
@@ -132,76 +117,61 @@ const CONFIG = {
   }
 };
 
-// 💆‍♂️ MENU DE SERVIÇOS (COM COPYWRITING PERSUASIVO)
+// 💆‍♂️ SEUS SERVIÇOS ORIGINAIS (SEM NURU)
 const services = [
   { 
-    id: 'masculina', name: 'Experiência Tântrica Dual', type: 'sensual',
-    tagline: 'A Fusão Perfeita',
-    description: 'O equilíbrio exato entre o relaxamento muscular e o despertar sensorial intenso. Começa com toques firmes e evolui para uma conexão corpo a corpo (Body-to-Body) de cueca, culminando em uma finalização manual (Lingam) que recarrega suas energias.', 
+    id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
+    description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
     labelDuration: '60 min', minutes: 60, 
-    basePrice: 150, // Ajuste de valor percebido
-    highlight: "🔥 MAIS PEDIDA", ratings: 5.0, reviews: 310, 
-    details: ["Relaxante Muscular", "Body-to-Body (Corpo a Corpo)", "Massagista de Cueca", "Finalização Manual Intensa"] 
+    basePrice: 140, 
+    highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
+    details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] 
   },
   { 
-    id: 'relaxante', name: 'Relaxante Deep Tissue', type: 'relax',
-    tagline: 'Alívio Absoluto',
-    description: 'Foco total na descompressão muscular. Movimentos longos, firmes e deslizantes do pescoço aos pés. Ideal para quem carrega o estresse do trabalho nas costas. Sem toques íntimos, apenas relaxamento puro.', 
-    labelDuration: '50 min', minutes: 50, 
-    basePrice: 100, 
+    id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
+    description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', 
+    labelDuration: '60 min', minutes: 60, 
+    basePrice: 90, 
     ratings: 4.9, reviews: 142, 
-    details: ["Corpo Inteiro", "Foco em Nódulos", "Toque Terapêutico", "Óleos Essenciais"] 
+    details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] 
   },
-  { 
-    id: 'nuru', name: 'Nuru Gel Experience', type: 'sensual',
-    tagline: 'Deslize Total',
-    description: 'Técnica japonesa utilizando gel ultra-deslizante. O contato é pele com pele o tempo todo, criando uma sensação elétrica e contínua. Uma imersão sensorial onde você perde a noção de onde começa o meu corpo e termina o seu.',
-    labelDuration: '60 min', minutes: 60,
-    basePrice: 180,
-    highlight: "👑 VIP", ratings: 5.0, reviews: 85,
-    details: ["Gel Nuru Aquecido", "Contato Total", "Estimulação Máxima", "Banho Incluso (se local permitir)"]
-  }
 ];
 
-// 📍 LOCAIS DE ATENDIMENTO
+// 📍 SEUS LOCAIS ORIGINAIS
 const locations = [
   { 
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
-    sublabel: 'Vou até sua suíte', 
+    sublabel: 'Vou com você', 
     fee: 75,
     allowsTableChoice: false, 
-    estimatedTravelTime: '10-15 min',
     isMotel: true,
     icon: <Lock className="w-5 h-5 text-[#FFD60A]" />
   },
   { 
     id: 'santa-fe', 
-    label: 'Domicílio / Hotel', 
-    sublabel: 'Santa Fé do Sul', 
-    fee: 35,
+    label: 'Santa Fé do Sul', 
+    sublabel: 'No conforto do seu lar', 
+    fee: 40,
     allowsTableChoice: true, 
-    estimatedTravelTime: '15-20 min',
     isUber: true,
     icon: <MapPin className="w-5 h-5 text-[#0A84FF]" />
   },
   { 
     id: 'outras-cidades', 
     label: 'Cidades Vizinhas', 
-    sublabel: 'Jales, Urânia, Três Fronteiras...', 
+    sublabel: 'Atendimento na região', 
     fee: 0,
     allowsTableChoice: false, 
-    estimatedTravelTime: 'A combinar', 
     input: true,
     isPending: true,
     icon: <Navigation className="w-5 h-5 text-gray-400" />
   },
 ];
 
-// 💳 TAXAS DO CARTÃO (JUROS MAQUININHA)
 const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
 
-// 🏆 SISTEMA DE FIDELIDADE & CUPONS
+// 🏆 SEU SISTEMA DE FIDELIDADE
 const SYSTEM_COUPONS = {
   'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF (1ª Vez)' },
   'MASCULINA': { code: 'MASCULINA', type: 'percent', value: 10, desc: '10% OFF Especial' },
@@ -212,20 +182,15 @@ const SYSTEM_COUPONS = {
 };
 
 const LEVELS = [
-  { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', perks: ["Acesso à Agenda", "Lista de Espera"] },
+  { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉', perks: ["Acesso VIP", "Agendamento Rápido"] },
   { name: 'Prata', min: 400, rewardCode: 'NIVELPRATA', icon: '🥈', perks: ["Cupom R$ 15 (Ganhou!)", "Aroma 50% OFF"] },
   { name: 'Ouro', min: 900, rewardCode: 'NIVELOURO', icon: '🥇', perks: ["Cupom R$ 25 (Ganhou!)", "Aroma GRÁTIS"] },
   { name: 'Diamante', min: 1800, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: ["Cupom R$ 50 (Ganhou!)", "Prioridade Total"] },
 ];
 
-const musicVibes = [
-  { id: 'silence', label: 'Silêncio 🤫', desc: 'Foco total no toque' },
-  { id: 'lofi', label: 'Lo-Fi Chill 🎧', desc: 'Batidas leves' },
-  { id: 'nature', label: 'Natureza 🌿', desc: 'Sons de chuva/floresta' },
-  { id: 'tantra', label: 'Mântras 🧘', desc: 'Imersão profunda' }
-]; 
+const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘']; 
 
-// ⭐ REVIEWS DB (COMPLETA - TODAS AS ORIGINAIS)
+// ⭐ SUAS REVIEWS ORIGINAIS (LISTA COMPLETA)
 const REVIEWS_DB = [
   { t: "Sou casado, o sigilo foi total. A massagem tântrica me surpreendeu, finalização manual perfeita.", a: "Sigiloso (44 anos)", r: 5 },
   { t: "Nunca tinha feito tântrica. A sensibilidade que ele desperta no corpo é absurda. Gozei muito no final.", a: "R.S. (Santa Fé)", r: 5 },
@@ -290,17 +255,17 @@ const generateBookingId = () => {
 };
 
 // ==================================================================================
-// 3. COMPONENTES UI: "SENIOR DESIGN & FEATURES"
+// 3. COMPONENTES UI (NOVOS E MELHORADOS)
 // ==================================================================================
 
-// 🚨 BOTÃO DE PÂNICO (Feature Homens Casados)
+// 🚨 BOTÃO DE PÂNICO
 const PanicButton = () => (
   <button onClick={() => window.location.href = "https://www.google.com"} className="fixed top-4 right-4 z-[100] bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/30 rounded-full p-2.5 transition-all duration-300 shadow-lg group backdrop-blur-md">
     <LogOut className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
   </button>
 );
 
-// 🕵️ TOGGLE DE PRIVACIDADE (Feature Sigilo)
+// 🕵️ TOGGLE DE PRIVACIDADE
 const PrivacyToggle = ({ mode, setMode }) => (
   <button onClick={() => { triggerHaptic(); setMode(!mode); }} className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/5 active:scale-95 transition-all">
     {mode ? <EyeOff className="w-3.5 h-3.5 text-gray-400"/> : <Eye className="w-3.5 h-3.5 text-[#0A84FF]"/>}
@@ -308,15 +273,10 @@ const PrivacyToggle = ({ mode, setMode }) => (
   </button>
 );
 
-// 🔥 LIVE STATUS TICKER (Marketing de Escassez)
+// 🔥 LIVE STATUS TICKER
 const LiveStatus = () => {
   const [idx, setIdx] = useState(0);
-  const msgs = [
-    "Atendimento em andamento em Santa Fé 💆‍♂️", 
-    "Horários da noite acabando 🌙", 
-    "Cliente de Jales acabou de agendar 🔥",
-    "Promoção VIP ativada para hoje 💎"
-  ];
+  const msgs = ["Atendimento em andamento 💆‍♂️", "Horários da noite acabando 🌙", "Cliente acabou de agendar 🔥"];
   useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%msgs.length), 4000); return () => clearInterval(t); }, []);
   return (
     <div className="flex justify-center mb-6">
@@ -328,7 +288,7 @@ const LiveStatus = () => {
   );
 };
 
-// 💳 CARTÃO DE FIDELIDADE (Gamification)
+// 💳 CARTÃO DE FIDELIDADE
 const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
   const safeSpent = (data && typeof data.totalSpent === 'number') ? data.totalSpent : 0;
   const currentLevelIdx = [...LEVELS].reverse().findIndex(l => safeSpent >= l.min);
@@ -343,13 +303,10 @@ const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
   return (
     <div className="glass-panel p-5 rounded-[28px] relative overflow-hidden mb-6 group border-t border-white/10">
         <div className="absolute top-[-50%] right-[-20%] w-64 h-64 bg-[#0A84FF]/10 blur-[80px] rounded-full pointer-events-none"></div>
-        
         <div className="flex justify-between items-end mb-2 relative z-10">
             <div>
               <p className="text-[9px] text-[#8E8E93] font-bold uppercase tracking-[0.1em] mb-0.5">Seu Status</p>
-              <h3 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                 {currentLevel.name} {currentLevel.icon}
-              </h3>
+              <h3 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">{currentLevel.name} {currentLevel.icon}</h3>
             </div>
             <div className="text-right">
               <span className={`text-[15px] font-mono text-white font-bold block transition-all duration-300 ${privacyMode ? 'blur-[6px] select-none opacity-50' : ''}`}>
@@ -358,18 +315,12 @@ const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
               <span className="text-[9px] text-gray-500 font-bold uppercase">Investido</span>
             </div>
         </div>
-        
         <div className="relative h-2 bg-white/10 rounded-full mb-2 overflow-hidden z-10">
             <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#0A84FF] to-[#30D158] rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(48,209,88,0.5)]" style={{ width: `${progress}%` }} />
         </div>
-        
         <div className="flex justify-between text-[9px] text-gray-500 font-medium tracking-wide">
             <span>Benefício: <span className="text-[#32D74B]">{currentLevel.perks[1]}</span></span>
-            {nextLevel ? (
-               <span>Faltam {formatCurrency(nextLevel.min - safeSpent)} p/ {nextLevel.name}</span>
-            ) : (
-               <span className="text-[#FFD60A]">Nível Máximo</span>
-            )}
+            {nextLevel ? (<span>Faltam {formatCurrency(nextLevel.min - safeSpent)} p/ {nextLevel.name}</span>) : (<span className="text-[#FFD60A]">Nível Máximo</span>)}
         </div>
     </div>
   )
@@ -380,7 +331,6 @@ const ReviewsCarousel = () => {
   const [idx, setIdx] = useState(0);
   useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 5000); return () => clearInterval(t); }, []);
   const currentReview = REVIEWS_DB[idx];
-    
   return (
     <div className="relative h-28 flex items-center justify-center mb-8">
       <div key={idx} className="absolute inset-0 flex flex-col items-center justify-center animate-enter px-4 bg-[#1C1C1E] rounded-[24px] border border-white/5 shadow-xl glass-panel">
@@ -394,7 +344,7 @@ const ReviewsCarousel = () => {
   );
 };
 
-// 🖼️ GALERIA BLUR (TEASER)
+// 🖼️ GALERIA BLUR (PRIVACIDADE)
 const BlurGallery = () => {
   return (
     <div className="mb-8 animate-enter delay-200">
@@ -405,7 +355,6 @@ const BlurGallery = () => {
       <div className="grid grid-cols-3 gap-2 relative">
         {[1,2,3].map(i => (
           <div key={i} className="aspect-square bg-[#1C1C1E] rounded-xl overflow-hidden relative group border border-white/5">
-            {/* Simulando imagem borrada */}
             <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-black opacity-80" />
             <div className="absolute inset-0 flex items-center justify-center backdrop-blur-[20px]">
                <Lock className="w-6 h-6 text-white/30 group-hover:text-white/60 transition-colors"/>
@@ -413,9 +362,7 @@ const BlurGallery = () => {
           </div>
         ))}
         <div className="absolute inset-0 z-10 flex items-center justify-center">
-          <button onClick={() => { triggerHaptic(); alert('Fotos liberadas após o primeiro agendamento para sua segurança e sigilo.'); }} className="bg-black/60 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-xl active:scale-95 transition-transform hover:bg-black/80">
-            Toque para solicitar acesso
-          </button>
+          <button onClick={() => { triggerHaptic(); alert('Fotos liberadas após o primeiro agendamento para sua segurança e sigilo.'); }} className="bg-black/60 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-xl active:scale-95 transition-transform hover:bg-black/80">Toque para solicitar acesso</button>
         </div>
       </div>
     </div>
@@ -450,8 +397,8 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   };
   const periods = [
       { label: 'Manhã ☀️', slots: ['09:00', '10:00', '11:00'] },
-      { label: 'Tarde 🌤️', slots: ['13:00', '14:30', '16:00', '17:30'] },
-      { label: 'Noite 🌙', slots: ['19:00', '20:30', '22:00'] }
+      { label: 'Tarde 🌤️', slots: ['13:00', '14:00', '15:00', '16:00', '17:00'] },
+      { label: 'Noite 🌙', slots: ['18:00', '19:00', '20:00', '21:00'] }
   ];
 
   return (
@@ -553,14 +500,14 @@ const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddMan
 };
 
 // ==================================================================================
-// 4. APP PRINCIPAL (LÓGICA SENIOR)
+// 4. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
   const [step, setStep] = useState('home');
   const [loading, setLoading] = useState(true);
   
-  // Refs para Scroll Suave
+  // Refs
   const locationRef = useRef(null);
   const vibeRef = useRef(null);
   const extrasRef = useRef(null);
@@ -571,7 +518,7 @@ export default function App() {
     
   // Estado Persistente
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_senior_v3'); 
+    const saved = localStorage.getItem('thaly_system_final'); 
     return saved ? JSON.parse(saved) : { savedName: '', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
@@ -586,13 +533,13 @@ export default function App() {
   
   // Init
   useEffect(() => { 
-    setTimeout(() => setLoading(false), 2000); // Simulando load pesado
+    setTimeout(() => setLoading(false), 2000); 
     const hr = new Date().getHours();
     setWeatherHint(hr < 18 ? "☀️ Dia perfeito para relaxar" : "🌙 Noite ideal para sigilo"); 
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_senior_v3', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_final', JSON.stringify(loyalty));
     if (loyalty.savedName) { setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true})); }
   }, [loyalty]);
 
@@ -614,7 +561,7 @@ export default function App() {
     setStep('home');
   };
 
-  // --- LÓGICA DE PREÇOS ---
+  // --- LÓGICA DE PREÇOS (ORIGINAL) ---
   const getCurrentLevel = () => [...LEVELS].reverse().find(l => (loyalty.totalSpent || 0) >= l.min) || LEVELS[0];
 
   const getAromaPrice = () => {
@@ -699,7 +646,7 @@ export default function App() {
 
     const locationString = selection.location.id === 'outras-cidades' ? `${selection.location.label} (${selection.city})` : selection.location.label;
 
-    const msg = `*NOVO PEDIDO VIP: #${bookingId}*
+    const msg = `*NOVO PEDIDO: #${bookingId}*
 👤 *Cliente:* ${user.name}
 📅 *Data:* ${selection.date.toLocaleDateString('pt-BR')} às ${selection.time}
 💆 *Serviço:* ${selection.service.name}
@@ -713,7 +660,7 @@ ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(
 ${feeVal > 0 ? `${feeType}: ${formatCurrency(feeVal)}\n` : ''}💰 *TOTAL FINAL: ${formatCurrency(calcFinalPrice())}*
 (Pgto: ${selection.paymentMethod === 'credit_card' ? `${selection.installments}x Cartão` : selection.paymentMethod === 'pix' ? 'Pix' : 'Dinheiro'})
 ------------------------------
-🎵 Vibe: ${selection.music.label}`;
+🎵 Vibe: ${selection.music}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${CONFIG.CONTACT.PHONE}&text=${encodeURIComponent(msg)}`;
     setLastOrderLink(whatsappUrl); 
@@ -792,7 +739,7 @@ ${feeVal > 0 ? `${feeType}: ${formatCurrency(feeVal)}\n` : ''}💰 *TOTAL FINAL:
         {step === 'home' && (
           <div className="flex-1 p-6 overflow-y-auto pb-32 pt-32 scrollbar-hide" ref={homeRef}>
             <div className="mb-8 animate-enter">
-              <h1 className="text-3xl font-bold text-white tracking-tight leading-tight mb-2">Massagem &<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA] text-2xl shimmer-text">Experiência Sensorial</span></h1>
+              <h1 className="text-3xl font-bold text-white tracking-tight leading-tight mb-2">Massagens Relaxantes<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA] text-2xl shimmer-text">em Santa Fé do Sul</span></h1>
             </div>
 
             <LevelProgressBar data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
@@ -813,19 +760,19 @@ ${feeVal > 0 ? `${feeType}: ${formatCurrency(feeVal)}\n` : ''}💰 *TOTAL FINAL:
         {/* --- IDENTITY --- */}
         {step === 'identity' && (
           <div className="flex-1 p-6 pt-36 animate-enter flex flex-col h-full pb-32">
-            <h2 className="text-3xl font-bold text-white mb-2">Identificação</h2>
-            <p className="text-gray-400 text-[15px] mb-8">Para manter a segurança e exclusividade do atendimento.</p>
+            <h2 className="text-3xl font-bold text-white mb-2">Quem é você?</h2>
+            <p className="text-gray-400 text-[15px] mb-8">Para manter a segurança e exclusividade.</p>
             
             <div className="space-y-6 flex-1">
               <div className="glass-panel p-6 rounded-[24px]">
-                <label className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-wider block mb-2">Seu Nome ou Apelido</label>
-                <input value={user.name} onChange={e => setUser({...user, name: e.target.value})} className="w-full bg-transparent text-white text-[22px] font-medium placeholder:text-gray-600 border-b border-white/10 py-2 focus:border-[#0A84FF] transition-colors" placeholder="Digite aqui..." />
+                <label className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-wider block mb-2">Seu Nome</label>
+                <input value={user.name} onChange={e => setUser({...user, name: e.target.value})} className="w-full bg-transparent text-white text-[22px] font-medium placeholder:text-gray-600 border-b border-white/10 py-2 focus:border-[#0A84FF] transition-colors" placeholder="Digite seu nome..." />
               </div>
 
               <div className="space-y-3">
                 <button onClick={() => { triggerHaptic(); setUser({...user, isAdult: !user.isAdult}); }} className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user.isAdult ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'glass-panel border-transparent'}`}>
                   <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isAdult ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-600'}`}>{user.isAdult && <Check className="w-3.5 h-3.5 text-white" />}</div>
-                  <span className={`text-[16px] font-medium ${user.isAdult ? 'text-white' : 'text-gray-400'}`}>Sou maior de 18 anos</span>
+                  <span className={`text-[16px] font-medium ${user.isAdult ? 'text-white' : 'text-gray-400'}`}>Maior de 18 anos</span>
                 </button>
                 <button onClick={() => { triggerHaptic(); setUser({...user, isMassagemOk: !user.isMassagemOk}); }} className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'glass-panel border-transparent'}`}>
                   <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isMassagemOk ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-600'}`}>{user.isMassagemOk && <Check className="w-3.5 h-3.5 text-white" />}</div>
@@ -838,17 +785,16 @@ ${feeVal > 0 ? `${feeType}: ${formatCurrency(feeVal)}\n` : ''}💰 *TOTAL FINAL:
           </div>
         )}
 
-        {/* --- SERVICES (VISUAL CARDS) --- */}
+        {/* --- SERVICES --- */}
         {step === 'services' && (
           <div className="flex-1 p-6 pt-36 overflow-y-auto pb-32 animate-enter scrollbar-hide">
-            <h2 className="text-3xl font-bold text-white mb-6">Menu de Rituais</h2>
+            <h2 className="text-3xl font-bold text-white mb-6">Menu</h2>
             <div className="space-y-6">
               {services.map(s => (
                 <div key={s.id} onClick={() => { triggerHaptic(); setSelection({...selection, service: s}); setStep('configure'); }} className={`glass-panel p-6 rounded-[30px] active:scale-98 transition-transform group relative overflow-hidden border-t border-white/10`}>
                   {s.highlight && <div className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[10px] font-bold px-3 py-1.5 rounded-bl-[20px] shadow-lg z-10">{s.highlight}</div>}
                   <div className="mb-4 relative z-10">
                     <h3 className="font-bold text-white text-[22px] leading-tight mb-1">{s.name}</h3>
-                    <p className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-widest mb-2">{s.tagline}</p>
                     <div className="flex items-center gap-2">
                         <span className={`text-[#0A84FF] font-bold text-[24px] ${privacyMode ? 'blur-md' : ''}`}>{formatCurrency(s.basePrice)}</span>
                         <span className="text-gray-500 text-[13px]">• {s.labelDuration}</span>
@@ -870,7 +816,7 @@ ${feeVal > 0 ? `${feeType}: ${formatCurrency(feeVal)}\n` : ''}💰 *TOTAL FINAL:
           </div>
         )}
 
-        {/* --- CONFIGURE (COMPLEX LOGIC) --- */}
+        {/* --- CONFIGURE --- */}
         {step === 'configure' && selection.service && (
           <div className="flex-1 p-6 pt-36 overflow-y-auto pb-64 animate-enter scrollbar-hide"> 
             <div className="glass-panel p-5 rounded-[22px] mb-8 flex items-center justify-between border-l-4 border-l-[#0A84FF]">
@@ -917,12 +863,11 @@ ${feeVal > 0 ? `${feeType}: ${formatCurrency(feeVal)}\n` : ''}💰 *TOTAL FINAL:
               </section>
 
               <div ref={vibeRef}>
-                <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Vibe Sonora (Playlist)</h4>
+                <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Vibe Sonora</h4>
                 <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                    {musicVibes.map(vibe => (
-                      <button key={vibe.id} onClick={() => { setSelection({...selection, music: vibe}); scrollTo(extrasRef); }} className={`px-6 py-4 rounded-[18px] border flex flex-col items-center justify-center gap-1 min-w-[120px] transition-all duration-300 ${selection.music?.id === vibe.id ? 'bg-white text-black border-white' : 'glass-panel border-transparent text-gray-400'}`}>
-                        <span className="text-[14px] font-bold whitespace-nowrap">{vibe.label}</span>
-                        <span className="text-[10px] opacity-70">{vibe.desc}</span>
+                      <button key={vibe} onClick={() => { setSelection({...selection, music: vibe}); scrollTo(extrasRef); }} className={`px-6 py-4 rounded-[18px] border flex flex-col items-center justify-center gap-1 min-w-[100px] transition-all duration-300 ${selection.music === vibe ? 'bg-white text-black border-white' : 'glass-panel border-transparent text-gray-400'}`}>
+                        <span className="text-[14px] font-bold whitespace-nowrap">{vibe}</span>
                       </button>
                    ))}
                 </div>
@@ -931,12 +876,12 @@ ${feeVal > 0 ? `${feeType}: ${formatCurrency(feeVal)}\n` : ''}💰 *TOTAL FINAL:
               <div className="space-y-3" ref={extrasRef}>
                 <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4 mt-8">Extras Premium</h4>
                 <button onClick={() => { triggerHaptic(); setSelection({...selection, upgrade: !selection.upgrade}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.upgrade ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'glass-panel border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">+30 Minutos</p><p className="text-[11px] text-gray-500">Mais tempo para curtir sem pressa</p></div>
+                  <div className="text-left"><p className="text-white font-bold text-[15px]">+30 Minutos</p><p className="text-[11px] text-gray-500">Mais tempo para curtir</p></div>
                   <span className={`text-[#0A84FF] font-bold text-[15px] ${privacyMode ? 'blur-sm' : ''}`}>+ {formatCurrency(selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT)}</span>
                 </button>
 
                 <button onClick={() => { triggerHaptic(); setSelection({...selection, aroma: !selection.aroma}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.aroma ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'glass-panel border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia</p><p className="text-[11px] text-gray-500">Óleos essenciais para imersão</p></div>
+                  <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia</p><p className="text-[11px] text-gray-500">Óleos essenciais</p></div>
                   <div className={`text-right ${privacyMode ? 'blur-sm' : ''}`}>
                       {getAromaPrice() < CONFIG.PRICES.AROMA_FULL ? (
                           <><span className="text-gray-500 line-through text-[11px] mr-2">{formatCurrency(CONFIG.PRICES.AROMA_FULL)}</span><span className="text-[#30D158] font-bold text-[15px]">{getAromaPrice() === 0 ? 'GRÁTIS' : `+${formatCurrency(getAromaPrice())}`}</span></>
@@ -1019,7 +964,7 @@ ${feeVal > 0 ? `${feeType}: ${formatCurrency(feeVal)}\n` : ''}💰 *TOTAL FINAL:
                 <div><h4 className="font-bold text-white mb-1">Locais</h4><p className="text-sm">Motel (vou na sua suíte), Sua Casa (Santa Fé) ou Cidades Vizinhas.</p></div>
                 <div><h4 className="font-bold text-white mb-1">Conduta</h4><p className="text-sm">Respeito máximo. Serviço profissional.</p></div>
               </div>
-              <button onClick={() => setShowFaq(false)} className="mt-8 w-full btn-secondary text-white py-4 rounded-[18px] font-bold">Fechar</button>
+              <button onClick={() => setShowFaq(false)} className="mt-8 w-full btn-secondary text-white py-4 rounded-[18px] font-bold hover:bg-white/10 transition-colors">Fechar</button>
             </div>
           </div>
         )}
