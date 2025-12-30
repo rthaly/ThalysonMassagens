@@ -1,17 +1,17 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
-  ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
+  ChevronLeft, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
   Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
   LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car, Menu, Smartphone, Sparkles, Settings, MoreHorizontal
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. INFRAESTRUTURA & SEGURANÇA
+// 1. INFRAESTRUTURA DE SEGURANÇA & ARMAZENAMENTO
 // ==================================================================================
 
 const SecureStorage = {
-  SECRET: 'THALY_FUSION_V1_',
+  SECRET: 'THALY_ULTIMATE_FINAL_',
   encrypt: (data) => {
     try { return btoa(encodeURIComponent(JSON.stringify(data))); } catch (e) { return null; }
   },
@@ -24,15 +24,24 @@ const SecureStorage = {
   },
   get: (key) => {
     const cipher = localStorage.getItem(SecureStorage.SECRET + key);
-    // Fallback para versão antiga se não achar a criptografada
+    // Tenta recuperar versão antiga se não achar a nova
     if (!cipher) {
         const old = localStorage.getItem('thaly_system_v22');
-        if(old) return JSON.parse(old);
+        if(old) {
+            try { return JSON.parse(old); } catch(e) { return null; }
+        }
         return null;
     }
     return cipher ? SecureStorage.decrypt(cipher) : null;
   },
   clear: () => localStorage.clear()
+};
+
+const generateBookingId = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
+    let result = '';
+    for (let i = 0; i < 4; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
+    return result;
 };
 
 const generateCalendarLink = (serviceName, date, time) => {
@@ -46,19 +55,11 @@ const generateCalendarLink = (serviceName, date, time) => {
   return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(serviceName)}&dates=${formatDate(startDate)}/${formatDate(endDate)}&details=${encodeURIComponent("Sessão confirmada com Thalyson Massagens.")}&location=${encodeURIComponent("Santa Fé do Sul")}`;
 };
 
-const generateBookingId = () => {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
-    let result = '';
-    for (let i = 0; i < 4; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
-    return result;
-};
-
 // ==================================================================================
-// 2. ESTILOS GLOBAIS (COM 3D E RECIBO)
+// 2. ESTILOS GLOBAIS (CSS IN JS)
 // ==================================================================================
 
 const globalStyles = `
-/* Reset & Base */
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { font-size: 16px; background-color: #000000; }
 body { 
@@ -84,7 +85,8 @@ body {
 .ios-card:active { transform: scale(0.99); }
 
 .ios-btn-primary {
-  background: #007AFF; color: white; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); border: none;
+  background: linear-gradient(135deg, #007AFF, #0055FF); color: white; 
+  box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); border: none;
 }
 .ios-btn-primary:active { transform: scale(0.98); opacity: 0.9; }
 .ios-btn-primary:disabled { filter: grayscale(1); opacity: 0.5; }
@@ -110,6 +112,7 @@ body {
 /* TOASTS */
 .toast-container { position: fixed; top: 10px; left: 0; right: 0; z-index: 9999; display: flex; flex-col; align-items: center; gap: 8px; pointer-events: none; }
 .toast { pointer-events: auto; background: rgba(30,30,30,0.95); backdrop-filter: blur(12px); color: white; padding: 12px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; items-center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); animation: slideDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 /* ANIMATIONS */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -123,7 +126,7 @@ body {
 const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 
 // ==================================================================================
-// 3. DADOS DO SISTEMA
+// 3. DADOS COMPLETOS (SEM CORTES)
 // ==================================================================================
 
 const CONFIG = {
@@ -131,8 +134,22 @@ const CONFIG = {
 };
 
 const services = [
-  { id: 'masculina', name: 'Massagem Masculina', type: 'sensual', description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', labelDuration: '60 min', basePrice: 140, highlight: "MAIS PEDIDA 🔥", details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] },
-  { id: 'relaxante', name: 'Massagem Relaxante', type: 'relax', description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', labelDuration: '60 min', basePrice: 90, details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] },
+  { 
+    id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
+    description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
+    labelDuration: '60 min', minutes: 60, 
+    basePrice: 140, 
+    highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
+    details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] 
+  },
+  { 
+    id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
+    description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', 
+    labelDuration: '60 min', minutes: 60, 
+    basePrice: 90, 
+    ratings: 4.9, reviews: 142, 
+    details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] 
+  },
 ];
 
 const locations = [
@@ -164,15 +181,22 @@ const REVIEWS_DB = [
   { t: "Profissionalismo puro. Massagem relaxante de verdade, com um final feliz incrível.", a: "D.S.", r: 5 },
   { t: "Discrição garantida. Para quem é casado e quer relaxar sem preocupação.", a: "Empresário", r: 5 },
   { t: "Primeira vez recebendo massagem no lingam. Foi uma descoberta.", a: "Pedro (24 anos)", r: 5 },
+  { t: "Gozei tanto que fiquei sem pernas. Vergonha rs, mas foi muito bom.", a: "Safado", r: 5 },
+  { t: "O toque de cueca roçando... excitante demais.", a: "Curioso (30)", r: 5 },
+  { t: "Me tratou super bem. A massagem perineal ajudou muito na potência.", a: "C.A.", r: 5 },
+  { t: "Fiquei com receio, mas ele é super profissional. Relaxei e gozei muito.", a: "Iniciante", r: 5 },
+  { t: "Muito bom. Aliviou a tensão e o tesão acumulado.", a: "Trabalhador", r: 4 },
+  { t: "Experiência completa. Banho, tântrica e alívio manual. Nota 10.", a: "M.S.", r: 5 },
+  { t: "O melhor da região. Técnica apurada, sabe levar ao clímax sem pressa.", a: "Cliente Vip", r: 5 }
 ];
 
 const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
-const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘', 'Lofi ☕']; 
+const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘', 'Lofi HipHop ☕']; 
 const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(5); };
 
 // ==================================================================================
-// 4. SUB-COMPONENTES
+// 4. SUB-COMPONENTES AVANÇADOS
 // ==================================================================================
 
 const InstallPrompt = () => {
@@ -231,6 +255,7 @@ const LoyaltyFlipCard = ({ data, privacyMode }) => {
           <div className="absolute top-4 left-4 text-[10px] text-gray-500 uppercase font-bold">Seu ID de Membro</div>
           <div className="bg-white p-2 rounded-xl"><QrCode className="w-24 h-24 text-black"/></div>
           <p className="text-gray-400 text-xs mt-3 font-mono tracking-widest">MEMBER-{data.savedName ? data.savedName.slice(0,3).toUpperCase() : 'GST'}-{Math.floor(Math.random()*999)}</p>
+          <p className="text-[10px] text-[#0A84FF] mt-2 animate-pulse">Apresente para Check-in</p>
         </div>
       </div>
     </div>
@@ -252,7 +277,7 @@ const ReviewsCarousel = () => {
   );
 };
 
-// Seletor de Datas Completo (Grade) - Trazido do V1
+// Seletor de Datas Completo (Grade)
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   const days = []; const now = new Date();
   for (let i = 0; i < 16; i++) { const d = new Date(now); d.setDate(now.getDate() + i); days.push(d); }
@@ -297,7 +322,7 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   );
 };
 
-// Recibo Visual - Trazido do V1
+// Recibo Visual Detalhado
 const OrderReceipt = ({ selection, priceFunc }) => {
   const finalPrice = priceFunc();
   return (
@@ -313,6 +338,7 @@ const OrderReceipt = ({ selection, priceFunc }) => {
         {selection.coupon && <div className="flex justify-between text-red-500"><span>Desconto ({selection.coupon.code})</span><span>APLICADO</span></div>}
       </div>
       <div className="border-t-2 border-black pt-4 flex justify-between items-end"><span className="font-bold text-xl">TOTAL</span><span className="font-bold text-2xl">{formatCurrency(finalPrice)}</span></div>
+      <div className="mt-4 text-center text-[10px] text-gray-400">AGUARDANDO CONFIRMAÇÃO VIA WHATSAPP</div>
     </div>
   )
 };
@@ -342,7 +368,12 @@ export default function App() {
   const [privacyMode, setPrivacyMode] = useState(true);
 
   // Init
-  useEffect(() => { setTimeout(() => setLoading(false), 1500); if(loyalty.savedName) setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true})); }, []);
+  useEffect(() => { 
+      setTimeout(() => setLoading(false), 1500); 
+      if(loyalty.savedName) setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true})); 
+      document.title = "Massagens Relaxantes";
+  }, []);
+  
   useEffect(() => { SecureStorage.set('DATA', loyalty); }, [loyalty]);
 
   const addToast = (msg, type = 'info') => {
@@ -366,14 +397,14 @@ export default function App() {
       } else addToast('Cupom Inválido.', 'error');
   };
 
-  // Preço Calculation (Centralized)
+  // Preço Calculation (Centralized Logic)
   const calcBaseTotal = () => {
     if (!selection.service) return 0;
     let total = selection.service.basePrice;
     if (selection.upgrade) total += selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
     if (selection.useTable) total += CONFIG.PRICES.MACA;
     
-    // Aroma Logic
+    // Aroma Logic (Level based)
     const level = [...LEVELS].reverse().find(l => (loyalty.totalSpent||0) >= l.min) || LEVELS[0];
     let aromaPrice = (level.name === 'Ouro' || level.name === 'Diamante') ? 0 : (level.name === 'Prata' ? CONFIG.PRICES.AROMA_DISCOUNT : CONFIG.PRICES.AROMA_FULL);
     if (selection.aroma) total += aromaPrice;
@@ -424,10 +455,10 @@ export default function App() {
         discount = currentSelection.coupon.type === 'percent' ? (baseForDiscount * currentSelection.coupon.value / 100) : currentSelection.coupon.value;
     }
 
-    const finalVal = calcFinalPrice(); // Uses current state logic but allows for approximation here
+    const finalVal = calcFinalPrice(); 
     
     // Update Loyalty
-    const newTotalSpent = (loyalty.totalSpent || 0) + priceBase; // Add base value to loyalty
+    const newTotalSpent = (loyalty.totalSpent || 0) + priceBase; 
     setLoyalty(prev => ({...prev, totalSpent: newTotalSpent, savedName: user.name }));
 
     const msg = `*NOVO PEDIDO #${generateBookingId()}*
@@ -490,7 +521,7 @@ Pagamento: ${currentSelection.paymentMethod === 'credit_card' ? `${currentSelect
                 <LoyaltyFlipCard data={loyalty} privacyMode={privacyMode} />
                 <ReviewsCarousel />
                 <button onClick={() => { triggerHaptic(); loyalty.savedName ? setStep('services') : setStep('identity'); }} className="w-full ios-btn-primary font-bold py-4 rounded-[22px] shadow-lg flex justify-center items-center gap-2 text-[17px] mb-8">Agendar Sessão <ArrowRight className="w-5 h-5" /></button>
-                {isAdmin && <div className="p-4 bg-red-900/20 border border-red-500 rounded-xl mb-6 text-center text-red-500 font-bold">Modo Admin Ativo</div>}
+                {isAdmin && <div className="p-4 bg-red-900/20 border border-red-500 rounded-xl mb-6 text-center text-red-500 font-bold">Modo Admin Ativo: {loyalty.savedName}</div>}
               </div>
             )}
 
