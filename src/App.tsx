@@ -3,7 +3,7 @@ import {
   ChevronLeft, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Bell, Tag, AlertCircle, ArrowRight, Eye, EyeOff, Share2, 
   LogOut, Star, Instagram, Menu, Send, CreditCard, Banknote, QrCode, 
-  CheckCircle2, Info, ChevronRight, Crown, Trash2, Siren, Flame, Map
+  CheckCircle2, Info, ChevronRight, Crown, Trash2, Siren, Flame, Gift
 } from 'lucide-react';
 
 // ==================================================================================
@@ -42,8 +42,10 @@ button { touch-action: manipulation; user-select: none; cursor: pointer; }
 }
 .animate-fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-pulse-slow { animation: pulse 3s infinite; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 `;
 
 const CONFIG = {
@@ -91,8 +93,16 @@ const REVIEWS_DB = [
   { t: "Fui tenso e saí leve. O respeito durante a massagem foi total.", a: "M.V. (Jales)", r: 5 },
   { t: "Minha esposa nem desconfia. Foi meu momento de escape.", a: "Casado (Jales)", r: 5 },
   { t: "Cara profissional. Focou no meu prazer.", a: "Vitor", r: 5 },
-  { t: "Sensação única. O óleo morno e a respiração...", a: "J.P.", r: 5 },
 ];
+
+const SYSTEM_COUPONS = {
+  'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF (1ª Vez)' },
+  'MASCULINA': { code: 'MASCULINA', type: 'percent', value: 10, desc: '10% OFF Especial' },
+  'VIP20': { code: 'VIP20', type: 'fixed', value: 20, desc: 'R$ 20,00 OFF' },
+  'NIVELPRATA': { code: 'NIVELPRATA', type: 'fixed', value: 15, desc: 'R$ 15,00 OFF (Prata)' },
+  'NIVELOURO': { code: 'NIVELOURO', type: 'fixed', value: 25, desc: 'R$ 25,00 OFF (Ouro)' },
+  'NIVELDIAMANTE': { code: 'NIVELDIAMANTE', type: 'fixed', value: 50, desc: 'R$ 50,00 OFF (Diamante)' },
+};
 
 const MUSIC_VIBES = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘'];
 
@@ -218,6 +228,21 @@ const Button = ({ children, variant = 'primary', className = "", disabled, onCli
   );
 };
 
+// Componente Live Status (Trouxe de volta!)
+const LiveStatus = () => {
+  const [idx, setIdx] = useState(0);
+  const msgs = ["Atendimento em andamento 💆‍♂️", "Horários da noite acabando 🌙", "Anônimo acabou de agendar 🔥", "3 pessoas vendo agora 👀"];
+  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%msgs.length), 4000); return () => clearInterval(t); }, []);
+  return (
+    <div className="flex justify-center mb-6">
+      <div className="animate-fade-in flex items-center gap-2 bg-[#1C1C1E] border border-white/5 rounded-full px-4 py-1.5 shadow-lg backdrop-blur-md">
+        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+        <span className="text-[10px] text-gray-400 font-medium tracking-wide uppercase">{msgs[idx]}</span>
+      </div>
+    </div>
+  );
+};
+
 const LevelProgressBar = ({ data, privacyMode, onTogglePrivacy }) => {
   const safeSpent = data.totalSpent || 0;
   const currentLevelIdx = [...LEVELS].reverse().findIndex(l => safeSpent >= l.min);
@@ -261,7 +286,6 @@ const ReviewsCarousel = () => {
   const [idx, setIdx] = useState(0);
   useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 5000); return () => clearInterval(t); }, []);
   const currentReview = REVIEWS_DB[idx];
-  
   return (
     <div className="relative h-28 flex items-center justify-center mb-8">
       <div key={idx} className="absolute inset-0 flex flex-col items-center justify-center animate-fade-in px-4 bg-[#1C1C1E] rounded-[24px] border border-white/5 shadow-xl mx-1">
@@ -274,6 +298,48 @@ const ReviewsCarousel = () => {
     </div>
   );
 };
+
+// Componente de Inventário de Cupons (Trouxe de volta e melhorei)
+const CouponSystem = ({ inventory, appliedCoupon, onApply, onRemove, onAddManual }) => {
+    const [code, setCode] = useState('');
+    const myCoupons = inventory.map(c => SYSTEM_COUPONS[c]).filter(Boolean);
+    const showToast = useToast();
+
+    const handleAdd = () => {
+        const c = code.toUpperCase().trim();
+        if(!c) return;
+        if(inventory.includes(c)) { showToast('Você já tem este cupom', 'error'); return; }
+        if(!SYSTEM_COUPONS[c]) { showToast('Cupom inválido', 'error'); return; }
+        onAddManual(c);
+        setCode('');
+    }
+
+    return (
+        <div className="space-y-4 pt-4 border-t border-white/10">
+            <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Cupons & Descontos</h4>
+            <div className="flex gap-2">
+                <input value={code} onChange={e => setCode(e.target.value.toUpperCase())} placeholder="Tem um código?" className="flex-1 bg-[#1C1C1E] p-3 rounded-xl text-sm border border-white/10 focus:border-[#0A84FF] outline-none"/>
+                <button onClick={handleAdd} className="px-5 bg-[#2C2C2E] rounded-xl text-xs font-bold hover:bg-[#3A3A3C]">Adicionar</button>
+            </div>
+            <div className="space-y-2">
+                {myCoupons.length === 0 && <p className="text-xs text-gray-600 text-center py-2">Nenhum cupom disponível.</p>}
+                {myCoupons.map(coupon => {
+                    const isApplied = appliedCoupon?.code === coupon.code;
+                    return (
+                        <button key={coupon.code} onClick={() => { triggerHaptic(); isApplied ? onRemove() : onApply(coupon); }}
+                            className={`w-full p-3 rounded-xl flex justify-between items-center transition-all ${isApplied ? 'bg-[#0A84FF]/20 border border-[#0A84FF]' : 'bg-[#1C1C1E] border border-white/5'}`}>
+                            <div className="text-left">
+                                <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-gray-300 font-bold">{coupon.code}</span>
+                                <p className="text-xs text-gray-400 mt-1">{coupon.desc}</p>
+                            </div>
+                            {isApplied ? <X className="w-4 h-4 text-[#0A84FF]"/> : <div className="w-4 h-4 rounded-full border border-gray-600"/>}
+                        </button>
+                    )
+                })}
+            </div>
+        </div>
+    )
+}
 
 // ==================================================================================
 // 6. COMPONENTES DO FLUXO (Views)
@@ -349,7 +415,7 @@ const initialState = {
   step: 'home',
   service: null,
   location: null,
-  address: '', // NOVO CAMPO
+  address: '', 
   city: '',
   date: null,
   time: '',
@@ -378,11 +444,39 @@ function bookingReducer(state, action) {
 
 export default function App() {
   const [state, dispatch] = useReducer(bookingReducer, initialState);
-  const [loyalty, setLoyalty] = usePersistedState('thaly_system_v3_senior', { savedName: '', totalSpent: 0, inventory: ['BEMVINDO'], notifications: [] });
+  // Inicialização do Loyalty com verificação se é null
+  const [loyalty, setLoyalty] = usePersistedState('thaly_system_v4_senior', { 
+    savedName: '', totalSpent: 0, inventory: [], notifications: [], hasVisited: false 
+  });
   const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
   const [privacyMode, setPrivacyMode] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const showToast = useToast();
+
+  // --- LÓGICA DE ONBOARDING (PRIMEIRA VISITA) ---
+  useEffect(() => {
+    if (!loyalty.hasVisited) {
+        // Primeira vez: Adiciona Cupom e Notificação
+        setTimeout(() => {
+            setLoyalty(prev => ({
+                ...prev,
+                hasVisited: true,
+                inventory: [...prev.inventory, 'BEMVINDO'],
+                notifications: [{
+                    id: Date.now(),
+                    title: 'Bem-vindo!',
+                    message: 'Você ganhou um cupom de 10% OFF para sua primeira sessão!',
+                    icon: 'gift',
+                    read: false,
+                    timestamp: Date.now()
+                }, ...prev.notifications]
+            }));
+            showToast('🎉 Você ganhou um cupom de Boas-vindas!');
+        }, 1500);
+    }
+  }, [loyalty.hasVisited]);
 
   useEffect(() => {
     if (loyalty.savedName && !user.name) {
@@ -391,13 +485,10 @@ export default function App() {
   }, [loyalty.savedName]);
 
   const pricing = usePriceCalculator(state, loyalty);
-
-  // Refs para Scroll
   const locationRef = useRef(null);
   const musicRef = useRef(null);
   const extrasRef = useRef(null);
   const payRef = useRef(null);
-
   const scrollTo = (ref) => setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
 
   const handleIdentitySubmit = () => {
@@ -413,15 +504,10 @@ export default function App() {
         let locStr = state.location.label;
         if(state.location.isMotel) locStr += " (Vou com você)";
         if(state.city) locStr += ` (${state.city})`;
-        
-        // NOVO: Adiciona Endereço na mensagem
         let addressStr = "";
-        if(state.location.askAddress && state.address) {
-            addressStr = `\n🏠 Endereço: ${state.address}`;
-        }
+        if(state.location.askAddress && state.address) { addressStr = `\n🏠 Endereço: ${state.address}`; }
 
         const msg = `*PEDIDO #${generateBookingId()}*\n👤 ${user.name}\n💆 ${state.service.name}\n📅 ${dateStr} às ${state.time}\n📍 ${locStr}${addressStr}\n\n*Detalhes Financeiros:*\nTotal: ${formatCurrency(pricing.total)} (${state.paymentMethod === 'credit_card' ? 'Cartão' : 'Pix/Dinheiro'})\n\n🔗 _Gerado via App Web_`;
-        
         const url = `https://api.whatsapp.com/send?phone=${CONFIG.CONTACT.PHONE}&text=${encodeURIComponent(msg)}`;
         
         const newSpent = (loyalty.totalSpent || 0) + pricing.total;
@@ -439,7 +525,7 @@ export default function App() {
   const canFinalize = state.service && state.location && state.date && state.time && state.paymentMethod && 
                       (state.location.allowsTableChoice ? state.useTable !== null : true) && 
                       (state.location.inputCity ? state.city.length > 3 : true) &&
-                      (state.location.askAddress ? state.address.length > 5 : true); // Validação de Endereço
+                      (state.location.askAddress ? state.address.length > 5 : true);
 
   return (
     <ToastProvider>
@@ -461,6 +547,10 @@ export default function App() {
                 )}
              </div>
              <div className="flex gap-3 pointer-events-auto">
+                 <button onClick={() => setShowNotifications(true)} className="relative w-10 h-10 rounded-full bg-[#1C1C1E]/80 border border-white/10 flex items-center justify-center backdrop-blur-md">
+                    <Bell className="w-5 h-5 text-gray-400"/>
+                    {loyalty.notifications.some(n => !n.read) && <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#1C1C1E]"/>}
+                 </button>
                  <button onClick={() => setShowMenu(!showMenu)} className="w-10 h-10 rounded-full bg-[#1C1C1E]/80 border border-white/10 flex items-center justify-center backdrop-blur-md">
                     <Menu className="w-5 h-5 text-gray-400"/>
                  </button>
@@ -473,6 +563,33 @@ export default function App() {
                 <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="w-full px-4 py-3 text-left text-sm text-red-500 hover:bg-white/5 flex items-center gap-2">
                    <LogOut className="w-4 h-4"/> Sair / Reset
                 </button>
+             </div>
+          )}
+
+          {/* --- NOTIFICATIONS MODAL --- */}
+          {showNotifications && (
+             <div className="absolute inset-0 z-[200] bg-black/60 backdrop-blur-xl flex items-end sm:items-center justify-center" onClick={() => setShowNotifications(false)}>
+                 <div className="bg-[#1C1C1E] w-full h-[70vh] sm:h-[500px] sm:max-w-sm rounded-t-[32px] sm:rounded-[32px] p-6 border-t border-white/10 flex flex-col animate-slide-up" onClick={e => e.stopPropagation()}>
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-xl font-bold text-white">Notificações</h3>
+                        <button onClick={() => { setLoyalty(prev => ({...prev, notifications: prev.notifications.map(n => ({...n, read:true}))})); setShowNotifications(false); }} className="bg-white/5 p-2 rounded-full"><X className="w-5 h-5"/></button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto space-y-3">
+                        {loyalty.notifications.length === 0 && <p className="text-center text-gray-500 mt-10">Nenhuma notificação.</p>}
+                        {loyalty.notifications.map(n => (
+                            <div key={n.id} className="bg-[#2C2C2E] p-4 rounded-xl border border-white/5 flex gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#0A84FF]/20 flex items-center justify-center text-[#0A84FF] flex-shrink-0">
+                                    {n.icon === 'gift' ? <Gift className="w-5 h-5"/> : <Bell className="w-5 h-5"/>}
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-sm text-white">{n.title}</h4>
+                                    <p className="text-xs text-gray-400">{n.message}</p>
+                                    <span className="text-[10px] text-gray-600 mt-1 block">{new Date(n.timestamp).toLocaleTimeString()}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                 </div>
              </div>
           )}
 
@@ -490,7 +607,8 @@ export default function App() {
                    <LevelProgressBar data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => setPrivacyMode(!privacyMode)} />
                 </Card>
 
-                {/* Reviews de volta */}
+                <LiveStatus />
+
                 <div>
                   <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 ml-1">O que dizem</h3>
                   <ReviewsCarousel />
@@ -620,7 +738,7 @@ export default function App() {
                      </div>
                   </div>
 
-                  {/* 4. EXTRAS */}
+                  {/* 4. EXTRAS & CUPONS */}
                   <div ref={extrasRef} className="space-y-3">
                      <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Adicionais</h4>
                      <button onClick={() => dispatch({ type: 'UPDATE', payload: { upgrade: !state.upgrade } })} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${state.upgrade ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
@@ -635,6 +753,17 @@ export default function App() {
                            ) : (<span className="text-[#0A84FF] font-bold text-sm">+ {formatCurrency(pricing.regularAromaPrice)}</span>)}
                         </div>
                      </button>
+
+                     <CouponSystem 
+                        inventory={loyalty.inventory}
+                        appliedCoupon={state.coupon}
+                        onApply={(c) => { dispatch({ type: 'UPDATE', payload: { coupon: c } }); scrollTo(payRef); }}
+                        onRemove={() => dispatch({ type: 'UPDATE', payload: { coupon: null } })}
+                        onAddManual={(c) => { 
+                            setLoyalty(prev => ({...prev, inventory: [...prev.inventory, c]}));
+                            showToast('Cupom adicionado com sucesso!');
+                        }}
+                     />
                   </div>
 
                   {/* 5. PAGAMENTO */}
