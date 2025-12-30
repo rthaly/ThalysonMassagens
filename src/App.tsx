@@ -342,16 +342,15 @@ const ReviewsCarousel = () => {
 };
 
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
+  // CONFIGURAÇÃO: Quantos dias mostrar na grade? (12 dias = 3 linhas de 4)
+  const DAYS_TO_SHOW = 12;
+  
   const days = [];
   const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth();
-  const endDate = new Date(currentYear, currentMonth + 2, 0); 
-
-  let tempDate = new Date(now);
-  while (tempDate <= endDate) {
-      days.push(new Date(tempDate));
-      tempDate.setDate(tempDate.getDate() + 1);
+  for (let i = 0; i < DAYS_TO_SHOW; i++) {
+      const d = new Date(now);
+      d.setDate(now.getDate() + i);
+      days.push(d);
   }
    
   const isTimeBlocked = (t, d) => {
@@ -387,24 +386,16 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   ];
 
   return (
-    <div className="w-full select-none"> {/* select-none evita selecionar texto sem querer */}
+    <div className="w-full select-none">
       
-      {/* --- SCROLL HORIZONTAL COM CSS GRID (A SOLUÇÃO DEFINITIVA) --- */}
-      <div 
-        className="scrollbar-hide"
-        style={{ 
-            display: 'grid',               // MUDANÇA: Grid em vez de Flex
-            gridAutoFlow: 'column',        // Itens fluem para o lado
-            gridAutoColumns: 'max-content',// Tamanho baseado no conteúdo (não espreme)
-            gap: '12px',
-            overflowX: 'auto',             // Força rolagem
-            overscrollBehaviorX: 'contain',// O PULO DO GATO: Trava o scroll aqui dentro
-            padding: '4px 4px 20px 4px',
-            width: '100%',
-            touchAction: 'pan-x',          // Permite arrastar apenas para os lados
-            WebkitOverflowScrolling: 'touch' 
-        }}
-      >
+      {/* TÍTULO DA SEÇÃO (Opcional, mas ajuda na UX) */}
+      <div className="flex justify-between items-end mb-4 px-1">
+        <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Escolha o Dia</h4>
+        <span className="text-[10px] text-[#0A84FF] font-medium">Próximos {DAYS_TO_SHOW} dias</span>
+      </div>
+
+      {/* --- GRID DE DATAS (SOLUÇÃO SEM SCROLL) --- */}
+      <div className="grid grid-cols-4 gap-2 mb-6 animate-fade-in">
         {days.map((d, i) => {
           const isSel = selectedDate?.getDate() === d.getDate() && selectedDate?.getMonth() === d.getMonth();
           const label = getDayLabel(d);
@@ -412,24 +403,64 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
           
           return (
             <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} 
-              style={{
-                  width: '76px',   // Largura Fixa
-                  height: '90px'   // Altura Fixa
-              }}
-              className={`relative flex flex-col items-center justify-center rounded-[22px] transition-all duration-200 border 
-              ${isSel ? 'bg-[#0A84FF] text-white shadow-[0_8px_20px_rgba(10,132,255,0.4)] border-[#0A84FF] scale-105 z-10' : 'bg-[#2C2C2E] text-gray-400 border-white/5 active:bg-[#3A3A3C]'}`}>
+              className={`relative flex flex-col items-center justify-center h-[80px] rounded-[18px] transition-all duration-200 border 
+              ${isSel ? 'bg-[#0A84FF] text-white shadow-lg border-[#0A84FF] scale-[1.03] z-10 font-bold' : 'bg-[#2C2C2E] text-gray-400 border-white/5 active:bg-[#3A3A3C] hover:bg-[#3A3A3C]'}`}>
               
-              <span className={`text-[10px] uppercase font-bold tracking-wide mb-1 ${label === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/80' : 'opacity-60'}`}>{label}</span>
-              <span className="text-2xl font-bold font-mono tracking-tight">{d.getDate()}</span>
-              <span className={`text-[9px] uppercase font-bold mt-1 ${isSel ? 'text-white/60' : 'text-gray-600'}`}>{month}</span>
+              {/* Label (Hoje/Amanhã/Semana) */}
+              <span className={`text-[9px] uppercase font-bold tracking-wide mb-0.5 ${label === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/90' : 'opacity-60'}`}>{label}</span>
               
-              {isSel && <div className="absolute -bottom-1.5 w-1 h-1 rounded-full bg-white/50"></div>}
+              {/* Dia Numérico */}
+              <span className={`text-xl font-mono leading-none mb-0.5 ${isSel ? 'text-white' : 'text-gray-200'}`}>{d.getDate()}</span>
+              
+              {/* Mês */}
+              <span className={`text-[8px] uppercase font-bold ${isSel ? 'text-white/70' : 'text-gray-600'}`}>{month}</span>
+              
+              {/* Indicador de Seleção (Ponto) */}
+              {isSel && <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-white rounded-full shadow-sm"></div>}
             </button>
           )
         })}
-        {/* Espaçador final */}
-        <div style={{ width: '20px', height: '1px' }}></div>
       </div>
+
+      {/* SELETOR DE HORÁRIOS */}
+      {selectedDate && (
+        <div className="animate-slide-up space-y-6 pt-2 border-t border-white/5">
+           {periods.map((period, idx) => {
+               const hasSlots = period.slots.some(t => !isTimeBlocked(t, selectedDate));
+               return (
+                   <div key={idx} className={`transition-opacity ${hasSlots ? 'opacity-100' : 'opacity-40 grayscale'}`}>
+                       <h5 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
+                           {period.label}
+                           <div className="h-[1px] flex-1 bg-white/5"></div>
+                       </h5>
+                       <div className="grid grid-cols-4 gap-2">
+                           {period.slots.map(t => {
+                               const blocked = isTimeBlocked(t, selectedDate);
+                               const isSelected = selectedTime === t;
+                               return (
+                                  <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
+                                    className={`py-2.5 rounded-[12px] text-[13px] font-semibold transition-all duration-200 relative overflow-hidden
+                                    ${isSelected ? 'bg-[#0A84FF] text-white shadow-lg scale-[1.02]' : blocked ? 'bg-white/5 text-gray-600 opacity-30 cursor-not-allowed' : 'bg-[#2C2C2E] text-gray-300 hover:bg-[#3A3A3C] border border-white/5'}`}>
+                                    {blocked && <div className="absolute inset-0 bg-black/40"></div>}
+                                    {t}
+                                  </button>
+                               )
+                           })}
+                       </div>
+                   </div>
+               )
+           })}
+           <div className="mt-4 p-3 bg-[#FFD60A]/10 rounded-xl border border-[#FFD60A]/20 flex items-start gap-3">
+              <Info className="w-4 h-4 text-[#FFD60A] mt-0.5 flex-shrink-0" />
+              <p className="text-[11px] text-[#FFD60A]/90 leading-relaxed">
+                  Horários noturnos e fins de semana esgotam rápido.
+              </p>
+           </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
       {/* SELETOR DE HORÁRIOS */}
       {selectedDate && (
