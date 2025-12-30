@@ -5,11 +5,11 @@ import {
   ChevronLeft, Check, X, HelpCircle, MapPin, Calendar, 
   Shield, Star, Instagram, 
   Bell, Tag, ArrowRight, Eye, EyeOff, Share2, 
-  LogOut, Crown, CreditCard, Banknote, QrCode, Info, CheckCircle2, Send, Menu
+  LogOut, Crown, CreditCard, Banknote, QrCode, Info, CheckCircle2, Siren, Send, Menu
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. ESTILOS GLOBAIS
+// 1. ESTILOS GLOBAIS (DESIGN SYSTEM)
 // ==================================================================================
 
 const globalStyles = `
@@ -53,7 +53,7 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.2s ease;
 }
-.ios-card:active { transform: scale(0.99); }
+.ios-card:active { transform: scale(0.98); }
 
 /* --- BOTÕES --- */
 .ios-btn { 
@@ -99,7 +99,6 @@ const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 // 2. CENTRAL DE PREÇOS E DADOS
 // ==================================================================================
 
-// 🛠️ CONFIGURAÇÕES GERAIS DE PREÇO
 const CONFIG = {
   PRICES: {
     MACA: 20,           
@@ -109,13 +108,12 @@ const CONFIG = {
   }
 };
 
-// 💆‍♂️ MENU DE SERVIÇOS
 const services = [
   { 
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
     description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
     labelDuration: '60 min', minutes: 60, 
-    basePrice: 100, 
+    basePrice: 140, 
     highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
     details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] 
   },
@@ -123,45 +121,27 @@ const services = [
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
     description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', 
     labelDuration: '60 min', minutes: 60, 
-    basePrice: 75, 
+    basePrice: 90, 
     ratings: 4.9, reviews: 142, 
     details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] 
   },
 ];
 
-// 📍 LOCAIS DE ATENDIMENTO
 const locations = [
   { 
-    id: 'motel', 
-    label: 'Suíte Privada (Motel)', 
-    sublabel: 'Vou com você', 
-    fee: 75,
-    allowsTableChoice: false, 
-    estimatedTravelTime: '10-15 min',
-    isMotel: true
+    id: 'motel', label: 'Suíte Privada (Motel)', sublabel: 'Vou com você', 
+    fee: 75, allowsTableChoice: false, estimatedTravelTime: '10-15 min', isMotel: true
   },
   { 
-    id: 'santa-fe', 
-    label: 'Santa Fé do Sul', 
-    sublabel: 'No conforto do seu lar', 
-    fee: 40,
-    allowsTableChoice: true, 
-    estimatedTravelTime: '15-20 min',
-    isUber: true
+    id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'No conforto do seu lar', 
+    fee: 40, allowsTableChoice: true, estimatedTravelTime: '15-20 min', isUber: true
   },
   { 
-    id: 'outras-cidades', 
-    label: 'Cidades Vizinhas', 
-    sublabel: 'Atendimento na região', 
-    fee: 0,
-    allowsTableChoice: false, 
-    estimatedTravelTime: 'A combinar', 
-    input: true,
-    isPending: true 
+    id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Atendimento na região', 
+    fee: 0, allowsTableChoice: false, estimatedTravelTime: 'A combinar', input: true, isPending: true 
   },
 ];
 
-// 💳 TAXAS DO CARTÃO
 const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
 
 // ==================================================================================
@@ -343,13 +323,12 @@ const ReviewsCarousel = () => {
   );
 };
 
-// --- COMPONENTE DE DATA EM GRADE (GRID) - SEM SCROLL ---
+// --- COMPONENTE DE DATA EM GRADE (GRID) - UX SENIOR ---
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
-  // CONFIGURAÇÃO: Mostra os próximos 16 dias (4 linhas de 4)
   const DAYS_TO_SHOW = 16;
-  
   const days = [];
   const now = new Date();
+  
   for (let i = 0; i < DAYS_TO_SHOW; i++) {
       const d = new Date(now);
       d.setDate(now.getDate() + i);
@@ -542,7 +521,6 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    // Check if window is defined (client-side) to avoid SSR errors
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('thaly_system_v22'); 
       return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
@@ -629,7 +607,7 @@ export default function App() {
 
   const handleReset = () => {
     setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
-    window.scrollTo(0, 0); 
+    if(typeof window !== 'undefined') window.scrollTo(0, 0); 
     setStep('home');
   };
 
@@ -670,7 +648,8 @@ export default function App() {
 
   const calcFinalPrice = () => {
     let base = calcBaseTotal();
-    if (selection.paymentMethod === 'credit_card') {
+    // Proteção contra erro: só calcula juros se for crédito
+    if (selection.paymentMethod === 'credit_card' && selection.installments) {
        const rate = CARD_RATES[selection.installments] || 0;
        return base / (1 - rate);
     }
@@ -730,7 +709,8 @@ export default function App() {
     const baseTotal = serviceValueForLoyalty + feeVal - discountVal;
     
     let finalPrice = baseTotal;
-    if (selection.paymentMethod === 'credit_card') {
+    // Proteção: só recalcula se for cartão
+    if (selection.paymentMethod === 'credit_card' && selection.installments) {
        const rate = CARD_RATES[selection.installments] || 0;
        finalPrice = baseTotal / (1 - rate);
     }
@@ -798,7 +778,7 @@ export default function App() {
 
     const netMasseur = serviceValueForLoyalty - discountVal;
     
-    // --- LÓGICA DE TEXTO MELHORADA PARA NÃO ASSUSTAR O CLIENTE ---
+    // --- LÓGICA DE TEXTO MELHORADA ---
     let priceDisplay = "";
     
     if (feeVal > 0) {
@@ -855,7 +835,7 @@ ${priceDisplay}
       )
   }
 
-  // --- HEADER GLOBAL ---
+  // --- HEADER GLOBAL (AGORA DENTRO DO APP) ---
   const GlobalHeader = () => (
       <div className="absolute top-0 w-full z-50 px-6 pt-12 pb-8 flex justify-between items-center pointer-events-none bg-gradient-to-b from-black/90 via-black/60 to-transparent">
           <div className="pointer-events-auto">
