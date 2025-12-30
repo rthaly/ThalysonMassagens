@@ -94,16 +94,16 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 
 // ==================================================================================
-// 2. CENTRAL DE PREÇOS E DADOS (EDITE AQUI!!!)
+// 2. CENTRAL DE PREÇOS E DADOS
 // ==================================================================================
 
-// 🛠️ CONFIGURAÇÕES GERAIS DE PREÇO (Mude aqui para afetar todo o app)
+// 🛠️ CONFIGURAÇÕES GERAIS DE PREÇO
 const CONFIG = {
   PRICES: {
-    MACA: 20,           // Valor cobrado pela Maca Portátil
-    AROMA_FULL: 10,     // Valor cheio da Aromaterapia
-    AROMA_DISCOUNT: 5,  // Valor da Aromaterapia para Nível Prata
-    UPGRADE_PCT: 0.5    // 0.5 significa 50% a mais no valor. (Ex: 100 vira 150)
+    MACA: 20,           
+    AROMA_FULL: 10,     
+    AROMA_DISCOUNT: 5,  
+    UPGRADE_PCT: 0.5    
   }
 };
 
@@ -113,7 +113,7 @@ const services = [
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
     description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
     labelDuration: '60 min', minutes: 60, 
-    basePrice: 100, // <--- PREÇO BASE AQUI
+    basePrice: 100, 
     highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
     details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] 
   },
@@ -121,7 +121,7 @@ const services = [
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
     description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', 
     labelDuration: '60 min', minutes: 60, 
-    basePrice: 75, // <--- PREÇO BASE AQUI
+    basePrice: 75, 
     ratings: 4.9, reviews: 142, 
     details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] 
   },
@@ -133,7 +133,7 @@ const locations = [
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
     sublabel: 'Vou com você', 
-    fee: 75, // <--- TAXA DO MOTEL AQUI
+    fee: 75,
     allowsTableChoice: false, 
     estimatedTravelTime: '10-15 min',
     isMotel: true
@@ -142,7 +142,7 @@ const locations = [
     id: 'santa-fe', 
     label: 'Santa Fé do Sul', 
     sublabel: 'No conforto do seu lar', 
-    fee: 40, // <--- TAXA UBER/DESLOCAMENTO AQUI
+    fee: 40,
     allowsTableChoice: true, 
     estimatedTravelTime: '15-20 min',
     isUber: true
@@ -151,7 +151,7 @@ const locations = [
     id: 'outras-cidades', 
     label: 'Cidades Vizinhas', 
     sublabel: 'Atendimento na região', 
-    fee: 0, // <--- TAXA BASE (Geralmente 0 pq é "A combinar")
+    fee: 0,
     allowsTableChoice: false, 
     estimatedTravelTime: 'A combinar', 
     input: true,
@@ -159,11 +159,11 @@ const locations = [
   },
 ];
 
-// 💳 TAXAS DO CARTÃO (Se mudar a maquininha, mude aqui)
+// 💳 TAXAS DO CARTÃO
 const CARD_RATES = [0, 0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1238];
 
 // ==================================================================================
-// 3. LÓGICA DO SISTEMA (NÃO PRECISA MEXER MUITO ABAIXO)
+// 3. LÓGICA DO SISTEMA
 // ==================================================================================
 
 const SYSTEM_COUPONS = {
@@ -341,9 +341,10 @@ const ReviewsCarousel = () => {
   );
 };
 
+// --- COMPONENTE DE DATA EM GRADE (GRID) - SEM SCROLL ---
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
-  // CONFIGURAÇÃO: Quantos dias mostrar na grade? (12 dias = 3 linhas de 4)
-  const DAYS_TO_SHOW = 12;
+  // CONFIGURAÇÃO: Mostra os próximos 16 dias (4 linhas de 4)
+  const DAYS_TO_SHOW = 16;
   
   const days = [];
   const now = new Date();
@@ -387,14 +388,12 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
 
   return (
     <div className="w-full select-none">
-      
-      {/* TÍTULO DA SEÇÃO (Opcional, mas ajuda na UX) */}
       <div className="flex justify-between items-end mb-4 px-1">
         <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Escolha o Dia</h4>
         <span className="text-[10px] text-[#0A84FF] font-medium">Próximos {DAYS_TO_SHOW} dias</span>
       </div>
 
-      {/* --- GRID DE DATAS (SOLUÇÃO SEM SCROLL) --- */}
+      {/* GRADE DE DATAS (GRID) */}
       <div className="grid grid-cols-4 gap-2 mb-6 animate-fade-in">
         {days.map((d, i) => {
           const isSel = selectedDate?.getDate() === d.getDate() && selectedDate?.getMonth() === d.getMonth();
@@ -406,16 +405,10 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
               className={`relative flex flex-col items-center justify-center h-[80px] rounded-[18px] transition-all duration-200 border 
               ${isSel ? 'bg-[#0A84FF] text-white shadow-lg border-[#0A84FF] scale-[1.03] z-10 font-bold' : 'bg-[#2C2C2E] text-gray-400 border-white/5 active:bg-[#3A3A3C] hover:bg-[#3A3A3C]'}`}>
               
-              {/* Label (Hoje/Amanhã/Semana) */}
               <span className={`text-[9px] uppercase font-bold tracking-wide mb-0.5 ${label === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/90' : 'opacity-60'}`}>{label}</span>
-              
-              {/* Dia Numérico */}
               <span className={`text-xl font-mono leading-none mb-0.5 ${isSel ? 'text-white' : 'text-gray-200'}`}>{d.getDate()}</span>
-              
-              {/* Mês */}
               <span className={`text-[8px] uppercase font-bold ${isSel ? 'text-white/70' : 'text-gray-600'}`}>{month}</span>
               
-              {/* Indicador de Seleção (Ponto) */}
               {isSel && <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-white rounded-full shadow-sm"></div>}
             </button>
           )
@@ -461,45 +454,6 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
     </div>
   );
 };
-      {/* SELETOR DE HORÁRIOS */}
-      {selectedDate && (
-        <div className="animate-fade-in space-y-5">
-           {periods.map((period, idx) => {
-               const hasSlots = period.slots.some(t => !isTimeBlocked(t, selectedDate));
-               return (
-                   <div key={idx} className={`transition-opacity ${hasSlots ? 'opacity-100' : 'opacity-40 grayscale'}`}>
-                       <h5 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
-                           {period.label}
-                           <div className="h-[1px] flex-1 bg-white/5"></div>
-                       </h5>
-                       <div className="grid grid-cols-4 gap-2">
-                           {period.slots.map(t => {
-                               const blocked = isTimeBlocked(t, selectedDate);
-                               const isSelected = selectedTime === t;
-                               return (
-                                  <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
-                                    className={`py-2.5 rounded-[12px] text-[13px] font-semibold transition-all duration-200 relative overflow-hidden
-                                    ${isSelected ? 'bg-[#0A84FF] text-white shadow-lg scale-[1.02]' : blocked ? 'bg-white/5 text-gray-600 opacity-30 cursor-not-allowed' : 'bg-[#2C2C2E] text-gray-300 hover:bg-[#3A3A3C] border border-white/5'}`}>
-                                    {blocked && <div className="absolute inset-0 bg-black/20"></div>}
-                                    {t}
-                                  </button>
-                               )
-                           })}
-                       </div>
-                   </div>
-               )
-           })}
-           <div className="mt-4 p-3 bg-[#FFD60A]/10 rounded-xl border border-[#FFD60A]/20 flex items-start gap-3">
-              <Info className="w-4 h-4 text-[#FFD60A] mt-0.5 flex-shrink-0" />
-              <p className="text-[11px] text-[#FFD60A]/90 leading-relaxed">
-                  Horários noturnos e fins de semana esgotam rápido.
-              </p>
-           </div>
-        </div>
-      )}
-    </div>
-  );
-}; 
 
 const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddManual }) => {
   const [manualCode, setManualCode] = useState('');
@@ -666,7 +620,7 @@ export default function App() {
     setStep('home');
   };
 
-  // --- LOGICA DE PREÇOS (CENTRALIZADA AGORA) ---
+  // --- LOGICA DE PREÇOS (CENTRALIZADA) ---
   const getCurrentLevel = () => {
       return [...LEVELS].reverse().find(l => (loyalty.totalSpent || 0) >= l.min) || LEVELS[0];
   };
@@ -722,8 +676,7 @@ export default function App() {
       return;
     }
 
-    // --- 1. CÁLCULO DO SERVIÇO PARA FIDELIDADE (E LÍQUIDO) ---
-    // Soma: Base + Upgrade + Maca + Aroma (Sem taxas de terceiros)
+    // --- CÁLCULO DO SERVIÇO ---
     let serviceValueForLoyalty = selection.service.basePrice;
     let extrasText = "";
     
@@ -745,7 +698,6 @@ export default function App() {
         aromaText = `\n➕ Aromaterapia (${aromaPrice === 0 ? 'GRÁTIS VIP' : `+${formatCurrency(aromaPrice)}`})`;
     }
 
-    // --- 2. TAXAS DE TERCEIROS ---
     let feeVal = selection.location.fee || 0;
     let feeType = selection.location.isMotel ? "Taxa Motel (Suíte)" : selection.location.isUber ? "Taxa Deslocamento (Uber)" : "";
     if(selection.location.isPending) {
@@ -753,7 +705,6 @@ export default function App() {
         feeVal = 0; 
     }
 
-    // --- 3. DESCONTOS ---
     let discountVal = 0;
     if (selection.coupon) {
       if (selection.coupon.type === 'percent') {
@@ -763,8 +714,6 @@ export default function App() {
       }
     }
 
-    // --- 4. TOTAIS ---
-    // Base Total = (Serviço Completo + Taxas) - Desconto
     const baseTotal = serviceValueForLoyalty + feeVal - discountVal;
     
     let finalPrice = baseTotal;
@@ -775,13 +724,11 @@ export default function App() {
 
     const bookingId = generateBookingId(); 
 
-    // Atualiza Inventário
     let newInventory = [...loyalty.inventory];
     if (selection.coupon) {
         newInventory = newInventory.filter(c => c !== selection.coupon.code);
     }
 
-    // Atualiza Nível (Soma apenas o valor do serviço/produtos, não taxas de terceiros)
     const oldTotal = loyalty.totalSpent || 0;
     const newTotal = oldTotal + serviceValueForLoyalty; 
     
@@ -836,7 +783,6 @@ export default function App() {
     if(selection.location.isMotel) locationString += " (Vou com você)";
     if(selection.location.id === 'outras-cidades' && selection.city) locationString += ` (${selection.city})`;
 
-    // --- CÁLCULO LÍQUIDO ---
     const netMasseur = serviceValueForLoyalty - discountVal;
 
     let msg = `*NOVO PEDIDO: #${bookingId}*
@@ -880,7 +826,6 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
         else discount = selection.coupon.value;
     }
     
-    // Total Visual (Sem Juros)
     const totalVisual = grossService + fee - discount;
 
     return (
@@ -960,7 +905,7 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
       )
   }
 
-  // --- HEADER GLOBAL FIXO (COM DATA E CLIMA) ---
+  // --- HEADER GLOBAL (AGORA DENTRO DO APP) ---
   const GlobalHeader = () => (
       <div className="absolute top-0 w-full z-50 px-6 pt-12 pb-8 flex justify-between items-center pointer-events-none bg-gradient-to-b from-black/90 via-black/60 to-transparent">
           <div className="pointer-events-auto">
@@ -968,11 +913,9 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                 <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10 bg-black/20 backdrop-blur-md border border-white/5"><IconBack /></button>
              ) : (
                 <div className="flex flex-col items-start animate-fade-in">
-                    {/* DATA (Pequena e azul) */}
                     <span className="text-[10px] font-bold text-[#0A84FF] uppercase tracking-widest mb-0.5">
                         {new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric'})}
                     </span>
-                    {/* CLIMA (Frase embaixo) */}
                     <span className="text-[13px] font-bold text-gray-200 leading-tight">
                         {weatherHint}
                     </span>
@@ -981,7 +924,6 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
           </div>
 
           <div className="flex items-center gap-3 pointer-events-auto relative">
-              {/* Notificações */}
               <button onClick={() => setShowNotifications(true)} className="relative w-10 h-10 rounded-full bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 active:scale-95 transition-all">
                   <Bell className="w-5 h-5"/>
                   {loyalty.notifications.filter(n => !n.read).length > 0 && (
@@ -990,13 +932,9 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
                       </span>
                   )}
               </button>
-              
-              {/* Menu Hamburguer */}
               <button onClick={() => setShowMenu(!showMenu)} className={`w-10 h-10 rounded-full backdrop-blur-md border border-white/10 flex items-center justify-center transition-all active:scale-95 ${showMenu ? 'bg-white text-black' : 'bg-[#1C1C1E]/80 text-gray-400'}`}>
                   {showMenu ? <X className="w-5 h-5"/> : <Menu className="w-5 h-5"/>}
               </button>
-
-              {/* Dropdown Menu */}
               <HamburgerMenu />
           </div>
       </div>
@@ -1024,7 +962,6 @@ ${selection.location.isMotel ? '⚠️ Obs: Taxa Motel inclusa no total cliente.
           <div className="flex-1 p-6 overflow-y-auto pb-32 pt-32" ref={homeRef}>
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-white tracking-tight leading-tight mb-2">Massagens Relaxantes<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0A84FF] to-[#5AC8FA] text-2xl">em Santa Fé do Sul e Região</span></h1>
-              <p className="text-gray-400 text-[15px]">{weatherHint}</p>
             </div>
 
             <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
