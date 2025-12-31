@@ -140,7 +140,7 @@ const locations = [
   },
   { 
     id: 'santa-fe', 
-    label: 'Santa Fé do Sul', 
+    label: 'Rio Preto', 
     sublabel: 'No conforto do seu lar', 
     fee: 40,
     allowsTableChoice: true, 
