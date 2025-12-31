@@ -140,7 +140,7 @@ const locations = [
   },
   { 
     id: 'santa-fe', 
-    label: 'Rio Preto', 
+    label: 'Cidade Atual', 
     sublabel: 'No conforto do seu lar', 
     fee: 50,
     allowsTableChoice: true, 
