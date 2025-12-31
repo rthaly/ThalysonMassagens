@@ -133,16 +133,16 @@ const locations = [
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
     sublabel: 'Vou com você', 
-    fee: 75,
+    fee: combinar,
     allowsTableChoice: false, 
     estimatedTravelTime: '10-15 min',
     isMotel: true
   },
   { 
     id: 'santa-fe', 
-    label: 'Santa Fé do Sul', 
+    label: 'Rio Preto', 
     sublabel: 'No conforto do seu lar', 
-    fee: 40,
+    fee: combinar,
     allowsTableChoice: true, 
     estimatedTravelTime: '15-20 min',
     isUber: true
@@ -151,7 +151,7 @@ const locations = [
     id: 'outras-cidades', 
     label: 'Cidades Vizinhas', 
     sublabel: 'Atendimento na região', 
-    fee: 0,
+    fee: combinar,
     allowsTableChoice: false, 
     estimatedTravelTime: 'A combinar', 
     input: true,
