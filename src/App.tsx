@@ -140,9 +140,9 @@ const locations = [
   },
   { 
     id: 'santa-fe', 
-    label: 'Cidade Atual', 
+    label: 'Santa Fé do Sul', 
     sublabel: 'No conforto do seu lar', 
-    fee: 50,
+    fee: 40,
     allowsTableChoice: true, 
     estimatedTravelTime: '15-20 min',
     isUber: true
