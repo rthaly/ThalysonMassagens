@@ -3,7 +3,7 @@ import {
   ChevronLeft, Check, X, MapPin, Calendar, Clock,
   Bell, Tag, AlertCircle, ArrowRight, Eye, EyeOff, 
   LogOut, Star, Menu, CreditCard, Banknote, QrCode, 
-  CheckCircle2, Info, ChevronRight, Crown, Gift, Sparkles, Flame, ShieldCheck
+  CheckCircle2, Info, ChevronRight, Crown, Gift, Sparkles, Flame, ShieldCheck, Ticket
 } from 'lucide-react';
 
 // ==================================================================================
@@ -19,35 +19,36 @@ body {
   color: #fff; background: #000; -webkit-font-smoothing: antialiased;
 }
 ::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 input, select { font-size: 16px; outline: none; appearance: none; }
 button { user-select: none; cursor: pointer; }
 
 /* Aurora Background Premium */
 .aurora-bg {
   background: 
-    radial-gradient(120% 100% at 50% 0%, #1a1a1c 0%, #000 100%),
-    radial-gradient(60% 50% at 50% 100%, rgba(10, 132, 255, 0.08), transparent 100%);
+    radial-gradient(120% 100% at 50% 0%, #101012 0%, #000 100%),
+    radial-gradient(60% 50% at 50% 100%, rgba(10, 132, 255, 0.06), transparent 100%);
   background-attachment: fixed; min-height: 100vh;
 }
 
 /* Glassmorphism Cards */
 .glass-card { 
-  background: rgba(30, 30, 32, 0.6); backdrop-filter: blur(40px); 
+  background: rgba(30, 30, 32, 0.7); backdrop-filter: blur(30px); 
   border: 1px solid rgba(255, 255, 255, 0.08); 
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-.glass-card:active { transform: scale(0.98); background: rgba(40, 40, 42, 0.7); }
+.glass-card:active { transform: scale(0.98); background: rgba(40, 40, 42, 0.8); }
 
 /* Animations */
-.animate-enter { animation: enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-enter { animation: enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-@keyframes enter { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes enter { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
 
-/* Typography Utility */
-.text-gradient { background: linear-gradient(90deg, #fff, #a1a1aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.text-gold { color: #FFD60A; text-shadow: 0 0 20px rgba(255, 214, 10, 0.3); }
+/* Typography & Utilities */
+.text-gradient { background: linear-gradient(90deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.coupon-ticket { background-image: radial-gradient(circle at 0 50%, transparent 10px, #1C1C1E 11px), radial-gradient(circle at 100% 50%, transparent 10px, #1C1C1E 11px); background-position: 0 0, 0 0; background-size: 50% 100%; background-repeat: no-repeat; }
 `;
 
 const CONFIG = {
@@ -57,7 +58,7 @@ const CONFIG = {
 };
 
 // ==================================================================================
-// 2. DATA (Copywriting Otimizado)
+// 2. DATA LAYERS
 // ==================================================================================
 
 const SERVICES_DB = [
@@ -65,14 +66,14 @@ const SERVICES_DB = [
     id: 'masculina', name: 'Massagem Tântrica/Sensual', type: 'sensual',
     shortDesc: 'A experiência definitiva de relaxamento e prazer.',
     description: 'Uma jornada sensorial completa. Combina técnicas de relaxamento profundo com toques corpo a corpo (Body-to-Body) e finalização manual tântrica para alívio total do estresse.', 
-    duration: '60 min', basePrice: 140, highlight: "MAIS ESCOLHIDA 🔥", ratings: 5.0, reviews: 310, 
+    duration: '60 min', basePrice: 140, highlight: "MAIS ESCOLHIDA 🔥", ratings: 5.0, 
     benefits: ["Relaxamento Muscular Profundo", "Toque Body-to-Body (Intenso)", "Desbloqueio Energético", "Finalização Manual Completa"] 
   },
   { 
     id: 'relaxante', name: 'Massagem Relaxante Clássica', type: 'relax',
     shortDesc: 'Desconexão total do estresse diário.',
     description: 'Protocolo focado exclusivamente no relaxamento muscular e alívio de tensões. Movimentos fluidos em todo o corpo (costas, pernas, braços). Sem toques íntimos.', 
-    duration: '60 min', basePrice: 90, ratings: 4.9, reviews: 142, 
+    duration: '60 min', basePrice: 90, ratings: 4.9, 
     benefits: ["Alívio de Dores nas Costas", "Melhora da Circulação", "Zero Conteúdo Sexual", "Ambiente Zen"] 
   },
 ];
@@ -81,6 +82,13 @@ const LOCATIONS_DB = [
   { id: 'motel', label: 'Suíte Privada (Motel)', sublabel: 'Eu vou até você (Sigilo Total)', fee: 75, allowsTableChoice: false, isMotel: true },
   { id: 'santa-fe', label: 'Domicílio (Santa Fé)', sublabel: 'No conforto do seu lar', fee: 40, allowsTableChoice: true, askAddress: true, isUber: true },
   { id: 'outras-cidades', label: 'Região / Outras', sublabel: 'Cidades vizinhas', fee: 0, allowsTableChoice: false, estimatedTravelTime: 'A combinar', inputCity: true, isPending: true },
+];
+
+const REVIEWS_DB = [
+  { t: "O sigilo foi total. A massagem tântrica me surpreendeu muito.", a: "Anônimo (44 anos)", r: 5 },
+  { t: "A sensibilidade que ele desperta no corpo é absurda. Recomendo.", a: "R.S. (Santa Fé)", r: 5 },
+  { t: "Ambiente discreto e toque muito profissional.", a: "Curioso", r: 5 },
+  { t: "Fui tenso e saí leve. O respeito durante a massagem foi total.", a: "M.V. (Jales)", r: 5 },
 ];
 
 const LEVELS = [
@@ -93,14 +101,16 @@ const LEVELS = [
 const SYSTEM_COUPONS = {
   'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF (Primeira Vez)' },
   'VIP20': { code: 'VIP20', type: 'fixed', value: 20, desc: 'R$ 20,00 OFF' },
+  'PRATA15': { code: 'PRATA15', type: 'fixed', value: 15, desc: 'R$ 15,00 OFF (Prata)' },
 };
 
 // ==================================================================================
-// 3. LOGIC & HOOKS
+// 3. LOGIC & HOOKS (The Engine)
 // ==================================================================================
 
 const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 const generateBookingId = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+const triggerHaptic = () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10); };
 
 const ToastContext = createContext();
 const useToast = () => useContext(ToastContext);
@@ -189,6 +199,81 @@ const Header = ({ title, subtitle, onBack, rightAction }) => (
   </div>
 );
 
+const ReviewsCarousel = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 5000); return () => clearInterval(t); }, []);
+  const current = REVIEWS_DB[idx];
+  
+  return (
+    <div className="relative h-24 mb-8">
+      <div key={idx} className="absolute inset-0 bg-[#1C1C1E]/50 border border-white/5 rounded-2xl p-4 flex flex-col justify-center animate-enter">
+        <div className="flex gap-1 mb-2">
+          {[...Array(5)].map((_,k) => <Star key={k} className="w-3 h-3 text-[#FFD60A] fill-[#FFD60A]"/>)}
+        </div>
+        <p className="text-xs text-gray-300 italic line-clamp-2">"{current.t}"</p>
+        <p className="text-[10px] text-gray-500 font-bold mt-1 uppercase tracking-wide">- {current.a}</p>
+      </div>
+    </div>
+  );
+};
+
+// NOVO: Componente de Carteira de Cupons
+const CouponWallet = ({ inventory, selected, onSelect, onAdd }) => {
+    const [code, setCode] = useState('');
+    const showToast = useToast();
+    
+    const handleAdd = () => {
+        const c = code.toUpperCase().trim();
+        if(!c) return;
+        if(inventory.includes(c)) { showToast('Você já tem este cupom!', 'error'); return; }
+        if(!SYSTEM_COUPONS[c]) { showToast('Cupom inválido ou expirado.', 'error'); return; }
+        onAdd(c);
+        setCode('');
+    }
+
+    const availableCoupons = inventory.map(c => SYSTEM_COUPONS[c]).filter(Boolean);
+
+    return (
+        <div className="mt-4 pt-4 border-t border-white/10">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Carteira de Descontos</h3>
+            
+            {/* Input Area */}
+            <div className="flex gap-2 mb-4">
+                <div className="flex-1 relative">
+                    <Ticket className="absolute left-3 top-3 w-4 h-4 text-gray-500"/>
+                    <input value={code} onChange={e => setCode(e.target.value)} placeholder="Adicionar código..." className="w-full bg-[#1C1C1E] border border-white/10 rounded-xl py-2.5 pl-9 pr-3 text-sm text-white focus:border-blue-500"/>
+                </div>
+                <button onClick={handleAdd} className="px-4 bg-white/10 rounded-xl text-xs font-bold hover:bg-white/20">Resgatar</button>
+            </div>
+
+            {/* List */}
+            <div className="space-y-2">
+                {availableCoupons.length === 0 && <p className="text-xs text-gray-600 text-center italic">Sua carteira está vazia.</p>}
+                {availableCoupons.map(coupon => {
+                    const isSelected = selected?.code === coupon.code;
+                    return (
+                        <button key={coupon.code} onClick={() => onSelect(isSelected ? null : coupon)}
+                            className={`w-full p-3 rounded-xl border flex justify-between items-center transition-all group ${isSelected ? 'bg-blue-600/10 border-blue-600' : 'bg-[#1C1C1E] border-white/5 hover:border-white/20'}`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isSelected ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400'}`}>
+                                    <Tag className="w-4 h-4"/>
+                                </div>
+                                <div className="text-left">
+                                    <p className={`text-xs font-bold ${isSelected ? 'text-blue-400' : 'text-white'}`}>{coupon.code}</p>
+                                    <p className="text-[10px] text-gray-500">{coupon.desc}</p>
+                                </div>
+                            </div>
+                            <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-blue-600 bg-blue-600' : 'border-gray-600'}`}>
+                                {isSelected && <Check className="w-3 h-3 text-white"/>}
+                            </div>
+                        </button>
+                    )
+                })}
+            </div>
+        </div>
+    )
+}
+
 // ==================================================================================
 // 5. TELAS DO FLUXO (Router Visual)
 // ==================================================================================
@@ -202,13 +287,13 @@ const HomeScreen = ({ loyalty, onSelectService, onOpenNotifs, hasNotifs }) => {
                 <p className="text-xs font-bold text-blue-500 uppercase tracking-widest mb-1">Bem-vindo</p>
                 <h1 className="text-3xl font-bold text-white leading-tight">Relaxe &<br/><span className="text-gradient">Renove-se.</span></h1>
              </div>
-             <button onClick={onOpenNotifs} className="relative p-3 rounded-full bg-white/5 border border-white/10">
+             <button onClick={onOpenNotifs} className="relative p-3 rounded-full bg-white/5 border border-white/10 active:scale-95 transition-transform">
                 <Bell className="w-5 h-5 text-gray-300"/>
                 {hasNotifs && <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-black"/>}
              </button>
           </div>
 
-          {/* Status Bar */}
+          {/* Status Bar Live */}
           <div className="flex items-center gap-3 mb-8 bg-green-500/10 border border-green-500/20 px-4 py-3 rounded-2xl">
              <div className="relative">
                 <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"/>
@@ -216,6 +301,9 @@ const HomeScreen = ({ loyalty, onSelectService, onOpenNotifs, hasNotifs }) => {
              </div>
              <p className="text-xs font-medium text-green-400 uppercase tracking-wide">Atendimento Online Agora</p>
           </div>
+
+          {/* Social Proof */}
+          <ReviewsCarousel />
 
           {/* Services Grid */}
           <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Experiências Disponíveis</h2>
@@ -248,7 +336,7 @@ const HomeScreen = ({ loyalty, onSelectService, onOpenNotifs, hasNotifs }) => {
                  <span>{formatCurrency(loyalty.totalSpent)} investidos</span>
               </div>
               <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                 <div className="h-full bg-blue-600 w-[20%]"/> 
+                 <div className="h-full bg-blue-600" style={{width: `${Math.min(100, (loyalty.totalSpent/1800)*100)}%`}}/> 
               </div>
           </div>
        </div>
@@ -307,7 +395,6 @@ const BookingLogisticsScreen = ({ state, dispatch, onNext, onBack }) => {
       const d = new Date(); d.setDate(new Date().getDate() + i); return d;
   });
   
-  // Lógica de Bloqueio de Horário
   const isTimeBlocked = (t, d) => {
     if(!d) return true;
     const now = new Date();
@@ -407,17 +494,6 @@ const BookingLogisticsScreen = ({ state, dispatch, onNext, onBack }) => {
 
 const CheckoutScreen = ({ state, dispatch, user, setUser, pricing, loyalty, setLoyalty, onFinalize, onBack, isProcessing }) => {
   const showToast = useToast();
-  const [couponCode, setCouponCode] = useState('');
-
-  const handleApplyCoupon = () => {
-     if (SYSTEM_COUPONS[couponCode]) {
-        dispatch({type: 'UPDATE', payload: {coupon: SYSTEM_COUPONS[couponCode]}});
-        showToast('Cupom aplicado com sucesso!');
-        setCouponCode('');
-     } else {
-        showToast('Cupom inválido', 'error');
-     }
-  }
 
   return (
      <div className="animate-enter pb-40">
@@ -434,7 +510,7 @@ const CheckoutScreen = ({ state, dispatch, user, setUser, pricing, loyalty, setL
                         <p className="text-sm font-medium text-gray-200">Aromaterapia</p>
                         <p className="text-[10px] text-gray-500">Óleos essenciais importados</p>
                      </div>
-                     <button onClick={() => dispatch({type: 'UPDATE', payload: {aroma: !state.aroma}})} className={`w-12 h-7 rounded-full transition-colors flex items-center px-1 ${state.aroma ? 'bg-blue-600 justify-end' : 'bg-gray-700 justify-start'}`}>
+                     <button onClick={() => { triggerHaptic(); dispatch({type: 'UPDATE', payload: {aroma: !state.aroma}}); }} className={`w-12 h-7 rounded-full transition-colors flex items-center px-1 ${state.aroma ? 'bg-blue-600 justify-end' : 'bg-gray-700 justify-start'}`}>
                         <div className="w-5 h-5 bg-white rounded-full shadow-sm"/>
                      </button>
                   </div>
@@ -443,7 +519,7 @@ const CheckoutScreen = ({ state, dispatch, user, setUser, pricing, loyalty, setL
                         <p className="text-sm font-medium text-gray-200">+30 Minutos</p>
                         <p className="text-[10px] text-gray-500">Sessão estendida</p>
                      </div>
-                     <button onClick={() => dispatch({type: 'UPDATE', payload: {upgrade: !state.upgrade}})} className={`w-12 h-7 rounded-full transition-colors flex items-center px-1 ${state.upgrade ? 'bg-blue-600 justify-end' : 'bg-gray-700 justify-start'}`}>
+                     <button onClick={() => { triggerHaptic(); dispatch({type: 'UPDATE', payload: {upgrade: !state.upgrade}}); }} className={`w-12 h-7 rounded-full transition-colors flex items-center px-1 ${state.upgrade ? 'bg-blue-600 justify-end' : 'bg-gray-700 justify-start'}`}>
                         <div className="w-5 h-5 bg-white rounded-full shadow-sm"/>
                      </button>
                   </div>
@@ -472,22 +548,16 @@ const CheckoutScreen = ({ state, dispatch, user, setUser, pricing, loyalty, setL
               )}
            </section>
 
-           {/* Cupons */}
-           <section>
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Cupom de Desconto</h3>
-              <div className="flex gap-2">
-                 <input value={couponCode} onChange={e => setCouponCode(e.target.value.toUpperCase())} placeholder="Código" className="flex-1 bg-[#1C1C1E] border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-blue-500"/>
-                 <button onClick={handleApplyCoupon} className="px-5 bg-white/10 rounded-xl text-xs font-bold hover:bg-white/20">Aplicar</button>
-              </div>
-              {/* Lista Cupons Ativos */}
-              <div className="mt-3 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                 {loyalty.inventory.map(c => (
-                    <button key={c} onClick={() => dispatch({type: 'UPDATE', payload: {coupon: SYSTEM_COUPONS[c]}})} className={`flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-bold ${state.coupon?.code === c ? 'bg-blue-600 border-blue-600 text-white' : 'bg-[#1C1C1E] border-white/10 text-gray-400'}`}>
-                       {c}
-                    </button>
-                 ))}
-              </div>
-           </section>
+           {/* Coupon Wallet (SENIOR FEATURE) */}
+           <CouponWallet 
+              inventory={loyalty.inventory} 
+              selected={state.coupon}
+              onSelect={(c) => dispatch({type: 'UPDATE', payload: {coupon: c}})}
+              onAdd={(code) => {
+                  setLoyalty(prev => ({...prev, inventory: [...prev.inventory, code]}));
+                  showToast('Cupom adicionado à carteira!', 'success');
+              }}
+           />
 
            {/* Identity (Compromisso Final) */}
            <section className="bg-[#1C1C1E] p-5 rounded-2xl border border-white/10">
@@ -530,7 +600,7 @@ const CheckoutScreen = ({ state, dispatch, user, setUser, pricing, loyalty, setL
 // ==================================================================================
 
 const initialState = {
-  step: 'home', // home, service_detail, logistics, checkout, success
+  step: 'home',
   service: null,
   location: null,
   address: '',
@@ -565,15 +635,24 @@ const useLocalStorage = (key, initial) => {
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [loyalty, setLoyalty] = useLocalStorage('thaly_v5_pro', { totalSpent: 0, inventory: [], notifications: [], hasVisited: false, savedName: '' });
+  const [loyalty, setLoyalty] = useLocalStorage('thaly_v6_senior_master', { totalSpent: 0, inventory: [], notifications: [], hasVisited: false, savedName: '' });
   const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
   const [showNotifs, setShowNotifs] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const showToast = useToast();
 
-  // Onboarding Logic
+  // Onboarding & Welcome Logic
   useEffect(() => {
      if (!loyalty.hasVisited) {
-        setLoyalty(p => ({...p, hasVisited: true, inventory: ['BEMVINDO'], notifications: [{id: 1, title: 'Bem-vindo!', message: 'Use o cupom BEMVINDO para 10% OFF.', read: false, timestamp: Date.now()}]}));
+        setTimeout(() => {
+            setLoyalty(p => ({
+                ...p, 
+                hasVisited: true, 
+                inventory: ['BEMVINDO'], 
+                notifications: [{id: Date.now(), title: 'Bem-vindo!', message: 'Você ganhou o cupom BEMVINDO (10% OFF).', icon: 'gift', read: false, timestamp: Date.now()}]
+            }));
+            showToast('🎁 Você ganhou um cupom de boas-vindas!');
+        }, 1000);
      }
      if (loyalty.savedName && !user.name) setUser(p => ({...p, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
   }, []);
@@ -583,8 +662,12 @@ export default function App() {
   const handleFinalize = () => {
      setIsProcessing(true);
      setTimeout(() => {
-        // Save User
-        setLoyalty(p => ({...p, savedName: user.name, totalSpent: p.totalSpent + pricing.total}));
+        // Save User & Loyalty
+        const newTotal = loyalty.totalSpent + pricing.total;
+        let newInventory = [...loyalty.inventory];
+        if(state.coupon) newInventory = newInventory.filter(c => c !== state.coupon.code);
+
+        setLoyalty(p => ({...p, savedName: user.name, totalSpent: newTotal, inventory: newInventory}));
         
         // Generate WhatsApp Link
         const dateStr = state.date.toLocaleDateString('pt-BR');
@@ -592,7 +675,7 @@ export default function App() {
         if(state.location.askAddress) locStr += `\n🏠 ${state.address}`;
         if(state.city) locStr += ` (${state.city})`;
         
-        const msg = `*RESERVA CONFIRMADA #${generateBookingId()}*\n👤 ${user.name}\n💆 ${state.service.name}\n📅 ${dateStr} às ${state.time}\n📍 ${locStr}\n\n💰 Total: ${formatCurrency(pricing.total)} (${state.paymentMethod})\n🔗 _Via App_`;
+        const msg = `*RESERVA CONFIRMADA #${generateBookingId()}*\n👤 ${user.name}\n💆 ${state.service.name}\n📅 ${dateStr} às ${state.time}\n📍 ${locStr}\n\n💰 Total: ${formatCurrency(pricing.total)} (${state.paymentMethod})\n🔗 _Via App Web_`;
         
         window.open(`https://api.whatsapp.com/send?phone=${CONFIG.CONTACT.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
         
@@ -618,9 +701,8 @@ export default function App() {
 
              {state.step === 'service_detail' && (
                 <div className="animate-enter h-full relative">
-                   {/* Background Image Placeholder */}
                    <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-black z-0"/> 
-                   <HomeScreen loyalty={loyalty} onSelectService={()=>{}} hasNotifs={false} onOpenNotifs={()=>{}}/> {/* Render background */}
+                   <HomeScreen loyalty={loyalty} onSelectService={()=>{}} hasNotifs={false} onOpenNotifs={()=>{}}/> 
                    <ServiceDetailModal 
                       service={state.service} 
                       onClose={() => dispatch({type: 'SET_STEP', payload: 'home'})}
@@ -665,19 +747,22 @@ export default function App() {
              {/* Notifications Modal */}
              {showNotifs && (
                 <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6" onClick={() => setShowNotifs(false)}>
-                   <div className="bg-[#1C1C1E] w-full max-w-sm rounded-3xl p-6 border border-white/10" onClick={e => e.stopPropagation()}>
-                      <div className="flex justify-between items-center mb-4">
-                         <h3 className="font-bold text-white">Notificações</h3>
-                         <button onClick={() => setShowNotifs(false)}><X className="w-5 h-5 text-gray-400"/></button>
+                   <div className="bg-[#1C1C1E] w-full max-w-sm rounded-3xl p-6 border border-white/10 shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
+                      <div className="flex justify-between items-center mb-6">
+                         <h3 className="font-bold text-white text-lg">Notificações</h3>
+                         <button onClick={() => setShowNotifs(false)} className="bg-white/5 p-2 rounded-full"><X className="w-5 h-5 text-gray-400"/></button>
                       </div>
-                      <div className="space-y-3 max-h-[60vh] overflow-y-auto">
-                         {loyalty.notifications.length === 0 && <p className="text-gray-500 text-sm">Nada por aqui.</p>}
+                      <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-hide">
+                         {loyalty.notifications.length === 0 && <p className="text-gray-500 text-center text-sm py-4">Nenhuma notificação recente.</p>}
                          {loyalty.notifications.map(n => (
-                            <div key={n.id} className="flex gap-3 p-3 bg-white/5 rounded-xl">
-                               <Gift className="w-5 h-5 text-blue-500"/>
+                            <div key={n.id} className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                               <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0 text-blue-500">
+                                  {n.icon === 'gift' ? <Gift className="w-5 h-5"/> : <Bell className="w-5 h-5"/>}
+                               </div>
                                <div>
-                                  <h4 className="font-bold text-sm text-white">{n.title}</h4>
-                                  <p className="text-xs text-gray-400">{n.message}</p>
+                                  <h4 className="font-bold text-sm text-white mb-1">{n.title}</h4>
+                                  <p className="text-xs text-gray-400 leading-snug">{n.message}</p>
+                                  <span className="text-[10px] text-gray-600 mt-2 block">{new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                                </div>
                             </div>
                          ))}
