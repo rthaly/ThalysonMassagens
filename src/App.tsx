@@ -113,7 +113,7 @@ const services = [
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
     description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
     labelDuration: '60 min', minutes: 60, 
-    basePrice: 155, 
+    basePrice: 130, 
     highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
     details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] 
   },
@@ -140,7 +140,7 @@ const locations = [
   },
   { 
     id: 'santa-fe', 
-    label: 'Rio Preto', 
+    label: 'Rio Preto, Uber Ida e Volta', 
     sublabel: 'No conforto do seu lar', 
     fee: 40,
     allowsTableChoice: true, 
