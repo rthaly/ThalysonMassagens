@@ -359,117 +359,106 @@ const ReviewsCarousel = () => {
 
 // --- COMPONENTE DE DATA EM GRADE (GRID) - SEM SCROLL ---
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
-  // CONFIGURAÇÃO: Mostra os próximos 16 dias (4 linhas de 4)
-  const DAYS_TO_SHOW = 16;
-  
-  const days = [];
-  const now = new Date();
-  for (let i = 0; i < DAYS_TO_SHOW; i++) {
-      const d = new Date(now);
-      d.setDate(now.getDate() + i);
-      days.push(d);
-  }
-   
-  const isTimeBlocked = (t, d) => {
-    if(!d) return true;
-    const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
-    if (!isToday) return false;
-    const [h] = t.split(':').map(Number);
-    return h <= now.getHours() + 1;
-  };
+  const DAYS_TO_SHOW = 16;
+  const days = [];
+  const now = new Date();
+  
+  for (let i = 0; i < DAYS_TO_SHOW; i++) {
+      const d = new Date(now);
+      d.setDate(now.getDate() + i);
+      days.push(d);
+  }
+   
+  const isTimeBlocked = (t, d) => {
+    if(!d) return true;
+    
+    // Converte o horário do slot (ex: "14:00") para objeto Date
+    const [h] = t.split(':').map(Number);
+    const slotDate = new Date(d);
+    slotDate.setHours(h, 0, 0, 0);
+    
+    const nowTime = new Date();
+    
+    // Se a data selecionada for HOJE
+    if (d.getDate() === nowTime.getDate() && d.getMonth() === nowTime.getMonth()) {
+        // Calcula diferença em minutos
+        const diffInMinutes = (slotDate - nowTime) / (1000 * 60);
+        // Bloqueia se já passou ou se falta menos de 30 minutos
+        return diffInMinutes < 30; 
+    }
+    
+    return false; // Se for amanhã ou depois, está livre
+  };
 
-  const getDayLabel = (d) => {
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      
-      d.setHours(0,0,0,0);
-      today.setHours(0,0,0,0);
-      tomorrow.setHours(0,0,0,0);
+  const getDayLabel = (d) => {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      d.setHours(0,0,0,0); today.setHours(0,0,0,0); tomorrow.setHours(0,0,0,0);
+      if (d.getTime() === today.getTime()) return 'HOJE';
+      if (d.getTime() === tomorrow.getTime()) return 'AMANHÃ';
+      return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3).replace('.','');
+  };
 
-      if (d.getTime() === today.getTime()) return 'HOJE';
-      if (d.getTime() === tomorrow.getTime()) return 'AMANHÃ';
-      return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3).replace('.','');
-  };
+  const getMonthLabel = (d) => d.toLocaleDateString('pt-BR', {month: 'short'}).slice(0,3).toUpperCase();
 
-  const getMonthLabel = (d) => {
-      return d.toLocaleDateString('pt-BR', {month: 'short'}).slice(0,3).toUpperCase();
-  }
+  const periods = [
+      { label: 'Manhã ☀️', slots: ['09:00', '10:00', '11:00'] },
+      { label: 'Tarde 🌤️', slots: ['13:00', '14:00', '15:00', '16:00', '17:00'] },
+      { label: 'Noite 🌙', slots: ['18:00', '19:00', '20:00', '21:00'] }
+  ];
 
-  const periods = [
-      { label: 'Manhã ☀️', slots: ['09:00', '10:00', '11:00'] },
-      { label: 'Tarde 🌤️', slots: ['13:00', '14:00', '15:00', '16:00', '17:00'] },
-      { label: 'Noite 🌙', slots: ['18:00', '19:00', '20:00', '21:00'] }
-  ];
-
-  return (
-    <div className="w-full select-none">
-      <div className="flex justify-between items-end mb-4 px-1">
-        <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Escolha o Dia</h4>
-        <span className="text-[10px] text-[#0A84FF] font-medium">Próximos {DAYS_TO_SHOW} dias</span>
-      </div>
-
-      {/* GRADE DE DATAS (GRID) */}
-      <div className="grid grid-cols-4 gap-2 mb-6 animate-fade-in">
-        {days.map((d, i) => {
-          const isSel = selectedDate?.getDate() === d.getDate() && selectedDate?.getMonth() === d.getMonth();
-          const label = getDayLabel(d);
-          const month = getMonthLabel(d);
-          
-          return (
-            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} 
-              className={`relative flex flex-col items-center justify-center h-[80px] rounded-[18px] transition-all duration-200 border 
-              ${isSel ? 'bg-[#0A84FF] text-white shadow-lg border-[#0A84FF] scale-[1.03] z-10 font-bold' : 'bg-[#2C2C2E] text-gray-400 border-white/5 active:bg-[#3A3A3C] hover:bg-[#3A3A3C]'}`}>
-              
-              <span className={`text-[9px] uppercase font-bold tracking-wide mb-0.5 ${label === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/90' : 'opacity-60'}`}>{label}</span>
-              <span className={`text-xl font-mono leading-none mb-0.5 ${isSel ? 'text-white' : 'text-gray-200'}`}>{d.getDate()}</span>
-              <span className={`text-[8px] uppercase font-bold ${isSel ? 'text-white/70' : 'text-gray-600'}`}>{month}</span>
-              
-              {isSel && <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-white rounded-full shadow-sm"></div>}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* SELETOR DE HORÁRIOS */}
-      {selectedDate && (
-        <div className="animate-slide-up space-y-6 pt-2 border-t border-white/5">
-           {periods.map((period, idx) => {
-               const hasSlots = period.slots.some(t => !isTimeBlocked(t, selectedDate));
-               return (
-                   <div key={idx} className={`transition-opacity ${hasSlots ? 'opacity-100' : 'opacity-40 grayscale'}`}>
-                       <h5 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
-                           {period.label}
-                           <div className="h-[1px] flex-1 bg-white/5"></div>
-                       </h5>
-                       <div className="grid grid-cols-4 gap-2">
-                           {period.slots.map(t => {
-                               const blocked = isTimeBlocked(t, selectedDate);
-                               const isSelected = selectedTime === t;
-                               return (
-                                  <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
-                                    className={`py-2.5 rounded-[12px] text-[13px] font-semibold transition-all duration-200 relative overflow-hidden
-                                    ${isSelected ? 'bg-[#0A84FF] text-white shadow-lg scale-[1.02]' : blocked ? 'bg-white/5 text-gray-600 opacity-30 cursor-not-allowed' : 'bg-[#2C2C2E] text-gray-300 hover:bg-[#3A3A3C] border border-white/5'}`}>
-                                    {blocked && <div className="absolute inset-0 bg-black/40"></div>}
-                                    {t}
-                                  </button>
-                               )
-                           })}
-                       </div>
-                   </div>
-               )
-           })}
-           <div className="mt-4 p-3 bg-[#FFD60A]/10 rounded-xl border border-[#FFD60A]/20 flex items-start gap-3">
-              <Info className="w-4 h-4 text-[#FFD60A] mt-0.5 flex-shrink-0" />
-              <p className="text-[11px] text-[#FFD60A]/90 leading-relaxed">
-                  Horários noturnos e fins de semana esgotam rápido.
-              </p>
-           </div>
-        </div>
-      )}
-    </div>
-  );
+  return (
+    <div className="w-full select-none">
+      <div className="flex justify-between items-end mb-4 px-1">
+        <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Escolha o Dia</h4>
+        <span className="text-[10px] text-[#0A84FF] font-medium">Próximos {DAYS_TO_SHOW} dias</span>
+      </div>
+      <div className="grid grid-cols-4 gap-2 mb-6 animate-fade-in">
+        {days.map((d, i) => {
+          const isSel = selectedDate?.getDate() === d.getDate() && selectedDate?.getMonth() === d.getMonth();
+          return (
+            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} 
+              className={`relative flex flex-col items-center justify-center h-[80px] rounded-[18px] transition-all duration-200 border 
+              ${isSel ? 'bg-[#0A84FF] text-white shadow-lg border-[#0A84FF] scale-[1.03] z-10 font-bold' : 'bg-[#2C2C2E] text-gray-400 border-white/5 active:bg-[#3A3A3C] hover:bg-[#3A3A3C]'}`}>
+              <span className={`text-[9px] uppercase font-bold tracking-wide mb-0.5 ${getDayLabel(d) === 'HOJE' ? 'text-[#32D74B]' : isSel ? 'text-white/90' : 'opacity-60'}`}>{getDayLabel(d)}</span>
+              <span className={`text-xl font-mono leading-none mb-0.5 ${isSel ? 'text-white' : 'text-gray-200'}`}>{d.getDate()}</span>
+              <span className={`text-[8px] uppercase font-bold ${isSel ? 'text-white/70' : 'text-gray-600'}`}>{getMonthLabel(d)}</span>
+              {isSel && <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-white rounded-full shadow-sm"></div>}
+            </button>
+          )
+        })}
+      </div>
+      {selectedDate && (
+        <div className="animate-slide-up space-y-6 pt-2 border-t border-white/5">
+           {periods.map((period, idx) => {
+               const hasSlots = period.slots.some(t => !isTimeBlocked(t, selectedDate));
+               return (
+                   <div key={idx} className={`transition-opacity ${hasSlots ? 'opacity-100' : 'opacity-40 grayscale'}`}>
+                       <h5 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">{period.label}<div className="h-[1px] flex-1 bg-white/5"></div></h5>
+                       <div className="grid grid-cols-4 gap-2">
+                           {period.slots.map(t => {
+                               const blocked = isTimeBlocked(t, selectedDate);
+                               const isSelected = selectedTime === t;
+                               return (
+                                  <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
+                                    className={`py-2.5 rounded-[12px] text-[13px] font-semibold transition-all duration-200 relative overflow-hidden
+                                    ${isSelected ? 'bg-[#0A84FF] text-white shadow-lg scale-[1.02]' : blocked ? 'bg-white/5 text-gray-600 opacity-30 cursor-not-allowed' : 'bg-[#2C2C2E] text-gray-300 hover:bg-[#3A3A3C] border border-white/5'}`}>
+                                    {blocked && <div className="absolute inset-0 bg-black/40"></div>}
+                                    {t}
+                                  </button>
+                               )
+                           })}
+                       </div>
+                   </div>
+               )
+           })}
+        </div>
+      )}
+    </div>
+  );
 };
+
 
 const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddManual }) => {
   const [manualCode, setManualCode] = useState('');
