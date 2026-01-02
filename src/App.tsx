@@ -93,6 +93,22 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 
 const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 
+// --- NOVO COMPONENTE TOAST ---
+const Toast = ({ message, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000); // Some após 3 segundos
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="fixed top-10 left-1/2 transform -translate-x-1/2 z-[300] bg-[#32D74B] text-black px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 animate-slide-up font-bold text-[14px]">
+      <CheckCircle2 className="w-5 h-5 text-black" />
+      <span>{message}</span>
+    </div>
+  );
+};
+
+
 // ==================================================================================
 // 2. CENTRAL DE PREÇOS E DADOS
 // ==================================================================================
