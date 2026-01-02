@@ -152,7 +152,7 @@ const locations = [
   },
   { 
     id: 'santa-fe', 
-    label: 'Rio Preto, Uber Ida e Volta', 
+    label: 'Rio Preto, Uber Ida e Volta, Aproximadamente..', 
     sublabel: 'No conforto do seu lar', 
     fee: 40,
     allowsTableChoice: true, 
