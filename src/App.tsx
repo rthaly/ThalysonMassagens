@@ -978,7 +978,7 @@ ${priceDisplay}
                 </div>
             )}
 
-            <h2 className="text-3xl font-bold text-white mb-2">Quem é você?</h2>
+            <h2 className="text-3xl font-bold text-white mb-2">Qual seu nome?</h2>
             <p className="text-gray-400 text-[15px] mb-8">Para manter a segurança e exclusividade.</p>
             
             <div className="space-y-6 flex-1">
@@ -1118,7 +1118,7 @@ ${priceDisplay}
                 </button>
 
                 <button onClick={() => { triggerHaptic(); setSelection({...selection, aroma: !selection.aroma}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.aroma ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia</p><p className="text-[11px] text-gray-500">Óleos essenciais</p></div>
+                  <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia</p><p className="text-[11px] text-gray-500">Cheiro bom no ar</p></div>
                   <div className="text-right">
                       {getAromaPrice() < CONFIG.PRICES.AROMA_FULL ? (
                           <><span className="text-gray-500 line-through text-[11px] mr-2">{formatCurrency(CONFIG.PRICES.AROMA_FULL)}</span><span className="text-[#30D158] font-bold text-[15px]">{getAromaPrice() === 0 ? 'GRÁTIS' : `+${formatCurrency(getAromaPrice())}`}</span></>
