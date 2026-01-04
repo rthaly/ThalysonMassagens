@@ -129,7 +129,7 @@ const services = [
     labelDuration: '60 min', minutes: 60, 
     basePrice: 155, 
     highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
-    details: ["Relaxante + Tântrica", "Massagista de Cueca", "Finalização Manual", "Alívio do Stress"] 
+    details: ["Relaxante + Tântrica", "Massagista de Cueca", "Finalização Manual", "Corpo a corpo"] 
   },
   { 
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
@@ -137,7 +137,7 @@ const services = [
     labelDuration: '60 min', minutes: 60, 
     basePrice: 125, 
     ratings: 4.9, reviews: 142, 
-    details: ["Corpo Inteiro", "Tira Dores", "Toque Firme", "Sem Finalização"] 
+    details: ["Corpo Inteiro", "Tira Dores", "Toque Suaves", "Sem Toques Íntimos"] 
   },
 ];
 
