@@ -154,7 +154,7 @@ const locations = [
     id: 'santa-fe', 
     label: 'Rio Preto, Uber Ida e Volta, Aproximadamente..', 
     sublabel: 'No conforto do seu lar', 
-    fee: 40,
+    fee: 23,
     allowsTableChoice: true, 
     estimatedTravelTime: '15-20 min',
     isUber: true
