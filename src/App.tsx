@@ -134,7 +134,7 @@ const services = [
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
     description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', 
     labelDuration: '60 min', minutes: 60, 
-    basePrice: 95, 
+    basePrice: 125, 
     ratings: 4.9, reviews: 142, 
     details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] 
   },
@@ -152,7 +152,7 @@ const locations = [
   },
   { 
     id: 'santa-fe', 
-    label: 'Rio Preto, Uber Ida e Volta, Aproximadamente..', 
+    label: 'SP, Uber Ida e Volta, Calcular no Zap', 
     sublabel: 'No conforto do seu lar', 
     fee: 23,
     allowsTableChoice: true, 
