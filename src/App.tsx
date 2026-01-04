@@ -3,7 +3,7 @@ import {
   ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
   Briefcase, Bed, Shield, Users, Flame, Star, Instagram, Flower, MessageCircle,
   Bell, Tag, AlertCircle, Gift, ArrowRight, Lock, Eye, EyeOff, Share2, 
-  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car, Menu
+  LogOut, Copy, RefreshCw, Zap, Crown, Music, Trash2, CreditCard, Banknote, QrCode, AlertTriangle, Edit3, Plus, Info, Receipt, CheckCircle2, Siren, Send, ThumbsUp, Car, Menu, Hand
 } from 'lucide-react';
 
 // ==================================================================================
@@ -93,10 +93,10 @@ button { touch-action: manipulation; user-select: none; -webkit-touch-callout: n
 
 const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
 
-// --- NOVO COMPONENTE TOAST ---
+// --- COMPONENTE TOAST ---
 const Toast = ({ message, onClose }) => {
   useEffect(() => {
-    const timer = setTimeout(onClose, 3000); // Fecha em 3 segundos
+    const timer = setTimeout(onClose, 3000);
     return () => clearTimeout(timer);
   }, [onClose]);
 
@@ -117,26 +117,27 @@ const CONFIG = {
     MACA: 20,            
     AROMA_FULL: 10,      
     AROMA_DISCOUNT: 5,   
-    UPGRADE_PCT: 0.5     
+    UPGRADE_PCT: 0.5,
+    TOUCH: 55 // NOVO PREÇO DO TOQUE
   }
 };
 
 const services = [
   { 
     id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
-    description: 'Massagem Relaxante + Toques corpo a corpo (de cueca) com finalização Lingam manual completa.', 
+    description: 'A experiência completa. Relaxamento muscular profundo seguido de toques sensitivos e finalização manual intensa.', 
     labelDuration: '60 min', minutes: 60, 
     basePrice: 155, 
     highlight: "MAIS PEDIDA 🔥", ratings: 5.0, reviews: 310, 
-    details: ["Relaxante + Body-to-Body", "Massagista de Cueca", "Lingam / Finalização Manual", "Alívio Completo"] 
+    details: ["Relaxante + Tântrica", "Massagista de Cueca", "Finalização Manual", "Alívio do Stress"] 
   },
   { 
     id: 'relaxante', name: 'Massagem Relaxante', type: 'relax',
-    description: 'Corpo inteiro: Costas, braços, mãos, pernas, coxas, pés, peito e frente. (Sem toques íntimos).', 
+    description: 'Foco total em tirar dores e tensão. Corpo todo: Costas, pernas e pés. Ideal para quem treina ou trabalha muito.', 
     labelDuration: '60 min', minutes: 60, 
     basePrice: 125, 
     ratings: 4.9, reviews: 142, 
-    details: ["Corpo Inteiro", "Sem Glúteos/Íntimo", "Toque Terapêutico", "Relaxamento Puro"] 
+    details: ["Corpo Inteiro", "Tira Dores", "Toque Firme", "Sem Finalização"] 
   },
 ];
 
@@ -144,7 +145,7 @@ const locations = [
   { 
     id: 'motel', 
     label: 'Suíte Privada (Motel)', 
-    sublabel: 'Vou com você', 
+    sublabel: 'Vou até você (Sigilo Total)', 
     fee: 75,
     allowsTableChoice: false, 
     estimatedTravelTime: '10-15 min',
@@ -153,7 +154,7 @@ const locations = [
   { 
     id: 'santa-fe', 
     label: 'SP, Uber Ida e Volta, Calcular no Zap', 
-    sublabel: 'No conforto do seu lar', 
+    sublabel: 'No conforto da sua casa', 
     fee: 23,
     allowsTableChoice: true, 
     estimatedTravelTime: '15-20 min',
@@ -162,7 +163,7 @@ const locations = [
   { 
     id: 'outras-cidades', 
     label: 'Cidades Vizinhas', 
-    sublabel: 'Atendimento na região', 
+    sublabel: 'Jales, Urânia, Três Fronteiras...', 
     fee: 0,
     allowsTableChoice: false, 
     estimatedTravelTime: 'A combinar', 
@@ -194,13 +195,37 @@ const LEVELS = [
 ];
 
 const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
-const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Zen 🧘']; 
+const musicVibes = ['Silêncio 🤫', 'Natureza 🌿', 'Deep House 🔊', 'Zen 🧘']; 
 
+// --- REVIEWS ATUALIZADAS E MAIS REAIS ---
 const REVIEWS_DB = [
   { t: "Sou casado, o sigilo foi total. A massagem tântrica me surpreendeu, finalização manual perfeita.", a: "Sigiloso (44 anos)", r: 5 },
-  { t: "Nunca tinha feito tântrica. A sensibilidade que ele desperta no corpo é absurda. Gozei muito no final.", a: "R.S. (Santa Fé)", r: 5 },
-  { t: "Ambiente discreto. O toque íntimo foi feito com muito respeito e técnica. Alívio imediato.", a: "Curioso", r: 5 },
-  // ... (mantido igual)
+  { t: "Paguei o extra pra tocar nele e valeu cada centavo. Pele macia, cheiroso. Gozei gostoso demais.", a: "Anônimo (Jales)", r: 5 },
+  { t: "Tava carente há meses. O toque dele preencheu um vazio em mim. Não é só sexo, é conexão.", a: "R.S. (Santa Fé)", r: 5 },
+  { t: "Massagem top, mas demora pra responder no zap as vezes. Agenda muito cheia.", a: "Carlos M.", r: 4 },
+  { t: "Sou empresário, vivo estressado. Essa hora na maca me salvou. O final foi explosivo.", a: "M. (Ouro)", r: 5 },
+  { t: "Local limpo, discreto. Fiquei meio tímido no começo mas ele deixa a gente super a vontade.", a: "Felipe", r: 5 },
+  { t: "Achei o valor do deslocamento meio alto, mas pela qualidade do serviço compensou.", a: "J.P.", r: 4 },
+  { t: "Nunca tinha sentido tanto prazer só com as mãos. Recomendo pra quem quer algo diferente.", a: "Curioso", r: 5 },
+  { t: "O cara é gato e tem pegada. O extra de tocar faz toda a diferença pra quem curte interagir.", a: "Cliente VIP", r: 5 },
+  { t: "Gostei muito, mas queria que atendesse domingo. Trabalho a semana toda.", a: "Gustavo", r: 4 },
+  { t: "Sensação única. Gozei litros no final. A técnica tântrica é real mesmo.", a: "Sigilo (38)", r: 5 },
+  { t: "Sou hétero curioso, fui pra testar e voltei renovado. Respeito total.", a: "Anon", r: 5 },
+  { t: "Muito bom tirar a roupa e sentir o corpo dele no meu. O óleo quente ajuda muito.", a: "T.L.", r: 5 },
+  { t: "Atendimento impecável, mas o ar condicionado tava meio frio.", a: "Roberto", r: 4 },
+  { t: "Melhor investimento da semana. Saí de lá leve e satisfeito.", a: "Empresário", r: 5 }
+];
+
+// --- LIVE STATUS EXPANDIDO ---
+const LIVE_STATUS_MSGS = [
+    "Atendimento em andamento 💆‍♂️", 
+    "Horários da noite acabando 🌙", 
+    "Anônimo acabou de agendar 🔥",
+    "Empresário de Jales agendou agora 💼",
+    "2 pessoas vendo a agenda agora 👀",
+    "Vaga de desistência liberada! ⚡",
+    "Massagem Masculina é a mais pedida hoje 🔥",
+    "Cliente VIP acabou de renovar pacote 💎"
 ];
 
 // --- HELPERS ---
@@ -219,13 +244,12 @@ const generateBookingId = () => {
 
 const LiveStatus = () => {
   const [idx, setIdx] = useState(0);
-  const msgs = ["Atendimento em andamento 💆‍♂️", "Horários da noite acabando 🌙", "Anônimo acabou de agendar 🔥"];
-  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%msgs.length), 4000); return () => clearInterval(t); }, []);
+  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%LIVE_STATUS_MSGS.length), 3500); return () => clearInterval(t); }, []);
   return (
     <div className="flex justify-center mb-6">
       <div className="animate-fade-in flex items-center gap-2 bg-[#1C1C1E] border border-white/5 rounded-full px-4 py-1.5 shadow-lg backdrop-blur-md">
         <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-        <span className="text-[10px] text-gray-400 font-medium tracking-wide uppercase">{msgs[idx]}</span>
+        <span className="text-[10px] text-gray-400 font-medium tracking-wide uppercase">{LIVE_STATUS_MSGS[idx]}</span>
       </div>
     </div>
   );
@@ -292,16 +316,15 @@ const ReviewsCarousel = () => {
     <div className="relative h-28 flex items-center justify-center mb-8">
       <div key={idx} className="absolute inset-0 flex flex-col items-center justify-center animate-fade-in px-4 bg-[#1C1C1E] rounded-[24px] border border-white/5 shadow-xl">
         <div className="flex gap-1 mb-2">
-          {[...Array(5)].map((_,k) => <Star key={k} className={`w-3.5 h-3.5 ${k < currentReview.r ? 'text-[#FFD60A] fill-[#FFD60A]' : 'text-gray-800'}`}/>)}
+          {[...Array(5)].map((_,k) => <Star key={k} className={`w-3.5 h-3.5 ${k < currentReview.r ? 'text-[#FFD60A] fill-[#FFD60A]' : 'text-gray-700'}`}/>)}
         </div>
-        <p className="text-[13px] text-gray-200 text-center font-medium leading-relaxed tracking-tight italic">"{currentReview.t}"</p>
+        <p className="text-[13px] text-gray-200 text-center font-medium leading-relaxed tracking-tight italic line-clamp-2">"{currentReview.t}"</p>
         <p className="text-[10px] text-gray-500 font-bold uppercase mt-2 tracking-widest">- {currentReview.a}</p>
       </div>
     </div>
   );
 };
 
-// --- DATA EM GRADE ATUALIZADA (30 MIN) ---
 const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
   const DAYS_TO_SHOW = 16;
   const days = [];
@@ -315,21 +338,14 @@ const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
    
   const isTimeBlocked = (t, d) => {
     if(!d) return true;
-    
-    // Converte horario do slot
     const [h] = t.split(':').map(Number);
     const slotDate = new Date(d);
     slotDate.setHours(h, 0, 0, 0);
-    
     const nowTime = new Date();
-    
-    // Se for hoje
     if (d.getDate() === nowTime.getDate() && d.getMonth() === nowTime.getMonth()) {
         const diffInMinutes = (slotDate - nowTime) / (1000 * 60);
-        // Bloqueia se falta menos de 30 minutos ou já passou
         return diffInMinutes < 30; 
     }
-    
     return false;
   };
 
@@ -485,7 +501,7 @@ const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddMan
 export default function App() {
   const [step, setStep] = useState('home');
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState(null); // STATE DO TOAST
+  const [toast, setToast] = useState(null);
   
   // Refs
   const locationRef = useRef(null);
@@ -504,19 +520,21 @@ export default function App() {
     
   // State
   const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v22'); 
+    const saved = localStorage.getItem('thaly_system_v23'); 
     return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
   });
 
   const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
   
-  // STATE SELECTION ATUALIZADO COM ENDEREÇO
+  // STATE SELECTION ATUALIZADO (Incluindo TOUCH)
   const [selection, setSelection] = useState({ 
       service: null, location: null, date: null, time: '', useTable: null, 
       city: '', 
-      // Campos de Endereço
       address: '', number: '', district: '', reference: '',
-      coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 
+      coupon: null, 
+      upgrade: false, 
+      touch: false, // NOVO ESTADO PARA O TOQUE
+      music: null, aroma: false, paymentMethod: null, installments: 1 
   });
 
   const [showFaq, setShowFaq] = useState(false);
@@ -528,14 +546,13 @@ export default function App() {
     
   const surfaceRef = useRef(null);
 
-  // Init
   useEffect(() => { 
     document.title = "Massagens Relaxantes"; 
     setTimeout(() => setLoading(false), 2000); 
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('thaly_system_v22', JSON.stringify(loyalty));
+    localStorage.setItem('thaly_system_v23', JSON.stringify(loyalty));
     if (loyalty.savedName) {
         setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
     }
@@ -558,7 +575,6 @@ export default function App() {
     }
   }, [step]);
 
-  // Actions
   const handleQuickSchedule = () => {
     triggerHaptic();
     if (loyalty.savedName) {
@@ -589,7 +605,7 @@ export default function App() {
   };
 
   const handleReset = () => {
-    setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', address: '', number: '', district: '', reference: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
+    setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', address: '', number: '', district: '', reference: '', coupon: null, upgrade: false, touch: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
     setStep('home');
   };
 
@@ -608,6 +624,7 @@ export default function App() {
     if (!selection.service) return 0;
     let total = selection.service.basePrice;
     if (selection.upgrade) total += selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
+    if (selection.touch) total += CONFIG.PRICES.TOUCH; // SOMA O TOQUE
     if (selection.useTable) total += CONFIG.PRICES.MACA;
     if (selection.aroma) total += getAromaPrice();
     if (selection.location?.fee) total += selection.location.fee;
@@ -631,7 +648,6 @@ export default function App() {
     return base;
   };
 
-  // --- NOVA FUNÇÃO PIX COM TOAST ---
   const handlePixSelect = () => {
      setSelection({...selection, paymentMethod: 'pix'});
      navigator.clipboard.writeText("62922530000144");
@@ -639,11 +655,9 @@ export default function App() {
      triggerHaptic();
   };
 
-  // --- VALIDAÇÃO ATUALIZADA ---
   const canFinalize = selection.service && selection.location && selection.date && selection.time && selection.music && selection.paymentMethod && 
   (selection.location.allowsTableChoice ? selection.useTable !== null : true) && 
   (selection.location.id === 'outras-cidades' ? !!selection.city : true) &&
-  // Se for Santa Fe (Rio Preto), exige endereço
   (selection.location.id === 'santa-fe' ? (selection.address && selection.number && selection.district) : true);
 
   const handleWhatsApp = () => {
@@ -663,6 +677,10 @@ export default function App() {
         const upgradePrice = selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
         serviceValueForLoyalty += upgradePrice; 
         extrasText += `\n➕ +30 Minutos (+${formatCurrency(upgradePrice)})`; 
+    }
+    if (selection.touch) { 
+        serviceValueForLoyalty += CONFIG.PRICES.TOUCH; 
+        extrasText += `\n➕ Tocar o Massagista (+${formatCurrency(CONFIG.PRICES.TOUCH)})`; 
     }
     if (selection.useTable) { 
         serviceValueForLoyalty += CONFIG.PRICES.MACA; 
@@ -762,7 +780,6 @@ export default function App() {
     if(selection.location.isMotel) locationString += " (Vou com você)";
     if(selection.location.id === 'outras-cidades' && selection.city) locationString += ` (${selection.city})`;
 
-    // --- BLOCO DE ENDEREÇO NA MENSAGEM ---
     let addressInfo = "";
     if(selection.location.id === 'santa-fe') {
         addressInfo = `\n🏠 *Endereço:* ${selection.address}, ${selection.number}\n🏘️ *Bairro:* ${selection.district}\n📍 *Ref:* ${selection.reference || 'Sem referência'}`;
@@ -783,10 +800,10 @@ ${feeType}: ${formatCurrency(feeVal)}
     let msg = `*NOVO PEDIDO: #${bookingId}*
 👤 ${user.name} (Liberado p/ Massagem)
 📅 ${dateStr} às ${selection.time}
-💆 ${selection.service.name} ${selection.upgrade ? '*(+30 MIN UPGRADE)*' : ''}
+💆 ${selection.service.name}
 📍 ${locationString}${addressInfo}
 
-*DETALHES:*
+*EXTRAS & SERVIÇOS:*
 • Serviço Base: ${formatCurrency(selection.service.basePrice)}${extrasText}${aromaText}
 ${discountVal > 0 ? `• Desconto (${selection.coupon.code}): -${formatCurrency(discountVal)}` : ''}
 
@@ -805,6 +822,7 @@ ${priceDisplay}
   const OrderReceipt = () => {
     let grossService = selection.service.basePrice;
     if(selection.upgrade) grossService += selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT;
+    if(selection.touch) grossService += CONFIG.PRICES.TOUCH;
     if(selection.useTable) grossService += CONFIG.PRICES.MACA;
     if(selection.aroma) grossService += getAromaPrice();
 
@@ -832,6 +850,7 @@ ${priceDisplay}
                     <span>{formatCurrency(selection.service.basePrice)}</span>
                 </div>
                 {selection.upgrade && <div className="flex justify-between text-gray-600 text-xs"><span>+ 30 Minutos</span><span>{formatCurrency(selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT)}</span></div>}
+                {selection.touch && <div className="flex justify-between text-black font-bold text-xs bg-gray-100 p-1"><span>+ Tocar o Massagista</span><span>{formatCurrency(CONFIG.PRICES.TOUCH)}</span></div>}
                 {selection.useTable && <div className="flex justify-between text-gray-600 text-xs"><span>+ Maca Portátil</span><span>{formatCurrency(CONFIG.PRICES.MACA)}</span></div>}
                 {selection.aroma && <div className="flex justify-between text-gray-600 text-xs"><span>+ Aromaterapia (Vip)</span><span>{getAromaPrice() === 0 ? 'GRÁTIS' : formatCurrency(getAromaPrice())}</span></div>}
                 
@@ -1064,7 +1083,6 @@ ${priceDisplay}
                           <p className="text-[13px] text-gray-500">{l.sublabel}</p>
                         </button>
                         
-                        {/* --- CAMPOS PARA SANTA FÉ / RIO PRETO --- */}
                         {selection.location?.id === l.id && l.id === 'santa-fe' && l.allowsTableChoice && (
                           <div className="mt-4 animate-fade-in space-y-4">
                             <div ref={surfaceRef} className="grid grid-cols-2 gap-3">
@@ -1072,7 +1090,6 @@ ${priceDisplay}
                               <button onClick={() => { setSelection({...selection, useTable: true}); scrollTo(vibeRef); }} className={`p-4 rounded-[18px] border text-[13px] font-bold transition-all ${selection.useTable === true ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#1C1C1E] border-transparent text-gray-400'}`}>💆‍♂️ Maca (+{formatCurrency(CONFIG.PRICES.MACA)})</button>
                             </div>
 
-                            {/* --- INPUTS DE ENDEREÇO --- */}
                             <div className="bg-[#2C2C2E]/40 p-4 rounded-[20px] border border-white/5 space-y-3">
                                 <div className="flex items-center gap-2 mb-1">
                                     <MapPin className="w-4 h-4 text-[#0A84FF]" />
@@ -1112,17 +1129,35 @@ ${priceDisplay}
 
               <div className="space-y-3" ref={extrasRef}>
                 <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4 mt-8">Extras Premium</h4>
+                
+                {/* UPGRADE 30 MIN */}
                 <button onClick={() => { triggerHaptic(); setSelection({...selection, upgrade: !selection.upgrade}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.upgrade ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">+30 Minutos</p><p className="text-[11px] text-gray-500">Mais tempo para curtir</p></div>
+                  <div className="flex items-center gap-3">
+                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${selection.upgrade ? 'bg-[#0A84FF] text-white' : 'bg-[#2C2C2E] text-gray-500'}`}><Clock className="w-4 h-4"/></div>
+                     <div className="text-left"><p className="text-white font-bold text-[15px]">+30 Minutos</p><p className="text-[11px] text-gray-500">Mais tempo para curtir</p></div>
+                  </div>
                   <span className="text-[#0A84FF] font-bold text-[15px]">+ {formatCurrency(selection.service.basePrice * CONFIG.PRICES.UPGRADE_PCT)}</span>
                 </button>
 
-                <button onClick={() => { triggerHaptic(); setSelection({...selection, aroma: !selection.aroma}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.aroma ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia</p><p className="text-[11px] text-gray-500">Cheiro bom no ar</p></div>
+                {/* NOVO EXTRA: TOCAR O MASSAGISTA */}
+                <button onClick={() => { triggerHaptic(); setSelection({...selection, touch: !selection.touch}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.touch ? 'bg-[#FF375F]/15 border-[#FF375F]' : 'bg-[#1C1C1E] border-transparent'}`}>
+                  <div className="flex items-center gap-3">
+                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${selection.touch ? 'bg-[#FF375F] text-white' : 'bg-[#2C2C2E] text-gray-500'}`}><Hand className="w-4 h-4"/></div>
+                     <div className="text-left"><p className="text-white font-bold text-[15px]">Tocar o Massagista</p><p className="text-[11px] text-gray-500">Interação permitida</p></div>
+                  </div>
+                  <span className="text-[#FF375F] font-bold text-[15px]">+ {formatCurrency(CONFIG.PRICES.TOUCH)}</span>
+                </button>
+
+                {/* AROMATERAPIA */}
+                <button onClick={() => { triggerHaptic(); setSelection({...selection, aroma: !selection.aroma}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.aroma ? 'bg-[#30D158]/10 border-[#30D158]' : 'bg-[#1C1C1E] border-transparent'}`}>
+                  <div className="flex items-center gap-3">
+                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${selection.aroma ? 'bg-[#30D158] text-white' : 'bg-[#2C2C2E] text-gray-500'}`}><Flower className="w-4 h-4"/></div>
+                     <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia</p><p className="text-[11px] text-gray-500">Cheiro bom no ar</p></div>
+                  </div>
                   <div className="text-right">
                       {getAromaPrice() < CONFIG.PRICES.AROMA_FULL ? (
                           <><span className="text-gray-500 line-through text-[11px] mr-2">{formatCurrency(CONFIG.PRICES.AROMA_FULL)}</span><span className="text-[#30D158] font-bold text-[15px]">{getAromaPrice() === 0 ? 'GRÁTIS' : `+${formatCurrency(getAromaPrice())}`}</span></>
-                      ) : (<span className="text-[#0A84FF] font-bold text-[15px]">+ {formatCurrency(CONFIG.PRICES.AROMA_FULL)}</span>)}
+                      ) : (<span className="text-[#30D158] font-bold text-[15px]">+ {formatCurrency(CONFIG.PRICES.AROMA_FULL)}</span>)}
                   </div>
                 </button>
               </div>
@@ -1132,7 +1167,7 @@ ${priceDisplay}
               <div className="mt-6" ref={paymentRef}>
                 <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Pagamento</h4>
                 <div className="grid grid-cols-2 gap-3">
-                  {/* --- BOTÃO PIX ATUALIZADO --- */}
+                  {/* --- BOTÃO PIX --- */}
                   <button onClick={handlePixSelect} className={`h-24 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'pix' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'bg-[#1C1C1E] border-transparent'}`}>
                     <QrCode className="w-6 h-6 text-[#0A84FF]" /><span className="text-[13px] font-bold text-white">Pix (Copia e Cola)</span>
                   </button>
@@ -1201,7 +1236,7 @@ ${priceDisplay}
             <div className="bg-[#1C1C1E] w-full max-w-sm rounded-[32px] p-8 border border-white/10 shadow-2xl animate-scale">
               <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2"><HelpCircle className="w-6 h-6 text-[#0A84FF]"/> Ajuda & Informações</h3>
               <div className="space-y-5 text-[15px] text-gray-300 leading-relaxed">
-                <div><h4 className="font-bold text-white mb-1 flex items-center gap-2"><Shield className="w-4 h-4 text-gray-400"/> Conduta</h4><p className="text-sm">Apenas massagem terapêutica e relaxante. Sem sexo, sem oral. Respeito acima de tudo.</p></div>
+                <div><h4 className="font-bold text-white mb-1 flex items-center gap-2"><Shield className="w-4 h-4 text-gray-400"/> Conduta</h4><p className="text-sm">Apenas massagem terapêutica e relaxante. Sigilo absoluto garantido.</p></div>
                 <div><h4 className="font-bold text-white mb-1 flex items-center gap-2"><MapPin className="w-4 h-4 text-gray-400"/> Locais</h4><p className="text-sm">Atendimento em Suítes (Motel), Domicílio (Santa Fé) ou Cidades Vizinhas (a combinar).</p></div>
                 <div><h4 className="font-bold text-white mb-1 flex items-center gap-2"><Tag className="w-4 h-4 text-gray-400"/> Cupons & Descontos</h4><p className="text-sm">Cupons são de uso único. Descontos de nível (Aromaterapia) são aplicados automaticamente.</p></div>
                 <div className="pt-6 border-t border-white/10">
