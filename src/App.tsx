@@ -1288,4 +1288,4 @@ ${priceDisplay}
 
     </div>
   );
-}
+} 
