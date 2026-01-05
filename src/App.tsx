@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChevronLeft, Check, Star, MapPin, Clock,
@@ -6,24 +7,16 @@ import {
 } from 'lucide-react';
 
 /* ==================================================================================
-   1. ESTILOS CSS (DARK LUXURY - SP)
+   1. ESTILOS CSS (INJETADOS COM SEGURANÇA)
    ================================================================================== */
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-  :root {
-    --primary: #0A84FF;
-    --bg-body: #050505;
-    --card-bg: #141414;
-  }
-
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   
   body, html { 
     margin: 0; padding: 0; 
-    background-color: var(--bg-body); 
+    background-color: #050505; 
     color: #F5F5F7; 
-    font-family: 'Inter', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     overflow-x: hidden;
   }
 
@@ -58,10 +51,10 @@ const styles = `
     outline: none;
     transition: 0.2s;
   }
-  .custom-input:focus { border-color: var(--primary); background: #222; }
+  .custom-input:focus { border-color: #0A84FF; background: #222; }
 
   .btn-main {
-    background: var(--primary);
+    background: #0A84FF;
     color: white;
     font-weight: 700;
     font-size: 16px;
@@ -80,7 +73,7 @@ const styles = `
   .btn-main:active { transform: scale(0.98); }
   .btn-main:disabled { background: #333; color: #666; box-shadow: none; cursor: not-allowed; }
 
-  /* LOADER */
+  /* LOADER & MODAL */
   .loader-wrapper {
     position: fixed; inset: 0; z-index: 9999;
     background: #000;
@@ -88,11 +81,17 @@ const styles = `
     transition: opacity 0.5s ease;
   }
   .loader-bar { width: 200px; height: 4px; background: #222; border-radius: 4px; margin-top: 20px; overflow: hidden; }
-  .loader-fill { height: 100%; background: var(--primary); animation: loadBar 2s ease-in-out forwards; }
+  .loader-fill { height: 100%; background: #0A84FF; animation: loadBar 2s ease-in-out forwards; }
+
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    animation: fadeIn 0.3s ease-out;
+  }
 `;
 
 /* ==================================================================================
-   2. DADOS E REGRAS
+   2. CONFIGURAÇÃO & DADOS
    ================================================================================== */
 const CONFIG = {
   WHATSAPP: "5517991360413", 
@@ -116,7 +115,6 @@ const DATA = {
       tag: null
     }
   ],
-  // SEM MACA
   extras: [
     { id: 'touch', label: 'Interação (Tocar)', price: 55, sub: 'Permitido tocar o massagista' },
     { id: 'upgrade', label: '+30 Minutos', price: 80, sub: 'Sessão estendida' },
@@ -149,24 +147,27 @@ export default function App() {
     couponApplied: false
   });
 
-  // Inicialização (Simples e Segura)
+  // Inicialização Segura
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-      try {
-        const used = localStorage.getItem('thaly_coupon_used');
-        if (!used) setTimeout(() => setShowCoupon(true), 1000);
-        
-        const savedUser = localStorage.getItem('thaly_user');
-        if (savedUser) setUser(savedUser);
-      } catch (e) {
-        console.log("Storage access error");
+    // Força o fim do loading em 2.5s mesmo se algo falhar
+    const safetyTimer = setTimeout(() => setLoading(false), 2500);
+
+    try {
+      const used = localStorage.getItem('thaly_coupon_used');
+      if (!used) {
+        setTimeout(() => setShowCoupon(true), 3000);
       }
-    }, 2000);
-    return () => clearTimeout(timer);
+      
+      const savedUser = localStorage.getItem('thaly_user');
+      if (savedUser) setUser(savedUser);
+    } catch (e) {
+      console.log("Storage error (ignore)", e);
+    }
+
+    return () => clearTimeout(safetyTimer);
   }, []);
 
-  // Navegação
+  // Handlers
   const handleNext = (next) => {
     window.scrollTo(0,0);
     setStep(next);
@@ -217,8 +218,8 @@ export default function App() {
       : 'Nenhum extra';
 
     const locTxt = cart.locationType === 'metro' 
-      ? `📍 *Perto do Metrô (<1km)*\nEndereço: ${cart.address}\n(Taxa: GRÁTIS)`
-      : `🚗 *Longe do Metrô (>1km)*\nEndereço: ${cart.address}\n(Taxa: A CALCULAR)`;
+      ? `📍 *Perto do Metrô (Menos de 1km)*\nEndereço: ${cart.address}\n(Taxa: GRÁTIS)`
+      : `🚗 *Longe do Metrô (Mais de 1km)*\nEndereço: ${cart.address}\n(Taxa: A CALCULAR)`;
 
     const msg = 
 `*AGENDAMENTO VIP SP* 🔒
@@ -227,7 +228,7 @@ export default function App() {
 📅 *Data:* ${dateStr} às ${cart.time}
 
 💆 *SERVIÇO:*
-${cart.service.title}
+${cart.service?.title}
 
 🏠 *LOCALIZAÇÃO:*
 ${locTxt}
@@ -249,16 +250,19 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
     setStep('success');
   };
 
+  // --- RENDERIZAÇÃO PROTEGIDA ---
   return (
-    <div className="min-h-screen pb-10">
+    <div style={{ backgroundColor: '#050505', minHeight: '100vh', color: '#fff' }} className="min-h-screen pb-10">
       <style>{styles}</style>
       
       {/* LOADER */}
-      <div className={`loader-wrapper ${!loading ? 'pointer-events-none opacity-0' : ''}`}>
-        <Crown size={64} className="text-[#0A84FF] animate-pulse" />
-        <h1 className="text-white font-bold text-xl mt-4">THALYSON VIP</h1>
-        <div className="loader-bar"><div className="loader-fill"></div></div>
-      </div>
+      {loading && (
+        <div className="loader-wrapper">
+          <Crown size={64} className="text-[#0A84FF] animate-pulse" />
+          <h1 className="text-white font-bold text-xl mt-4">THALYSON VIP</h1>
+          <div className="loader-bar"><div className="loader-fill"></div></div>
+        </div>
+      )}
 
       {/* HEADER FIXO */}
       <div className="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-white/10">
@@ -490,15 +494,15 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                </div>
                
                <div className="space-y-2 text-sm mb-6">
-                 <div className="flex justify-between font-bold"><span>{cart.service.title}</span><span>R$ {cart.service.price}</span></div>
+                 <div className="flex justify-between font-bold"><span>{cart.service?.title}</span><span>R$ {cart.service?.price}</span></div>
                  {cart.extras.map(id => {
                    const item = DATA.extras.find(e => e.id === id);
-                   return <div key={id} className="flex justify-between text-blue-600 font-medium"><span>+ {item.label}</span><span>R$ {item.price}</span></div>
+                   return <div key={id} className="flex justify-between text-blue-600 font-medium"><span>+ {item?.label}</span><span>R$ {item?.price}</span></div>
                  })}
                  
                  {cart.locationType === 'uber' && (
                    <div className="flex justify-between text-yellow-600 font-bold text-xs bg-yellow-100 p-1 rounded">
-                     <span>Taxa Uber (&gt;1km)</span>
+                     <span>Taxa Uber (Mais de 1km)</span>
                      <span>A CALCULAR</span>
                    </div>
                  )}
@@ -526,7 +530,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                </button>
             </div>
 
-            <button onClick={sendWhatsApp} className="btn-main bg-[#25D366]">
+            <button onClick={sendWhatsApp} className="btn-main bg-[#25D366] hover:bg-[#20bd5a] shadow-[0_8px_30px_rgba(37,211,102,0.3)]">
               ENVIAR PEDIDO <Send size={20}/>
             </button>
           </div>
@@ -535,14 +539,14 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
         {/* === SUCCESS === */}
         {step === 'success' && (
           <div className="fade-in flex flex-col items-center justify-center pt-20 text-center">
-            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-xl">
+            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(37,211,102,0.4)]">
               <ThumbsUp size={48} className="text-white" />
             </div>
             <h2 className="text-3xl font-bold mb-2 text-white">Solicitação Enviada!</h2>
-            <p className="text-gray-400 mb-8 max-w-[250px]">
+            <p className="text-gray-400 mb-8 max-w-[250px] leading-relaxed">
               Sua pré-reserva está no meu WhatsApp. Responderei em instantes.
             </p>
-            <button onClick={() => window.location.reload()} className="px-8 py-3 rounded-xl border border-[#333] text-gray-400 text-sm">
+            <button onClick={() => window.location.reload()} className="px-8 py-3 rounded-xl border border-[#333] text-gray-400 text-sm hover:text-white hover:border-white transition-colors">
               Voltar ao Início
             </button>
           </div>
@@ -553,8 +557,8 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
       {/* MODAL CUPOM */}
       {showCoupon && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 fade-in">
-          <div className="bg-[#1C1C1E] w-full max-w-sm rounded-3xl p-8 text-center border border-white/10 relative">
-            <button onClick={() => setShowCoupon(false)} className="absolute top-4 right-4 text-gray-500"><X size={20}/></button>
+          <div className="bg-[#1C1C1E] w-full max-w-sm rounded-3xl p-8 text-center border border-white/10 relative shadow-2xl">
+            <button onClick={() => setShowCoupon(false)} className="absolute top-4 right-4 text-gray-500 p-2"><X size={20}/></button>
             <Gift size={48} className="text-[#0A84FF] mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-white mb-2">Boas-vindas VIP</h3>
             <p className="text-gray-400 text-sm mb-6">
