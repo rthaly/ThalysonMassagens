@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  ChevronLeft, Calendar, MapPin, Clock, Check, Star, 
-  Sparkles, ArrowRight, ShieldCheck, Flame, 
-  Music, Phone, Zap, Info, CreditCard
+  MapPin, Calendar, Clock, Check, Star, 
+  Sparkles, ArrowRight, Shield, Zap, 
+  Trophy, Lock, Flame, Navigation
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. ESTILOS GLOBAIS & ANIMAÇÕES (CSS-IN-JS)
+// 1. ESTILOS & CONFIGURAÇÕES (PREMIUM DARK)
 // ==================================================================================
 const styles = `
-  :root { --primary: #0A84FF; --bg: #000000; --card: #1C1C1E; --glass: rgba(28, 28, 30, 0.65); }
+  :root { --primary: #0A84FF; --gold: #FFD60A; --bg: #000000; --card: #121212; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
   
   body { 
@@ -19,388 +19,358 @@ const styles = `
     margin: 0; padding: 0;
   }
 
-  /* Fundo Animado Premium */
-  .aurora-bg {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-    background: 
-      radial-gradient(circle at 100% 0%, rgba(10, 132, 255, 0.15) 0%, transparent 40%),
-      radial-gradient(circle at 0% 100%, rgba(50, 215, 75, 0.1) 0%, transparent 40%);
-    background-color: #000;
+  /* Animação de Carregamento */
+  .loader-ring {
+    display: inline-block; position: relative; width: 64px; height: 64px;
   }
+  .loader-ring div {
+    box-sizing: border-box; display: block; position: absolute;
+    width: 51px; height: 51px; margin: 6px; border: 3px solid #fff;
+    border-radius: 50%; animation: loader-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: #0A84FF transparent transparent transparent;
+  }
+  .loader-ring div:nth-child(1) { animation-delay: -0.45s; }
+  .loader-ring div:nth-child(2) { animation-delay: -0.3s; }
+  .loader-ring div:nth-child(3) { animation-delay: -0.15s; }
+  @keyframes loader-ring { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-  /* Componentes UI */
-  .glass-panel {
-    background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  /* UI Elements */
+  .glass-card {
+    background: #121212; border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
   }
   
   .btn-primary {
-    background: var(--primary); color: white; border: none; font-weight: 600;
-    box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4); transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    background: var(--primary); color: white; border: none; font-weight: 700;
+    box-shadow: 0 0 20px rgba(10, 132, 255, 0.3); transition: all 0.2s ease;
   }
-  .btn-primary:active { transform: scale(0.96); opacity: 0.9; }
+  .btn-primary:active { transform: scale(0.97); opacity: 0.9; }
 
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .fade-in { animation: fadeIn 0.6s ease forwards; opacity: 0; transform: translateY(10px); }
+  @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
   
-  /* Animações de Entrada */
-  .fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
-  .delay-100 { animation-delay: 0.1s; }
-  .delay-200 { animation-delay: 0.2s; }
-  
-  @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-  
-  .pulse-border { animation: pulseBorder 2s infinite; }
-  @keyframes pulseBorder { 0% { border-color: rgba(10,132,255,0.3); } 50% { border-color: rgba(10,132,255,0.8); } 100% { border-color: rgba(10,132,255,0.3); } }
+  .progress-bar { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
 `;
 
 // ==================================================================================
-// 2. DADOS DO NEGÓCIO
+// 2. BANCO DE DADOS (TEXTOS REAIS & REGRAS)
 // ==================================================================================
 
 const SERVICES = [
   { 
-    id: 'masculina', title: 'Massagem Masculina', price: 150, duration: '60 min', 
-    tag: 'MAIS VENDIDA 🔥',
-    desc: 'Protocolo completo: Relaxamento muscular profundo + Finalização Tântrica.',
-    features: ['Alívio de Stress', 'Toque Sensitivo', 'Finalização Manual']
+    id: 'masculina', title: 'Massagem Masculina', price: 155, duration: '60 min', 
+    tag: 'EXPERIÊNCIA COMPLETA 🔥',
+    desc: 'O protocolo mais procurado. Relaxamento muscular seguido de toques íntimos e finalização manual intensa.',
+    features: ['Sigilo Total', 'Toque Íntimo Liberado', 'Finalização (Pode gozar)', 'Sem tabus']
   },
   { 
-    id: 'relaxante', title: 'Relaxante Clássica', price: 120, duration: '50 min', 
-    tag: 'TIRA DORES',
-    desc: 'Foco total em remover tensão muscular, dores nas costas e pernas.',
-    features: ['Corpo Todo', 'Óleos Essenciais', 'Música Zen']
-  },
-  { 
-    id: 'premium', title: 'Experiência Premium', price: 200, duration: '90 min', 
-    tag: 'VIP 💎',
-    desc: 'A fusão perfeita: Mais tempo, mais técnica e imersão total.',
-    features: ['90 Minutos', 'Tântrica + Relax', 'Bebida Inclusa']
+    id: 'relaxante', title: 'Relaxante Corporal', price: 125, duration: '50 min', 
+    tag: 'TIRE O STRESS',
+    desc: 'Foco em dores e cansaço. Massagem no corpo todo para zerar o stress de São Paulo.',
+    features: ['Corpo Todo', 'Mãos Leves', 'Sem Toque Íntimo', 'Apenas Relaxamento']
   }
 ];
 
-const ADDONS = [
-  { id: 'aroma', name: 'Aromaterapia', price: 15, icon: '🌿' },
-  { id: 'pedras', name: 'Pedras Quentes', price: 25, icon: '🔥' },
-  { id: 'ducha', name: 'Banho Tomado', price: 0, icon: '🚿' } // Exemplo de 'free' addon
+const REVIEWS = [
+  { text: "Sou casado, o sigilo foi 100%. A finalização foi absurda, gozei gostoso demais.", author: "Anônimo (Zona Sul)", stars: 5 },
+  { text: "Empresário, vivo na correria. Foi direto ao ponto, sem enrolação. Recomendo.", author: "R. M.", stars: 5 },
+  { text: "Tava carente há meses. O toque dela me resgatou. Voltarei semana que vem.", author: "M. (Vila Madalena)", stars: 5 },
+  { text: "Ambiente discreto. A massagem relaxante tira o peso das costas mesmo.", author: "Felipe T.", stars: 5 }
+];
+
+const LEVELS = [
+  { name: 'Novato', min: 0, icon: '🛡️' },
+  { name: 'Cliente VIP', min: 300, icon: '🥈' },
+  { name: 'Elite SP', min: 800, icon: '👑' },
 ];
 
 // ==================================================================================
-// 3. HELPERS DE UX
+// 3. APP LÓGICA
 // ==================================================================================
-const haptic = () => { if (navigator.vibrate) navigator.vibrate(10); };
-const formatBRL = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-// ==================================================================================
-// 4. APP PRINCIPAL
-// ==================================================================================
-export default function UltraMassageApp() {
-  const [view, setView] = useState('home'); // home, detail, book, success
+export default function SPMassageApp() {
+  const [loading, setLoading] = useState(true);
+  const [view, setView] = useState('home'); 
   
-  // Estado do Carrinho (Tudo que o user escolhe)
+  // Gamificação Persistente
+  const [userStats, setUserStats] = useState({ spent: 0, level: 'Novato' });
+
+  // Carrinho
   const [selection, setSelection] = useState({
     service: null,
-    addons: [],
     date: null,
     time: null,
-    locationType: 'studio', // 'studio' ou 'delivery'
+    addressType: 'apt', // 'apt' ou 'casa'
     address: '',
-    couponApplied: false
+    neighborhood: '',
+    aroma: false,
+    coupon: false
   });
 
-  // Estado de 'Intenção' (para salvar progresso se fechar)
-  const [userIntent, setUserIntent] = useState({ visitedBefore: false });
-
+  // Init
   useEffect(() => {
-    // Verifica se é cliente recorrente silenciosamente
-    const history = localStorage.getItem('thaly_history');
-    if (history) setUserIntent({ visitedBefore: true });
+    // Simula carregamento de segurança
+    setTimeout(() => setLoading(false), 2500);
+
+    // Carrega dados do usuário
+    const saved = localStorage.getItem('sp_massage_user');
+    if (saved) setUserStats(JSON.parse(saved));
   }, []);
 
+  const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(10); };
+
+  // Cálculos
+  const currentLevelIdx = LEVELS.findIndex(l => userStats.spent < l.min) === -1 ? LEVELS.length - 1 : LEVELS.findIndex(l => userStats.spent < l.min) - 1;
+  const currentLevel = LEVELS[currentLevelIdx];
+  const nextLevel = LEVELS[currentLevelIdx + 1];
+  const progressPercent = nextLevel ? ((userStats.spent - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100 : 100;
+
   const total = (selection.service?.price || 0) + 
-                selection.addons.reduce((acc, curr) => acc + curr.price, 0) +
-                (selection.locationType === 'delivery' ? 25 : 0) - // Taxa fixa Uber ex
-                (selection.couponApplied ? 20 : 0);
+                (selection.aroma ? 10 : 0) - 
+                (selection.coupon ? 10 : 0);
 
-  // --- COMPONENTES INTERNOS ---
+  // --- COMPONENTES ---
 
-  // 1. HEADER DINÂMICO
-  const Header = ({ title, showBack }) => (
-    <div className="flex items-center justify-between p-6 pt-12 sticky top-0 z-20 bg-gradient-to-b from-black/90 to-transparent pointer-events-none">
-      <div className="pointer-events-auto flex items-center gap-3">
-        {showBack && (
-          <button onClick={() => { haptic(); setView('home'); }} className="w-10 h-10 rounded-full glass-panel flex items-center justify-center active:scale-90 transition-transform">
-            <ChevronLeft className="text-white w-6 h-6" />
-          </button>
-        )}
-        <h1 className="text-xl font-bold text-white tracking-tight shadow-black drop-shadow-lg">{title}</h1>
-      </div>
-      <div className="w-10 h-10 rounded-full glass-panel flex items-center justify-center pointer-events-auto">
-        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+  const LoadingScreen = () => (
+    <div className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center p-6 text-center">
+      <div className="loader-ring"><div></div><div></div><div></div><div></div></div>
+      <h2 className="mt-8 text-xl font-bold text-white tracking-widest uppercase">Thalyson SP</h2>
+      <p className="text-[#0A84FF] text-xs font-mono mt-2 animate-pulse">Estabelecendo conexão segura...</p>
+      <div className="absolute bottom-10 flex items-center gap-2 text-gray-600 text-[10px] uppercase">
+        <Lock className="w-3 h-3" /> Ambienta Seguro & Discreto
       </div>
     </div>
   );
 
-  // 2. CUPOM INTELIGENTE (FLOAT)
-  const SmartCoupon = () => {
-    if (userIntent.visitedBefore || selection.couponApplied) return null;
+  const GamificationBar = () => (
+    <div className="mx-6 mt-4 mb-6 p-4 rounded-2xl bg-[#121212] border border-white/10 relative overflow-hidden">
+      <div className="flex justify-between items-center mb-2 relative z-10">
+        <div className="flex items-center gap-2">
+           <span className="text-xl">{currentLevel.icon}</span>
+           <div>
+             <p className="text-[10px] text-gray-500 font-bold uppercase">Seu Status</p>
+             <h3 className="text-white font-bold text-sm">{currentLevel.name}</h3>
+           </div>
+        </div>
+        <div className="text-right">
+           <p className="text-[10px] text-gray-500 font-bold uppercase">Investido</p>
+           <p className="text-[#0A84FF] font-mono font-bold">R$ {userStats.spent}</p>
+        </div>
+      </div>
+      
+      {/* Barra */}
+      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden relative z-10">
+         <div className="h-full bg-[#0A84FF] progress-bar" style={{ width: `${progressPercent}%` }}></div>
+      </div>
+      
+      {nextLevel && (
+        <p className="text-[10px] text-gray-600 mt-2 text-center relative z-10">
+          Faltam R$ {nextLevel.min - userStats.spent} para subir de nível
+        </p>
+      )}
+    </div>
+  );
+
+  const ReviewsCarousel = () => {
+    const [idx, setIdx] = useState(0);
+    useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS.length), 4000); return () => clearInterval(t); }, []);
     return (
-      <div onClick={() => { haptic(); setSelection(p => ({...p, couponApplied: true})); }} className="mx-6 mb-6 p-4 rounded-2xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 flex items-center gap-4 cursor-pointer active:scale-98 transition-transform fade-in-up">
-        <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse">
-          <Sparkles className="text-white w-5 h-5" />
+      <div className="px-6 mb-8">
+        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Avaliações Reais</h3>
+        <div className="bg-[#121212] border border-white/5 p-4 rounded-xl min-h-[100px] flex flex-col justify-center relative">
+           <div className="flex gap-1 mb-2">
+             {[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 text-[#FFD60A] fill-[#FFD60A]" />)}
+           </div>
+           <p className="text-sm text-gray-300 italic leading-relaxed">"{REVIEWS[idx].text}"</p>
+           <p className="text-[10px] text-gray-500 font-bold mt-2 text-right uppercase">- {REVIEWS[idx].author}</p>
         </div>
-        <div className="flex-1">
-          <h3 className="font-bold text-sm text-white">Presente de Boas-vindas</h3>
-          <p className="text-xs text-gray-400">Toque para ativar <span className="text-blue-400 font-bold">R$ 20 OFF</span> agora.</p>
-        </div>
-        <div className="text-xs font-bold bg-white/10 px-2 py-1 rounded text-white">ATIVAR</div>
       </div>
     );
-  };
+  }
 
-  // --- VIEWS ---
+  // --- FLUXO DE TELAS ---
+
+  if (loading) return <>
+    <style>{styles}</style>
+    <LoadingScreen />
+  </>;
 
   if (view === 'home') return (
     <div className="min-h-screen pb-32">
       <style>{styles}</style>
-      <div className="aurora-bg"></div>
       
-      <Header title="Thalyson Massagens" showBack={false} />
-      
-      <div className="px-6 mb-6">
-        <h2 className="text-3xl font-bold text-white leading-tight mb-2 fade-in-up">
-          Relaxe.<br/>
-          <span className="text-[#0A84FF]">Recupere.</span>
-        </h2>
-        <p className="text-gray-400 text-sm fade-in-up delay-100">Agendamento exclusivo em Santa Fé do Sul.</p>
+      {/* Header */}
+      <div className="pt-12 px-6 pb-4 bg-gradient-to-b from-black via-black to-transparent sticky top-0 z-20">
+        <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-white">Massagem<span className="text-[#0A84FF]">SP</span></h1>
+            <div className="px-3 py-1 bg-white/10 rounded-full flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-[#0A84FF]" />
+                <span className="text-[10px] font-bold text-gray-300">São Paulo</span>
+            </div>
+        </div>
+        <p className="text-gray-500 text-xs mt-1">Discrição total para homens exigentes.</p>
       </div>
 
-      <SmartCoupon />
+      <GamificationBar />
 
-      <div className="space-y-4 px-6 fade-in-up delay-200">
-        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Menu de Tratamentos</h3>
-        {SERVICES.map(service => (
-          <div key={service.id} onClick={() => { haptic(); setSelection({...selection, service}); setView('book'); }}
-            className="glass-panel p-5 rounded-3xl relative overflow-hidden group active:scale-[0.98] transition-all cursor-pointer border-l-4 border-l-transparent hover:border-l-[#0A84FF]">
-            
-            {service.tag && (
-              <div className="absolute top-0 right-0 bg-[#0A84FF] text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-lg">
-                {service.tag}
-              </div>
-            )}
-
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <h3 className="text-lg font-bold text-white">{service.title}</h3>
-                <div className="flex items-center gap-2 mt-1">
-                   <Clock className="w-3 h-3 text-gray-500" />
-                   <span className="text-xs text-gray-400">{service.duration}</span>
-                </div>
-              </div>
-              <span className="text-lg font-bold text-[#0A84FF]">{formatBRL(service.price)}</span>
-            </div>
-            
-            <p className="text-sm text-gray-400 leading-relaxed mb-4 border-t border-white/5 pt-3 mt-3">
-              {service.desc}
-            </p>
-
-            <div className="flex gap-2">
-              {service.features.map((f, i) => (
-                <span key={i} className="text-[10px] bg-white/5 text-gray-300 px-2 py-1 rounded-lg border border-white/5">{f}</span>
-              ))}
-            </div>
+      {/* Serviços */}
+      <div className="px-6 space-y-4 fade-in">
+        {SERVICES.map(s => (
+          <div key={s.id} onClick={() => { triggerHaptic(); setSelection({...selection, service: s}); setView('booking'); }} 
+               className={`glass-card p-5 rounded-2xl relative overflow-hidden active:scale-[0.98] transition-all border-l-4 ${s.id === 'masculina' ? 'border-l-[#0A84FF]' : 'border-l-gray-600'}`}>
+             
+             {s.tag && <div className="absolute top-0 right-0 bg-[#0A84FF] text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl">{s.tag}</div>}
+             
+             <div className="flex justify-between items-start mb-2">
+               <h3 className="text-lg font-bold text-white">{s.title}</h3>
+               <span className="text-lg font-bold text-[#0A84FF]">R$ {s.price}</span>
+             </div>
+             
+             <p className="text-sm text-gray-400 mb-4 leading-relaxed">{s.desc}</p>
+             
+             <div className="grid grid-cols-2 gap-2">
+                {s.features.map((f, i) => (
+                    <div key={i} className="flex items-center gap-1.5">
+                        <Check className="w-3 h-3 text-green-500" />
+                        <span className="text-[10px] text-gray-300 uppercase font-bold">{f}</span>
+                    </div>
+                ))}
+             </div>
           </div>
         ))}
       </div>
 
-      {/* Social Proof - Reviews Rápidas */}
-      <div className="mt-8 px-6 fade-in-up delay-200">
-        <div className="flex items-center gap-2 mb-4 opacity-70">
-           <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-           <span className="text-xs font-bold text-white">4.9/5.0 <span className="text-gray-500 font-normal">(120+ Clientes)</span></span>
-        </div>
-      </div>
+      <div className="mt-8"><ReviewsCarousel /></div>
     </div>
   );
 
-  if (view === 'book') return (
-    <div className="min-h-screen flex flex-col">
+  if (view === 'booking') return (
+    <div className="min-h-screen pb-40">
       <style>{styles}</style>
-      <div className="aurora-bg"></div>
-      <Header title="Personalizar" showBack={true} />
+      
+      {/* Nav Back */}
+      <div className="pt-12 px-6 mb-6">
+        <button onClick={() => setView('home')} className="text-gray-500 text-sm flex items-center gap-1 hover:text-white"><ArrowRight className="w-4 h-4 rotate-180"/> Voltar</button>
+        <h2 className="text-2xl font-bold text-white mt-2">Personalizar</h2>
+      </div>
 
-      <div className="flex-1 overflow-y-auto px-6 pb-40 fade-in-up">
+      <div className="px-6 space-y-8 fade-in">
         
-        {/* Card Resumo Topo */}
-        <div className="mb-6 flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10">
-           <div>
-             <p className="text-xs text-gray-500 uppercase font-bold">Selecionado</p>
-             <h3 className="text-white font-bold">{selection.service.title}</h3>
+        {/* Endereço */}
+        <section>
+           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><MapPin className="w-3 h-3 text-[#0A84FF]"/> Onde Atender?</h3>
+           
+           {/* Tipo de Local */}
+           <div className="grid grid-cols-2 gap-3 mb-4">
+              <button onClick={() => setSelection({...selection, addressType: 'apt'})} className={`p-3 rounded-xl border text-sm font-bold transition-all ${selection.addressType === 'apt' ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#121212] border-white/10 text-gray-500'}`}>🏢 Apartamento</button>
+              <button onClick={() => setSelection({...selection, addressType: 'casa'})} className={`p-3 rounded-xl border text-sm font-bold transition-all ${selection.addressType === 'casa' ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#121212] border-white/10 text-gray-500'}`}>🏠 Casa</button>
            </div>
-           <div className="text-right">
-             <p className="text-xs text-gray-500 uppercase font-bold">Valor Base</p>
-             <h3 className="text-[#0A84FF] font-bold">{formatBRL(selection.service.price)}</h3>
-           </div>
-        </div>
 
-        {/* 1. Escolha de Local (Fator de UX Crítico) */}
-        <section className="mb-8">
-           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><MapPin className="w-3 h-3"/> Local</h3>
-           <div className="grid grid-cols-2 gap-3">
-             <button onClick={() => { haptic(); setSelection({...selection, locationType: 'studio'}); }} 
-               className={`p-4 rounded-2xl border text-left transition-all ${selection.locationType === 'studio' ? 'bg-[#0A84FF] border-[#0A84FF] shadow-lg shadow-blue-900/40' : 'bg-[#1C1C1E] border-white/10 text-gray-400'}`}>
-               <span className="font-bold text-sm block mb-1">Motel / Suíte</span>
-               <span className="text-[10px] opacity-80">Vou até você</span>
-             </button>
-             <button onClick={() => { haptic(); setSelection({...selection, locationType: 'delivery'}); }} 
-               className={`p-4 rounded-2xl border text-left transition-all ${selection.locationType === 'delivery' ? 'bg-[#0A84FF] border-[#0A84FF] shadow-lg shadow-blue-900/40' : 'bg-[#1C1C1E] border-white/10 text-gray-400'}`}>
-               <span className="font-bold text-sm block mb-1">Uber Ida/Volta</span>
-               <span className="text-[10px] opacity-80">+ R$ 25,00 (Taxa)</span>
-             </button>
+           <input value={selection.address} onChange={e => setSelection({...selection, address: e.target.value})} placeholder="Rua e Número" className="w-full bg-[#121212] border border-white/10 p-4 rounded-xl text-white text-sm focus:border-[#0A84FF] outline-none mb-3" />
+           <input value={selection.neighborhood} onChange={e => setSelection({...selection, neighborhood: e.target.value})} placeholder="Bairro (Para cálculo do Uber)" className="w-full bg-[#121212] border border-white/10 p-4 rounded-xl text-white text-sm focus:border-[#0A84FF] outline-none" />
+           
+           {/* Alerta Uber */}
+           <div className="mt-3 p-3 bg-[#0A84FF]/10 border border-[#0A84FF]/20 rounded-xl flex gap-3">
+              <Navigation className="w-4 h-4 text-[#0A84FF] flex-shrink-0 mt-0.5" />
+              <p className="text-[11px] text-gray-300 leading-tight">
+                 <span className="text-white font-bold">Política Uber:</span> Até 500m do meu local é <span className="text-green-400">Grátis</span>. Acima de 1km, calculamos a taxa exata no WhatsApp.
+              </p>
            </div>
-           {selection.locationType === 'delivery' && (
-              <input 
-                placeholder="Endereço (Rua, Número, Bairro)" 
-                className="w-full mt-3 bg-transparent border-b border-white/20 py-3 text-white text-sm focus:border-[#0A84FF] outline-none transition-colors"
-                onChange={e => setSelection({...selection, address: e.target.value})}
-              />
-           )}
         </section>
 
-        {/* 2. Data e Hora (Scroll Horizontal) */}
-        <section className="mb-8">
-           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><Calendar className="w-3 h-3"/> Data e Hora</h3>
-           <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
-              {['Hoje', 'Amanhã', 'Sáb', 'Dom'].map((d, i) => (
-                <button key={d} onClick={() => { haptic(); setSelection({...selection, date: d}); }}
-                   className={`px-5 py-3 rounded-xl border text-sm font-bold whitespace-nowrap transition-all ${selection.date === d ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] border-white/10 text-gray-400'}`}>
-                   {d}
-                </button>
+        {/* Data e Hora */}
+        <section>
+           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><Calendar className="w-3 h-3 text-[#0A84FF]"/> Horário</h3>
+           <div className="flex gap-2 overflow-x-auto pb-2">
+              {['Hoje', 'Amanhã', 'Sexta'].map(d => (
+                 <button key={d} onClick={() => setSelection({...selection, date: d})} className={`px-4 py-2 rounded-lg text-xs font-bold border whitespace-nowrap ${selection.date === d ? 'bg-white text-black' : 'bg-[#121212] border-white/10 text-gray-400'}`}>{d}</button>
               ))}
            </div>
            {selection.date && (
-             <div className="grid grid-cols-4 gap-2 mt-3 animate-pulse-once">
-                {['10:00', '14:00', '18:00', '20:00'].map(t => (
-                  <button key={t} onClick={() => { haptic(); setSelection({...selection, time: t}); }}
-                    className={`py-2 rounded-lg text-xs font-bold border transition-all ${selection.time === t ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-[#0A84FF]' : 'bg-[#1C1C1E] border-white/5 text-gray-500'}`}>
-                    {t}
-                  </button>
-                ))}
+              <div className="grid grid-cols-4 gap-2 mt-2">
+                 {['14:00', '16:00', '19:00', '21:00'].map(t => (
+                    <button key={t} onClick={() => setSelection({...selection, time: t})} className={`py-2 rounded-lg text-xs font-bold border ${selection.time === t ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#121212] border-white/10 text-gray-500'}`}>{t}</button>
+                 ))}
+              </div>
+           )}
+        </section>
+
+        {/* Extras */}
+        <section>
+           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><Sparkles className="w-3 h-3 text-[#0A84FF]"/> Adicionais</h3>
+           
+           <button onClick={() => setSelection({...selection, aroma: !selection.aroma})} className={`w-full p-4 rounded-xl border flex items-center justify-between transition-all ${selection.aroma ? 'bg-green-500/10 border-green-500/50' : 'bg-[#121212] border-white/10'}`}>
+              <div className="flex items-center gap-3">
+                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${selection.aroma ? 'bg-green-500 text-black' : 'bg-gray-800 text-gray-500'}`}><Zap className="w-4 h-4"/></div>
+                 <div className="text-left"><p className="text-white font-bold text-sm">Aromaterapia</p><p className="text-[10px] text-gray-400">Ambiente perfumado e imersivo</p></div>
+              </div>
+              <span className="text-green-400 font-bold text-sm">+ R$ 10,00</span>
+           </button>
+
+           {/* Cupom */}
+           {!selection.coupon ? (
+             <div onClick={() => { triggerHaptic(); setSelection({...selection, coupon: true}); }} className="mt-4 p-4 border border-dashed border-[#FFD60A]/30 bg-[#FFD60A]/5 rounded-xl text-center cursor-pointer active:scale-95 transition-transform">
+                <p className="text-[#FFD60A] text-xs font-bold uppercase tracking-widest animate-pulse">Toque para ativar Cupom R$ 10</p>
+             </div>
+           ) : (
+             <div className="mt-4 p-3 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center justify-center gap-2">
+                <Check className="w-4 h-4 text-green-500" /> <span className="text-green-400 text-xs font-bold">Desconto Aplicado!</span>
              </div>
            )}
         </section>
 
-        {/* 3. Add-ons (Upsell Fácil) */}
-        <section className="mb-8">
-           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><Zap className="w-3 h-3"/> Turbinar Sessão</h3>
-           <div className="space-y-2">
-             {ADDONS.map(addon => {
-               const active = selection.addons.some(a => a.id === addon.id);
-               return (
-                 <div key={addon.id} onClick={() => {
-                    haptic();
-                    setSelection(prev => ({
-                      ...prev, 
-                      addons: active ? prev.addons.filter(a => a.id !== addon.id) : [...prev.addons, addon]
-                    }))
-                 }} className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${active ? 'bg-[#32D74B]/10 border-[#32D74B] text-white' : 'bg-[#1C1C1E] border-white/5 text-gray-400'}`}>
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg">{addon.icon}</span>
-                      <span className="text-sm font-medium">{addon.name}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                       <span className="text-xs">{addon.price === 0 ? 'Grátis' : `+ ${formatBRL(addon.price)}`}</span>
-                       <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${active ? 'bg-[#32D74B] border-[#32D74B]' : 'border-gray-600'}`}>
-                          {active && <Check className="w-3 h-3 text-black" />}
-                       </div>
-                    </div>
-                 </div>
-               )
-             })}
-           </div>
-        </section>
-
       </div>
 
-      {/* FOOTER FLUTUANTE DE CHECKOUT */}
-      <div className="fixed bottom-0 w-full p-0 z-30">
-        <div className="h-16 bg-gradient-to-t from-black to-transparent pointer-events-none" />
-        <div className="bg-[#1C1C1E] border-t border-white/10 rounded-t-[30px] p-6 pb-8 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
-           
-           {/* Resumo de Preço */}
-           <div className="flex justify-between items-end mb-4">
-              <div className="flex flex-col">
-                 <span className="text-xs text-gray-500 font-bold uppercase mb-1">Total Estimado</span>
-                 {selection.couponApplied && <span className="text-[10px] text-green-400 flex items-center gap-1"><Sparkles className="w-3 h-3"/> Cupom Aplicado</span>}
-              </div>
-              <div className="text-right">
-                 {selection.couponApplied && <span className="text-sm text-gray-500 line-through mr-2">{formatBRL(total + 20)}</span>}
-                 <span className="text-3xl font-bold text-white tracking-tighter">{formatBRL(total)}</span>
-              </div>
-           </div>
+      {/* FOOTER CHECKOUT */}
+      <div className="fixed bottom-0 w-full z-30">
+        <div className="h-10 bg-gradient-to-t from-black to-transparent pointer-events-none" />
+        <div className="bg-[#121212] border-t border-white/10 p-5 rounded-t-[25px] shadow-[0_-10px_50px_rgba(0,0,0,0.9)]">
+            <div className="flex justify-between items-end mb-4">
+               <div>
+                  <p className="text-xs text-gray-500 uppercase font-bold">Total Estimado</p>
+                  {selection.aroma && <span className="text-[10px] text-gray-400 block">+ Aroma Incluso</span>}
+                  {selection.coupon && <span className="text-[10px] text-green-400 block">- Desconto R$ 10</span>}
+               </div>
+               <div className="text-right">
+                  <h2 className="text-3xl font-bold text-white tracking-tighter">R$ {total}</h2>
+                  <p className="text-[10px] text-[#0A84FF] font-bold">+ Taxa Uber (A calcular)</p>
+               </div>
+            </div>
 
-           {/* Botão de Ação */}
-           <button 
-             disabled={!selection.date || !selection.time}
-             onClick={() => setView('success')}
-             className="w-full btn-primary py-4 rounded-2xl flex items-center justify-center gap-3 text-lg disabled:opacity-50 disabled:scale-100 disabled:shadow-none">
-             <span className="font-bold">Agendar pelo WhatsApp</span>
-             <ArrowRight className="w-5 h-5" />
-           </button>
-           <p className="text-center text-[10px] text-gray-600 mt-3 flex items-center justify-center gap-1">
-             <ShieldCheck className="w-3 h-3"/> Pagamento direto ao massagista. Sem cartão no app.
-           </p>
+            <button 
+               disabled={!selection.address || !selection.time}
+               onClick={() => {
+                   // Salva gamificação
+                   const newStats = { ...userStats, spent: userStats.spent + total };
+                   localStorage.setItem('sp_massage_user', JSON.stringify(newStats));
+                   
+                   // Gera Link Zap
+                   const msg = `*NOVO AGENDAMENTO SP* 🏢
+--------------------------------
+👤 *Cliente:* Anônimo
+💆 *Serviço:* ${selection.service.title}
+💰 *Valor Base:* R$ ${selection.service.price}
+
+📍 *Local:* ${selection.addressType === 'apt' ? 'Apartamento' : 'Casa'}
+🏠 *Endereço:* ${selection.address}
+🏘 *Bairro:* ${selection.neighborhood}
+_(Verificar taxa Uber: <500m Free / >1km Calcular)_
+
+📅 *Data:* ${selection.date} às ${selection.time}
+
+*ADICIONAIS:*
+${selection.aroma ? '✅ Aromaterapia (+R$ 10)' : '❌ Sem Aroma'}
+${selection.coupon ? '🎟 CUPOM ATIVO (-R$ 10)' : ''}
+
+*TOTAL PENDENTE: R$ ${total},00* (+ Uber)
+--------------------------------`;
+                   window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
+               }}
+               className="w-full btn-primary py-4 rounded-xl flex items-center justify-center gap-2 text-lg disabled:opacity-50 disabled:shadow-none">
+               <span className="font-bold">Agendar no WhatsApp</span> <ArrowRight className="w-5 h-5" />
+            </button>
         </div>
       </div>
     </div>
   );
-
-  // VIEW SUCESSO (Geração da Msg)
-  if (view === 'success') {
-    const msg = `*PEDIDO INICIADO* 🚀
-    
-💆 *${selection.service.title}*
-📅 ${selection.date} às ${selection.time}
-📍 ${selection.locationType === 'studio' ? 'No Motel/Suíte' : 'No meu Local (Uber)'}
-${selection.address ? `🏠 ${selection.address}` : ''}
-
-*EXTRAS:*
-${selection.addons.map(a => `+ ${a.name}`).join('\n') || 'Nenhum'}
-
-${selection.couponApplied ? '🎟 *CUPOM DE 1ª VEZ APLICADO (-R$20)*' : ''}
-
-💰 *TOTAL FINAL: ${formatBRL(total)}*
-(Pagamento: Pix ou Dinheiro)
-
------------------------------
-*Aguardo confirmação.*`;
-
-    const zapLink = `https://wa.me/5517991360413?text=${encodeURIComponent(msg)}`;
-    
-    // Auto-redirect UX
-    setTimeout(() => {
-       window.open(zapLink, '_blank');
-       localStorage.setItem('thaly_history', 'true'); // Marca como cliente antigo
-    }, 1500);
-
-    return (
-      <div className="h-screen flex flex-col items-center justify-center bg-black px-6 text-center">
-        <style>{styles}</style>
-        <div className="w-24 h-24 bg-[#32D74B] rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(34,197,94,0.5)] animate-bounce">
-           <Check className="w-12 h-12 text-black" />
-        </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Quase lá!</h2>
-        <p className="text-gray-400 mb-8">Abrindo seu WhatsApp para confirmar...</p>
-        
-        <div className="p-4 rounded-xl bg-[#1C1C1E] border border-white/10 w-full max-w-xs animate-pulse">
-           <p className="text-xs text-gray-500 mb-2">Resumo</p>
-           <div className="flex justify-between text-sm font-bold">
-              <span>Total</span>
-              <span>{formatBRL(total)}</span>
-           </div>
-        </div>
-
-        <button onClick={() => window.location.reload()} className="mt-8 text-sm text-[#0A84FF] font-bold">Voltar ao Início</button>
-      </div>
-    );
-  }
 }
