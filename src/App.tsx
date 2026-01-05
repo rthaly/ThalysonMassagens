@@ -2,11 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import {
   Check, MapPin, Star, ArrowRight, Bed, 
   Home, MessageCircle, Clock, Zap, Ticket, Lock,
-  ShieldCheck, Map, Navigation, User, ChevronDown, Flame, AlertCircle, Car
+  ShieldCheck, Map, Navigation, User, ChevronDown, Flame, AlertCircle, 
+  CreditCard, Banknote, QrCode, Copy
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. ESTILOS GLOBAIS (DARK MODE REFINADO)
+// 1. ESTILOS GLOBAIS
 // ==================================================================================
 
 const globalStyles = `
@@ -37,6 +38,10 @@ section.active-step {
   pointer-events: auto;
   filter: blur(0);
 }
+
+/* --- TOAST NOTIFICATION --- */
+.toast-enter { animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+@keyframes slideDown { from { transform: translate(-50%, -100%); opacity: 0; } to { transform: translate(-50%, 20px); opacity: 1; } }
 
 /* --- BACKGROUND --- */
 .luxury-bg {
@@ -92,10 +97,6 @@ section.active-step {
 }
 .smart-input::placeholder { color: #555; font-weight: 500; }
 
-/* --- ANIMATIONS --- */
-.animate-enter { animation: enter 0.6s ease forwards; opacity: 0; transform: translateY(20px); }
-@keyframes enter { to { opacity: 1; transform: translateY(0); } }
-
 /* --- VISUAL DISCOUNT --- */
 .price-strike {
   text-decoration: line-through;
@@ -111,6 +112,7 @@ section.active-step {
 
 const CONFIG = {
   PHONE: "5517991360413", 
+  PIX_KEY: "62922530000144", // CNPJ/Chave
   COUPON_VAL: 12, 
   PRICES: {
     UPGRADE_PCT: 0.5,
@@ -166,13 +168,20 @@ const formatBRL = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency
 const vibrate = () => { if (navigator.vibrate) navigator.vibrate(12); };
 
 // ==================================================================================
-// 4. COMPONENTES
+// 4. COMPONENTES VISUAIS
 // ==================================================================================
+
+const Toast = ({ msg }) => (
+  <div className="fixed top-0 left-1/2 z-[200] bg-[#32D74B] text-black px-6 py-3 rounded-full shadow-[0_10px_40px_rgba(50,215,75,0.4)] flex items-center gap-3 toast-enter font-bold text-sm">
+    <Check className="w-5 h-5" strokeWidth={3} />
+    {msg}
+  </div>
+);
 
 const CouponModal = ({ onClaim }) => {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    const used = localStorage.getItem('thaly_coupon_v4');
+    const used = localStorage.getItem('thaly_coupon_v5');
     if (!used) setTimeout(() => setShow(true), 1200);
   }, []);
 
@@ -227,14 +236,16 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [hasCoupon, setHasCoupon] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [toast, setToast] = useState(null);
   
-  // Refs para Scroll
+  // Refs
   const refs = {
     intro: useRef(null),
     services: useRef(null),
     datetime: useRef(null),
     extras: useRef(null),
     location: useRef(null),
+    payment: useRef(null),
     checkout: useRef(null)
   };
 
@@ -242,7 +253,7 @@ export default function App() {
   const [data, setData] = useState({
     name: '', age: '', service: null, date: null, time: null, location: null,
     street: '', number: '', district: '', comp: '',
-    extras: { upgrade: false, touch: false }, payment: 'pix'
+    extras: { upgrade: false, touch: false }, payment: null // Payment starts null to force choice
   });
 
   const [stage, setStage] = useState(0);
@@ -281,8 +292,22 @@ export default function App() {
 
   const handleAddressConfirm = () => {
       if(data.street && data.number && data.district) {
-          nextStep(5, refs.checkout);
+          nextStep(5, refs.payment);
       }
+  };
+
+  const handlePaymentSelect = (method) => {
+    vibrate();
+    setData({...data, payment: method});
+    
+    // Lógica do PIX (Copia e Cola)
+    if (method === 'pix') {
+        navigator.clipboard.writeText(CONFIG.PIX_KEY);
+        setToast("Chave Pix Copiada!");
+        setTimeout(() => setToast(null), 3000);
+    }
+    
+    nextStep(6, refs.checkout);
   };
 
   const getSubTotal = () => {
@@ -300,7 +325,7 @@ export default function App() {
   }
 
   const finishOrder = () => {
-    if (hasCoupon) localStorage.setItem('thaly_coupon_v4', 'true');
+    if (hasCoupon) localStorage.setItem('thaly_coupon_v5', 'true');
 
     const total = getFinalTotal();
     const dateStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
@@ -326,7 +351,7 @@ export default function App() {
 
     text += `\n💰 *TOTAL DO SERVIÇO: ${formatBRL(total)}*\n`;
     text += `🚗 *TAXA DESLOCAMENTO: A CALCULAR*\n`;
-    text += `💳 Pagto: ${data.payment.toUpperCase()}`;
+    text += `💳 Pagto: ${data.payment ? data.payment.toUpperCase() : 'A COMBINAR'}`;
 
     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`, '_blank');
     setSuccess(true);
@@ -344,10 +369,9 @@ export default function App() {
           <div className="w-24 h-24 bg-[#32D74B]/10 rounded-full flex items-center justify-center mb-6 border border-[#32D74B]/20 shadow-[0_0_60px_rgba(50,215,75,0.15)]">
               <Check className="w-10 h-10 text-[#32D74B]" strokeWidth={3} />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-3">Pedido Enviado!</h2>
-          <p className="text-gray-300 text-sm mb-2 font-bold">⚠️ PRÓXIMO PASSO:</p>
+          <h2 className="text-3xl font-bold text-white mb-3">Solicitação Enviada!</h2>
           <p className="text-gray-400 mb-8 leading-relaxed max-w-xs mx-auto">
-              Me envie sua <strong>Localização em Tempo Real</strong> no WhatsApp para eu calcular a taxa de Uber/Deslocamento exata.
+              Agora é só aguardar. Vou calcular a taxa de deslocamento e te confirmo o valor final no WhatsApp.
           </p>
           <button onClick={() => window.location.reload()} className="w-full bg-[#1a1a1a] border border-[#333] text-white py-4 rounded-[18px] font-bold hover:bg-[#222]">
               Voltar ao Início
@@ -358,6 +382,8 @@ export default function App() {
   return (
     <div className="luxury-bg min-h-screen text-gray-200 pb-40">
       <style>{globalStyles}</style>
+      
+      {toast && <Toast msg={toast} />}
       <CouponModal onClaim={() => setHasCoupon(true)} />
       
       {/* HEADER FIXO */}
@@ -521,14 +547,14 @@ export default function App() {
             </div>
         </section>
 
-        {/* 5. LOCALIZAÇÃO (FINAL) */}
+        {/* 5. LOCALIZAÇÃO */}
         <section ref={refs.location} className={stage >= 4 ? 'active-step' : ''}>
             <div className="flex items-center gap-3 mb-4 opacity-80 mt-12">
                 <div className="w-6 h-6 rounded-full bg-[#222] border border-[#333] flex items-center justify-center text-xs font-bold text-white">4</div>
                 <h2 className="text-lg font-bold text-white">Onde irei te atender?</h2>
             </div>
 
-            <div className="space-y-3 pb-32">
+            <div className="space-y-3 pb-8">
                 {LOCATIONS.map(loc => {
                     const isSel = data.location?.id === loc.id;
                     return (
@@ -542,10 +568,6 @@ export default function App() {
                                         <div className="font-bold text-white text-[15px]">{loc.label}</div>
                                         <div className="text-[11px] text-gray-500 mt-0.5">{loc.sub}</div>
                                     </div>
-                                </div>
-                                <div className="text-right">
-                                     <span className="text-[9px] font-bold text-gray-500 block">TAXA</span>
-                                     <span className="text-xs font-bold text-[#0A84FF]">NO ZAP</span>
                                 </div>
                             </button>
 
@@ -583,7 +605,7 @@ export default function App() {
                                         onClick={handleAddressConfirm} 
                                         className="w-full bg-[#1a1a1a] border border-[#333] text-white py-3.5 rounded-xl text-xs font-bold mt-2 hover:bg-[#222] flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                     >
-                                        Salvar Endereço <Check size={14}/>
+                                        Confirmar Endereço <Check size={14}/>
                                     </button>
                                 </div>
                             )}
@@ -593,10 +615,33 @@ export default function App() {
             </div>
         </section>
 
+        {/* 6. FORMA DE PAGAMENTO */}
+        <section ref={refs.payment} className={stage >= 5 ? 'active-step' : ''}>
+            <div className="flex items-center gap-3 mb-4 opacity-80 mt-12">
+                <div className="w-6 h-6 rounded-full bg-[#222] border border-[#333] flex items-center justify-center text-xs font-bold text-white">5</div>
+                <h2 className="text-lg font-bold text-white">Forma de Pagamento</h2>
+            </div>
+            
+            <div className="glass-card p-3 rounded-[24px] pb-32 grid grid-cols-3 gap-2">
+                <button onClick={() => handlePaymentSelect('pix')} className={`flex flex-col items-center justify-center gap-2 p-4 rounded-[18px] border transition-all ${data.payment === 'pix' ? 'bg-[#0A84FF]/20 border-[#0A84FF]' : 'border-[#222] hover:bg-[#1a1a1a]'}`}>
+                    <QrCode className="w-6 h-6 text-[#0A84FF]" />
+                    <span className="text-xs font-bold text-white">Pix</span>
+                </button>
+                <button onClick={() => handlePaymentSelect('dinheiro')} className={`flex flex-col items-center justify-center gap-2 p-4 rounded-[18px] border transition-all ${data.payment === 'dinheiro' ? 'bg-[#0A84FF]/20 border-[#0A84FF]' : 'border-[#222] hover:bg-[#1a1a1a]'}`}>
+                    <Banknote className="w-6 h-6 text-[#32D74B]" />
+                    <span className="text-xs font-bold text-white">Dinheiro</span>
+                </button>
+                <button onClick={() => handlePaymentSelect('cartao')} className={`flex flex-col items-center justify-center gap-2 p-4 rounded-[18px] border transition-all ${data.payment === 'cartao' ? 'bg-[#0A84FF]/20 border-[#0A84FF]' : 'border-[#222] hover:bg-[#1a1a1a]'}`}>
+                    <CreditCard className="w-6 h-6 text-[#FFD60A]" />
+                    <span className="text-xs font-bold text-white">Cartão</span>
+                </button>
+            </div>
+        </section>
+
       </main>
 
-      {/* 6. CHECKOUT FLUTUANTE (VISUAL UX MELHORADO) */}
-      {stage >= 5 && (
+      {/* 7. CHECKOUT FLUTUANTE (SÓ APARECE NO FINAL) */}
+      {stage >= 6 && (
         <div ref={refs.checkout} className="fixed bottom-0 w-full z-50 animate-enter">
             <div className="h-24 bg-gradient-to-t from-black via-black/95 to-transparent absolute bottom-full w-full pointer-events-none"></div>
             
