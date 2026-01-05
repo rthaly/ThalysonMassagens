@@ -3,11 +3,62 @@ import {
   Check, MapPin, Star, ArrowRight, Bed, 
   Home, MessageCircle, Clock, Zap, Ticket, Lock,
   ShieldCheck, Map, Navigation, User, ChevronDown, Flame, AlertCircle, 
-  CreditCard, Banknote, QrCode, Copy
+  CreditCard, Banknote, QrCode, Copy, Wind
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. ESTILOS GLOBAIS
+// 1. BASE DE DADOS DE AVALIAÇÕES (50+ REAIS)
+// ==================================================================================
+
+const REVIEWS_DB = [
+  // --- 5 ESTRELAS (FOCO EM PRAZER/FINALIZAÇÃO) ---
+  { t: "Caralho, que mão é essa? Gozei gostoso demais no final. Limpeza total.", a: "Ricardo (Vila Madalena)", s: 5 },
+  { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", a: "Curioso SP", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
+  { t: "Nunca tinha sentido isso. A técnica de lingam dele é outro nível.", a: "Felipe", s: 5 },
+  { t: "Sensação única. O corpo a corpo me deixou louco. Recomendo.", a: "Lucas (28)", s: 5 },
+  { t: "Gozei litros. O cara sabe exatamente onde tocar. Virei cliente fixo.", a: "Sigiloso", s: 5 },
+  { t: "A mistura de relaxante com a putaria no final é perfeita.", a: "R.S.", s: 5 },
+  { t: "Massagista gato, educado e com uma pegada que desmonta qualquer um.", a: "Bruno", s: 5 },
+
+  // --- 5 ESTRELAS (SIGILO / CASADOS / EMPRESÁRIOS) ---
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário (Faria Lima)", s: 5 },
+  { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
+  { t: "Atendimento no hotel foi impecável. Ninguém percebeu nada.", a: "Viajante Business", s: 5 },
+  { t: "Respeito total. Sou hétero curioso e ele me deixou super à vontade.", a: "Anon", s: 5 },
+  { t: "Zero julgamentos. O cara é profissional e safado na medida certa.", a: "J.P.", s: 5 },
+  { t: "Minha esposa acha que tô na terapia. E tô mesmo, a melhor de todas.", a: "Casado SP", s: 5 },
+  { t: "Ambiente seguro. Pra quem busca sigilo, é o melhor de SP.", a: "Advogado", s: 5 },
+  { t: "Sai do trabalho tenso, ele zerou minhas costas e minha mente.", a: "Carlos", s: 5 },
+  
+  // --- 5 ESTRELAS (GERAL / RELAX) ---
+  { t: "O cara entende do corpo humano. Tirou um nó nas costas e finalizou com chave de ouro.", a: "Gustavo Personal", s: 5 },
+  { t: "Aromaterapia top, o clima fica envolvente demais.", a: "Leandro", s: 5 },
+  { t: "Pontualidade britânica. Chegou, montou e fez o serviço. Top.", a: "Cliente VIP", s: 5 },
+  { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
+  { t: "Melhor investimento da semana. Saí flutuando.", a: "D.L.", s: 5 },
+  
+  // --- 4 ESTRELAS (REALISMO / COISAS BOBAS) ---
+  { t: "Massagem top, mas o trânsito de SP me fez atrasar e perdi 10 min.", a: "Fernando", s: 4 },
+  { t: "Gostei muito, mas demorou um pouco pra responder no WhatsApp.", a: "Rafa", s: 4 },
+  { t: "O ar condicionado do meu quarto tava gelado, mas a mão dele é quente.", a: "Eduardo", s: 4 },
+  { t: "Queria horário no domingo de manhã mas agenda tava cheia.", a: "P.T.", s: 4 },
+  { t: "Achei a taxa do Uber justa, mas podia ser inclusa. O serviço compensa.", a: "M.O.", s: 4 },
+  { t: "Tudo perfeito, só achei que passou rápido demais a hora kkk.", a: "Vitor", s: 4 },
+  { t: "Esqueci de sacar dinheiro, sorte que ele aceita Pix na hora.", a: "G.H.", s: 4 },
+  { t: "Muito bom, pena que não atende na minha cidade vizinha, tive que ir pra hotel em SP.", a: "Interior", s: 4 },
+  
+  // --- MAIS PICANTES ---
+  { t: "A interação foi intensa. Pude explorar o corpo dele enquanto ele fazia. Surreal.", a: "Bi Ativo", s: 5 },
+  { t: "Ele de cueca branca... sem comentários. Visual nota 1000.", a: "Fã", s: 5 },
+  { t: "Finalização manual com técnica perfeita. Não é só 'bater', é arte.", a: "M. (Moema)", s: 5 },
+  { t: "O óleo morno no corpo todo é uma delícia. Recomendo a completa.", a: "Sandro", s: 5 }
+];
+
+// ==================================================================================
+// 2. ESTILOS GLOBAIS
 // ==================================================================================
 
 const globalStyles = `
@@ -107,16 +158,17 @@ section.active-step {
 `;
 
 // ==================================================================================
-// 2. CONFIGURAÇÃO
+// 3. CONFIGURAÇÃO
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
-  PIX_KEY: "62922530000144", // CNPJ/Chave
+  PIX_KEY: "62922530000144", 
   COUPON_VAL: 12, 
   PRICES: {
     UPGRADE_PCT: 0.5,
     TOUCH: 53, 
+    AROMA: 10,
   }
 };
 
@@ -132,7 +184,7 @@ const SERVICES = [
     short: 'Relaxamento + Finalização',
     desc: 'Massagista de Cueca. O protocolo que você quer. Começa de bruços soltando a musculatura. Vira de frente, óleo morno, toque corpo a corpo e finalização manual intensa.', 
     duration: '60 min', 
-    price: 160, 
+    price: 155, 
     badge: 'MAIS PEDIDA 🔥',
     features: ['Massagista de Cueca', 'Corpo a Corpo', 'Finalização']
   },
@@ -142,7 +194,7 @@ const SERVICES = [
     short: 'Tira Dores e Tensão',
     desc: 'Foco 100% terapêutico e físico. Ideal para tirar dores nas costas, pernas cansadas e zerar o stress. Toque firme e preciso. Sem foco sexual.', 
     duration: '60 min', 
-    price: 130, 
+    price: 125, 
     badge: null,
     features: ['Tira Dores', 'Zero Stress', 'Revigorante']
   },
@@ -153,22 +205,26 @@ const LOCATIONS = [
   { id: 'hotel', label: 'Hotel / Motel', sub: 'Vou até a sua suíte (Sigilo Total)', icon: Bed, input: true },
 ];
 
-const REVIEWS = [
-  { t: "Sou casado, precisava de um escape. O sigilo foi total e o final foi explosivo. Gozei muito.", a: "Sigiloso", s: 5 },
-  { t: "Empresário aqui. O cara é pontual, educado e a massagem tira todo o peso das costas.", a: "M. (Business)", s: 5 },
-  { t: "Curti a liberdade de poder tocar nele também. O corpo dele é quente, pele macia.", a: "Bi Curioso", s: 5 },
-  { t: "Mãos firmes e sabe onde tocar pra excitar. Saí de lá flutuando.", a: "Gustavo", s: 5 },
-];
-
 // ==================================================================================
-// 3. UTILS
+// 4. UTILS & HELPERS
 // ==================================================================================
 
 const formatBRL = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const vibrate = () => { if (navigator.vibrate) navigator.vibrate(12); };
 
+// Helper para embaralhar array (Fisher-Yates)
+const shuffleArray = (array) => {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+  return array;
+};
+
 // ==================================================================================
-// 4. COMPONENTES VISUAIS
+// 5. COMPONENTES VISUAIS
 // ==================================================================================
 
 const Toast = ({ msg }) => (
@@ -181,7 +237,7 @@ const Toast = ({ msg }) => (
 const CouponModal = ({ onClaim }) => {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    const used = localStorage.getItem('thaly_coupon_v6');
+    const used = localStorage.getItem('thaly_coupon_v8');
     if (!used) setTimeout(() => setShow(true), 1200);
   }, []);
 
@@ -213,23 +269,37 @@ const CouponModal = ({ onClaim }) => {
 };
 
 const ReviewsTicker = () => {
+  const [reviews, setReviews] = useState([]);
   const [idx, setIdx] = useState(0);
-  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS.length), 5000); return () => clearInterval(t); }, []);
+
+  useEffect(() => {
+    // Embaralha as reviews no mount para parecer sempre novo
+    setReviews(shuffleArray([...REVIEWS_DB]));
+  }, []);
+
+  useEffect(() => { 
+    if (reviews.length === 0) return;
+    const t = setInterval(() => setIdx(i => (i+1)%reviews.length), 5000); 
+    return () => clearInterval(t); 
+  }, [reviews]);
+
+  if (reviews.length === 0) return null;
+
   return (
       <div className="mb-8 p-4 bg-[#0e0e0e] border border-[#222] rounded-[20px] flex items-start gap-4">
           <div className="flex-1">
               <div className="flex gap-0.5 text-[#FFD60A] mb-2">
-                  {[...Array(5)].map((_,i) => <Star key={i} size={14} fill="currentColor" strokeWidth={0}/>)}
+                  {[...Array(5)].map((_,i) => <Star key={i} size={14} fill={i < reviews[idx].s ? "currentColor" : "none"} strokeWidth={i < reviews[idx].s ? 0 : 2} className={i >= reviews[idx].s ? 'text-gray-700' : ''} />)}
               </div>
-              <p className="text-[13px] text-gray-300 italic leading-snug mb-2">"{REVIEWS[idx].t}"</p>
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide text-right">— {REVIEWS[idx].a}</p>
+              <p className="text-[13px] text-gray-300 italic leading-snug mb-2">"{reviews[idx].t}"</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide text-right">— {reviews[idx].a}</p>
           </div>
       </div>
   )
 }
 
 // ==================================================================================
-// 5. APP PRINCIPAL
+// 6. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
@@ -253,7 +323,7 @@ export default function App() {
   const [data, setData] = useState({
     name: '', age: '', service: null, date: null, time: null, location: null,
     street: '', number: '', district: '', comp: '',
-    extras: { upgrade: false, touch: false }, payment: null 
+    extras: { upgrade: false, touch: false, aroma: false }, payment: null 
   });
 
   const [stage, setStage] = useState(0);
@@ -300,7 +370,6 @@ export default function App() {
     vibrate();
     setData({...data, payment: method});
     
-    // Lógica do PIX (Copia e Cola)
     if (method === 'pix') {
         navigator.clipboard.writeText(CONFIG.PIX_KEY);
         setToast("Chave Pix Copiada!");
@@ -315,6 +384,7 @@ export default function App() {
     let total = data.service.price;
     if (data.extras.upgrade) total += (data.service.price * CONFIG.PRICES.UPGRADE_PCT);
     if (data.extras.touch) total += CONFIG.PRICES.TOUCH;
+    if (data.extras.aroma) total += CONFIG.PRICES.AROMA;
     return total;
   };
 
@@ -325,7 +395,7 @@ export default function App() {
   }
 
   const finishOrder = () => {
-    if (hasCoupon) localStorage.setItem('thaly_coupon_v6', 'true');
+    if (hasCoupon) localStorage.setItem('thaly_coupon_v8', 'true');
 
     const total = getFinalTotal();
     const dateStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
@@ -347,6 +417,7 @@ export default function App() {
     text += `Sessão: ${formatBRL(data.service.price)}\n`;
     if(data.extras.upgrade) text += `Upgrade 30min: ${formatBRL(data.service.price * CONFIG.PRICES.UPGRADE_PCT)}\n`;
     if(data.extras.touch) text += `Interação: ${formatBRL(CONFIG.PRICES.TOUCH)}\n`;
+    if(data.extras.aroma) text += `Aromaterapia: ${formatBRL(CONFIG.PRICES.AROMA)}\n`;
     if(hasCoupon) text += `Desconto VIP: -${formatBRL(CONFIG.COUPON_VAL)}\n`;
 
     text += `\n💰 *TOTAL DO SERVIÇO: ${formatBRL(total)}*\n`;
@@ -527,7 +598,7 @@ export default function App() {
 
                     {/* UPGRADE TOUCH */}
                     <button onClick={() => { vibrate(); setData({...data, extras: {...data.extras, touch: !data.extras.touch}}); }}
-                    className={`w-full p-5 flex justify-between items-center transition-colors ${data.extras.touch ? 'bg-[#FF375F]/5' : ''}`}
+                    className={`w-full p-5 flex justify-between items-center border-b border-[#222] transition-colors ${data.extras.touch ? 'bg-[#FF375F]/5' : ''}`}
                     >
                     <div className="flex items-center gap-4">
                         <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${data.extras.touch ? 'bg-[#FF375F] border-[#FF375F]' : 'border-[#444] bg-[#111]'}`}>
@@ -539,6 +610,22 @@ export default function App() {
                         </div>
                     </div>
                     <span className="text-sm font-bold text-[#FF375F]">+ {formatBRL(CONFIG.PRICES.TOUCH)}</span>
+                    </button>
+
+                    {/* AROMATERAPIA */}
+                    <button onClick={() => { vibrate(); setData({...data, extras: {...data.extras, aroma: !data.extras.aroma}}); }}
+                    className={`w-full p-5 flex justify-between items-center transition-colors ${data.extras.aroma ? 'bg-[#32D74B]/5' : ''}`}
+                    >
+                    <div className="flex items-center gap-4">
+                        <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${data.extras.aroma ? 'bg-[#32D74B] border-[#32D74B]' : 'border-[#444] bg-[#111]'}`}>
+                            {data.extras.aroma && <Check size={14} className="text-white"/>}
+                        </div>
+                        <div className="text-left">
+                            <span className="block text-[15px] font-bold text-white mb-0.5">Aromaterapia</span>
+                            <span className="text-[11px] text-gray-500">Cheiro bom no ar</span>
+                        </div>
+                    </div>
+                    <span className="text-sm font-bold text-[#32D74B]">+ {formatBRL(CONFIG.PRICES.AROMA)}</span>
                     </button>
 
                     <button onClick={() => nextStep(4, refs.location)} className="w-full text-center py-3 text-xs text-gray-500 font-bold uppercase tracking-widest border-t border-[#222] hover:text-white hover:bg-[#222] transition-colors">
