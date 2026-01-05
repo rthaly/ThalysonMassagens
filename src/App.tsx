@@ -1,98 +1,114 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChevronLeft, Check, Star, MapPin, Calendar, Clock,
-  ArrowRight, ShieldCheck, Zap, Hand, Gift, Crown,
+  ArrowRight, ShieldCheck, Hand, Gift, Crown,
   CreditCard, Banknote, QrCode, Send, Sparkles, X, 
-  AlertTriangle, CheckCircle2, Info
+  AlertTriangle, Info, Navigation, ThumbsUp
 } from 'lucide-react';
 
 /* ==================================================================================
-   1. ESTILOS CSS INJETADOS (DARK LUXURY SP EDITION)
+   1. DESIGN SYSTEM & CSS (CSS-IN-JS OTMIZADO)
    ================================================================================== */
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body, html { margin: 0; padding: 0; background-color: #000; color: #fff; font-family: 'Inter', -apple-system, sans-serif; }
+  :root {
+    --primary: #0A84FF;
+    --bg-dark: #050505;
+    --card-bg: rgba(28, 28, 30, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --safe-area-bottom: env(safe-area-inset-bottom);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
   
-  /* Utilitários */
+  body, html { 
+    margin: 0; padding: 0; 
+    background-color: var(--bg-dark); 
+    color: #F5F5F7; 
+    font-family: 'Inter', -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* --- UTILITÁRIOS --- */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .tap-target { min-height: 52px; } /* Melhor para dedos em telas mobile */
+  .tap-target { min-height: 56px; } /* Área de toque aumentada */
+  .fade-enter { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-  /* Animações */
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
-  @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes pulseSubtle { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-  .animate-enter { animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-  
-  /* Glassmorphism Premium */
-  .glass-panel {
-    background: rgba(30, 30, 30, 0.7);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+  /* --- COMPONENTES --- */
+  .glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
-  
-  /* Inputs Mobile-First (Font 16px evita zoom no iOS) */
+
   .custom-input {
-    background: #151517;
+    background: #1C1C1E;
     border: 1px solid #333;
     color: white;
-    font-size: 16px; 
+    font-size: 16px; /* Evita zoom no iOS */
     border-radius: 14px;
     width: 100%;
-    padding: 18px;
-    transition: 0.2s;
+    padding: 16px;
+    transition: all 0.2s;
+    user-select: text; /* Permite digitar */
   }
-  .custom-input:focus { border-color: #0A84FF; outline: none; background: #1C1C1E; }
+  .custom-input:focus { border-color: var(--primary); outline: none; background: #2C2C2E; }
 
-  /* Botão Principal */
   .btn-primary {
-    background: #0A84FF;
+    background: var(--primary);
     color: white;
     font-weight: 700;
     font-size: 16px;
     border-radius: 16px;
-    padding: 20px;
+    padding: 18px;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 8px 30px rgba(10, 132, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(10, 132, 255, 0.3);
     border: none;
     cursor: pointer;
     transition: transform 0.1s;
   }
-  .btn-primary:active { transform: scale(0.97); }
+  .btn-primary:active { transform: scale(0.96); }
   .btn-primary:disabled { background: #333; color: #666; box-shadow: none; cursor: not-allowed; }
 
-  /* Loader */
-  .loader-bg {
-    position: fixed; inset: 0; z-index: 9999; background: #000;
+  /* --- LOADER --- */
+  .app-loader {
+    position: fixed; inset: 0; z-index: 9999; 
+    background: #000;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity 0.5s ease, visibility 0.5s;
   }
-  .progress-container { width: 200px; height: 4px; background: #222; border-radius: 4px; overflow: hidden; margin-top: 20px; }
-  .progress-bar { height: 100%; background: #0A84FF; animation: loadBar 2.5s ease-in-out forwards; }
+  .app-loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  
+  .loader-bar-bg { width: 180px; height: 3px; background: #222; border-radius: 3px; overflow: hidden; margin-top: 24px; }
+  .loader-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.1s linear; }
 
-  /* Popup Cupom */
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-    animation: fadeIn 0.3s ease-out;
-  }
+  /* --- TOAST --- */
+  .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; }
+  .toast { background: #32D74B; color: #000; padding: 12px 24px; rounded: 30px; font-weight: 600; font-size: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 8px; animation: fadeIn 0.3s forwards; }
 `;
 
 /* ==================================================================================
-   2. CONFIGURAÇÃO DE NEGÓCIO (SÃO PAULO)
+   2. REGRAS DE NEGÓCIO & DADOS
    ================================================================================== */
 const CONFIG = {
-  PHONE: "5517991360413", // Seu número
-  COUPONS: {
-    'BEMVINDO': { code: 'BEMVINDO', discount: 0.10, type: 'percent', label: '10% OFF' }, // 10%
-    'VIPSP': { code: 'VIPSP', discount: 20, type: 'fixed', label: 'R$ 20 OFF' }
+  WHATSAPP: "5517991360413", 
+  COUPON_CODE: "BEMVINDO10",
+  COUPON_VAL: 0.10, // 10%
+  STORAGE_KEYS: {
+    USED_COUPON: 'thaly_used_coupon_v1',
+    USER_NAME: 'thaly_username_v1'
   }
 };
 
@@ -100,119 +116,150 @@ const DATA = {
   services: [
     { 
       id: 'masculina', 
-      title: 'Massagem Masculina (SP)', 
+      title: 'Protocolo Masculino SP', 
       price: 200, 
-      desc: 'Técnica exclusiva. Relaxamento profundo + Finalização manual inclusa.',
-      tag: 'PREFERIDA EM SP 🔥'
+      time: '60 min',
+      desc: 'Experiência completa. Relaxamento muscular profundo seguido de técnica tântrica e finalização manual.',
+      tag: 'MAIS PEDIDO 🏆'
     },
     { 
       id: 'relaxante', 
       title: 'Massagem Relaxante', 
       price: 150, 
-      desc: 'Foco terapêutico. Costas, pernas e lombar. Alívio de tensão e stress urbano.',
+      time: '50 min',
+      desc: 'Foco terapêutico. Alívio imediato de dores nas costas, pernas e tensão urbana. Sem toque íntimo.',
       tag: null
     }
   ],
   extras: [
-    { id: 'touch', label: 'Tocar o Massagista', price: 55, sub: 'Interação permitida', icon: <Hand size={18}/> },
-    { id: 'upgrade', label: '+30 Minutos', price: 80, sub: 'Sessão estendida', icon: <Clock size={18}/> },
-    { id: 'table', label: 'Levar Maca Portátil', price: 30, sub: 'Experiência Pro', icon: <Zap size={18}/> },
+    { id: 'touch', label: 'Interação (Tocar)', price: 55, sub: 'Permitido tocar o massagista' },
+    { id: 'upgrade', label: '+30 Minutos', price: 80, sub: 'Sessão estendida' },
+    { id: 'aroma', label: 'Aromaterapia Premium', price: 20, sub: 'Óleos importados' }
   ],
-  locations: [
-    { id: 'home_sp', label: 'Domicílio / Hotel', fee: 35, icon: <MapPin size={20}/>, details: 'Vou até você (Uber Incluso)' },
-    // Removido Motel e Cidades Vizinhas conforme solicitado
+  reviews: [
+    { txt: "Serviço de primeira. O atendimento no hotel foi super discreto.", author: "Ricardo (Empresário)", stars: 5 },
+    { txt: "Vale muito a pena o extra de interação. Conexão surreal.", author: "Anônimo SP", stars: 5 },
+    { txt: "Mãos firmes, tirou toda minha dor nas costas.", author: "Carlos M.", stars: 5 },
+    { txt: "Pontual e educado. Recomendo para quem busca sigilo.", author: "Felipe", stars: 5 }
   ]
 };
 
 /* ==================================================================================
-   3. COMPONENTES VISUAIS
+   3. COMPONENTES DE UI
    ================================================================================== */
-const AdvancedLoader = () => (
-  <div className="loader-bg">
+const Loader = ({ progress, visible }) => (
+  <div className={`app-loader ${!visible ? 'hidden' : ''}`}>
     <div className="relative">
-      <div className="absolute inset-0 bg-blue-500 blur-xl opacity-20 rounded-full"></div>
-      <Crown size={48} className="text-[#0A84FF] relative z-10 animate-pulse" />
+      <div className="absolute inset-0 bg-blue-600 blur-2xl opacity-20 rounded-full animate-pulse"></div>
+      <Crown size={56} className="text-[#0A84FF] relative z-10" />
     </div>
-    <h1 className="text-white font-bold text-lg mt-6 tracking-widest uppercase">Thalyson VIP</h1>
-    <p className="text-gray-500 text-xs mt-2">São Paulo • Massoterapia</p>
-    <div className="progress-container"><div className="progress-bar"></div></div>
+    <h1 className="text-white font-bold text-xl mt-6 tracking-[0.2em] uppercase">Thalyson VIP</h1>
+    <p className="text-gray-500 text-xs mt-2 font-medium">Carregando Experiência...</p>
+    <div className="loader-bar-bg">
+      <div className="loader-bar-fill" style={{width: `${progress}%`}}></div>
+    </div>
   </div>
 );
 
-const CouponPopup = ({ onClose, onApply }) => (
-  <div className="modal-overlay">
-    <div className="bg-[#1C1C1E] border border-[#333] w-full max-w-sm rounded-3xl p-6 text-center relative shadow-2xl animate-enter">
-      <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 p-2"><X size={20}/></button>
-      
+const Toast = ({ msg }) => (
+  <div className="toast-container">
+    <div className="toast"><Check size={16}/> {msg}</div>
+  </div>
+);
+
+const BetaBadge = () => (
+  <div className="bg-[#FFD60A]/10 border-b border-[#FFD60A]/10 py-2 px-4 flex items-center justify-center gap-2">
+    <AlertTriangle size={12} className="text-[#FFD60A]" />
+    <span className="text-[10px] font-bold text-[#FFD60A] uppercase tracking-wide">App em Fase Beta • V2.0</span>
+  </div>
+);
+
+const ModalCoupon = ({ onClose, onApply }) => (
+  <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 fade-enter">
+    <div className="bg-[#1C1C1E] w-full max-w-sm rounded-3xl p-6 text-center border border-white/10 shadow-2xl relative">
+      <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20}/></button>
       <div className="w-16 h-16 bg-[#0A84FF]/20 rounded-full flex items-center justify-center mx-auto mb-4">
         <Gift size={32} className="text-[#0A84FF]" />
       </div>
-      
-      <h3 className="text-2xl font-bold text-white mb-2">Presente para Você</h3>
+      <h3 className="text-2xl font-bold text-white mb-2">Presente de Boas-vindas</h3>
       <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-        Como é sua primeira vez no novo App, ganhe <strong>10% de Desconto</strong> no seu agendamento em São Paulo.
+        Aplique agora <strong>10% OFF</strong> no seu primeiro agendamento via App.
       </p>
-
-      <button onClick={onApply} className="btn-primary">
-        RESGATAR AGORA
-      </button>
-      <p className="text-[10px] text-gray-600 mt-4">Válido apenas hoje. Aplicado no final.</p>
+      <button onClick={onApply} className="btn-primary">RESGATAR 10% OFF</button>
     </div>
-  </div>
-);
-
-const BetaBanner = () => (
-  <div className="bg-[#FFD60A]/10 border-b border-[#FFD60A]/20 px-4 py-2 flex items-center justify-center gap-2">
-    <AlertTriangle size={12} className="text-[#FFD60A]" />
-    <span className="text-[10px] font-bold text-[#FFD60A] uppercase tracking-wide">App em Fase de Testes (Beta)</span>
   </div>
 );
 
 /* ==================================================================================
-   4. APP PRINCIPAL
+   4. APP LOGIC (FULL STACK SIMULADO)
    ================================================================================== */
 export default function App() {
-  // --- STATES ---
-  const [loading, setLoading] = useState(true);
-  const [showPopup, setShowPopup] = useState(false);
-  const [step, setStep] = useState('home'); 
-  
-  const [user, setUser] = useState({ name: '' });
+  // --- STATE MANAGEMENT ---
+  const [loaded, setLoaded] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [step, setStep] = useState('home');
+  const [toast, setToast] = useState(null);
+  const [showCoupon, setShowCoupon] = useState(false);
+  const [hasUsedCoupon, setHasUsedCoupon] = useState(false);
+
+  // User & Cart State
+  const [user, setUser] = useState('');
   const [cart, setCart] = useState({
     service: null,
     date: null,
     time: null,
-    addressDetails: { street: '', number: '', comp: '' }, // SP Address
-    extras: [], 
+    locationType: null, // 'metro' (<1km) or 'uber' (>1km)
+    address: '',
+    extras: [],
     payment: 'pix',
-    coupon: null 
+    couponApplied: false
   });
 
-  // --- LIFECYCLE ---
+  // --- INITIALIZATION ---
   useEffect(() => {
-    // Simula carregamento pesado
-    setTimeout(() => {
-      setLoading(false);
-      // Mostra popup após 1 segundo de carregado
-      setTimeout(() => setShowPopup(true), 1000);
-    }, 2500);
+    // Check Storage
+    const storedUser = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_NAME);
+    const storedCoupon = localStorage.getItem(CONFIG.STORAGE_KEYS.USED_COUPON);
+    
+    if (storedUser) setUser(storedUser);
+    if (storedCoupon === 'true') setHasUsedCoupon(true);
+
+    // Fake Loading
+    let p = 0;
+    const interval = setInterval(() => {
+      p += Math.random() * 15;
+      if (p > 100) {
+        p = 100;
+        clearInterval(interval);
+        setTimeout(() => {
+          setLoaded(true);
+          // Show coupon only if never used
+          if (localStorage.getItem(CONFIG.STORAGE_KEYS.USED_COUPON) !== 'true') {
+             setTimeout(() => setShowCoupon(true), 1500);
+          }
+        }, 500);
+      }
+      setProgress(p);
+    }, 200);
+    return () => clearInterval(interval);
   }, []);
 
   // --- ACTIONS ---
-  const handleNext = (next) => { 
-    if (navigator.vibrate) navigator.vibrate(15);
-    window.scrollTo(0,0);
-    setStep(next); 
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
   };
 
-  const applyCoupon = (code) => {
-    const cp = CONFIG.COUPONS[code];
-    if (cp) {
-      setCart(c => ({...c, coupon: cp}));
-      setShowPopup(false);
-      return true;
-    }
-    return false;
+  const handleNext = (nextStep) => {
+    if (navigator.vibrate) navigator.vibrate(10);
+    window.scrollTo(0,0);
+    setStep(nextStep);
+  };
+
+  const handleApplyCoupon = () => {
+    setCart(c => ({...c, couponApplied: true}));
+    setShowCoupon(false);
+    showToast("Cupom de 10% Aplicado!");
   };
 
   const toggleExtra = (id) => {
@@ -225,206 +272,227 @@ export default function App() {
     });
   };
 
-  // --- CALCULADORA ---
+  // --- CALC ENGINE ---
   const totals = useMemo(() => {
-    let subtotal = 0;
-    if (cart.service) subtotal += cart.service.price;
-    // SP Location Fee
-    subtotal += 35; // Default fee
+    let sub = 0;
+    if (cart.service) sub += cart.service.price;
     
     // Extras
-    cart.extras.forEach(id => {
-      const item = DATA.extras.find(e => e.id === id);
-      if(item) subtotal += item.price;
+    cart.extras.forEach(eid => {
+      const it = DATA.extras.find(e => e.id === eid);
+      if (it) sub += it.price;
     });
 
+    // Discount
     let discount = 0;
-    if (cart.coupon) {
-      if (cart.coupon.type === 'percent') {
-        discount = subtotal * cart.coupon.discount;
-      } else {
-        discount = cart.coupon.discount;
-      }
+    if (cart.couponApplied && !hasUsedCoupon) {
+      discount = sub * CONFIG.COUPON_VAL;
     }
 
-    return { subtotal, discount, final: subtotal - discount };
-  }, [cart]);
+    return {
+      sub,
+      discount,
+      final: sub - discount
+    };
+  }, [cart, hasUsedCoupon]);
 
-  // --- GERADOR DE WHATSAPP (AVANÇADO) ---
-  const sendToWhatsapp = () => {
+  // --- WHATSAPP GENERATOR ---
+  const finalizeOrder = () => {
+    // 1. Save Data
+    localStorage.setItem(CONFIG.STORAGE_KEYS.USER_NAME, user);
+    if (cart.couponApplied) {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.USED_COUPON, 'true');
+    }
+
+    // 2. Build Message
     const dateStr = cart.date ? `${cart.date.getDate()}/${cart.date.getMonth()+1}` : 'Hoje';
+    const extrasTxt = cart.extras.length 
+      ? cart.extras.map(id => `✅ ${DATA.extras.find(e=>e.id===id).label}`).join('\n') 
+      : 'Nenhum extra';
     
-    const extrasText = cart.extras.length > 0 
-      ? cart.extras.map(id => `✅ + ${DATA.extras.find(e=>e.id===id).label}`).join('\n') 
-      : '⛔ Nenhum extra';
-
-    const addressText = `${cart.addressDetails.street}, ${cart.addressDetails.number} ${cart.addressDetails.comp ? `(${cart.addressDetails.comp})` : ''} - SP`;
-
-    const couponText = cart.coupon 
-      ? `🎫 *CUPOM APLICADO:* ${cart.coupon.code} (- R$ ${totals.discount.toFixed(2)})`
-      : '';
+    const locationTxt = cart.locationType === 'metro' 
+      ? `📍 Perto do Metrô (Free)\nEndereço: ${cart.address}` 
+      : `🚗 Uber (>1km) - Calcular Taxa\nEndereço: ${cart.address}`;
 
     const msg = 
-`*NOVO AGENDAMENTO (APP BETA)* 📱
+`*AGENDAMENTO CONFIRMADO* 🔒
 --------------------------------
-👤 *Cliente:* ${user.name}
-📍 *Local:* SP (Domicílio/Hotel)
+👤 *Cliente:* ${user}
 📅 *Data:* ${dateStr} às ${cart.time}
 
 💆 *SERVIÇO:*
 ${cart.service.title}
 
-🏠 *ENDEREÇO:*
-${addressText}
+🏠 *LOCALIZAÇÃO:*
+${locationTxt}
 
-✨ *EXTRAS:*
-${extrasText}
+✨ *ADICIONAIS:*
+${extrasTxt}
 
 --------------------------------
-💰 *RESUMO FINANCEIRO:*
-Subtotal: R$ ${totals.subtotal.toFixed(2)}
-${couponText ? couponText + '\n' : ''}
-*TOTAL FINAL: R$ ${totals.final.toFixed(2)}*
+💰 *RESUMO (Estimado):*
+Subtotal: R$ ${totals.sub.toFixed(2)}
+${cart.couponApplied ? `Desconto: - R$ ${totals.discount.toFixed(2)}` : ''}
+*TOTAL SERVIÇO: R$ ${totals.final.toFixed(2)}*
+${cart.locationType === 'uber' ? '_(+ Taxa Uber a calcular)_' : '_(Isento de Taxa)_'}
 
 💳 *Pagamento:* ${cart.payment === 'pix' ? 'PIX' : 'Dinheiro'}
 --------------------------------
-_Aguardando confirmação do terapeuta._`;
+_Aguardando aprovação do terapeuta._`;
 
-    window.open(`https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+    // 3. Redirect
+    window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
     setStep('success');
   };
 
-  if (loading) return <AdvancedLoader />;
-
+  // --- RENDER ---
   return (
-    <div className="min-h-screen pb-10">
+    <div className="min-h-screen pb-safe">
       <style>{styles}</style>
-      
-      {/* HEADER FIXO */}
-      <div className="bg-black/90 backdrop-blur-md sticky top-0 z-40 border-b border-white/5">
-        <BetaBanner />
+      <Loader progress={progress} visible={!loaded} />
+      {toast && <Toast msg={toast} />}
+
+      {/* HEADER */}
+      <div className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/5">
+        <BetaBadge />
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
              {step !== 'home' && step !== 'success' && (
-                <button onClick={() => {
-                  if(step==='checkout') setStep('config');
-                  else if(step==='config') setStep('service');
-                  else if(step==='service') setStep('identity');
-                  else setStep('home');
-                }} className="p-2 bg-[#1C1C1E] rounded-full"><ChevronLeft size={20}/></button>
+               <button onClick={() => {
+                 if(step === 'checkout') setStep('config');
+                 else if(step === 'config') setStep('service');
+                 else if(step === 'service') setStep('identity');
+                 else setStep('home');
+               }} className="w-10 h-10 bg-[#1C1C1E] rounded-full flex items-center justify-center text-[#0A84FF]">
+                 <ChevronLeft />
+               </button>
              )}
              <div>
-               <h1 className="font-bold text-sm tracking-wide">THALYSON VIP</h1>
-               <p className="text-[10px] text-[#0A84FF] font-bold">ONLINE EM SÃO PAULO</p>
+               <h1 className="font-bold text-sm tracking-wide text-white">THALYSON VIP</h1>
+               <div className="flex items-center gap-1.5">
+                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                 <span className="text-[10px] text-gray-400 font-medium">Online em SP</span>
+               </div>
              </div>
           </div>
-          <div className="w-8 h-8 rounded-full bg-gray-800 border border-gray-700 overflow-hidden">
-             {/* Placeholder Avatar */}
-             <div className="w-full h-full bg-gradient-to-br from-gray-700 to-black flex items-center justify-center text-xs">👨🏻</div>
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-700 to-black border border-white/10 flex items-center justify-center">
+            <span className="text-xs">🧔🏻</span>
           </div>
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-5 pt-6">
-
-        {/* --- STEP: HOME --- */}
+      <div className="max-w-md mx-auto px-5 pt-6 pb-24">
+        
+        {/* === HOME === */}
         {step === 'home' && (
-          <div className="animate-enter">
-            <h1 className="text-3xl font-bold mb-2">Massagem &<br/>Relaxamento SP</h1>
+          <div className="fade-enter">
+            <h1 className="text-3xl font-bold mb-3 leading-tight">Massoterapia &<br/>Relaxamento SP</h1>
             <p className="text-gray-400 text-sm mb-8 leading-relaxed">
-              Atendimento exclusivo para homens em São Paulo (Capital). 
-              Discrição, técnica e relaxamento no conforto do seu local.
+              Atendimento exclusivo masculino em São Paulo. 
+              Técnica apurada, discrição absoluta e conforto onde você estiver.
             </p>
 
-            {/* CARD DESTAQUE */}
-            <div className="glass-panel p-6 rounded-3xl mb-8 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-20"><Crown size={80} /></div>
-              <h3 className="text-xl font-bold mb-1">Experiência VIP</h3>
-              <p className="text-sm text-gray-300 mb-4">Massagem + Finalização + Extras</p>
-              <div className="flex gap-2">
-                 <span className="text-[10px] bg-white/10 px-2 py-1 rounded">Higienizado</span>
-                 <span className="text-[10px] bg-white/10 px-2 py-1 rounded">Sigiloso</span>
+            <div className="glass-card p-6 rounded-3xl mb-8 relative overflow-hidden">
+              <div className="absolute -right-4 -top-4 opacity-10"><Crown size={120} /></div>
+              <h3 className="text-xl font-bold mb-1 relative z-10">Experiência VIP</h3>
+              <p className="text-sm text-gray-300 mb-4 relative z-10">Massagem + Finalização + Extras</p>
+              <div className="flex gap-2 relative z-10">
+                <span className="text-[10px] bg-white/10 px-2 py-1 rounded font-bold text-[#0A84FF]">HIGIENIZADO</span>
+                <span className="text-[10px] bg-white/10 px-2 py-1 rounded font-bold text-[#0A84FF]">SIGILOSO</span>
               </div>
             </div>
 
-            <button onClick={() => handleNext('identity')} className="btn-primary">
-              INICIAR AGENDAMENTO <ArrowRight size={18} />
+            <button onClick={() => handleNext('identity')} className="btn-primary mb-8">
+              AGENDAR AGORA <ArrowRight size={20}/>
             </button>
 
-            <div className="mt-8 grid grid-cols-2 gap-4">
-               <div className="bg-[#111] p-4 rounded-2xl text-center">
-                 <ShieldCheck size={24} className="mx-auto text-[#0A84FF] mb-2"/>
-                 <p className="text-xs text-gray-500 font-bold">100% DISCRETO</p>
-               </div>
-               <div className="bg-[#111] p-4 rounded-2xl text-center">
-                 <Star size={24} className="mx-auto text-[#FFD60A] mb-2"/>
-                 <p className="text-xs text-gray-500 font-bold">5 ESTRELAS</p>
-               </div>
-            </div>
-          </div>
-        )}
-
-        {/* --- STEP: IDENTIFICAÇÃO --- */}
-        {step === 'identity' && (
-          <div className="animate-enter">
-            <h2 className="text-xl font-bold mb-6">Identificação</h2>
-            <div className="glass-panel p-6 rounded-3xl">
-              <label className="text-xs font-bold text-gray-500 uppercase ml-1 mb-2 block">Seu Nome</label>
-              <input 
-                value={user.name} 
-                onChange={e => setUser({name: e.target.value})}
-                placeholder="Como prefere ser chamado?" 
-                className="custom-input mb-6"
-                autoFocus
-              />
-              <div className="flex gap-3 items-start">
-                 <Info size={16} className="text-[#0A84FF] flex-shrink-0 mt-1"/>
-                 <p className="text-xs text-gray-400 leading-relaxed">
-                   Seus dados ficam salvos apenas localmente. A negociação final ocorre no WhatsApp privado.
-                 </p>
-              </div>
-            </div>
-            <button disabled={!user.name} onClick={() => handleNext('service')} className="btn-primary mt-6">
-              CONTINUAR
-            </button>
-          </div>
-        )}
-
-        {/* --- STEP: SERVIÇO --- */}
-        {step === 'service' && (
-          <div className="animate-enter pb-24">
-            <h2 className="text-xl font-bold mb-6">Menu de Serviços</h2>
-            <div className="space-y-4">
-              {DATA.services.map(s => (
-                <button 
-                  key={s.id}
-                  onClick={() => { setCart(c => ({...c, service: s})); handleNext('config'); }}
-                  className={`w-full text-left glass-panel p-6 rounded-3xl relative border transition-all ${cart.service?.id === s.id ? 'border-[#0A84FF] bg-[#0A84FF]/10' : 'border-white/5'}`}
-                >
-                  {s.tag && <span className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl">{s.tag}</span>}
-                  <h3 className="text-lg font-bold mb-1">{s.title}</h3>
-                  <p className="text-[#0A84FF] font-bold mb-3">R$ {s.price},00</p>
-                  <p className="text-sm text-gray-400 leading-relaxed">{s.desc}</p>
-                </button>
+            {/* AVALIAÇÕES (CARROUSEL) */}
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Avaliações Recentes</h3>
+            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4">
+              {DATA.reviews.map((r, i) => (
+                <div key={i} className="min-w-[260px] bg-[#111] p-5 rounded-2xl border border-white/5">
+                  <div className="flex text-[#FFD60A] mb-2 gap-1">
+                    {[...Array(r.stars)].map((_,k)=><Star key={k} size={12} fill="currentColor"/>)}
+                  </div>
+                  <p className="text-sm text-gray-300 italic mb-3 leading-relaxed">"{r.txt}"</p>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase">{r.author}</p>
+                </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* --- STEP: CONFIGURAÇÃO --- */}
+        {/* === IDENTITY === */}
+        {step === 'identity' && (
+          <div className="fade-enter">
+            <h2 className="text-2xl font-bold mb-2">Identificação</h2>
+            <p className="text-gray-400 text-sm mb-8">Como prefere ser chamado?</p>
+            
+            <div className="glass-card p-6 rounded-3xl mb-6">
+              <label className="text-xs font-bold text-gray-500 uppercase ml-1 mb-2 block">Nome / Apelido</label>
+              <input 
+                value={user}
+                onChange={e => setUser(e.target.value)}
+                placeholder="Digite aqui..."
+                className="custom-input text-lg font-medium"
+                autoFocus
+              />
+            </div>
+
+            <div className="bg-blue-900/10 border border-blue-500/20 p-4 rounded-2xl flex gap-3 items-start mb-6">
+               <ShieldCheck size={20} className="text-[#0A84FF] flex-shrink-0 mt-0.5"/>
+               <p className="text-xs text-blue-200/80 leading-relaxed">
+                 <strong className="text-blue-400">Política de Sigilo:</strong> Seus dados não são armazenados em nuvem. A negociação ocorre via WhatsApp pessoal.
+               </p>
+            </div>
+
+            <button disabled={user.length < 3} onClick={() => handleNext('service')} className="btn-primary">
+              CONTINUAR
+            </button>
+          </div>
+        )}
+
+        {/* === SERVICE === */}
+        {step === 'service' && (
+          <div className="fade-enter pb-20">
+            <h2 className="text-2xl font-bold mb-6">Menu de Serviços</h2>
+            <div className="space-y-4">
+              {DATA.services.map(s => (
+                <div 
+                  key={s.id}
+                  onClick={() => { setCart(c => ({...c, service: s})); handleNext('config'); }}
+                  className={`glass-card p-6 rounded-3xl relative cursor-pointer transition-all active:scale-98 ${cart.service?.id === s.id ? 'border-[#0A84FF] bg-[#0A84FF]/10' : 'hover:border-white/20'}`}
+                >
+                  {s.tag && <span className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl">{s.tag}</span>}
+                  
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-bold text-white">{s.title}</h3>
+                    <div className="text-right">
+                      <p className="text-[#0A84FF] font-bold text-lg">R$ {s.price}</p>
+                      <p className="text-[10px] text-gray-500">{s.time}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-400 leading-relaxed">{s.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* === CONFIG (Location, Date, Extras) === */}
         {step === 'config' && (
-          <div className="animate-enter space-y-8 pb-32">
+          <div className="fade-enter space-y-8 pb-32">
             
             {/* DATA */}
             <section>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Data e Horário</h3>
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                {[0,1,2,3,4].map(d => {
+                {[0,1,2,3,4,5].map(d => {
                   const date = new Date(); date.setDate(date.getDate() + d);
                   const isSel = cart.date?.getDate() === date.getDate();
                   return (
                     <button key={d} onClick={() => setCart(c => ({...c, date}))} 
-                      className={`min-w-[60px] h-[70px] rounded-xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF]' : 'bg-[#151517] border-[#333]'}`}>
+                      className={`min-w-[64px] h-[72px] rounded-xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333]'}`}>
                       <span className="text-[10px] uppercase font-bold text-gray-400">{date.toLocaleDateString('pt-BR', {weekday:'short'}).slice(0,3)}</span>
                       <span className="text-lg font-bold text-white">{date.getDate()}</span>
                     </button>
@@ -432,49 +500,55 @@ _Aguardando confirmação do terapeuta._`;
                 })}
               </div>
               {cart.date && (
-                <div className="grid grid-cols-4 gap-2 mt-3 animate-enter">
+                <div className="grid grid-cols-4 gap-2 mt-3 animate-slideUp">
                    {['10:00','11:00','13:00','15:00','17:00','19:00','20:00','21:00'].map(t => (
-                     <button key={t} onClick={() => setCart(c => ({...c, time: t}))} className={`py-2 rounded-lg text-xs font-bold border ${cart.time === t ? 'bg-white text-black border-white' : 'bg-[#151517] text-gray-400 border-[#333]'}`}>{t}</button>
+                     <button key={t} onClick={() => setCart(c => ({...c, time: t}))} className={`py-2.5 rounded-lg text-xs font-bold border ${cart.time === t ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-gray-400 border-[#333]'}`}>{t}</button>
                    ))}
                 </div>
               )}
             </section>
 
-            {/* LOCAL SP */}
+            {/* LOCALIZAÇÃO (LÓGICA UBER/METRO) */}
             <section>
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Local (São Paulo)</h3>
-              <div className="glass-panel p-5 rounded-3xl border-l-4 border-l-[#0A84FF]">
-                 <div className="flex items-center gap-3 mb-4">
-                   <MapPin className="text-[#0A84FF]" />
-                   <div>
-                     <p className="font-bold text-sm">Domicílio / Hotel</p>
-                     <p className="text-xs text-gray-500">Taxa fixa (Uber): R$ 35,00</p>
-                   </div>
-                 </div>
-                 <div className="space-y-3">
-                   <input placeholder="Rua / Avenida" className="custom-input" onChange={e => setCart(c => ({...c, addressDetails: {...c.addressDetails, street: e.target.value}}))} />
-                   <div className="flex gap-3">
-                     <input placeholder="Número" type="tel" className="custom-input w-1/3" onChange={e => setCart(c => ({...c, addressDetails: {...c.addressDetails, number: e.target.value}}))} />
-                     <input placeholder="Compl. (Apt/Bloco)" className="custom-input flex-1" onChange={e => setCart(c => ({...c, addressDetails: {...c.addressDetails, comp: e.target.value}}))} />
-                   </div>
-                 </div>
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Localização (SP)</h3>
+              <div className="glass-card p-5 rounded-3xl">
+                <div className="flex gap-3 mb-4">
+                  <button onClick={() => setCart(c => ({...c, locationType: 'metro'}))} className={`flex-1 p-3 rounded-xl border text-center transition-all ${cart.locationType === 'metro' ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-white' : 'bg-[#111] border-[#333] text-gray-400'}`}>
+                    <Navigation size={20} className="mx-auto mb-1"/>
+                    <p className="text-xs font-bold">Perto Metrô</p>
+                    <p className="text-[10px] text-green-500">&lt; 1km (Free)</p>
+                  </button>
+                  <button onClick={() => setCart(c => ({...c, locationType: 'uber'}))} className={`flex-1 p-3 rounded-xl border text-center transition-all ${cart.locationType === 'uber' ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-white' : 'bg-[#111] border-[#333] text-gray-400'}`}>
+                    <MapPin size={20} className="mx-auto mb-1"/>
+                    <p className="text-xs font-bold">Longe Metrô</p>
+                    <p className="text-[10px] text-yellow-500">Uber (Combinar)</p>
+                  </button>
+                </div>
+                
+                {cart.locationType && (
+                  <div className="animate-slideUp">
+                    <label className="text-xs font-bold text-gray-500 ml-1 mb-2 block">Endereço (Hotel/Domicílio)</label>
+                    <input 
+                      placeholder="Rua, Número, Bairro..." 
+                      className="custom-input"
+                      onChange={e => setCart(c => ({...c, address: e.target.value}))}
+                    />
+                  </div>
+                )}
               </div>
             </section>
 
             {/* EXTRAS */}
             <section>
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Turbinar Sessão</h3>
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Adicionais VIP</h3>
               <div className="space-y-3">
                 {DATA.extras.map(e => {
                   const active = cart.extras.includes(e.id);
                   return (
-                    <button key={e.id} onClick={() => toggleExtra(e.id)} className={`w-full p-4 rounded-2xl border flex items-center justify-between transition-all ${active ? 'bg-[#0A84FF]/20 border-[#0A84FF] shadow-[0_0_15px_rgba(10,132,255,0.2)]' : 'bg-[#151517] border-[#333]'}`}>
-                       <div className="flex items-center gap-3">
-                         <div className={`text-${active ? 'white' : 'gray-500'}`}>{e.icon}</div>
-                         <div className="text-left">
-                           <p className={`font-bold text-sm ${active ? 'text-white' : 'text-gray-300'}`}>{e.label}</p>
-                           <p className="text-xs text-gray-500">{e.sub}</p>
-                         </div>
+                    <button key={e.id} onClick={() => toggleExtra(e.id)} className={`w-full p-4 rounded-2xl border flex items-center justify-between transition-all tap-target ${active ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333]'}`}>
+                       <div className="text-left">
+                         <p className={`font-bold text-sm ${active ? 'text-white' : 'text-gray-300'}`}>{e.label}</p>
+                         <p className="text-xs text-gray-500">{e.sub}</p>
                        </div>
                        <span className={`text-sm font-bold ${active ? 'text-[#0A84FF]' : 'text-gray-500'}`}>+ R$ {e.price}</span>
                     </button>
@@ -483,15 +557,19 @@ _Aguardando confirmação do terapeuta._`;
               </div>
             </section>
 
-            {/* TOTAL BAR */}
-            <div className="fixed bottom-0 left-0 right-0 bg-[#1C1C1E] border-t border-white/10 p-5 z-30">
+            {/* STICKY FOOTER */}
+            <div className="fixed bottom-0 left-0 right-0 bg-[#151515] border-t border-white/10 p-5 z-50 pb-safe">
                <div className="max-w-md mx-auto flex justify-between items-center gap-4">
                  <div>
                    <p className="text-[10px] text-gray-400 font-bold uppercase">Total Estimado</p>
                    <p className="text-2xl font-bold text-white">R$ {totals.final}</p>
                  </div>
-                 <button disabled={!cart.date || !cart.time || !cart.addressDetails.street} onClick={() => handleNext('checkout')} className="btn-primary w-auto px-8 py-3 rounded-xl text-sm">
-                   FINALIZAR <ArrowRight size={18}/>
+                 <button 
+                    disabled={!cart.date || !cart.time || !cart.locationType || cart.address.length < 5} 
+                    onClick={() => handleNext('checkout')} 
+                    className="btn-primary w-auto px-8 py-3 rounded-xl text-sm"
+                 >
+                   REVISAR <ArrowRight size={18}/>
                  </button>
                </div>
             </div>
@@ -499,10 +577,10 @@ _Aguardando confirmação do terapeuta._`;
           </div>
         )}
 
-        {/* --- STEP: CHECKOUT --- */}
+        {/* === CHECKOUT === */}
         {step === 'checkout' && (
-          <div className="animate-enter pb-24">
-            <h2 className="text-xl font-bold mb-6">Resumo do Pedido</h2>
+          <div className="fade-enter pb-24">
+            <h2 className="text-2xl font-bold mb-6">Confirmação</h2>
 
             {/* RECIBO VISUAL */}
             <div className="bg-white text-black p-6 rounded-2xl shadow-2xl relative overflow-hidden mb-8">
@@ -514,14 +592,19 @@ _Aguardando confirmação do terapeuta._`;
                
                <div className="space-y-2 text-sm mb-6">
                  <div className="flex justify-between font-bold"><span>{cart.service.title}</span><span>R$ {cart.service.price}</span></div>
-                 <div className="flex justify-between text-gray-600"><span>Taxa Local (SP)</span><span>R$ 35</span></div>
                  {cart.extras.map(id => {
                    const item = DATA.extras.find(e => e.id === id);
                    return <div key={id} className="flex justify-between text-blue-600 font-medium"><span>+ {item.label}</span><span>R$ {item.price}</span></div>
                  })}
-                 {cart.coupon && (
+                 {cart.locationType === 'uber' && (
+                   <div className="flex justify-between text-yellow-600 font-bold text-xs bg-yellow-100 p-1 rounded">
+                     <span>Taxa Uber (>1km)</span>
+                     <span>A CALCULAR</span>
+                   </div>
+                 )}
+                 {totals.discount > 0 && (
                    <div className="flex justify-between text-green-600 font-bold border-t border-dashed border-gray-300 pt-2 mt-2">
-                     <span>Cupom: {cart.coupon.code}</span>
+                     <span>Desconto (10%)</span>
                      <span>- R$ {totals.discount.toFixed(2)}</span>
                    </div>
                  )}
@@ -533,21 +616,7 @@ _Aguardando confirmação do terapeuta._`;
                </div>
             </div>
 
-            {/* CUPOM MANUAL */}
-            {!cart.coupon && (
-              <div className="mb-8">
-                 <p className="text-xs font-bold text-gray-500 uppercase mb-2">Possui outro cupom?</p>
-                 <div className="flex gap-2">
-                   <input id="manualCoupon" placeholder="DIGITE O CÓDIGO" className="custom-input py-3 uppercase" />
-                   <button onClick={() => {
-                     const val = document.getElementById('manualCoupon').value.toUpperCase();
-                     if(!applyCoupon(val)) alert('Cupom inválido');
-                   }} className="bg-[#333] px-6 rounded-xl font-bold text-sm">APLICAR</button>
-                 </div>
-              </div>
-            )}
-
-            <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Pagamento</h3>
+            <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Forma de Pagamento</h3>
             <div className="grid grid-cols-2 gap-3 mb-8">
                <button onClick={() => setCart(c => ({...c, payment:'pix'}))} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${cart.payment === 'pix' ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333] text-gray-500'}`}>
                  <QrCode/> <span className="font-bold text-sm">PIX</span>
@@ -557,24 +626,26 @@ _Aguardando confirmação do terapeuta._`;
                </button>
             </div>
 
-            <button onClick={sendToWhatsapp} className="btn-primary bg-[#25D366] hover:bg-[#20bd5a] shadow-[0_8px_30px_rgba(37,211,102,0.3)]">
-              CONFIRMAR NO WHATSAPP <Send size={20}/>
+            <button onClick={finalizeOrder} className="btn-primary bg-[#25D366] hover:bg-[#20bd5a] shadow-[0_8px_30px_rgba(37,211,102,0.3)]">
+              ENVIAR PEDIDO <Send size={20}/>
             </button>
-            <p className="text-center text-xs text-gray-600 mt-4">Ao confirmar, você concorda com a política de sigilo.</p>
+            <p className="text-center text-xs text-gray-600 mt-4 max-w-[280px] mx-auto">
+              Ao clicar, você será redirecionado para o WhatsApp com todos os detalhes preenchidos.
+            </p>
           </div>
         )}
 
-        {/* --- STEP: SUCCESS --- */}
+        {/* === SUCCESS === */}
         {step === 'success' && (
-          <div className="animate-enter flex flex-col items-center justify-center pt-20 text-center">
-            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-green-500/40">
-              <Check size={48} className="text-white" />
+          <div className="fade-enter flex flex-col items-center justify-center pt-20 text-center">
+            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(37,211,102,0.4)]">
+              <ThumbsUp size={48} className="text-white" />
             </div>
-            <h2 className="text-3xl font-bold mb-2">Pedido Enviado!</h2>
-            <p className="text-gray-400 mb-8 max-w-[250px]">
-              Verifique seu WhatsApp. O terapeuta irá confirmar a disponibilidade e o endereço.
+            <h2 className="text-3xl font-bold mb-2">Solicitação Enviada!</h2>
+            <p className="text-gray-400 mb-8 max-w-[250px] leading-relaxed">
+              Sua pré-reserva está no meu WhatsApp. Responderei em instantes para confirmar.
             </p>
-            <button onClick={() => window.location.reload()} className="px-8 py-3 rounded-xl border border-[#333] text-gray-400 text-sm">
+            <button onClick={() => window.location.reload()} className="px-8 py-3 rounded-xl border border-[#333] text-gray-400 text-sm hover:text-white hover:border-white transition-colors">
               Voltar ao Início
             </button>
           </div>
@@ -582,8 +653,9 @@ _Aguardando confirmação do terapeuta._`;
 
       </div>
 
-      {/* POPUP DE CUPOM */}
-      {showPopup && <CouponPopup onClose={() => setShowPopup(false)} onApply={() => applyCoupon('BEMVINDO')} />}
+      {/* MODAIS */}
+      {showCoupon && <ModalCoupon onClose={() => setShowCoupon(false)} onApply={handleApplyCoupon} />}
+
     </div>
   );
 }
