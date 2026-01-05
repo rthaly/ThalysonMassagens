@@ -1,573 +1,404 @@
-// @ts-nocheck
-import React, { useState, useEffect, useMemo } from 'react';
-import {
-  ChevronLeft, Check, Star, MapPin, Clock,
-  ShieldCheck, Crown, CreditCard, Send, X, Gift, 
-  Info, ThumbsUp, Map, User, Zap
+import { useState, useEffect } from 'react';
+import { 
+  ChevronRight, Calendar, MapPin, Clock, Check, 
+  X, User, Sparkles, Phone, ArrowRight, Star
 } from 'lucide-react';
 
-/* ==================================================================================
-   1. ESTILOS CSS (INJETADOS COM SEGURANÇA)
-   ================================================================================== */
+// ==================================================================================
+// 1. ESTILOS GLOBAIS (Minimalista & Premium)
+// ==================================================================================
 const styles = `
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  
-  body, html { 
-    margin: 0; padding: 0; 
-    background-color: #050505; 
-    color: #F5F5F7; 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    overflow-x: hidden;
+  body { 
+    background-color: #000; color: #fff; 
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    overscroll-behavior-y: none;
   }
-
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  
-  /* ANIMAÇÕES */
-  .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-  .slide-up { animation: slideUp 0.4s ease-out forwards; }
-  
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
-
-  /* COMPONENTES */
+  .app-container {
+    max-width: 420px; margin: 0 auto; min-height: 100vh;
+    background: radial-gradient(circle at top right, #1a1a1a, #000);
+    position: relative; overflow-x: hidden;
+  }
   .glass-card {
-    background: rgba(30, 30, 30, 0.6);
+    background: rgba(28, 28, 30, 0.6);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
   }
-
-  .custom-input {
-    background: #1C1C1E;
-    border: 1px solid #333;
-    color: white;
-    font-size: 16px;
-    border-radius: 12px;
-    width: 100%;
-    padding: 16px;
-    outline: none;
-    transition: 0.2s;
+  .btn-primary {
+    background: #0A84FF; color: white; border: none;
+    font-weight: 600; transition: transform 0.1s;
   }
-  .custom-input:focus { border-color: #0A84FF; background: #222; }
-
-  .btn-main {
-    background: #0A84FF;
-    color: white;
-    font-weight: 700;
-    font-size: 16px;
-    border-radius: 14px;
-    padding: 18px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(10, 132, 255, 0.3);
-    transition: transform 0.1s;
-  }
-  .btn-main:active { transform: scale(0.98); }
-  .btn-main:disabled { background: #333; color: #666; box-shadow: none; cursor: not-allowed; }
-
-  /* LOADER & MODAL */
-  .loader-wrapper {
-    position: fixed; inset: 0; z-index: 9999;
-    background: #000;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    transition: opacity 0.5s ease;
-  }
-  .loader-bar { width: 200px; height: 4px; background: #222; border-radius: 4px; margin-top: 20px; overflow: hidden; }
-  .loader-fill { height: 100%; background: #0A84FF; animation: loadBar 2s ease-in-out forwards; }
-
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px);
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-    animation: fadeIn 0.3s ease-out;
-  }
+  .btn-primary:active { transform: scale(0.97); }
+  .anim-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  input { outline: none; }
 `;
 
-/* ==================================================================================
-   2. CONFIGURAÇÃO & DADOS
-   ================================================================================== */
-const CONFIG = {
-  WHATSAPP: "5517991360413", 
-  COUPON_VAL: 0.10 // 10%
-};
+// ==================================================================================
+// 2. DADOS DO SISTEMA
+// ==================================================================================
 
-const DATA = {
-  services: [
-    { 
-      id: 'masc_sp', 
-      title: 'Protocolo Masculino SP', 
-      price: 200, 
-      desc: 'Experiência completa. Relaxamento + Técnica Tântrica + Finalização Manual.',
-      tag: 'MAIS PEDIDO 🏆'
-    },
-    { 
-      id: 'relax_sp', 
-      title: 'Massagem Relaxante', 
-      price: 150, 
-      desc: 'Foco em dores musculares e stress. Sem toques íntimos.',
-      tag: null
-    }
-  ],
-  extras: [
-    { id: 'touch', label: 'Interação (Tocar)', price: 55, sub: 'Permitido tocar o massagista' },
-    { id: 'upgrade', label: '+30 Minutos', price: 80, sub: 'Sessão estendida' },
-    { id: 'aroma', label: 'Aromaterapia', price: 20, sub: 'Óleos essenciais' }
-  ],
-  reviews: [
-    { txt: "Atendimento no hotel foi impecável.", author: "Ricardo", stars: 5 },
-    { txt: "A interação vale cada centavo.", author: "Anônimo", stars: 5 },
-    { txt: "Resolveu minha dor nas costas.", author: "Carlos", stars: 5 }
-  ]
-};
+const SERVICES = [
+  { id: 'masculina', name: 'Massagem Masculina', price: 150, time: '60 min', desc: 'Relaxamento muscular e finalização tântrica.' },
+  { id: 'relaxante', name: 'Massagem Relaxante', price: 120, priceDiscount: 100, time: '50 min', desc: 'Tira dores e tensão do corpo todo.' },
+  { id: 'tantrica', name: 'Tântrica Real', price: 200, time: '90 min', desc: 'Experiência sensorial completa e intensa.' }
+];
 
-/* ==================================================================================
-   3. APP PRINCIPAL
-   ================================================================================== */
-export default function App() {
-  const [loading, setLoading] = useState(true);
-  const [step, setStep] = useState('home');
-  const [showCoupon, setShowCoupon] = useState(false);
+const LOCATIONS = [
+  { id: 'suite', name: 'Suíte (Motel)', tax: 70, detail: 'Taxa da suíte inclusa' },
+  { id: 'local', name: 'Seu Local (Santa Fé)', tax: 20, detail: 'Taxa de deslocamento' },
+  { id: 'outras', name: 'Outras Cidades', tax: 0, detail: 'Valor a combinar no Zap' }
+];
+
+const WELCOME_COUPON = { code: 'PRIMEIRA_VEZ', discount: 20, label: 'R$ 20,00 OFF' };
+
+// ==================================================================================
+// 3. COMPONENTE PRINCIPAL
+// ==================================================================================
+
+export default function BookingApp() {
+  // --- ESTADOS ---
+  const [step, setStep] = useState('loading'); // loading, login, home, checkout, success
+  const [user, setUser] = useState(null);
+  const [couponActive, setCouponActive] = useState(false);
+  const [showCouponModal, setShowCouponModal] = useState(false);
   
-  const [user, setUser] = useState('');
-  const [cart, setCart] = useState({
+  // Carrinho
+  const [booking, setBooking] = useState({
     service: null,
+    location: null,
     date: null,
     time: null,
-    locationType: null, // 'metro' | 'uber'
-    address: '',
-    extras: [],
-    payment: 'pix',
-    couponApplied: false
+    address: ''
   });
 
-  // Inicialização Segura
+  // --- LÓGICA DE INICIALIZAÇÃO E "LOGIN" ---
   useEffect(() => {
-    // Força o fim do loading em 2.5s mesmo se algo falhar
-    const safetyTimer = setTimeout(() => setLoading(false), 2500);
-
-    try {
-      const used = localStorage.getItem('thaly_coupon_used');
-      if (!used) {
-        setTimeout(() => setShowCoupon(true), 3000);
+    // Simula verificação de banco de dados local
+    const savedUser = localStorage.getItem('thaly_user_v1');
+    setTimeout(() => {
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+        setStep('home');
+      } else {
+        setStep('login');
       }
-      
-      const savedUser = localStorage.getItem('thaly_user');
-      if (savedUser) setUser(savedUser);
-    } catch (e) {
-      console.log("Storage error (ignore)", e);
-    }
-
-    return () => clearTimeout(safetyTimer);
+    }, 1000);
   }, []);
 
-  // Handlers
-  const handleNext = (next) => {
-    window.scrollTo(0,0);
-    setStep(next);
+  // Verifica se deve oferecer o cupom assim que entrar na Home
+  useEffect(() => {
+    if (step === 'home' && user) {
+      // Se o usuário nunca usou o cupom e ainda não o ativou
+      if (!user.hasUsedWelcomeCoupon && !couponActive) {
+        setTimeout(() => setShowCouponModal(true), 500);
+      }
+    }
+  }, [step, user]);
+
+  // --- FUNÇÕES ---
+
+  const handleLogin = (name, phone) => {
+    if (!name || !phone) return alert("Preencha todos os campos.");
+    
+    const newUser = { 
+      name, 
+      phone, 
+      id: Date.now(), 
+      hasUsedWelcomeCoupon: false // Flag importante
+    };
+    
+    localStorage.setItem('thaly_user_v1', JSON.stringify(newUser));
+    setUser(newUser);
+    setStep('home');
   };
 
   const applyCoupon = () => {
-    setCart(prev => ({ ...prev, couponApplied: true }));
-    setShowCoupon(false);
+    setCouponActive(true);
+    setShowCouponModal(false);
   };
 
-  const toggleExtra = (id) => {
-    setCart(prev => {
-      const exists = prev.extras.includes(id);
-      return {
-        ...prev,
-        extras: exists ? prev.extras.filter(x => x !== id) : [...prev.extras, id]
-      };
-    });
-  };
+  const handleBookingConfirm = () => {
+    // Calcular totais
+    const servicePrice = booking.service.price;
+    const tax = booking.location.tax;
+    const discount = couponActive ? WELCOME_COUPON.discount : 0;
+    const total = servicePrice + tax - discount;
 
-  // Cálculos
-  const totals = useMemo(() => {
-    let sub = 0;
-    if (cart.service) sub += cart.service.price;
+    // Gerar mensagem do WhatsApp
+    const msg = `*NOVO AGENDAMENTO VIA APP* 📅
     
-    cart.extras.forEach(eid => {
-      const item = DATA.extras.find(e => e.id === eid);
-      if (item) sub += item.price;
-    });
+👤 *Cliente:* ${user.name}
+📱 *Tel:* ${user.phone}
 
-    let discount = 0;
-    if (cart.couponApplied) discount = sub * CONFIG.COUPON_VAL;
+💆 *Serviço:* ${booking.service.name} (${booking.service.time})
+💰 *Valor Base:* R$ ${servicePrice},00
 
-    return { sub, discount, final: sub - discount };
-  }, [cart]);
+📍 *Local:* ${booking.location.name}
+🚗 *Taxa Local:* ${tax > 0 ? `R$ ${tax},00` : 'A combinar'}
+${booking.address ? `🏠 *Endereço:* ${booking.address}` : ''}
 
-  // Enviar WhatsApp
-  const sendWhatsApp = () => {
-    try {
-      localStorage.setItem('thaly_user', user);
-      if (cart.couponApplied) localStorage.setItem('thaly_coupon_used', 'true');
-    } catch(e) {}
+📅 *Data:* ${booking.date} às ${booking.time}
 
-    const dateStr = cart.date ? `${cart.date.getDate()}/${cart.date.getMonth()+1}` : '';
-    
-    const extrasTxt = cart.extras.length 
-      ? cart.extras.map(id => `✅ ${DATA.extras.find(e=>e.id===id).label}`).join('\n') 
-      : 'Nenhum extra';
+${couponActive ? `🎟 *CUPOM APLICADO:* -R$ ${WELCOME_COUPON.discount},00` : ''}
+---------------------------
+*TOTAL FINAL: R$ ${total},00*`;
 
-    const locTxt = cart.locationType === 'metro' 
-      ? `📍 *Perto do Metrô (Menos de 1km)*\nEndereço: ${cart.address}\n(Taxa: GRÁTIS)`
-      : `🚗 *Longe do Metrô (Mais de 1km)*\nEndereço: ${cart.address}\n(Taxa: A CALCULAR)`;
+    // Atualizar usuário (Queimar o cupom)
+    if (couponActive) {
+      const updatedUser = { ...user, hasUsedWelcomeCoupon: true };
+      setUser(updatedUser);
+      localStorage.setItem('thaly_user_v1', JSON.stringify(updatedUser));
+    }
 
-    const msg = 
-`*AGENDAMENTO VIP SP* 🔒
---------------------------------
-👤 *Nome:* ${user}
-📅 *Data:* ${dateStr} às ${cart.time}
-
-💆 *SERVIÇO:*
-${cart.service?.title}
-
-🏠 *LOCALIZAÇÃO:*
-${locTxt}
-
-✨ *ADICIONAIS:*
-${extrasTxt}
-
---------------------------------
-💰 *RESUMO (Estimado):*
-Subtotal: R$ ${totals.sub.toFixed(2)}
-${cart.couponApplied ? `Desconto (10%): - R$ ${totals.discount.toFixed(2)}` : ''}
-*TOTAL SERVIÇO: R$ ${totals.final.toFixed(2)}*
-${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
-
-💳 *Pagamento:* ${cart.payment === 'pix' ? 'PIX' : 'Dinheiro'}
---------------------------------`;
-
-    window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+    // Enviar
+    const link = `https://wa.me/5517991360413?text=${encodeURIComponent(msg)}`;
+    window.open(link, '_blank');
     setStep('success');
   };
 
-  // --- RENDERIZAÇÃO PROTEGIDA ---
-  return (
-    <div style={{ backgroundColor: '#050505', minHeight: '100vh', color: '#fff' }} className="min-h-screen pb-10">
-      <style>{styles}</style>
-      
-      {/* LOADER */}
-      {loading && (
-        <div className="loader-wrapper">
-          <Crown size={64} className="text-[#0A84FF] animate-pulse" />
-          <h1 className="text-white font-bold text-xl mt-4">THALYSON VIP</h1>
-          <div className="loader-bar"><div className="loader-fill"></div></div>
-        </div>
-      )}
+  const resetFlow = () => {
+    setBooking({ service: null, location: null, date: null, time: null, address: '' });
+    setCouponActive(false); // Reseta o cupom da sessão atual
+    setStep('home');
+  };
 
-      {/* HEADER FIXO */}
-      <div className="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-white/10">
-        <div className="bg-yellow-500/10 py-1 text-center border-b border-yellow-500/10">
-          <p className="text-[10px] font-bold text-yellow-500 uppercase">APP BETA • SP CAPITAL</p>
-        </div>
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
-             {step !== 'home' && step !== 'success' && (
-               <button onClick={() => {
-                 if(step === 'checkout') setStep('config');
-                 else if(step === 'config') setStep('service');
-                 else if(step === 'service') setStep('identity');
-                 else setStep('home');
-               }} className="w-10 h-10 bg-[#1C1C1E] rounded-full flex items-center justify-center text-[#0A84FF]">
-                 <ChevronLeft />
-               </button>
-             )}
-             <div>
-               <h1 className="font-bold text-sm text-white">THALYSON VIP</h1>
-               <div className="flex items-center gap-1.5">
-                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                 <span className="text-[10px] text-gray-400">Online</span>
-               </div>
-             </div>
-          </div>
-        </div>
-      </div>
+  const handleLogout = () => {
+    if(confirm("Sair desconectará sua conta.")) {
+        localStorage.removeItem('thaly_user_v1');
+        window.location.reload();
+    }
+  }
 
-      <div className="max-w-md mx-auto px-5 pt-6 pb-24">
+  // --- RENDERIZAÇÃO ---
 
-        {/* === HOME === */}
-        {step === 'home' && (
-          <div className="fade-in">
-            <h1 className="text-3xl font-bold mb-3 text-white">Massagem &<br/>Relaxamento SP</h1>
-            <p className="text-gray-400 text-sm mb-8">
-              Atendimento exclusivo masculino em São Paulo. 
-              Técnica apurada, discrição e conforto.
-            </p>
-
-            <div className="glass-card p-6 rounded-3xl mb-8 relative overflow-hidden">
-              <h3 className="text-xl font-bold mb-1 text-white relative z-10">Experiência VIP</h3>
-              <p className="text-sm text-gray-300 mb-4 relative z-10">Massagem + Finalização + Extras</p>
-              <div className="flex gap-2 relative z-10">
-                <span className="text-[10px] bg-white/10 px-2 py-1 rounded font-bold text-[#0A84FF]">HIGIENIZADO</span>
-                <span className="text-[10px] bg-white/10 px-2 py-1 rounded font-bold text-[#0A84FF]">SIGILOSO</span>
-              </div>
-            </div>
-
-            <button onClick={() => handleNext('identity')} className="btn-main mb-8">
-              AGENDAR AGORA <ArrowRight size={20}/>
-            </button>
-
-            {/* AVALIAÇÕES */}
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Avaliações</h3>
-            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4">
-              {DATA.reviews.map((r, i) => (
-                <div key={i} className="min-w-[260px] bg-[#111] p-5 rounded-2xl border border-white/5">
-                  <div className="flex text-yellow-500 mb-2 gap-1">
-                    {[...Array(r.stars)].map((_,k)=><Star key={k} size={12} fill="currentColor"/>)}
-                  </div>
-                  <p className="text-sm text-gray-300 italic mb-3">"{r.txt}"</p>
-                  <p className="text-[10px] text-gray-500 font-bold uppercase">{r.author}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* === IDENTITY === */}
-        {step === 'identity' && (
-          <div className="slide-up">
-            <h2 className="text-2xl font-bold mb-2 text-white">Identificação</h2>
-            <p className="text-gray-400 text-sm mb-8">Como prefere ser chamado?</p>
-            
-            <input 
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
-              placeholder="Nome / Apelido"
-              className="custom-input mb-6"
-            />
-
-            <div className="bg-blue-900/10 border border-blue-500/20 p-4 rounded-2xl flex gap-3 items-start mb-6">
-               <ShieldCheck size={20} className="text-[#0A84FF] flex-shrink-0"/>
-               <p className="text-xs text-blue-200/80">
-                 Seus dados não ficam online. Tudo é tratado diretamente no WhatsApp.
-               </p>
-            </div>
-
-            <button disabled={user.length < 3} onClick={() => handleNext('service')} className="btn-main">
-              CONTINUAR
-            </button>
-          </div>
-        )}
-
-        {/* === SERVICE === */}
-        {step === 'service' && (
-          <div className="slide-up pb-20">
-            <h2 className="text-2xl font-bold mb-6 text-white">Menu</h2>
-            <div className="space-y-4">
-              {DATA.services.map(s => (
-                <div 
-                  key={s.id}
-                  onClick={() => { setCart({...cart, service: s}); handleNext('config'); }}
-                  className={`glass-card p-6 rounded-3xl relative cursor-pointer ${cart.service?.id === s.id ? 'border-[#0A84FF] bg-[#0A84FF]/10' : ''}`}
-                >
-                  {s.tag && <span className="absolute top-0 right-0 bg-yellow-500 text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl">{s.tag}</span>}
-                  <h3 className="text-lg font-bold text-white mb-1">{s.title}</h3>
-                  <p className="text-[#0A84FF] font-bold text-lg mb-2">R$ {s.price}</p>
-                  <p className="text-sm text-gray-400">{s.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* === CONFIG === */}
-        {step === 'config' && (
-          <div className="slide-up space-y-8 pb-32">
-            
-            {/* DATA */}
-            <section>
-              <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Data e Horário</h3>
-              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                {[0,1,2,3,4].map(d => {
-                  const date = new Date(); date.setDate(date.getDate() + d);
-                  const isSel = cart.date?.getDate() === date.getDate();
-                  return (
-                    <button key={d} onClick={() => setCart({...cart, date})} 
-                      className={`min-w-[64px] h-[72px] rounded-xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333]'}`}>
-                      <span className="text-[10px] uppercase font-bold text-gray-400">{date.toLocaleDateString('pt-BR', {weekday:'short'}).slice(0,3)}</span>
-                      <span className="text-lg font-bold text-white">{date.getDate()}</span>
-                    </button>
-                  )
-                })}
-              </div>
-              {cart.date && (
-                <div className="grid grid-cols-4 gap-2 mt-3">
-                   {['11:00','13:00','15:00','17:00','19:00','20:00','21:00'].map(t => (
-                     <button key={t} onClick={() => setCart({...cart, time: t})} className={`py-2 rounded-lg text-xs font-bold border ${cart.time === t ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-gray-400 border-[#333]'}`}>{t}</button>
-                   ))}
-                </div>
-              )}
-            </section>
-
-            {/* LOCALIZAÇÃO */}
-            <section>
-              <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Localização (SP)</h3>
-              <div className="glass-card p-5 rounded-3xl">
-                <div className="flex gap-3 mb-4">
-                  <button onClick={() => setCart({...cart, locationType: 'metro'})} className={`flex-1 p-3 rounded-xl border text-center transition-all ${cart.locationType === 'metro' ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-white' : 'bg-[#111] border-[#333] text-gray-400'}`}>
-                    <Map size={20} className="mx-auto mb-1"/>
-                    <p className="text-xs font-bold">Perto Metrô</p>
-                    <p className="text-[10px] text-green-500">&lt; 1km (Free)</p>
-                  </button>
-                  <button onClick={() => setCart({...cart, locationType: 'uber'})} className={`flex-1 p-3 rounded-xl border text-center transition-all ${cart.locationType === 'uber' ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-white' : 'bg-[#111] border-[#333] text-gray-400'}`}>
-                    <MapPin size={20} className="mx-auto mb-1"/>
-                    <p className="text-xs font-bold">Longe Metrô</p>
-                    <p className="text-[10px] text-yellow-500">Uber (Combinar)</p>
-                  </button>
-                </div>
-                
-                {cart.locationType && (
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 ml-1 mb-2 block">Endereço</label>
-                    <input 
-                      placeholder="Rua, Número, Bairro..." 
-                      className="custom-input"
-                      onChange={e => setCart({...cart, address: e.target.value})}
-                    />
-                  </div>
-                )}
-              </div>
-            </section>
-
-            {/* EXTRAS */}
-            <section>
-              <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Adicionais</h3>
-              <div className="space-y-3">
-                {DATA.extras.map(e => {
-                  const active = cart.extras.includes(e.id);
-                  return (
-                    <button key={e.id} onClick={() => toggleExtra(e.id)} className={`w-full p-4 rounded-2xl border flex items-center justify-between transition-all ${active ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333]'}`}>
-                       <div className="flex items-center gap-3">
-                         {e.id === 'touch' && <Hand className={active ? 'text-white' : 'text-gray-500'} size={20}/>}
-                         {e.id === 'upgrade' && <Clock className={active ? 'text-white' : 'text-gray-500'} size={20}/>}
-                         {e.id === 'aroma' && <Sparkles className={active ? 'text-white' : 'text-gray-500'} size={20}/>}
-                         <div className="text-left">
-                           <p className={`font-bold text-sm ${active ? 'text-white' : 'text-gray-300'}`}>{e.label}</p>
-                           <p className="text-xs text-gray-500">{e.sub}</p>
-                         </div>
-                       </div>
-                       <span className={`text-sm font-bold ${active ? 'text-[#0A84FF]' : 'text-gray-500'}`}>+ R$ {e.price}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </section>
-
-            <div className="fixed bottom-0 left-0 right-0 bg-[#151515] border-t border-white/10 p-5 z-50">
-               <div className="max-w-md mx-auto flex justify-between items-center gap-4">
-                 <div>
-                   <p className="text-[10px] text-gray-400 font-bold uppercase">Total Estimado</p>
-                   <p className="text-2xl font-bold text-white">R$ {totals.final}</p>
-                 </div>
-                 <button 
-                    disabled={!cart.date || !cart.time || !cart.locationType || cart.address.length < 5} 
-                    onClick={() => handleNext('checkout')} 
-                    className="btn-main w-auto px-8"
-                 >
-                   REVISAR <ArrowRight size={18}/>
-                 </button>
-               </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* === CHECKOUT === */}
-        {step === 'checkout' && (
-          <div className="slide-up pb-24">
-            <h2 className="text-2xl font-bold mb-6 text-white">Confirmação</h2>
-
-            <div className="bg-white text-black p-6 rounded-2xl shadow-2xl relative overflow-hidden mb-8">
-               <div className="absolute top-0 left-0 w-full h-2 bg-[#0A84FF]"></div>
-               <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
-                  <h3 className="font-bold text-lg">THALYSON VIP</h3>
-                  <span className="text-[10px] font-bold bg-black text-white px-2 py-1 rounded">PENDENTE</span>
-               </div>
-               
-               <div className="space-y-2 text-sm mb-6">
-                 <div className="flex justify-between font-bold"><span>{cart.service?.title}</span><span>R$ {cart.service?.price}</span></div>
-                 {cart.extras.map(id => {
-                   const item = DATA.extras.find(e => e.id === id);
-                   return <div key={id} className="flex justify-between text-blue-600 font-medium"><span>+ {item?.label}</span><span>R$ {item?.price}</span></div>
-                 })}
-                 
-                 {cart.locationType === 'uber' && (
-                   <div className="flex justify-between text-yellow-600 font-bold text-xs bg-yellow-100 p-1 rounded">
-                     <span>Taxa Uber (Mais de 1km)</span>
-                     <span>A CALCULAR</span>
-                   </div>
-                 )}
-                 {totals.discount > 0 && (
-                   <div className="flex justify-between text-green-600 font-bold border-t border-dashed border-gray-300 pt-2 mt-2">
-                     <span>Desconto (10%)</span>
-                     <span>- R$ {totals.discount.toFixed(2)}</span>
-                   </div>
-                 )}
-               </div>
-
-               <div className="flex justify-between items-end border-t border-gray-800 pt-4">
-                 <span className="font-bold text-xl">TOTAL</span>
-                 <span className="font-bold text-2xl">R$ {totals.final.toFixed(0)}</span>
-               </div>
-            </div>
-
-            <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Forma de Pagamento</h3>
-            <div className="grid grid-cols-2 gap-3 mb-8">
-               <button onClick={() => setCart({...cart, payment:'pix'})} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${cart.payment === 'pix' ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333] text-gray-500'}`}>
-                 <QrCode/> <span className="font-bold text-sm">PIX</span>
-               </button>
-               <button onClick={() => setCart({...cart, payment:'dinheiro'})} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${cart.payment === 'dinheiro' ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333] text-gray-500'}`}>
-                 <Banknote/> <span className="font-bold text-sm">Dinheiro</span>
-               </button>
-            </div>
-
-            <button onClick={sendWhatsApp} className="btn-main bg-[#25D366] hover:bg-[#20bd5a] shadow-[0_8px_30px_rgba(37,211,102,0.3)]">
-              ENVIAR PEDIDO <Send size={20}/>
-            </button>
-          </div>
-        )}
-
-        {/* === SUCCESS === */}
-        {step === 'success' && (
-          <div className="fade-in flex flex-col items-center justify-center pt-20 text-center">
-            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(37,211,102,0.4)]">
-              <ThumbsUp size={48} className="text-white" />
-            </div>
-            <h2 className="text-3xl font-bold mb-2 text-white">Solicitação Enviada!</h2>
-            <p className="text-gray-400 mb-8 max-w-[250px] leading-relaxed">
-              Sua pré-reserva está no meu WhatsApp. Responderei em instantes.
-            </p>
-            <button onClick={() => window.location.reload()} className="px-8 py-3 rounded-xl border border-[#333] text-gray-400 text-sm hover:text-white hover:border-white transition-colors">
-              Voltar ao Início
-            </button>
-          </div>
-        )}
-
-      </div>
-
-      {/* MODAL CUPOM */}
-      {showCoupon && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 fade-in">
-          <div className="bg-[#1C1C1E] w-full max-w-sm rounded-3xl p-8 text-center border border-white/10 relative shadow-2xl">
-            <button onClick={() => setShowCoupon(false)} className="absolute top-4 right-4 text-gray-500 p-2"><X size={20}/></button>
-            <Gift size={48} className="text-[#0A84FF] mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-white mb-2">Boas-vindas VIP</h3>
-            <p className="text-gray-400 text-sm mb-6">
-              Como é sua primeira vez aqui, ganhe <strong>10% de Desconto</strong>.
-            </p>
-            <button onClick={applyCoupon} className="btn-main">RESGATAR 10% OFF</button>
-          </div>
-        </div>
-      )}
+  if (step === 'loading') return (
+    <div className="h-screen bg-black flex items-center justify-center">
+        <style>{styles}</style>
+        <div className="animate-pulse text-[#0A84FF] font-bold tracking-widest">CARREGANDO...</div>
     </div>
   );
+
+  return (
+    <div className="app-container font-sans text-gray-200">
+      <style>{styles}</style>
+
+      {/* HEADER FIXO */}
+      <div className="p-6 flex justify-between items-center bg-black/50 backdrop-blur-md sticky top-0 z-20">
+        <h1 className="font-bold text-lg text-white">Thalyson<span className="text-[#0A84FF]">Massagens</span></h1>
+        {user && <button onClick={handleLogout} className="text-xs text-gray-500 underline">Sair</button>}
+      </div>
+
+      {/* --- TELA 1: LOGIN (SIMPLIFICADO) --- */}
+      {step === 'login' && <LoginScreen onLogin={handleLogin} />}
+
+      {/* --- TELA 2: HOME / SELEÇÃO --- */}
+      {step === 'home' && (
+        <div className="p-6 pb-32 anim-up">
+          {/* USER WELCOME */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-white">Olá, {user.name.split(' ')[0]} 👋</h2>
+            <p className="text-gray-400 text-sm">Pronto para relaxar hoje?</p>
+          </div>
+
+          {/* INDICADOR DE CUPOM ATIVO */}
+          {couponActive && (
+             <div className="mb-6 p-3 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-3 text-green-400 text-sm font-bold animate-pulse">
+                <Sparkles className="w-4 h-4" />
+                <span>Desconto de {WELCOME_COUPON.label} ativado!</span>
+             </div>
+          )}
+
+          {/* LISTA DE SERVIÇOS */}
+          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Escolha o Serviço</h3>
+          <div className="space-y-4">
+            {SERVICES.map(srv => (
+              <div key={srv.id} onClick={() => { setBooking({...booking, service: srv}); setStep('checkout'); }}
+                className="glass-card p-5 active:scale-95 transition-all cursor-pointer relative overflow-hidden group">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-bold text-lg text-white">{srv.name}</h4>
+                  <span className="text-[#0A84FF] font-bold">R$ {srv.price}</span>
+                </div>
+                <p className="text-sm text-gray-400 leading-relaxed mb-3">{srv.desc}</p>
+                <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+                  <Clock className="w-3 h-3" /> {srv.time}
+                </div>
+                {/* Visual Flair */}
+                <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-[#0A84FF]/10 rounded-full blur-xl group-hover:bg-[#0A84FF]/20 transition-all"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* --- TELA 3: CHECKOUT / DETALHES --- */}
+      {step === 'checkout' && (
+        <div className="p-6 pb-32 anim-up min-h-screen flex flex-col">
+          <button onClick={() => setStep('home')} className="mb-4 text-sm text-gray-500 flex items-center gap-1 hover:text-white"><ArrowRight className="w-4 h-4 rotate-180"/> Voltar</button>
+          
+          <h2 className="text-2xl font-bold text-white mb-6">Finalizar Agendamento</h2>
+
+          <div className="space-y-6 flex-1">
+            {/* SERVIÇO SELECIONADO */}
+            <div className="glass-card p-4 border-l-4 border-l-[#0A84FF]">
+               <span className="text-xs text-gray-500 uppercase font-bold">Serviço</span>
+               <div className="flex justify-between items-center">
+                 <span className="text-white font-bold">{booking.service.name}</span>
+                 <span className="text-[#0A84FF]">R$ {booking.service.price}</span>
+               </div>
+            </div>
+
+            {/* LOCAL */}
+            <div>
+               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Onde será?</h3>
+               <div className="space-y-2">
+                 {LOCATIONS.map(loc => (
+                    <button key={loc.id} onClick={() => setBooking({...booking, location: loc, address: ''})}
+                      className={`w-full p-4 rounded-xl text-left border transition-all ${booking.location?.id === loc.id ? 'bg-[#0A84FF] border-[#0A84FF] text-white shadow-lg' : 'bg-[#1c1c1e] border-white/5 text-gray-400'}`}>
+                      <div className="flex justify-between">
+                        <span className="font-bold">{loc.name}</span>
+                        <span className="text-xs opacity-70 mt-0.5">{loc.tax > 0 ? `+ R$ ${loc.tax}` : 'Grátis'}</span>
+                      </div>
+                    </button>
+                 ))}
+               </div>
+               
+               {booking.location?.id === 'local' && (
+                  <input 
+                    placeholder="Digite seu Endereço e Bairro"
+                    className="mt-3 w-full bg-[#1C1C1E] text-white p-4 rounded-xl border border-white/10 focus:border-[#0A84FF] transition-colors"
+                    onChange={(e) => setBooking({...booking, address: e.target.value})}
+                  />
+               )}
+            </div>
+
+            {/* DATA SIMPLIFICADA */}
+            <div>
+               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Quando?</h3>
+               <div className="grid grid-cols-2 gap-3 mb-3">
+                 <input type="date" className="bg-[#1C1C1E] text-white p-3 rounded-xl border border-white/10 uppercase" 
+                    onChange={(e) => setBooking({...booking, date: e.target.value})} />
+                 <input type="time" className="bg-[#1C1C1E] text-white p-3 rounded-xl border border-white/10" 
+                    onChange={(e) => setBooking({...booking, time: e.target.value})} />
+               </div>
+            </div>
+          </div>
+
+          {/* RESUMO DE VALORES */}
+          <div className="mt-8 pt-4 border-t border-white/10">
+             <div className="flex justify-between text-sm text-gray-400 mb-2">
+                <span>Serviço</span>
+                <span>R$ {booking.service.price}</span>
+             </div>
+             {booking.location && booking.location.tax > 0 && (
+                <div className="flex justify-between text-sm text-gray-400 mb-2">
+                    <span>Taxa Local</span>
+                    <span>R$ {booking.location.tax}</span>
+                </div>
+             )}
+             {couponActive && (
+                <div className="flex justify-between text-sm text-green-400 mb-2 font-bold">
+                    <span>Cupom ({WELCOME_COUPON.code})</span>
+                    <span>- R$ {WELCOME_COUPON.discount}</span>
+                </div>
+             )}
+             
+             <div className="flex justify-between items-end mt-4">
+                <span className="text-white font-bold text-lg">Total</span>
+                <span className="text-[#0A84FF] font-bold text-2xl">
+                    R$ {(booking.service.price + (booking.location?.tax || 0) - (couponActive ? WELCOME_COUPON.discount : 0))}
+                </span>
+             </div>
+
+             <button 
+                disabled={!booking.date || !booking.time || !booking.location}
+                onClick={handleBookingConfirm}
+                className="w-full mt-6 btn-primary py-4 rounded-xl text-lg shadow-lg disabled:opacity-50 disabled:shadow-none">
+                Confirmar no WhatsApp
+             </button>
+          </div>
+        </div>
+      )}
+
+      {/* --- TELA 4: SUCESSO --- */}
+      {step === 'success' && (
+        <div className="h-screen flex flex-col items-center justify-center p-6 text-center anim-up">
+           <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(34,197,94,0.4)]">
+              <Check className="w-10 h-10 text-white" />
+           </div>
+           <h2 className="text-2xl font-bold text-white mb-2">Pedido Enviado!</h2>
+           <p className="text-gray-400 mb-8">Verifique seu WhatsApp para confirmar o pagamento.</p>
+           <button onClick={resetFlow} className="text-[#0A84FF] font-bold">Voltar ao Início</button>
+        </div>
+      )}
+
+      {/* --- MODAL DE CUPOM --- */}
+      {showCouponModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6">
+           <div className="bg-[#1C1C1E] border border-[#0A84FF]/30 w-full max-w-sm rounded-3xl p-8 text-center shadow-[0_0_50px_rgba(10,132,255,0.2)] anim-up relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#0A84FF] to-purple-500"></div>
+              <Sparkles className="w-12 h-12 text-[#FFD60A] mx-auto mb-4 animate-spin-slow" />
+              <h2 className="text-2xl font-bold text-white mb-2">Presente Exclusivo!</h2>
+              <p className="text-gray-400 text-sm mb-6">Como é sua primeira vez aqui, liberamos um desconto especial para você usar <b>AGORA</b>.</p>
+              
+              <div className="bg-white/5 p-4 rounded-xl mb-6 border border-dashed border-white/20">
+                 <span className="block text-xs text-gray-500 uppercase tracking-widest mb-1">Cupom</span>
+                 <span className="text-2xl font-mono font-bold text-[#0A84FF]">{WELCOME_COUPON.code}</span>
+                 <span className="block text-sm text-white mt-1 font-bold">R$ 20,00 OFF</span>
+              </div>
+
+              <button onClick={applyCoupon} className="w-full btn-primary py-3.5 rounded-xl mb-3 shadow-lg">
+                 RESGATAR AGORA
+              </button>
+              <button onClick={() => setShowCouponModal(false)} className="text-xs text-gray-500 hover:text-white transition-colors">
+                 Não quero desconto
+              </button>
+           </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
+
+// Subcomponente de Login
+function LoginScreen({ onLogin }) {
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+
+    return (
+        <div className="p-8 h-full flex flex-col justify-center pt-32 anim-up">
+            <div className="mb-8">
+                <div className="w-12 h-12 bg-[#0A84FF] rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
+                    <User className="w-6 h-6 text-white"/>
+                </div>
+                <h1 className="text-3xl font-bold text-white mb-2">Bem-vindo.</h1>
+                <p className="text-gray-400">Identifique-se para acessar a agenda.</p>
+            </div>
+
+            <div className="space-y-4">
+                <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase ml-1">Seu Nome</label>
+                    <div className="glass-card flex items-center px-4 py-3">
+                        <User className="w-5 h-5 text-gray-500 mr-3"/>
+                        <input value={name} onChange={e => setName(e.target.value)} placeholder="Como gosta de ser chamado?" className="bg-transparent w-full text-white placeholder-gray-600"/>
+                    </div>
+                </div>
+                <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase ml-1">Whatsapp</label>
+                    <div className="glass-card flex items-center px-4 py-3">
+                        <Phone className="w-5 h-5 text-gray-500 mr-3"/>
+                        <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="(00) 00000-0000" className="bg-transparent w-full text-white placeholder-gray-600"/>
+                    </div>
+                </div>
+            </div>
+
+            <button onClick={() => onLogin(name, phone)} className="mt-8 w-full btn-primary py-4 rounded-xl text-lg shadow-lg flex items-center justify-center gap-2">
+                Entrar <ChevronRight className="w-5 h-5"/>
+            </button>
+            <p className="text-center text-[10px] text-gray-600 mt-6">Seus dados ficam salvos apenas neste dispositivo.</p>
+        </div>
+    )
 }
