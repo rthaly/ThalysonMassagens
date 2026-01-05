@@ -130,11 +130,11 @@ const SERVICES = [
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    desc: 'O protocolo que você quer. Começa de bruços soltando a musculatura. Vira de frente, óleo morno, toque corpo a corpo e finalização manual intensa.', 
+    desc: 'Massagista de Cueca. O protocolo que você quer. Começa de bruços soltando a musculatura. Vira de frente, óleo morno, toque corpo a corpo e finalização manual intensa.', 
     duration: '60 min', 
-    price: 155, 
+    price: 160, 
     badge: 'MAIS PEDIDA 🔥',
-    features: ['Corpo a Corpo', 'Tântrica', 'Finalização']
+    features: ['Massagista de Cueca', 'Corpo a Corpo', 'Finalização']
   },
   { 
     id: 'relax', 
@@ -142,7 +142,7 @@ const SERVICES = [
     short: 'Tira Dores e Tensão',
     desc: 'Foco 100% terapêutico e físico. Ideal para tirar dores nas costas, pernas cansadas e zerar o stress. Toque firme e preciso. Sem foco sexual.', 
     duration: '60 min', 
-    price: 125, 
+    price: 130, 
     badge: null,
     features: ['Tira Dores', 'Zero Stress', 'Revigorante']
   },
@@ -181,7 +181,7 @@ const Toast = ({ msg }) => (
 const CouponModal = ({ onClaim }) => {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    const used = localStorage.getItem('thaly_coupon_v5');
+    const used = localStorage.getItem('thaly_coupon_v6');
     if (!used) setTimeout(() => setShow(true), 1200);
   }, []);
 
@@ -253,7 +253,7 @@ export default function App() {
   const [data, setData] = useState({
     name: '', age: '', service: null, date: null, time: null, location: null,
     street: '', number: '', district: '', comp: '',
-    extras: { upgrade: false, touch: false }, payment: null // Payment starts null to force choice
+    extras: { upgrade: false, touch: false }, payment: null 
   });
 
   const [stage, setStage] = useState(0);
@@ -325,7 +325,7 @@ export default function App() {
   }
 
   const finishOrder = () => {
-    if (hasCoupon) localStorage.setItem('thaly_coupon_v5', 'true');
+    if (hasCoupon) localStorage.setItem('thaly_coupon_v6', 'true');
 
     const total = getFinalTotal();
     const dateStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
