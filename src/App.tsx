@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChevronLeft, Check, Star, MapPin, Clock,
   ShieldCheck, Crown, CreditCard, Send, X, Gift, 
-  Info, ThumbsUp, Map, User
+  Info, ThumbsUp, Map, User, Zap
 } from 'lucide-react';
 
 /* ==================================================================================
-   1. ESTILOS CSS (INJETADOS)
+   1. ESTILOS CSS (DARK LUXURY - SP)
    ================================================================================== */
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -27,11 +27,10 @@ const styles = `
     overflow-x: hidden;
   }
 
-  /* UTILS */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   
-  /* ANIMATIONS */
+  /* ANIMAÇÕES */
   .fade-in { animation: fadeIn 0.5s ease-out forwards; }
   .slide-up { animation: slideUp 0.4s ease-out forwards; }
   
@@ -81,7 +80,7 @@ const styles = `
   .btn-main:active { transform: scale(0.98); }
   .btn-main:disabled { background: #333; color: #666; box-shadow: none; cursor: not-allowed; }
 
-  /* LOADER & MODAL */
+  /* LOADER */
   .loader-wrapper {
     position: fixed; inset: 0; z-index: 9999;
     background: #000;
@@ -90,16 +89,10 @@ const styles = `
   }
   .loader-bar { width: 200px; height: 4px; background: #222; border-radius: 4px; margin-top: 20px; overflow: hidden; }
   .loader-fill { height: 100%; background: var(--primary); animation: loadBar 2s ease-in-out forwards; }
-
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px);
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-    animation: fadeIn 0.3s ease-out;
-  }
 `;
 
 /* ==================================================================================
-   2. CONFIGURAÇÃO & DADOS
+   2. DADOS E REGRAS
    ================================================================================== */
 const CONFIG = {
   WHATSAPP: "5517991360413", 
@@ -123,6 +116,7 @@ const DATA = {
       tag: null
     }
   ],
+  // SEM MACA
   extras: [
     { id: 'touch', label: 'Interação (Tocar)', price: 55, sub: 'Permitido tocar o massagista' },
     { id: 'upgrade', label: '+30 Minutos', price: 80, sub: 'Sessão estendida' },
@@ -139,13 +133,12 @@ const DATA = {
    3. APP PRINCIPAL
    ================================================================================== */
 export default function App() {
-  // States com tipagem implícita ou any para evitar erros de build
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState('home');
   const [showCoupon, setShowCoupon] = useState(false);
   
   const [user, setUser] = useState('');
-  const [cart, setCart] = useState<any>({
+  const [cart, setCart] = useState({
     service: null,
     date: null,
     time: null,
@@ -156,7 +149,7 @@ export default function App() {
     couponApplied: false
   });
 
-  // Inicialização Segura
+  // Inicialização (Simples e Segura)
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -167,29 +160,29 @@ export default function App() {
         const savedUser = localStorage.getItem('thaly_user');
         if (savedUser) setUser(savedUser);
       } catch (e) {
-        console.error(e);
+        console.log("Storage access error");
       }
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Handlers
-  const handleNext = (next: string) => {
+  // Navegação
+  const handleNext = (next) => {
     window.scrollTo(0,0);
     setStep(next);
   };
 
   const applyCoupon = () => {
-    setCart((prev: any) => ({ ...prev, couponApplied: true }));
+    setCart(prev => ({ ...prev, couponApplied: true }));
     setShowCoupon(false);
   };
 
-  const toggleExtra = (id: string) => {
-    setCart((prev: any) => {
+  const toggleExtra = (id) => {
+    setCart(prev => {
       const exists = prev.extras.includes(id);
       return {
         ...prev,
-        extras: exists ? prev.extras.filter((x: string) => x !== id) : [...prev.extras, id]
+        extras: exists ? prev.extras.filter(x => x !== id) : [...prev.extras, id]
       };
     });
   };
@@ -199,7 +192,7 @@ export default function App() {
     let sub = 0;
     if (cart.service) sub += cart.service.price;
     
-    cart.extras.forEach((eid: string) => {
+    cart.extras.forEach(eid => {
       const item = DATA.extras.find(e => e.id === eid);
       if (item) sub += item.price;
     });
@@ -220,7 +213,7 @@ export default function App() {
     const dateStr = cart.date ? `${cart.date.getDate()}/${cart.date.getMonth()+1}` : '';
     
     const extrasTxt = cart.extras.length 
-      ? cart.extras.map((id: string) => `✅ ${DATA.extras.find(e=>e.id===id)?.label}`).join('\n') 
+      ? cart.extras.map(id => `✅ ${DATA.extras.find(e=>e.id===id).label}`).join('\n') 
       : 'Nenhum extra';
 
     const locTxt = cart.locationType === 'metro' 
@@ -234,7 +227,7 @@ export default function App() {
 📅 *Data:* ${dateStr} às ${cart.time}
 
 💆 *SERVIÇO:*
-${cart.service?.title}
+${cart.service.title}
 
 🏠 *LOCALIZAÇÃO:*
 ${locTxt}
@@ -343,7 +336,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
             
             <input 
               value={user}
-              onChange={(e: any) => setUser(e.target.value)}
+              onChange={(e) => setUser(e.target.value)}
               placeholder="Nome / Apelido"
               className="custom-input mb-6"
             />
@@ -369,7 +362,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
               {DATA.services.map(s => (
                 <div 
                   key={s.id}
-                  onClick={() => { setCart((c: any) => ({...c, service: s})); handleNext('config'); }}
+                  onClick={() => { setCart({...cart, service: s}); handleNext('config'); }}
                   className={`glass-card p-6 rounded-3xl relative cursor-pointer ${cart.service?.id === s.id ? 'border-[#0A84FF] bg-[#0A84FF]/10' : ''}`}
                 >
                   {s.tag && <span className="absolute top-0 right-0 bg-yellow-500 text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl">{s.tag}</span>}
@@ -394,7 +387,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                   const date = new Date(); date.setDate(date.getDate() + d);
                   const isSel = cart.date?.getDate() === date.getDate();
                   return (
-                    <button key={d} onClick={() => setCart((c: any) => ({...c, date}))} 
+                    <button key={d} onClick={() => setCart({...cart, date})} 
                       className={`min-w-[64px] h-[72px] rounded-xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333]'}`}>
                       <span className="text-[10px] uppercase font-bold text-gray-400">{date.toLocaleDateString('pt-BR', {weekday:'short'}).slice(0,3)}</span>
                       <span className="text-lg font-bold text-white">{date.getDate()}</span>
@@ -405,7 +398,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
               {cart.date && (
                 <div className="grid grid-cols-4 gap-2 mt-3">
                    {['11:00','13:00','15:00','17:00','19:00','20:00','21:00'].map(t => (
-                     <button key={t} onClick={() => setCart((c: any) => ({...c, time: t}))} className={`py-2 rounded-lg text-xs font-bold border ${cart.time === t ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-gray-400 border-[#333]'}`}>{t}</button>
+                     <button key={t} onClick={() => setCart({...cart, time: t})} className={`py-2 rounded-lg text-xs font-bold border ${cart.time === t ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-gray-400 border-[#333]'}`}>{t}</button>
                    ))}
                 </div>
               )}
@@ -416,12 +409,12 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
               <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Localização (SP)</h3>
               <div className="glass-card p-5 rounded-3xl">
                 <div className="flex gap-3 mb-4">
-                  <button onClick={() => setCart((c: any) => ({...c, locationType: 'metro'}))} className={`flex-1 p-3 rounded-xl border text-center transition-all ${cart.locationType === 'metro' ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-white' : 'bg-[#111] border-[#333] text-gray-400'}`}>
+                  <button onClick={() => setCart({...cart, locationType: 'metro'})} className={`flex-1 p-3 rounded-xl border text-center transition-all ${cart.locationType === 'metro' ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-white' : 'bg-[#111] border-[#333] text-gray-400'}`}>
                     <Map size={20} className="mx-auto mb-1"/>
                     <p className="text-xs font-bold">Perto Metrô</p>
                     <p className="text-[10px] text-green-500">&lt; 1km (Free)</p>
                   </button>
-                  <button onClick={() => setCart((c: any) => ({...c, locationType: 'uber'}))} className={`flex-1 p-3 rounded-xl border text-center transition-all ${cart.locationType === 'uber' ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-white' : 'bg-[#111] border-[#333] text-gray-400'}`}>
+                  <button onClick={() => setCart({...cart, locationType: 'uber'})} className={`flex-1 p-3 rounded-xl border text-center transition-all ${cart.locationType === 'uber' ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-white' : 'bg-[#111] border-[#333] text-gray-400'}`}>
                     <MapPin size={20} className="mx-auto mb-1"/>
                     <p className="text-xs font-bold">Longe Metrô</p>
                     <p className="text-[10px] text-yellow-500">Uber (Combinar)</p>
@@ -434,7 +427,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                     <input 
                       placeholder="Rua, Número, Bairro..." 
                       className="custom-input"
-                      onChange={(e: any) => setCart((c: any) => ({...c, address: e.target.value}))}
+                      onChange={e => setCart({...cart, address: e.target.value})}
                     />
                   </div>
                 )}
@@ -449,9 +442,14 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                   const active = cart.extras.includes(e.id);
                   return (
                     <button key={e.id} onClick={() => toggleExtra(e.id)} className={`w-full p-4 rounded-2xl border flex items-center justify-between transition-all ${active ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333]'}`}>
-                       <div className="text-left">
-                         <p className={`font-bold text-sm ${active ? 'text-white' : 'text-gray-300'}`}>{e.label}</p>
-                         <p className="text-xs text-gray-500">{e.sub}</p>
+                       <div className="flex items-center gap-3">
+                         {e.id === 'touch' && <Hand className={active ? 'text-white' : 'text-gray-500'} size={20}/>}
+                         {e.id === 'upgrade' && <Clock className={active ? 'text-white' : 'text-gray-500'} size={20}/>}
+                         {e.id === 'aroma' && <Sparkles className={active ? 'text-white' : 'text-gray-500'} size={20}/>}
+                         <div className="text-left">
+                           <p className={`font-bold text-sm ${active ? 'text-white' : 'text-gray-300'}`}>{e.label}</p>
+                           <p className="text-xs text-gray-500">{e.sub}</p>
+                         </div>
                        </div>
                        <span className={`text-sm font-bold ${active ? 'text-[#0A84FF]' : 'text-gray-500'}`}>+ R$ {e.price}</span>
                     </button>
@@ -492,10 +490,10 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                </div>
                
                <div className="space-y-2 text-sm mb-6">
-                 <div className="flex justify-between font-bold"><span>{cart.service?.title}</span><span>R$ {cart.service?.price}</span></div>
-                 {cart.extras.map((id: string) => {
+                 <div className="flex justify-between font-bold"><span>{cart.service.title}</span><span>R$ {cart.service.price}</span></div>
+                 {cart.extras.map(id => {
                    const item = DATA.extras.find(e => e.id === id);
-                   return <div key={id} className="flex justify-between text-blue-600 font-medium"><span>+ {item?.label}</span><span>R$ {item?.price}</span></div>
+                   return <div key={id} className="flex justify-between text-blue-600 font-medium"><span>+ {item.label}</span><span>R$ {item.price}</span></div>
                  })}
                  
                  {cart.locationType === 'uber' && (
@@ -520,10 +518,10 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
 
             <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Forma de Pagamento</h3>
             <div className="grid grid-cols-2 gap-3 mb-8">
-               <button onClick={() => setCart((c: any) => ({...c, payment:'pix'}))} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${cart.payment === 'pix' ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333] text-gray-500'}`}>
+               <button onClick={() => setCart({...cart, payment:'pix'})} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${cart.payment === 'pix' ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333] text-gray-500'}`}>
                  <QrCode/> <span className="font-bold text-sm">PIX</span>
                </button>
-               <button onClick={() => setCart((c: any) => ({...c, payment:'dinheiro'}))} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${cart.payment === 'dinheiro' ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333] text-gray-500'}`}>
+               <button onClick={() => setCart({...cart, payment:'dinheiro'})} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${cart.payment === 'dinheiro' ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333] text-gray-500'}`}>
                  <Banknote/> <span className="font-bold text-sm">Dinheiro</span>
                </button>
             </div>
@@ -537,7 +535,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
         {/* === SUCCESS === */}
         {step === 'success' && (
           <div className="fade-in flex flex-col items-center justify-center pt-20 text-center">
-            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(37,211,102,0.4)]">
+            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-xl">
               <ThumbsUp size={48} className="text-white" />
             </div>
             <h2 className="text-3xl font-bold mb-2 text-white">Solicitação Enviada!</h2>
