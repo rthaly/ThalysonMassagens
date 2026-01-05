@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import {
   Check, MapPin, Star, ArrowRight, Bed, 
   Home, MessageCircle, Clock, Zap, Ticket, Lock,
-  ShieldCheck, Map, Navigation, User, ChevronDown, Flame, AlertCircle
+  ShieldCheck, Map, Navigation, User, ChevronDown, Flame, AlertCircle, Car
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. ESTILOS GLOBAIS
+// 1. ESTILOS GLOBAIS (DARK MODE REFINADO)
 // ==================================================================================
 
 const globalStyles = `
@@ -29,7 +29,7 @@ section {
   opacity: 0.3; 
   transition: opacity 0.5s ease;
   pointer-events: none;
-  filter: blur(1px);
+  filter: blur(2px);
 }
 
 section.active-step {
@@ -95,6 +95,14 @@ section.active-step {
 /* --- ANIMATIONS --- */
 .animate-enter { animation: enter 0.6s ease forwards; opacity: 0; transform: translateY(20px); }
 @keyframes enter { to { opacity: 1; transform: translateY(0); } }
+
+/* --- VISUAL DISCOUNT --- */
+.price-strike {
+  text-decoration: line-through;
+  color: #666;
+  font-size: 0.85em;
+  margin-right: 6px;
+}
 `;
 
 // ==================================================================================
@@ -122,7 +130,7 @@ const SERVICES = [
     short: 'Relaxamento + Finalização',
     desc: 'O protocolo que você quer. Começa de bruços soltando a musculatura. Vira de frente, óleo morno, toque corpo a corpo e finalização manual intensa.', 
     duration: '60 min', 
-    price: 155, 
+    price: 160, 
     badge: 'MAIS PEDIDA 🔥',
     features: ['Corpo a Corpo', 'Tântrica', 'Finalização']
   },
@@ -132,14 +140,14 @@ const SERVICES = [
     short: 'Tira Dores e Tensão',
     desc: 'Foco 100% terapêutico e físico. Ideal para tirar dores nas costas, pernas cansadas e zerar o stress. Toque firme e preciso. Sem foco sexual.', 
     duration: '60 min', 
-    price: 125, 
+    price: 130, 
     badge: null,
     features: ['Tira Dores', 'Zero Stress', 'Revigorante']
   },
 ];
 
 const LOCATIONS = [
-  { id: 'home', label: 'Na sua Casa / Apto', sub: 'Atendimento na Cama ou Sofá', icon: Home, input: true },
+  { id: 'home', label: 'Na sua Casa / Apto', sub: 'Atendimento no seu conforto', icon: Home, input: true },
   { id: 'hotel', label: 'Hotel / Motel', sub: 'Vou até a sua suíte (Sigilo Total)', icon: Bed, input: true },
 ];
 
@@ -164,7 +172,7 @@ const vibrate = () => { if (navigator.vibrate) navigator.vibrate(12); };
 const CouponModal = ({ onClaim }) => {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    const used = localStorage.getItem('thaly_coupon_final_v1');
+    const used = localStorage.getItem('thaly_coupon_v4');
     if (!used) setTimeout(() => setShow(true), 1200);
   }, []);
 
@@ -277,19 +285,24 @@ export default function App() {
       }
   };
 
-  const calculateTotal = () => {
+  const getSubTotal = () => {
     if (!data.service) return 0;
     let total = data.service.price;
     if (data.extras.upgrade) total += (data.service.price * CONFIG.PRICES.UPGRADE_PCT);
     if (data.extras.touch) total += CONFIG.PRICES.TOUCH;
-    if (hasCoupon) total -= CONFIG.COUPON_VAL;
-    return Math.max(0, total);
+    return total;
   };
 
-  const finishOrder = () => {
-    if (hasCoupon) localStorage.setItem('thaly_coupon_final_v1', 'true');
+  const getFinalTotal = () => {
+      let total = getSubTotal();
+      if (hasCoupon) total -= CONFIG.COUPON_VAL;
+      return Math.max(0, total);
+  }
 
-    const total = calculateTotal();
+  const finishOrder = () => {
+    if (hasCoupon) localStorage.setItem('thaly_coupon_v4', 'true');
+
+    const total = getFinalTotal();
     const dateStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
 
     let text = `*SOLICITAÇÃO DE AGENDAMENTO* 📝\n`;
@@ -305,17 +318,15 @@ export default function App() {
         if(data.comp) text += `🏢 ${data.comp}\n`;
     }
 
-    text += `\n🚗 Taxa Deslocamento: *A CALCULAR NO ZAP*\n`;
-    text += `🛏️ Local: *Ciente que é na Cama/Sofá (Não levo maca)*\n`;
-
-    text += `\n*DETALHES DO PEDIDO:*\n`;
+    text += `\n*RESUMO FINANCEIRO:*\n`;
     text += `Sessão: ${formatBRL(data.service.price)}\n`;
     if(data.extras.upgrade) text += `Upgrade 30min: ${formatBRL(data.service.price * CONFIG.PRICES.UPGRADE_PCT)}\n`;
     if(data.extras.touch) text += `Interação: ${formatBRL(CONFIG.PRICES.TOUCH)}\n`;
     if(hasCoupon) text += `Desconto VIP: -${formatBRL(CONFIG.COUPON_VAL)}\n`;
 
-    text += `\n💰 *TOTAL (Sem Frete): ${formatBRL(total)}*`;
-    text += `\n💳 Pagto: ${data.payment.toUpperCase()}`;
+    text += `\n💰 *TOTAL DO SERVIÇO: ${formatBRL(total)}*\n`;
+    text += `🚗 *TAXA DESLOCAMENTO: A CALCULAR*\n`;
+    text += `💳 Pagto: ${data.payment.toUpperCase()}`;
 
     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`, '_blank');
     setSuccess(true);
@@ -334,7 +345,9 @@ export default function App() {
               <Check className="w-10 h-10 text-[#32D74B]" strokeWidth={3} />
           </div>
           <h2 className="text-3xl font-bold text-white mb-3">Pedido Enviado!</h2>
-          <p className="text-gray-300 text-sm mb-2 font-bold">Obrigado, só aguardar que já respondo:</p>
+          <p className="text-gray-300 text-sm mb-2 font-bold">⚠️ PRÓXIMO PASSO:</p>
+          <p className="text-gray-400 mb-8 leading-relaxed max-w-xs mx-auto">
+              Me envie sua <strong>Localização em Tempo Real</strong> no WhatsApp para eu calcular a taxa de Uber/Deslocamento exata.
           </p>
           <button onClick={() => window.location.reload()} className="w-full bg-[#1a1a1a] border border-[#333] text-white py-4 rounded-[18px] font-bold hover:bg-[#222]">
               Voltar ao Início
@@ -360,7 +373,7 @@ export default function App() {
 
         {/* 1. PERFIL */}
         <section ref={refs.intro} className="active-step">
-          <h1 className="text-3xl font-bold text-white mb-2 leading-none tracking-tight">Discrição e<br/><span className="text-gray-600">Prazer.</span></h1>
+          <h1 className="text-3xl font-bold text-white mb-2 leading-none tracking-tight">Relaxamento &<br/><span className="text-gray-600">Prazer.</span></h1>
           <p className="text-gray-500 text-sm mb-6 mt-2 leading-relaxed">Atendimento exclusivo para homens.<br/>Eu vou até você.</p>
 
           <ReviewsTicker />
@@ -532,19 +545,12 @@ export default function App() {
                                 </div>
                                 <div className="text-right">
                                      <span className="text-[9px] font-bold text-gray-500 block">TAXA</span>
-                                     <span className="text-xs font-bold text-[#0A84FF]">A CALCULAR</span>
+                                     <span className="text-xs font-bold text-[#0A84FF]">NO ZAP</span>
                                 </div>
                             </button>
 
                             {isSel && loc.input && (
                                 <div className="mt-4 pl-2 space-y-3 animate-enter border-l-2 border-[#222] ml-4 pr-1 py-2">
-                                    <div className="bg-[#111] p-3 rounded-lg border border-[#333] flex gap-2 mb-3">
-                                        <AlertCircle className="w-4 h-4 text-[#FFD60A]" />
-                                        <p className="text-[10px] text-[#FFD60A] leading-tight">
-                                            Atenção: Não levo maca portátil. O atendimento é realizado na sua cama ou sofá.
-                                        </p>
-                                    </div>
-
                                     <div>
                                         <label className="text-[9px] font-bold text-gray-500 uppercase ml-1 mb-1.5 block">Rua / Avenida</label>
                                         <input value={data.street} onChange={e => setData({...data, street: e.target.value})}
@@ -589,7 +595,7 @@ export default function App() {
 
       </main>
 
-      {/* 6. CHECKOUT FLUTUANTE (SÓ APARECE NO FINAL) */}
+      {/* 6. CHECKOUT FLUTUANTE (VISUAL UX MELHORADO) */}
       {stage >= 5 && (
         <div ref={refs.checkout} className="fixed bottom-0 w-full z-50 animate-enter">
             <div className="h-24 bg-gradient-to-t from-black via-black/95 to-transparent absolute bottom-full w-full pointer-events-none"></div>
@@ -597,9 +603,11 @@ export default function App() {
             <div className="bg-[#0e0e0e] border-t border-[#222] p-6 pb-8 rounded-t-[32px] shadow-[0_-10px_50px_rgba(0,0,0,0.8)] max-w-md mx-auto">
                 <div className="flex justify-between items-end mb-5 px-1">
                     <div>
-                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block mb-1">Total (Sem Frete)</span>
+                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block mb-1">Total (Sem Deslocamento)</span>
                         <div className="flex items-baseline gap-2.5">
-                             <span className="text-3xl font-bold text-white tracking-tighter">{formatBRL(calculateTotal())}</span>
+                             {/* LÓGICA DE DESCONTO VISUAL */}
+                             {hasCoupon && <span className="price-strike">R$ {getSubTotal()},00</span>}
+                             <span className="text-3xl font-bold text-white tracking-tighter">R$ {getFinalTotal()},00</span>
                              {hasCoupon && <span className="text-[10px] text-[#0A84FF] bg-[#0A84FF]/10 px-2 py-1 rounded font-bold border border-[#0A84FF]/20">CUPOM ATIVO</span>}
                         </div>
                     </div>
@@ -607,7 +615,7 @@ export default function App() {
                 
                 <button onClick={finishOrder} className="w-full primary-btn h-14 rounded-[20px] font-bold text-[16px] flex items-center justify-center gap-3">
                     <MessageCircle size={20} fill="currentColor"/>
-                    CONFIRMAR PEDIDO
+                    CONFIRMAR (+ CALCULAR TAXA)
                 </button>
             </div>
         </div>
