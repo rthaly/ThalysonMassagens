@@ -498,7 +498,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                  
                  {cart.locationType === 'uber' && (
                    <div className="flex justify-between text-yellow-600 font-bold text-xs bg-yellow-100 p-1 rounded">
-                     <span>Taxa Uber (>1km)</span>
+                     <span>Taxa Uber (&gt;1km)</span>
                      <span>A CALCULAR</span>
                    </div>
                  )}
