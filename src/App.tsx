@@ -122,7 +122,7 @@ const SERVICES = [
     short: 'Relaxamento + Finalização',
     desc: 'O protocolo que você quer. Começa de bruços soltando a musculatura. Vira de frente, óleo morno, toque corpo a corpo e finalização manual intensa.', 
     duration: '60 min', 
-    price: 160, 
+    price: 155, 
     badge: 'MAIS PEDIDA 🔥',
     features: ['Corpo a Corpo', 'Tântrica', 'Finalização']
   },
@@ -132,14 +132,14 @@ const SERVICES = [
     short: 'Tira Dores e Tensão',
     desc: 'Foco 100% terapêutico e físico. Ideal para tirar dores nas costas, pernas cansadas e zerar o stress. Toque firme e preciso. Sem foco sexual.', 
     duration: '60 min', 
-    price: 130, 
+    price: 125, 
     badge: null,
     features: ['Tira Dores', 'Zero Stress', 'Revigorante']
   },
 ];
 
 const LOCATIONS = [
-  { id: 'home', label: 'Na sua Casa / Apto', sub: 'Atendimento na Cama ou Sofá (Não levo maca)', icon: Home, input: true },
+  { id: 'home', label: 'Na sua Casa / Apto', sub: 'Atendimento na Cama ou Sofá', icon: Home, input: true },
   { id: 'hotel', label: 'Hotel / Motel', sub: 'Vou até a sua suíte (Sigilo Total)', icon: Bed, input: true },
 ];
 
@@ -334,9 +334,7 @@ export default function App() {
               <Check className="w-10 h-10 text-[#32D74B]" strokeWidth={3} />
           </div>
           <h2 className="text-3xl font-bold text-white mb-3">Pedido Enviado!</h2>
-          <p className="text-gray-300 text-sm mb-2 font-bold">⚠️ FALTA UMA COISA:</p>
-          <p className="text-gray-400 mb-8 leading-relaxed max-w-xs mx-auto">
-              Por favor, me envie sua <strong>Localização em Tempo Real (GPS)</strong> no WhatsApp agora para eu calcular a taxa de deslocamento exata.
+          <p className="text-gray-300 text-sm mb-2 font-bold">Obrigado, só aguardar que já respondo:</p>
           </p>
           <button onClick={() => window.location.reload()} className="w-full bg-[#1a1a1a] border border-[#333] text-white py-4 rounded-[18px] font-bold hover:bg-[#222]">
               Voltar ao Início
