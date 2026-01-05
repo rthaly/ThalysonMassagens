@@ -577,7 +577,7 @@ export default function App() {
                         </div>
                         <div className="text-left">
                             <span className="block text-[15px] font-bold text-white mb-0.5">Interação / Toque</span>
-                            <span className="text-[11px] text-gray-500">Reciprocidade e corpo a corpo</span>
+                            <span className="text-[11px] text-gray-500">Reciprocidade, toques por cima da cueca</span>
                         </div>
                     </div>
                     <span className="text-sm font-bold text-[#FF375F]">+ {formatBRL(CONFIG.PRICES.TOUCH)}</span>
