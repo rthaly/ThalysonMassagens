@@ -1,419 +1,410 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   MapPin, Calendar, Clock, Check, Star, 
   Sparkles, ArrowRight, Shield, Zap, 
-  Eye, EyeOff, X, CreditCard, Banknote, QrCode, Lock
+  Trophy, Lock, Flame, Navigation, X
 } from 'lucide-react';
 
-/* ==================================================================================
-   1. ESTILOS CSS (Injetados via JS para garantir funcionamento)
-   ================================================================================== */
-const globalStyles = `
-  :root { --primary: #0A84FF; --gold: #FFD60A; --bg: #000000; }
+// ==================================================================================
+// 1. ESTILOS & CONFIGURAÇÕES (PREMIUM DARK)
+// ==================================================================================
+const styles = `
+  :root { --primary: #0A84FF; --gold: #FFD60A; --bg: #000000; --card: #121212; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
   
   body { 
     background-color: var(--bg); color: #fff; 
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-    margin: 0; padding: 0; overscroll-behavior-y: none;
+    overscroll-behavior-y: none;
+    margin: 0; padding: 0;
   }
 
-  /* Aurora Background */
-  .aurora-container {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-    background: #000; overflow: hidden; pointer-events: none;
+  /* Animação de Carregamento */
+  .loader-ring {
+    display: inline-block; position: relative; width: 64px; height: 64px;
   }
-  .aurora-blob {
-    position: absolute; filter: blur(80px); opacity: 0.35;
-    animation: float 10s infinite alternate ease-in-out;
+  .loader-ring div {
+    box-sizing: border-box; display: block; position: absolute;
+    width: 51px; height: 51px; margin: 6px; border: 3px solid #fff;
+    border-radius: 50%; animation: loader-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: #0A84FF transparent transparent transparent;
   }
-  .b1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #0A84FF; }
-  .b2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: #059669; animation-delay: -5s; }
-  @keyframes float { 0% { transform: translate(0,0); } 100% { transform: translate(30px, 50px); } }
+  .loader-ring div:nth-child(1) { animation-delay: -0.45s; }
+  .loader-ring div:nth-child(2) { animation-delay: -0.3s; }
+  .loader-ring div:nth-child(3) { animation-delay: -0.15s; }
+  @keyframes loader-ring { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-  /* Glassmorphism */
-  .glass {
-    background: rgba(20, 20, 20, 0.7);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  /* UI Elements */
+  .glass-card {
+    background: #121212; border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
   }
+  
+  .btn-primary {
+    background: var(--primary); color: white; border: none; font-weight: 700;
+    box-shadow: 0 0 20px rgba(10, 132, 255, 0.3); transition: all 0.2s ease;
+  }
+  .btn-primary:active { transform: scale(0.97); opacity: 0.9; }
 
-  /* Animations */
-  .fade-in { animation: fadeIn 0.6s ease-out forwards; opacity: 0; transform: translateY(20px); }
+  .fade-in { animation: fadeIn 0.6s ease forwards; opacity: 0; transform: translateY(10px); }
   @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
   
-  .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; transform: scale(0.8); }
-  @keyframes popIn { to { opacity: 1; transform: scale(1); } }
-
-  .spin-slow { animation: spin 3s linear infinite; }
-  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-  /* Scrollbar Hide */
+  .progress-bar { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+  
+  /* Scrollbar oculta para carrossel */
   .hide-scroll::-webkit-scrollbar { display: none; }
   .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 `;
 
-/* ==================================================================================
-   2. DADOS DO SISTEMA
-   ================================================================================== */
+// ==================================================================================
+// 2. BANCO DE DADOS (TEXTOS REAIS & REGRAS)
+// ==================================================================================
+
 const SERVICES = [
   { 
-    id: 'masculina', title: 'Massagem Masculina', price: 155, time: '60 min', 
-    tag: 'MAIS PEDIDA 🔥',
-    desc: 'Protocolo completo. Relaxamento muscular profundo seguido de toques sensitivos e finalização manual intensa (pode gozar).',
-    features: ['Sigilo Total', 'Massagista Homem', 'Finalização Manual', 'Toque Íntimo']
+    id: 'masculina', title: 'Massagem Masculina', price: 155, duration: '60 min', 
+    tag: 'EXPERIÊNCIA COMPLETA 🔥',
+    desc: 'O protocolo mais procurado. Relaxamento muscular seguido de toques íntimos e finalização manual intensa.',
+    features: ['Sigilo Total', 'Toque Íntimo Liberado', 'Finalização (Pode gozar)', 'Sem tabus']
   },
   { 
-    id: 'relaxante', title: 'Relaxante Clássica', price: 125, time: '50 min', 
+    id: 'relaxante', title: 'Relaxante Corporal', price: 125, duration: '50 min', 
     tag: 'TIRE O STRESS',
-    desc: 'Foco total em remover dores e tensão. Movimentos deslizantes no corpo todo para zerar o cansaço.',
-    features: ['Corpo Todo', 'Sem Toque Íntimo', 'Tira Dores', 'Óleos Essenciais']
+    desc: 'Foco em dores e cansaço. Massagem no corpo todo para zerar o stress de São Paulo.',
+    features: ['Corpo Todo', 'Mãos Leves', 'Sem Toque Íntimo', 'Apenas Relaxamento']
   }
 ];
 
-// 30 Avaliações Reais (Focadas em Sigilo/Masculina)
+// LISTA EXPANDIDA DE AVALIAÇÕES
 const REVIEWS = [
-  { t: "A mão dele é firme na medida certa. Finalização top.", a: "Carlos (Moema)", s: 5 },
-  { t: "Sou casado, o sigilo foi total. Recomendo muito.", a: "Anônimo", s: 5 },
-  { t: "Fui pra relaxar e saí flutuando. O cara é bom.", a: "Pedro H.", s: 5 },
-  { t: "Direto ao ponto, sem enrolação. Curti.", a: "Marcos (Empresário)", s: 5 },
-  { t: "Ambiente discreto, me senti super a vontade.", a: "J.L.", s: 5 },
-  { t: "Me fez gozar gostoso demais. Voltarei.", a: "Sigiloso", s: 5 },
-  { t: "Mãos de ouro. Tirou toda a tensão das costas.", a: "Felipe", s: 5 },
-  { t: "Discrição nota 10. Serviço impecável.", a: "R.S.", s: 5 },
-  { t: "Preço justo pela qualidade. Tântrica real.", a: "Gustavo", s: 5 },
-  { t: "Óleos de primeira, cheiro muito bom.", a: "Beto", s: 5 },
-  { t: "Primeira vez com homem e foi sensacional.", a: "Curioso", s: 5 },
-  { t: "Treino pesado e ele soltou toda a musculatura.", a: "Vitor (Crossfit)", s: 5 },
-  { t: "Finalização explosiva. Recomendo a masculina.", a: "André", s: 5 },
-  { t: "Simples, limpo e eficiente. O que importa é a mão.", a: "M.", s: 4 },
-  { t: "Tem pegada de macho. Gostei.", a: "T.", s: 5 },
-  { t: "Dormi na maca de tão relaxado.", a: "Lucas", s: 5 },
-  { t: "Pontual no meu apto. Sem stress.", a: "Fernando", s: 5 },
-  { t: "Achou todos os nós nas costas. Alívio total.", a: "Ricardo", s: 5 },
-  { t: "Técnica apurada, prazer garantido.", a: "Anon", s: 5 },
-  { t: "Educado e discreto. Pode confiar.", a: "Sérgio", s: 5 },
-  { t: "Fiquei a vontade rapidinho. Profissional.", a: "P.J.", s: 5 },
-  { t: "Vale cada centavo. Serviço premium.", a: "Eduardo", s: 5 },
-  { t: "Massagem forte, do jeito que eu gosto.", a: "Bruno", s: 5 },
-  { t: "O toque dele arrepia. Experiência única.", a: "M.C.", s: 5 },
-  { t: "Agendamento rápido no zap.", a: "Leandro", s: 4 },
-  { t: "Foi no motel, super discreto na portaria.", a: "Casado SP", s: 5 },
-  { t: "Aromaterapia fez a diferença.", a: "Daniel", s: 5 },
-  { t: "Experiência foda. Mlk é brabo.", a: "Guilherme", s: 5 },
-  { t: "Gozada inesquecível.", a: "R.", s: 5 },
-  { t: "Parabéns pelo profissionalismo.", a: "Dr. Paulo", s: 5 }
+  { text: "Sou casado, o sigilo foi 100%. A finalização foi absurda, gozei gostoso demais.", author: "Anônimo (Zona Sul)", stars: 5 },
+  { text: "Empresário, vivo na correria. Foi direto ao ponto, sem enrolação. Recomendo.", author: "R. M.", stars: 5 },
+  { text: "A mão dele é firme na medida certa. Finalização top.", author: "Carlos (Moema)", stars: 5 },
+  { text: "Tava carente há meses. O toque dele me resgatou.", author: "M. (Vila Madalena)", stars: 5 },
+  { text: "Ambiente discreto. A massagem relaxante tira o peso das costas mesmo.", author: "Felipe T.", stars: 5 },
+  { text: "Me fez gozar gostoso demais. Voltarei.", author: "Sigiloso", stars: 5 },
+  { text: "Mãos de ouro. Tirou toda a tensão das costas.", author: "Felipe", stars: 5 },
+  { text: "Discrição nota 10. Serviço impecável.", author: "R.S.", stars: 5 },
+  { text: "Preço justo pela qualidade. Tântrica real.", author: "Gustavo", stars: 5 },
+  { text: "Óleos de primeira, cheiro muito bom.", author: "Beto", stars: 5 },
+  { text: "Primeira vez com homem e foi sensacional.", author: "Curioso", stars: 5 },
+  { text: "Treino pesado e ele soltou toda a musculatura.", author: "Vitor (Crossfit)", stars: 5 },
+  { text: "Finalização explosiva. Recomendo a masculina.", author: "André", stars: 5 },
+  { text: "Simples, limpo e eficiente. O que importa é a mão.", author: "M.", stars: 4 },
+  { text: "Tem pegada de macho. Gostei.", author: "T.", stars: 5 },
+  { text: "Dormi na maca de tão relaxado.", author: "Lucas", stars: 5 },
+  { text: "Pontual no meu apto. Sem stress.", author: "Fernando", stars: 5 },
+  { text: "Achou todos os nós nas costas. Alívio total.", author: "Ricardo", stars: 5 },
+  { text: "Técnica apurada, prazer garantido.", author: "Anon", stars: 5 },
+  { text: "Educado e discreto. Pode confiar.", author: "Sérgio", stars: 5 },
+  { text: "Fiquei a vontade rapidinho. Profissional.", author: "P.J.", stars: 5 },
+  { text: "Vale cada centavo. Serviço premium.", author: "Eduardo", stars: 5 },
+  { text: "Massagem forte, do jeito que eu gosto.", author: "Bruno", stars: 5 },
+  { text: "O toque dele arrepia. Experiência única.", author: "M.C.", stars: 5 },
+  { text: "Agendamento rápido no zap.", author: "Leandro", stars: 4 },
+  { text: "Foi no motel, super discreto na portaria.", author: "Casado SP", stars: 5 },
+  { text: "Aromaterapia fez a diferença.", author: "Daniel", stars: 5 },
+  { text: "Experiência foda. Mlk é brabo.", author: "Guilherme", stars: 5 },
+  { text: "Gozada inesquecível.", author: "R.", stars: 5 },
+  { text: "Parabéns pelo profissionalismo.", author: "Dr. Paulo", stars: 5 }
 ];
 
-/* ==================================================================================
-   3. COMPONENTE PRINCIPAL
-   ================================================================================== */
-export default function App() {
+const LEVELS = [
+  { name: 'Novato', min: 0, icon: '🛡️' },
+  { name: 'Cliente VIP', min: 300, icon: '🥈' },
+  { name: 'Elite SP', min: 800, icon: '👑' },
+];
+
+// ==================================================================================
+// 3. APP LÓGICA
+// ==================================================================================
+
+export default function SPMassageApp() {
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [showBalance, setShowBalance] = useState(false);
-  const [stats, setStats] = useState({ spent: 0, level: 'Bronze' });
+  const [view, setView] = useState('home'); 
   
-  // FORMULÁRIO COMPLETO
-  const [form, setForm] = useState({
+  // Gamificação Persistente
+  const [userStats, setUserStats] = useState({ spent: 0, level: 'Novato' });
+
+  // Carrinho
+  const [selection, setSelection] = useState({
     service: null,
-    locType: 'apt', // 'apt' | 'casa'
+    date: null,
+    time: null,
+    addressType: 'apt', // 'apt' ou 'casa'
     address: '',
-    number: '',
     neighborhood: '',
-    aptDetails: '', // bloco/apto
-    date: '',
-    time: '',
-    payment: 'pix',
     aroma: false,
     coupon: false
   });
 
-  // INICIALIZAÇÃO
+  // Init
   useEffect(() => {
-    // 1. Simula Loading
-    setTimeout(() => {
-      setLoading(false);
-      // 2. Abre Modal de Desconto se não tiver usado
-      const hasUsed = localStorage.getItem('thaly_coupon_used');
-      if (!hasUsed) setTimeout(() => setShowModal(true), 800);
-    }, 2000);
+    // Simula carregamento de segurança
+    setTimeout(() => setLoading(false), 2500);
 
-    // 3. Carrega Stats
-    const savedStats = localStorage.getItem('thaly_user_stats');
-    if (savedStats) setStats(JSON.parse(savedStats));
+    // Carrega dados do usuário
+    const saved = localStorage.getItem('sp_massage_user');
+    if (saved) setUserStats(JSON.parse(saved));
   }, []);
 
-  // HELPERS
-  const haptic = () => { if (navigator.vibrate) navigator.vibrate(10); };
-  
-  const applyCoupon = () => {
-    haptic();
-    setForm({...form, coupon: true});
-    setShowModal(false);
-    localStorage.setItem('thaly_coupon_used', 'true');
-  };
+  const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(10); };
 
-  const calcTotal = () => {
-    let total = form.service ? form.service.price : 0;
-    if (form.aroma) total += 10;
-    if (form.coupon) total -= 10;
-    return total;
-  };
+  // Cálculos
+  const currentLevelIdx = LEVELS.findIndex(l => userStats.spent < l.min) === -1 ? LEVELS.length - 1 : LEVELS.findIndex(l => userStats.spent < l.min) - 1;
+  const currentLevel = LEVELS[currentLevelIdx];
+  const nextLevel = LEVELS[currentLevelIdx + 1];
+  const progressPercent = nextLevel ? ((userStats.spent - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100 : 100;
 
-  const isFormValid = () => {
-    if (!form.service || !form.date || !form.time || !form.address || !form.number || !form.neighborhood) return false;
-    return true;
-  };
+  const total = (selection.service?.price || 0) + 
+                (selection.aroma ? 10 : 0) - 
+                (selection.coupon ? 10 : 0);
 
-  const handleWhatsApp = () => {
-    // Salvar progresso (Gamificação)
-    const newSpent = stats.spent + calcTotal();
-    const newStats = { spent: newSpent, level: newSpent > 500 ? 'Ouro' : newSpent > 200 ? 'Prata' : 'Bronze' };
-    setStats(newStats);
-    localStorage.setItem('thaly_user_stats', JSON.stringify(newStats));
+  // --- COMPONENTES ---
 
-    // Montar Mensagem
-    const locText = form.locType === 'apt' 
-      ? `🏢 *Apto:* ${form.address}, ${form.number}\n📍 *Bairro:* ${form.neighborhood}\n🔢 *Comp:* ${form.aptDetails}`
-      : `🏠 *Casa:* ${form.address}, ${form.number}\n📍 *Bairro:* ${form.neighborhood}`;
-
-    const msg = `*NOVO AGENDAMENTO VIP* 🚀
---------------------------------
-💆 *Serviço:* ${form.service.title}
-💰 *Valor Base:* R$ ${form.service.price},00
-
-${locText}
-_(Verificar Uber: <500m Free | >1km Calcular)_
-
-📅 *Data:* ${form.date} às ${form.time}
-💳 *Pag:* ${form.payment.toUpperCase()}
-
-*ADICIONAIS:*
-${form.aroma ? '✅ Aromaterapia (+R$ 10)' : '❌ Sem Aroma'}
-${form.coupon ? '🎟 CUPOM APLICADO (-R$ 10)' : ''}
-
-*TOTAL FINAL: R$ ${calcTotal()},00* (+ Taxa se houver)
---------------------------------`;
-
-    const link = `https://wa.me/5517991360413?text=${encodeURIComponent(msg)}`;
-    window.open(link, '_blank');
-  };
-
-  // --- TELAS ---
-
-  if (loading) return (
-    <div className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center">
-      <style>{globalStyles}</style>
-      <div className="w-16 h-16 border-4 border-[#111] border-t-[#0A84FF] rounded-full spin-slow"></div>
-      <h2 className="mt-6 text-xl font-bold tracking-[0.3em] text-white animate-pulse">THALYSON</h2>
-      <p className="text-[10px] text-[#0A84FF] uppercase mt-2 font-mono">Carregando Sistema...</p>
+  const LoadingScreen = () => (
+    <div className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center p-6 text-center">
+      <div className="loader-ring"><div></div><div></div><div></div><div></div></div>
+      <h2 className="mt-8 text-xl font-bold text-white tracking-widest uppercase">Thalyson SP</h2>
+      <p className="text-[#0A84FF] text-xs font-mono mt-2 animate-pulse">Estabelecendo conexão segura...</p>
+      <div className="absolute bottom-10 flex items-center gap-2 text-gray-600 text-[10px] uppercase">
+        <Lock className="w-3 h-3" /> Ambienta Seguro & Discreto
+      </div>
     </div>
   );
 
-  return (
-    <div className="min-h-screen pb-40 relative overflow-hidden">
-      <style>{globalStyles}</style>
-      
-      {/* BACKGROUND */}
-      <div className="aurora-container">
-        <div className="aurora-blob b1"></div>
-        <div className="aurora-blob b2"></div>
-      </div>
-
-      {/* MODAL DESCONTO */}
-      {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm fade-in">
-          <div className="bg-[#121212] w-full max-w-sm rounded-[30px] p-6 border border-[#FFD60A]/30 text-center pop-in shadow-2xl relative">
-             <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 text-gray-500"><X className="w-5 h-5"/></button>
-             <div className="w-14 h-14 bg-[#FFD60A]/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                <Sparkles className="w-7 h-7 text-[#FFD60A] fill-[#FFD60A]" />
-             </div>
-             <h3 className="text-2xl font-bold text-white mb-2">Ganhou R$ 10 OFF</h3>
-             <p className="text-sm text-gray-400 mb-6">Presente exclusivo para sua primeira sessão. Aproveite agora.</p>
-             <button onClick={applyCoupon} className="w-full py-4 rounded-xl bg-[#FFD60A] text-black font-bold text-lg shadow-[0_0_20px_rgba(255,214,10,0.4)] active:scale-95 transition-transform">RESGATAR AGORA</button>
-          </div>
-        </div>
-      )}
-
-      {/* HEADER */}
-      <header className="pt-12 px-6 pb-4 flex justify-between items-end sticky top-0 z-40 bg-gradient-to-b from-black via-black/90 to-transparent">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Thalyson<span className="text-[#0A84FF]">Massagens</span></h1>
-          <div className="flex items-center gap-1.5 mt-1">
-             <Shield className="w-3 h-3 text-gray-500" />
-             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Profissional Masculino • SP</span>
-          </div>
-        </div>
-        <div className="text-right">
-          <button onClick={() => {haptic(); setShowBalance(!showBalance)}} className="flex items-center justify-end gap-1.5 text-[10px] text-gray-500 font-bold uppercase mb-1">
-            Investido {showBalance ? <EyeOff className="w-3 h-3"/> : <Eye className="w-3 h-3"/>}
-          </button>
-          <div className="text-lg font-mono font-bold text-[#0A84FF] transition-all">
-             {showBalance ? `R$ ${stats.spent}` : '****'}
-          </div>
-        </div>
-      </header>
-
-      {/* CONTEÚDO PRINCIPAL */}
-      <main className="px-6 space-y-10 fade-in">
-        
-        {/* 1. SELEÇÃO DE SERVIÇO */}
-        <section className="space-y-5">
-           {SERVICES.map(s => (
-             <div key={s.id} onClick={() => { haptic(); setForm({...form, service: s}) }}
-                  className={`glass p-6 rounded-[24px] relative overflow-hidden transition-all duration-300 border active:scale-95 cursor-pointer
-                  ${form.service?.id === s.id ? 'border-[#0A84FF] bg-[#0A84FF]/10' : 'border-white/5 hover:border-white/10'}`}>
-                
-                {s.tag && <div className="absolute top-0 right-0 bg-[#0A84FF] text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl shadow-lg">{s.tag}</div>}
-                
-                <div className="flex justify-between items-start mb-3">
-                   <h3 className="text-xl font-bold text-white">{s.title}</h3>
-                   <div className="text-right">
-                      <span className="block text-xl font-bold text-[#0A84FF]">R$ {s.price}</span>
-                      <span className="text-[10px] text-gray-400">{s.time}</span>
-                   </div>
-                </div>
-                <p className="text-sm text-gray-300 leading-relaxed mb-4 opacity-90">{s.desc}</p>
-                <div className="flex flex-wrap gap-2">
-                   {s.features.map((f,i) => (
-                     <span key={i} className="text-[10px] font-semibold bg-white/5 text-gray-300 px-2 py-1 rounded-md border border-white/5 flex items-center gap-1">
-                       <Check className="w-3 h-3 text-[#0A84FF]" /> {f}
-                     </span>
-                   ))}
-                </div>
-             </div>
-           ))}
-        </section>
-
-        {/* 2. CARROSSEL DE AVALIAÇÕES */}
-        <section>
-          <div className="flex justify-between items-end mb-3 px-1">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Avaliações ({REVIEWS.length})</h3>
-            <div className="flex text-[#FFD60A]"><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/></div>
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-4 hide-scroll snap-x">
-             {REVIEWS.map((r, i) => (
-               <div key={i} className="min-w-[280px] glass p-4 rounded-2xl snap-center border-l-2 border-l-[#0A84FF]/50 flex flex-col justify-between">
-                  <p className="text-[13px] text-gray-300 italic leading-relaxed mb-3">"{r.t}"</p>
-                  <div className="flex justify-between items-center mt-auto">
-                     <span className="text-[10px] font-bold text-gray-500 uppercase">{r.a}</span>
-                     <div className="flex gap-0.5">{[...Array(r.s)].map((_,k)=><Star key={k} className="w-2 h-2 text-[#FFD60A] fill-current"/>)}</div>
-                  </div>
-               </div>
-             ))}
-          </div>
-        </section>
-
-        {/* 3. FORMULÁRIO DE AGENDAMENTO (Só aparece se escolher serviço) */}
-        {form.service && (
-          <div className="space-y-8 pb-10 fade-in">
-             <div className="flex items-center gap-3 py-2 border-b border-white/10">
-                <div className="w-2 h-2 bg-[#0A84FF] rounded-full animate-pulse"></div>
-                <h3 className="text-lg font-bold text-white">Finalizar Sessão</h3>
-             </div>
-
-             {/* LOCAL */}
-             <div className="space-y-4">
-               <h4 className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2"><MapPin className="w-4 h-4 text-[#0A84FF]"/> Onde Atender?</h4>
-               <div className="grid grid-cols-2 gap-4">
-                  <button onClick={() => setForm({...form, locType: 'apt'})} className={`p-4 rounded-2xl border text-sm font-bold transition-all ${form.locType === 'apt' ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#121212] border-white/10 text-gray-500'}`}>🏢 Apartamento</button>
-                  <button onClick={() => setForm({...form, locType: 'casa'})} className={`p-4 rounded-2xl border text-sm font-bold transition-all ${form.locType === 'casa' ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#121212] border-white/10 text-gray-500'}`}>🏠 Casa</button>
-               </div>
-               
-               <input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="Rua / Avenida" className="w-full bg-[#121212] border border-white/10 p-4 rounded-xl text-white text-sm focus:border-[#0A84FF] outline-none" />
-               
-               <div className="flex gap-3">
-                  <input type="tel" value={form.number} onChange={e => setForm({...form, number: e.target.value})} placeholder="Número" className="w-1/3 bg-[#121212] border border-white/10 p-4 rounded-xl text-white text-sm focus:border-[#0A84FF] outline-none" />
-                  <input value={form.neighborhood} onChange={e => setForm({...form, neighborhood: e.target.value})} placeholder="Bairro" className="flex-1 bg-[#121212] border border-white/10 p-4 rounded-xl text-white text-sm focus:border-[#0A84FF] outline-none" />
-               </div>
-               
-               {form.locType === 'apt' && (
-                  <input value={form.aptDetails} onChange={e => setForm({...form, aptDetails: e.target.value})} placeholder="Bloco / Apto / Complemento" className="w-full bg-[#121212] border border-white/10 p-4 rounded-xl text-white text-sm focus:border-[#0A84FF] outline-none fade-in" />
-               )}
-               
-               <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-xl">
-                  <p className="text-[11px] text-blue-200"><strong className="text-white">Uber:</strong> Até 500m do meu local é <span className="text-green-400">FREE</span>. Acima de 1km calculamos no WhatsApp.</p>
-               </div>
-             </div>
-
-             {/* DATA E HORA */}
-             <div className="space-y-4">
-                <h4 className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2"><Calendar className="w-4 h-4 text-[#0A84FF]"/> Data e Hora</h4>
-                <div className="flex gap-3 overflow-x-auto pb-2 hide-scroll">
-                   {['Hoje', 'Amanhã', 'Sáb', 'Dom'].map(d => (
-                      <button key={d} onClick={() => setForm({...form, date: d})} className={`px-6 py-3 rounded-xl border text-sm font-bold whitespace-nowrap transition-all ${form.date === d ? 'bg-white text-black border-white' : 'bg-[#121212] border-white/10 text-gray-500'}`}>{d}</button>
-                   ))}
-                </div>
-                {form.date && (
-                   <div className="grid grid-cols-4 gap-3 fade-in">
-                      {['10:00', '14:00', '16:00', '19:00', '21:00'].map(t => (
-                         <button key={t} onClick={() => setForm({...form, time: t})} className={`py-2 rounded-xl text-xs font-bold border transition-all ${form.time === t ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#121212] border-white/10 text-gray-500'}`}>{t}</button>
-                      ))}
-                   </div>
-                )}
-             </div>
-
-             {/* PAGAMENTO */}
-             <div className="space-y-4">
-                <h4 className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2"><CreditCard className="w-4 h-4 text-[#0A84FF]"/> Pagamento</h4>
-                <div className="grid grid-cols-3 gap-3">
-                   {[{id:'pix', l:'Pix', i:QrCode}, {id:'card', l:'Cartão', i:CreditCard}, {id:'cash', l:'Dinheiro', i:Banknote}].map(p => (
-                      <button key={p.id} onClick={() => setForm({...form, payment: p.id})} className={`h-20 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all ${form.payment === p.id ? 'bg-[#0A84FF]/20 border-[#0A84FF]' : 'bg-[#121212] border-white/10'}`}>
-                         <p.i className={`w-5 h-5 ${form.payment === p.id ? 'text-[#0A84FF]' : 'text-gray-500'}`} />
-                         <span className={`text-[10px] font-bold ${form.payment === p.id ? 'text-white' : 'text-gray-500'}`}>{p.l}</span>
-                      </button>
-                   ))}
-                </div>
-             </div>
-
-             {/* EXTRAS */}
-             <div className="space-y-3">
-                <div onClick={() => setForm({...form, aroma: !form.aroma})} className={`w-full p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${form.aroma ? 'bg-green-500/10 border-green-500/50' : 'bg-[#121212] border-white/10'}`}>
-                    <div className="flex items-center gap-3">
-                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${form.aroma ? 'bg-green-500 text-black' : 'bg-[#2a2a2a] text-gray-500'}`}><Zap className="w-5 h-5"/></div>
-                       <div><h4 className="text-sm font-bold text-white">Aromaterapia</h4><p className="text-[10px] text-gray-400">Ambiente perfumado</p></div>
-                    </div>
-                    <span className="text-green-400 font-bold text-sm">+ R$ 10</span>
-                </div>
-                
-                {!form.coupon ? (
-                   <div onClick={applyCoupon} className="p-4 border border-dashed border-[#FFD60A]/30 bg-[#FFD60A]/5 rounded-2xl text-center cursor-pointer active:scale-95 transition-transform">
-                      <p className="text-[#FFD60A] text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2"><Sparkles className="w-3 h-3"/> Aplicar Cupom R$ 10</p>
-                   </div>
-                ) : (
-                   <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center justify-center gap-2">
-                      <Check className="w-4 h-4 text-green-500" /> <span className="text-green-400 text-xs font-bold">Desconto Aplicado!</span>
-                   </div>
-                )}
-             </div>
-          </div>
-        )}
-      </main>
-
-      {/* FOOTER FLUTUANTE */}
-      {form.service && (
-        <div className="fixed bottom-0 w-full z-50 fade-in">
-           <div className="h-10 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
-           <div className="bg-[#1a1a1a] border-t border-white/10 p-6 rounded-t-[32px] shadow-[0_-10px_60px_rgba(0,0,0,0.9)]">
-              <div className="flex justify-between items-end mb-5">
-                 <div>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Total Final</p>
-                    {form.aroma && <span className="text-[10px] text-gray-400 block">+ Aroma Incluso</span>}
-                    {form.coupon && <span className="text-[10px] text-green-400 block">- Desconto R$ 10</span>}
-                 </div>
-                 <div className="text-right">
-                    <h2 className="text-3xl font-bold text-white tracking-tighter">R$ {calcTotal()}</h2>
-                    <p className="text-[10px] text-[#0A84FF] font-bold">+ Taxa Uber (Se > 500m)</p>
-                 </div>
-              </div>
-              <button disabled={!isFormValid()} onClick={handleWhatsApp} className="w-full btn-primary py-4 rounded-2xl bg-gradient-to-r from-[#0A84FF] to-[#0060df] text-white font-bold text-lg shadow-lg flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-all">
-                 <span className="uppercase tracking-wide">Confirmar no Zap</span> <ArrowRight className="w-5 h-5"/>
-              </button>
+  const GamificationBar = () => (
+    <div className="mx-6 mt-4 mb-6 p-4 rounded-2xl bg-[#121212] border border-white/10 relative overflow-hidden">
+      <div className="flex justify-between items-center mb-2 relative z-10">
+        <div className="flex items-center gap-2">
+           <span className="text-xl">{currentLevel.icon}</span>
+           <div>
+             <p className="text-[10px] text-gray-500 font-bold uppercase">Seu Status</p>
+             <h3 className="text-white font-bold text-sm">{currentLevel.name}</h3>
            </div>
         </div>
+        <div className="text-right">
+           <p className="text-[10px] text-gray-500 font-bold uppercase">Investido</p>
+           <p className="text-[#0A84FF] font-mono font-bold">R$ {userStats.spent}</p>
+        </div>
+      </div>
+      
+      {/* Barra */}
+      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden relative z-10">
+         <div className="h-full bg-[#0A84FF] progress-bar" style={{ width: `${progressPercent}%` }}></div>
+      </div>
+      
+      {nextLevel && (
+        <p className="text-[10px] text-gray-600 mt-2 text-center relative z-10">
+          Faltam R$ {nextLevel.min - userStats.spent} para subir de nível
+        </p>
       )}
+    </div>
+  );
+
+  const ReviewsCarousel = () => {
+    // Carrossel com scroll horizontal nativo para melhor performance com muitos itens
+    return (
+      <div className="px-6 mb-8">
+        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Avaliações Reais ({REVIEWS.length})</h3>
+        <div className="flex gap-4 overflow-x-auto pb-4 hide-scroll snap-x">
+           {REVIEWS.map((review, i) => (
+             <div key={i} className="min-w-[280px] bg-[#121212] border border-white/5 p-4 rounded-xl flex flex-col justify-between snap-center">
+                <div className="flex gap-1 mb-2">
+                   {[...Array(5)].map((_,k) => <Star key={k} className="w-3 h-3 text-[#FFD60A] fill-[#FFD60A]" />)}
+                </div>
+                <p className="text-sm text-gray-300 italic leading-relaxed mb-3">"{review.text}"</p>
+                <p className="text-[10px] text-gray-500 font-bold text-right uppercase">- {review.author}</p>
+             </div>
+           ))}
+        </div>
+      </div>
+    );
+  }
+
+  // --- FLUXO DE TELAS ---
+
+  if (loading) return <>
+    <style>{styles}</style>
+    <LoadingScreen />
+  </>;
+
+  if (view === 'home') return (
+    <div className="min-h-screen pb-32">
+      <style>{styles}</style>
+      
+      {/* Header */}
+      <div className="pt-12 px-6 pb-4 bg-gradient-to-b from-black via-black to-transparent sticky top-0 z-20">
+        <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-white">Massagem<span className="text-[#0A84FF]">SP</span></h1>
+            <div className="px-3 py-1 bg-white/10 rounded-full flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-[#0A84FF]" />
+                <span className="text-[10px] font-bold text-gray-300">São Paulo</span>
+            </div>
+        </div>
+        <p className="text-gray-500 text-xs mt-1">Discrição total para homens exigentes.</p>
+      </div>
+
+      <GamificationBar />
+
+      {/* Serviços */}
+      <div className="px-6 space-y-4 fade-in">
+        {SERVICES.map(s => (
+          <div key={s.id} onClick={() => { triggerHaptic(); setSelection({...selection, service: s}); setView('booking'); }} 
+               className={`glass-card p-5 rounded-2xl relative overflow-hidden active:scale-[0.98] transition-all border-l-4 ${s.id === 'masculina' ? 'border-l-[#0A84FF]' : 'border-l-gray-600'}`}>
+             
+             {s.tag && <div className="absolute top-0 right-0 bg-[#0A84FF] text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl">{s.tag}</div>}
+             
+             <div className="flex justify-between items-start mb-2">
+               <h3 className="text-lg font-bold text-white">{s.title}</h3>
+               <span className="text-lg font-bold text-[#0A84FF]">R$ {s.price}</span>
+             </div>
+             
+             <p className="text-sm text-gray-400 mb-4 leading-relaxed">{s.desc}</p>
+             
+             <div className="grid grid-cols-2 gap-2">
+                {s.features.map((f, i) => (
+                    <div key={i} className="flex items-center gap-1.5">
+                        <Check className="w-3 h-3 text-green-500" />
+                        <span className="text-[10px] text-gray-300 uppercase font-bold">{f}</span>
+                    </div>
+                ))}
+             </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-8"><ReviewsCarousel /></div>
+    </div>
+  );
+
+  if (view === 'booking') return (
+    <div className="min-h-screen pb-40">
+      <style>{styles}</style>
+      
+      {/* Nav Back */}
+      <div className="pt-12 px-6 mb-6">
+        <button onClick={() => setView('home')} className="text-gray-500 text-sm flex items-center gap-1 hover:text-white"><ArrowRight className="w-4 h-4 rotate-180"/> Voltar</button>
+        <h2 className="text-2xl font-bold text-white mt-2">Personalizar</h2>
+      </div>
+
+      <div className="px-6 space-y-8 fade-in">
+        
+        {/* Endereço */}
+        <section>
+           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><MapPin className="w-3 h-3 text-[#0A84FF]"/> Onde Atender?</h3>
+           
+           {/* Tipo de Local */}
+           <div className="grid grid-cols-2 gap-3 mb-4">
+              <button onClick={() => setSelection({...selection, addressType: 'apt'})} className={`p-3 rounded-xl border text-sm font-bold transition-all ${selection.addressType === 'apt' ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#121212] border-white/10 text-gray-500'}`}>🏢 Apartamento</button>
+              <button onClick={() => setSelection({...selection, addressType: 'casa'})} className={`p-3 rounded-xl border text-sm font-bold transition-all ${selection.addressType === 'casa' ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#121212] border-white/10 text-gray-500'}`}>🏠 Casa</button>
+           </div>
+
+           <input value={selection.address} onChange={e => setSelection({...selection, address: e.target.value})} placeholder="Rua e Número" className="w-full bg-[#121212] border border-white/10 p-4 rounded-xl text-white text-sm focus:border-[#0A84FF] outline-none mb-3" />
+           <input value={selection.neighborhood} onChange={e => setSelection({...selection, neighborhood: e.target.value})} placeholder="Bairro (Para cálculo do Uber)" className="w-full bg-[#121212] border border-white/10 p-4 rounded-xl text-white text-sm focus:border-[#0A84FF] outline-none" />
+           
+           {/* Alerta Uber */}
+           <div className="mt-3 p-3 bg-[#0A84FF]/10 border border-[#0A84FF]/20 rounded-xl flex gap-3">
+              <Navigation className="w-4 h-4 text-[#0A84FF] flex-shrink-0 mt-0.5" />
+              <p className="text-[11px] text-gray-300 leading-tight">
+                 <span className="text-white font-bold">Política Uber:</span> Até 500m do meu local é <span className="text-green-400">Grátis</span>. Acima de 1km, calculamos a taxa exata no WhatsApp.
+              </p>
+           </div>
+        </section>
+
+        {/* Data e Hora */}
+        <section>
+           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><Calendar className="w-3 h-3 text-[#0A84FF]"/> Horário</h3>
+           <div className="flex gap-2 overflow-x-auto pb-2 hide-scroll">
+              {['Hoje', 'Amanhã', 'Sexta'].map(d => (
+                 <button key={d} onClick={() => setSelection({...selection, date: d})} className={`px-4 py-2 rounded-lg text-xs font-bold border whitespace-nowrap ${selection.date === d ? 'bg-white text-black' : 'bg-[#121212] border-white/10 text-gray-400'}`}>{d}</button>
+              ))}
+           </div>
+           {selection.date && (
+              <div className="grid grid-cols-4 gap-2 mt-2">
+                 {['14:00', '16:00', '19:00', '21:00'].map(t => (
+                    <button key={t} onClick={() => setSelection({...selection, time: t})} className={`py-2 rounded-lg text-xs font-bold border ${selection.time === t ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#121212] border-white/10 text-gray-500'}`}>{t}</button>
+                 ))}
+              </div>
+           )}
+        </section>
+
+        {/* Extras */}
+        <section>
+           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><Sparkles className="w-3 h-3 text-[#0A84FF]"/> Adicionais</h3>
+           
+           <button onClick={() => setSelection({...selection, aroma: !selection.aroma})} className={`w-full p-4 rounded-xl border flex items-center justify-between transition-all ${selection.aroma ? 'bg-green-500/10 border-green-500/50' : 'bg-[#121212] border-white/10'}`}>
+              <div className="flex items-center gap-3">
+                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${selection.aroma ? 'bg-green-500 text-black' : 'bg-gray-800 text-gray-500'}`}><Zap className="w-4 h-4"/></div>
+                 <div className="text-left"><p className="text-white font-bold text-sm">Aromaterapia</p><p className="text-[10px] text-gray-400">Ambiente perfumado e imersivo</p></div>
+              </div>
+              <span className="text-green-400 font-bold text-sm">+ R$ 10,00</span>
+           </button>
+
+           {/* Cupom */}
+           {!selection.coupon ? (
+             <div onClick={() => { triggerHaptic(); setSelection({...selection, coupon: true}); }} className="mt-4 p-4 border border-dashed border-[#FFD60A]/30 bg-[#FFD60A]/5 rounded-xl text-center cursor-pointer active:scale-95 transition-transform">
+                <p className="text-[#FFD60A] text-xs font-bold uppercase tracking-widest animate-pulse">Toque para ativar Cupom R$ 10</p>
+             </div>
+           ) : (
+             <div className="mt-4 p-3 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center justify-center gap-2">
+                <Check className="w-4 h-4 text-green-500" /> <span className="text-green-400 text-xs font-bold">Desconto Aplicado!</span>
+             </div>
+           )}
+        </section>
+
+      </div>
+
+      {/* FOOTER CHECKOUT */}
+      <div className="fixed bottom-0 w-full z-30">
+        <div className="h-10 bg-gradient-to-t from-black to-transparent pointer-events-none" />
+        <div className="bg-[#121212] border-t border-white/10 p-5 rounded-t-[25px] shadow-[0_-10px_50px_rgba(0,0,0,0.9)]">
+            <div className="flex justify-between items-end mb-4">
+               <div>
+                  <p className="text-xs text-gray-500 uppercase font-bold">Total Estimado</p>
+                  {selection.aroma && <span className="text-[10px] text-gray-400 block">+ Aroma Incluso</span>}
+                  {selection.coupon && <span className="text-[10px] text-green-400 block">- Desconto R$ 10</span>}
+               </div>
+               <div className="text-right">
+                  <h2 className="text-3xl font-bold text-white tracking-tighter">R$ {total}</h2>
+                  <p className="text-[10px] text-[#0A84FF] font-bold">+ Taxa Uber (A calcular)</p>
+               </div>
+            </div>
+
+            <button 
+               disabled={!selection.address || !selection.time}
+               onClick={() => {
+                   // Salva gamificação
+                   const newStats = { ...userStats, spent: userStats.spent + total };
+                   localStorage.setItem('sp_massage_user', JSON.stringify(newStats));
+                   
+                   // Gera Link Zap Corrigido para 17991360413
+                   const msg = `*NOVO AGENDAMENTO SP* 🏢
+--------------------------------
+👤 *Cliente:* Anônimo
+💆 *Serviço:* ${selection.service.title}
+💰 *Valor Base:* R$ ${selection.service.price}
+
+📍 *Local:* ${selection.addressType === 'apt' ? 'Apartamento' : 'Casa'}
+🏠 *Endereço:* ${selection.address}
+🏘 *Bairro:* ${selection.neighborhood}
+_(Verificar taxa Uber: <500m Free / >1km Calcular)_
+
+📅 *Data:* ${selection.date} às ${selection.time}
+
+*ADICIONAIS:*
+${selection.aroma ? '✅ Aromaterapia (+R$ 10)' : '❌ Sem Aroma'}
+${selection.coupon ? '🎟 CUPOM ATIVO (-R$ 10)' : ''}
+
+*TOTAL PENDENTE: R$ ${total},00* (+ Uber)
+--------------------------------`;
+                   window.open(`https://wa.me/5517991360413?text=${encodeURIComponent(msg)}`, '_blank');
+               }}
+               className="w-full btn-primary py-4 rounded-xl flex items-center justify-center gap-2 text-lg disabled:opacity-50 disabled:shadow-none">
+               <span className="font-bold">Agendar no WhatsApp</span> <ArrowRight className="w-5 h-5" />
+            </button>
+        </div>
+      </div>
     </div>
   );
 }
