@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  ChevronRight, Check, X, MapPin, Calendar, Clock,
+  ChevronLeft, ChevronRight, Check, X, MapPin, Calendar, Clock,
   Shield, Star, Instagram, MessageCircle, Bell, Tag, 
-  ArrowRight, Share2, Zap, Music, Trash2, CreditCard, 
-  Banknote, QrCode, AlertTriangle,  Info, Send, 
-  Moon, Sun, Wind, Droplets, Heart, Navigation, Layout
+  ArrowRight, Share2, Zap, Crown, Music, Trash2, CreditCard, 
+  Banknote, QrCode, Info, Send, Moon, Wind, Droplets, Heart, 
+  Navigation, Eye, EyeOff, Sparkles, Flame
 } from 'lucide-react';
 
 // ==================================================================================
@@ -12,18 +12,13 @@ import {
 // ==================================================================================
 
 const THEME = {
-  bg: '#050505', // Preto quase absoluto
-  surface: 'rgba(30, 30, 35, 0.6)', // Vidro escuro
-  surfaceHigh: 'rgba(50, 50, 60, 0.5)', // Vidro mais claro
-  accent: '#2563EB', // Azul Royal (Confiança/Profissionalismo)
-  accentGlow: 'rgba(37, 99, 235, 0.3)',
-  gold: '#D4AF37', // Ouro para VIP/Destaques
+  bg: '#050505',
+  surface: 'rgba(30, 30, 35, 0.6)', 
+  surfaceHighlight: 'rgba(255, 255, 255, 0.05)',
+  accent: '#2563EB', // Azul Royal
+  gold: '#D4AF37',   // Ouro VIP
   success: '#10B981',
-  text: {
-    primary: '#FFFFFF',
-    secondary: '#A1A1AA',
-    tertiary: '#52525B'
-  }
+  text: { primary: '#FFFFFF', secondary: '#A1A1AA' }
 };
 
 const styles = `
@@ -35,7 +30,7 @@ const styles = `
     overscroll-behavior-y: none;
   }
   
-  /* --- BACKGROUND ANIMADO --- */
+  /* --- AMBIENT BACKGROUND --- */
   .ambient-bg {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
     background: 
@@ -43,7 +38,7 @@ const styles = `
       radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 40%);
   }
 
-  /* --- GLASSMORPHISM CARDS --- */
+  /* --- GLASSMORPHISM --- */
   .glass-card {
     background: ${THEME.surface};
     backdrop-filter: blur(20px) saturate(180%);
@@ -53,390 +48,349 @@ const styles = `
   }
   
   .glass-btn {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.1);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.2s ease;
   }
-  .glass-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.1); }
+  .glass-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.08); }
   
   .primary-btn {
     background: linear-gradient(135deg, ${THEME.accent}, #1d4ed8);
-    box-shadow: 0 0 20px ${THEME.accentGlow};
-    border: none;
-    color: white;
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+    border: none; color: white;
   }
 
   /* --- ANIMATIONS --- */
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   .animate-enter { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  
-  /* --- UTILS --- */
+  .animate-pulse-slow { animation: pulse 3s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
   .hide-scrollbar::-webkit-scrollbar { display: none; }
-  .safe-bottom { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
 `;
 
 // ==================================================================================
-// 2. DATA LAYER (CONFIGURAÇÃO SP & SEM MACA)
+// 2. DADOS & LÓGICA (MISTURA DO ANTIGO COM O NOVO)
 // ==================================================================================
 
 const CONFIG = {
   WHATSAPP: "5517991360413",
-  PRICES: {
-    TOUCH: 55,
-    AROMA: 15,
-    UPGRADE_TIME: 0.4 // 40% do valor base
-  }
+  PRICES: { TOUCH: 55, AROMA: 15, UPGRADE_TIME_PCT: 0.4 }
 };
 
-// Serviços reformulados para "Experiência In-Room"
-const services = [
-  { 
-    id: 'signature', 
-    name: 'Signature SP', 
-    tag: 'BEST SELLER',
-    desc: 'Fusão de Relaxante e Tântrica. Alívio muscular seguido de conexão sensorial intensa.',
-    duration: '60 min', 
-    price: 180,
-    features: ['In-Room (Cama/Sofá)', 'Óleos Aquecidos', 'Finalização Manual', 'Corpo a Corpo'],
-    vibe: '🔥 Intenso'
-  },
-  { 
-    id: 'deep-relax', 
-    name: 'Deep Relax', 
-    tag: 'ZERO STRESS',
-    desc: 'Foco total em descompressão muscular. Costas, pescoço e pernas. Ideal pós-trabalho.',
-    duration: '50 min', 
-    price: 140,
-    features: ['Foco em Dores', 'Sem Toque Íntimo', 'Trilha Sonora Alpha', 'Aromaterapia Inclusa'],
-    vibe: '🌿 Zen'
-  },
-  { 
-    id: 'tantra-floor', 
-    name: 'Tantra Floor', 
-    tag: 'NOVIDADE',
-    desc: 'Massagem feita no chão (tatame ou tapete). Maior amplitude de movimentos e alongamentos.',
-    duration: '70 min', 
-    price: 220,
-    features: ['Necessário Tapete/Edredom', 'Respiração Guiada', 'Bioenergética', 'Toque Pleno'],
-    vibe: '🧘 Espiritual'
-  }
+const LEVELS = [
+  { name: 'Bronze', min: 0, icon: '🥉', perk: "Acesso ao App" },
+  { name: 'Prata', min: 400, icon: '🥈', perk: "Aroma 50% OFF" },
+  { name: 'Ouro', min: 900, icon: '🥇', perk: "Aroma GRÁTIS" },
+  { name: 'Diamante', min: 1800, icon: '💎', perk: "Prioridade Total" },
 ];
 
-// Bairros Nobres de SP (Filtro de Segurança)
-const spZones = [
-  { id: 'itaim', name: 'Itaim Bibi', surcharge: 0, time: '15 min' },
-  { id: 'moema', name: 'Moema', surcharge: 0, time: '20 min' },
-  { id: 'jardins', name: 'Jardins / Paulista', surcharge: 15, time: '25 min' },
-  { id: 'vn', name: 'Vila Nova Conceição', surcharge: 0, time: '10 min' },
-  { id: 'morumbi', name: 'Morumbi / Panamby', surcharge: 30, time: '40 min' },
-  { id: 'other', name: 'Outra Região (Sob Análise)', surcharge: 0, time: 'Consultar' }
+const SERVICES = [
+  { id: 'signature', name: 'Signature SP', tag: 'BEST SELLER', desc: 'Relaxante + Tântrica. Alívio muscular e conexão sensorial.', duration: '60 min', price: 180, vibe: '🔥 Intenso' },
+  { id: 'deep', name: 'Deep Relax', tag: 'ZERO STRESS', desc: 'Foco em dores musculares. Costas e pernas.', duration: '50 min', price: 140, vibe: '🌿 Zen' },
+  { id: 'tantra', name: 'Tantra Floor', tag: 'NOVIDADE', desc: 'Feita no chão/tatame. Amplitude e respiração.', duration: '70 min', price: 220, vibe: '🧘 Espiritual' }
 ];
 
-const vibes = [
-  { id: 'chill', icon: <Wind size={16}/>, label: 'Lounge & Chill' },
-  { id: 'nature', icon: <Droplets size={16}/>, label: 'Sons da Chuva' },
-  { id: 'deep', icon: <Music size={16}/>, label: 'Deep House' },
-  { id: 'silence', icon: <Moon size={16}/>, label: 'Silêncio Total' },
+const REVIEWS = [
+  { t: "O sigilo foi total. A experiência In-Room é muito melhor.", a: "Executivo (Itaim)", r: 5 },
+  { t: "A vibe Dark Luxury do atendimento é real. Iluminação, som, tudo.", a: "Cliente (Jardins)", r: 5 },
+  { t: "A técnica tântrica me renovou. Vale cada centavo.", a: "Anônimo", r: 5 }
 ];
+
+const LIVE_STATUS = ["Atendimento em Moema agora 💆‍♂️", "Horário das 19h acabou de sair 🌙", "Cliente Ouro agendou Signature 🔥"];
 
 // ==================================================================================
-// 3. COMPONENTES ATÓMICOS
+// 3. COMPONENTES REUTILIZÁVEIS (HÍBRIDOS)
 // ==================================================================================
 
-const Header = ({ step, goBack }) => (
-  <div className="fixed top-0 w-full z-50 px-6 pt-6 pb-4 bg-gradient-to-b from-black via-black/80 to-transparent flex justify-between items-center">
-    {step > 1 ? (
-      <button onClick={goBack} className="w-10 h-10 rounded-full glass-card flex items-center justify-center text-white active:scale-90 transition-transform">
-        <Navigation className="w-4 h-4 rotate-[-90deg]" />
+const Header = ({ step, goBack, notifCount, onOpenNotif }) => (
+  <div className="fixed top-0 w-full z-50 px-6 pt-6 pb-4 bg-gradient-to-b from-black via-black/90 to-transparent flex justify-between items-center pointer-events-none">
+    <div className="pointer-events-auto">
+      {step > 1 ? (
+        <button onClick={goBack} className="w-10 h-10 rounded-full glass-card flex items-center justify-center text-white active:scale-90 transition-transform">
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      ) : (
+        <div className="flex flex-col animate-enter">
+          <span className="text-[10px] text-blue-500 font-bold tracking-[0.2em] uppercase">Thalyson SP</span>
+          <span className="text-sm font-medium text-gray-300">São Paulo, Zona Sul</span>
+        </div>
+      )}
+    </div>
+    <div className="flex gap-3 pointer-events-auto">
+      <button onClick={onOpenNotif} className="relative w-10 h-10 rounded-full glass-card flex items-center justify-center text-gray-300 border border-white/5 active:scale-95">
+        <Bell className="w-5 h-5"/>
+        {notifCount > 0 && <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-black"></span>}
       </button>
-    ) : (
-      <div className="flex flex-col">
-        <span className="text-[10px] text-blue-500 font-bold tracking-[0.2em] uppercase">Thalyson Massagens</span>
-        <span className="text-sm font-medium text-gray-300">São Paulo, SP</span>
-      </div>
-    )}
-    <div className="flex gap-3">
-      <div className="px-3 py-1.5 rounded-full glass-card flex items-center gap-2 border border-green-500/30">
-        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"/>
-        <span className="text-[10px] font-bold text-green-400">ONLINE</span>
-      </div>
     </div>
   </div>
 );
 
-const ProgressBar = ({ step, total }) => (
-  <div className="fixed top-0 left-0 h-1 bg-blue-600 transition-all duration-500 z-[60]" style={{ width: `${(step/total)*100}%` }} />
-);
+// --- O SELETOR DE DATA ANTIGO (REFATORADO PARA VISUAL NOVO) ---
+const SmartDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
+  const days = Array.from({length: 14}, (_, i) => {
+    const d = new Date(); d.setDate(d.getDate() + i); return d;
+  });
+  
+  const getLabel = (d) => {
+    const now = new Date();
+    if(d.getDate() === now.getDate()) return 'HOJE';
+    if(d.getDate() === now.getDate()+1) return 'AMANHÃ';
+    return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3).toUpperCase();
+  };
+
+  const slots = ['09:00', '11:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
+
+  return (
+    <div className="animate-enter">
+      <h3 className="text-xs font-bold text-gray-500 uppercase mb-3 tracking-widest">Escolha a Data</h3>
+      <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar">
+        {days.map((d, i) => {
+          const isSel = selectedDate === d.toDateString();
+          return (
+            <button key={i} onClick={() => onSelect(d.toDateString(), '')} 
+              className={`flex flex-col items-center justify-center min-w-[70px] h-[75px] rounded-xl border transition-all ${isSel ? 'bg-blue-600 text-white border-blue-500 shadow-lg scale-105' : 'glass-btn border-white/5 text-gray-400'}`}>
+              <span className={`text-[9px] font-bold mb-1 ${isSel ? 'text-white' : 'text-blue-500'}`}>{getLabel(d)}</span>
+              <span className="text-xl font-bold font-mono">{d.getDate()}</span>
+            </button>
+          )
+        })}
+      </div>
+      
+      {selectedDate && (
+        <div className="mt-2 animate-enter">
+          <h3 className="text-xs font-bold text-gray-500 uppercase mb-3 tracking-widest">Horário</h3>
+          <div className="grid grid-cols-4 gap-2">
+            {slots.map(t => (
+              <button key={t} onClick={() => onSelect(selectedDate, t)} className={`py-2 rounded-lg text-sm font-bold border transition-all ${selectedTime === t ? 'bg-white text-black border-white' : 'glass-btn border-white/5 text-gray-300'}`}>
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+};
+
+// --- GAMIFICATION CARD (MISTURA DO NOVO COM ANTIGO) ---
+const LoyaltyHUD = ({ stats }) => {
+  const [privacy, setPrivacy] = useState(true);
+  const currentLevel = [...LEVELS].reverse().find(l => stats.totalSpent >= l.min) || LEVELS[0];
+  const nextLevel = LEVELS.find(l => l.min > stats.totalSpent);
+  const progress = nextLevel ? ((stats.totalSpent - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100 : 100;
+
+  return (
+    <div className="glass-card p-5 rounded-2xl relative overflow-hidden mb-6 border-t border-white/10">
+       <div className="absolute top-[-50%] right-[-20%] w-40 h-40 bg-blue-600/20 blur-[60px] rounded-full pointer-events-none"></div>
+       
+       <div className="flex justify-between items-end mb-2 relative z-10">
+         <div>
+           <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-1">Status VIP</p>
+           <h3 className="text-xl font-bold text-white flex items-center gap-2">{currentLevel.name} {currentLevel.icon}</h3>
+         </div>
+         <div className="text-right">
+            <button onClick={() => setPrivacy(!privacy)} className="text-gray-500 hover:text-white mb-1 ml-auto block"><Eye size={12}/></button>
+            <span className={`font-mono text-sm font-bold ${privacy ? 'blur-sm opacity-50' : ''}`}>R$ {stats.totalSpent}</span>
+         </div>
+       </div>
+
+       <div className="h-1.5 bg-white/10 rounded-full mb-2 overflow-hidden">
+         <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-1000" style={{width: `${progress}%`}} />
+       </div>
+       
+       <div className="flex justify-between text-[9px] text-gray-500 font-bold tracking-wide">
+          <span className="text-blue-400">{currentLevel.perk}</span>
+          {nextLevel && <span>Faltam R$ {nextLevel.min - stats.totalSpent}</span>}
+       </div>
+    </div>
+  );
+};
 
 // ==================================================================================
 // 4. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
-  // Estado Simplificado
   const [step, setStep] = useState(1);
-  const [data, setData] = useState({
-    service: null,
-    extras: { touch: false, aroma: false, time: false },
-    zone: null,
-    date: null,
-    time: null,
-    vibe: null,
-    surface: 'bed', // bed | floor
-    clientName: '',
-    payment: 'pix'
+  const [loading, setLoading] = useState(true);
+  
+  // Persistência "Silenciosa" (Mistura do código antigo)
+  const [userStats, setUserStats] = useState(() => {
+    const saved = localStorage.getItem('thaly_stats_v1');
+    return saved ? JSON.parse(saved) : { totalSpent: 0, bookings: 0 };
   });
 
-  // Scroll to top on step change
-  useEffect(() => { window.scrollTo(0,0); }, [step]);
+  const [booking, setBooking] = useState({
+    service: null, date: null, time: null, location: null,
+    extras: { touch: false, time: false, aroma: false }
+  });
 
-  // Funções Auxiliares
-  const formatMoney = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  const toggleExtra = (key) => setData(prev => ({...prev, extras: {...prev.extras, [key]: !prev.extras[key]}}));
-  
+  // Efeito de Live Status
+  const [liveMsg, setLiveMsg] = useState(LIVE_STATUS[0]);
+  useEffect(() => {
+    const i = setInterval(() => setLiveMsg(LIVE_STATUS[Math.floor(Math.random()*LIVE_STATUS.length)]), 4000);
+    setTimeout(() => setLoading(false), 1500);
+    return () => clearInterval(i);
+  }, []);
+
+  const formatMoney = (v) => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+
   const calcTotal = () => {
-    if(!data.service) return 0;
-    let total = data.service.price;
-    if(data.extras.time) total += data.service.price * CONFIG.PRICES.UPGRADE_TIME;
-    if(data.extras.touch) total += CONFIG.PRICES.TOUCH;
-    if(data.extras.aroma) total += CONFIG.PRICES.AROMA;
-    if(data.zone?.surcharge) total += data.zone.surcharge;
-    return total;
+    if(!booking.service) return 0;
+    let t = booking.service.price;
+    if(booking.extras.time) t += booking.service.price * CONFIG.PRICES.UPGRADE_TIME_PCT;
+    if(booking.extras.touch) t += CONFIG.PRICES.TOUCH;
+    // Lógica do Nível: Aroma é grátis se for nível Ouro+
+    const isGold = userStats.totalSpent >= 900;
+    if(booking.extras.aroma && !isGold) t += CONFIG.PRICES.AROMA;
+    return t;
   };
 
-  const handleWhatsApp = () => {
-    const total = calcTotal();
-    const isCredit = data.payment === 'card';
-    const finalVal = isCredit ? total * 1.1 : total; // Taxa maquininha simulada
-    
-    const msg = 
-`*AGENDAMENTO SP - VIP* 🌃
----------------------------
-👤 *Cliente:* ${data.clientName || 'Anônimo'}
-💆‍♂️ *Serviço:* ${data.service.name}
-📅 *Data:* ${data.date} às ${data.time}
-📍 *Região:* ${data.zone.name}
-🛏️ *Local:* ${data.surface === 'bed' ? 'Na Cama' : 'No Tapete/Chão'}
-
-*EXTRAS:*
-${data.extras.time ? '➕ +Tempo Extra\n' : ''}${data.extras.touch ? '➕ Toque Interativo\n' : ''}${data.extras.aroma ? '➕ Aromaterapia\n' : ''}
-🎵 *Vibe:* ${data.vibe?.label || 'Padrão'}
-
-💰 *TOTAL:* ${formatMoney(finalVal)}
-(${data.payment === 'pix' ? 'Pix' : 'Cartão Crédito'})
----------------------------
-_Solicito confirmação de disponibilidade._`;
-
-    window.open(`https://api.whatsapp.com/send?phone=${CONFIG.WHATSAPP}&text=${encodeURIComponent(msg)}`, '_blank');
+  const handleFinish = () => {
+     // Atualiza stats localmente (simulando backend)
+     const newTotal = userStats.totalSpent + calcTotal();
+     const newStats = { totalSpent: newTotal, bookings: userStats.bookings + 1 };
+     setUserStats(newStats);
+     localStorage.setItem('thaly_stats_v1', JSON.stringify(newStats));
+     
+     // Redireciona WhatsApp
+     const msg = `*RESERVA NOVO APP* 💎\nServiço: ${booking.service.name}\nData: ${booking.date} - ${booking.time}\nTotal: ${formatMoney(calcTotal())}`;
+     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.WHATSAPP}&text=${encodeURIComponent(msg)}`, '_blank');
   };
+
+  if(loading) return (
+    <div className="h-screen bg-black flex flex-col items-center justify-center">
+      <div className="w-12 h-12 border-4 border-blue-600/30 border-t-blue-500 rounded-full animate-spin mb-4"/>
+      <span className="text-[10px] tracking-[0.3em] font-bold text-blue-500 animate-pulse">CARREGANDO</span>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen text-white pb-24">
+    <div className="min-h-screen pb-24">
       <style>{styles}</style>
       <div className="ambient-bg" />
-      <ProgressBar step={step} total={4} />
-      <Header step={step} goBack={() => setStep(s => s - 1)} />
+      <Header step={step} goBack={() => setStep(s => s-1)} notifCount={1} />
 
-      {/* ================= PASSO 1: VITRINE (SERVIÇOS) ================= */}
+      {/* --- HOME (MISTURA: CONTEÚDO RICO DO ANTIGO + DESIGN NOVO) --- */}
       {step === 1 && (
         <div className="px-6 pt-24 animate-enter">
-          <h1 className="text-3xl font-bold mb-2">Experiência <br/><span className="text-blue-500">Relax SP</span></h1>
-          <p className="text-gray-400 text-sm mb-8 leading-relaxed">Terapias exclusivas no conforto da sua suíte ou residência. Sem macas, sem equipamentos invasivos. Apenas relaxamento puro.</p>
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-white leading-tight">Bem-vindo ao <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Nível Superior</span></h1>
+          </div>
 
-          <div className="space-y-6">
-            {services.map(s => (
-              <div key={s.id} onClick={() => { setData({...data, service: s}); setStep(2); }} className="glass-card rounded-2xl p-5 relative overflow-hidden active:scale-[0.98] transition-transform cursor-pointer group">
-                {s.tag && <div className="absolute top-0 right-0 bg-blue-600 text-[10px] font-bold px-3 py-1 rounded-bl-xl text-white shadow-lg z-10">{s.tag}</div>}
-                
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">{s.name}</h3>
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-widest">{s.duration} • {s.vibe}</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="block text-xl font-bold text-blue-400">{formatMoney(s.price)}</span>
-                  </div>
-                </div>
-                
-                <p className="text-gray-300 text-sm mb-4 border-l-2 border-white/10 pl-3 leading-snug">{s.desc}</p>
-                
-                <div className="flex flex-wrap gap-2">
-                  {s.features.map((f, i) => (
-                    <span key={i} className="text-[10px] bg-white/5 border border-white/5 px-2 py-1 rounded-md text-gray-400">{f}</span>
-                  ))}
-                </div>
+          <LoyaltyHUD stats={userStats} />
+
+          {/* Live Ticker (Do código antigo) */}
+          <div className="flex justify-center mb-6">
+            <div className="glass-card px-4 py-1.5 rounded-full flex items-center gap-2 border border-green-500/20">
+              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse-slow"/>
+              <span className="text-[10px] font-bold text-gray-300 uppercase tracking-wide">{liveMsg}</span>
+            </div>
+          </div>
+
+          <h3 className="text-xs font-bold text-gray-500 uppercase mb-4 tracking-widest pl-1">Experiências</h3>
+          <div className="space-y-4 mb-8">
+            {SERVICES.map(s => (
+              <div key={s.id} onClick={() => { setBooking({...booking, service: s}); setStep(2); }} className="glass-card p-5 rounded-2xl active:scale-[0.98] transition-all relative overflow-hidden group">
+                 {s.tag && <div className="absolute top-0 right-0 bg-blue-600 text-[9px] font-bold px-3 py-1 rounded-bl-xl">{s.tag}</div>}
+                 <div className="flex justify-between items-start mb-2">
+                   <div>
+                     <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">{s.name}</h3>
+                     <span className="text-[10px] text-gray-400 font-bold uppercase">{s.duration} • {s.vibe}</span>
+                   </div>
+                   <span className="text-lg font-bold text-blue-400">{formatMoney(s.price)}</span>
+                 </div>
+                 <p className="text-xs text-gray-400 leading-relaxed border-l-2 border-white/10 pl-3">{s.desc}</p>
               </div>
             ))}
           </div>
-          
-          <div className="mt-8 p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 flex gap-3 items-start">
-            <Info className="w-5 h-5 text-blue-500 shrink-0" />
-            <p className="text-xs text-blue-200/80 leading-relaxed">
-              Atendemos exclusivamente na Zona Sul e Centro Expandido. A massagem é realizada na sua própria cama ou sofá, garantindo máximo conforto e higiene.
-            </p>
+
+          {/* Social Proof (Do código antigo) */}
+          <div className="overflow-x-auto flex gap-4 pb-4 hide-scrollbar">
+            {REVIEWS.map((r, i) => (
+              <div key={i} className="glass-card min-w-[240px] p-4 rounded-xl border border-white/5">
+                <div className="flex gap-1 mb-2">
+                   {[...Array(5)].map((_,k) => <Star key={k} size={10} className="text-yellow-500 fill-yellow-500"/>)}
+                </div>
+                <p className="text-xs text-gray-300 italic mb-2">"{r.t}"</p>
+                <p className="text-[9px] text-gray-500 font-bold uppercase">{r.a}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* ================= PASSO 2: CUSTOMIZAÇÃO (O NOVO LUXO) ================= */}
+      {/* --- AGENDAMENTO (DATA INTELIGENTE) --- */}
       {step === 2 && (
         <div className="px-6 pt-24 animate-enter">
-          <h2 className="text-2xl font-bold mb-6">Personalize</h2>
-          
-          {/* ONDE SERÁ FEITA */}
-          <section className="mb-8">
-            <h3 className="text-xs font-bold text-gray-500 uppercase mb-3 tracking-widest">Superfície (Onde faremos?)</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => setData({...data, surface: 'bed'})} className={`p-4 rounded-xl border transition-all ${data.surface === 'bed' ? 'bg-blue-600/20 border-blue-500 text-white' : 'glass-btn border-white/5 text-gray-400'}`}>
-                <div className="font-bold text-sm mb-1">Na Cama / Sofá</div>
-                <div className="text-[10px] opacity-70">Máximo conforto</div>
-              </button>
-              <button onClick={() => setData({...data, surface: 'floor'})} className={`p-4 rounded-xl border transition-all ${data.surface === 'floor' ? 'bg-blue-600/20 border-blue-500 text-white' : 'glass-btn border-white/5 text-gray-400'}`}>
-                <div className="font-bold text-sm mb-1">No Chão / Tapete</div>
-                <div className="text-[10px] opacity-70">Maior firmeza</div>
-              </button>
-            </div>
-          </section>
+           <h2 className="text-2xl font-bold mb-6">Quando?</h2>
+           
+           <SmartDateSelector 
+             selectedDate={booking.date} 
+             selectedTime={booking.time}
+             onSelect={(d, t) => setBooking({...booking, date: d, time: t})} 
+           />
 
-          {/* EXTRAS */}
-          <section className="mb-8 space-y-3">
-             <h3 className="text-xs font-bold text-gray-500 uppercase mb-3 tracking-widest">Upgrades</h3>
-             
-             {/* TOQUE */}
-             <button onClick={() => toggleExtra('touch')} className={`w-full p-4 rounded-xl border flex justify-between items-center transition-all ${data.extras.touch ? 'bg-red-500/10 border-red-500/50' : 'glass-btn border-white/5'}`}>
-               <div className="flex items-center gap-3">
-                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${data.extras.touch ? 'bg-red-500 text-white' : 'bg-white/10 text-gray-400'}`}><Heart size={14}/></div>
-                 <div className="text-left"><div className="text-sm font-bold">Toque Interativo</div><div className="text-[10px] text-gray-400">Permite tocar no massagista</div></div>
+           {booking.date && booking.time && (
+             <div className="mt-8 animate-enter">
+               <h3 className="text-xs font-bold text-gray-500 uppercase mb-3 tracking-widest">Personalize</h3>
+               <div className="space-y-3">
+                  <button onClick={() => setBooking(p => ({...p, extras: {...p.extras, touch: !p.extras.touch}}))} className={`w-full p-4 rounded-xl border flex justify-between items-center transition-all ${booking.extras.touch ? 'bg-red-500/10 border-red-500/50' : 'glass-btn border-white/5'}`}>
+                    <div className="flex items-center gap-3"><Heart size={16} className={booking.extras.touch ? 'text-red-500' : 'text-gray-500'} /><span className="text-sm font-bold text-gray-200">Toque Interativo</span></div>
+                    <span className="text-xs font-bold text-red-400">+ {formatMoney(CONFIG.PRICES.TOUCH)}</span>
+                  </button>
+
+                  <button onClick={() => setBooking(p => ({...p, extras: {...p.extras, aroma: !p.extras.aroma}}))} className={`w-full p-4 rounded-xl border flex justify-between items-center transition-all ${booking.extras.aroma ? 'bg-green-500/10 border-green-500/50' : 'glass-btn border-white/5'}`}>
+                    <div className="flex items-center gap-3"><Wind size={16} className={booking.extras.aroma ? 'text-green-500' : 'text-gray-500'} /><span className="text-sm font-bold text-gray-200">Aromaterapia</span></div>
+                    {userStats.totalSpent >= 900 ? (
+                        <span className="text-xs font-bold text-green-400">GRÁTIS (OURO)</span>
+                    ) : (
+                        <span className="text-xs font-bold text-green-400">+ {formatMoney(CONFIG.PRICES.AROMA)}</span>
+                    )}
+                  </button>
                </div>
-               <span className="text-sm font-bold text-red-400">+ {formatMoney(CONFIG.PRICES.TOUCH)}</span>
-             </button>
 
-             {/* TEMPO */}
-             <button onClick={() => toggleExtra('time')} className={`w-full p-4 rounded-xl border flex justify-between items-center transition-all ${data.extras.time ? 'bg-blue-500/10 border-blue-500/50' : 'glass-btn border-white/5'}`}>
-               <div className="flex items-center gap-3">
-                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${data.extras.time ? 'bg-blue-500 text-white' : 'bg-white/10 text-gray-400'}`}><Clock size={14}/></div>
-                 <div className="text-left"><div className="text-sm font-bold">Sessão Estendida</div><div className="text-[10px] text-gray-400">+30 Minutos de duração</div></div>
-               </div>
-               <span className="text-sm font-bold text-blue-400">+ {formatMoney(data.service.price * CONFIG.PRICES.UPGRADE_TIME)}</span>
-             </button>
-          </section>
-
-          {/* VIBE */}
-          <section className="mb-8">
-            <h3 className="text-xs font-bold text-gray-500 uppercase mb-3 tracking-widest">Trilha Sonora</h3>
-            <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
-              {vibes.map(v => (
-                <button key={v.id} onClick={() => setData({...data, vibe: v})} className={`flex items-center gap-2 px-4 py-3 rounded-lg border whitespace-nowrap transition-all ${data.vibe?.id === v.id ? 'bg-white text-black border-white' : 'glass-btn border-white/10 text-gray-400'}`}>
-                  {v.icon} <span className="text-xs font-bold">{v.label}</span>
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <button onClick={() => setStep(3)} className="w-full primary-btn py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 mb-8">
-            Escolher Local <ArrowRight size={20} />
-          </button>
+               <button onClick={() => setStep(3)} className="w-full mt-8 primary-btn py-4 rounded-xl font-bold flex justify-center items-center gap-2">
+                 Revisar Pedido <ArrowRight size={18}/>
+               </button>
+             </div>
+           )}
         </div>
       )}
 
-      {/* ================= PASSO 3: LOGÍSTICA & DATA ================= */}
+      {/* --- CHECKOUT (RESUMO) --- */}
       {step === 3 && (
         <div className="px-6 pt-24 animate-enter">
-          <h2 className="text-2xl font-bold mb-6">Logística</h2>
-
-          <section className="mb-6">
-            <h3 className="text-xs font-bold text-gray-500 uppercase mb-3 tracking-widest">Sua Região</h3>
-            <div className="space-y-2">
-              {spZones.map(z => (
-                <button key={z.id} onClick={() => setData({...data, zone: z})} className={`w-full p-4 rounded-xl border flex justify-between items-center transition-all ${data.zone?.id === z.id ? 'bg-blue-600/20 border-blue-500' : 'glass-btn border-white/5'}`}>
-                   <div className="flex items-center gap-3">
-                     <MapPin size={16} className={data.zone?.id === z.id ? 'text-blue-400' : 'text-gray-500'} />
-                     <div className="text-left">
-                       <div className={`text-sm font-bold ${data.zone?.id === z.id ? 'text-white' : 'text-gray-300'}`}>{z.name}</div>
-                       <div className="text-[10px] text-gray-500">Chegada est: {z.time}</div>
-                     </div>
-                   </div>
-                   {z.surcharge > 0 && <span className="text-xs font-bold text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded">+ {formatMoney(z.surcharge)}</span>}
-                </button>
-              ))}
+          <div className="glass-card p-6 rounded-2xl border-t-4 border-blue-600 mb-6">
+            <h3 className="text-lg font-bold text-white mb-1">{booking.service.name}</h3>
+            <p className="text-sm text-gray-400 mb-4">{booking.date} às {booking.time}</p>
+            
+            <div className="space-y-2 border-t border-white/10 pt-4 mb-4">
+               {booking.extras.touch && <div className="flex justify-between text-sm text-gray-300"><span>Toque</span><span>{formatMoney(CONFIG.PRICES.TOUCH)}</span></div>}
+               {booking.extras.aroma && <div className="flex justify-between text-sm text-gray-300"><span>Aroma</span><span>{userStats.totalSpent >= 900 ? 'R$ 0,00' : formatMoney(CONFIG.PRICES.AROMA)}</span></div>}
             </div>
-          </section>
-
-          {data.zone && (
-            <section className="mb-8 animate-enter">
-               <h3 className="text-xs font-bold text-gray-500 uppercase mb-3 tracking-widest">Para Quando?</h3>
-               <div className="glass-card p-4 rounded-xl mb-4">
-                 <input type="date" onChange={(e) => setData({...data, date: e.target.value})} className="w-full bg-transparent text-white border-b border-white/10 py-2 mb-4 outline-none text-lg font-medium" />
-                 <div className="grid grid-cols-4 gap-2">
-                   {['14:00', '16:00', '19:00', '21:00'].map(t => (
-                     <button key={t} onClick={() => setData({...data, time: t})} className={`py-2 rounded-lg text-sm font-bold border transition-all ${data.time === t ? 'bg-blue-500 text-white border-blue-500' : 'border-white/10 text-gray-400 hover:bg-white/5'}`}>{t}</button>
-                   ))}
-                 </div>
-               </div>
-               
-               <button disabled={!data.date || !data.time} onClick={() => setStep(4)} className="w-full primary-btn py-4 rounded-xl font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all">
-                 Ir para Pagamento
-               </button>
-            </section>
-          )}
-        </div>
-      )}
-
-      {/* ================= PASSO 4: CHECKOUT SEM LOGIN ================= */}
-      {step === 4 && (
-        <div className="px-6 pt-24 animate-enter safe-bottom">
-          <h2 className="text-2xl font-bold mb-6">Resumo</h2>
-          
-          <div className="glass-card p-6 rounded-2xl mb-6 border-t-4 border-t-blue-500">
-             <div className="flex justify-between items-start mb-4 border-b border-white/5 pb-4">
-               <div>
-                 <h3 className="text-lg font-bold text-white">{data.service.name}</h3>
-                 <p className="text-xs text-gray-400">{data.date} às {data.time}</p>
-                 <p className="text-xs text-gray-400">{data.zone.name}</p>
-               </div>
-               <span className="text-xl font-bold text-blue-400">{formatMoney(data.service.price)}</span>
-             </div>
-             
-             <div className="space-y-2 mb-4">
-               {data.extras.touch && <div className="flex justify-between text-sm text-gray-300"><span>Toque Interativo</span><span>{formatMoney(CONFIG.PRICES.TOUCH)}</span></div>}
-               {data.extras.time && <div className="flex justify-between text-sm text-gray-300"><span>Tempo Extra</span><span>{formatMoney(data.service.price * CONFIG.PRICES.UPGRADE_TIME)}</span></div>}
-               {data.zone.surcharge > 0 && <div className="flex justify-between text-sm text-yellow-500/80"><span>Taxa Região</span><span>{formatMoney(data.zone.surcharge)}</span></div>}
-             </div>
-
-             <div className="flex justify-between items-end pt-4 border-t border-white/10">
-               <span className="text-sm text-gray-500 font-bold uppercase">Total Estimado</span>
-               <span className="text-2xl font-bold text-white">{formatMoney(calcTotal())}</span>
-             </div>
+            
+            <div className="flex justify-between items-end">
+               <span className="text-xs font-bold text-gray-500 uppercase">Total Estimado</span>
+               <span className="text-3xl font-bold text-white">{formatMoney(calcTotal())}</span>
+            </div>
           </div>
 
-          <div className="mb-6">
-            <label className="text-xs font-bold text-gray-500 uppercase mb-2 block tracking-widest">Como prefere ser chamado?</label>
-            <input 
-              value={data.clientName} 
-              onChange={e => setData({...data, clientName: e.target.value})}
-              placeholder="Seu nome ou apelido" 
-              className="w-full glass-card p-4 rounded-xl text-white outline-none focus:border-blue-500 transition-colors placeholder:text-gray-600"
-            />
+          <div className="bg-blue-600/10 border border-blue-500/20 p-4 rounded-xl mb-6 flex gap-3">
+             <Sparkles className="text-blue-400 w-5 h-5 shrink-0" />
+             <p className="text-xs text-blue-200 leading-relaxed">
+               Ao confirmar, você ganha <strong>{Math.floor(calcTotal())} pontos XP</strong> para subir de nível e desbloquear descontos.
+             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-8">
-             <button onClick={() => setData({...data, payment: 'pix'})} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${data.payment === 'pix' ? 'bg-green-500/10 border-green-500 text-green-400' : 'glass-btn border-white/5 text-gray-500'}`}>
-               <QrCode /> <span className="text-xs font-bold">PIX (5% OFF)</span>
-             </button>
-             <button onClick={() => setData({...data, payment: 'card'})} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${data.payment === 'card' ? 'bg-blue-500/10 border-blue-500 text-blue-400' : 'glass-btn border-white/5 text-gray-500'}`}>
-               <CreditCard /> <span className="text-xs font-bold">Cartão</span>
-             </button>
-          </div>
-
-          <button onClick={handleWhatsApp} className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(37,211,102,0.4)] flex justify-center items-center gap-3 transition-all active:scale-[0.98]">
-            <MessageCircle size={20} />
-            FINALIZAR NO WHATSAPP
+          <button onClick={handleFinish} className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-4 rounded-xl shadow-lg flex justify-center items-center gap-2">
+             <MessageCircle size={20}/> Confirmar no WhatsApp
           </button>
-          <p className="text-[10px] text-center text-gray-500 mt-4 px-4">
-            Ao clicar, você será redirecionado para o WhatsApp Business Oficial para confirmação segura e envio da localização exata.
-          </p>
+          <button onClick={() => setStep(1)} className="w-full py-4 text-xs text-gray-500 mt-2">Cancelar</button>
         </div>
       )}
+
     </div>
   );
 }
