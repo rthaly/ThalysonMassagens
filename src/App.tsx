@@ -3,11 +3,11 @@ import {
   ChevronLeft, Check, Star, MapPin, Calendar, Clock,
   ArrowRight, ShieldCheck, Hand, Gift, Crown,
   CreditCard, Banknote, QrCode, Send, Sparkles, X, 
-  AlertTriangle, Navigation, ThumbsUp
+  AlertTriangle, Navigation, ThumbsUp, Info
 } from 'lucide-react';
 
 /* ==================================================================================
-   1. ESTILOS CSS INJETADOS (Para funcionar direto no Bolt sem config extra)
+   1. ESTILOS CSS (DARK LUXURY - SP EDITION)
    ================================================================================== */
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -89,10 +89,8 @@ const styles = `
     position: fixed; inset: 0; z-index: 9999;
     background: #000;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    transition: opacity 0.5s ease, visibility 0.5s;
+    transition: opacity 0.5s ease;
   }
-  .loader-wrapper.hidden { opacity: 0; visibility: hidden; }
-  
   .loader-bar { width: 200px; height: 4px; background: #222; border-radius: 4px; margin-top: 20px; overflow: hidden; }
   .loader-fill { height: 100%; background: var(--primary); animation: loadProgress 2s ease-in-out forwards; }
 `;
@@ -103,11 +101,7 @@ const styles = `
 const CONFIG = {
   WHATSAPP: "5517991360413", 
   COUPON_CODE: "PRIMEIRA10",
-  COUPON_PCT: 0.10, // 10%
-  STORAGE_KEYS: {
-    USED_COUPON: 'thaly_coupon_used_v2',
-    USER_NAME: 'thaly_user_name_v2'
-  }
+  COUPON_PCT: 0.10 // 10%
 };
 
 const DATA = {
@@ -143,14 +137,18 @@ const DATA = {
 };
 
 /* ==================================================================================
-   3. HELPER FUNCTIONS (SAFE STORAGE)
+   3. HELPER SEGURO PARA STORAGE (Evita quebra de Deploy)
    ================================================================================== */
-const safeStorage = {
-  getItem: (key) => {
-    try { return localStorage.getItem(key); } catch (e) { return null; }
-  },
-  setItem: (key, value) => {
-    try { localStorage.setItem(key, value); } catch (e) { }
+const getStorage = (key) => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem(key);
+  }
+  return null;
+};
+
+const setStorage = (key, value) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(key, value);
   }
 };
 
@@ -158,7 +156,7 @@ const safeStorage = {
    4. COMPONENTES INTERNOS
    ================================================================================== */
 const FullScreenLoader = ({ visible }) => (
-  <div className={`loader-wrapper ${!visible ? 'hidden' : ''}`}>
+  <div className={`loader-wrapper ${!visible ? 'pointer-events-none opacity-0' : ''}`}>
     <div className="relative">
       <div className="absolute inset-0 bg-blue-600 blur-3xl opacity-20 animate-pulse"></div>
       <Crown size={64} className="text-[#0A84FF] relative z-10" />
@@ -201,7 +199,7 @@ export default function App() {
   const [step, setStep] = useState('home');
   const [showCoupon, setShowCoupon] = useState(false);
   
-  // Dados do Usuário
+  // Persistência
   const [user, setUser] = useState('');
   const [cart, setCart] = useState({
     service: null,
@@ -216,22 +214,15 @@ export default function App() {
 
   // --- INIT LOGIC ---
   useEffect(() => {
-    // Tenta recuperar nome salvo
-    const savedName = safeStorage.getItem(CONFIG.STORAGE_KEYS.USER_NAME);
-    if(savedName) setUser(savedName);
-
     // Simula carregamento
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       setLoading(false);
-      
       // Verifica se já usou cupom antes
-      const usedBefore = safeStorage.getItem(CONFIG.STORAGE_KEYS.USED_COUPON);
+      const usedBefore = getStorage('thaly_coupon_used');
       if (!usedBefore) {
-        setTimeout(() => setShowCoupon(true), 1500); // Popup aparece depois de um tempo
+        setTimeout(() => setShowCoupon(true), 1000);
       }
     }, 2000);
-
-    return () => clearTimeout(timer);
   }, []);
 
   // --- ACTIONS ---
@@ -278,15 +269,12 @@ export default function App() {
 
   // --- WHATSAPP GENERATOR ---
   const sendWhatsApp = () => {
-    // 1. Salvar dados
-    safeStorage.setItem(CONFIG.STORAGE_KEYS.USER_NAME, user);
-    if (cart.couponApplied) {
-      safeStorage.setItem(CONFIG.STORAGE_KEYS.USED_COUPON, 'true');
-    }
+    // Salvar que usou cupom
+    if (cart.couponApplied) setStorage('thaly_coupon_used', 'true');
 
-    // 2. Formatar Texto
     const dateStr = cart.date ? `${cart.date.getDate()}/${cart.date.getMonth()+1}` : '';
     
+    // Montar texto dos extras
     const extrasTxt = cart.extras.length 
       ? cart.extras.map(id => `✅ ${DATA.extras.find(e=>e.id===id).label}`).join('\n') 
       : 'Nenhum extra';
@@ -294,7 +282,7 @@ export default function App() {
     // Lógica UBER vs METRO
     const locTxt = cart.locationType === 'metro' 
       ? `📍 *Perto do Metrô (<1km)*\nEndereço: ${cart.address}\n(Taxa de Deslocamento: GRÁTIS)`
-      : `🚗 *Longe do Metrô (>1km)*\nEndereço: ${cart.address}\n(Taxa de Uber: A COMBINAR)`;
+      : `🚗 *Longe do Metrô (>1km)*\nEndereço: ${cart.address}\n(Taxa de Uber: A CALCULAR)`;
 
     const msg = 
 `*AGENDAMENTO VIP SP* 🔒
@@ -321,14 +309,13 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
 💳 *Pagamento:* ${cart.payment === 'pix' ? 'PIX' : 'Dinheiro'}
 --------------------------------`;
 
-    // 3. Abrir WhatsApp
     window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
     setStep('success');
   };
 
   // --- RENDER ---
   return (
-    <div className="min-h-screen pb-10 bg-[#050505] text-white font-sans">
+    <div className="min-h-screen pb-10">
       <style>{styles}</style>
       <FullScreenLoader visible={loading} />
 
