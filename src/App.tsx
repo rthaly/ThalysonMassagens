@@ -1,14 +1,13 @@
-// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  ChevronLeft, Check, Star, MapPin, 
-  ShieldCheck, Crown, QrCode, Banknote, 
-  Send, X, Gift, AlertTriangle, 
-  Navigation, ThumbsUp, Map, Clock, Sparkles, Hand
+  ChevronLeft, Check, Star, MapPin, Calendar, Clock,
+  ArrowRight, ShieldCheck, Hand, Gift, Crown,
+  CreditCard, Banknote, QrCode, Send, Sparkles, X, 
+  AlertTriangle, Navigation, ThumbsUp
 } from 'lucide-react';
 
 /* ==================================================================================
-   1. CSS / ESTILOS (DARK LUXURY - SP EDITION)
+   1. ESTILOS CSS INJETADOS (BLINDADO)
    ================================================================================== */
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -18,7 +17,7 @@ const styles = `
     --success: #32D74B;
     --bg-body: #050505;
     --bg-card: #141414;
-    --glass: rgba(30, 30, 30, 0.7);
+    --border-color: rgba(255, 255, 255, 0.1);
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -36,23 +35,23 @@ const styles = `
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   
   /* ANIMATIONS */
-  .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  .slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes loadProgress { 0% { width: 0%; } 100% { width: 100%; } }
 
   /* COMPONENTES */
   .glass-card {
     background: rgba(28, 28, 30, 0.6);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
-  .custom-input {
+  .input-field {
     background: #1C1C1E;
     border: 1px solid #333;
     color: white;
@@ -63,7 +62,7 @@ const styles = `
     outline: none;
     transition: 0.2s;
   }
-  .custom-input:focus { border-color: var(--primary); background: #222; }
+  .input-field:focus { border-color: var(--primary); background: #222; }
 
   .btn-main {
     background: var(--primary);
@@ -83,35 +82,29 @@ const styles = `
     transition: transform 0.1s;
   }
   .btn-main:active { transform: scale(0.98); }
-  .btn-main:disabled { background: #333; color: #666; box-shadow: none; cursor: not-allowed; }
+  .btn-main:disabled { background: #333; color: #666; box-shadow: none; }
 
-  /* LOADER E MODAL */
+  /* LOADER */
   .loader-wrapper {
     position: fixed; inset: 0; z-index: 9999;
     background: #000;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: opacity 0.5s ease;
   }
-  .loader-bar-bg { width: 200px; height: 4px; background: #222; border-radius: 4px; margin-top: 24px; overflow: hidden; }
-  .loader-fill { height: 100%; background: var(--primary); animation: loadBar 2s ease-in-out forwards; }
-
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-    animation: fadeIn 0.3s ease-out;
-  }
+  .loader-bar { width: 200px; height: 4px; background: #222; border-radius: 4px; margin-top: 20px; overflow: hidden; }
+  .loader-fill { height: 100%; background: var(--primary); animation: loadProgress 2s ease-in-out forwards; }
 `;
 
 /* ==================================================================================
-   2. REGRAS DE NEGÓCIO
+   2. DADOS E REGRAS DE NEGÓCIO
    ================================================================================== */
 const CONFIG = {
   WHATSAPP: "5517991360413", 
   COUPON_CODE: "PRIMEIRA10",
   COUPON_PCT: 0.10, // 10%
   STORAGE_KEYS: {
-    USER: 'thaly_user_v3',
-    COUPON: 'thaly_coupon_used_v3'
+    USED_COUPON: 'thaly_coupon_used_v4', // Chave única
+    USER_NAME: 'thaly_user_name_v4'
   }
 };
 
@@ -134,30 +127,30 @@ const DATA = {
       tag: null
     }
   ],
-  // REMOVIDA A MACA
+  // MACA REMOVIDA
   extras: [
     { id: 'touch', label: 'Interação (Tocar)', price: 55, sub: 'Permitido tocar o massagista' },
     { id: 'upgrade', label: '+30 Minutos', price: 80, sub: 'Sessão estendida' },
     { id: 'aroma', label: 'Aromaterapia', price: 20, sub: 'Óleos essenciais importados' }
   ],
   reviews: [
-    { txt: "Atendimento no hotel foi impecável. Muito discreto.", author: "Ricardo (Empresário)", stars: 5 },
-    { txt: "A interação faz toda diferença. Recomendo muito.", author: "Anônimo SP", stars: 5 },
-    { txt: "Mãos firmes, resolveu minha dor lombar.", author: "Carlos M.", stars: 5 },
-    { txt: "Pontual e educado. Voltarei com certeza.", author: "Felipe", stars: 5 }
+    { txt: "Discrição total. O atendimento no hotel foi impecável.", author: "Ricardo (Empresário)", stars: 5 },
+    { txt: "O extra de interação vale cada centavo. Recomendo.", author: "Anônimo SP", stars: 5 },
+    { txt: "Mãos firmes, resolveu minha dor nas costas.", author: "Carlos M.", stars: 5 },
+    { txt: "Pontual e muito educado.", author: "Felipe", stars: 5 }
   ]
 };
 
 /* ==================================================================================
-   3. HELPER SEGURO PARA DEPLOY (Evita erro de window/localStorage)
+   3. HELPER FUNCTIONS (SAFE STORAGE)
    ================================================================================== */
 const safeStorage = {
-  get: (key) => {
+  getItem: (key) => {
     if (typeof window !== 'undefined') return localStorage.getItem(key);
     return null;
   },
-  set: (key, val) => {
-    if (typeof window !== 'undefined') localStorage.setItem(key, val);
+  setItem: (key, value) => {
+    if (typeof window !== 'undefined') localStorage.setItem(key, value);
   }
 };
 
@@ -172,12 +165,12 @@ const FullScreenLoader = ({ visible }) => (
     </div>
     <h1 className="text-white font-bold text-xl mt-6 tracking-[0.2em] uppercase">Thalyson VIP</h1>
     <p className="text-gray-500 text-xs mt-2 font-medium">Carregando Sistema...</p>
-    <div className="loader-bar-bg"><div className="loader-fill"></div></div>
+    <div className="loader-bar"><div className="loader-fill"></div></div>
   </div>
 );
 
 const CouponModal = ({ onClose, onApply }) => (
-  <div className="modal-overlay">
+  <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 fade-in">
     <div className="bg-[#1C1C1E] w-full max-w-sm rounded-3xl p-8 text-center border border-white/10 shadow-2xl relative">
       <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 p-2 hover:text-white"><X size={20}/></button>
       <div className="w-16 h-16 bg-[#0A84FF]/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -185,7 +178,7 @@ const CouponModal = ({ onClose, onApply }) => (
       </div>
       <h3 className="text-2xl font-bold text-white mb-2">Boas-vindas VIP</h3>
       <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-        Como é sua primeira vez aqui, ganhe <strong>10% de Desconto</strong> no seu agendamento hoje.
+        Como é sua primeira vez aqui, liberamos <strong>10% de Desconto</strong> no seu agendamento hoje.
       </p>
       <button onClick={onApply} className="btn-main">RESGATAR 10% OFF</button>
     </div>
@@ -208,7 +201,7 @@ export default function App() {
   const [step, setStep] = useState('home');
   const [showCoupon, setShowCoupon] = useState(false);
   
-  // Dados do Usuário
+  // Persistência
   const [user, setUser] = useState('');
   const [cart, setCart] = useState({
     service: null,
@@ -223,17 +216,18 @@ export default function App() {
 
   // --- INIT LOGIC ---
   useEffect(() => {
-    // Recupera usuário salvo
-    const savedUser = safeStorage.get(CONFIG.STORAGE_KEYS.USER);
-    if (savedUser) setUser(savedUser);
+    // Tenta recuperar nome salvo
+    const savedName = safeStorage.getItem(CONFIG.STORAGE_KEYS.USER_NAME);
+    if(savedName) setUser(savedName);
 
     // Simula carregamento
     const timer = setTimeout(() => {
       setLoading(false);
-      // Verifica cupom
-      const usedBefore = safeStorage.get(CONFIG.STORAGE_KEYS.COUPON);
+      
+      // Verifica se já usou cupom antes
+      const usedBefore = safeStorage.getItem(CONFIG.STORAGE_KEYS.USED_COUPON);
       if (!usedBefore) {
-        setTimeout(() => setShowCoupon(true), 1500);
+        setTimeout(() => setShowCoupon(true), 1500); // Popup aparece depois de um tempo
       }
     }, 2000);
 
@@ -262,7 +256,7 @@ export default function App() {
     });
   };
 
-  // --- CALCULADORA ---
+  // --- CALC ENGINE ---
   const totals = useMemo(() => {
     let sub = 0;
     if (cart.service) sub += cart.service.price;
@@ -285,9 +279,9 @@ export default function App() {
   // --- WHATSAPP GENERATOR ---
   const sendWhatsApp = () => {
     // 1. Salvar dados
-    safeStorage.set(CONFIG.STORAGE_KEYS.USER, user);
+    safeStorage.setItem(CONFIG.STORAGE_KEYS.USER_NAME, user);
     if (cart.couponApplied) {
-      safeStorage.set(CONFIG.STORAGE_KEYS.COUPON, 'true');
+      safeStorage.setItem(CONFIG.STORAGE_KEYS.USED_COUPON, 'true');
     }
 
     // 2. Formatar Texto
@@ -297,10 +291,10 @@ export default function App() {
       ? cart.extras.map(id => `✅ ${DATA.extras.find(e=>e.id===id).label}`).join('\n') 
       : 'Nenhum extra';
 
-    // Lógica UBER vs METRO (Explícita)
+    // Lógica UBER vs METRO
     const locTxt = cart.locationType === 'metro' 
       ? `📍 *Perto do Metrô (<1km)*\nEndereço: ${cart.address}\n(Taxa de Deslocamento: GRÁTIS)`
-      : `🚗 *Longe do Metrô (>1km)*\nEndereço: ${cart.address}\n(Taxa de Uber: A CALCULAR)`;
+      : `🚗 *Longe do Metrô (>1km)*\nEndereço: ${cart.address}\n(Taxa de Uber: A COMBINAR)`;
 
     const msg = 
 `*AGENDAMENTO VIP SP* 🔒
@@ -420,7 +414,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                 value={user}
                 onChange={e => setUser(e.target.value)}
                 placeholder="Digite aqui..."
-                className="custom-input text-lg font-medium"
+                className="input-field text-lg font-medium"
                 autoFocus
               />
             </div>
@@ -494,7 +488,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
               )}
             </section>
 
-            {/* LOCALIZAÇÃO - LÓGICA UBER/METRO */}
+            {/* LOCALIZAÇÃO - UBER LOGIC */}
             <section>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Localização (SP)</h3>
               <div className="glass-card p-5 rounded-3xl">
@@ -505,7 +499,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                     <p className="text-[10px] text-green-500">&lt; 1km (Free)</p>
                   </button>
                   <button onClick={() => setCart(c => ({...c, locationType: 'uber'}))} className={`flex-1 p-3 rounded-xl border text-center transition-all ${cart.locationType === 'uber' ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-white' : 'bg-[#111] border-[#333] text-gray-400'}`}>
-                    <Map size={20} className="mx-auto mb-1"/>
+                    <MapPin size={20} className="mx-auto mb-1"/>
                     <p className="text-xs font-bold">Longe Metrô</p>
                     <p className="text-[10px] text-yellow-500">Uber (A Combinar)</p>
                   </button>
@@ -516,7 +510,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                     <label className="text-xs font-bold text-gray-500 ml-1 mb-2 block">Endereço (Hotel/Domicílio)</label>
                     <input 
                       placeholder="Rua, Número, Bairro..." 
-                      className="custom-input"
+                      className="input-field"
                       onChange={e => setCart(c => ({...c, address: e.target.value}))}
                     />
                   </div>
@@ -524,7 +518,7 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
               </div>
             </section>
 
-            {/* EXTRAS */}
+            {/* EXTRAS (SEM MACA) */}
             <section>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Adicionais VIP</h3>
               <div className="space-y-3">
@@ -532,14 +526,9 @@ ${cart.locationType === 'uber' ? '_(+ Valor do Uber a somar)_' : ''}
                   const active = cart.extras.includes(e.id);
                   return (
                     <button key={e.id} onClick={() => toggleExtra(e.id)} className={`w-full p-4 rounded-2xl border flex items-center justify-between transition-all ${active ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333]'}`}>
-                       <div className="flex items-center gap-3">
-                         {e.id === 'touch' && <Hand className={active ? 'text-white' : 'text-gray-500'} size={20}/>}
-                         {e.id === 'upgrade' && <Clock className={active ? 'text-white' : 'text-gray-500'} size={20}/>}
-                         {e.id === 'aroma' && <Sparkles className={active ? 'text-white' : 'text-gray-500'} size={20}/>}
-                         <div className="text-left">
-                           <p className={`font-bold text-sm ${active ? 'text-white' : 'text-gray-300'}`}>{e.label}</p>
-                           <p className="text-xs text-gray-500">{e.sub}</p>
-                         </div>
+                       <div className="text-left">
+                         <p className={`font-bold text-sm ${active ? 'text-white' : 'text-gray-300'}`}>{e.label}</p>
+                         <p className="text-xs text-gray-500">{e.sub}</p>
                        </div>
                        <span className={`text-sm font-bold ${active ? 'text-[#0A84FF]' : 'text-gray-500'}`}>+ R$ {e.price}</span>
                     </button>
