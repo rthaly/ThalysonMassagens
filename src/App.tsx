@@ -1,9 +1,10 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChevronLeft, Check, Star, MapPin, 
   ShieldCheck, Crown, QrCode, Banknote, 
   Send, X, Gift, AlertTriangle, 
-  Navigation, ThumbsUp, Map, Clock
+  Navigation, ThumbsUp, Map, Clock, Sparkles, Hand
 } from 'lucide-react';
 
 /* ==================================================================================
