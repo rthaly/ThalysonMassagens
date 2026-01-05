@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import {
   Check, MapPin, Star, ArrowRight, Bed, 
   Home, MessageCircle, Clock, Zap, Ticket, Lock,
-  ShieldCheck, Map, Navigation, User, ChevronDown, Flame
+  ShieldCheck, Map, Navigation, User, ChevronDown, Flame, AlertCircle
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. ESTILOS GLOBAIS (DARK MODE REFINADO)
+// 1. ESTILOS GLOBAIS
 // ==================================================================================
 
 const globalStyles = `
@@ -23,18 +23,19 @@ body {
   overflow-x: hidden;
 }
 
-/* --- SCROLL PHYSICS (O SEGREDO DO APP) --- */
-/* Margem superior grande para o item nunca ficar escondido atrás do header */
+/* --- SCROLL PHYSICS --- */
 section { 
   scroll-margin-top: 15vh; 
-  opacity: 0.4; 
+  opacity: 0.3; 
   transition: opacity 0.5s ease;
-  pointer-events: none; /* Bloqueia interação até ativar */
+  pointer-events: none;
+  filter: blur(1px);
 }
 
 section.active-step {
   opacity: 1;
   pointer-events: auto;
+  filter: blur(0);
 }
 
 /* --- BACKGROUND --- */
@@ -97,7 +98,7 @@ section.active-step {
 `;
 
 // ==================================================================================
-// 2. CONFIGURAÇÃO (PREÇOS & DADOS)
+// 2. CONFIGURAÇÃO
 // ==================================================================================
 
 const CONFIG = {
@@ -105,12 +106,10 @@ const CONFIG = {
   COUPON_VAL: 12, 
   PRICES: {
     UPGRADE_PCT: 0.5,
-    TOUCH: 53, // Ajustado conforme pedido
-    UBER: 20   // Ajustado conforme pedido
+    TOUCH: 53, 
   }
 };
 
-// Horários 08h as 21h
 const TIME_SLOTS = [
     '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', 
     '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'
@@ -121,7 +120,7 @@ const SERVICES = [
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    desc: 'O protocolo que você quer. Começa de bruços soltando a musculatura. Vira de frente, óleo morno, toque corpo a corpo e finalização manual intensa garantida.', 
+    desc: 'O protocolo que você quer. Começa de bruços soltando a musculatura. Vira de frente, óleo morno, toque corpo a corpo e finalização manual intensa.', 
     duration: '60 min', 
     price: 160, 
     badge: 'MAIS PEDIDA 🔥',
@@ -140,8 +139,8 @@ const SERVICES = [
 ];
 
 const LOCATIONS = [
-  { id: 'home', label: 'Na sua Casa / Apto', sub: 'Levo a maca ou atendemos na cama/sofá', fee: CONFIG.PRICES.UBER, icon: Home, input: true },
-  { id: 'hotel', label: 'Hotel / Motel', sub: 'Vou até a sua suíte (Total discrição)', fee: CONFIG.PRICES.UBER, icon: Bed, input: true },
+  { id: 'home', label: 'Na sua Casa / Apto', sub: 'Atendimento na Cama ou Sofá (Não levo maca)', icon: Home, input: true },
+  { id: 'hotel', label: 'Hotel / Motel', sub: 'Vou até a sua suíte (Sigilo Total)', icon: Bed, input: true },
 ];
 
 const REVIEWS = [
@@ -165,7 +164,7 @@ const vibrate = () => { if (navigator.vibrate) navigator.vibrate(12); };
 const CouponModal = ({ onClaim }) => {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    const used = localStorage.getItem('thaly_coupon_gold');
+    const used = localStorage.getItem('thaly_coupon_final_v1');
     if (!used) setTimeout(() => setShow(true), 1200);
   }, []);
 
@@ -179,10 +178,10 @@ const CouponModal = ({ onClaim }) => {
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">Primeira Vez?</h2>
         <p className="text-gray-400 text-sm mb-8 leading-relaxed">
-          Liberei um desconto especial para você conhecer o serviço hoje.
+          Desconto exclusivo para novos clientes VIP.
         </p>
         <div className="bg-[#050505] border border-[#222] border-dashed rounded-xl p-5 mb-8">
-          <span className="text-gray-600 text-[10px] font-bold uppercase tracking-[0.2em] block mb-2">Valor do Cupom</span>
+          <span className="text-gray-600 text-[10px] font-bold uppercase tracking-[0.2em] block mb-2">Desconto Liberado</span>
           <span className="text-4xl font-bold text-white tracking-tighter">R$ {CONFIG.COUPON_VAL},00</span>
         </div>
         <button onClick={() => { vibrate(); setShow(false); onClaim(); }} className="w-full bg-[#0A84FF] text-white font-bold py-4 rounded-[18px] text-[15px] active:scale-95 transition-transform">
@@ -198,7 +197,7 @@ const CouponModal = ({ onClaim }) => {
 
 const ReviewsTicker = () => {
   const [idx, setIdx] = useState(0);
-  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS.length), 4000); return () => clearInterval(t); }, []);
+  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS.length), 5000); return () => clearInterval(t); }, []);
   return (
       <div className="mb-8 p-4 bg-[#0e0e0e] border border-[#222] rounded-[20px] flex items-start gap-4">
           <div className="flex-1">
@@ -238,16 +237,16 @@ export default function App() {
     extras: { upgrade: false, touch: false }, payment: 'pix'
   });
 
-  const [stage, setStage] = useState(0); // Controle rigoroso de passos
+  const [stage, setStage] = useState(0);
 
   useEffect(() => { setTimeout(() => setLoading(false), 1500); }, []);
 
-  // --- ENGINE DE SCROLL (CENTRALIZADO) ---
+  // --- ENGINE DE SCROLL ---
   const scrollTo = (ref) => {
     if (ref && ref.current) {
         setTimeout(() => {
             ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300); // Delay suave para UX
+        }, 300);
     }
   };
 
@@ -269,12 +268,12 @@ export default function App() {
 
   const handleTimeSelect = (t) => {
     setData({...data, time: t});
-    nextStep(3, refs.extras); // Vai para extras antes do local
+    nextStep(3, refs.extras);
   };
 
   const handleAddressConfirm = () => {
       if(data.street && data.number && data.district) {
-          nextStep(5, refs.checkout); // Mostra o botão final
+          nextStep(5, refs.checkout);
       }
   };
 
@@ -283,18 +282,17 @@ export default function App() {
     let total = data.service.price;
     if (data.extras.upgrade) total += (data.service.price * CONFIG.PRICES.UPGRADE_PCT);
     if (data.extras.touch) total += CONFIG.PRICES.TOUCH;
-    if (data.location) total += data.location.fee;
     if (hasCoupon) total -= CONFIG.COUPON_VAL;
     return Math.max(0, total);
   };
 
   const finishOrder = () => {
-    if (hasCoupon) localStorage.setItem('thaly_coupon_gold', 'true');
+    if (hasCoupon) localStorage.setItem('thaly_coupon_final_v1', 'true');
 
     const total = calculateTotal();
     const dateStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
 
-    let text = `*AGENDAMENTO CONFIRMADO* 🚨\n`;
+    let text = `*SOLICITAÇÃO DE AGENDAMENTO* 📝\n`;
     text += `👤 *${data.name}* (${data.age} anos)\n`;
     
     text += `💆 *${data.service.name}*\n`;
@@ -307,15 +305,16 @@ export default function App() {
         if(data.comp) text += `🏢 ${data.comp}\n`;
     }
 
-    text += `\n*RESUMO FINANCEIRO:*\n`;
+    text += `\n🚗 Taxa Deslocamento: *A CALCULAR NO ZAP*\n`;
+    text += `🛏️ Local: *Ciente que é na Cama/Sofá (Não levo maca)*\n`;
+
+    text += `\n*DETALHES DO PEDIDO:*\n`;
     text += `Sessão: ${formatBRL(data.service.price)}\n`;
-    text += `Taxa Uber: ${formatBRL(CONFIG.PRICES.UBER)}\n`;
-    
     if(data.extras.upgrade) text += `Upgrade 30min: ${formatBRL(data.service.price * CONFIG.PRICES.UPGRADE_PCT)}\n`;
     if(data.extras.touch) text += `Interação: ${formatBRL(CONFIG.PRICES.TOUCH)}\n`;
     if(hasCoupon) text += `Desconto VIP: -${formatBRL(CONFIG.COUPON_VAL)}\n`;
 
-    text += `\n💰 *TOTAL: ${formatBRL(total)}*`;
+    text += `\n💰 *TOTAL (Sem Frete): ${formatBRL(total)}*`;
     text += `\n💳 Pagto: ${data.payment.toUpperCase()}`;
 
     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`, '_blank');
@@ -334,11 +333,12 @@ export default function App() {
           <div className="w-24 h-24 bg-[#32D74B]/10 rounded-full flex items-center justify-center mb-6 border border-[#32D74B]/20 shadow-[0_0_60px_rgba(50,215,75,0.15)]">
               <Check className="w-10 h-10 text-[#32D74B]" strokeWidth={3} />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-3">Tudo Pronto!</h2>
-          <p className="text-gray-400 mb-10 leading-relaxed max-w-xs mx-auto">
-              Te enviei os detalhes no WhatsApp. Confirme lá para eu me deslocar.
+          <h2 className="text-3xl font-bold text-white mb-3">Pedido Enviado!</h2>
+          <p className="text-gray-300 text-sm mb-2 font-bold">⚠️ FALTA UMA COISA:</p>
+          <p className="text-gray-400 mb-8 leading-relaxed max-w-xs mx-auto">
+              Por favor, me envie sua <strong>Localização em Tempo Real (GPS)</strong> no WhatsApp agora para eu calcular a taxa de deslocamento exata.
           </p>
-          <button onClick={() => window.location.reload()} className="w-full bg-[#1a1a1a] border border-[#333] text-white py-4 rounded-[18px] font-bold">
+          <button onClick={() => window.location.reload()} className="w-full bg-[#1a1a1a] border border-[#333] text-white py-4 rounded-[18px] font-bold hover:bg-[#222]">
               Voltar ao Início
           </button>
       </div>
@@ -358,9 +358,9 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-md mx-auto pt-28 px-5">
+      <main className="max-w-md mx-auto pt-32 px-5">
 
-        {/* 1. PERFIL (SEMPRE VISIVEL) */}
+        {/* 1. PERFIL */}
         <section ref={refs.intro} className="active-step">
           <h1 className="text-3xl font-bold text-white mb-2 leading-none tracking-tight">Discrição e<br/><span className="text-gray-600">Prazer.</span></h1>
           <p className="text-gray-500 text-sm mb-6 mt-2 leading-relaxed">Atendimento exclusivo para homens.<br/>Eu vou até você.</p>
@@ -464,7 +464,7 @@ export default function App() {
             </div>
         </section>
 
-        {/* 4. EXTRAS (AGORA VEM ANTES DO LOCAL PARA FLUXO MELHOR) */}
+        {/* 4. EXTRAS */}
         <section ref={refs.extras} className={stage >= 3 ? 'active-step' : ''}>
             <div className="flex items-center gap-3 mb-4 opacity-80 mt-12">
                 <div className="w-6 h-6 rounded-full bg-[#222] border border-[#333] flex items-center justify-center text-xs font-bold text-white">3</div>
@@ -498,7 +498,7 @@ export default function App() {
                         </div>
                         <div className="text-left">
                             <span className="block text-[15px] font-bold text-white mb-0.5">Interação / Toque</span>
-                            <span className="text-[11px] text-gray-500">Você pode tocar</span>
+                            <span className="text-[11px] text-gray-500">Reciprocidade e corpo a corpo</span>
                         </div>
                     </div>
                     <span className="text-sm font-bold text-[#FF375F]">+ {formatBRL(CONFIG.PRICES.TOUCH)}</span>
@@ -523,20 +523,30 @@ export default function App() {
                     return (
                         <div key={loc.id} className="transition-all duration-300">
                             <button onClick={() => { setData({...data, location: loc, street:'', number:'', district:'', comp:''}); }}
-                                className={`w-full p-4 rounded-[22px] border flex items-center justify-between transition-all ${isSel ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'glass-card border-transparent'}`}
+                                className={`w-full p-4 rounded-[22px] border flex items-center justify-between transition-all text-left ${isSel ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'glass-card border-transparent'}`}
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isSel ? 'bg-[#0A84FF] text-white' : 'bg-[#1a1a1a] text-gray-500'}`}><loc.icon size={18} /></div>
-                                    <div className="text-left">
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${isSel ? 'bg-[#0A84FF] text-white' : 'bg-[#1a1a1a] text-gray-500'}`}><loc.icon size={18} /></div>
+                                    <div>
                                         <div className="font-bold text-white text-[15px]">{loc.label}</div>
                                         <div className="text-[11px] text-gray-500 mt-0.5">{loc.sub}</div>
                                     </div>
                                 </div>
-                                <span className="text-xs font-bold text-[#0A84FF] bg-[#0A84FF]/10 px-2 py-1 rounded">+ {formatBRL(loc.fee)}</span>
+                                <div className="text-right">
+                                     <span className="text-[9px] font-bold text-gray-500 block">TAXA</span>
+                                     <span className="text-xs font-bold text-[#0A84FF]">A CALCULAR</span>
+                                </div>
                             </button>
 
                             {isSel && loc.input && (
                                 <div className="mt-4 pl-2 space-y-3 animate-enter border-l-2 border-[#222] ml-4 pr-1 py-2">
+                                    <div className="bg-[#111] p-3 rounded-lg border border-[#333] flex gap-2 mb-3">
+                                        <AlertCircle className="w-4 h-4 text-[#FFD60A]" />
+                                        <p className="text-[10px] text-[#FFD60A] leading-tight">
+                                            Atenção: Não levo maca portátil. O atendimento é realizado na sua cama ou sofá.
+                                        </p>
+                                    </div>
+
                                     <div>
                                         <label className="text-[9px] font-bold text-gray-500 uppercase ml-1 mb-1.5 block">Rua / Avenida</label>
                                         <input value={data.street} onChange={e => setData({...data, street: e.target.value})}
@@ -589,7 +599,7 @@ export default function App() {
             <div className="bg-[#0e0e0e] border-t border-[#222] p-6 pb-8 rounded-t-[32px] shadow-[0_-10px_50px_rgba(0,0,0,0.8)] max-w-md mx-auto">
                 <div className="flex justify-between items-end mb-5 px-1">
                     <div>
-                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block mb-1">Valor Total</span>
+                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block mb-1">Total (Sem Frete)</span>
                         <div className="flex items-baseline gap-2.5">
                              <span className="text-3xl font-bold text-white tracking-tighter">{formatBRL(calculateTotal())}</span>
                              {hasCoupon && <span className="text-[10px] text-[#0A84FF] bg-[#0A84FF]/10 px-2 py-1 rounded font-bold border border-[#0A84FF]/20">CUPOM ATIVO</span>}
