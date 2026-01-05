@@ -132,7 +132,7 @@ const SERVICES = [
     short: 'Relaxamento + Finalização',
     desc: 'O protocolo que você quer. Começa de bruços soltando a musculatura. Vira de frente, óleo morno, toque corpo a corpo e finalização manual intensa.', 
     duration: '60 min', 
-    price: 160, 
+    price: 155, 
     badge: 'MAIS PEDIDA 🔥',
     features: ['Corpo a Corpo', 'Tântrica', 'Finalização']
   },
@@ -142,7 +142,7 @@ const SERVICES = [
     short: 'Tira Dores e Tensão',
     desc: 'Foco 100% terapêutico e físico. Ideal para tirar dores nas costas, pernas cansadas e zerar o stress. Toque firme e preciso. Sem foco sexual.', 
     duration: '60 min', 
-    price: 130, 
+    price: 125, 
     badge: null,
     features: ['Tira Dores', 'Zero Stress', 'Revigorante']
   },
