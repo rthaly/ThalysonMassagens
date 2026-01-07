@@ -156,7 +156,7 @@ const LOCATIONS = [
 ];
 
 const REVIEWS_DB = [
-  { t: "Caralho, que mão é essa? Gozei gostoso demais no final. Limpeza total.", a: "Ricardo (Vila Madalena)", s: 5 },
+  { t: "O Thalyson tem uma energia muito boa e é simpático. A massagem foi simplesmente perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
   { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
   { t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", a: "Curioso SP", s: 5 },
