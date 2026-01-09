@@ -430,7 +430,7 @@ export default function App() {
       
       {/* HEADER FIXO */}
       <header className="fixed top-0 w-full z-40 bg-[#050505]/95 backdrop-blur-xl border-b border-white/5 py-4 px-6 flex justify-between items-center shadow-lg transition-all">
-        <span className="font-bold text-white tracking-tight text-lg">Thalyson <span className="text-[#0A84FF]">Massagens</span></span>
+        <span className="font-bold text-white tracking-tight text-lg">Thalyson Massagens<span className="text-[#0A84FF]">Agendamento Rápido</span></span>
         <div className="flex items-center gap-2 px-3 py-1 bg-[#111] rounded-full border border-[#222]">
             <Lock className="w-3 h-3 text-gray-500" />
             <span className="text-[10px] font-bold text-gray-400 uppercase">Sigilo</span>
@@ -442,7 +442,8 @@ export default function App() {
         {/* 1. PERFIL */}
         <section ref={refs.intro} className="active-step">
           <h1 className="text-3xl font-bold text-white mb-2 leading-none tracking-tight">Relaxamento &<br/><span className="text-gray-600">Prazer.</span></h1>
-          <p className="text-gray-500 text-sm mb-6 mt-2 leading-relaxed">Atendimento exclusivo para homens.<br/>Eu vou até você.</p>
+          <p className="text-gray-500 text-sm mb-6 mt-2 leading-relaxed">Atendimento exclusivo para homens.<br/>Eu vou até você.
+Obs: O App não salva seus dados e não tem pagamento antecipado</p>
 
           <ReviewsTicker />
 
