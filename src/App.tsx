@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Check, Star, ArrowRight, Bed, Home, MessageCircle, 
   Ticket, Lock, Flame, Wind, Clock,
   CreditCard, Banknote, QrCode, Copy, Calendar as CalendarIcon, 
-  ChevronRight, Activity, Menu, X, HelpCircle, Instagram, Info, 
-  Volume2, VolumeX, Download, MapPin, Smartphone
+  ChevronRight, Menu, X, HelpCircle, Instagram, Info, 
+  Volume2, VolumeX, MapPin
 } from 'lucide-react';
 
 // ==================================================================================
@@ -17,13 +17,12 @@ const CONFIG = {
   PIX_KEY: "62922530000144", 
   COUPON_VAL: 12,
   PRICES: {
-    UPGRADE_PCT: 0.5, 
+    UPGRADE_PCT: 0.5, // 50% do valor base
     TOUCH: 53, 
     AROMA: 10,
   },
   URLS: {
-    WHATSAPP_API: "https://api.whatsapp.com/send",
-    GOOGLE_CALENDAR: "https://calendar.google.com/calendar/render"
+    WHATSAPP_API: "https://api.whatsapp.com/send"
   }
 };
 
@@ -47,8 +46,7 @@ const SERVICES = [
     desc: 'Massagista de Cueca. O protocolo premium. Inicia de bruços soltando a musculatura, vira de frente com óleo morno, toque corpo a corpo e finalização manual intensa.', 
     duration: 60, 
     price: 155, 
-    badge: 'MAIS PEDIDA 🔥',
-    features: ['Massagista de Cueca', 'Corpo a Corpo', 'Finalização']
+    badge: 'MAIS PEDIDA 🔥'
   },
   { 
     id: 'relax', 
@@ -57,8 +55,7 @@ const SERVICES = [
     desc: 'Foco 100% terapêutico. Ideal para remover dores lombares, pernas cansadas e zerar o stress. Toque firme e preciso.', 
     duration: 60, 
     price: 125, 
-    badge: null,
-    features: ['Tira Dores', 'Zero Stress', 'Revigorante']
+    badge: null
   },
 ];
 
@@ -73,65 +70,22 @@ const LOCATIONS = [
 ];
 
 const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago", s: 5 },
-  { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
-  { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", a: "Curioso SP", s: 5 },
-  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M.", s: 5 },
-  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
-  { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
-  { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
-  { t: "Ele de cueca branca... sem comentários. Visual nota 1000.", a: "Fã", s: 5 },
-  { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
-  { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
-  { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
-  { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
-  { t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", a: "Felipe", s: 5 },
-  { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
-  { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
-  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista", s: 5 },
-  { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
-  { t: "Fiz a relaxante e dormi na maca de tão bom. Recomendo.", a: "Breno", s: 5 },
-  { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
-  { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
-  { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
-  { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
-  { t: "O óleo de coco morno é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
-  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Antigo", s: 5 },
-  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Beto", s: 5 },
-  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado", s: 5 },
-  { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
-  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anon", s: 5 },
-  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero C.", s: 5 },
-  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Uber", s: 5 },
-  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "Sigilo", s: 5 },
-  { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
-  { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
-  { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
-  { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
-  { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
-  { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
-  { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
-  { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
-  { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
-  { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
-  { t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", a: "Morador", s: 5 },
-  { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
-  { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
-  { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
-  { t: "O final foi explosivo. Recomendo.", a: "Anônimo", s: 5 },
-  { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
-  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 }
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", a: "Tiago", s: 5 },
+  { t: "O toque dele vicia. A finalização foi absurda.", a: "Anônimo", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba. Recomendo.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O óleo quente faz diferença.", a: "Curioso SP", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo.", a: "M. (Jardins)", s: 5 },
+  { t: "Sou casado, o sigilo foi absoluto.", a: "Empresário", s: 5 },
+  { t: "O upgrade de 30 minutos vale a pena.", a: "Roberto", s: 5 }
 ];
 
 // ==================================================================================
-// 2. AUDIO ENGINE V2 (CLEAN OCEAN + VISIBILITY API)
+// 2. AUDIO ENGINE (NOISE + SFX)
 // ==================================================================================
 
 const AudioEngine = {
     ctx: null,
     oceanGain: null,
-    lfo: null,
     isMuted: true,
 
     init: () => {
@@ -139,69 +93,57 @@ const AudioEngine = {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
             AudioEngine.ctx = new AudioContext();
-            
-            // Adiciona listener para parar som ao sair do app
-            document.addEventListener('visibilitychange', AudioEngine.handleVisibility);
         }
     },
 
-    handleVisibility: () => {
-        if (document.hidden) {
-            if (AudioEngine.ctx && AudioEngine.ctx.state === 'running') {
-                AudioEngine.ctx.suspend();
-            }
-        } else {
-            if (AudioEngine.ctx && AudioEngine.ctx.state === 'suspended' && !AudioEngine.isMuted) {
-                AudioEngine.ctx.resume();
-            }
-        }
-    },
-
-    // SOM DE MAR SEM CHIADO (Brown Noise Filtrado)
     startOcean: () => {
         if (!AudioEngine.ctx) AudioEngine.init();
         const ctx = AudioEngine.ctx;
         if (!ctx) return;
         if (ctx.state === 'suspended') ctx.resume();
 
-        // 1. Gera Ruído Marrom (Brown Noise) - Som mais grave e natural que White/Pink
+        // Pink Noise Generator
         const bufferSize = 4096;
-        const brownNoise = ctx.createScriptProcessor(bufferSize, 1, 1);
-        let lastOut = 0.0;
-        brownNoise.onaudioprocess = function(e) {
-            const output = e.outputBuffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                const white = Math.random() * 2 - 1;
-                output[i] = (lastOut + (0.02 * white)) / 1.02;
-                lastOut = output[i];
-                output[i] *= 3.5; // Compensação de ganho
-            }
-        };
+        const pinkNoise = (function() {
+            let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
+            const node = ctx.createScriptProcessor(bufferSize, 1, 1);
+            node.onaudioprocess = function(e) {
+                const output = e.outputBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                    output[i] *= 0.11; 
+                    b6 = white * 0.115926;
+                }
+            };
+            return node;
+        })();
 
-        // 2. Filtro LowPass (Corta o agudo/chiado)
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 250; // Frequência bem baixa (som abafado de mar)
+        filter.frequency.value = 400;
 
-        // 3. Controle de Volume Mestre
         const masterGain = ctx.createGain();
-        masterGain.gain.value = 0.0; // Inicia mudo
+        masterGain.gain.value = 0.0;
         AudioEngine.oceanGain = masterGain;
 
-        // 4. LFO (Oscilador de Baixa Frequência) para simular ondas
         const lfo = ctx.createOscillator();
         lfo.type = 'sine';
-        lfo.frequency.value = 0.12; // Velocidade da maré
+        lfo.frequency.value = 0.12;
         const lfoGain = ctx.createGain();
-        lfoGain.gain.value = 0.03; // Intensidade da onda
+        lfoGain.gain.value = 0.04; 
 
-        // Conexões
         lfo.connect(lfoGain);
         lfoGain.connect(masterGain.gain);
-        brownNoise.connect(filter);
+        pinkNoise.connect(filter);
         filter.connect(masterGain);
         masterGain.connect(ctx.destination);
-        
         lfo.start();
     },
 
@@ -214,11 +156,9 @@ const AudioEngine = {
         const now = ctx.currentTime;
         
         if (!AudioEngine.isMuted) {
-            // Fade in lento e suave
             AudioEngine.oceanGain.gain.cancelScheduledValues(now);
-            AudioEngine.oceanGain.gain.linearRampToValueAtTime(0.06, now + 3); 
+            AudioEngine.oceanGain.gain.linearRampToValueAtTime(0.08, now + 3); 
         } else {
-            // Fade out rápido
             AudioEngine.oceanGain.gain.cancelScheduledValues(now);
             AudioEngine.oceanGain.gain.linearRampToValueAtTime(0, now + 0.5);
         }
@@ -229,30 +169,25 @@ const AudioEngine = {
         if (!AudioEngine.ctx || AudioEngine.isMuted) return;
         const ctx = AudioEngine.ctx;
         const t = ctx.currentTime;
-        
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        
         osc.connect(gain);
         gain.connect(ctx.destination);
 
         if (type === 'tap') {
-            // Click curto e agradável
-            osc.frequency.setValueAtTime(800, t);
+            osc.frequency.setValueAtTime(600, t);
             gain.gain.setValueAtTime(0.05, t);
             gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
             osc.start(t);
             osc.stop(t + 0.05);
         } else if (type === 'bubble') {
-            // Notificação suave
             osc.frequency.setValueAtTime(300, t);
-            osc.frequency.linearRampToValueAtTime(500, t + 0.15);
-            gain.gain.setValueAtTime(0.02, t);
+            osc.frequency.linearRampToValueAtTime(500, t + 0.1);
+            gain.gain.setValueAtTime(0.05, t);
             gain.gain.linearRampToValueAtTime(0, t + 0.3);
             osc.start(t);
             osc.stop(t + 0.3);
         } else if (type === 'success') {
-            // Acorde final
             const tone = (f, d) => {
                 const o = ctx.createOscillator(); const g = ctx.createGain();
                 o.connect(g); g.connect(ctx.destination);
@@ -266,18 +201,16 @@ const AudioEngine = {
 };
 
 // ==================================================================================
-// 3. UTILITÁRIOS (Helpers)
+// 3. UTILITÁRIOS
 // ==================================================================================
 
 const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
   vibrate: (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); },
   shuffleArray: (array) => {
-    let currentIndex = array.length, randomIndex;
-    while (currentIndex !== 0) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
   },
@@ -293,8 +226,8 @@ const Utils = {
     return hours <= now.getHours();
   },
 
-  // GERA ARQUIVO .ICS REAL
-  generateIcsFile: (data) => {
+  // --- CALENDÁRIO NATIVO (CORRIGIDO) ---
+  addToCalendar: (data) => {
     if (!data.date || !data.time) return;
     const [h] = data.time.split(':');
     const start = new Date(data.date); start.setHours(parseInt(h));
@@ -305,41 +238,19 @@ const Utils = {
     const icsContent = 
 `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Thalymassagens//Agendamento//PT
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
+PRODID:-//ThalyMassagens//Agendamento//PT
 BEGIN:VEVENT
-UID:${Date.now()}@thalymassagens.com
-DTSTAMP:${fmt(new Date())}
 DTSTART:${fmt(start)}
 DTEND:${fmt(end)}
 SUMMARY:Massagem com Thalyson
-DESCRIPTION:Serviço: ${data.service?.name} - Local: ${data.location?.label}
+DESCRIPTION:Serviço: ${data.service?.name}
 LOCATION:${data.location?.label}
-STATUS:CONFIRMED
 END:VEVENT
 END:VCALENDAR`;
 
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.setAttribute('download', 'agendamento.ics');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  },
-
-  generateGoogleLink: (data) => {
-    if (!data.date || !data.time || !data.service) return '';
-    const [h] = data.time.split(':');
-    const start = new Date(data.date); start.setHours(parseInt(h));
-    const end = new Date(start); end.setMinutes(end.getMinutes() + 60);
-    const fmt = (d) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
-    const p = new URLSearchParams({
-      action: 'TEMPLATE', text: 'Massagem Thalyson', dates: `${fmt(start)}/${fmt(end)}`,
-      details: `Serviço: ${data.service?.name}`, location: data.location?.label
-    });
-    return `${CONFIG.URLS.GOOGLE_CALENDAR}?${p.toString()}`;
+    // ABRE DIRETO NO APP NATIVO
+    const uri = 'data:text/calendar;charset=utf8,' + encodeURIComponent(icsContent);
+    window.open(uri, '_self');
   },
 
   getGreeting: () => {
@@ -427,7 +338,7 @@ const ReviewsTicker = () => {
   const [reviews, setReviews] = useState([]);
   const [idx, setIdx] = useState(0);
   useEffect(() => { setReviews(Utils.shuffleArray([...REVIEWS_DB])); }, []);
-  useEffect(() => { if (reviews.length === 0) return; const t = setInterval(() => setIdx(i => (i+1)%reviews.length), 5000); return () => clearInterval(t); }, [reviews]);
+  useEffect(() => { if (reviews.length === 0) return; const t = setInterval(() => setIdx(i => (i+1)%reviews.length), 6000); return () => clearInterval(t); }, [reviews]);
   if (reviews.length === 0) return null;
   return (
       <div className="mb-6 p-1 relative min-h-[90px] flex items-center animate-enter">
@@ -469,7 +380,7 @@ const MenuOverlay = ({ onClose, onHelp }) => (
           </button>
        </div>
        <div className="mt-auto pt-6 border-t border-[#333]">
-          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 9.0 (Platinum)</p>
+          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 8.0 (Gold)</p>
        </div>
     </div>
   </div>
@@ -490,29 +401,27 @@ const HelpModal = ({ onClose }) => (
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">2</div>
-                <div><h3 className="font-bold text-white text-sm">Agendamento</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Escolha o dia e horário. O app bloqueia horários já passados para evitar erros.</p></div>
+                <div><h3 className="font-bold text-white text-sm">Agendamento</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Escolha o dia e horário. O app bloqueia horários já passados.</p></div>
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">3</div>
-                <div><h3 className="font-bold text-white text-sm">Onde Atendo?</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Vou até sua residência ou hotel/motel. O valor do deslocamento é calculado no WhatsApp.</p></div>
+                <div><h3 className="font-bold text-white text-sm">Onde Atendo?</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Vou até sua residência ou hotel. Valor de deslocamento a combinar.</p></div>
             </div>
-            
             <div className="bg-[#2C2C2E] p-4 rounded-xl border border-[#333]">
                 <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Segurança & Pagamento</h4>
                 <ul className="text-xs text-gray-400 space-y-1 list-disc pl-4">
                     <li>Sigilo absoluto garantido.</li>
-                    <li>Pagamento feito apenas no local (Pix/Dinheiro).</li>
-                    <li>Não é necessário cadastro, apenas dados básicos.</li>
+                    <li>Pagamento feito no local (Pix/Dinheiro).</li>
+                    <li>Sem taxas ocultas.</li>
                 </ul>
             </div>
         </div>
-        <button onClick={onClose} className="w-full mt-6 bg-[#0A84FF] py-3 rounded-xl font-bold text-sm">Entendi, vamos agendar!</button>
+        <button onClick={onClose} className="w-full mt-6 bg-[#0A84FF] py-3 rounded-xl font-bold text-sm">Entendi!</button>
     </div>
   </div>
 );
 
 const SuccessScreen = ({ data, whatsappLink, onCopy }) => {
-  const googleLink = Utils.generateGoogleLink(data);
   useEffect(() => { AudioEngine.playSfx('success'); }, []);
 
   return (
@@ -523,7 +432,7 @@ const SuccessScreen = ({ data, whatsappLink, onCopy }) => {
       
       <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Gerado!</h2>
       <p className="text-gray-400 mb-8 text-base leading-relaxed max-w-xs mx-auto">
-        Agora é só aguardar. Vou calcular a taxa de deslocamento e te confirmo no WhatsApp.
+        Envie a mensagem no WhatsApp para confirmar.
       </p>
 
       <a href={whatsappLink} target="_blank" rel="noreferrer" 
@@ -538,22 +447,17 @@ const SuccessScreen = ({ data, whatsappLink, onCopy }) => {
 
       <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Salvar na Agenda</p>
       
-      <div className="w-full max-w-sm grid grid-cols-2 gap-3 mb-8">
-          <a href={googleLink} target="_blank" rel="noreferrer" 
-             className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex flex-col items-center justify-center hover:bg-[#222] transition-colors">
-             <CalendarIcon className="text-white w-6 h-6 mb-2" />
-             <span className="text-xs font-bold text-[#0A84FF]">Google Agenda</span>
-             <span className="text-[9px] text-gray-500">Android / Web</span>
-          </a>
-          <button onClick={() => Utils.generateIcsFile(data)} 
-             className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex flex-col items-center justify-center hover:bg-[#222] transition-colors">
-             <Smartphone className="text-white w-6 h-6 mb-2" />
-             <span className="text-xs font-bold text-[#32D74B]">Apple / Samsung</span>
-             <span className="text-[9px] text-gray-500">Arquivo .ICS</span>
-          </button>
-      </div>
+      {/* BOTÃO ÚNICO DE CALENDÁRIO OTIMIZADO PARA ABERTURA DIRETA */}
+      <button onClick={() => Utils.addToCalendar(data)} 
+         className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex items-center justify-center gap-3 hover:bg-[#222] transition-colors mb-8">
+         <CalendarIcon className="text-[#0A84FF] w-6 h-6" />
+         <div className="text-left">
+             <span className="block text-sm font-bold text-white">Adicionar à Agenda</span>
+             <span className="block text-[10px] text-gray-500">Abre App Nativo</span>
+         </div>
+      </button>
 
-      <button onClick={() => { localStorage.removeItem('thaly_full_v9'); window.location.reload(); }} 
+      <button onClick={() => { localStorage.removeItem('thaly_full_v8'); window.location.reload(); }} 
         className="text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
         Fazer novo pedido
       </button>
@@ -568,7 +472,7 @@ const SuccessScreen = ({ data, whatsappLink, onCopy }) => {
 export default function App() {
   const [data, setData] = useState(() => {
     try {
-      const saved = localStorage.getItem('thaly_full_v9');
+      const saved = localStorage.getItem('thaly_full_v8');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.date) parsed.date = new Date(parsed.date);
@@ -599,7 +503,7 @@ export default function App() {
     extras: useRef(null), location: useRef(null), payment: useRef(null), checkout: useRef(null)
   };
 
-  useEffect(() => { localStorage.setItem('thaly_full_v9', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_full_v8', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
 
   // Inicializa som no primeiro clique (Política de Navegador)
@@ -692,7 +596,7 @@ export default function App() {
     </div>
   );
 
-  if (success) return <SuccessScreen data={data} financials={financials} whatsappLink={whatsappLink} onCopy={handleCopy} />;
+  if (success) return <SuccessScreen data={data} whatsappLink={whatsappLink} onCopy={handleCopy} />;
 
   return (
     <div className="ios-bg min-h-screen text-white pb-48 selection:bg-[#0A84FF] selection:text-white">
@@ -756,7 +660,7 @@ export default function App() {
 
                 {/* --- CHECKBOX DE SAÚDE --- */}
                 <div onClick={() => { AudioEngine.playSfx('tap'); Utils.vibrate(); setData({...data, medical: !data.medical}) }} 
-                     className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${data.medical ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333] hover:bg-[#222]'}`}>
+                      className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${data.medical ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333] hover:bg-[#222]'}`}>
                     
                     <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${data.medical ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#555]'}`}>
                         {data.medical && <Check size={14} className="text-white"/>}
@@ -840,7 +744,7 @@ export default function App() {
                  {/* UPGRADE TEMPO */}
                  <div onClick={() => { AudioEngine.playSfx('tap'); Utils.vibrate(); setData({...data, extras: {...data.extras, upgrade: !data.extras.upgrade}}); }}
                       className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
-                     <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-4">
                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.upgrade ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#444] bg-transparent'}`}>
                            {data.extras.upgrade && <Check size={16} className="text-white"/>}
                         </div>
@@ -848,14 +752,14 @@ export default function App() {
                             <p className="font-bold text-white text-[16px]">+30 Minutos</p>
                             <p className="text-[12px] text-gray-500">Sessão estendida</p>
                         </div>
-                     </div>
-                     <span className="text-[#0A84FF] font-bold text-[14px]">+ {Utils.formatBRL(data.service ? data.service.price * CONFIG.PRICES.UPGRADE_PCT : 0)}</span>
+                      </div>
+                      <span className="text-[#0A84FF] font-bold text-[14px]">+ {Utils.formatBRL(data.service ? data.service.price * CONFIG.PRICES.UPGRADE_PCT : 0)}</span>
                  </div>
 
                  {/* TOUCH */}
                  <div onClick={() => { AudioEngine.playSfx('tap'); Utils.vibrate(); setData({...data, extras: {...data.extras, touch: !data.extras.touch}}); }}
                       className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
-                     <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-4">
                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.touch ? 'bg-[#FF375F] border-[#FF375F]' : 'border-[#444] bg-transparent'}`}>
                            {data.extras.touch && <Flame size={16} className="text-white"/>}
                         </div>
@@ -863,14 +767,14 @@ export default function App() {
                             <p className="font-bold text-white text-[16px]">Interação / Toque</p>
                             <p className="text-[12px] text-gray-500">Liberdade total</p>
                         </div>
-                     </div>
-                     <span className="text-[#FF375F] font-bold text-[14px]">+ {Utils.formatBRL(CONFIG.PRICES.TOUCH)}</span>
+                      </div>
+                      <span className="text-[#FF375F] font-bold text-[14px]">+ {Utils.formatBRL(CONFIG.PRICES.TOUCH)}</span>
                  </div>
 
                  {/* AROMA */}
                  <div onClick={() => { AudioEngine.playSfx('tap'); Utils.vibrate(); setData({...data, extras: {...data.extras, aroma: !data.extras.aroma}}); }}
                       className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
-                     <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-4">
                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.aroma ? 'bg-[#32D74B] border-[#32D74B]' : 'border-[#444] bg-transparent'}`}>
                            {data.extras.aroma && <Wind size={16} className="text-white"/>}
                         </div>
@@ -878,8 +782,8 @@ export default function App() {
                             <p className="font-bold text-white text-[16px]">Aromaterapia</p>
                             <p className="text-[12px] text-gray-500">Óleos essenciais</p>
                         </div>
-                     </div>
-                     <span className="text-[#32D74B] font-bold text-[14px]">+ {Utils.formatBRL(CONFIG.PRICES.AROMA)}</span>
+                      </div>
+                      <span className="text-[#32D74B] font-bold text-[14px]">+ {Utils.formatBRL(CONFIG.PRICES.AROMA)}</span>
                  </div>
             </div>
 
