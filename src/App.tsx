@@ -3,7 +3,7 @@ import {
   Check, Star, ArrowRight, Bed, Home, MessageCircle, 
   Ticket, Lock, Flame, Wind, Clock,
   CreditCard, Banknote, QrCode, Copy, Calendar as CalendarIcon, 
-  ChevronRight, Activity, Menu, X, HelpCircle, Instagram, Info, MapPin
+  ChevronRight, Activity, Menu, X, HelpCircle, Instagram, Info, Download, Bell
 } from 'lucide-react';
 
 // ==================================================================================
@@ -25,6 +25,16 @@ const CONFIG = {
     GOOGLE_CALENDAR: "https://calendar.google.com/calendar/render"
   }
 };
+
+// Dados para o "Live Status"
+const LIVE_NOTIFICATIONS = [
+  "🔥 João (Centro) acabou de agendar",
+  "👀 3 pessoas visualizando agora",
+  "📅 Agenda de Sexta quase cheia",
+  "⭐ Pedro avaliou com 5 estrelas",
+  "✅ Matheus confirmou presença",
+  "💎 Novo cliente VIP cadastrado"
+];
 
 const SERVICES = [
   { 
@@ -60,49 +70,43 @@ const LOCATIONS = [
 ];
 
 const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
   { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
   { t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", a: "Curioso SP", s: 5 },
-  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M.", s: 5 },
   { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
-  { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
+  { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "Casado", s: 5 },
   { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
   { t: "Ele de cueca branca... sem comentários. Visual nota 1000.", a: "Fã", s: 5 },
   { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
   { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
-  { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
   { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
-  { t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", a: "Felipe Personal", s: 5 },
+  { t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", a: "Felipe", s: 5 },
   { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
   { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
-  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
-  { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista", s: 5 },
   { t: "Fiz a relaxante e dormi na maca de tão bom. Recomendo.", a: "Breno", s: 5 },
   { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
   { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
   { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
   { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
-  { t: "O óleo de coco morno é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
-  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
-  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
-  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
+  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Antigo", s: 5 },
+  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Beto", s: 5 },
+  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado", s: 5 },
   { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
-  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anônimo", s: 5 },
-  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
-  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Motorista", s: 5 },
-  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
+  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero C.", s: 5 },
+  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Uber", s: 5 },
+  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "Sigilo", s: 5 },
   { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
   { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
   { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
-  { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
   { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
   { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
   { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
-  { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
   { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
   { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
-  { t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", a: "Morador Centro", s: 5 },
+  { t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", a: "Morador", s: 5 },
   { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
   { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
   { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
@@ -112,12 +116,71 @@ const REVIEWS_DB = [
 ];
 
 // ==================================================================================
-// 2. UTILITÁRIOS (Helpers)
+// 2. SISTEMA DE SOM (WEB AUDIO API - ZERO DEPENDÊNCIA)
+// ==================================================================================
+
+const playSound = (type) => {
+    // Cria contexto de áudio apenas no clique para evitar bloqueio do navegador
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    const now = ctx.currentTime;
+    
+    if (type === 'pop') {
+        // Som de "Click" suave
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        osc.start(now);
+        osc.stop(now + 0.1);
+    } else if (type === 'notification') {
+        // Som de "Tu-dum" (bolha)
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.setValueAtTime(800, now + 0.1);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.linearRampToValueAtTime(0.2, now + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+        osc.start(now);
+        osc.stop(now + 0.4);
+    } else if (type === 'success') {
+        // Acorde de sucesso
+        const playNote = (freq, time) => {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(freq, time);
+            g.gain.setValueAtTime(0.3, time);
+            g.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+            o.start(time);
+            o.stop(time + 0.5);
+        };
+        playNote(440, now); // A4
+        playNote(554.37, now + 0.1); // C#5
+        playNote(659.25, now + 0.2); // E5
+    }
+};
+
+// ==================================================================================
+// 3. UTILITÁRIOS (Helpers)
 // ==================================================================================
 
 const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+  
   vibrate: (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); },
+  
   shuffleArray: (array) => {
     let currentIndex = array.length, randomIndex;
     while (currentIndex !== 0) {
@@ -127,16 +190,21 @@ const Utils = {
     }
     return array;
   },
+
   isTimeBlocked: (selectedDate, timeString) => {
     if (!selectedDate) return true;
     const now = new Date();
     const today = new Date(); today.setHours(0,0,0,0);
     const sel = new Date(selectedDate); sel.setHours(0,0,0,0);
+
     if (sel < today) return true; 
     if (sel > today) return false; 
+
     const [hours] = timeString.split(':').map(Number);
-    return hours <= now.getHours();
+    const currentHour = now.getHours();
+    return hours <= currentHour;
   },
+
   generateCalendarLink: (data) => {
     if (!data.date || !data.time || !data.service) return '';
     const [h] = data.time.split(':');
@@ -145,14 +213,50 @@ const Utils = {
     const duration = data.service.duration + (data.extras.upgrade ? 30 : 0);
     end.setMinutes(end.getMinutes() + duration);
     const formatGCalDate = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
+    
     const params = new URLSearchParams({
-      action: 'TEMPLATE', text: `Massagem Thalyson - ${data.service.name}`,
+      action: 'TEMPLATE', text: `Massagem Thalymassagens - ${data.service.name}`,
       dates: `${formatGCalDate(start)}/${formatGCalDate(end)}`,
       details: `Serviço: ${data.service.name}\nLocal: ${data.location?.label}\nObs: Pagamento no local.`,
       location: data.location?.label === 'home' ? 'Meu Endereço' : 'Hotel/Motel',
     });
     return `${CONFIG.URLS.GOOGLE_CALENDAR}?${params.toString()}`;
   },
+
+  // NOVO: Gerador de arquivo .ICS Universal (Apple/Android)
+  downloadIcsFile: (data) => {
+    if (!data.date || !data.time) return;
+    const [h] = data.time.split(':');
+    const start = new Date(data.date); start.setHours(parseInt(h));
+    const end = new Date(start);
+    const duration = data.service.duration + (data.extras.upgrade ? 30 : 0);
+    end.setMinutes(end.getMinutes() + duration);
+
+    const formatDate = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
+    
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Thalymassagens//App//PT
+BEGIN:VEVENT
+UID:${Date.now()}@thalymassagens.com
+DTSTAMP:${formatDate(new Date())}
+DTSTART:${formatDate(start)}
+DTEND:${formatDate(end)}
+SUMMARY:Massagem com Thalyson
+DESCRIPTION:Serviço: ${data.service?.name} - Local: ${data.location?.label}
+LOCATION:${data.location?.label}
+END:VEVENT
+END:VCALENDAR`;
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.setAttribute('download', 'agendamento_thalyson.ics');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  },
+
   getGreeting: () => {
     const h = new Date().getHours();
     return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
@@ -160,7 +264,7 @@ const Utils = {
 };
 
 // ==================================================================================
-// 3. ESTILOS GLOBAIS (High Contrast & Apple Design)
+// 4. ESTILOS GLOBAIS (Animations & High Contrast)
 // ==================================================================================
 
 const globalStyles = `
@@ -172,12 +276,31 @@ body {
   letter-spacing: -0.01em; color: #fff; background: var(--bg-app);
   padding-bottom: env(safe-area-inset-bottom); overflow-x: hidden;
 }
+
+/* Shimmer Animation para o Título */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.text-shimmer {
+  background: linear-gradient(90deg, #ffffff 0%, #0A84FF 50%, #ffffff 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 6s linear infinite;
+}
+
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes bubblePop { 0% { opacity: 0; transform: scale(0.8) translateY(-10px); } 10% { opacity: 1; transform: scale(1) translateY(0); } 90% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(0.8) translateY(-10px); } }
+
 .animate-enter { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-scale { animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 .animate-slide { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-bubble { animation: bubblePop 5s ease-in-out forwards; }
+
 .ios-bg { background: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000000 70%); min-height: 100vh; }
 .ios-card { 
   background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px;
@@ -198,6 +321,40 @@ body {
 // ==================================================================================
 // 5. COMPONENTES VISUAIS (Sub-components)
 // ==================================================================================
+
+// Notificações Estilo Live Status iOS (Bubble)
+const LiveBubbles = () => {
+    const [activeMsg, setActiveMsg] = useState(null);
+  
+    useEffect(() => {
+      // Ciclo de notificações randômicas
+      const cycle = () => {
+        const randomMsg = LIVE_NOTIFICATIONS[Math.floor(Math.random() * LIVE_NOTIFICATIONS.length)];
+        setTimeout(() => {
+            setActiveMsg(randomMsg);
+            playSound('notification');
+        }, 2000); // Delay inicial
+        
+        // Esconde depois de 5s
+        setTimeout(() => setActiveMsg(null), 7000);
+      };
+  
+      cycle(); // Primeiro ciclo
+      const interval = setInterval(cycle, 15000); // Repete a cada 15s
+      return () => clearInterval(interval);
+    }, []);
+  
+    if (!activeMsg) return null;
+  
+    return (
+      <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-30 w-max max-w-[90%] pointer-events-none">
+        <div className="bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 shadow-xl animate-bubble">
+           <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse"></div>
+           <span className="text-xs font-bold text-white tracking-wide">{activeMsg}</span>
+        </div>
+      </div>
+    );
+};
 
 const ReviewsTicker = () => {
   const [reviews, setReviews] = useState([]);
@@ -249,7 +406,7 @@ const MenuOverlay = ({ onClose, onHelp }) => (
        </div>
 
        <div className="mt-auto pt-6 border-t border-[#333]">
-          <p className="text-xs text-center text-gray-600">Thalyson Massagens<br/>Versão 4.0 (Apple Edition)</p>
+          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 5.0 (Ultimate)</p>
        </div>
     </div>
   </div>
@@ -260,7 +417,7 @@ const HelpModal = ({ onClose }) => (
     <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose}></div>
     <div className="relative w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[80vh]">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2"><Info size={20} className="text-[#0A84FF]"/> Como Funciona</h2>
+            <h2 className="text-xl font-bold text-white flex items-center gap-2"><Info size={20} className="text-[#0A84FF]"/> Tudinho Explicadinho</h2>
             <button onClick={onClose} className="p-1 bg-[#333] rounded-full"><X size={16} className="text-gray-400"/></button>
         </div>
         
@@ -279,7 +436,7 @@ const HelpModal = ({ onClose }) => (
             </div>
             
             <div className="bg-[#2C2C2E] p-4 rounded-xl border border-[#333]">
-                <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Política de Segurança</h4>
+                <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Segurança & Pagamento</h4>
                 <ul className="text-xs text-gray-400 space-y-1 list-disc pl-4">
                     <li>Sigilo absoluto garantido.</li>
                     <li>Pagamento feito apenas no local (Pix/Dinheiro).</li>
@@ -295,6 +452,8 @@ const HelpModal = ({ onClose }) => (
 
 const SuccessScreen = ({ data, financials, whatsappLink, onCopy }) => {
   const calendarLink = Utils.generateCalendarLink(data);
+  useEffect(() => { playSound('success'); }, []);
+
   return (
     <div className="fixed inset-0 z-[300] bg-black flex flex-col items-center justify-center p-6 text-center animate-enter">
       <div className="w-24 h-24 bg-[#32D74B] rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(50,215,75,0.4)] animate-scale">
@@ -303,7 +462,7 @@ const SuccessScreen = ({ data, financials, whatsappLink, onCopy }) => {
       
       <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Gerado!</h2>
       <p className="text-gray-400 mb-10 text-base leading-relaxed max-w-xs mx-auto">
-        Agora é só enviar a mensagem pronta no WhatsApp para confirmar seu horário.
+        Envie a mensagem no WhatsApp para confirmar.
       </p>
 
       <a href={whatsappLink} target="_blank" rel="noreferrer" 
@@ -316,21 +475,22 @@ const SuccessScreen = ({ data, financials, whatsappLink, onCopy }) => {
          <Copy size={20} /> Copiar Texto
       </button>
 
-      <div className="w-full max-w-sm bg-[#1C1C1E] rounded-2xl p-4 flex items-center justify-between border border-[#333]">
-          <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-xl bg-[#333] flex items-center justify-center">
-               <CalendarIcon className="text-white w-5 h-5" />
-             </div>
-             <div className="text-left">
-               <p className="text-white font-semibold text-sm">Lembrete</p>
-               <p className="text-gray-500 text-xs">Google Agenda</p>
-             </div>
-          </div>
-          <a href={calendarLink} target="_blank" rel="noreferrer" className="text-[#0A84FF] font-bold text-sm bg-[#0A84FF]/10 px-3 py-1.5 rounded-lg">Adicionar</a>
+      {/* ÁREA DE CALENDÁRIO DUPLA */}
+      <div className="w-full max-w-sm grid grid-cols-2 gap-3 mb-8">
+          <a href={calendarLink} target="_blank" rel="noreferrer" 
+             className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex flex-col items-center justify-center hover:bg-[#222]">
+             <CalendarIcon className="text-white w-6 h-6 mb-2" />
+             <span className="text-xs font-bold text-[#0A84FF]">Google Agenda</span>
+          </a>
+          <button onClick={() => Utils.downloadIcsFile(data)} 
+             className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex flex-col items-center justify-center hover:bg-[#222]">
+             <Download className="text-white w-6 h-6 mb-2" />
+             <span className="text-xs font-bold text-[#0A84FF]">Baixar .ICS</span>
+          </button>
       </div>
 
-      <button onClick={() => { localStorage.removeItem('thaly_full_v3'); window.location.reload(); }} 
-        className="mt-8 text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
+      <button onClick={() => { localStorage.removeItem('thaly_full_v5'); window.location.reload(); }} 
+        className="text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
         Fazer novo pedido
       </button>
     </div>
@@ -344,7 +504,7 @@ const SuccessScreen = ({ data, financials, whatsappLink, onCopy }) => {
 export default function App() {
   const [data, setData] = useState(() => {
     try {
-      const saved = localStorage.getItem('thaly_full_v3');
+      const saved = localStorage.getItem('thaly_full_v5');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.date) parsed.date = new Date(parsed.date);
@@ -374,7 +534,7 @@ export default function App() {
     extras: useRef(null), location: useRef(null), payment: useRef(null), checkout: useRef(null)
   };
 
-  useEffect(() => { localStorage.setItem('thaly_full_v3', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_full_v5', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
 
   const financials = useMemo(() => {
@@ -394,6 +554,7 @@ export default function App() {
   };
 
   const advanceStage = (nextStage, nextRef) => {
+    playSound('pop');
     Utils.vibrate([10]);
     if(nextStage > stage) setStage(nextStage);
     scrollToRef(nextRef);
@@ -422,7 +583,7 @@ export default function App() {
         if(data.comp) text += `🏢 ${data.comp}\n`;
     }
 
-    text += `\n*RESUMO FINANCEIRO:*\n`;
+    text += `\n*RESUMO FINANCEIRO (Detalhado):*\n`;
     text += `🔹 Serviço Base: ${Utils.formatBRL(financials.basePrice)}\n`;
     
     if(financials.upgradePrice > 0) text += `⏱️ Upgrade 30min: +${Utils.formatBRL(financials.upgradePrice)}\n`;
@@ -430,7 +591,7 @@ export default function App() {
     if(financials.aromaPrice > 0) text += `🍃 Aromaterapia: +${Utils.formatBRL(financials.aromaPrice)}\n`;
     if(financials.discount > 0) text += `🎟️ Desconto VIP: -${Utils.formatBRL(financials.discount)}\n`;
     
-    text += `\n💰 *VALOR SERVIÇO: ${Utils.formatBRL(financials.finalTotal)}*\n`;
+    text += `\n💰 *TOTAL FINAL: ${Utils.formatBRL(financials.finalTotal)}*\n`;
     text += `🚗 *+ TAXA DESLOCAMENTO: A CALCULAR*\n`;
     text += `💳 Pagamento: ${data.payment ? data.payment.toUpperCase() : 'A COMBINAR'}`;
     
@@ -467,32 +628,33 @@ export default function App() {
       
       {/* HEADER */}
       <header className="fixed top-0 w-full z-40 bg-black/80 backdrop-blur-xl border-b border-white/5 py-3 px-6 flex justify-between items-center transition-all duration-300">
-        <span className="font-semibold text-lg tracking-tight">Thalyson</span>
+        <span className="font-extrabold text-lg tracking-tight text-shimmer">THALYMASSAGENS</span>
         <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1C1C1E] rounded-full border border-[#333]">
               <Lock className="w-3 h-3 text-[#32D74B]" />
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Sigilo</span>
             </div>
-            <button onClick={() => setShowMenu(true)} className="p-2 bg-[#1C1C1E] rounded-full border border-[#333] active:scale-95 transition-transform">
+            <button onClick={() => { playSound('pop'); setShowMenu(true); }} className="p-2 bg-[#1C1C1E] rounded-full border border-[#333] active:scale-95 transition-transform">
                 <Menu size={18} className="text-white"/>
             </button>
         </div>
       </header>
 
-      {/* OVERLAYS */}
+      {/* OVERLAYS & LIVE STATUS */}
+      <LiveBubbles />
       {showMenu && <MenuOverlay onClose={() => setShowMenu(false)} onHelp={() => setShowHelp(true)} />}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
 
       {/* TOAST FLUTUANTE */}
       {toast && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[100] bg-[#32D74B] text-black px-6 py-3 rounded-full shadow-xl flex items-center gap-2 font-bold text-sm animate-scale">
+        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] bg-[#32D74B] text-black px-6 py-3 rounded-full shadow-xl flex items-center gap-2 font-bold text-sm animate-scale">
             <Check size={16} strokeWidth={3}/> {toast}
         </div>
       )}
 
       <main className="max-w-md mx-auto pt-24 px-5">
         
-        {/* 1. INTRODUÇÃO (NOME, IDADE, MEDICAL CHECK) */}
+        {/* 1. INTRODUÇÃO */}
         <section ref={refs.intro} className={`transition-all duration-700 ${stage >= 0 ? 'section-active' : 'section-blur'}`}>
           <div className="mb-8 mt-4">
              <h1 className="text-[40px] font-bold leading-[1.05] tracking-tight mb-3">
@@ -522,7 +684,7 @@ export default function App() {
                 </div>
 
                 {/* --- CHECKBOX DE SAÚDE --- */}
-                <div onClick={() => { Utils.vibrate(); setData({...data, medical: !data.medical}) }} 
+                <div onClick={() => { playSound('pop'); Utils.vibrate(); setData({...data, medical: !data.medical}) }} 
                      className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${data.medical ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333] hover:bg-[#222]'}`}>
                     
                     <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${data.medical ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#555]'}`}>
@@ -535,7 +697,7 @@ export default function App() {
                     </div>
                 </div>
 
-                {/* BOTÃO APARECE SÓ SE TUDO ESTIVER PREENCHIDO */}
+                {/* BOTÃO START */}
                 {data.name.length > 2 && data.age && data.medical && stage === 0 && (
                     <button onClick={() => advanceStage(1, refs.services)} className="ios-btn w-full py-4 mt-2 flex items-center justify-center gap-2 animate-scale shadow-lg shadow-blue-900/20">
                        Começar Agendamento <ArrowRight size={20}/>
@@ -572,7 +734,7 @@ export default function App() {
                         const d = new Date(); d.setDate(d.getDate() + i);
                         const isSelected = data.date && new Date(data.date).getDate() === d.getDate();
                         return (
-                            <button key={i} onClick={() => { Utils.vibrate(); setData({...data, date: d, time: null}); }}
+                            <button key={i} onClick={() => { playSound('pop'); Utils.vibrate(); setData({...data, date: d, time: null}); }}
                                 className={`snap-center min-w-[72px] h-[88px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSelected ? 'bg-[#0A84FF] border-[#0A84FF] text-white shadow-lg scale-105' : 'bg-[#1C1C1E] border-[#333] text-gray-400'}`}>
                                 <span className="text-[10px] font-bold uppercase mb-1 opacity-60">{i===0?'HOJE':d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
                                 <span className="text-[24px] font-bold tracking-tight">{d.getDate()}</span>
@@ -605,7 +767,7 @@ export default function App() {
             
             <div className="ios-card rounded-[24px] overflow-hidden divide-y divide-[#333]">
                  {/* UPGRADE TEMPO */}
-                 <div onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, upgrade: !data.extras.upgrade}}); }}
+                 <div onClick={() => { playSound('pop'); Utils.vibrate(); setData({...data, extras: {...data.extras, upgrade: !data.extras.upgrade}}); }}
                       className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
                      <div className="flex items-center gap-4">
                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.upgrade ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#444] bg-transparent'}`}>
@@ -620,7 +782,7 @@ export default function App() {
                  </div>
 
                  {/* TOUCH */}
-                 <div onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, touch: !data.extras.touch}}); }}
+                 <div onClick={() => { playSound('pop'); Utils.vibrate(); setData({...data, extras: {...data.extras, touch: !data.extras.touch}}); }}
                       className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
                      <div className="flex items-center gap-4">
                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.touch ? 'bg-[#FF375F] border-[#FF375F]' : 'border-[#444] bg-transparent'}`}>
@@ -635,7 +797,7 @@ export default function App() {
                  </div>
 
                  {/* AROMA */}
-                 <div onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, aroma: !data.extras.aroma}}); }}
+                 <div onClick={() => { playSound('pop'); Utils.vibrate(); setData({...data, extras: {...data.extras, aroma: !data.extras.aroma}}); }}
                       className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
                      <div className="flex items-center gap-4">
                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.aroma ? 'bg-[#32D74B] border-[#32D74B]' : 'border-[#444] bg-transparent'}`}>
@@ -743,7 +905,7 @@ export default function App() {
                         </div>
                     </div>
                     {!hasCoupon && !localStorage.getItem('thaly_coupon_redeemed') && (
-                        <button onClick={() => { setHasCoupon(true); Utils.vibrate(); setToast('Desconto Aplicado!'); }} 
+                        <button onClick={() => { playSound('pop'); setHasCoupon(true); Utils.vibrate(); setToast('Desconto Aplicado!'); }} 
                             className="h-10 px-4 rounded-full bg-[#0A84FF]/10 text-[#0A84FF] font-bold text-xs border border-[#0A84FF]/20 flex items-center gap-2">
                             <Ticket size={14}/> Aplicar Cupom
                         </button>
