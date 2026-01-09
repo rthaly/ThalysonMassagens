@@ -68,14 +68,58 @@ const LOCATIONS = [
   { id: 'hotel', label: 'Hotel / Motel', sub: 'Vou até a sua suíte (Sigilo Total)', icon: Bed, input: true },
 ];
 
+// BANCO DE DADOS DE AVALIAÇÕES (50 ITENS)
 const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", a: "Tiago", s: 5 },
-  { t: "O toque dele vicia. A finalização foi absurda.", a: "Anônimo", s: 5 },
-  { t: "Fui pra relaxar e saí de perna bamba. Recomendo.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O óleo quente faz diferença.", a: "Curioso SP", s: 5 },
-  { t: "Paguei o extra pra tocar e valeu cada centavo.", a: "M. (Jardins)", s: 5 },
-  { t: "Sou casado, o sigilo foi absoluto.", a: "Empresário", s: 5 },
-  { t: "O upgrade de 30 minutos vale a pena.", a: "Roberto", s: 5 }
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
+  { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", a: "Curioso SP", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
+  { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
+  { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
+  { t: "Ele de cueca branca... sem comentários. Visual nota 1000.", a: "Fã", s: 5 },
+  { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
+  { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
+  { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
+  { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
+  { t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", a: "Felipe Personal", s: 5 },
+  { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
+  { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
+  { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
+  { t: "Fiz a relaxante e dormi na maca de tão bom. Recomendo.", a: "Breno", s: 5 },
+  { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
+  { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
+  { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
+  { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
+  { t: "O óleo de coco morno é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
+  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
+  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
+  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
+  { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
+  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anônimo", s: 5 },
+  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
+  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Motorista", s: 5 },
+  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
+  { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
+  { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
+  { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
+  { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
+  { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
+  { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
+  { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
+  { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
+  { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
+  { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
+  { t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", a: "Morador Centro", s: 5 },
+  { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
+  { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
+  { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
+  { t: "O final foi explosivo. Recomendo.", a: "Anônimo", s: 5 },
+  { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
+  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 },
+  { t: "Paz de espírito e corpo relaxado. Obrigado.", a: "Fernando", s: 5 }
 ];
 
 // ==================================================================================
@@ -85,7 +129,6 @@ const REVIEWS_DB = [
 const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
   
-  // Vibração apenas (sem som)
   vibrate: (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); },
   
   shuffleArray: (array) => {
@@ -107,7 +150,7 @@ const Utils = {
     return hours <= now.getHours();
   },
 
-  // --- CALENDÁRIO NATIVO (LINK DIRETO / SEM DOWNLOAD) ---
+  // --- CALENDÁRIO NATIVO (ICS DIRECT LINK) ---
   addToCalendar: (data) => {
     if (!data.date || !data.time) return;
     const [h] = data.time.split(':');
@@ -116,23 +159,25 @@ const Utils = {
 
     const fmt = (d) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
     
-    // Conteúdo ICS padrão universal
+    // Conteúdo ICS Limpo
     const icsContent = 
 `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//ThalyMassagens//MobileApp//PT
+PRODID:-//Thaly//App//PT
 BEGIN:VEVENT
 DTSTART:${fmt(start)}
 DTEND:${fmt(end)}
 SUMMARY:Massagem com Thalyson
-DESCRIPTION:Serviço: ${data.service?.name} | Local: ${data.location?.label}
+DESCRIPTION:Serviço: ${data.service?.name}
 LOCATION:${data.location?.label}
 END:VEVENT
 END:VCALENDAR`;
 
-    // Usa location.href com Data URI. Isso força o Android/iOS a abrir o "intent" de calendário
-    // ao invés de baixar um arquivo para a pasta de downloads.
-    window.location.href = 'data:text/calendar;charset=utf8,' + encodeURIComponent(icsContent);
+    // URI com encode correto para mobile abrir direto
+    const uri = 'data:text/calendar;charset=utf8,' + encodeURIComponent(icsContent);
+    
+    // Tenta abrir na mesma janela para forçar intent no Android/iOS
+    window.open(uri, '_self');
   },
 
   getGreeting: () => {
@@ -262,7 +307,7 @@ const MenuOverlay = ({ onClose, onHelp }) => (
           </button>
        </div>
        <div className="mt-auto pt-6 border-t border-[#333]">
-          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 8.0 (Silent)</p>
+          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 8.5 (Silent Fix)</p>
        </div>
     </div>
   </div>
@@ -319,7 +364,7 @@ export default function App() {
   });
 
   const [stage, setStage] = useState(0);
-  const [hasCoupon, setHasCoupon] = useState(false);
+  const [hasCoupon, setHasCoupon] = useState(false); // Reseta todo reload (CORREÇÃO PEDIDA)
   const [success, setSuccess] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -396,7 +441,7 @@ export default function App() {
   };
 
   const finishOrder = () => {
-    if (hasCoupon) localStorage.setItem('thaly_coupon_redeemed', 'true');
+    // CORREÇÃO: Removi a persistência do cupom no localStorage para não travar
     const text = generateMessage();
     const link = `${CONFIG.URLS.WHATSAPP_API}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
     setWhatsappLink(link);
@@ -421,7 +466,7 @@ export default function App() {
     <div className="ios-bg min-h-screen text-white pb-48 selection:bg-[#0A84FF] selection:text-white">
       <style>{globalStyles}</style>
       
-      {/* HEADER GLOBAL (FIXO EM TODAS AS TELAS) */}
+      {/* HEADER GLOBAL FIXO (EM TODAS AS TELAS) */}
       <header className="fixed top-0 w-full z-40 bg-black/80 backdrop-blur-xl border-b border-white/5 py-3 px-6 flex justify-between items-center transition-all duration-300">
         <span className="font-extrabold text-lg tracking-tight text-shimmer cursor-pointer" onClick={() => { setSuccess(false); setStage(0); }}>THALYMASSAGENS</span>
         <div className="flex items-center gap-3">
@@ -467,7 +512,7 @@ export default function App() {
 
             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Salvar na Agenda</p>
             
-            {/* BOTÃO ÚNICO DE CALENDÁRIO */}
+            {/* BOTÃO DE CALENDÁRIO COM DATA URI DIRETO */}
             <button onClick={() => Utils.addToCalendar(data)} 
                 className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex items-center justify-center gap-3 hover:bg-[#222] transition-colors mb-8">
                 <CalendarIcon className="text-[#0A84FF] w-6 h-6" />
@@ -716,7 +761,7 @@ export default function App() {
         </main>
       )}
 
-      {/* 7. CHECKOUT BAR (APENAS SE NÃO ESTIVER EM SUCCESS E STAGE >= 6) */}
+      {/* 7. CHECKOUT BAR */}
       {!success && stage >= 6 && (
         <div ref={refs.checkout} className="fixed bottom-0 w-full z-50 animate-enter">
             {/* Gradient Fade */}
@@ -736,7 +781,8 @@ export default function App() {
                             <span className="text-[36px] font-extrabold text-white tracking-tight">{Utils.formatBRL(financials.finalTotal)}</span>
                         </div>
                     </div>
-                    {!hasCoupon && !localStorage.getItem('thaly_coupon_redeemed') && (
+                    {/* CORREÇÃO DO CUPOM: REMOVIDA A VERIFICAÇÃO DE LOCALSTORAGE PARA EVITAR BUG DE 'SEMPRE ATIVO' */}
+                    {!hasCoupon && (
                         <button onClick={() => { setHasCoupon(true); Utils.vibrate(); setToast('Desconto Aplicado!'); }} 
                             className="h-10 px-4 rounded-full bg-[#0A84FF]/10 text-[#0A84FF] font-bold text-xs border border-[#0A84FF]/20 flex items-center gap-2">
                             <Ticket size={14}/> Aplicar Cupom
