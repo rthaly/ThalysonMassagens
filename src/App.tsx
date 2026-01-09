@@ -1,22 +1,22 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import {
-  Check, MapPin, Star, ArrowRight, Bed, 
-  Home, MessageCircle, Clock, Zap, Ticket, Lock,
-  ShieldCheck, Map, Navigation, User, ChevronDown, Flame, AlertCircle, 
-  CreditCard, Banknote, QrCode, Copy, Wind, Calendar as CalendarIcon, 
-  ChevronRight, Activity
+  Check, Star, ArrowRight, Bed, Home, MessageCircle, 
+  Ticket, Lock, Flame, Wind, Clock,
+  CreditCard, Banknote, QrCode, Copy, Calendar as CalendarIcon, 
+  ChevronRight, Activity, Menu, X, HelpCircle, Instagram, Info, MapPin
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO DE NEGÓCIO (Edite aqui)
+// 1. CONFIGURAÇÃO DE NEGÓCIO
 // ==================================================================================
 
 const CONFIG = {
-  PHONE: "5517991360413", // Seu WhatsApp
+  PHONE: "5517991360413", 
+  INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
   COUPON_VAL: 12,
   PRICES: {
-    UPGRADE_PCT: 0.5, // 50% do valor base
+    UPGRADE_PCT: 0.5, 
     TOUCH: 53, 
     AROMA: 10,
   },
@@ -60,25 +60,64 @@ const LOCATIONS = [
 ];
 
 const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", a: "Tiago (Bela Vista)", s: 5 },
-  { t: "O toque dele vicia. A finalização foi absurda.", a: "Anônimo", s: 5 },
-  { t: "Fui pra relaxar e saí renovado. A técnica é real.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. Óleo quente top.", a: "Curioso SP", s: 5 },
-  { t: "Paguei o extra e valeu cada centavo.", a: "M. (Jardins)", s: 5 },
-  { t: "Sou casado, tinha receio. O sigilo foi absoluto.", a: "Empresário", s: 5 },
-  { t: "Ambiente relaxante e profissionalismo nota 10.", a: "Lucas", s: 5 },
-  { t: "Estava travado das costas, saiu tudo.", a: "Roberto", s: 5 }
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
+  { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", a: "Curioso SP", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
+  { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
+  { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
+  { t: "Ele de cueca branca... sem comentários. Visual nota 1000.", a: "Fã", s: 5 },
+  { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
+  { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
+  { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
+  { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
+  { t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", a: "Felipe Personal", s: 5 },
+  { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
+  { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
+  { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
+  { t: "Fiz a relaxante e dormi na maca de tão bom. Recomendo.", a: "Breno", s: 5 },
+  { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
+  { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
+  { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
+  { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
+  { t: "O óleo de coco morno é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
+  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
+  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
+  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
+  { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
+  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anônimo", s: 5 },
+  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
+  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Motorista", s: 5 },
+  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
+  { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
+  { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
+  { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
+  { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
+  { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
+  { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
+  { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
+  { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
+  { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
+  { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
+  { t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", a: "Morador Centro", s: 5 },
+  { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
+  { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
+  { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
+  { t: "O final foi explosivo. Recomendo.", a: "Anônimo", s: 5 },
+  { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
+  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 }
 ];
 
 // ==================================================================================
-// 2. UTILITÁRIOS (Lógica)
+// 2. UTILITÁRIOS (Helpers)
 // ==================================================================================
 
 const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-  
   vibrate: (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); },
-  
   shuffleArray: (array) => {
     let currentIndex = array.length, randomIndex;
     while (currentIndex !== 0) {
@@ -88,46 +127,32 @@ const Utils = {
     }
     return array;
   },
-
-  // Bloqueio Temporal
   isTimeBlocked: (selectedDate, timeString) => {
     if (!selectedDate) return true;
     const now = new Date();
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    const sel = new Date(selectedDate);
-    sel.setHours(0,0,0,0);
-
-    if (sel < today) return true; // Passado
-    if (sel > today) return false; // Futuro
-
-    // Hoje: verifica hora
+    const today = new Date(); today.setHours(0,0,0,0);
+    const sel = new Date(selectedDate); sel.setHours(0,0,0,0);
+    if (sel < today) return true; 
+    if (sel > today) return false; 
     const [hours] = timeString.split(':').map(Number);
-    const currentHour = now.getHours();
-    return hours <= currentHour;
+    return hours <= now.getHours();
   },
-
-  // Link Google Calendar
   generateCalendarLink: (data) => {
     if (!data.date || !data.time || !data.service) return '';
     const [h] = data.time.split(':');
-    const start = new Date(data.date);
-    start.setHours(parseInt(h));
+    const start = new Date(data.date); start.setHours(parseInt(h));
     const end = new Date(start);
     const duration = data.service.duration + (data.extras.upgrade ? 30 : 0);
     end.setMinutes(end.getMinutes() + duration);
     const formatGCalDate = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
-    
     const params = new URLSearchParams({
-      action: 'TEMPLATE',
-      text: `Massagem Thalyson - ${data.service.name}`,
+      action: 'TEMPLATE', text: `Massagem Thalyson - ${data.service.name}`,
       dates: `${formatGCalDate(start)}/${formatGCalDate(end)}`,
       details: `Serviço: ${data.service.name}\nLocal: ${data.location?.label}\nObs: Pagamento no local.`,
       location: data.location?.label === 'home' ? 'Meu Endereço' : 'Hotel/Motel',
     });
     return `${CONFIG.URLS.GOOGLE_CALENDAR}?${params.toString()}`;
   },
-
   getGreeting: () => {
     const h = new Date().getHours();
     return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
@@ -139,7 +164,6 @@ const Utils = {
 // ==================================================================================
 
 const globalStyles = `
-/* --- CORE --- */
 :root { --primary: #0A84FF; --bg-app: #000000; --card-bg: #121212; --border: #2C2C2E; }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { font-size: 16px; background-color: var(--bg-app); color-scheme: dark; }
@@ -148,95 +172,126 @@ body {
   letter-spacing: -0.01em; color: #fff; background: var(--bg-app);
   padding-bottom: env(safe-area-inset-bottom); overflow-x: hidden;
 }
-
-/* --- ANIMATIONS --- */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 .animate-enter { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-scale { animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-
-/* --- COMPONENTS --- */
-.ios-bg {
-  background: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000000 70%);
-  min-height: 100vh;
-}
-
+.animate-slide { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.ios-bg { background: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000000 70%); min-height: 100vh; }
 .ios-card { 
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .ios-card:active { transform: scale(0.98); background: #1A1A1A; }
-
-.ios-card.selected {
-  border-color: var(--primary); 
-  background: rgba(10, 132, 255, 0.08);
-  box-shadow: 0 0 0 1px var(--primary), 0 10px 40px rgba(10, 132, 255, 0.1);
-}
-
-.ios-input {
-  background: #1C1C1E;
-  border: 1px solid #333;
-  color: white;
-  font-size: 17px;
-  border-radius: 14px;
-  width: 100%;
-  transition: all 0.2s;
-}
+.ios-card.selected { border-color: var(--primary); background: rgba(10, 132, 255, 0.08); box-shadow: 0 0 0 1px var(--primary), 0 10px 40px rgba(10, 132, 255, 0.1); }
+.ios-input { background: #1C1C1E; border: 1px solid #333; color: white; font-size: 17px; border-radius: 14px; width: 100%; transition: all 0.2s; }
 .ios-input:focus { border-color: var(--primary); background: #222; outline: none; }
-.ios-input::placeholder { color: #555; }
-
-.ios-btn {
-  background: var(--primary);
-  color: white;
-  border-radius: 16px;
-  font-weight: 700;
-  font-size: 17px;
-  border: none;
-  transition: transform 0.2s;
-  box-shadow: 0 4px 20px rgba(10, 132, 255, 0.25);
-}
+.ios-btn { background: var(--primary); color: white; border-radius: 16px; font-weight: 700; font-size: 17px; border: none; transition: transform 0.2s; box-shadow: 0 4px 20px rgba(10, 132, 255, 0.25); }
 .ios-btn:active { opacity: 0.9; transform: scale(0.97); }
-
 .section-blur { opacity: 0.3; filter: blur(3px); pointer-events: none; transition: all 0.6s ease; }
 .section-active { opacity: 1; filter: blur(0); pointer-events: auto; }
-
-/* --- SCROLLBAR --- */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 `;
 
 // ==================================================================================
-// 4. COMPONENTES VISUAIS (Sub-components)
+// 5. COMPONENTES VISUAIS (Sub-components)
 // ==================================================================================
 
 const ReviewsTicker = () => {
   const [reviews, setReviews] = useState([]);
   const [idx, setIdx] = useState(0);
-
   useEffect(() => { setReviews(Utils.shuffleArray([...REVIEWS_DB])); }, []);
-  useEffect(() => { 
-    if (reviews.length === 0) return;
-    const t = setInterval(() => setIdx(i => (i+1)%reviews.length), 5000); 
-    return () => clearInterval(t); 
-  }, [reviews]);
-
+  useEffect(() => { if (reviews.length === 0) return; const t = setInterval(() => setIdx(i => (i+1)%reviews.length), 5000); return () => clearInterval(t); }, [reviews]);
   if (reviews.length === 0) return null;
-
   return (
-      <div className="mb-8 p-0 overflow-hidden relative h-16 animate-enter">
+      <div className="mb-6 p-1 relative min-h-[90px] flex items-center animate-enter">
           <div key={idx} className="absolute inset-0 flex flex-col justify-center animate-enter">
-              <div className="flex gap-1 text-[#FFD60A] mb-1.5">
-                  {[...Array(5)].map((_,i) => <Star key={i} size={14} fill="currentColor" strokeWidth={0} />)}
-              </div>
-              <p className="text-[15px] text-white font-medium leading-snug mb-1 line-clamp-2 italic">"{reviews[idx].t}"</p>
+              <div className="flex gap-1 text-[#FFD60A] mb-2">{[...Array(5)].map((_,i) => <Star key={i} size={14} fill="currentColor" strokeWidth={0} />)}</div>
+              <p className="text-[15px] text-white font-medium leading-relaxed mb-1 italic">"{reviews[idx].t}"</p>
               <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wide">— {reviews[idx].a}</p>
           </div>
       </div>
   )
 }
+
+const MenuOverlay = ({ onClose, onHelp }) => (
+  <div className="fixed inset-0 z-[200] flex justify-end animate-enter">
+    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+    <div className="relative w-3/4 max-w-sm h-full bg-[#1C1C1E] border-l border-[#333] p-6 shadow-2xl animate-slide flex flex-col">
+       <button onClick={onClose} className="self-end p-2 bg-[#333] rounded-full mb-8"><X size={20} className="text-white"/></button>
+       
+       <h2 className="text-2xl font-bold text-white mb-6">Menu</h2>
+       
+       <div className="space-y-4">
+          <a href={`https://instagram.com/${CONFIG.INSTAGRAM}`} target="_blank" rel="noreferrer" 
+             className="flex items-center gap-4 p-4 rounded-xl bg-[#2C2C2E] active:bg-[#333] transition-colors">
+             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-500 via-red-500 to-purple-600 flex items-center justify-center">
+                <Instagram size={20} className="text-white"/>
+             </div>
+             <div>
+                <p className="font-bold text-white">Instagram</p>
+                <p className="text-xs text-gray-400">@{CONFIG.INSTAGRAM}</p>
+             </div>
+          </a>
+
+          <button onClick={() => { onClose(); onHelp(); }} 
+             className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#2C2C2E] active:bg-[#333] transition-colors text-left">
+             <div className="w-10 h-10 rounded-full bg-[#0A84FF]/20 flex items-center justify-center">
+                <HelpCircle size={20} className="text-[#0A84FF]"/>
+             </div>
+             <div>
+                <p className="font-bold text-white">Como Funciona?</p>
+                <p className="text-xs text-gray-400">Ajuda e Dúvidas</p>
+             </div>
+          </button>
+       </div>
+
+       <div className="mt-auto pt-6 border-t border-[#333]">
+          <p className="text-xs text-center text-gray-600">Thalyson Massagens<br/>Versão 4.0 (Apple Edition)</p>
+       </div>
+    </div>
+  </div>
+);
+
+const HelpModal = ({ onClose }) => (
+  <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 animate-enter">
+    <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose}></div>
+    <div className="relative w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[80vh]">
+        <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2"><Info size={20} className="text-[#0A84FF]"/> Como Funciona</h2>
+            <button onClick={onClose} className="p-1 bg-[#333] rounded-full"><X size={16} className="text-gray-400"/></button>
+        </div>
+        
+        <div className="space-y-6">
+            <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">1</div>
+                <div><h3 className="font-bold text-white text-sm">Escolha a Experiência</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Selecione o tipo de massagem que mais combina com seu momento atual.</p></div>
+            </div>
+            <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">2</div>
+                <div><h3 className="font-bold text-white text-sm">Agendamento</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Escolha o dia e horário. O app bloqueia horários já passados para evitar erros.</p></div>
+            </div>
+            <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">3</div>
+                <div><h3 className="font-bold text-white text-sm">Onde Atendo?</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Vou até sua residência ou hotel/motel. O valor do deslocamento é calculado no WhatsApp.</p></div>
+            </div>
+            
+            <div className="bg-[#2C2C2E] p-4 rounded-xl border border-[#333]">
+                <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Política de Segurança</h4>
+                <ul className="text-xs text-gray-400 space-y-1 list-disc pl-4">
+                    <li>Sigilo absoluto garantido.</li>
+                    <li>Pagamento feito apenas no local (Pix/Dinheiro).</li>
+                    <li>Não é necessário cadastro, apenas dados básicos.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <button onClick={onClose} className="w-full mt-6 bg-[#0A84FF] py-3 rounded-xl font-bold text-sm">Entendi, vamos agendar!</button>
+    </div>
+  </div>
+);
 
 const SuccessScreen = ({ data, financials, whatsappLink, onCopy }) => {
   const calendarLink = Utils.generateCalendarLink(data);
@@ -274,7 +329,7 @@ const SuccessScreen = ({ data, financials, whatsappLink, onCopy }) => {
           <a href={calendarLink} target="_blank" rel="noreferrer" className="text-[#0A84FF] font-bold text-sm bg-[#0A84FF]/10 px-3 py-1.5 rounded-lg">Adicionar</a>
       </div>
 
-      <button onClick={() => { localStorage.removeItem('thaly_full_v1'); window.location.reload(); }} 
+      <button onClick={() => { localStorage.removeItem('thaly_full_v3'); window.location.reload(); }} 
         className="mt-8 text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
         Fazer novo pedido
       </button>
@@ -283,24 +338,22 @@ const SuccessScreen = ({ data, financials, whatsappLink, onCopy }) => {
 };
 
 // ==================================================================================
-// 5. APP PRINCIPAL
+// 6. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
-  // 1. STATE & PERSISTÊNCIA
   const [data, setData] = useState(() => {
     try {
-      const saved = localStorage.getItem('thaly_full_v1');
+      const saved = localStorage.getItem('thaly_full_v3');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.date) parsed.date = new Date(parsed.date);
-        // Garantir que campos novos existam
         if (!parsed.medical) parsed.medical = false;
         return parsed;
       }
     } catch (e) { console.error(e); }
     return {
-      name: '', age: '', medical: false, // NOVO CAMPO
+      name: '', age: '', medical: false, 
       service: null, date: null, time: null, location: null,
       street: '', number: '', district: '', comp: '',
       extras: { upgrade: false, touch: false, aroma: false }, payment: null 
@@ -310,20 +363,20 @@ export default function App() {
   const [stage, setStage] = useState(0);
   const [hasCoupon, setHasCoupon] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [whatsappLink, setWhatsappLink] = useState('');
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Refs para Scroll
   const refs = {
     intro: useRef(null), services: useRef(null), datetime: useRef(null),
     extras: useRef(null), location: useRef(null), payment: useRef(null), checkout: useRef(null)
   };
 
-  useEffect(() => { localStorage.setItem('thaly_full_v1', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_full_v3', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
 
-  // Cálculos
   const financials = useMemo(() => {
     const basePrice = data.service ? data.service.price : 0;
     const upgradePrice = data.extras.upgrade ? (basePrice * CONFIG.PRICES.UPGRADE_PCT) : 0;
@@ -336,11 +389,8 @@ export default function App() {
 
   const activeExtrasCount = Object.values(data.extras).filter(Boolean).length;
 
-  // Ações de Navegação
   const scrollToRef = (ref) => {
-    if (ref && ref.current) {
-        setTimeout(() => { ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
-    }
+    if (ref && ref.current) setTimeout(() => { ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
   };
 
   const advanceStage = (nextStage, nextRef) => {
@@ -362,7 +412,7 @@ export default function App() {
     const dateStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
     let text = `${Utils.getGreeting()} Thalyson! 🌿\nGostaria de agendar:\n\n`;
     text += `👤 *${data.name}* (${data.age} anos)\n`;
-    text += `✅ *Liberado p/ Massagem: Sim*\n`; // Confirmação médica na msg
+    text += `✅ *Liberado p/ Massagem: Sim*\n`; 
     text += `💆 *${data.service?.name}*\n`;
     text += `📅 *${dateStr} às ${data.time}*\n`;
     
@@ -372,16 +422,17 @@ export default function App() {
         if(data.comp) text += `🏢 ${data.comp}\n`;
     }
 
-    text += `\n*Detalhes:*\n`;
-    if(financials.upgradePrice > 0) text += `+ Upgrade 30min\n`;
-    if(financials.touchPrice > 0) text += `+ Interação\n`;
-    if(financials.aromaPrice > 0) text += `+ Aromaterapia\n`;
-    if(financials.discount > 0) text += `🎟️ Desconto VIP\n`;
-    if(activeExtrasCount === 0) text += `(Padrão)\n`;
-
-    text += `\n💰 *Total Estimado: ${Utils.formatBRL(financials.finalTotal)}*\n`;
-    text += `🚗 *Taxa Deslocamento: A calcular*\n`;
-    text += `💳 Pagamento: ${data.payment ? data.payment.toUpperCase() : 'A combinar'}`;
+    text += `\n*RESUMO FINANCEIRO:*\n`;
+    text += `🔹 Serviço Base: ${Utils.formatBRL(financials.basePrice)}\n`;
+    
+    if(financials.upgradePrice > 0) text += `⏱️ Upgrade 30min: +${Utils.formatBRL(financials.upgradePrice)}\n`;
+    if(financials.touchPrice > 0) text += `🔥 Interação: +${Utils.formatBRL(financials.touchPrice)}\n`;
+    if(financials.aromaPrice > 0) text += `🍃 Aromaterapia: +${Utils.formatBRL(financials.aromaPrice)}\n`;
+    if(financials.discount > 0) text += `🎟️ Desconto VIP: -${Utils.formatBRL(financials.discount)}\n`;
+    
+    text += `\n💰 *VALOR SERVIÇO: ${Utils.formatBRL(financials.finalTotal)}*\n`;
+    text += `🚗 *+ TAXA DESLOCAMENTO: A CALCULAR*\n`;
+    text += `💳 Pagamento: ${data.payment ? data.payment.toUpperCase() : 'A COMBINAR'}`;
     
     return text;
   };
@@ -417,11 +468,20 @@ export default function App() {
       {/* HEADER */}
       <header className="fixed top-0 w-full z-40 bg-black/80 backdrop-blur-xl border-b border-white/5 py-3 px-6 flex justify-between items-center transition-all duration-300">
         <span className="font-semibold text-lg tracking-tight">Thalyson</span>
-        <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1C1C1E] rounded-full border border-[#333]">
-          <Lock className="w-3 h-3 text-[#32D74B]" />
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Sigilo</span>
+        <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1C1C1E] rounded-full border border-[#333]">
+              <Lock className="w-3 h-3 text-[#32D74B]" />
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Sigilo</span>
+            </div>
+            <button onClick={() => setShowMenu(true)} className="p-2 bg-[#1C1C1E] rounded-full border border-[#333] active:scale-95 transition-transform">
+                <Menu size={18} className="text-white"/>
+            </button>
         </div>
       </header>
+
+      {/* OVERLAYS */}
+      {showMenu && <MenuOverlay onClose={() => setShowMenu(false)} onHelp={() => setShowHelp(true)} />}
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
 
       {/* TOAST FLUTUANTE */}
       {toast && (
@@ -461,7 +521,7 @@ export default function App() {
                     />
                 </div>
 
-                {/* --- CHECKBOX DE SAÚDE (NOVO) --- */}
+                {/* --- CHECKBOX DE SAÚDE --- */}
                 <div onClick={() => { Utils.vibrate(); setData({...data, medical: !data.medical}) }} 
                      className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${data.medical ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333] hover:bg-[#222]'}`}>
                     
