@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Check, Star, ArrowRight, Bed, Home, MessageCircle, 
   Ticket, Lock, Flame, Wind,
-  CreditCard, Banknote, QrCode, Copy, Calendar as CalendarIcon, 
-  ChevronRight, Menu, X, HelpCircle, Instagram, Info, MapPin
+  CreditCard, Banknote, QrCode, Copy, 
+  ChevronRight, Menu, X, HelpCircle, Instagram, Info
 } from 'lucide-react';
 
 // ==================================================================================
@@ -68,7 +68,6 @@ const LOCATIONS = [
   { id: 'hotel', label: 'Hotel / Motel', sub: 'Vou até a sua suíte (Sigilo Total)', icon: Bed, input: true },
 ];
 
-// BANCO DE DADOS DE AVALIAÇÕES (50 ITENS)
 const REVIEWS_DB = [
   { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
@@ -129,6 +128,7 @@ const REVIEWS_DB = [
 const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
   
+  // Vibração (sem som)
   vibrate: (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); },
   
   shuffleArray: (array) => {
@@ -148,36 +148,6 @@ const Utils = {
     if (sel > today) return false; 
     const [hours] = timeString.split(':').map(Number);
     return hours <= now.getHours();
-  },
-
-  // --- CALENDÁRIO NATIVO (ICS DIRECT LINK) ---
-  addToCalendar: (data) => {
-    if (!data.date || !data.time) return;
-    const [h] = data.time.split(':');
-    const start = new Date(data.date); start.setHours(parseInt(h));
-    const end = new Date(start); end.setMinutes(end.getMinutes() + 60);
-
-    const fmt = (d) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
-    
-    // Conteúdo ICS Limpo
-    const icsContent = 
-`BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Thaly//App//PT
-BEGIN:VEVENT
-DTSTART:${fmt(start)}
-DTEND:${fmt(end)}
-SUMMARY:Massagem com Thalyson
-DESCRIPTION:Serviço: ${data.service?.name}
-LOCATION:${data.location?.label}
-END:VEVENT
-END:VCALENDAR`;
-
-    // URI com encode correto para mobile abrir direto
-    const uri = 'data:text/calendar;charset=utf8,' + encodeURIComponent(icsContent);
-    
-    // Tenta abrir na mesma janela para forçar intent no Android/iOS
-    window.open(uri, '_self');
   },
 
   getGreeting: () => {
@@ -307,7 +277,7 @@ const MenuOverlay = ({ onClose, onHelp }) => (
           </button>
        </div>
        <div className="mt-auto pt-6 border-t border-[#333]">
-          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 8.5 (Silent Fix)</p>
+          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 9.0 (No Calendar/Silent)</p>
        </div>
     </div>
   </div>
@@ -364,7 +334,7 @@ export default function App() {
   });
 
   const [stage, setStage] = useState(0);
-  const [hasCoupon, setHasCoupon] = useState(false); // Reseta todo reload (CORREÇÃO PEDIDA)
+  const [hasCoupon, setHasCoupon] = useState(false); 
   const [success, setSuccess] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -441,7 +411,6 @@ export default function App() {
   };
 
   const finishOrder = () => {
-    // CORREÇÃO: Removi a persistência do cupom no localStorage para não travar
     const text = generateMessage();
     const link = `${CONFIG.URLS.WHATSAPP_API}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
     setWhatsappLink(link);
@@ -449,10 +418,16 @@ export default function App() {
     window.open(link, '_blank');
   };
 
+  // FUNÇÃO CORRIGIDA PARA EXIBIR TOAST COM TEMPO
+  const showToast = (msg) => {
+      setToast(msg);
+      // Garante que some em 3 segundos
+      setTimeout(() => setToast(null), 3000);
+  };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(generateMessage());
-    setToast('Copiado!');
-    setTimeout(() => setToast(null), 3000);
+    showToast('Copiado!');
   };
 
   if (loading) return (
@@ -466,7 +441,7 @@ export default function App() {
     <div className="ios-bg min-h-screen text-white pb-48 selection:bg-[#0A84FF] selection:text-white">
       <style>{globalStyles}</style>
       
-      {/* HEADER GLOBAL FIXO (EM TODAS AS TELAS) */}
+      {/* HEADER GLOBAL FIXO */}
       <header className="fixed top-0 w-full z-40 bg-black/80 backdrop-blur-xl border-b border-white/5 py-3 px-6 flex justify-between items-center transition-all duration-300">
         <span className="font-extrabold text-lg tracking-tight text-shimmer cursor-pointer" onClick={() => { setSuccess(false); setStage(0); }}>THALYMASSAGENS</span>
         <div className="flex items-center gap-3">
@@ -481,7 +456,7 @@ export default function App() {
       {showMenu && <MenuOverlay onClose={() => setShowMenu(false)} onHelp={() => setShowHelp(true)} />}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
 
-      {/* TOAST */}
+      {/* TOAST (MENSAGENS FLUTUANTES) */}
       {toast && (
         <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] bg-[#32D74B] text-black px-6 py-3 rounded-full shadow-xl flex items-center gap-2 font-bold text-sm animate-scale">
             <Check size={16} strokeWidth={3}/> {toast}
@@ -510,18 +485,8 @@ export default function App() {
                 <Copy size={20} /> Copiar Texto
             </button>
 
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Salvar na Agenda</p>
+            {/* BOTÃO DE CALENDÁRIO REMOVIDO CONFORME SOLICITADO */}
             
-            {/* BOTÃO DE CALENDÁRIO COM DATA URI DIRETO */}
-            <button onClick={() => Utils.addToCalendar(data)} 
-                className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex items-center justify-center gap-3 hover:bg-[#222] transition-colors mb-8">
-                <CalendarIcon className="text-[#0A84FF] w-6 h-6" />
-                <div className="text-left">
-                    <span className="block text-sm font-bold text-white">Adicionar à Agenda</span>
-                    <span className="block text-[10px] text-gray-500">Adicionar Agora</span>
-                </div>
-            </button>
-
             <button onClick={() => { setSuccess(false); setStage(0); window.scrollTo(0,0); }} 
                 className="text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
                 Fazer novo pedido
@@ -748,7 +713,7 @@ export default function App() {
                 
                 <div className="ios-card p-3 rounded-3xl grid grid-cols-3 gap-3 mb-32">
                     {['pix', 'dinheiro', 'cartao'].map(method => (
-                        <button key={method} onClick={() => { setData({...data, payment: method}); advanceStage(6, refs.checkout); if(method==='pix'){navigator.clipboard.writeText(CONFIG.PIX_KEY); setToast('Chave Pix Copiada!')} }}
+                        <button key={method} onClick={() => { setData({...data, payment: method}); advanceStage(6, refs.checkout); if(method==='pix'){navigator.clipboard.writeText(CONFIG.PIX_KEY); showToast('Chave Pix Copiada!')} }}
                             className={`flex flex-col items-center gap-3 p-5 rounded-2xl border transition-all ${data.payment === method ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'border-transparent hover:bg-[#222]'}`}>
                             {method === 'pix' && <QrCode className="text-[#0A84FF]" size={24}/>}
                             {method === 'dinheiro' && <Banknote className="text-[#32D74B]" size={24}/>}
@@ -781,9 +746,8 @@ export default function App() {
                             <span className="text-[36px] font-extrabold text-white tracking-tight">{Utils.formatBRL(financials.finalTotal)}</span>
                         </div>
                     </div>
-                    {/* CORREÇÃO DO CUPOM: REMOVIDA A VERIFICAÇÃO DE LOCALSTORAGE PARA EVITAR BUG DE 'SEMPRE ATIVO' */}
                     {!hasCoupon && (
-                        <button onClick={() => { setHasCoupon(true); Utils.vibrate(); setToast('Desconto Aplicado!'); }} 
+                        <button onClick={() => { setHasCoupon(true); Utils.vibrate(); showToast('Desconto Aplicado!'); }} 
                             className="h-10 px-4 rounded-full bg-[#0A84FF]/10 text-[#0A84FF] font-bold text-xs border border-[#0A84FF]/20 flex items-center gap-2">
                             <Ticket size={14}/> Aplicar Cupom
                         </button>
