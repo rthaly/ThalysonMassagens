@@ -3,7 +3,7 @@ import {
   Check, Star, ArrowRight, Bed, Home, MessageCircle, 
   Ticket, Lock, Flame, Wind,
   CreditCard, Banknote, QrCode, Copy, 
-  ChevronRight, Menu, X, HelpCircle, Instagram, Info
+  ChevronRight, Menu, X, HelpCircle, Instagram, Info, MapPin, Calendar as CalendarIcon, Clock
 } from 'lucide-react';
 
 // ==================================================================================
@@ -127,10 +127,7 @@ const REVIEWS_DB = [
 
 const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-  
-  // Vibração (sem som)
   vibrate: (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); },
-  
   shuffleArray: (array) => {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -138,7 +135,6 @@ const Utils = {
     }
     return array;
   },
-  
   isTimeBlocked: (selectedDate, timeString) => {
     if (!selectedDate) return true;
     const now = new Date();
@@ -149,7 +145,6 @@ const Utils = {
     const [hours] = timeString.split(':').map(Number);
     return hours <= now.getHours();
   },
-
   getGreeting: () => {
     const h = new Date().getHours();
     return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
@@ -169,24 +164,20 @@ body {
   letter-spacing: -0.01em; color: #fff; background: var(--bg-app);
   padding-bottom: env(safe-area-inset-bottom); overflow-x: hidden;
 }
-
 @keyframes shimmer { 0% {background-position: -200% 0;} 100% {background-position: 200% 0;} }
 .text-shimmer {
   background: linear-gradient(90deg, #ffffff 0%, #0A84FF 50%, #ffffff 100%);
   background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: shimmer 5s linear infinite;
 }
-
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @keyframes bubblePop { 0% { opacity: 0; transform: scale(0.8) translateY(-10px); } 10% { opacity: 1; transform: scale(1) translateY(0); } 90% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(0.8) translateY(-10px); } }
-
 .animate-enter { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-scale { animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 .animate-slide { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-bubble { animation: bubblePop 6s ease-in-out forwards; }
-
 .ios-bg { background: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000000 70%); min-height: 100vh; }
 .ios-card { 
   background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px;
@@ -277,38 +268,119 @@ const MenuOverlay = ({ onClose, onHelp }) => (
           </button>
        </div>
        <div className="mt-auto pt-6 border-t border-[#333]">
-          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 9.0 (No Calendar/Silent)</p>
+          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 10.0 (Completa)</p>
        </div>
     </div>
   </div>
 );
 
+// AJUDA EXPANDIDA
 const HelpModal = ({ onClose }) => (
   <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 animate-enter">
     <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose}></div>
-    <div className="relative w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[80vh]">
+    <div className="relative w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[85vh]">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2"><Info size={20} className="text-[#0A84FF]"/> Tudinho Explicadinho</h2>
+            <h2 className="text-xl font-bold text-white flex items-center gap-2"><Info size={20} className="text-[#0A84FF]"/> Guia Rápido</h2>
             <button onClick={onClose} className="p-1 bg-[#333] rounded-full"><X size={16} className="text-gray-400"/></button>
         </div>
         <div className="space-y-6">
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">1</div>
-                <div><h3 className="font-bold text-white text-sm">Escolha a Experiência</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Selecione o tipo de massagem que mais combina com seu momento atual.</p></div>
+                <div><h3 className="font-bold text-white text-sm">O Serviço</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Massagem profissional masculina realizada no conforto do seu local (Casa ou Hotel).</p></div>
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">2</div>
-                <div><h3 className="font-bold text-white text-sm">Agendamento</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Escolha o dia e horário. O app bloqueia horários já passados.</p></div>
+                <div><h3 className="font-bold text-white text-sm">Preparação</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Recomendo um banho quente antes. Levo maca e óleos. Tenha duas toalhas disponíveis.</p></div>
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">3</div>
-                <div><h3 className="font-bold text-white text-sm">Onde Atendo?</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Vou até sua residência ou hotel. Valor de deslocamento a combinar.</p></div>
+                <div><h3 className="font-bold text-white text-sm">Segurança</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Sigilo total garantido. Atendimento discreto e respeitoso.</p></div>
+            </div>
+            <div className="bg-[#2C2C2E] p-4 rounded-xl border border-[#333]">
+                <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Pagamento & Cancelamento</h4>
+                <ul className="text-xs text-gray-400 space-y-2 list-disc pl-4">
+                    <li>Pagamento direto via Pix ou Dinheiro.</li>
+                    <li>Cancelamentos com min. 2 horas de antecedência.</li>
+                    <li>Taxa de deslocamento pode variar conforme distância.</li>
+                </ul>
             </div>
         </div>
         <button onClick={onClose} className="w-full mt-6 bg-[#0A84FF] py-3 rounded-xl font-bold text-sm">Entendi!</button>
     </div>
   </div>
 );
+
+// TELA DE SUCESSO PREENCHIDA
+const SuccessScreen = ({ data, financials, whatsappLink, onCopy, onReset }) => {
+  return (
+    <div className="min-h-screen pt-24 pb-12 px-5 flex flex-col items-center animate-enter text-center">
+      
+      <div className="w-20 h-20 bg-[#32D74B] rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(50,215,75,0.3)] animate-scale">
+        <Check className="w-10 h-10 text-black" strokeWidth={4} />
+      </div>
+      
+      <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Confirmado!</h2>
+      <p className="text-gray-400 mb-8 text-sm max-w-xs">
+        Agora finalize enviando os detalhes abaixo no WhatsApp.
+      </p>
+
+      {/* CARD RESUMO (TICKET) */}
+      <div className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-2xl p-6 mb-8 relative overflow-hidden text-left shadow-2xl">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0A84FF] to-[#32D74B]"></div>
+          
+          <div className="flex justify-between items-start mb-4 border-b border-[#333] pb-4">
+              <div>
+                  <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Serviço</p>
+                  <p className="text-white font-bold text-lg">{data.service?.name}</p>
+              </div>
+              <div className="text-right">
+                   <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Valor Final</p>
+                   <p className="text-[#32D74B] font-bold text-xl">{Utils.formatBRL(financials.finalTotal)}</p>
+              </div>
+          </div>
+
+          <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                  <CalendarIcon size={16} className="text-[#0A84FF]"/>
+                  <span className="text-sm text-gray-300">
+                      {data.date ? data.date.toLocaleDateString('pt-BR') : '--/--'} às {data.time}
+                  </span>
+              </div>
+              <div className="flex items-center gap-3">
+                  <MapPin size={16} className="text-[#0A84FF]"/>
+                  <span className="text-sm text-gray-300">{data.location?.label}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                  <Clock size={16} className="text-[#0A84FF]"/>
+                  <span className="text-sm text-gray-300">Duração: {data.service?.duration + (data.extras.upgrade ? 30 : 0)} min</span>
+              </div>
+          </div>
+          
+          {data.payment === 'pix' && (
+              <div className="mt-4 pt-4 border-t border-[#333]">
+                  <p className="text-[10px] text-gray-500 uppercase font-bold mb-1">Chave Pix (Copiada)</p>
+                  <p className="text-xs text-gray-400 break-all font-mono bg-black/30 p-2 rounded">{CONFIG.PIX_KEY}</p>
+              </div>
+          )}
+      </div>
+
+      <a href={whatsappLink} target="_blank" rel="noreferrer" 
+         className="w-full max-w-sm bg-[#32D74B] text-black font-bold py-4 rounded-2xl mb-4 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-lg shadow-lg active:scale-95 transition-transform">
+         <MessageCircle size={24} fill="currentColor" /> Enviar no WhatsApp
+      </a>
+      
+      <button onClick={onCopy} 
+         className="w-full max-w-sm bg-[#1C1C1E] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 mb-8 border border-[#333] active:scale-95 transition-transform">
+         <Copy size={20} /> Copiar Texto
+      </button>
+
+      <button onClick={onReset} 
+        className="text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors py-4">
+        Fazer novo pedido
+      </button>
+    </div>
+  );
+};
 
 // ==================================================================================
 // 5. APP PRINCIPAL
@@ -418,10 +490,8 @@ export default function App() {
     window.open(link, '_blank');
   };
 
-  // FUNÇÃO CORRIGIDA PARA EXIBIR TOAST COM TEMPO
   const showToast = (msg) => {
       setToast(msg);
-      // Garante que some em 3 segundos
       setTimeout(() => setToast(null), 3000);
   };
 
@@ -443,7 +513,7 @@ export default function App() {
       
       {/* HEADER GLOBAL FIXO */}
       <header className="fixed top-0 w-full z-40 bg-black/80 backdrop-blur-xl border-b border-white/5 py-3 px-6 flex justify-between items-center transition-all duration-300">
-        <span className="font-extrabold text-lg tracking-tight text-shimmer cursor-pointer" onClick={() => { setSuccess(false); setStage(0); }}>THALYMASSAGENS</span>
+        <span className="font-extrabold text-lg tracking-tight text-shimmer cursor-pointer" onClick={() => { setSuccess(false); setStage(0); window.scrollTo(0,0); }}>THALYMASSAGENS</span>
         <div className="flex items-center gap-3">
             <button onClick={() => { setShowMenu(true); }} className="p-2 bg-[#1C1C1E] rounded-full border border-[#333] active:scale-95 transition-transform">
                 <Menu size={18} className="text-white"/>
@@ -456,44 +526,23 @@ export default function App() {
       {showMenu && <MenuOverlay onClose={() => setShowMenu(false)} onHelp={() => setShowHelp(true)} />}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
 
-      {/* TOAST (MENSAGENS FLUTUANTES) */}
+      {/* TOAST */}
       {toast && (
         <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] bg-[#32D74B] text-black px-6 py-3 rounded-full shadow-xl flex items-center gap-2 font-bold text-sm animate-scale">
             <Check size={16} strokeWidth={3}/> {toast}
         </div>
       )}
 
-      {/* --- TELA DE SUCESSO --- */}
+      {/* --- TELA DE SUCESSO OU HOME --- */}
       {success ? (
-        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center animate-enter pt-32">
-            <div className="w-24 h-24 bg-[#32D74B] rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(50,215,75,0.4)] animate-scale">
-                <Check className="w-12 h-12 text-black" strokeWidth={4} />
-            </div>
-            
-            <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Gerado!</h2>
-            <p className="text-gray-400 mb-8 text-base leading-relaxed max-w-xs mx-auto">
-                Envie a mensagem no WhatsApp para confirmar.
-            </p>
-
-            <a href={whatsappLink} target="_blank" rel="noreferrer" 
-                className="w-full max-w-sm bg-[#32D74B] text-black font-bold py-4 rounded-2xl mb-4 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-lg shadow-lg">
-                <MessageCircle size={24} fill="currentColor" /> Enviar no WhatsApp
-            </a>
-            
-            <button onClick={handleCopy} 
-                className="w-full max-w-sm bg-[#1C1C1E] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 mb-8 border border-[#333]">
-                <Copy size={20} /> Copiar Texto
-            </button>
-
-            {/* BOTÃO DE CALENDÁRIO REMOVIDO CONFORME SOLICITADO */}
-            
-            <button onClick={() => { setSuccess(false); setStage(0); window.scrollTo(0,0); }} 
-                className="text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
-                Fazer novo pedido
-            </button>
-        </div>
+        <SuccessScreen 
+          data={data} 
+          financials={financials}
+          whatsappLink={whatsappLink} 
+          onCopy={handleCopy} 
+          onReset={() => { setSuccess(false); setStage(0); window.scrollTo(0,0); }}
+        />
       ) : (
-        /* --- TELA DE FORMULÁRIO (HOME) --- */
         <main className="max-w-md mx-auto pt-24 px-5">
             
             {/* 1. INTRODUÇÃO */}
