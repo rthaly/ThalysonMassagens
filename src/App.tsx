@@ -3,7 +3,7 @@ import {
   Check, Star, ArrowRight, Bed, Home, MessageCircle, 
   Ticket, Lock, Flame, Wind, Clock,
   CreditCard, Banknote, QrCode, Copy, Calendar as CalendarIcon, 
-  ChevronRight, Activity, Menu, X, HelpCircle, Instagram, Info, Download, Bell
+  ChevronRight, Activity, Menu, X, HelpCircle, Instagram, Info, Smartphone, Bell
 } from 'lucide-react';
 
 // ==================================================================================
@@ -26,10 +26,9 @@ const CONFIG = {
   }
 };
 
-// Dados para o "Live Status"
 const LIVE_NOTIFICATIONS = [
-  "🔥 João (Centro) acabou de agendar",
-  "👀 3 pessoas visualizando agora",
+  "🔥 João acabou de agendar",
+  "👀 4 pessoas visualizando agora",
   "📅 Agenda de Sexta quase cheia",
   "⭐ Pedro avaliou com 5 estrelas",
   "✅ Matheus confirmou presença",
@@ -116,11 +115,10 @@ const REVIEWS_DB = [
 ];
 
 // ==================================================================================
-// 2. SISTEMA DE SOM (WEB AUDIO API - ZERO DEPENDÊNCIA)
+// 2. SISTEMA DE SOM (WEB AUDIO API)
 // ==================================================================================
 
 const playSound = (type) => {
-    // Cria contexto de áudio apenas no clique para evitar bloqueio do navegador
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
     
@@ -134,7 +132,6 @@ const playSound = (type) => {
     const now = ctx.currentTime;
     
     if (type === 'pop') {
-        // Som de "Click" suave
         osc.type = 'sine';
         osc.frequency.setValueAtTime(800, now);
         osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
@@ -143,7 +140,6 @@ const playSound = (type) => {
         osc.start(now);
         osc.stop(now + 0.1);
     } else if (type === 'notification') {
-        // Som de "Tu-dum" (bolha)
         osc.type = 'sine';
         osc.frequency.setValueAtTime(600, now);
         osc.frequency.setValueAtTime(800, now + 0.1);
@@ -153,7 +149,6 @@ const playSound = (type) => {
         osc.start(now);
         osc.stop(now + 0.4);
     } else if (type === 'success') {
-        // Acorde de sucesso
         const playNote = (freq, time) => {
             const o = ctx.createOscillator();
             const g = ctx.createGain();
@@ -166,9 +161,9 @@ const playSound = (type) => {
             o.start(time);
             o.stop(time + 0.5);
         };
-        playNote(440, now); // A4
-        playNote(554.37, now + 0.1); // C#5
-        playNote(659.25, now + 0.2); // E5
+        playNote(440, now); 
+        playNote(554.37, now + 0.1);
+        playNote(659.25, now + 0.2);
     }
 };
 
@@ -178,9 +173,7 @@ const playSound = (type) => {
 
 const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-  
   vibrate: (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); },
-  
   shuffleArray: (array) => {
     let currentIndex = array.length, randomIndex;
     while (currentIndex !== 0) {
@@ -196,35 +189,36 @@ const Utils = {
     const now = new Date();
     const today = new Date(); today.setHours(0,0,0,0);
     const sel = new Date(selectedDate); sel.setHours(0,0,0,0);
-
     if (sel < today) return true; 
     if (sel > today) return false; 
-
     const [hours] = timeString.split(':').map(Number);
-    const currentHour = now.getHours();
-    return hours <= currentHour;
+    return hours <= now.getHours();
   },
 
-  generateCalendarLink: (data) => {
+  // GERA LINK GOOGLE WEB (Compatível com Mobile Web)
+  generateGoogleLink: (data) => {
     if (!data.date || !data.time || !data.service) return '';
     const [h] = data.time.split(':');
     const start = new Date(data.date); start.setHours(parseInt(h));
     const end = new Date(start);
     const duration = data.service.duration + (data.extras.upgrade ? 30 : 0);
     end.setMinutes(end.getMinutes() + duration);
-    const formatGCalDate = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
+    
+    // Converte para formato UTC string YYYYMMDDTHHMMSSZ para o Google aceitar globalmente
+    const formatGCalDate = (d) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
     
     const params = new URLSearchParams({
-      action: 'TEMPLATE', text: `Massagem Thalymassagens - ${data.service.name}`,
+      action: 'TEMPLATE', 
+      text: `Massagem Thalymassagens - ${data.service.name}`,
       dates: `${formatGCalDate(start)}/${formatGCalDate(end)}`,
       details: `Serviço: ${data.service.name}\nLocal: ${data.location?.label}\nObs: Pagamento no local.`,
-      location: data.location?.label === 'home' ? 'Meu Endereço' : 'Hotel/Motel',
+      location: data.location?.label === 'home' ? 'Minha Residência' : 'Hotel/Motel',
     });
     return `${CONFIG.URLS.GOOGLE_CALENDAR}?${params.toString()}`;
   },
 
-  // NOVO: Gerador de arquivo .ICS Universal (Apple/Android)
-  downloadIcsFile: (data) => {
+  // FUNÇÃO MÁGICA PARA ABRIR APP NATIVO (SAMSUNG/IPHONE)
+  openNativeCalendar: (data) => {
     if (!data.date || !data.time) return;
     const [h] = data.time.split(':');
     const start = new Date(data.date); start.setHours(parseInt(h));
@@ -232,18 +226,17 @@ const Utils = {
     const duration = data.service.duration + (data.extras.upgrade ? 30 : 0);
     end.setMinutes(end.getMinutes() + duration);
 
-    const formatDate = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
-    
+    // Cria um arquivo .ics virtual
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Thalymassagens//App//PT
 BEGIN:VEVENT
 UID:${Date.now()}@thalymassagens.com
-DTSTAMP:${formatDate(new Date())}
-DTSTART:${formatDate(start)}
-DTEND:${formatDate(end)}
+DTSTAMP:${new Date().toISOString().replace(/-|:|\.\d\d\d/g, "")}
+DTSTART:${start.toISOString().replace(/-|:|\.\d\d\d/g, "")}
+DTEND:${end.toISOString().replace(/-|:|\.\d\d\d/g, "")}
 SUMMARY:Massagem com Thalyson
-DESCRIPTION:Serviço: ${data.service?.name} - Local: ${data.location?.label}
+DESCRIPTION:Serviço: ${data.service?.name}
 LOCATION:${data.location?.label}
 END:VEVENT
 END:VCALENDAR`;
@@ -251,6 +244,7 @@ END:VCALENDAR`;
     const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(blob);
+    // IMPORTANTE: Isso força o Android/iOS a perguntar "Abrir com Calendário?"
     link.setAttribute('download', 'agendamento_thalyson.ics');
     document.body.appendChild(link);
     link.click();
@@ -264,7 +258,7 @@ END:VCALENDAR`;
 };
 
 // ==================================================================================
-// 4. ESTILOS GLOBAIS (Animations & High Contrast)
+// 4. ESTILOS GLOBAIS
 // ==================================================================================
 
 const globalStyles = `
@@ -288,7 +282,7 @@ body {
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
-  animation: shimmer 6s linear infinite;
+  animation: shimmer 5s linear infinite;
 }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -319,35 +313,24 @@ body {
 `;
 
 // ==================================================================================
-// 5. COMPONENTES VISUAIS (Sub-components)
+// 5. COMPONENTES VISUAIS
 // ==================================================================================
 
-// Notificações Estilo Live Status iOS (Bubble)
 const LiveBubbles = () => {
     const [activeMsg, setActiveMsg] = useState(null);
-  
     useEffect(() => {
-      // Ciclo de notificações randômicas
       const cycle = () => {
         const randomMsg = LIVE_NOTIFICATIONS[Math.floor(Math.random() * LIVE_NOTIFICATIONS.length)];
-        setTimeout(() => {
-            setActiveMsg(randomMsg);
-            playSound('notification');
-        }, 2000); // Delay inicial
-        
-        // Esconde depois de 5s
+        setTimeout(() => { setActiveMsg(randomMsg); playSound('notification'); }, 2000);
         setTimeout(() => setActiveMsg(null), 7000);
       };
-  
-      cycle(); // Primeiro ciclo
-      const interval = setInterval(cycle, 15000); // Repete a cada 15s
+      cycle();
+      const interval = setInterval(cycle, 15000);
       return () => clearInterval(interval);
     }, []);
-  
     if (!activeMsg) return null;
-  
     return (
-      <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-30 w-max max-w-[90%] pointer-events-none">
+      <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-30 w-max max-w-[90%] pointer-events-none">
         <div className="bg-[#1C1C1E]/80 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 shadow-xl animate-bubble">
            <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse"></div>
            <span className="text-xs font-bold text-white tracking-wide">{activeMsg}</span>
@@ -378,9 +361,7 @@ const MenuOverlay = ({ onClose, onHelp }) => (
     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
     <div className="relative w-3/4 max-w-sm h-full bg-[#1C1C1E] border-l border-[#333] p-6 shadow-2xl animate-slide flex flex-col">
        <button onClick={onClose} className="self-end p-2 bg-[#333] rounded-full mb-8"><X size={20} className="text-white"/></button>
-       
        <h2 className="text-2xl font-bold text-white mb-6">Menu</h2>
-       
        <div className="space-y-4">
           <a href={`https://instagram.com/${CONFIG.INSTAGRAM}`} target="_blank" rel="noreferrer" 
              className="flex items-center gap-4 p-4 rounded-xl bg-[#2C2C2E] active:bg-[#333] transition-colors">
@@ -392,7 +373,6 @@ const MenuOverlay = ({ onClose, onHelp }) => (
                 <p className="text-xs text-gray-400">@{CONFIG.INSTAGRAM}</p>
              </div>
           </a>
-
           <button onClick={() => { onClose(); onHelp(); }} 
              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#2C2C2E] active:bg-[#333] transition-colors text-left">
              <div className="w-10 h-10 rounded-full bg-[#0A84FF]/20 flex items-center justify-center">
@@ -404,7 +384,6 @@ const MenuOverlay = ({ onClose, onHelp }) => (
              </div>
           </button>
        </div>
-
        <div className="mt-auto pt-6 border-t border-[#333]">
           <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 5.0 (Ultimate)</p>
        </div>
@@ -420,38 +399,31 @@ const HelpModal = ({ onClose }) => (
             <h2 className="text-xl font-bold text-white flex items-center gap-2"><Info size={20} className="text-[#0A84FF]"/> Tudinho Explicadinho</h2>
             <button onClick={onClose} className="p-1 bg-[#333] rounded-full"><X size={16} className="text-gray-400"/></button>
         </div>
-        
         <div className="space-y-6">
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">1</div>
-                <div><h3 className="font-bold text-white text-sm">Escolha a Experiência</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Selecione o tipo de massagem que mais combina com seu momento atual.</p></div>
+                <div><h3 className="font-bold text-white text-sm">Escolha a Experiência</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Selecione o tipo de massagem. O valor é transparente e sem surpresas.</p></div>
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">2</div>
-                <div><h3 className="font-bold text-white text-sm">Agendamento</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Escolha o dia e horário. O app bloqueia horários já passados para evitar erros.</p></div>
+                <div><h3 className="font-bold text-white text-sm">Agenda Inteligente</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">O app só mostra horários disponíveis de verdade. Clicou, agendou.</p></div>
             </div>
-            <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">3</div>
-                <div><h3 className="font-bold text-white text-sm">Onde Atendo?</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Vou até sua residência ou hotel/motel. O valor do deslocamento é calculado no WhatsApp.</p></div>
-            </div>
-            
             <div className="bg-[#2C2C2E] p-4 rounded-xl border border-[#333]">
                 <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Segurança & Pagamento</h4>
                 <ul className="text-xs text-gray-400 space-y-1 list-disc pl-4">
                     <li>Sigilo absoluto garantido.</li>
                     <li>Pagamento feito apenas no local (Pix/Dinheiro).</li>
-                    <li>Não é necessário cadastro, apenas dados básicos.</li>
+                    <li>Sem taxas ocultas, apenas deslocamento.</li>
                 </ul>
             </div>
         </div>
-        
         <button onClick={onClose} className="w-full mt-6 bg-[#0A84FF] py-3 rounded-xl font-bold text-sm">Entendi, vamos agendar!</button>
     </div>
   </div>
 );
 
 const SuccessScreen = ({ data, financials, whatsappLink, onCopy }) => {
-  const calendarLink = Utils.generateCalendarLink(data);
+  const googleLink = Utils.generateGoogleLink(data);
   useEffect(() => { playSound('success'); }, []);
 
   return (
@@ -461,7 +433,7 @@ const SuccessScreen = ({ data, financials, whatsappLink, onCopy }) => {
       </div>
       
       <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Gerado!</h2>
-      <p className="text-gray-400 mb-10 text-base leading-relaxed max-w-xs mx-auto">
+      <p className="text-gray-400 mb-8 text-base leading-relaxed max-w-xs mx-auto">
         Envie a mensagem no WhatsApp para confirmar.
       </p>
 
@@ -475,17 +447,18 @@ const SuccessScreen = ({ data, financials, whatsappLink, onCopy }) => {
          <Copy size={20} /> Copiar Texto
       </button>
 
-      {/* ÁREA DE CALENDÁRIO DUPLA */}
+      {/* ÁREA DE CALENDÁRIO UNIVERSAL */}
+      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Salvar na Agenda</p>
       <div className="w-full max-w-sm grid grid-cols-2 gap-3 mb-8">
-          <a href={calendarLink} target="_blank" rel="noreferrer" 
-             className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex flex-col items-center justify-center hover:bg-[#222]">
+          <a href={googleLink} target="_blank" rel="noreferrer" 
+             className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex flex-col items-center justify-center hover:bg-[#222] transition-colors">
              <CalendarIcon className="text-white w-6 h-6 mb-2" />
              <span className="text-xs font-bold text-[#0A84FF]">Google Agenda</span>
           </a>
-          <button onClick={() => Utils.downloadIcsFile(data)} 
-             className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex flex-col items-center justify-center hover:bg-[#222]">
-             <Download className="text-white w-6 h-6 mb-2" />
-             <span className="text-xs font-bold text-[#0A84FF]">Baixar .ICS</span>
+          <button onClick={() => Utils.openNativeCalendar(data)} 
+             className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex flex-col items-center justify-center hover:bg-[#222] transition-colors">
+             <Smartphone className="text-white w-6 h-6 mb-2" />
+             <span className="text-xs font-bold text-[#32D74B]">Agenda do Celular</span>
           </button>
       </div>
 
