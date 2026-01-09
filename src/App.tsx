@@ -72,16 +72,12 @@ const LOCATIONS = [
   { id: 'hotel', label: 'Hotel / Motel', sub: 'Vou até a sua suíte (Sigilo Total)', icon: Bed, input: true },
 ];
 
-// ==================================================================================
-// 2. BANCO DE AVALIAÇÕES COMPLETO (50+)
-// ==================================================================================
-
 const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
   { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
   { t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", a: "Curioso SP", s: 5 },
-  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M.", s: 5 },
   { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
   { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
   { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
@@ -90,10 +86,10 @@ const REVIEWS_DB = [
   { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
   { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
   { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
-  { t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", a: "Felipe Personal", s: 5 },
+  { t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", a: "Felipe", s: 5 },
   { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
   { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
-  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista", s: 5 },
   { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
   { t: "Fiz a relaxante e dormi na maca de tão bom. Recomendo.", a: "Breno", s: 5 },
   { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
@@ -101,14 +97,14 @@ const REVIEWS_DB = [
   { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
   { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
   { t: "O óleo de coco morno é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
-  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
-  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
-  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
+  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Antigo", s: 5 },
+  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Beto", s: 5 },
+  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado", s: 5 },
   { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
-  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anônimo", s: 5 },
-  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
-  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Motorista", s: 5 },
-  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
+  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anon", s: 5 },
+  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero C.", s: 5 },
+  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Uber", s: 5 },
+  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "Sigilo", s: 5 },
   { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
   { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
   { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
@@ -119,83 +115,93 @@ const REVIEWS_DB = [
   { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
   { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
   { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
-  { t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", a: "Morador Centro", s: 5 },
+  { t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", a: "Morador", s: 5 },
   { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
   { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
   { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
   { t: "O final foi explosivo. Recomendo.", a: "Anônimo", s: 5 },
   { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
-  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 },
-  { t: "Paz de espírito e corpo relaxado. Obrigado.", a: "Fernando", s: 5 }
+  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 }
 ];
 
 // ==================================================================================
-// 3. AUDIO ENGINE (OCEAN SOUND + UI SFX)
+// 2. AUDIO ENGINE V2 (CLEAN OCEAN + VISIBILITY API)
 // ==================================================================================
 
 const AudioEngine = {
     ctx: null,
     oceanGain: null,
-    isMuted: true, // Começa mudo
+    lfo: null,
+    isMuted: true,
 
     init: () => {
         if (!AudioEngine.ctx) {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
             AudioEngine.ctx = new AudioContext();
+            
+            // Adiciona listener para parar som ao sair do app
+            document.addEventListener('visibilitychange', AudioEngine.handleVisibility);
         }
     },
 
+    handleVisibility: () => {
+        if (document.hidden) {
+            if (AudioEngine.ctx && AudioEngine.ctx.state === 'running') {
+                AudioEngine.ctx.suspend();
+            }
+        } else {
+            if (AudioEngine.ctx && AudioEngine.ctx.state === 'suspended' && !AudioEngine.isMuted) {
+                AudioEngine.ctx.resume();
+            }
+        }
+    },
+
+    // SOM DE MAR SEM CHIADO (Brown Noise Filtrado)
     startOcean: () => {
         if (!AudioEngine.ctx) AudioEngine.init();
         const ctx = AudioEngine.ctx;
         if (!ctx) return;
         if (ctx.state === 'suspended') ctx.resume();
 
-        // Gerador de Pink Noise (Som de Cachoeira/Mar)
+        // 1. Gera Ruído Marrom (Brown Noise) - Som mais grave e natural que White/Pink
         const bufferSize = 4096;
-        const pinkNoise = (function() {
-            let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
-            const node = ctx.createScriptProcessor(bufferSize, 1, 1);
-            node.onaudioprocess = function(e) {
-                const output = e.outputBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    const white = Math.random() * 2 - 1;
-                    b0 = 0.99886 * b0 + white * 0.0555179;
-                    b1 = 0.99332 * b1 + white * 0.0750759;
-                    b2 = 0.96900 * b2 + white * 0.1538520;
-                    b3 = 0.86650 * b3 + white * 0.3104856;
-                    b4 = 0.55000 * b4 + white * 0.5329522;
-                    b5 = -0.7616 * b5 - white * 0.0168980;
-                    output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-                    output[i] *= 0.11; 
-                    b6 = white * 0.115926;
-                }
-            };
-            return node;
-        })();
+        const brownNoise = ctx.createScriptProcessor(bufferSize, 1, 1);
+        let lastOut = 0.0;
+        brownNoise.onaudioprocess = function(e) {
+            const output = e.outputBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                output[i] = (lastOut + (0.02 * white)) / 1.02;
+                lastOut = output[i];
+                output[i] *= 3.5; // Compensação de ganho
+            }
+        };
 
-        // Filtro Lowpass (Deixa o som mais abafado, como mar distante)
+        // 2. Filtro LowPass (Corta o agudo/chiado)
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 400;
+        filter.frequency.value = 250; // Frequência bem baixa (som abafado de mar)
 
+        // 3. Controle de Volume Mestre
         const masterGain = ctx.createGain();
-        masterGain.gain.value = 0.0; // Começa zerado
+        masterGain.gain.value = 0.0; // Inicia mudo
         AudioEngine.oceanGain = masterGain;
 
-        // Oscilador (Ondas indo e vindo)
+        // 4. LFO (Oscilador de Baixa Frequência) para simular ondas
         const lfo = ctx.createOscillator();
         lfo.type = 'sine';
-        lfo.frequency.value = 0.12; // Frequência da onda
+        lfo.frequency.value = 0.12; // Velocidade da maré
         const lfoGain = ctx.createGain();
-        lfoGain.gain.value = 0.04; 
+        lfoGain.gain.value = 0.03; // Intensidade da onda
 
+        // Conexões
         lfo.connect(lfoGain);
         lfoGain.connect(masterGain.gain);
-        pinkNoise.connect(filter);
+        brownNoise.connect(filter);
         filter.connect(masterGain);
         masterGain.connect(ctx.destination);
+        
         lfo.start();
     },
 
@@ -207,11 +213,12 @@ const AudioEngine = {
         AudioEngine.isMuted = !AudioEngine.isMuted;
         const now = ctx.currentTime;
         
-        // Fade in suave para não assustar
         if (!AudioEngine.isMuted) {
+            // Fade in lento e suave
             AudioEngine.oceanGain.gain.cancelScheduledValues(now);
-            AudioEngine.oceanGain.gain.linearRampToValueAtTime(0.08, now + 3); 
+            AudioEngine.oceanGain.gain.linearRampToValueAtTime(0.06, now + 3); 
         } else {
+            // Fade out rápido
             AudioEngine.oceanGain.gain.cancelScheduledValues(now);
             AudioEngine.oceanGain.gain.linearRampToValueAtTime(0, now + 0.5);
         }
@@ -222,14 +229,16 @@ const AudioEngine = {
         if (!AudioEngine.ctx || AudioEngine.isMuted) return;
         const ctx = AudioEngine.ctx;
         const t = ctx.currentTime;
+        
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+        
         osc.connect(gain);
         gain.connect(ctx.destination);
 
         if (type === 'tap') {
-            // "Tick" mecânico estilo iPhone
-            osc.frequency.setValueAtTime(600, t);
+            // Click curto e agradável
+            osc.frequency.setValueAtTime(800, t);
             gain.gain.setValueAtTime(0.05, t);
             gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
             osc.start(t);
@@ -237,13 +246,13 @@ const AudioEngine = {
         } else if (type === 'bubble') {
             // Notificação suave
             osc.frequency.setValueAtTime(300, t);
-            osc.frequency.linearRampToValueAtTime(500, t + 0.1);
-            gain.gain.setValueAtTime(0.05, t);
+            osc.frequency.linearRampToValueAtTime(500, t + 0.15);
+            gain.gain.setValueAtTime(0.02, t);
             gain.gain.linearRampToValueAtTime(0, t + 0.3);
             osc.start(t);
             osc.stop(t + 0.3);
         } else if (type === 'success') {
-            // Acorde de sucesso
+            // Acorde final
             const tone = (f, d) => {
                 const o = ctx.createOscillator(); const g = ctx.createGain();
                 o.connect(g); g.connect(ctx.destination);
@@ -264,10 +273,11 @@ const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
   vibrate: (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); },
   shuffleArray: (array) => {
-    // Fisher-Yates shuffle
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex !== 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
     return array;
   },
@@ -283,8 +293,8 @@ const Utils = {
     return hours <= now.getHours();
   },
 
-  // --- GERADOR DE .ICS CORRIGIDO ---
-  downloadIcs: (data) => {
+  // GERA ARQUIVO .ICS REAL
+  generateIcsFile: (data) => {
     if (!data.date || !data.time) return;
     const [h] = data.time.split(':');
     const start = new Date(data.date); start.setHours(parseInt(h));
@@ -292,11 +302,10 @@ const Utils = {
 
     const fmt = (d) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
     
-    // Cabeçalho compatível com Outlook/Android/iOS
     const icsContent = 
 `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//ThalyMassagens//Agendamento//PT
+PRODID:-//Thalymassagens//Agendamento//PT
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 BEGIN:VEVENT
@@ -305,20 +314,32 @@ DTSTAMP:${fmt(new Date())}
 DTSTART:${fmt(start)}
 DTEND:${fmt(end)}
 SUMMARY:Massagem com Thalyson
-DESCRIPTION:Serviço: ${data.service?.name}
+DESCRIPTION:Serviço: ${data.service?.name} - Local: ${data.location?.label}
 LOCATION:${data.location?.label}
 STATUS:CONFIRMED
 END:VEVENT
 END:VCALENDAR`;
 
-    // Blob Universal
     const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(blob);
-    link.setAttribute('download', 'agendamento_thalyson.ics');
+    link.setAttribute('download', 'agendamento.ics');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  },
+
+  generateGoogleLink: (data) => {
+    if (!data.date || !data.time || !data.service) return '';
+    const [h] = data.time.split(':');
+    const start = new Date(data.date); start.setHours(parseInt(h));
+    const end = new Date(start); end.setMinutes(end.getMinutes() + 60);
+    const fmt = (d) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
+    const p = new URLSearchParams({
+      action: 'TEMPLATE', text: 'Massagem Thalyson', dates: `${fmt(start)}/${fmt(end)}`,
+      details: `Serviço: ${data.service?.name}`, location: data.location?.label
+    });
+    return `${CONFIG.URLS.GOOGLE_CALENDAR}?${p.toString()}`;
   },
 
   getGreeting: () => {
@@ -406,7 +427,7 @@ const ReviewsTicker = () => {
   const [reviews, setReviews] = useState([]);
   const [idx, setIdx] = useState(0);
   useEffect(() => { setReviews(Utils.shuffleArray([...REVIEWS_DB])); }, []);
-  useEffect(() => { if (reviews.length === 0) return; const t = setInterval(() => setIdx(i => (i+1)%reviews.length), 6000); return () => clearInterval(t); }, [reviews]);
+  useEffect(() => { if (reviews.length === 0) return; const t = setInterval(() => setIdx(i => (i+1)%reviews.length), 5000); return () => clearInterval(t); }, [reviews]);
   if (reviews.length === 0) return null;
   return (
       <div className="mb-6 p-1 relative min-h-[90px] flex items-center animate-enter">
@@ -448,7 +469,7 @@ const MenuOverlay = ({ onClose, onHelp }) => (
           </button>
        </div>
        <div className="mt-auto pt-6 border-t border-[#333]">
-          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 8.0 (Gold)</p>
+          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 9.0 (Platinum)</p>
        </div>
     </div>
   </div>
@@ -469,27 +490,29 @@ const HelpModal = ({ onClose }) => (
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">2</div>
-                <div><h3 className="font-bold text-white text-sm">Agendamento</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Escolha o dia e horário. O app bloqueia horários já passados.</p></div>
+                <div><h3 className="font-bold text-white text-sm">Agendamento</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Escolha o dia e horário. O app bloqueia horários já passados para evitar erros.</p></div>
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">3</div>
-                <div><h3 className="font-bold text-white text-sm">Onde Atendo?</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Vou até sua residência ou hotel. Valor de deslocamento a combinar.</p></div>
+                <div><h3 className="font-bold text-white text-sm">Onde Atendo?</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Vou até sua residência ou hotel/motel. O valor do deslocamento é calculado no WhatsApp.</p></div>
             </div>
+            
             <div className="bg-[#2C2C2E] p-4 rounded-xl border border-[#333]">
                 <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Segurança & Pagamento</h4>
                 <ul className="text-xs text-gray-400 space-y-1 list-disc pl-4">
                     <li>Sigilo absoluto garantido.</li>
-                    <li>Pagamento feito no local (Pix/Dinheiro).</li>
-                    <li>Sem taxas ocultas.</li>
+                    <li>Pagamento feito apenas no local (Pix/Dinheiro).</li>
+                    <li>Não é necessário cadastro, apenas dados básicos.</li>
                 </ul>
             </div>
         </div>
-        <button onClick={onClose} className="w-full mt-6 bg-[#0A84FF] py-3 rounded-xl font-bold text-sm">Entendi!</button>
+        <button onClick={onClose} className="w-full mt-6 bg-[#0A84FF] py-3 rounded-xl font-bold text-sm">Entendi, vamos agendar!</button>
     </div>
   </div>
 );
 
 const SuccessScreen = ({ data, whatsappLink, onCopy }) => {
+  const googleLink = Utils.generateGoogleLink(data);
   useEffect(() => { AudioEngine.playSfx('success'); }, []);
 
   return (
@@ -500,7 +523,7 @@ const SuccessScreen = ({ data, whatsappLink, onCopy }) => {
       
       <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Gerado!</h2>
       <p className="text-gray-400 mb-8 text-base leading-relaxed max-w-xs mx-auto">
-        Envie a mensagem no WhatsApp para confirmar.
+        Agora é só aguardar. Vou calcular a taxa de deslocamento e te confirmo no WhatsApp.
       </p>
 
       <a href={whatsappLink} target="_blank" rel="noreferrer" 
@@ -515,17 +538,22 @@ const SuccessScreen = ({ data, whatsappLink, onCopy }) => {
 
       <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Salvar na Agenda</p>
       
-      {/* BOTÃO ÚNICO DE CALENDÁRIO OTIMIZADO */}
-      <button onClick={() => Utils.downloadIcs(data)} 
-         className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex items-center justify-center gap-3 hover:bg-[#222] transition-colors mb-8">
-         <CalendarIcon className="text-[#0A84FF] w-6 h-6" />
-         <div className="text-left">
-             <span className="block text-sm font-bold text-white">Adicionar à Agenda</span>
-             <span className="block text-[10px] text-gray-500">Android & iOS (Universal)</span>
-         </div>
-      </button>
+      <div className="w-full max-w-sm grid grid-cols-2 gap-3 mb-8">
+          <a href={googleLink} target="_blank" rel="noreferrer" 
+             className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex flex-col items-center justify-center hover:bg-[#222] transition-colors">
+             <CalendarIcon className="text-white w-6 h-6 mb-2" />
+             <span className="text-xs font-bold text-[#0A84FF]">Google Agenda</span>
+             <span className="text-[9px] text-gray-500">Android / Web</span>
+          </a>
+          <button onClick={() => Utils.generateIcsFile(data)} 
+             className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex flex-col items-center justify-center hover:bg-[#222] transition-colors">
+             <Smartphone className="text-white w-6 h-6 mb-2" />
+             <span className="text-xs font-bold text-[#32D74B]">Apple / Samsung</span>
+             <span className="text-[9px] text-gray-500">Arquivo .ICS</span>
+          </button>
+      </div>
 
-      <button onClick={() => { localStorage.removeItem('thaly_full_v8'); window.location.reload(); }} 
+      <button onClick={() => { localStorage.removeItem('thaly_full_v9'); window.location.reload(); }} 
         className="text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
         Fazer novo pedido
       </button>
@@ -540,7 +568,7 @@ const SuccessScreen = ({ data, whatsappLink, onCopy }) => {
 export default function App() {
   const [data, setData] = useState(() => {
     try {
-      const saved = localStorage.getItem('thaly_full_v8');
+      const saved = localStorage.getItem('thaly_full_v9');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.date) parsed.date = new Date(parsed.date);
@@ -571,7 +599,7 @@ export default function App() {
     extras: useRef(null), location: useRef(null), payment: useRef(null), checkout: useRef(null)
   };
 
-  useEffect(() => { localStorage.setItem('thaly_full_v8', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_full_v9', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
 
   // Inicializa som no primeiro clique (Política de Navegador)
