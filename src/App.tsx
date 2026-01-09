@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Check, Star, ArrowRight, Bed, Home, MessageCircle, 
-  Ticket, Lock, Flame, Wind, Clock,
-  CreditCard, Banknote, QrCode, Copy, Calendar as CalendarIcon, 
-  ChevronRight, Activity, Menu, X, HelpCircle, Instagram, Info, 
-  Volume2, VolumeX, Download, MapPin, Smartphone
+  Ticket, Lock, Flame, Wind,
+  CreditCard, Banknote, QrCode, Copy, 
+  ChevronRight, Menu, X, HelpCircle, Instagram, Info, MapPin, Calendar as CalendarIcon, Clock
 } from 'lucide-react';
 
 // ==================================================================================
@@ -22,8 +21,7 @@ const CONFIG = {
     AROMA: 10,
   },
   URLS: {
-    WHATSAPP_API: "https://api.whatsapp.com/send",
-    GOOGLE_CALENDAR: "https://calendar.google.com/calendar/render"
+    WHATSAPP_API: "https://api.whatsapp.com/send"
   }
 };
 
@@ -47,8 +45,7 @@ const SERVICES = [
     desc: 'Massagista de Cueca. O protocolo premium. Inicia de bruços soltando a musculatura, vira de frente com óleo morno, toque corpo a corpo e finalização manual intensa.', 
     duration: 60, 
     price: 155, 
-    badge: 'MAIS PEDIDA 🔥',
-    features: ['Massagista de Cueca', 'Corpo a Corpo', 'Finalização']
+    badge: 'MAIS PEDIDA 🔥'
   },
   { 
     id: 'relax', 
@@ -57,8 +54,7 @@ const SERVICES = [
     desc: 'Foco 100% terapêutico. Ideal para remover dores lombares, pernas cansadas e zerar o stress. Toque firme e preciso.', 
     duration: 60, 
     price: 125, 
-    badge: null,
-    features: ['Tira Dores', 'Zero Stress', 'Revigorante']
+    badge: null
   },
 ];
 
@@ -71,10 +67,6 @@ const LOCATIONS = [
   { id: 'home', label: 'Na sua Casa / Apto', sub: 'Atendimento no seu conforto', icon: Home, input: true },
   { id: 'hotel', label: 'Hotel / Motel', sub: 'Vou até a sua suíte (Sigilo Total)', icon: Bed, input: true },
 ];
-
-// ==================================================================================
-// 2. BANCO DE AVALIAÇÕES COMPLETO (50+)
-// ==================================================================================
 
 const REVIEWS_DB = [
   { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
@@ -130,148 +122,19 @@ const REVIEWS_DB = [
 ];
 
 // ==================================================================================
-// 3. AUDIO ENGINE (OCEAN SOUND + UI SFX)
-// ==================================================================================
-
-const AudioEngine = {
-    ctx: null,
-    oceanGain: null,
-    isMuted: true, // Começa mudo
-
-    init: () => {
-        if (!AudioEngine.ctx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) return;
-            AudioEngine.ctx = new AudioContext();
-        }
-    },
-
-    startOcean: () => {
-        if (!AudioEngine.ctx) AudioEngine.init();
-        const ctx = AudioEngine.ctx;
-        if (!ctx) return;
-        if (ctx.state === 'suspended') ctx.resume();
-
-        // Gerador de Pink Noise (Som de Cachoeira/Mar)
-        const bufferSize = 4096;
-        const pinkNoise = (function() {
-            let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
-            const node = ctx.createScriptProcessor(bufferSize, 1, 1);
-            node.onaudioprocess = function(e) {
-                const output = e.outputBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    const white = Math.random() * 2 - 1;
-                    b0 = 0.99886 * b0 + white * 0.0555179;
-                    b1 = 0.99332 * b1 + white * 0.0750759;
-                    b2 = 0.96900 * b2 + white * 0.1538520;
-                    b3 = 0.86650 * b3 + white * 0.3104856;
-                    b4 = 0.55000 * b4 + white * 0.5329522;
-                    b5 = -0.7616 * b5 - white * 0.0168980;
-                    output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-                    output[i] *= 0.11; 
-                    b6 = white * 0.115926;
-                }
-            };
-            return node;
-        })();
-
-        // Filtro Lowpass (Deixa o som mais abafado, como mar distante)
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 400;
-
-        const masterGain = ctx.createGain();
-        masterGain.gain.value = 0.0; // Começa zerado
-        AudioEngine.oceanGain = masterGain;
-
-        // Oscilador (Ondas indo e vindo)
-        const lfo = ctx.createOscillator();
-        lfo.type = 'sine';
-        lfo.frequency.value = 0.12; // Frequência da onda
-        const lfoGain = ctx.createGain();
-        lfoGain.gain.value = 0.04; 
-
-        lfo.connect(lfoGain);
-        lfoGain.connect(masterGain.gain);
-        pinkNoise.connect(filter);
-        filter.connect(masterGain);
-        masterGain.connect(ctx.destination);
-        lfo.start();
-    },
-
-    toggleMute: () => {
-        if (!AudioEngine.ctx) AudioEngine.startOcean();
-        const ctx = AudioEngine.ctx;
-        if (ctx.state === 'suspended') ctx.resume();
-
-        AudioEngine.isMuted = !AudioEngine.isMuted;
-        const now = ctx.currentTime;
-        
-        // Fade in suave para não assustar
-        if (!AudioEngine.isMuted) {
-            AudioEngine.oceanGain.gain.cancelScheduledValues(now);
-            AudioEngine.oceanGain.gain.linearRampToValueAtTime(0.08, now + 3); 
-        } else {
-            AudioEngine.oceanGain.gain.cancelScheduledValues(now);
-            AudioEngine.oceanGain.gain.linearRampToValueAtTime(0, now + 0.5);
-        }
-        return AudioEngine.isMuted;
-    },
-
-    playSfx: (type) => {
-        if (!AudioEngine.ctx || AudioEngine.isMuted) return;
-        const ctx = AudioEngine.ctx;
-        const t = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        if (type === 'tap') {
-            // "Tick" mecânico estilo iPhone
-            osc.frequency.setValueAtTime(600, t);
-            gain.gain.setValueAtTime(0.05, t);
-            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-            osc.start(t);
-            osc.stop(t + 0.05);
-        } else if (type === 'bubble') {
-            // Notificação suave
-            osc.frequency.setValueAtTime(300, t);
-            osc.frequency.linearRampToValueAtTime(500, t + 0.1);
-            gain.gain.setValueAtTime(0.05, t);
-            gain.gain.linearRampToValueAtTime(0, t + 0.3);
-            osc.start(t);
-            osc.stop(t + 0.3);
-        } else if (type === 'success') {
-            // Acorde de sucesso
-            const tone = (f, d) => {
-                const o = ctx.createOscillator(); const g = ctx.createGain();
-                o.connect(g); g.connect(ctx.destination);
-                o.frequency.value = f;
-                g.gain.setValueAtTime(0.05, t+d); g.gain.exponentialRampToValueAtTime(0.001, t+d+0.8);
-                o.start(t+d); o.stop(t+d+0.8);
-            };
-            tone(440,0); tone(554,0.15); tone(659,0.3);
-        }
-    }
-};
-
-// ==================================================================================
-// 3. UTILITÁRIOS (Helpers)
+// 2. UTILITÁRIOS
 // ==================================================================================
 
 const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
   vibrate: (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); },
   shuffleArray: (array) => {
-    // Fisher-Yates shuffle
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
   },
-  
   isTimeBlocked: (selectedDate, timeString) => {
     if (!selectedDate) return true;
     const now = new Date();
@@ -282,45 +145,6 @@ const Utils = {
     const [hours] = timeString.split(':').map(Number);
     return hours <= now.getHours();
   },
-
-  // --- GERADOR DE .ICS CORRIGIDO ---
-  downloadIcs: (data) => {
-    if (!data.date || !data.time) return;
-    const [h] = data.time.split(':');
-    const start = new Date(data.date); start.setHours(parseInt(h));
-    const end = new Date(start); end.setMinutes(end.getMinutes() + 60);
-
-    const fmt = (d) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
-    
-    // Cabeçalho compatível com Outlook/Android/iOS
-    const icsContent = 
-`BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//ThalyMassagens//Agendamento//PT
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
-BEGIN:VEVENT
-UID:${Date.now()}@thalymassagens.com
-DTSTAMP:${fmt(new Date())}
-DTSTART:${fmt(start)}
-DTEND:${fmt(end)}
-SUMMARY:Massagem com Thalyson
-DESCRIPTION:Serviço: ${data.service?.name}
-LOCATION:${data.location?.label}
-STATUS:CONFIRMED
-END:VEVENT
-END:VCALENDAR`;
-
-    // Blob Universal
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.setAttribute('download', 'agendamento_thalyson.ics');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  },
-
   getGreeting: () => {
     const h = new Date().getHours();
     return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
@@ -328,7 +152,7 @@ END:VCALENDAR`;
 };
 
 // ==================================================================================
-// 4. ESTILOS GLOBAIS
+// 3. ESTILOS GLOBAIS
 // ==================================================================================
 
 const globalStyles = `
@@ -340,24 +164,20 @@ body {
   letter-spacing: -0.01em; color: #fff; background: var(--bg-app);
   padding-bottom: env(safe-area-inset-bottom); overflow-x: hidden;
 }
-
 @keyframes shimmer { 0% {background-position: -200% 0;} 100% {background-position: 200% 0;} }
 .text-shimmer {
   background: linear-gradient(90deg, #ffffff 0%, #0A84FF 50%, #ffffff 100%);
   background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: shimmer 5s linear infinite;
 }
-
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @keyframes bubblePop { 0% { opacity: 0; transform: scale(0.8) translateY(-10px); } 10% { opacity: 1; transform: scale(1) translateY(0); } 90% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(0.8) translateY(-10px); } }
-
 .animate-enter { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-scale { animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 .animate-slide { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-bubble { animation: bubblePop 6s ease-in-out forwards; }
-
 .ios-bg { background: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000000 70%); min-height: 100vh; }
 .ios-card { 
   background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px;
@@ -376,7 +196,7 @@ body {
 `;
 
 // ==================================================================================
-// 5. COMPONENTES VISUAIS
+// 4. COMPONENTES VISUAIS
 // ==================================================================================
 
 const LiveBubbles = () => {
@@ -384,7 +204,7 @@ const LiveBubbles = () => {
     useEffect(() => {
       const cycle = () => {
         const randomMsg = LIVE_NOTIFICATIONS[Math.floor(Math.random() * LIVE_NOTIFICATIONS.length)];
-        setTimeout(() => { setActiveMsg(randomMsg); AudioEngine.playSfx('bubble'); }, 2000);
+        setTimeout(() => { setActiveMsg(randomMsg); }, 2000);
         setTimeout(() => setActiveMsg(null), 8000);
       };
       cycle();
@@ -448,39 +268,41 @@ const MenuOverlay = ({ onClose, onHelp }) => (
           </button>
        </div>
        <div className="mt-auto pt-6 border-t border-[#333]">
-          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 8.0 (Gold)</p>
+          <p className="text-xs text-center text-gray-600">Thalymassagens App<br/>Versão 10.0 (Completa)</p>
        </div>
     </div>
   </div>
 );
 
+// AJUDA EXPANDIDA
 const HelpModal = ({ onClose }) => (
   <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 animate-enter">
     <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose}></div>
-    <div className="relative w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[80vh]">
+    <div className="relative w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[85vh]">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2"><Info size={20} className="text-[#0A84FF]"/> Tudinho Explicadinho</h2>
+            <h2 className="text-xl font-bold text-white flex items-center gap-2"><Info size={20} className="text-[#0A84FF]"/> Guia Rápido</h2>
             <button onClick={onClose} className="p-1 bg-[#333] rounded-full"><X size={16} className="text-gray-400"/></button>
         </div>
         <div className="space-y-6">
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">1</div>
-                <div><h3 className="font-bold text-white text-sm">Escolha a Experiência</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Selecione o tipo de massagem que mais combina com seu momento atual.</p></div>
+                <div><h3 className="font-bold text-white text-sm">O Serviço</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Massagem profissional masculina realizada no conforto do seu local (Apt, Casa, Suíte e Hotel).</p></div>
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">2</div>
-                <div><h3 className="font-bold text-white text-sm">Agendamento</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Escolha o dia e horário. O app bloqueia horários já passados.</p></div>
+                <div><h3 className="font-bold text-white text-sm">Preparação</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Recomendo um banho quente antes. 
+                  Levo óleos e lubrificantes. Tenha duas toalhas disponíveis.</p></div>
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">3</div>
-                <div><h3 className="font-bold text-white text-sm">Onde Atendo?</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Vou até sua residência ou hotel. Valor de deslocamento a combinar.</p></div>
+                <div><h3 className="font-bold text-white text-sm">Segurança</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Sigilo total garantido. Atendimento discreto e respeitoso.</p></div>
             </div>
             <div className="bg-[#2C2C2E] p-4 rounded-xl border border-[#333]">
-                <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Segurança & Pagamento</h4>
-                <ul className="text-xs text-gray-400 space-y-1 list-disc pl-4">
-                    <li>Sigilo absoluto garantido.</li>
-                    <li>Pagamento feito no local (Pix/Dinheiro).</li>
-                    <li>Sem taxas ocultas.</li>
+                <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Pagamento & Cancelamento</h4>
+                <ul className="text-xs text-gray-400 space-y-2 list-disc pl-4">
+                    <li>Pagamento direto via Pix ou Dinheiro.</li>
+                    <li>Cancelamentos com min. 2 horas de antecedência.</li>
+                    <li>Taxa de deslocamento pode variar conforme distância.</li>
                 </ul>
             </div>
         </div>
@@ -489,44 +311,72 @@ const HelpModal = ({ onClose }) => (
   </div>
 );
 
-const SuccessScreen = ({ data, whatsappLink, onCopy }) => {
-  useEffect(() => { AudioEngine.playSfx('success'); }, []);
-
+// TELA DE SUCESSO PREENCHIDA
+const SuccessScreen = ({ data, financials, whatsappLink, onCopy, onReset }) => {
   return (
-    <div className="fixed inset-0 z-[300] bg-black flex flex-col items-center justify-center p-6 text-center animate-enter">
-      <div className="w-24 h-24 bg-[#32D74B] rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(50,215,75,0.4)] animate-scale">
-        <Check className="w-12 h-12 text-black" strokeWidth={4} />
+    <div className="min-h-screen pt-24 pb-12 px-5 flex flex-col items-center animate-enter text-center">
+      
+      <div className="w-20 h-20 bg-[#32D74B] rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(50,215,75,0.3)] animate-scale">
+        <Check className="w-10 h-10 text-black" strokeWidth={4} />
       </div>
       
-      <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Gerado!</h2>
-      <p className="text-gray-400 mb-8 text-base leading-relaxed max-w-xs mx-auto">
-        Envie a mensagem no WhatsApp para confirmar.
+      <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Confirmado!</h2>
+      <p className="text-gray-400 mb-8 text-sm max-w-xs">
+        Agora finalize enviando os detalhes abaixo no WhatsApp.
       </p>
 
+      {/* CARD RESUMO (TICKET) */}
+      <div className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-2xl p-6 mb-8 relative overflow-hidden text-left shadow-2xl">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0A84FF] to-[#32D74B]"></div>
+          
+          <div className="flex justify-between items-start mb-4 border-b border-[#333] pb-4">
+              <div>
+                  <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Serviço</p>
+                  <p className="text-white font-bold text-lg">{data.service?.name}</p>
+              </div>
+              <div className="text-right">
+                   <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Valor Final</p>
+                   <p className="text-[#32D74B] font-bold text-xl">{Utils.formatBRL(financials.finalTotal)}</p>
+              </div>
+          </div>
+
+          <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                  <CalendarIcon size={16} className="text-[#0A84FF]"/>
+                  <span className="text-sm text-gray-300">
+                      {data.date ? data.date.toLocaleDateString('pt-BR') : '--/--'} às {data.time}
+                  </span>
+              </div>
+              <div className="flex items-center gap-3">
+                  <MapPin size={16} className="text-[#0A84FF]"/>
+                  <span className="text-sm text-gray-300">{data.location?.label}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                  <Clock size={16} className="text-[#0A84FF]"/>
+                  <span className="text-sm text-gray-300">Duração: {data.service?.duration + (data.extras.upgrade ? 30 : 0)} min</span>
+              </div>
+          </div>
+          
+          {data.payment === 'pix' && (
+              <div className="mt-4 pt-4 border-t border-[#333]">
+                  <p className="text-[10px] text-gray-500 uppercase font-bold mb-1">Chave Pix (Copiada)</p>
+                  <p className="text-xs text-gray-400 break-all font-mono bg-black/30 p-2 rounded">{CONFIG.PIX_KEY}</p>
+              </div>
+          )}
+      </div>
+
       <a href={whatsappLink} target="_blank" rel="noreferrer" 
-         className="w-full max-w-sm bg-[#32D74B] text-black font-bold py-4 rounded-2xl mb-4 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-lg shadow-lg">
+         className="w-full max-w-sm bg-[#32D74B] text-black font-bold py-4 rounded-2xl mb-4 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-lg shadow-lg active:scale-95 transition-transform">
          <MessageCircle size={24} fill="currentColor" /> Enviar no WhatsApp
       </a>
       
       <button onClick={onCopy} 
-         className="w-full max-w-sm bg-[#1C1C1E] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 mb-8 border border-[#333]">
+         className="w-full max-w-sm bg-[#1C1C1E] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 mb-8 border border-[#333] active:scale-95 transition-transform">
          <Copy size={20} /> Copiar Texto
       </button>
 
-      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Salvar na Agenda</p>
-      
-      {/* BOTÃO ÚNICO DE CALENDÁRIO OTIMIZADO */}
-      <button onClick={() => Utils.downloadIcs(data)} 
-         className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-xl p-4 flex items-center justify-center gap-3 hover:bg-[#222] transition-colors mb-8">
-         <CalendarIcon className="text-[#0A84FF] w-6 h-6" />
-         <div className="text-left">
-             <span className="block text-sm font-bold text-white">Adicionar à Agenda</span>
-             <span className="block text-[10px] text-gray-500">Android & iOS (Universal)</span>
-         </div>
-      </button>
-
-      <button onClick={() => { localStorage.removeItem('thaly_full_v8'); window.location.reload(); }} 
-        className="text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
+      <button onClick={onReset} 
+        className="text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors py-4">
         Fazer novo pedido
       </button>
     </div>
@@ -534,7 +384,7 @@ const SuccessScreen = ({ data, whatsappLink, onCopy }) => {
 };
 
 // ==================================================================================
-// 6. APP PRINCIPAL
+// 5. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
@@ -557,14 +407,13 @@ export default function App() {
   });
 
   const [stage, setStage] = useState(0);
-  const [hasCoupon, setHasCoupon] = useState(false);
+  const [hasCoupon, setHasCoupon] = useState(false); 
   const [success, setSuccess] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [whatsappLink, setWhatsappLink] = useState('');
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
 
   const refs = {
     intro: useRef(null), services: useRef(null), datetime: useRef(null),
@@ -573,13 +422,6 @@ export default function App() {
 
   useEffect(() => { localStorage.setItem('thaly_full_v8', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
-
-  // Inicializa som no primeiro clique (Política de Navegador)
-  useEffect(() => {
-    const initAudio = () => { AudioEngine.init(); AudioEngine.startOcean(); document.removeEventListener('click', initAudio); };
-    document.addEventListener('click', initAudio);
-    return () => document.removeEventListener('click', initAudio);
-  }, []);
 
   const financials = useMemo(() => {
     const basePrice = data.service ? data.service.price : 0;
@@ -598,7 +440,6 @@ export default function App() {
   };
 
   const advanceStage = (nextStage, nextRef) => {
-    AudioEngine.playSfx('tap');
     Utils.vibrate([10]);
     if(nextStage > stage) setStage(nextStage);
     scrollToRef(nextRef);
@@ -643,7 +484,6 @@ export default function App() {
   };
 
   const finishOrder = () => {
-    if (hasCoupon) localStorage.setItem('thaly_coupon_redeemed', 'true');
     const text = generateMessage();
     const link = `${CONFIG.URLS.WHATSAPP_API}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
     setWhatsappLink(link);
@@ -651,10 +491,14 @@ export default function App() {
     window.open(link, '_blank');
   };
 
+  const showToast = (msg) => {
+      setToast(msg);
+      setTimeout(() => setToast(null), 3000);
+  };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(generateMessage());
-    setToast('Copiado!');
-    setTimeout(() => setToast(null), 3000);
+    showToast('Copiado!');
   };
 
   if (loading) return (
@@ -664,271 +508,276 @@ export default function App() {
     </div>
   );
 
-  if (success) return <SuccessScreen data={data} financials={financials} whatsappLink={whatsappLink} onCopy={handleCopy} />;
-
   return (
     <div className="ios-bg min-h-screen text-white pb-48 selection:bg-[#0A84FF] selection:text-white">
       <style>{globalStyles}</style>
       
-      {/* HEADER */}
+      {/* HEADER GLOBAL FIXO */}
       <header className="fixed top-0 w-full z-40 bg-black/80 backdrop-blur-xl border-b border-white/5 py-3 px-6 flex justify-between items-center transition-all duration-300">
-        <span className="font-extrabold text-lg tracking-tight text-shimmer">THALYMASSAGENS</span>
+        <span className="font-extrabold text-lg tracking-tight text-shimmer cursor-pointer" onClick={() => { setSuccess(false); setStage(0); window.scrollTo(0,0); }}>THALYMASSAGENS</span>
         <div className="flex items-center gap-3">
-            <button onClick={() => setIsMuted(AudioEngine.toggleMute())} className="p-2 bg-[#1C1C1E] rounded-full border border-[#333] active:scale-95 transition-transform">
-                {isMuted ? <VolumeX size={18} className="text-gray-500"/> : <Volume2 size={18} className="text-[#0A84FF]"/>}
-            </button>
-            <button onClick={() => { AudioEngine.playSfx('tap'); setShowMenu(true); }} className="p-2 bg-[#1C1C1E] rounded-full border border-[#333] active:scale-95 transition-transform">
+            <button onClick={() => { setShowMenu(true); }} className="p-2 bg-[#1C1C1E] rounded-full border border-[#333] active:scale-95 transition-transform">
                 <Menu size={18} className="text-white"/>
             </button>
         </div>
       </header>
 
-      {/* OVERLAYS & LIVE STATUS */}
+      {/* OVERLAYS */}
       <LiveBubbles />
       {showMenu && <MenuOverlay onClose={() => setShowMenu(false)} onHelp={() => setShowHelp(true)} />}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
 
-      {/* TOAST FLUTUANTE */}
+      {/* TOAST */}
       {toast && (
         <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] bg-[#32D74B] text-black px-6 py-3 rounded-full shadow-xl flex items-center gap-2 font-bold text-sm animate-scale">
             <Check size={16} strokeWidth={3}/> {toast}
         </div>
       )}
 
-      <main className="max-w-md mx-auto pt-24 px-5">
-        
-        {/* 1. INTRODUÇÃO */}
-        <section ref={refs.intro} className={`transition-all duration-700 ${stage >= 0 ? 'section-active' : 'section-blur'}`}>
-          <div className="mb-8 mt-4">
-             <h1 className="text-[40px] font-bold leading-[1.05] tracking-tight mb-3">
-               Relaxamento<br/><span className="text-[#555]">Exclusivo.</span>
-             </h1>
-             <p className="text-gray-400 text-[17px] leading-relaxed">
-               Massoterapia masculina no conforto do seu local.
-             </p>
-          </div>
-
-          <ReviewsTicker />
-
-          <div className="ios-card p-6 space-y-5">
-                <div>
-                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2 block ml-1">Seu Nome</label>
-                    <input 
-                      value={data.name} onChange={e => setData({...data, name: e.target.value})}
-                      placeholder="Como prefere ser chamado?" className="ios-input p-4"
-                    />
-                </div>
-                <div>
-                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2 block ml-1">Sua Idade</label>
-                    <input 
-                      type="tel" maxLength={2} value={data.age} onChange={e => setData({...data, age: e.target.value.replace(/\D/g,'')})}
-                      placeholder="Ex: 30" className="ios-input p-4"
-                    />
-                </div>
-
-                {/* --- CHECKBOX DE SAÚDE --- */}
-                <div onClick={() => { AudioEngine.playSfx('tap'); Utils.vibrate(); setData({...data, medical: !data.medical}) }} 
-                     className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${data.medical ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333] hover:bg-[#222]'}`}>
-                    
-                    <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${data.medical ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#555]'}`}>
-                        {data.medical && <Check size={14} className="text-white"/>}
-                    </div>
-                    
-                    <div className="flex-1">
-                        <p className={`text-[15px] font-bold ${data.medical ? 'text-white' : 'text-gray-400'}`}>Liberado para massagem</p>
-                        <p className="text-[11px] text-gray-500 leading-tight mt-0.5">Confirmo que estou apto e sem lesões.</p>
-                    </div>
-                </div>
-
-                {/* BOTÃO START */}
-                {data.name.length > 2 && data.age && data.medical && stage === 0 && (
-                    <button onClick={() => advanceStage(1, refs.services)} className="ios-btn w-full py-4 mt-2 flex items-center justify-center gap-2 animate-scale shadow-lg shadow-blue-900/20">
-                       Começar Agendamento <ArrowRight size={20}/>
-                    </button>
-                )}
-          </div>
-        </section>
-
-        {/* 2. SERVIÇOS */}
-        <section ref={refs.services} className={`mt-16 transition-all duration-700 ${stage >= 1 ? 'section-active' : 'section-blur'}`}>
-            <h3 className="text-xl font-bold mb-5 ml-1 flex items-center gap-2"><span className="text-gray-600">01.</span> Experiência</h3>
-            <div className="space-y-6">
-                {SERVICES.map(s => (
-                    <div key={s.id} onClick={() => { setData({...data, service: s}); advanceStage(2, refs.datetime); }}
-                        className={`ios-card p-6 cursor-pointer relative ${data.service?.id === s.id ? 'selected' : ''}`}>
-                        {s.badge && <span className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[10px] font-bold px-3 py-1.5 rounded-bl-xl">{s.badge}</span>}
-                        <div className="flex justify-between items-start mb-3">
-                            <h3 className={`text-xl font-bold ${data.service?.id === s.id ? 'text-[#0A84FF]' : 'text-white'}`}>{s.name}</h3>
-                            <span className="text-gray-300 font-bold bg-[#333] px-3 py-1 rounded-lg text-sm">{Utils.formatBRL(s.price)}</span>
-                        </div>
-                        <p className="text-[11px] font-bold text-[#0A84FF] uppercase tracking-wide border border-[#0A84FF]/30 inline-block px-2 py-1 rounded mb-3">{s.short}</p>
-                        <p className="text-gray-400 text-[15px] leading-relaxed">{s.desc}</p>
-                    </div>
-                ))}
-            </div>
-        </section>
-
-        {/* 3. DATA E HORA */}
-        <section ref={refs.datetime} className={`mt-16 transition-all duration-700 ${stage >= 2 ? 'section-active' : 'section-blur'}`}>
-            <h3 className="text-xl font-bold mb-5 ml-1 flex items-center gap-2"><span className="text-gray-600">02.</span> Agendamento</h3>
-            <div className="ios-card p-6">
-                <div className="flex gap-3 overflow-x-auto pb-5 scrollbar-hide snap-x">
-                    {[...Array(14)].map((_, i) => {
-                        const d = new Date(); d.setDate(d.getDate() + i);
-                        const isSelected = data.date && new Date(data.date).getDate() === d.getDate();
-                        return (
-                            <button key={i} onClick={() => { AudioEngine.playSfx('tap'); Utils.vibrate(); setData({...data, date: d, time: null}); }}
-                                className={`snap-center min-w-[72px] h-[88px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSelected ? 'bg-[#0A84FF] border-[#0A84FF] text-white shadow-lg scale-105' : 'bg-[#1C1C1E] border-[#333] text-gray-400'}`}>
-                                <span className="text-[10px] font-bold uppercase mb-1 opacity-60">{i===0?'HOJE':d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
-                                <span className="text-[24px] font-bold tracking-tight">{d.getDate()}</span>
-                            </button>
-                        )
-                    })}
-                </div>
-                
-                <div className={`grid grid-cols-4 gap-3 transition-all duration-500 ${data.date ? 'opacity-100 mt-4' : 'opacity-20 pointer-events-none'}`}>
-                    {TIME_SLOTS.map(t => {
-                        const isBlocked = Utils.isTimeBlocked(data.date, t);
-                        return (
-                            <button key={t} disabled={isBlocked} onClick={() => handleTimeSelect(t)}
-                                className={`py-3.5 rounded-xl text-[14px] font-bold border transition-all relative overflow-hidden
-                                    ${data.time === t ? 'bg-white text-black border-white shadow-md' : 
-                                      isBlocked ? 'bg-transparent text-[#333] border-[#222] cursor-not-allowed decoration-slice' : 
-                                      'bg-[#1C1C1E] border-transparent text-gray-300 hover:bg-[#2C2C2E]'}`}>
-                                {isBlocked && <div className="absolute inset-0 flex items-center justify-center"><div className="w-[120%] h-[1px] bg-[#333] rotate-45"></div></div>}
-                                {t}
-                            </button>
-                        )
-                    })}
-                </div>
-            </div>
-        </section>
-
-        {/* 4. ADICIONAIS */}
-        <section ref={refs.extras} className={`mt-16 transition-all duration-700 ${stage >= 3 ? 'section-active' : 'section-blur'}`}>
-            <h3 className="text-xl font-bold mb-5 ml-1 flex items-center gap-2"><span className="text-gray-600">03.</span> Personalizar</h3>
+      {/* --- TELA DE SUCESSO OU HOME --- */}
+      {success ? (
+        <SuccessScreen 
+          data={data} 
+          financials={financials}
+          whatsappLink={whatsappLink} 
+          onCopy={handleCopy} 
+          onReset={() => { setSuccess(false); setStage(0); window.scrollTo(0,0); }}
+        />
+      ) : (
+        <main className="max-w-md mx-auto pt-24 px-5">
             
-            <div className="ios-card rounded-[24px] overflow-hidden divide-y divide-[#333]">
-                 {/* UPGRADE TEMPO */}
-                 <div onClick={() => { AudioEngine.playSfx('tap'); Utils.vibrate(); setData({...data, extras: {...data.extras, upgrade: !data.extras.upgrade}}); }}
-                      className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
-                     <div className="flex items-center gap-4">
-                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.upgrade ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#444] bg-transparent'}`}>
-                           {data.extras.upgrade && <Check size={16} className="text-white"/>}
+            {/* 1. INTRODUÇÃO */}
+            <section ref={refs.intro} className={`transition-all duration-700 ${stage >= 0 ? 'section-active' : 'section-blur'}`}>
+                <div className="mb-8 mt-4">
+                    <h1 className="text-[40px] font-bold leading-[1.05] tracking-tight mb-3">
+                    Relaxamento<br/><span className="text-[#555]">Exclusivo.</span>
+                    </h1>
+                    <p className="text-gray-400 text-[17px] leading-relaxed">
+                    Massoterapia masculina no conforto do seu local.
+                    </p>
+                </div>
+
+                <ReviewsTicker />
+
+                <div className="ios-card p-6 space-y-5">
+                        <div>
+                            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2 block ml-1">Seu Nome</label>
+                            <input 
+                            value={data.name} onChange={e => setData({...data, name: e.target.value})}
+                            placeholder="Como prefere ser chamado?" className="ios-input p-4"
+                            />
                         </div>
                         <div>
-                            <p className="font-bold text-white text-[16px]">+30 Minutos</p>
-                            <p className="text-[12px] text-gray-500">Sessão estendida</p>
+                            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2 block ml-1">Sua Idade</label>
+                            <input 
+                            type="tel" maxLength={2} value={data.age} onChange={e => setData({...data, age: e.target.value.replace(/\D/g,'')})}
+                            placeholder="Ex: 30" className="ios-input p-4"
+                            />
                         </div>
-                     </div>
-                     <span className="text-[#0A84FF] font-bold text-[14px]">+ {Utils.formatBRL(data.service ? data.service.price * CONFIG.PRICES.UPGRADE_PCT : 0)}</span>
-                 </div>
 
-                 {/* TOUCH */}
-                 <div onClick={() => { AudioEngine.playSfx('tap'); Utils.vibrate(); setData({...data, extras: {...data.extras, touch: !data.extras.touch}}); }}
-                      className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
-                     <div className="flex items-center gap-4">
-                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.touch ? 'bg-[#FF375F] border-[#FF375F]' : 'border-[#444] bg-transparent'}`}>
-                           {data.extras.touch && <Flame size={16} className="text-white"/>}
-                        </div>
-                        <div>
-                            <p className="font-bold text-white text-[16px]">Interação / Toque</p>
-                            <p className="text-[12px] text-gray-500">Liberdade total</p>
-                        </div>
-                     </div>
-                     <span className="text-[#FF375F] font-bold text-[14px]">+ {Utils.formatBRL(CONFIG.PRICES.TOUCH)}</span>
-                 </div>
-
-                 {/* AROMA */}
-                 <div onClick={() => { AudioEngine.playSfx('tap'); Utils.vibrate(); setData({...data, extras: {...data.extras, aroma: !data.extras.aroma}}); }}
-                      className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
-                     <div className="flex items-center gap-4">
-                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.aroma ? 'bg-[#32D74B] border-[#32D74B]' : 'border-[#444] bg-transparent'}`}>
-                           {data.extras.aroma && <Wind size={16} className="text-white"/>}
-                        </div>
-                        <div>
-                            <p className="font-bold text-white text-[16px]">Aromaterapia</p>
-                            <p className="text-[12px] text-gray-500">Óleos essenciais</p>
-                        </div>
-                     </div>
-                     <span className="text-[#32D74B] font-bold text-[14px]">+ {Utils.formatBRL(CONFIG.PRICES.AROMA)}</span>
-                 </div>
-            </div>
-
-            {/* BOTÃO INTELIGENTE */}
-            <button onClick={() => advanceStage(4, refs.location)} 
-                className={`w-full mt-6 py-4 rounded-2xl text-[16px] font-bold transition-all flex items-center justify-center gap-2 shadow-lg
-                ${activeExtrasCount > 0 
-                    ? 'bg-[#0A84FF] text-white' 
-                    : 'bg-[#1C1C1E] text-gray-400 border border-[#333] hover:text-white hover:bg-[#2C2C2E]'
-                }`}>
-                {activeExtrasCount > 0 ? `Confirmar ${activeExtrasCount} Adicionais` : 'Pular esta etapa'}
-                {activeExtrasCount > 0 ? <Check size={20}/> : <ChevronRight size={20}/>}
-            </button>
-        </section>
-
-        {/* 5. LOCALIZAÇÃO */}
-        <section ref={refs.location} className={`mt-16 transition-all duration-700 ${stage >= 4 ? 'section-active' : 'section-blur'}`}>
-            <h3 className="text-xl font-bold mb-5 ml-1 flex items-center gap-2"><span className="text-gray-600">04.</span> Localização</h3>
-            <div className="space-y-4">
-                {LOCATIONS.map(loc => {
-                    const isSel = data.location?.id === loc.id;
-                    return (
-                        <div key={loc.id}>
-                            <div onClick={() => { setData({...data, location: loc}); }}
-                                className={`p-5 rounded-2xl border flex items-center gap-4 cursor-pointer transition-all ${isSel ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-card border-transparent'}`}>
-                                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isSel ? 'bg-[#0A84FF] text-white' : 'bg-[#222] text-gray-500'}`}>
-                                    <loc.icon size={20} />
-                                </div>
-                                <div>
-                                    <p className="font-bold text-white text-[16px]">{loc.label}</p>
-                                    <p className="text-[12px] text-gray-500">{loc.sub}</p>
-                                </div>
+                        {/* --- CHECKBOX DE SAÚDE --- */}
+                        <div onClick={() => { Utils.vibrate(); setData({...data, medical: !data.medical}) }} 
+                            className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${data.medical ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333] hover:bg-[#222]'}`}>
+                            
+                            <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${data.medical ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#555]'}`}>
+                                {data.medical && <Check size={14} className="text-white"/>}
                             </div>
                             
-                            {isSel && (
-                                <div className="mt-4 ml-6 pl-6 border-l-2 border-[#333] space-y-4 animate-enter">
-                                    <input value={data.street} onChange={e => setData({...data, street: e.target.value})} placeholder="Rua / Avenida" className="ios-input p-4"/>
-                                    <div className="flex gap-3">
-                                        <input type="tel" value={data.number} onChange={e => setData({...data, number: e.target.value})} placeholder="Nº" className="ios-input p-4 w-1/3 text-center"/>
-                                        <input value={data.district} onChange={e => setData({...data, district: e.target.value})} placeholder="Bairro" className="ios-input p-4 w-2/3"/>
-                                    </div>
-                                    <input value={data.comp} onChange={e => setData({...data, comp: e.target.value})} placeholder="Complemento (Opcional)" className="ios-input p-4"/>
-                                    
-                                    <button disabled={!data.street || !data.number || !data.district}
-                                        onClick={() => advanceStage(5, refs.payment)}
-                                        className="w-full bg-[#1C1C1E] text-white py-4 rounded-xl text-[14px] font-bold border border-[#333] hover:bg-[#2C2C2E] disabled:opacity-50 transition-all flex justify-center gap-2">
-                                        Confirmar Endereço <Check size={18}/>
-                                    </button>
-                                </div>
-                            )}
+                            <div className="flex-1">
+                                <p className={`text-[15px] font-bold ${data.medical ? 'text-white' : 'text-gray-400'}`}>Liberado para massagem</p>
+                                <p className="text-[11px] text-gray-500 leading-tight mt-0.5">Confirmo que estou apto e sem lesões.</p>
+                            </div>
                         </div>
-                    )
-                })}
-            </div>
-        </section>
 
-        {/* 6. PAGAMENTO */}
-        <section ref={refs.payment} className={`mt-16 transition-all duration-700 ${stage >= 5 ? 'section-active' : 'section-blur'}`}>
-            <h3 className="text-xl font-bold mb-5 ml-1 flex items-center gap-2"><span className="text-gray-600">05.</span> Pagamento</h3>
-            
-            <div className="ios-card p-3 rounded-3xl grid grid-cols-3 gap-3 mb-32">
-                {['pix', 'dinheiro', 'cartao'].map(method => (
-                    <button key={method} onClick={() => { setData({...data, payment: method}); advanceStage(6, refs.checkout); if(method==='pix'){navigator.clipboard.writeText(CONFIG.PIX_KEY); setToast('Chave Pix Copiada!')} }}
-                        className={`flex flex-col items-center gap-3 p-5 rounded-2xl border transition-all ${data.payment === method ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'border-transparent hover:bg-[#222]'}`}>
-                        {method === 'pix' && <QrCode className="text-[#0A84FF]" size={24}/>}
-                        {method === 'dinheiro' && <Banknote className="text-[#32D74B]" size={24}/>}
-                        {method === 'cartao' && <CreditCard className="text-[#FFD60A]" size={24}/>}
-                        <span className="text-[12px] font-bold text-gray-300 uppercase">{method}</span>
-                    </button>
-                ))}
-            </div>
-        </section>
+                        {/* BOTÃO START */}
+                        {data.name.length > 2 && data.age && data.medical && stage === 0 && (
+                            <button onClick={() => advanceStage(1, refs.services)} className="ios-btn w-full py-4 mt-2 flex items-center justify-center gap-2 animate-scale shadow-lg shadow-blue-900/20">
+                                Começar Agendamento <ArrowRight size={20}/>
+                            </button>
+                        )}
+                </div>
+            </section>
 
-      </main>
+            {/* 2. SERVIÇOS */}
+            <section ref={refs.services} className={`mt-16 transition-all duration-700 ${stage >= 1 ? 'section-active' : 'section-blur'}`}>
+                <h3 className="text-xl font-bold mb-5 ml-1 flex items-center gap-2"><span className="text-gray-600">01.</span> Experiência</h3>
+                <div className="space-y-6">
+                    {SERVICES.map(s => (
+                        <div key={s.id} onClick={() => { setData({...data, service: s}); advanceStage(2, refs.datetime); }}
+                            className={`ios-card p-6 cursor-pointer relative ${data.service?.id === s.id ? 'selected' : ''}`}>
+                            {s.badge && <span className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[10px] font-bold px-3 py-1.5 rounded-bl-xl">{s.badge}</span>}
+                            <div className="flex justify-between items-start mb-3">
+                                <h3 className={`text-xl font-bold ${data.service?.id === s.id ? 'text-[#0A84FF]' : 'text-white'}`}>{s.name}</h3>
+                                <span className="text-gray-300 font-bold bg-[#333] px-3 py-1 rounded-lg text-sm">{Utils.formatBRL(s.price)}</span>
+                            </div>
+                            <p className="text-[11px] font-bold text-[#0A84FF] uppercase tracking-wide border border-[#0A84FF]/30 inline-block px-2 py-1 rounded mb-3">{s.short}</p>
+                            <p className="text-gray-400 text-[15px] leading-relaxed">{s.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
 
-      {/* 7. CHECKOUT BAR (iOS Sheet Style) */}
-      {stage >= 6 && (
+            {/* 3. DATA E HORA */}
+            <section ref={refs.datetime} className={`mt-16 transition-all duration-700 ${stage >= 2 ? 'section-active' : 'section-blur'}`}>
+                <h3 className="text-xl font-bold mb-5 ml-1 flex items-center gap-2"><span className="text-gray-600">02.</span> Agendamento</h3>
+                <div className="ios-card p-6">
+                    <div className="flex gap-3 overflow-x-auto pb-5 scrollbar-hide snap-x">
+                        {[...Array(14)].map((_, i) => {
+                            const d = new Date(); d.setDate(d.getDate() + i);
+                            const isSelected = data.date && new Date(data.date).getDate() === d.getDate();
+                            return (
+                                <button key={i} onClick={() => { Utils.vibrate(); setData({...data, date: d, time: null}); }}
+                                    className={`snap-center min-w-[72px] h-[88px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSelected ? 'bg-[#0A84FF] border-[#0A84FF] text-white shadow-lg scale-105' : 'bg-[#1C1C1E] border-[#333] text-gray-400'}`}>
+                                    <span className="text-[10px] font-bold uppercase mb-1 opacity-60">{i===0?'HOJE':d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
+                                    <span className="text-[24px] font-bold tracking-tight">{d.getDate()}</span>
+                                </button>
+                            )
+                        })}
+                    </div>
+                    
+                    <div className={`grid grid-cols-4 gap-3 transition-all duration-500 ${data.date ? 'opacity-100 mt-4' : 'opacity-20 pointer-events-none'}`}>
+                        {TIME_SLOTS.map(t => {
+                            const isBlocked = Utils.isTimeBlocked(data.date, t);
+                            return (
+                                <button key={t} disabled={isBlocked} onClick={() => handleTimeSelect(t)}
+                                    className={`py-3.5 rounded-xl text-[14px] font-bold border transition-all relative overflow-hidden
+                                        ${data.time === t ? 'bg-white text-black border-white shadow-md' : 
+                                        isBlocked ? 'bg-transparent text-[#333] border-[#222] cursor-not-allowed decoration-slice' : 
+                                        'bg-[#1C1C1E] border-transparent text-gray-300 hover:bg-[#2C2C2E]'}`}>
+                                    {isBlocked && <div className="absolute inset-0 flex items-center justify-center"><div className="w-[120%] h-[1px] bg-[#333] rotate-45"></div></div>}
+                                    {t}
+                                </button>
+                            )
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* 4. ADICIONAIS */}
+            <section ref={refs.extras} className={`mt-16 transition-all duration-700 ${stage >= 3 ? 'section-active' : 'section-blur'}`}>
+                <h3 className="text-xl font-bold mb-5 ml-1 flex items-center gap-2"><span className="text-gray-600">03.</span> Personalizar</h3>
+                
+                <div className="ios-card rounded-[24px] overflow-hidden divide-y divide-[#333]">
+                        {/* UPGRADE TEMPO */}
+                        <div onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, upgrade: !data.extras.upgrade}}); }}
+                            className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
+                            <div className="flex items-center gap-4">
+                            <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.upgrade ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#444] bg-transparent'}`}>
+                                {data.extras.upgrade && <Check size={16} className="text-white"/>}
+                            </div>
+                            <div>
+                                <p className="font-bold text-white text-[16px]">+30 Minutos</p>
+                                <p className="text-[12px] text-gray-500">Sessão estendida</p>
+                            </div>
+                            </div>
+                            <span className="text-[#0A84FF] font-bold text-[14px]">+ {Utils.formatBRL(data.service ? data.service.price * CONFIG.PRICES.UPGRADE_PCT : 0)}</span>
+                        </div>
+
+                        {/* TOUCH */}
+                        <div onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, touch: !data.extras.touch}}); }}
+                            className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
+                            <div className="flex items-center gap-4">
+                            <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.touch ? 'bg-[#FF375F] border-[#FF375F]' : 'border-[#444] bg-transparent'}`}>
+                                {data.extras.touch && <Flame size={16} className="text-white"/>}
+                            </div>
+                            <div>
+                                <p className="font-bold text-white text-[16px]">Interação / Toque</p>
+                                <p className="text-[12px] text-gray-500">Liberdade total</p>
+                            </div>
+                            </div>
+                            <span className="text-[#FF375F] font-bold text-[14px]">+ {Utils.formatBRL(CONFIG.PRICES.TOUCH)}</span>
+                        </div>
+
+                        {/* AROMA */}
+                        <div onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, aroma: !data.extras.aroma}}); }}
+                            className="p-6 flex justify-between items-center cursor-pointer active:bg-[#333] transition-colors">
+                            <div className="flex items-center gap-4">
+                            <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${data.extras.aroma ? 'bg-[#32D74B] border-[#32D74B]' : 'border-[#444] bg-transparent'}`}>
+                                {data.extras.aroma && <Wind size={16} className="text-white"/>}
+                            </div>
+                            <div>
+                                <p className="font-bold text-white text-[16px]">Aromaterapia</p>
+                                <p className="text-[12px] text-gray-500">Óleos essenciais</p>
+                            </div>
+                            </div>
+                            <span className="text-[#32D74B] font-bold text-[14px]">+ {Utils.formatBRL(CONFIG.PRICES.AROMA)}</span>
+                        </div>
+                </div>
+
+                {/* BOTÃO INTELIGENTE */}
+                <button onClick={() => advanceStage(4, refs.location)} 
+                    className={`w-full mt-6 py-4 rounded-2xl text-[16px] font-bold transition-all flex items-center justify-center gap-2 shadow-lg
+                    ${activeExtrasCount > 0 
+                        ? 'bg-[#0A84FF] text-white' 
+                        : 'bg-[#1C1C1E] text-gray-400 border border-[#333] hover:text-white hover:bg-[#2C2C2E]'
+                    }`}>
+                    {activeExtrasCount > 0 ? `Confirmar ${activeExtrasCount} Adicionais` : 'Pular esta etapa'}
+                    {activeExtrasCount > 0 ? <Check size={20}/> : <ChevronRight size={20}/>}
+                </button>
+            </section>
+
+            {/* 5. LOCALIZAÇÃO */}
+            <section ref={refs.location} className={`mt-16 transition-all duration-700 ${stage >= 4 ? 'section-active' : 'section-blur'}`}>
+                <h3 className="text-xl font-bold mb-5 ml-1 flex items-center gap-2"><span className="text-gray-600">04.</span> Localização</h3>
+                <div className="space-y-4">
+                    {LOCATIONS.map(loc => {
+                        const isSel = data.location?.id === loc.id;
+                        return (
+                            <div key={loc.id}>
+                                <div onClick={() => { setData({...data, location: loc}); }}
+                                    className={`p-5 rounded-2xl border flex items-center gap-4 cursor-pointer transition-all ${isSel ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-card border-transparent'}`}>
+                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isSel ? 'bg-[#0A84FF] text-white' : 'bg-[#222] text-gray-500'}`}>
+                                        <loc.icon size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-white text-[16px]">{loc.label}</p>
+                                        <p className="text-[12px] text-gray-500">{loc.sub}</p>
+                                    </div>
+                                </div>
+                                
+                                {isSel && (
+                                    <div className="mt-4 ml-6 pl-6 border-l-2 border-[#333] space-y-4 animate-enter">
+                                        <input value={data.street} onChange={e => setData({...data, street: e.target.value})} placeholder="Rua / Avenida" className="ios-input p-4"/>
+                                        <div className="flex gap-3">
+                                            <input type="tel" value={data.number} onChange={e => setData({...data, number: e.target.value})} placeholder="Nº" className="ios-input p-4 w-1/3 text-center"/>
+                                            <input value={data.district} onChange={e => setData({...data, district: e.target.value})} placeholder="Bairro" className="ios-input p-4 w-2/3"/>
+                                        </div>
+                                        <input value={data.comp} onChange={e => setData({...data, comp: e.target.value})} placeholder="Complemento (Opcional)" className="ios-input p-4"/>
+                                        
+                                        <button disabled={!data.street || !data.number || !data.district}
+                                            onClick={() => advanceStage(5, refs.payment)}
+                                            className="w-full bg-[#1C1C1E] text-white py-4 rounded-xl text-[14px] font-bold border border-[#333] hover:bg-[#2C2C2E] disabled:opacity-50 transition-all flex justify-center gap-2">
+                                            Confirmar Endereço <Check size={18}/>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    })}
+                </div>
+            </section>
+
+            {/* 6. PAGAMENTO */}
+            <section ref={refs.payment} className={`mt-16 transition-all duration-700 ${stage >= 5 ? 'section-active' : 'section-blur'}`}>
+                <h3 className="text-xl font-bold mb-5 ml-1 flex items-center gap-2"><span className="text-gray-600">05.</span> Pagamento</h3>
+                
+                <div className="ios-card p-3 rounded-3xl grid grid-cols-3 gap-3 mb-32">
+                    {['pix', 'dinheiro', 'cartao'].map(method => (
+                        <button key={method} onClick={() => { setData({...data, payment: method}); advanceStage(6, refs.checkout); if(method==='pix'){navigator.clipboard.writeText(CONFIG.PIX_KEY); showToast('Chave Pix Copiada!')} }}
+                            className={`flex flex-col items-center gap-3 p-5 rounded-2xl border transition-all ${data.payment === method ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'border-transparent hover:bg-[#222]'}`}>
+                            {method === 'pix' && <QrCode className="text-[#0A84FF]" size={24}/>}
+                            {method === 'dinheiro' && <Banknote className="text-[#32D74B]" size={24}/>}
+                            {method === 'cartao' && <CreditCard className="text-[#FFD60A]" size={24}/>}
+                            <span className="text-[12px] font-bold text-gray-300 uppercase">{method}</span>
+                        </button>
+                    ))}
+                </div>
+            </section>
+        </main>
+      )}
+
+      {/* 7. CHECKOUT BAR */}
+      {!success && stage >= 6 && (
         <div ref={refs.checkout} className="fixed bottom-0 w-full z-50 animate-enter">
             {/* Gradient Fade */}
             <div className="h-24 bg-gradient-to-t from-black via-black/90 to-transparent absolute bottom-full w-full pointer-events-none"></div>
@@ -947,8 +796,8 @@ export default function App() {
                             <span className="text-[36px] font-extrabold text-white tracking-tight">{Utils.formatBRL(financials.finalTotal)}</span>
                         </div>
                     </div>
-                    {!hasCoupon && !localStorage.getItem('thaly_coupon_redeemed') && (
-                        <button onClick={() => { AudioEngine.playSfx('tap'); setHasCoupon(true); Utils.vibrate(); setToast('Desconto Aplicado!'); }} 
+                    {!hasCoupon && (
+                        <button onClick={() => { setHasCoupon(true); Utils.vibrate(); showToast('Desconto Aplicado!'); }} 
                             className="h-10 px-4 rounded-full bg-[#0A84FF]/10 text-[#0A84FF] font-bold text-xs border border-[#0A84FF]/20 flex items-center gap-2">
                             <Ticket size={14}/> Aplicar Cupom
                         </button>
