@@ -31,7 +31,7 @@ const LIVE_NOTIFICATIONS = [
   "📅 Agenda de Sexta quase cheia",
   "⭐ Pedro avaliou com 5 estrelas",
   "✅ Matheus confirmou presença",
-  "💎 Novo cliente VIP cadastrado",
+  "💎 Murilo usou o Cupom",
   "🌊 Ricardo ativou o modo relax",
   "💬 Lucas enviou uma dúvida",
   "🏠 Atendimento em domicílio iniciado"
@@ -42,7 +42,7 @@ const SERVICES = [
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    desc: 'Massagista de Cueca. O protocolo premium. Inicia de bruços soltando a musculatura, vira de frente com óleo morno, toque corpo a corpo e finalização manual intensa.', 
+    desc: 'Massagista de Cueca. O protocolo premium. Inicia de bruços soltando a musculatura, vira de frente com creme e óleo, toque corpo a corpo e finalização manual intensa.', 
     duration: 60, 
     price: 155, 
     badge: 'MAIS PEDIDA 🔥'
@@ -51,7 +51,7 @@ const SERVICES = [
     id: 'relax', 
     name: 'Massagem Relaxante', 
     short: 'Tira Dores e Tensão',
-    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares, pernas cansadas e zerar o stress. Toque firme e preciso.', 
+    desc: 'Foco 100% terapêutico e relaxante. Ideal para remover dores lombares, pernas cansadas. Toques suaves para relaxar e tirar o stress, sem toques íntimos.', 
     duration: 60, 
     price: 125, 
     badge: null
@@ -72,7 +72,7 @@ const REVIEWS_DB = [
   { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
   { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", a: "Curioso SP", s: 5 },
+  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
   { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
   { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
   { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
@@ -82,7 +82,7 @@ const REVIEWS_DB = [
   { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
   { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
   { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
-  { t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", a: "Felipe Personal", s: 5 },
+  { t: "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve. Da pra ver que ele manda bem no que faz. Obrigado!", a: "Alan SP ", s: 5 },
   { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
   { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
   { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
@@ -92,7 +92,7 @@ const REVIEWS_DB = [
   { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
   { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
   { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
-  { t: "O óleo de coco morno é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
+  { t: "O  lubrificante é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
   { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
   { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
   { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
@@ -111,7 +111,7 @@ const REVIEWS_DB = [
   { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
   { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
   { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
-  { t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", a: "Morador Centro", s: 5 },
+  { t: "Fiz no meu apto e foi Prático.", a: "Morador Centro", s: 5 },
   { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
   { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
   { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
@@ -322,7 +322,7 @@ const SuccessScreen = ({ data, financials, whatsappLink, onCopy, onReset }) => {
       
       <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Confirmado!</h2>
       <p className="text-gray-400 mb-8 text-sm max-w-xs">
-        Agora finalize enviando os detalhes abaixo no WhatsApp.
+        Agora tome uma ducha, que vou confirmar sua sessão, Obrigado!
       </p>
 
       {/* CARD RESUMO (TICKET) */}
