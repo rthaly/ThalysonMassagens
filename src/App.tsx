@@ -291,7 +291,7 @@ const HelpModal = ({ onClose }) => (
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">2</div>
                 <div><h3 className="font-bold text-white text-sm">Preparação</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Recomendo um banho quente antes. 
-                  Levo óleos e lubrificantes. Tenha duas toalhas disponíveis.</p></div>
+                  Levo creme,  óleos e lubrificantes e aromatizador. </p></div>
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">3</div>
@@ -300,7 +300,7 @@ const HelpModal = ({ onClose }) => (
             <div className="bg-[#2C2C2E] p-4 rounded-xl border border-[#333]">
                 <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Pagamento & Cancelamento</h4>
                 <ul className="text-xs text-gray-400 space-y-2 list-disc pl-4">
-                    <li>Pagamento direto via Pix ou Dinheiro.</li>
+                    <li>Pagamento direto via Pix, Cartão e Dinheiro.</li>
                     <li>Cancelamentos com min. 2 horas de antecedência.</li>
                     <li>Taxa de deslocamento pode variar conforme distância.</li>
                 </ul>
