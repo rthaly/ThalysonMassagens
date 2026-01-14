@@ -14,11 +14,11 @@ const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
-  COUPON_VAL: 12,
+  COUPON_VAL: 13,
   PRICES: {
-    UPGRADE_PCT: 0.5, 
-    TOUCH: 53, 
-    AROMA: 10,
+    UPGRADE_PCT: 0.6, 
+    TOUCH: 63, 
+    AROMA: 5,
   },
   URLS: {
     WHATSAPP_API: "https://api.whatsapp.com/send"
