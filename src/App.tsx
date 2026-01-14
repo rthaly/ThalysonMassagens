@@ -682,7 +682,7 @@ export default function App() {
                             </div>
                             <div>
                                 <p className="font-bold text-white text-[16px]">Interação / Toque</p>
-                                <p className="text-[12px] text-gray-500">Liberdade total</p>
+                                <p className="text-[12px] text-gray-500">Toques recíprocos no Massagista</p>
                             </div>
                             </div>
                             <span className="text-[#FF375F] font-bold text-[14px]">+ {Utils.formatBRL(CONFIG.PRICES.TOUCH)}</span>
@@ -697,7 +697,7 @@ export default function App() {
                             </div>
                             <div>
                                 <p className="font-bold text-white text-[16px]">Aromaterapia</p>
-                                <p className="text-[12px] text-gray-500">Óleos essenciais</p>
+                                <p className="text-[12px] text-gray-500">Cheiro bom no ar. </p>
                             </div>
                             </div>
                             <span className="text-[#32D74B] font-bold text-[14px]">+ {Utils.formatBRL(CONFIG.PRICES.AROMA)}</span>
