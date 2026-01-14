@@ -16,8 +16,8 @@ const CONFIG = {
   PIX_KEY: "62922530000144", 
   COUPON_VAL: 13,
   PRICES: {
-    UPGRADE_PCT: 0.6, 
-    TOUCH: 63, 
+    UPGRADE_PCT: 0.5, 
+    TOUCH: 73, 
     AROMA: 5,
   },
   URLS: {
