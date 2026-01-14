@@ -1,927 +1,522 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
-  ChevronLeft, ChevronRight, Check, X, HelpCircle, MapPin, Calendar, Clock,
-  Shield, Flame, Star, Instagram, Bell, Tag, ArrowRight, Lock, Eye, Share2, 
-  Copy, Zap, Music, Trash2, CreditCard, Banknote, QrCode, Edit3, Info, Receipt, 
-  FileSpreadsheet, ShieldCheck, User, Siren, CheckCircle2, Crown, Skull, Ghost
+  Check, Star, ArrowRight, Bed, Home, MessageCircle, 
+  Ticket, Lock, Flame, Wind, Crown, Shield,
+  CreditCard, Banknote, QrCode, Copy, 
+  ChevronRight, Menu, X, HelpCircle, Instagram, MapPin, Calendar as CalendarIcon, Clock, User, ChevronDown
 } from 'lucide-react';
 
-// --- ESTILOS GLOBAIS (CORRIGIDO SCROLL E VISUAL) ---
+// ==================================================================================
+// 1. CONFIGURAÇÃO DE NEGÓCIO & COPYWRITING
+// ==================================================================================
+
+const CONFIG = {
+  PHONE: "5517991360413", 
+  INSTAGRAM: "thalymassagens",
+  PIX_KEY: "62922530000144", 
+  COUPON_VAL: 15, // Aumentei um pouco para parecer mais vantajoso
+  PRICES: {
+    UPGRADE_PCT: 0.5, 
+    TOUCH: 80, // Ajuste de preço psicológico
+    AROMA: 10,
+  },
+  URLS: {
+    WHATSAPP_API: "https://api.whatsapp.com/send"
+  }
+};
+
+const SERVICES = [
+  { 
+    id: 'completa', 
+    name: 'Experiência Alpha Premium', 
+    short: 'O Protocolo Completo',
+    desc: 'A escolha da maioria. Massagem profunda para soltar a musculatura, seguida de óleo quente, toque pele na pele e finalização manual intensa. Você no comando das sensações.', 
+    duration: 60, 
+    price: 160, 
+    badge: 'RECOMENDADO 🔥'
+  },
+  { 
+    id: 'relax', 
+    name: 'Massagem Relaxante', 
+    short: 'Tira Dores e Tensão',
+    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares, pernas cansadas e stress do trabalho. Movimentos firmes e técnicos. Sem interação íntima.', 
+    duration: 50, 
+    price: 130, 
+    badge: null
+  },
+];
+
+const TIME_SLOTS = [
+    '09:00', '10:00', '11:00', '13:00', '14:00', 
+    '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
+];
+
+const LOCATIONS = [
+  { id: 'home', label: 'Sua Residência', sub: 'Vou até seu endereço', icon: Home, input: true },
+  { id: 'hotel', label: 'Hotel / Motel', sub: 'Vou até sua suíte (Sigilo Absoluto)', icon: Bed, input: true },
+];
+
+const REVIEWS_DB = [
+  { t: "A melhor da vida. O toque dele vicia. A finalização foi absurda.", a: "Tiago (Sigilo)", s: 5 },
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Profissionalismo raro.", a: "Empresário SP", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O visual dele de cueca... nota 1000.", a: "Anônimo", s: 5 },
+  { t: "O upgrade vale cada centavo. Não dá vontade de parar.", a: "Roberto", s: 5 },
+  { t: "Cara bonito, limpo e discreto. Atendeu no meu escritório.", a: "Executivo", s: 5 },
+];
+
+// ==================================================================================
+// 2. UTILITÁRIOS & ESTILOS GLOBAIS
+// ==================================================================================
+
+const Utils = {
+  formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+  vibrate: (pattern = 5) => { if (navigator.vibrate) navigator.vibrate(pattern); },
+  isTimeBlocked: (selectedDate, timeString) => {
+    if (!selectedDate) return true;
+    const now = new Date();
+    const today = new Date(); today.setHours(0,0,0,0);
+    const sel = new Date(selectedDate); sel.setHours(0,0,0,0);
+    if (sel < today) return true; 
+    if (sel > today) return false; 
+    const [hours] = timeString.split(':').map(Number);
+    return hours <= now.getHours() + 1; // Bloqueia próxima hora para deslocamento
+  },
+  getGreeting: () => {
+    const h = new Date().getHours();
+    return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
+  }
+};
+
 const globalStyles = `
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { font-size: 16px; background-color: #050505; }
-body { 
-  overscroll-behavior-y: none; 
-  touch-action: manipulation; 
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Roboto", Helvetica, Arial, sans-serif; 
-  letter-spacing: -0.01em;
-  color: #fff;
-  background: #050505;
-}
-::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-input, select { user-select: text; font-size: 18px; outline: none; appearance: none; }
-button { touch-action: manipulation; user-select: none; -webkit-touch-callout: none; }
+:root { --primary: #0A84FF; --accent: #32D74B; --bg-app: #050505; --card-bg: #121212; --border: #27272a; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+body { background: var(--bg-app); color: #fff; padding-bottom: env(safe-area-inset-bottom); overflow-x: hidden; }
+input, button { outline: none; }
+.ios-scroll::-webkit-scrollbar { display: none; }
+.ios-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Fundo Atmosférico */
-.aurora-bg {
-  background: 
-    radial-gradient(100% 100% at 50% 0%, rgba(20, 20, 30, 1), transparent 70%),
-    radial-gradient(100% 100% at 50% 100%, rgba(10, 80, 255, 0.08), transparent 80%),
-    #000000;
-  background-attachment: fixed;
-  background-size: cover;
-}
+/* Animations */
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes pulse-glow { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
+@keyframes shimmer { 0% {background-position: -200% 0;} 100% {background-position: 200% 0;} }
 
-.ios-card { 
-  background: rgba(30, 30, 35, 0.95); 
-  border: 1px solid rgba(255, 255, 255, 0.12); 
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(20px);
-}
+.animate-enter { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.btn-pulse { animation: pulse-glow 2s infinite; }
+.text-gradient { background: linear-gradient(90deg, #fff, #0A84FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-.ios-header { 
-  background: rgba(10, 10, 10, 0.98); 
-  border-bottom: 1px solid rgba(255,255,255,0.1); 
-  backdrop-filter: blur(20px);
-}
+/* Components */
+.glass-panel { background: rgba(28, 28, 30, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+.card-base { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; transition: all 0.3s ease; }
+.card-base:active { transform: scale(0.98); background: #18181b; }
+.card-selected { border-color: var(--primary); background: rgba(10, 132, 255, 0.08); box-shadow: 0 0 20px rgba(10, 132, 255, 0.15); }
+.input-field { background: #18181b; border: 1px solid #3f3f46; color: white; border-radius: 14px; width: 100%; transition: all 0.3s; font-size: 16px; }
+.input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(10,132,255,0.2); }
+.primary-btn { background: var(--primary); color: white; border-radius: 16px; font-weight: 700; border: none; box-shadow: 0 4px 15px rgba(10, 132, 255, 0.3); position: relative; overflow: hidden; }
+.primary-btn::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(255,255,255,0.2), transparent); opacity: 0; transition: opacity 0.2s; }
+.primary-btn:active::after { opacity: 1; }
 
-.ios-btn { 
-  background: rgba(255, 255, 255, 0.08); 
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: transform 0.1s; 
-}
-.ios-btn:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.15); }
-
-.ios-btn-primary {
-  background: #0A84FF;
-  color: white;
-  box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4);
-}
-.ios-btn-primary:active { transform: scale(0.98); opacity: 0.9; }
-
-.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Planilha Falsa */
-.spreadsheet-mode { background: #fff; color: #000; font-family: Arial, sans-serif; font-size: 13px; }
-.spreadsheet-cell { border: 1px solid #ddd; padding: 4px 8px; text-align: right; }
+/* Utilities */
+.section-closed { height: 60px; overflow: hidden; opacity: 0.6; pointer-events: none; }
+.section-open { height: auto; opacity: 1; pointer-events: auto; }
 `;
 
-const IconBack = () => <ChevronLeft className="w-8 h-8 text-[#0A84FF]" />;
+// ==================================================================================
+// 3. COMPONENTES DE UI
+// ==================================================================================
 
-const CARD_RATES = [0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1210, 0.1238];
-
-// --- SISTEMA DE TEXTOS DINÂMICOS (HETERO / GAY / SIGILOSO) ---
-const COPY_PACKS = {
-  hetero: {
-    welcome: "Fala, parceiro",
-    serviceTitle: "Protocolos Masculinos",
-    masculinaDesc: "Relaxamento muscular + Toque firme (de cueca). Finalização manual completa para aliviar a pressão.",
-    masculinaHigh: "MAIS PEDIDA",
-    relaxanteDesc: "Tirar o peso das costas. Ombros, pernas e peito. Sem gracinha, foco na dor muscular.",
-    relaxanteHigh: "ZERO STRESS",
-    moodLabel: "Qual a sua meta?",
-    payment: "Acerto",
-    coupon: "Desconto de Brother",
-    location: "Onde eu vou?",
-    btnConfirm: "Confirmar Sessão",
-    obs: "Sem frescura. Chego e resolvo."
-  },
-  gay: {
-    welcome: "Oi, lindo",
-    serviceTitle: "Menu de Experiências",
-    masculinaDesc: "Massagem sensorial + Corpo a corpo (cueca). Finalização Lingam deliciosa para você gozar gostoso.",
-    masculinaHigh: "A QUERIDINHA 🔥",
-    relaxanteDesc: "Deslize suave pelo corpo todo. Costas, pernas e peitoral. (Essa não tem toque íntimo, tá?).",
-    relaxanteHigh: "RELAX TOTAL",
-    moodLabel: "Como você tá, bb?",
-    payment: "Pagamento",
-    coupon: "Mimo Especial",
-    location: "Onde vai ser?",
-    btnConfirm: "Quero Agendar",
-    obs: "Pode se soltar. O momento é seu."
-  },
-  sigiloso: {
-    welcome: "Olá, Visitante",
-    serviceTitle: "Serviços Disponíveis",
-    masculinaDesc: "Técnica Tântrica + Body-to-Body. Procedimento com finalização manual técnica. Discrição absoluta.",
-    masculinaHigh: "RECOMENDADO",
-    relaxanteDesc: "Terapia manual para stress. Foco em musculatura tensa. (Procedimento sem contato genital).",
-    relaxanteHigh: "TERAPÊUTICO",
-    moodLabel: "Necessidade Atual",
-    payment: "Valor Total",
-    coupon: "Benefício Aplicado",
-    location: "Local do Atendimento",
-    btnConfirm: "Solicitar Horário",
-    obs: "Sigilo garantido. Dados não armazenados."
-  }
-};
-
-const services = [
-  { id: 'masculina', basePrice: 115, minutes: 60, details: ["🔥 Body-to-Body", "🩲 Massagista de Cueca", "🍆 Finalização Manual", "💦 Alívio Completo"] },
-  { id: 'relaxante', basePrice: 80, minutes: 60, details: ["💆‍♂️ Tira dores do corpo", "🚫 Sem parte íntima", "✋ Mãos fortes", "☮️ Apenas relaxamento"] },
-];
-
-const locations = [
-  { id: 'santa-fe', label: 'Vou até Você (Casa/Hotel)', sublabel: 'Atendimento domiciliar.', fee: 40, allowsTableChoice: true },
-  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Até 50km de raio.', fee: null, allowsTableChoice: false },
-  { id: 'motel', label: 'Encontro no Motel', sublabel: 'Acompanhante na suíte.', fee: 75, allowsTableChoice: false },
-];
-
-const SYSTEM_COUPONS = {
-  'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF' },
-  'PARCEIRO': { code: 'PARCEIRO', type: 'fixed', value: 15, desc: 'R$ 15,00 OFF' },
-  'VIPGOLD': { code: 'VIPGOLD', type: 'fixed', value: 20, desc: 'R$ 20,00 OFF' },
-  'PATRAO': { code: 'PATRAO', type: 'percent', value: 20, desc: '20% OFF' },
-};
-
-const LEVELS = [
-  { name: 'Iniciante', min: 0, icon: '🛡️', coupon: null },
-  { name: 'Membro', min: 300, icon: '🥈', coupon: 'PARCEIRO' },
-  { name: 'Vip', min: 600, icon: '🥇', coupon: 'VIPGOLD' },
-  { name: 'Patrão', min: 1200, icon: '💎', coupon: 'PATRAO' },
-];
-
-const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
-const musicVibes = ['Silêncio 🤫', 'Zen 🧘', 'Natureza 🌿'];
-
-// --- BASE DE DADOS DE 30 AVALIAÇÕES MISTAS ---
-const REVIEWS_DB = [
-  { t: "Sou casado, sigilo foi total. Gostei.", a: "Anônimo", r: 5 },
-  { t: "Mão firme, resolveu minha dor nas costas.", a: "Carlos", r: 5 },
-  { t: "Finalização top, gozei muito.", a: "R.S.", r: 5 },
-  { t: "O cara é gente boa, sem frescura.", a: "Marcos", r: 5 },
-  { t: "Ambiente do motel ajudou, foi rápido e direto.", a: "J.P.", r: 5 },
-  { t: "A relaxante é boa, mas a masculina é outro nível.", a: "Felipe", r: 5 },
-  { t: "Discreto mesmo. Ninguém desconfiou.", a: "Anônimo", r: 5 },
-  { t: "Massagista gato e educado. Recomendo.", a: "L.", r: 5 },
-  { t: "Preço justo pelo que entrega. Valeu.", a: "Roberto", r: 4 },
-  { t: "Tava precisando relaxar, foi foda.", a: "Gustavo", r: 5 },
-  { t: "Muito bom, só demorou um pouco pra responder no zap.", a: "André", r: 4 },
-  { t: "Curti a pegada, mão de homem mesmo.", a: "Beto", r: 5 },
-  { t: "Fiz na minha cama, levou a maca, tudo certo.", a: "Ricardo", r: 5 },
-  { t: "Sensação única, corpo a corpo faz diferença.", a: "M.", r: 5 },
-  { t: "Profissional, limpo e cheiroso.", a: "Sérgio", r: 5 },
-  { t: "Pode confiar, paguei no pix e foi tranquilo.", a: "Fernando", r: 5 },
-  { t: "Melhor da região, sem dúvida.", a: "Paulo", r: 5 },
-  { t: "O toque no final... sem palavras.", a: "Anonimo", r: 5 },
-  { t: "Sai de lá leve, parecia que tirei uma tonelada das costas.", a: "Vitor", r: 5 },
-  { t: "Respeitoso, sou bi e fiquei a vontade.", a: "C.", r: 5 },
-  { t: "Massagem forte, do jeito que eu pedi.", a: "Academia", r: 5 },
-  { t: "Atendimento 100%, voltarei semana que vem.", a: "Lucas", r: 5 },
-  { t: "Gostei da playlist e do aroma.", a: "Eduardo", r: 5 },
-  { t: "Rápido e prático. Ideal pro dia a dia.", a: "Thiago", r: 4 },
-  { t: "Me senti um rei. Tratamento vip.", a: "Alessandro", r: 5 },
-  { t: "Sigilo garantido, pode ir sem medo.", a: "Anônimo", r: 5 },
-  { t: "Cara bacana, bom papo e mão boa.", a: "Renato", r: 5 },
-  { t: "Finalização manual técnica, muito bom.", a: "Doutor", r: 5 },
-  { t: "Primeira vez que fiz, virei cliente.", a: "Júnior", r: 5 },
-  { t: "Serviço completo, nada a reclamar.", a: "Fabio", r: 5 }
-];
-
-// --- UTILS ---
-const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate([15]); }; 
-const generateBookingId = () => {
-    const chars = 'XYZ789'; 
-    let result = '';
-    for (let i = 0; i < 4; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
-    return result;
-};
-
-// --- COMPONENTES ---
-
-const FakeSpreadsheet = ({ onExit }) => (
-  <div className="fixed inset-0 bg-white z-[9999] spreadsheet-mode p-2 overflow-auto text-black" onClick={onExit}>
-    <div className="flex justify-between mb-2 border-b border-gray-300 pb-2">
-      <span className="font-bold text-green-700">Excel - Planilha.xlsx</span>
-      <span className="text-gray-500 text-[10px]">Clique p/ Sair</span>
+const StepHeader = ({ number, title, active, completed, onClick, summary }) => (
+  <div onClick={completed ? onClick : undefined} 
+    className={`flex items-center justify-between py-4 mb-2 transition-all ${completed ? 'cursor-pointer' : ''}`}>
+    <div className="flex items-center gap-3">
+      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-colors
+        ${active ? 'bg-[#0A84FF] text-white shadow-[0_0_15px_rgba(10,132,255,0.5)]' : 
+          completed ? 'bg-[#32D74B] text-black' : 'bg-[#27272a] text-gray-500'}`}>
+        {completed ? <Check size={16} strokeWidth={3}/> : number}
+      </div>
+      <div>
+        <h3 className={`font-bold text-lg ${active ? 'text-white' : 'text-gray-400'}`}>{title}</h3>
+        {completed && summary && <p className="text-xs text-[#0A84FF] font-medium mt-0.5">{summary}</p>}
+      </div>
     </div>
-    <table className="w-full border-collapse text-[11px]">
-      <thead className="bg-gray-100"><tr><th className="border p-1">Data</th><th className="border p-1">Item</th><th className="border p-1">Valor</th></tr></thead>
-      <tbody>{[...Array(30)].map((_, r) => (<tr key={r}><td className="spreadsheet-cell">--/--</td><td className="spreadsheet-cell">Despesa {r}</td><td className="spreadsheet-cell">R$ 0,00</td></tr>))}</tbody>
-    </table>
+    {completed && <div className="bg-[#27272a] p-1.5 rounded-full"><ChevronDown size={16} className="text-gray-400"/></div>}
   </div>
 );
 
-const PanicButton = ({ onTrigger }) => (
-  <button onClick={onTrigger} className="fixed bottom-5 right-5 z-[100] bg-[#1C1C1E] border border-white/20 w-12 h-12 rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition-transform">
-    <FileSpreadsheet className="w-5 h-5 text-gray-400" />
-  </button>
-);
-
-const MasseurProfile = ({ profileType }) => (
-  <div className="flex items-center gap-4 bg-[#151517] p-4 rounded-2xl border border-white/5 mb-6">
-    <div className="relative">
-      <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Masseur" className="w-16 h-16 rounded-full object-cover border-2 border-white/10"/>
-      <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-[#151517]"></div>
-    </div>
-    <div>
-      <h3 className="font-bold text-white text-[18px]">Thalyson R. <span className="text-[10px] text-[#0A84FF] bg-[#0A84FF]/10 px-2 py-0.5 rounded ml-1 uppercase">Verificado</span></h3>
-      <p className="text-gray-400 text-[13px] leading-tight mt-1">{COPY_PACKS[profileType].obs}</p>
-    </div>
+const ProgressBar = ({ progress }) => (
+  <div className="fixed top-0 left-0 w-full h-1 bg-[#27272a] z-[60]">
+    <div className="h-full bg-gradient-to-r from-[#0A84FF] to-[#32D74B] transition-all duration-500" style={{ width: `${progress}%` }}></div>
   </div>
 );
-
-const LiveStatus = () => (
-  <div className="flex justify-center mb-6">
-    <div className="animate-fade-in flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5">
-      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-      <span className="text-[11px] text-gray-300 font-bold uppercase tracking-wide">3 Pessoas vendo agora</span>
-    </div>
-  </div>
-);
-
-const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }) => {
-  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => data.totalSpent >= l.min);
-  const currentLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx];
-  const nextLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx + 1];
-  
-  // CORREÇÃO BARRA AZUL: Se totalSpent for 0, rawProgress é 0.
-  const rawProgress = nextLevel 
-    ? Math.max(0, ((data.totalSpent - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100)
-    : 100;
-
-  return (
-    <div className="ios-card p-5 rounded-[24px] relative overflow-hidden mb-8">
-      <div className="flex justify-between items-start mb-4 relative z-10">
-        <div>
-          <p className="text-[10px] text-[#0A84FF] font-bold uppercase tracking-widest mb-1">Nível Fidelidade</p>
-          <h3 className="text-2xl font-bold text-white flex items-center gap-2">{currentLevel.icon} {currentLevel.name}</h3>
-        </div>
-        <div className="text-right">
-          <button onClick={onTogglePrivacy} className="mb-1 text-gray-500 p-1"><Eye className="w-5 h-5" /></button>
-          <p className={`text-lg font-mono text-white font-bold ${privacyMode ? 'blur-sm opacity-50' : ''}`}>
-            {formatCurrency(data.totalSpent)}
-          </p>
-        </div>
-      </div>
-      <div className="w-full bg-white/10 h-1.5 rounded-full mb-3 overflow-hidden">
-        <div className="bg-[#0A84FF] h-1.5 rounded-full transition-all duration-1000" style={{width: `${rawProgress}%`}}></div>
-      </div>
-      <div className="flex justify-between text-[11px] text-gray-400 font-medium">
-        <span>Economia: {formatCurrency(data.totalSaved)}</span>
-        {nextLevel ? <span>Prox: {formatCurrency(nextLevel.min)}</span> : <span className="text-yellow-500">Nível Máximo</span>}
-      </div>
-    </div>
-  );
-};
 
 const ReviewsCarousel = () => {
-  const [idx, setIdx] = useState(0);
-  // Embaralhar reviews na montagem
-  const shuffledReviews = useMemo(() => [...REVIEWS_DB].sort(() => 0.5 - Math.random()), []);
-  
-  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%shuffledReviews.length), 5000); return () => clearInterval(t); }, [shuffledReviews]);
-  
-  const r = shuffledReviews[idx];
-  return (
-    <div className="ios-card p-0 rounded-[20px] relative overflow-hidden h-32 flex items-center justify-center mb-8 border border-white/5">
-      <div key={idx} className="absolute inset-0 p-6 flex flex-col items-center justify-center animate-fade-in bg-gradient-to-b from-transparent to-black/30">
-        <div className="flex gap-1 mb-2">
-          {[...Array(5)].map((_,k) => <Star key={k} className={`w-3.5 h-3.5 ${k < r.r ? 'text-[#FFD60A] fill-[#FFD60A]' : 'text-gray-700'}`}/>)}
+    const [idx, setIdx] = useState(0);
+    useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 5000); return () => clearInterval(t); }, []);
+    return (
+        <div className="bg-[#121212] border border-[#27272a] rounded-2xl p-4 mb-8 relative overflow-hidden">
+            <div className="flex text-[#FFD60A] mb-2 gap-1">{[...Array(5)].map((_,i)=><Star key={i} size={14} fill="currentColor"/>)}</div>
+            <p className="text-sm text-gray-300 italic mb-2 leading-relaxed animate-enter" key={idx}>"{REVIEWS_DB[idx].t}"</p>
+            <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wide flex items-center gap-1">
+                 <Shield size={10} className="text-[#32D74B]"/> {REVIEWS_DB[idx].a}
+            </p>
         </div>
-        <p className="text-[14px] text-gray-300 text-center font-medium leading-relaxed italic">"{r.t}"</p>
-        <p className="text-[10px] text-[#0A84FF] font-bold uppercase mt-3 tracking-widest flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> {r.a}</p>
-      </div>
-    </div>
-  );
+    )
 };
 
-const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }) => {
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const days = [];
-  let tempDate = new Date(now);
-  while (tempDate.getMonth() === currentMonth) {
-      days.push(new Date(tempDate));
-      tempDate.setDate(tempDate.getDate() + 1);
-  }
-  const currentMonthName = days[0]?.toLocaleDateString('pt-BR', { month: 'long' });
+// ==================================================================================
+// 4. APP PRINCIPAL
+// ==================================================================================
 
-  const getDayLabel = (d) => {
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      if (d.toDateString() === today.toDateString()) return 'HOJE';
-      if (d.toDateString() === tomorrow.toDateString()) return 'AMANHÃ';
-      return d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3).toUpperCase();
-  };
-
-  return (
-    <div>
-      {currentMonthName && <h3 className="text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1">{currentMonthName}</h3>}
-      <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide mb-2 w-full">
-        {days.map((d, i) => {
-          const isSel = selectedDate?.getDate() === d.getDate();
-          const label = getDayLabel(d);
-          return (
-            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`flex flex-col items-center justify-center min-w-[72px] h-[84px] rounded-[18px] transition-all border flex-shrink-0 ${isSel ? 'bg-[#0A84FF] border-[#0A84FF] text-white shadow-lg' : 'bg-[#1C1C1E] border-white/10 text-gray-500'}`}>
-              <span className={`text-[10px] uppercase font-bold mb-1 ${label === 'HOJE' ? 'text-green-400' : isSel ? 'text-white' : 'text-gray-400'}`}>{label}</span>
-              <span className="text-2xl font-bold">{d.getDate()}</span>
-            </button>
-          )
-        })}
-      </div>
-      {selectedDate && (
-        <div className="grid grid-cols-4 gap-2 animate-fade-in">
-          {timeSlots.map(t => {
-            const [h] = t.split(':').map(Number);
-            const blocked = selectedDate.getDate() === now.getDate() && h <= now.getHours();
-            return (
-              <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
-                className={`py-3 rounded-[14px] text-[14px] font-bold transition-all border ${selectedTime === t ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : blocked ? 'bg-white/5 border-transparent text-gray-700' : 'bg-[#1C1C1E] border-white/10 text-gray-300'}`}>
-                {blocked ? <Lock className="w-3 h-3 mx-auto opacity-20" /> : t}
-              </button>
-            )
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddManual }) => {
-  const [manualCode, setManualCode] = useState('');
-  const myCoupons = inventory.map((c) => SYSTEM_COUPONS[c]).filter(Boolean);
-
-  const handleManualAdd = () => {
-      const codeUpper = manualCode.toUpperCase().trim();
-      if(codeUpper && SYSTEM_COUPONS[codeUpper]) {
-          if (inventory.includes(codeUpper)) { alert('Cupom já resgatado!'); } 
-          else { onAddManual(codeUpper); setManualCode(''); triggerHaptic(); }
-      } else { alert('Cupom inválido.'); }
-  };
-
-  return (
-    <div className="space-y-4 mt-8">
-      <div className="flex justify-between items-center ml-1 mb-2">
-        <h4 className="text-[13px] font-bold text-gray-400 uppercase">Seus Cupons</h4>
-      </div>
-      <div className="flex gap-2 mb-3">
-          <input value={manualCode} onChange={(e) => setManualCode(e.target.value)} placeholder="Código..." className="w-full bg-[#1C1C1E] border border-white/10 text-white text-[16px] rounded-[14px] p-3 placeholder:text-gray-600 focus:border-[#0A84FF]" />
-          <button onClick={handleManualAdd} className="bg-[#2C2C2E] border border-white/10 text-white px-5 rounded-[14px] font-bold text-[13px]">Add</button>
-      </div>
-      {myCoupons.length > 0 && (
-        <div className="space-y-3">
-          {myCoupons.map((coupon) => {
-            const isApplied = appliedCoupon?.code === coupon.code;
-            return (
-              <button key={coupon.code} onClick={() => { triggerHaptic(); isApplied ? onRemove() : onApply(coupon.code); }} className={`w-full p-4 rounded-[18px] flex justify-between items-center transition-all border ${isApplied ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-white/5'}`}>
-                <div className="text-left">
-                  <span className="text-[11px] font-bold text-black bg-[#FFD60A] px-2 py-0.5 rounded uppercase">{coupon.code}</span>
-                  <p className="text-xs text-gray-300 mt-1">{coupon.desc}</p>
-                </div>
-                {isApplied ? <CheckCircle2 className="w-5 h-5 text-[#0A84FF]" /> : <div className="text-[11px] font-bold text-[#0A84FF]">USAR</div>}
-              </button>
-            )
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const Notifications = ({ notifications, onClear }) => {
-  const [open, setOpen] = useState(false);
-  const unread = notifications.filter(n => !n.read).length;
-  useEffect(() => { const close = () => setOpen(false); if(open) window.addEventListener('click', close); return () => window.removeEventListener('click', close); }, [open]);
-  return (
-    <div className="relative" onClick={e => e.stopPropagation()}>
-      <button onClick={() => { setOpen(!open); if(!open && unread > 0) onClear(); }} className="relative p-2.5 rounded-full bg-[#1C1C1E] border border-white/10">
-        <Bell className="w-6 h-6 text-white" />
-        {unread > 0 && <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-[#FF3B30] rounded-full border-2 border-[#1C1C1E] animate-pulse" />}
-      </button>
-      {open && (
-        <div className="absolute top-14 right-0 w-80 bg-[#121214] border border-white/10 shadow-2xl rounded-[20px] overflow-hidden z-[100] animate-fade-in">
-           <div className="p-4 border-b border-white/10 bg-[#1C1C1E] flex justify-between items-center">
-             <h4 className="font-bold text-white text-sm">Notificações</h4>
-             <button onClick={() => setOpen(false)} className="p-1"><X className="w-4 h-4 text-gray-400"/></button>
-           </div>
-           <div className="max-h-64 overflow-y-auto p-2">
-             {notifications.length === 0 ? <div className="p-6 text-center text-gray-500 text-sm">Nada por aqui.</div> : notifications.map(n => (
-                 <div key={n.id} className="p-3 mb-1 rounded-xl bg-white/5 border border-white/5">
-                   <div className="flex justify-between"><p className="text-sm font-semibold text-white mb-0.5">{n.title}</p><span className="text-[10px] text-gray-500">{new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
-                   <p className="text-xs text-gray-400 leading-snug">{n.message}</p>
-                 </div>
-               ))}
-           </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// --- APP PRINCIPAL ---
-export default function App() {
-  const [step, setStep] = useState('identity'); 
-  const [loading, setLoading] = useState(true);
-  const [camouflage, setCamouflage] = useState(false);
-  
-  // ESTADO DO PERFIL DO USUÁRIO (DINÂMICO)
-  const [profileType, setProfileType] = useState('hetero'); // default
-  
-  // Acesso rápido aos textos baseados no perfil
-  const copy = COPY_PACKS[profileType];
-
-  const locationRef = useRef(null);
-  const vibeRef = useRef(null);
-  const extrasRef = useRef(null);
-  const paymentRef = useRef(null);
-  const homeRef = useRef(null);
-  const surfaceRef = useRef(null);
-
-  const scrollTo = (ref) => setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
-
-  const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v70'); 
-    return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO'], notifications: [], history: [] };
+export default function BookingApp() {
+  const [data, setData] = useState({
+    name: '', age: '', medical: false, 
+    service: null, date: null, time: null, location: null,
+    street: '', number: '', district: '', comp: '',
+    extras: { upgrade: false, touch: false, aroma: false }, payment: null
   });
 
-  const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
-  const [selection, setSelection] = useState({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
-  const [showFaq, setShowFaq] = useState(false);
-  const [privacyMode, setPrivacyMode] = useState(true);
-  const [greeting, setGreeting] = useState("");
-  const [weatherHint, setWeatherHint] = useState("");
+  const [currentStep, setCurrentStep] = useState(0); // 0:Intro, 1:Service, 2:Date, 3:Extras, 4:Location, 5:Payment
+  const [hasCoupon, setHasCoupon] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setTimeout(() => setLoading(false), 1500); }, []);
-
+  // Load saved data
   useEffect(() => {
-    localStorage.setItem('thaly_system_v70', JSON.stringify(loyalty));
-    if (loyalty.savedName) { 
-        setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
-        setStep('home');
+    const saved = localStorage.getItem('thaly_v10_booking');
+    if (saved) {
+      try {
+        const p = JSON.parse(saved);
+        if (p.date) p.date = new Date(p.date);
+        setData(p);
+      } catch (e) {}
     }
-  }, [loyalty]);
-
-  useEffect(() => {
-    const hr = new Date().getHours();
-    setGreeting(hr < 12 ? "Bom dia" : hr < 18 ? "Boa tarde" : "Boa noite");
-    if (hr >= 18) setWeatherHint("Noite boa para relaxar.");
-    else setWeatherHint("Pausa merecida.");
+    setTimeout(() => setLoading(false), 1500);
   }, []);
 
-  useEffect(() => { if (selection.location?.allowsTableChoice && step === 'configure') setTimeout(() => surfaceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300); }, [selection.location, step]);
-  useEffect(() => { if (step === 'home') homeRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
+  useEffect(() => { localStorage.setItem('thaly_v10_booking', JSON.stringify(data)); }, [data]);
 
-  const handleQuickSchedule = () => { triggerHaptic(); setStep('services'); };
-  const handleCopyPix = () => { navigator.clipboard.writeText("62922530000144"); alert("Pix Copiado!"); }; 
+  // Scroll to active step
+  const stepRefs = useRef([]);
+  useEffect(() => {
+    if (stepRefs.current[currentStep]) {
+        setTimeout(() => {
+            stepRefs.current[currentStep].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+  }, [currentStep]);
 
-  const handleAddManualCoupon = (code) => {
-      if (!loyalty.inventory.includes(code)) { setLoyalty(prev => ({...prev, inventory: [...prev.inventory, code]})); triggerHaptic(); } 
-      else { alert('Cupom já existe!'); }
+  const financials = useMemo(() => {
+    const base = data.service ? data.service.price : 0;
+    const upg = data.extras.upgrade ? (base * CONFIG.PRICES.UPGRADE_PCT) : 0;
+    const touch = data.extras.touch ? CONFIG.PRICES.TOUCH : 0;
+    const aroma = data.extras.aroma ? CONFIG.PRICES.AROMA : 0;
+    const sub = base + upg + touch + aroma;
+    const desc = hasCoupon ? CONFIG.COUPON_VAL : 0;
+    return { base, upg, touch, aroma, sub, desc, total: Math.max(0, sub - desc) };
+  }, [data.service, data.extras, hasCoupon]);
+
+  const progress = Math.min(100, (currentStep / 5) * 100);
+
+  const handleNext = (step) => {
+    Utils.vibrate();
+    setCurrentStep(step);
   };
 
-  const calcBaseTotal = () => {
-    if (!selection.service) return 0;
-    let total = selection.service.basePrice;
-    if (selection.location?.fee) total += selection.location.fee; 
-    if (selection.upgrade) total += selection.service.basePrice * 0.5;
-    if (selection.useTable) total += 20;
-    if (selection.aroma) total += 10;
+  const generateWhatsapp = () => {
+    const d = data.date;
+    const dateStr = d ? `${d.getDate()}/${d.getMonth()+1}` : '';
+    let t = `*NOVO AGENDAMENTO VIP* 🦁\n\n`;
+    t += `👤 *Cliente:* ${data.name} (${data.age} anos)\n`;
+    t += `📅 *Data:* ${dateStr} às ${data.time}\n`;
+    t += `💆 *Serviço:* ${data.service?.name.toUpperCase()}\n\n`;
     
-    let discount = 0;
-    if (selection.coupon) {
-      if (selection.coupon.type === 'percent') discount = (total * selection.coupon.value / 100);
-      else discount = selection.coupon.value;
+    if(data.extras.upgrade || data.extras.touch || data.extras.aroma) {
+        t += `🔥 *ADICIONAIS:*\n`;
+        if(data.extras.upgrade) t += `+ ⏱️ Upgrade Tempo (30m)\n`;
+        if(data.extras.touch) t += `+ 😈 Interação Recíproca\n`;
+        if(data.extras.aroma) t += `+ 🍃 Aromaterapia\n`;
+        t += `\n`;
     }
-    return Math.max(0, total - discount);
-  }
 
-  const calcOriginalPrice = () => {
-    if (!selection.service) return 0;
-    let total = selection.service.basePrice;
-    if (selection.location?.fee) total += selection.location.fee;
-    if (selection.upgrade) total += selection.service.basePrice * 0.5;
-    if (selection.useTable) total += 20;
-    if (selection.aroma) total += 10;
-    return total;
-  }
-
-  const calcFinalPrice = () => {
-    let base = calcBaseTotal();
-    if (selection.paymentMethod === 'credit_card') {
-       const rate = CARD_RATES[selection.installments] || 0;
-       return base / (1 - rate);
-    }
-    return base;
+    t += `📍 *LOCAL:* ${data.location?.label}\n`;
+    if(data.location) t += `📝 ${data.street}, ${data.number} - ${data.district}\n\n`;
+    
+    t += `💰 *TOTAL: ${Utils.formatBRL(financials.total)}*\n`;
+    t += `💳 Pagamento: ${data.payment?.toUpperCase()}\n`;
+    t += `--------------------------\n`;
+    t += `_Aguardo confirmação e chave Pix._`;
+    
+    return `${CONFIG.URLS.WHATSAPP_API}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
   };
 
-  const canFinalize = selection.service && selection.location && selection.date && selection.time && selection.music && selection.paymentMethod && (selection.location.allowsTableChoice ? selection.useTable !== null : true) && (selection.location.id === 'outras-cidades' ? !!selection.city : true);
+  if (loading) return (
+    <div className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center">
+      <style>{globalStyles}</style>
+      <div className="w-16 h-16 border-4 border-[#121212] border-t-[#0A84FF] rounded-full animate-spin mb-6"></div>
+      <h1 className="text-2xl font-bold tracking-tighter mb-2">THALYMASSAGENS</h1>
+      <p className="text-gray-500 text-xs uppercase tracking-[0.3em]">Carregando Experiência...</p>
+    </div>
+  );
 
-  const handleWhatsApp = () => {
-    triggerHaptic();
-    if (!canFinalize) return;
-    if (selection.coupon && !loyalty.inventory.includes(selection.coupon.code)) { alert("Cupom inválido."); setSelection(prev => ({ ...prev, coupon: null })); return; }
-
-    const serviceVal = selection.service.basePrice;
-    const upgradeVal = selection.upgrade ? selection.service.basePrice * 0.5 : 0;
-    const aromaVal = selection.aroma ? 10 : 0;
-    const tableVal = selection.useTable ? 20 : 0;
-    const subTotal = serviceVal + upgradeVal + aromaVal + tableVal; 
-
-    let discountVal = 0;
-    if (selection.coupon) {
-        if (selection.coupon.type === 'percent') discountVal = (subTotal * selection.coupon.value / 100);
-        else discountVal = selection.coupon.value;
-    }
-    
-    const massageNet = subTotal - discountVal;
-    let externalCost = 0;
-    let externalLabel = "";
-    
-    if (selection.location.id === 'motel') { externalCost = 75; externalLabel = "(Pagar Motel)"; } 
-    else if (selection.location.id === 'santa-fe') { externalCost = selection.location.fee || 0; externalLabel = "(Taxa)"; }
-
-    let totalToPay = massageNet;
-    if (selection.location.id !== 'motel') totalToPay += externalCost;
-
-    const oldTotal = loyalty.totalSpent;
-    const newTotal = oldTotal + totalToPay; 
-    const bookingId = generateBookingId(); 
-    
-    let newInventory = [...loyalty.inventory];
-    if (selection.coupon) { newInventory = newInventory.filter(c => c !== selection.coupon.code); }
-
-    const notifications = [...loyalty.notifications];
-    // GAMIFICAÇÃO: Dar cupom se subir de nível
-    LEVELS.forEach(lvl => {
-      if (newTotal >= lvl.min && oldTotal < lvl.min) {
-        if (lvl.coupon && !newInventory.includes(lvl.coupon)) {
-          newInventory.push(lvl.coupon);
-          notifications.unshift({ id: Date.now()+1, title: '🏆 Subiu de Nível!', message: `Ganhou cupom ${lvl.coupon}!`, read: false, timestamp: Date.now() });
-        }
-      }
-    });
-
-    const newHistory = [{ id: Date.now(), serviceName: selection.service.name, date: new Date().toLocaleDateString(), value: totalToPay }, ...loyalty.history];
-    setLoyalty(prev => ({ ...prev, savedName: user.name || prev.savedName, totalSpent: newTotal, totalSaved: prev.totalSaved + discountVal, inventory: newInventory, notifications, history: newHistory }));
-
-    const isToday = selection.date.getDate() === new Date().getDate();
-    const dateStr = `${selection.date.toLocaleDateString('pt-BR')}${isToday ? ' (HOJE)' : ''}`;
-    let finalDuration = selection.service.labelDuration;
-    if (selection.upgrade) { finalDuration = "60 min + 30 min (Extra)"; }
-    
-    let surfaceText = "";
-    if (selection.location.allowsTableChoice) surfaceText = selection.useTable ? "Maca Portátil (+R$20)" : "Na minha cama";
-    else if (selection.location.id === 'motel') surfaceText = "Motel (Suíte)"; 
-    else surfaceText = `Cidade: ${selection.city}`;
-
-    let paymentText = "";
-    if (selection.paymentMethod === 'pix') paymentText = "PIX";
-    else if (selection.paymentMethod === 'cash') paymentText = "DINHEIRO";
-    else if (selection.paymentMethod === 'debit_card') paymentText = "DÉBITO";
-    else if (selection.paymentMethod === 'credit_card') {
-        const parcelValue = calcFinalPrice() / selection.installments;
-        paymentText = `CARTÃO (${selection.installments}x ${formatCurrency(parcelValue)})`;
-    }
-
-    let msg = `*PEDIDO #${bookingId}*
---------------------------------
-👤 *Cliente:* ${user.name}
-📅 *Data:* ${dateStr}
-⏰ *Hora:* ${selection.time}
-📍 *Local:* ${selection.location.label}
-${surfaceText}
-
-💆‍♂️ *SERVIÇO:*
-• ${selection.service.name}
-• Duração: ${finalDuration}
-${selection.aroma ? '• Com Aromaterapia' : ''}
-
-💰 *RESUMO:*
-Serviço: ${formatCurrency(subTotal)}
-Desconto: -${formatCurrency(discountVal)}
---------------------------------
-*= A PAGAR: ${formatCurrency(massageNet)}*
-
-🚗 *EXTRAS:*
-${externalCost > 0 ? `+ ${formatCurrency(externalCost)} ${externalLabel}` : 'Sem taxa extra'}
-
-💳 *PAGAMENTO:* ${paymentText}
-Total Previsto: ${formatCurrency(totalToPay)}
---------------------------------`;
-
-    msg = msg.replace(/^\s*[\r\n]/gm, "");
-    window.open(`https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`, '_blank');
-    setStep('success');
-  };
-
-  const handleReset = () => {
-    setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
-    setStep('home');
-  };
-
-  if (camouflage) return <FakeSpreadsheet onExit={() => setCamouflage(false)} />;
+  if (isSuccess) return (
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center animate-enter">
+       <style>{globalStyles}</style>
+       <div className="w-24 h-24 bg-[#32D74B]/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(50,215,75,0.3)]">
+          <Check size={48} className="text-[#32D74B]" />
+       </div>
+       <h2 className="text-3xl font-bold text-white mb-2">Solicitação Enviada!</h2>
+       <p className="text-gray-400 mb-8 max-w-xs mx-auto">Sua solicitação já está no meu WhatsApp. Aguarde alguns instantes que irei confirmar sua sessão.</p>
+       
+       <a href={generateWhatsapp()} target="_blank" rel="noreferrer" 
+         className="primary-btn w-full py-4 text-lg mb-4 flex items-center justify-center gap-2">
+         <MessageCircle size={24}/> Reenviar Mensagem
+       </a>
+       <button onClick={() => window.location.reload()} className="text-gray-500 text-sm font-bold p-4">VOLTAR AO INÍCIO</button>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen flex justify-center p-0 sm:p-6 font-sans text-gray-200 bg-black selection:bg-[#0A84FF] selection:text-white">
+    <div className="min-h-screen pb-40">
       <style>{globalStyles}</style>
+      <ProgressBar progress={progress} />
 
-      {loading ? (
-        <div className="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center animate-fade-in">
-          <div className="w-20 h-20 bg-gradient-to-tr from-[#0A84FF] to-[#0056B3] rounded-3xl flex items-center justify-center mb-6 shadow-2xl animate-pulse">
-            <span className="text-3xl">💆‍♂️</span>
-          </div>
-        </div>
-      ) : (
-      <>
-        <PanicButton onTrigger={() => setCamouflage(true)} />
+      {/* Header */}
+      <header className="fixed top-1 w-full z-50 px-6 py-4 flex justify-between items-center pointer-events-none">
+         <span className="font-black text-xl tracking-tighter text-white drop-shadow-lg pointer-events-auto" onClick={()=>window.location.reload()}>THALY.</span>
+         <a href={`https://instagram.com/${CONFIG.INSTAGRAM}`} target="_blank" rel="noreferrer" className="bg-black/50 backdrop-blur-md p-2 rounded-full border border-white/10 pointer-events-auto">
+            <Instagram size={20} className="text-white"/>
+         </a>
+      </header>
 
-        <div className="w-full max-w-[440px] bg-[#000] sm:rounded-[40px] shadow-2xl flex flex-col relative overflow-hidden sm:border border-white/10 h-screen sm:h-[92vh] aurora-bg">
-          
-          {/* HEADER */}
-          {step !== 'home' && step !== 'success' && step !== 'identity' && (
-            <div className="absolute top-0 w-full z-30 ios-header px-5 pt-12 pb-4 flex justify-between items-center">
-              {step === 'services' && loyalty.savedName ? (
-                 <div className="flex items-center gap-1"><button onClick={() => setStep('home')} className="p-2 -ml-2 rounded-full active:bg-white/10"><IconBack /></button></div>
-              ) : (
-                 <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10"><IconBack /></button>
+      <main className="max-w-md mx-auto pt-24 px-5">
+        
+        {/* STEP 0: INTRO & IDENTIFICATION */}
+        <section ref={el => stepRefs.current[0] = el} className={`mb-8 ${currentStep > 0 ? 'hidden' : 'block animate-enter'}`}>
+           <div className="mb-6">
+              <span className="inline-block px-3 py-1 bg-[#0A84FF]/20 text-[#0A84FF] rounded-full text-[10px] font-bold uppercase tracking-widest mb-3 border border-[#0A84FF]/20">Exclusivo para Homens</span>
+              <h1 className="text-4xl font-bold leading-[1.05] tracking-tight mb-3">Seu momento de <br/><span className="text-gradient">escape e prazer.</span></h1>
+              <p className="text-gray-400 text-lg leading-relaxed">Massoterapia profissional, sigilosa e sem tabus. No conforto do seu local.</p>
+           </div>
+
+           <div className="flex items-center gap-4 bg-[#18181b] p-4 rounded-2xl border border-[#27272a] mb-6">
+              <div className="w-12 h-12 bg-gray-700 rounded-full overflow-hidden shrink-0">
+                  {/* Placeholder Foto Avatar */}
+                  <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center"><User size={20}/></div>
+              </div>
+              <div>
+                  <p className="font-bold text-white text-sm">Thalyson</p>
+                  <p className="text-xs text-gray-400">Massoterapeuta Certificado</p>
+                  <div className="flex items-center gap-1 mt-1"><div className="w-2 h-2 bg-[#32D74B] rounded-full animate-pulse"></div><span className="text-[10px] text-[#32D74B] font-bold uppercase">Online Agora</span></div>
+              </div>
+           </div>
+
+           <ReviewsCarousel />
+
+           <div className="card-base p-6 space-y-4 shadow-2xl">
+              <div>
+                 <label className="text-xs font-bold text-gray-500 uppercase ml-1 mb-1.5 block">Como te chamo?</label>
+                 <input value={data.name} onChange={e => setData({...data, name: e.target.value})} className="input-field p-4" placeholder="Nome ou Apelido" />
+              </div>
+              <div>
+                 <label className="text-xs font-bold text-gray-500 uppercase ml-1 mb-1.5 block">Sua Idade</label>
+                 <input type="tel" maxLength={2} value={data.age} onChange={e => setData({...data, age: e.target.value.replace(/\D/g,'')})} className="input-field p-4" placeholder="Ex: 35" />
+              </div>
+              
+              <div onClick={() => setData({...data, medical: !data.medical})} 
+                 className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${data.medical ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#18181b] border-[#27272a]'}`}>
+                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${data.medical ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-600'}`}>
+                    {data.medical && <Check size={12} className="text-white"/>}
+                 </div>
+                 <span className="text-sm text-gray-300 font-medium">Declaro que sou maior de idade e estou saudável.</span>
+              </div>
+
+              <button disabled={!data.name || !data.age || !data.medical} onClick={() => handleNext(1)}
+                 className="primary-btn w-full py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2">
+                 Começar Agendamento <ArrowRight size={20}/>
+              </button>
+           </div>
+           
+           <p className="text-center text-[10px] text-gray-600 mt-6 flex items-center justify-center gap-1">
+              <Lock size={10}/> SEUS DADOS ESTÃO SEGUROS E CRIPTOGRAFADOS
+           </p>
+        </section>
+
+        {/* STEP 1: SERVICES */}
+        <section ref={el => stepRefs.current[1] = el} className={currentStep === 1 ? 'block animate-enter' : currentStep > 1 ? 'hidden' : 'hidden'}>
+           <StepHeader number={1} title="Escolha a Experiência" active={true} />
+           <div className="space-y-4 mt-2">
+              {SERVICES.map(s => (
+                  <div key={s.id} onClick={() => { setData({...data, service: s}); handleNext(2); }}
+                     className={`card-base p-5 cursor-pointer relative overflow-hidden group ${data.service?.id === s.id ? 'card-selected' : ''}`}>
+                     {s.badge && <div className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl z-10">{s.badge}</div>}
+                     <div className="flex justify-between items-start mb-2 relative z-10">
+                        <h3 className="text-lg font-bold text-white group-hover:text-[#0A84FF] transition-colors">{s.name}</h3>
+                        <span className="font-bold text-gray-300 bg-white/10 px-2 py-1 rounded text-sm">{Utils.formatBRL(s.price)}</span>
+                     </div>
+                     <p className="text-[#0A84FF] text-xs font-bold uppercase tracking-wider mb-2">{s.short}</p>
+                     <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+                     <div className="mt-3 flex items-center gap-2 text-xs text-gray-500 font-bold">
+                        <Clock size={12}/> {s.duration} MINUTOS
+                     </div>
+                  </div>
+              ))}
+           </div>
+           {currentStep > 1 && <div onClick={() => setCurrentStep(1)} className="text-center p-2 text-gray-500 text-xs mt-4 underline">Alterar Serviço</div>}
+        </section>
+
+        {currentStep > 1 && <StepHeader number={1} title="Serviço" completed={true} summary={data.service?.name} onClick={() => setCurrentStep(1)} />}
+
+        {/* STEP 2: DATE & TIME */}
+        <section ref={el => stepRefs.current[2] = el} className={currentStep === 2 ? 'block animate-enter' : 'hidden'}>
+           <StepHeader number={2} title="Data e Hora" active={true} />
+           <div className="card-base p-5">
+              <div className="flex gap-2 overflow-x-auto pb-4 ios-scroll">
+                 {[...Array(10)].map((_, i) => {
+                    const d = new Date(); d.setDate(d.getDate() + i);
+                    const isSel = data.date && data.date.getDate() === d.getDate();
+                    return (
+                       <button key={i} onClick={() => { Utils.vibrate(); setData({...data, date: d, time: null}) }}
+                          className={`min-w-[64px] h-[80px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF] text-white shadow-lg' : 'bg-[#18181b] border-[#27272a] text-gray-500'}`}>
+                          <span className="text-[10px] font-bold uppercase">{i===0?'HOJE':d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
+                          <span className="text-2xl font-bold tracking-tighter">{d.getDate()}</span>
+                       </button>
+                    )
+                 })}
+              </div>
+              
+              <div className={`grid grid-cols-4 gap-2 transition-all ${data.date ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
+                 {TIME_SLOTS.map(t => {
+                    const blocked = Utils.isTimeBlocked(data.date, t);
+                    return (
+                       <button key={t} disabled={blocked} onClick={() => { setData({...data, time: t}); handleNext(3); }}
+                          className={`py-3 rounded-lg text-sm font-bold border transition-all ${data.time === t ? 'bg-white text-black' : blocked ? 'opacity-30 line-through decoration-red-500 border-transparent' : 'bg-[#27272a] border-transparent hover:border-white/30'}`}>
+                          {t}
+                       </button>
+                    )
+                 })}
+              </div>
+           </div>
+        </section>
+
+        {currentStep > 2 && <StepHeader number={2} title="Agendamento" completed={true} summary={`${data.date?.toLocaleDateString('pt-BR')} às ${data.time}`} onClick={() => setCurrentStep(2)} />}
+
+        {/* STEP 3: EXTRAS */}
+        <section ref={el => stepRefs.current[3] = el} className={currentStep === 3 ? 'block animate-enter' : 'hidden'}>
+           <StepHeader number={3} title="Personalizar (Opcional)" active={true} />
+           <div className="space-y-3">
+              {[
+                 { key: 'upgrade', icon: Clock, label: '+30 Minutos', desc: 'Sessão estendida', price: data.service?.price * CONFIG.PRICES.UPGRADE_PCT, color: 'text-[#0A84FF]' },
+                 { key: 'touch', icon: Flame, label: 'Interação / Toque', desc: 'Toques recíprocos permitidos', price: CONFIG.PRICES.TOUCH, color: 'text-[#FF375F]' },
+                 { key: 'aroma', icon: Wind, label: 'Aromaterapia', desc: 'Essências relaxantes no ambiente', price: CONFIG.PRICES.AROMA, color: 'text-[#32D74B]' },
+              ].map((item) => (
+                  <div key={item.key} onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, [item.key]: !data.extras[item.key]}}); }}
+                     className={`card-base p-4 flex justify-between items-center cursor-pointer border-l-4 ${data.extras[item.key] ? `border-l-${item.color.split('[')[1].replace(']','')} bg-[#18181b]` : 'border-l-transparent'}`}>
+                     <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-full bg-[#27272a] flex items-center justify-center ${item.color}`}>
+                           <item.icon size={20} />
+                        </div>
+                        <div>
+                           <p className="font-bold text-white">{item.label}</p>
+                           <p className="text-xs text-gray-500">{item.desc}</p>
+                        </div>
+                     </div>
+                     <div className="flex flex-col items-end">
+                        <span className={`text-sm font-bold ${item.color}`}>+ {Utils.formatBRL(item.price)}</span>
+                        {data.extras[item.key] && <div className="bg-[#0A84FF] rounded-full p-0.5 mt-1"><Check size={10}/></div>}
+                     </div>
+                  </div>
+              ))}
+              <button onClick={() => handleNext(4)} className="w-full bg-[#27272a] py-4 rounded-xl font-bold text-gray-300 hover:text-white mt-4 flex items-center justify-center gap-2">
+                 {Object.values(data.extras).some(Boolean) ? 'Continuar com Selecionados' : 'Continuar sem Extras'} <ChevronRight size={16}/>
+              </button>
+           </div>
+        </section>
+
+        {currentStep > 3 && <StepHeader number={3} title="Adicionais" completed={true} summary={Object.values(data.extras).some(Boolean) ? 'Itens Selecionados' : 'Nenhum'} onClick={() => setCurrentStep(3)} />}
+
+        {/* STEP 4: LOCATION */}
+        <section ref={el => stepRefs.current[4] = el} className={currentStep === 4 ? 'block animate-enter' : 'hidden'}>
+           <StepHeader number={4} title="Onde será?" active={true} />
+           <div className="space-y-3">
+              {LOCATIONS.map(loc => (
+                 <div key={loc.id} onClick={() => setData({...data, location: loc})}
+                    className={`card-base p-4 flex items-center gap-4 cursor-pointer ${data.location?.id === loc.id ? 'card-selected' : ''}`}>
+                    <div className="bg-[#27272a] w-12 h-12 rounded-full flex items-center justify-center text-white"><loc.icon size={22}/></div>
+                    <div>
+                       <p className="font-bold text-white">{loc.label}</p>
+                       <p className="text-xs text-gray-500">{loc.sub}</p>
+                    </div>
+                 </div>
+              ))}
+
+              {data.location && (
+                 <div className="animate-enter bg-[#18181b] p-4 rounded-2xl border border-[#27272a] mt-4 space-y-3">
+                    <input value={data.street} onChange={e => setData({...data, street: e.target.value})} className="input-field p-3.5" placeholder="Nome da Rua / Hotel" />
+                    <div className="flex gap-3">
+                       <input type="tel" value={data.number} onChange={e => setData({...data, number: e.target.value})} className="input-field p-3.5 w-1/3" placeholder="Nº" />
+                       <input value={data.district} onChange={e => setData({...data, district: e.target.value})} className="input-field p-3.5 w-2/3" placeholder="Bairro" />
+                    </div>
+                    <button disabled={!data.street || !data.number} onClick={() => handleNext(5)} className="primary-btn w-full py-3.5 text-sm disabled:opacity-50">Confirmar Local</button>
+                 </div>
               )}
-              <div className="flex items-center gap-3">
-                <Notifications notifications={loyalty.notifications} onClear={() => setLoyalty(p => ({...p, notifications: p.notifications.map(n => ({...n, read: true}))}))} />
-              </div>
-            </div>
-          )}
+           </div>
+        </section>
 
-          {/* --- HOME --- */}
-          {step === 'home' && (
-            <div className="flex-1 p-6 overflow-y-auto pb-28 pt-12" ref={homeRef}>
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <p className="text-[11px] text-[#0A84FF] uppercase tracking-widest font-bold flex items-center gap-2 mb-1">
-                    {copy.welcome}
-                  </p>
-                  <h1 className="text-3xl font-bold text-white tracking-tight">{loyalty.savedName || 'Bem-vindo'}</h1>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button onClick={() => setShowFaq(true)} className="w-11 h-11 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center active:scale-95 transition-transform"><HelpCircle className="w-6 h-6 text-gray-300" /></button>
-                  <a href="https://www.instagram.com/thalymassagens/" target="_blank" className="w-11 h-11 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center active:scale-95 transition-transform"><Instagram className="w-6 h-6 text-[#FF2D55]" /></a>
-                </div>
-              </div>
+        {currentStep > 4 && <StepHeader number={4} title="Local" completed={true} summary={data.street} onClick={() => setCurrentStep(4)} />}
 
-              <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
-              <LiveStatus />
-              <MasseurProfile profileType={profileType} />
+        {/* STEP 5: PAYMENT */}
+        <section ref={el => stepRefs.current[5] = el} className={currentStep === 5 ? 'block animate-enter' : 'hidden'}>
+           <StepHeader number={5} title="Forma de Pagamento" active={true} />
+           <div className="grid grid-cols-3 gap-3 mb-8">
+              {['pix', 'dinheiro', 'cartao'].map(m => (
+                 <div key={m} onClick={() => setData({...data, payment: m})}
+                    className={`card-base p-4 flex flex-col items-center justify-center gap-2 cursor-pointer h-24 ${data.payment === m ? 'border-[#32D74B] bg-[#32D74B]/10' : ''}`}>
+                    {m==='pix' && <QrCode className="text-[#32D74B]"/>}
+                    {m==='dinheiro' && <Banknote className="text-[#32D74B]"/>}
+                    {m==='cartao' && <CreditCard className="text-[#32D74B]"/>}
+                    <span className="text-[10px] font-bold uppercase">{m}</span>
+                 </div>
+              ))}
+           </div>
+        </section>
 
-              <ReviewsCarousel />
+      </main>
+
+      {/* STICKY CHECKOUT BAR (Mostra após selecionar serviço) */}
+      {data.service && (
+        <div className="fixed bottom-0 w-full z-[100] animate-enter">
+           <div className="bg-gradient-to-t from-black via-black to-transparent h-12 pointer-events-none absolute bottom-full w-full"></div>
+           <div className="bg-[#1C1C1E]/90 backdrop-blur-xl border-t border-white/10 p-5 rounded-t-[32px] shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
               
-              <div className="mt-auto">
-                <button onClick={handleQuickSchedule} className="w-full ios-btn-primary font-bold py-4 rounded-[22px] shadow-lg flex justify-center items-center gap-3 text-[18px] h-16 uppercase tracking-wider">
-                  {copy.btnConfirm} <ArrowRight className="w-6 h-6" />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* --- IDENTITY (SELEÇÃO DE PERFIL) --- */}
-          {step === 'identity' && (
-            <div className="flex-1 p-6 pt-20 animate-fade-in flex flex-col h-full">
-              <h2 className="text-3xl font-bold text-white mb-2">Configuração</h2>
-              <p className="text-gray-400 text-[16px] mb-6">Escolha o modo que combina com você.</p>
-              
-              <div className="space-y-6 flex-1">
-                {/* SELETOR DE ÍCONE/PERFIL */}
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                    <button onClick={() => { setProfileType('hetero'); triggerHaptic(); }} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${profileType === 'hetero' ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#1C1C1E] border-white/10 text-gray-500'}`}>
-                        <span className="text-2xl">🦁</span>
-                        <span className="text-[10px] font-bold uppercase">Direto</span>
+              <div className="flex justify-between items-end mb-4 px-2">
+                 <div>
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Total Estimado</p>
+                    <div className="flex items-end gap-2">
+                        {hasCoupon && <span className="text-sm line-through text-gray-500 font-bold decoration-red-500 mb-1">{Utils.formatBRL(financials.sub)}</span>}
+                        <span className="text-3xl font-black text-white tracking-tight">{Utils.formatBRL(financials.total)}</span>
+                    </div>
+                 </div>
+                 {!hasCoupon ? (
+                    <button onClick={() => { Utils.vibrate(); setHasCoupon(true); }} className="px-3 py-1.5 rounded-lg bg-[#FFD60A]/10 text-[#FFD60A] border border-[#FFD60A]/30 text-xs font-bold flex items-center gap-1.5 btn-pulse">
+                       <Ticket size={12}/> CUPOM VIP
                     </button>
-                    <button onClick={() => { setProfileType('gay'); triggerHaptic(); }} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${profileType === 'gay' ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#1C1C1E] border-white/10 text-gray-500'}`}>
-                        <span className="text-2xl">🦄</span>
-                        <span className="text-[10px] font-bold uppercase">Livre</span>
-                    </button>
-                    <button onClick={() => { setProfileType('sigiloso'); triggerHaptic(); }} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${profileType === 'sigiloso' ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#1C1C1E] border-white/10 text-gray-500'}`}>
-                        <span className="text-2xl">🎭</span>
-                        <span className="text-[10px] font-bold uppercase">Sigilo</span>
-                    </button>
-                </div>
-
-                <div className="ios-card p-6 rounded-[24px]">
-                  <label className="text-[12px] text-[#0A84FF] font-bold uppercase tracking-wider block mb-2">Nome / Apelido</label>
-                  <input value={user.name} onChange={e => setUser({...user, name: e.target.value})} className="w-full bg-transparent text-white text-[22px] font-bold placeholder:text-gray-600 border-b border-white/10 py-2 focus:border-[#0A84FF] transition-colors" placeholder="Digite..." />
-                </div>
-                
-                <div className="space-y-3">
-                  <button onClick={() => { triggerHaptic(); setUser({...user, isAdult: !user.isAdult}); }} className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user.isAdult ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <div className={`w-7 h-7 rounded-full border-[2px] flex items-center justify-center transition-all ${user.isAdult ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-500'}`}>{user.isAdult && <Check className="w-4 h-4 text-white" />}</div>
-                    <span className={`text-[16px] font-bold ${user.isAdult ? 'text-white' : 'text-gray-400'}`}>Sou maior de 18 anos</span>
-                  </button>
-                  <button onClick={() => { triggerHaptic(); setUser({...user, isMassagemOk: !user.isMassagemOk}); }} className={`w-full p-5 rounded-[22px] border flex items-center gap-4 transition-all duration-300 ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <div className={`w-7 h-7 rounded-full border-[2px] flex items-center justify-center transition-all ${user.isMassagemOk ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-500'}`}>{user.isMassagemOk && <Check className="w-4 h-4 text-white" />}</div>
-                    <span className={`text-[16px] font-bold ${user.isMassagemOk ? 'text-white' : 'text-gray-400'}`}>Aceito a conduta</span>
-                  </button>
-                </div>
-
-                <div className="mt-auto">
-                  <button disabled={!user.name || !user.isAdult || !user.isMassagemOk} onClick={() => { triggerHaptic(); setStep('home'); }} className="w-full ios-btn-primary font-bold py-4 rounded-[22px] text-[18px] h-16 disabled:opacity-50 shadow-lg uppercase tracking-wide">ENTRAR</button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* --- SERVICES (TEXTOS DINÂMICOS) --- */}
-          {step === 'services' && (
-            <div className="flex-1 p-6 pt-32 overflow-y-auto pb-28 animate-fade-in">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold text-white">{copy.serviceTitle}</h2>
-              </div>
-              <div className="space-y-6">
-                {services.map(s => (
-                  <div key={s.id} onClick={() => { triggerHaptic(); setSelection({...selection, service: s}); setStep('configure'); }} className={`ios-card p-6 rounded-[26px] active:scale-[0.98] transition-all group relative overflow-hidden ${s.id === 'masculina' ? 'border-[#0A84FF] shadow-[0_0_30px_rgba(10,132,255,0.15)]' : 'border-white/5'}`}>
-                    {s.id === 'masculina' && <div className="absolute top-0 right-0 p-2 bg-[#0A84FF] rounded-bl-xl"><Flame className="w-5 h-5 text-white animate-pulse" /></div>}
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-bold text-white text-[20px] max-w-[70%] leading-tight">{s.id === 'masculina' ? 'Massagem Masculina' : 'Relaxante Clássica'}</h3>
-                      <span className="text-[#0A84FF] font-bold text-[18px] bg-[#0A84FF]/10 px-3 py-1 rounded-lg border border-[#0A84FF]/20">{formatCurrency(s.basePrice)}</span>
-                    </div>
-                    {/* Texto Dinâmico */}
-                    <p className="text-[15px] text-gray-300 leading-relaxed mb-5 font-medium">
-                        {s.id === 'masculina' ? copy.masculinaDesc : copy.relaxanteDesc}
-                    </p>
-                    <span className="text-[10px] font-bold text-black bg-[#FFD60A] px-2 py-0.5 rounded mb-3 inline-block tracking-wide uppercase">
-                        {s.id === 'masculina' ? copy.masculinaHigh : copy.relaxanteHigh}
-                    </span>
-                    <ul className="space-y-3 mb-4">
-                      {s.details.map((d, idx) => (<li key={idx} className="text-[14px] text-gray-300 flex items-center gap-3 font-medium"><div className="w-2 h-2 rounded-full bg-[#0A84FF]"></div> {d}</li>))}
-                    </ul>
-                    <div className="flex justify-between items-center pt-4 border-t border-white/5">
-                      <span className="text-[13px] bg-white/5 px-3 py-1.5 rounded-full text-gray-300 flex items-center gap-1.5 font-bold uppercase"><Clock className="w-4 h-4"/> 60 Minutos</span>
-                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#0A84FF] transition-colors"><ChevronRight className="w-6 h-6 text-gray-400 group-hover:text-white" /></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* --- CONFIGURE --- */}
-          {step === 'configure' && selection.service && (
-            <div className="flex-1 p-6 pt-32 overflow-y-auto pb-48 animate-fade-in">
-              <div className="ios-card p-5 rounded-[22px] mb-8 flex items-center justify-between border-l-4 border-l-[#0A84FF]">
-                <div>
-                  <h3 className="font-bold text-white text-[18px]">{selection.service.id === 'masculina' ? 'Massagem Masculina' : 'Relaxante Clássica'}</h3>
-                  <p className="text-[13px] text-gray-400 mt-0.5 font-medium">60 Minutos</p>
-                </div>
-                <span className="text-[20px] font-bold text-[#0A84FF]">{formatCurrency(selection.service.basePrice)}</span>
+                 ) : (
+                    <div className="px-3 py-1 bg-[#32D74B]/20 text-[#32D74B] text-[10px] font-bold rounded flex items-center gap-1"><Check size={10}/> DESC. APLICADO</div>
+                 )}
               </div>
 
-              <div className="space-y-10">
-                <section>
-                  <div className="flex justify-between items-center mb-4">
-                    <h4 className="text-[13px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><Calendar className="w-4 h-4"/> Data e Hora</h4>
-                  </div>
-                  <div className="ios-card p-2 rounded-[24px]">
-                     <InlineDateSelector selectedDate={selection.date} selectedTime={selection.time} onSelect={(d, t) => { setSelection({...selection, date: d, time: t}); if(t) scrollTo(locationRef); }} />
-                  </div>
-                </section>
+              <button 
+                 onClick={() => { if(currentStep < 5) handleNext(currentStep + 1); else { setIsSuccess(true); window.open(generateWhatsapp(), '_blank'); } }}
+                 disabled={currentStep === 5 && !data.payment}
+                 className={`w-full h-14 rounded-2xl font-bold text-lg shadow-xl transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale
+                 ${currentStep === 5 ? 'bg-[#32D74B] text-black hover:scale-[1.02]' : 'bg-[#0A84FF] text-white'}`}>
+                 {currentStep === 5 ? 
+                    <><MessageCircle size={24} fill="black"/> FINALIZAR PEDIDO</> : 
+                    <>AVANÇAR <ChevronRight size={20}/></>}
+              </button>
 
-                <section ref={locationRef}>
-                  <div className="flex justify-between items-center mb-4">
-                    <h4 className="text-[13px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><MapPin className="w-4 h-4"/> {copy.location}</h4>
-                    {selection.location && <button onClick={() => setSelection({...selection, location: null, useTable: null, city: ''})} className="text-[11px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 px-3 py-1 rounded-full uppercase">Trocar</button>}
-                  </div>
-                  <div className="space-y-3">
-                    {locations.map(l => {
-                      if (selection.location && selection.location.id !== l.id) return null;
-                      return (
-                      <div key={l.id} className="animate-fade-in">
-                          <button onClick={() => { triggerHaptic(); setSelection({...selection, location: l, useTable: null}); scrollTo(vibeRef); }} className={`w-full p-5 rounded-[22px] border text-left transition-all duration-300 ${selection.location?.id === l.id ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                            <div className="flex justify-between items-center mb-1">
-                              <span className="font-bold text-white text-[18px]">{l.label}</span> 
-                              {l.fee > 0 && <span className="text-[12px] font-bold text-gray-300 bg-white/10 px-2 py-1 rounded">+ {formatCurrency(l.fee)}</span>}
-                            </div>
-                            <p className="text-[14px] text-gray-400 font-medium">{l.sublabel}</p>
-                          </button>
-                          {selection.location?.id === l.id && l.id === 'santa-fe' && l.allowsTableChoice && (
-                            <div ref={surfaceRef} className="mt-3 grid grid-cols-2 gap-3 animate-fade-in">
-                              <button onClick={() => { setSelection({...selection, useTable: false}); scrollTo(vibeRef); }} className={`p-4 rounded-[18px] border text-[14px] font-bold transition-all ${selection.useTable === false ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'ios-btn border-transparent text-gray-400'}`}>🛏 Minha Cama</button>
-                              <button onClick={() => { setSelection({...selection, useTable: true}); scrollTo(vibeRef); }} className={`p-4 rounded-[18px] border text-[14px] font-bold transition-all ${selection.useTable === true ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'ios-btn border-transparent text-gray-400'}`}>💆‍♂️ Trazer Maca (+20)</button>
-                            </div>
-                          )}
-                          {selection.location?.id === l.id && l.id === 'outras-cidades' && (
-                              <input value={selection.city} onChange={e => setSelection({...selection, city: e.target.value})} placeholder="Nome da cidade..." className="mt-3 w-full bg-[#1C1C1E] p-4 rounded-[18px] border border-white/10 text-white placeholder:text-gray-600 focus:border-[#0A84FF] transition-all animate-fade-in" />
-                          )}
-                      </div>
-                    )})}
-                  </div>
-                </section>
-
-                <div className="mt-4" ref={vibeRef}>
-                  <h4 className="text-[13px] font-bold text-gray-400 uppercase mb-3 tracking-widest flex items-center gap-2"><Music className="w-4 h-4"/> Trilha Sonora</h4>
-                  <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                    {musicVibes.map(vibe => (
-                        <button key={vibe} onClick={() => { setSelection({...selection, music: vibe}); }} className={`px-5 py-3 rounded-[16px] border text-[13px] font-bold whitespace-nowrap flex-shrink-0 transition-all duration-300 ${selection.music === vibe ? 'bg-white text-black border-white' : 'ios-btn border-transparent text-gray-400'}`}>
-                          {vibe}
-                        </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-3" ref={extrasRef}>
-                  <h4 className="text-[13px] font-bold text-gray-400 uppercase mb-1 tracking-widest mt-4">Personalizar</h4>
-                  <button onClick={() => { triggerHaptic(); setSelection({...selection, upgrade: !selection.upgrade}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.upgrade ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <div className="text-left"><p className="text-white font-bold text-[16px]">Mais Tempo (+30min)</p><p className="text-[12px] text-gray-500 font-medium">Sem pressa para acabar</p></div>
-                    <span className="text-[#0A84FF] font-bold text-[16px]">+{formatCurrency(selection.service.basePrice * 0.5)}</span>
-                  </button>
-                  <button onClick={() => { triggerHaptic(); setSelection({...selection, aroma: !selection.aroma}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.aroma ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <div className="text-left"><p className="text-white font-bold text-[16px]">Aromaterapia 🌿</p><p className="text-[12px] text-gray-500 font-medium">Óleos especiais e cheiro bom</p></div>
-                    <span className="text-[#0A84FF] font-bold text-[16px]">+R$ 10,00</span>
-                  </button>
-                </div>
-
-                <CouponInventory inventory={loyalty.inventory} appliedCoupon={selection.coupon} onApply={(code) => { setSelection({...selection, coupon: SYSTEM_COUPONS[code]}); scrollTo(paymentRef); }} onRemove={() => setSelection({...selection, coupon: null})} onAddManual={handleAddManualCoupon}/>
-
-                <div className="mt-6" ref={paymentRef}>
-                  <h4 className="text-[13px] font-bold text-gray-400 uppercase mb-3 tracking-widest">{copy.payment}</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button onClick={() => setSelection({...selection, paymentMethod: 'pix'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'pix' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}><QrCode className="w-6 h-6 text-[#0A84FF]" /><span className="text-[14px] font-bold text-white">Pix</span></button>
-                    <button onClick={() => setSelection({...selection, paymentMethod: 'cash'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'cash' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}><Banknote className="w-6 h-6 text-[#30D158]" /><span className="text-[14px] font-bold text-white">Dinheiro</span></button>
-                    <button onClick={() => setSelection({...selection, paymentMethod: 'debit_card'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'debit_card' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}><CreditCard className="w-6 h-6 text-[#0A84FF]" /><span className="text-[14px] font-bold text-white">Débito</span></button>
-                    <button onClick={() => setSelection({...selection, paymentMethod: 'credit_card'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'credit_card' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}><CreditCard className="w-6 h-6 text-[#FFD60A]" /><span className="text-[14px] font-bold text-white">Crédito</span></button>
-                  </div>
-                  {selection.paymentMethod === 'credit_card' && (
-                    <div className="mt-3 ios-card p-3 rounded-[16px] animate-fade-in">
-                      <label className="text-[13px] text-gray-400 block mb-1 font-bold ml-1">Parcelas (Sem nome de massagem na fatura):</label>
-                      <select value={selection.installments} onChange={(e) => setSelection({...selection, installments: parseInt(e.target.value)})} className="w-full bg-[#1C1C1E] border border-white/10 text-white text-[16px] rounded-lg p-3 focus:border-[#0A84FF]">
-                        {Array.from({length: 12}, (_, i) => i + 1).map(num => {
-                            const rate = CARD_RATES[num] || 0;
-                            const totalWithRate = calcBaseTotal() / (1 - rate);
-                            const parcelValue = totalWithRate / num;
-                            return <option key={num} value={num}>{num}x de {formatCurrency(parcelValue)} (Total: {formatCurrency(totalWithRate)})</option>;
-                        })}
-                      </select>
-                    </div>
-                  )}
-
-                  <div className="mt-8 mb-4 ios-card p-5 rounded-[22px] border border-white/5 bg-[#121214]">
-                      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/5"><Receipt className="w-5 h-5 text-gray-400" /><span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Resumo do Pedido</span></div>
-                      <div className="space-y-3 text-[15px]">
-                          <div className="flex justify-between text-gray-300 font-medium"><span>{selection.service.name}</span><span>{formatCurrency(selection.service.basePrice)}</span></div>
-                          {selection.location?.fee > 0 && <div className="flex justify-between text-gray-400"><span>+ Taxa Deslocamento</span><span>{formatCurrency(selection.location.fee)}</span></div>}
-                          {selection.upgrade && <div className="flex justify-between text-gray-400"><span>+ 30 Minutos Extra</span><span>{formatCurrency(selection.service.basePrice * 0.5)}</span></div>}
-                          {selection.useTable && <div className="flex justify-between text-gray-400"><span>+ Levar Maca</span><span>{formatCurrency(20)}</span></div>}
-                          {selection.aroma && <div className="flex justify-between text-gray-400"><span>+ Aromaterapia</span><span>{formatCurrency(10)}</span></div>}
-                          {selection.coupon && <div className="flex justify-between text-[#30D158] font-bold"><span>Desconto ({selection.coupon.code})</span><span>-{selection.coupon.type === 'percent' ? formatCurrency(calcBaseTotal() / (1 - selection.coupon.value/100) - calcBaseTotal()) : formatCurrency(selection.coupon.value)}</span></div>}
-                          {selection.location?.id === 'motel' && <div className="flex items-center gap-2 text-[#FFD60A] text-[12px] bg-[#FFD60A]/10 p-2 rounded-lg mt-2"><Info className="w-4 h-4" /><span>Taxa da Suíte (R$75) paga lá na saída.</span></div>}
-                      </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* FOOTER FIXO */}
-          {step === 'configure' && selection.location && (
-            <div className="absolute bottom-0 w-full p-0 z-30">
-              <div className="h-12 bg-gradient-to-t from-[#000] to-transparent pointer-events-none"></div>
-              <div className="bg-[#1C1C1E]/95 backdrop-blur-xl rounded-t-[32px] p-6 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
-                <div className="flex justify-between items-end mb-4 px-1">
-                  <div className='flex flex-col'>
-                    <span className="text-[11px] text-gray-500 uppercase font-black tracking-widest mb-1">TOTAL FINAL</span>
-                    <div className="flex items-end gap-3">
-                      {(selection.coupon || selection.paymentMethod === 'credit_card') && <span className="text-sm text-gray-500 line-through font-medium mb-1">{formatCurrency(calcOriginalPrice())}</span>}
-                      <span className="text-4xl font-bold text-white tracking-tighter leading-none">{selection.location.id === 'outras-cidades' ? 'A definir' : formatCurrency(calcFinalPrice())}</span>
-                    </div>
-                    {selection.paymentMethod === 'credit_card' && <span className="text-[11px] text-gray-500 mt-1 ml-0.5">Com taxa da máquina</span>}
-                  </div>
-                </div>
-                <button disabled={!canFinalize} onClick={handleWhatsApp} className="w-full bg-[#0A84FF] hover:bg-[#007AFF] active:scale-[0.98] transition-all text-white font-bold py-4 rounded-[20px] shadow-[0_4px_20px_rgba(10,132,255,0.4)] flex justify-center items-center gap-3 text-[18px] disabled:opacity-50 disabled:shadow-none h-16 uppercase tracking-wide">
-                  {canFinalize ? `${copy.btnConfirm} • ${formatCurrency(calcFinalPrice())}` : 'Preencha tudo para continuar'} <ArrowRight className="w-6 h-6"/>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {step === 'success' && (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-              <div className="w-24 h-24 bg-[#30D158] rounded-full flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(48,209,88,0.4)] animate-scale"><Check className="w-12 h-12 text-white drop-shadow-md"/></div>
-              <h2 className="text-3xl font-bold text-white mb-3">Tudo Certo!</h2>
-              <p className="text-gray-400 mb-10 text-[18px] leading-relaxed font-medium">Seu pedido foi gerado. Finalize a conversa no WhatsApp para garantir sua vaga.</p>
-              <button onClick={handleCopyPix} className="mb-6 flex items-center gap-2 text-[16px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 px-6 py-4 rounded-xl border border-[#0A84FF]/20 hover:bg-[#0A84FF]/20 transition-colors uppercase tracking-wide"><Copy className="w-5 h-5"/> Copiar Chave Pix</button>
-              <button onClick={handleReset} className="w-full ios-btn py-4 rounded-[18px] text-white font-bold text-[16px]">Voltar ao Início</button>
-            </div>
-          )}
-
-          {showFaq && (
-            <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-5">
-              <div className="bg-[#1C1C1E] w-full max-w-sm rounded-[32px] p-8 border border-white/10 shadow-2xl animate-scale">
-                <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3"><Shield className="w-7 h-7 text-[#0A84FF]" /> Dúvidas & Segurança</h3>
-                <div className="space-y-6 text-[15px] text-gray-300 leading-relaxed font-medium">
-                  <p>🔒 <strong>Sigilo Total:</strong> Seus dados não ficam salvos em nenhum lugar. O app roda só no seu navegador.</p>
-                  <p>🚫 <strong>Conduta:</strong> Apenas massagem terapêutica. Respeito é a base de tudo.</p>
-                  <p>💳 <strong>Fatura Discreta:</strong> No cartão, não aparece nome de massagem.</p>
-                  <div className="pt-6 border-t border-white/10">
-                     <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="text-xs text-[#FF3B30] flex items-center gap-2 font-bold uppercase tracking-wider"><Trash2 className="w-4 h-4"/> Apagar tudo e sair</button>
-                  </div>
-                </div>
-                <button onClick={() => setShowFaq(false)} className="mt-8 w-full bg-[#2C2C2E] text-white py-4 rounded-[18px] font-bold text-[16px]">Entendi</button>
-              </div>
-            </div>
-          )}
+           </div>
         </div>
-      </>
       )}
     </div>
   );
