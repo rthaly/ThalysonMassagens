@@ -7,58 +7,63 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO DE NEGÓCIO & REGIÃO
+// 1. CONFIGURAÇÃO DE NEGÓCIO (EDITÁVEL)
 // ==================================================================================
 
 const CONFIG = {
-  // --- CONFIGURAÇÃO DA REGIÃO ATUAL (MUDE AQUI) ---
-  // OPÇÕES: 'SP' (São Paulo Capital) ou 'INTERIOR' (Santa Fé e Região)
+  // MUDE AQUI: 'SP' ou 'INTERIOR'
   REGION_MODE: 'SP', 
 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
   
-  // VALORES ORIGINAIS RESTAURADOS
-  COUPON_VAL: 13, 
+  // FINANCEIRO
+  COUPON_VAL: 15.00, 
   PRICES: {
-    UPGRADE_PCT: 0.5, // 50% do valor
+    UPGRADE_PCT: 0.5, // +50% do valor base
     TOUCH: 73, 
     AROMA: 5,
   },
   
-  // GAMIFICAÇÃO (MANTIDA P/ ENGAJAMENTO)
-  XP_THRESHOLDS: { VIP: 80, ALPHA: 120 },
+  // GAMIFICAÇÃO (BALANCEADA PARA NÃO DAR PREJUÍZO)
+  // O cliente precisa gastar aprox 200 reais para ganhar o cupom de 15.
+  XP_THRESHOLDS: { VIP: 100, ALPHA: 150 },
   
   URLS: {
     WHATSAPP_API: "https://api.whatsapp.com/send"
   }
 };
 
-// LISTAS DE LOCAIS INTELIGENTES (TROCA AUTOMÁTICA)
-const CITIES_DB = {
+// --- BASE DE DADOS DE LOCAIS (SP x INTERIOR) ---
+const LOCATIONS_DB = {
   SP: [
-    { id: 'centro', name: 'Centro SP (Bela Vista/Augusta)', fee: 0 },
-    { id: 'jardins', name: 'Jardins / Paulista', fee: 15 },
-    { id: 'pinheiros', name: 'Pinheiros / Vila Madalena', fee: 20 },
-    { id: 'moema', name: 'Moema / Vila Mariana', fee: 25 },
-    { id: 'itaim', name: 'Itaim Bibi / Faria Lima', fee: 30 },
-    { id: 'zsul', name: 'Zona Sul (Outros)', fee: 40 },
-    { id: 'zleste', name: 'Zona Leste (Consultar)', fee: 50 },
-    { id: 'znorte', name: 'Zona Norte (Consultar)', fee: 50 },
+    { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 0, zone: 'Base' },
+    { id: 'consola', name: 'Consolação / Centro', fee: 10, zone: 'Zona 1' },
+    { id: 'jardins', name: 'Jardins / Paulista', fee: 15, zone: 'Zona 1' },
+    { id: 'higien', name: 'Higienópolis / Sta Cecília', fee: 18, zone: 'Zona 1' },
+    { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 25, zone: 'Zona 2' },
+    { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 28, zone: 'Zona 2' },
+    { id: 'moema', name: 'Moema / V. Mariana', fee: 30, zone: 'Zona 2' },
+    { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 30, zone: 'Zona 2' },
+    { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 35, zone: 'Zona 3' },
+    { id: 'saude', name: 'Saúde / Jabaquara', fee: 40, zone: 'Zona 3' },
+    { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 45, zone: 'Zona 3' },
+    { id: 'morumbi', name: 'Morumbi / Panamby', fee: 50, zone: 'Zona 4' },
+    { id: 'santana', name: 'Santana / ZN', fee: 50, zone: 'Zona 4' },
+    { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: 'Consultar' },
   ],
   INTERIOR: [
-    { id: 'santafe', name: 'Santa Fé do Sul', fee: 0 },
-    { id: 'tresfron', name: 'Três Fronteiras', fee: 20 },
-    { id: 'rubineia', name: 'Rubinéia', fee: 25 },
-    { id: 'santaclara', name: 'Santa Clara', fee: 30 },
-    { id: 'jales', name: 'Jales', fee: 60 },
-    { id: 'aparecida', name: 'Ap. do Taboado', fee: 70 },
+    { id: 'santafe', name: 'Santa Fé do Sul', fee: 0, zone: 'Base' },
+    { id: 'tresfron', name: 'Três Fronteiras', fee: 20, zone: 'Vizinha' },
+    { id: 'rubineia', name: 'Rubinéia', fee: 25, zone: 'Vizinha' },
+    { id: 'santaclara', name: 'Santa Clara', fee: 30, zone: 'Vizinha' },
+    { id: 'jales', name: 'Jales', fee: 60, zone: 'Longe' },
+    { id: 'aparecida', name: 'Ap. do Taboado', fee: 70, zone: 'MS' },
   ]
 };
 
-// Seleciona a lista com base na configuração
-const CURRENT_CITIES = CITIES_DB[CONFIG.REGION_MODE];
+const CURRENT_LOCATIONS = LOCATIONS_DB[CONFIG.REGION_MODE];
 
 const SERVICES = [
   { 
@@ -69,7 +74,7 @@ const SERVICES = [
     duration: 60, 
     price: 155, 
     badge: 'MAIS PEDIDA 🔥',
-    xp: 60
+    xp: 60 // Sozinho não dá VIP (Precisa de extras)
   },
   { 
     id: 'relax', 
@@ -79,13 +84,8 @@ const SERVICES = [
     duration: 60, 
     price: 125, 
     badge: null,
-    xp: 30
+    xp: 30 // Precisa de muito extra pra dar VIP
   },
-];
-
-const TIME_SLOTS = [
-    '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', 
-    '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
 ];
 
 const LOCATION_TYPES = [
@@ -95,11 +95,31 @@ const LOCATION_TYPES = [
   { id: 'motel', label: 'Motel', icon: Flame },
 ];
 
+const TIME_SLOTS = [
+    '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', 
+    '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
+];
+
 const LEVELS = [
-  { name: 'Visitante', min: 0, color: 'text-gray-400', bg: 'bg-gray-600' },
-  { name: 'Membro', min: 30, color: 'text-blue-400', bg: 'bg-blue-500' },
+  { name: 'Visitante', min: 0, color: 'text-gray-500', bg: 'bg-gray-700' },
+  { name: 'Membro', min: 40, color: 'text-blue-400', bg: 'bg-blue-500' },
   { name: 'VIP', min: CONFIG.XP_THRESHOLDS.VIP, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, 
   { name: 'ALPHA', min: CONFIG.XP_THRESHOLDS.ALPHA, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
+];
+
+// --- BANCO DE DADOS DE TEXTOS ---
+
+const LIVE_NOTIFICATIONS = [
+  "🔥 João acabou de agendar", "👀 4 pessoas vendo a agenda", "📅 Agenda de Sexta quase cheia",
+  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou presença", "💎 Murilo virou VIP",
+  "🌊 Ricardo ativou o modo relax", "💬 Lucas enviou uma dúvida", "🏠 Atendimento em domicílio iniciado",
+  "🚀 Bruno fechou o pacote completo", "😈 Felipe adicionou interação", "🏨 Atendimento em Hotel iniciado",
+  "🍃 Gustavo pediu Aromaterapia", "💳 Pagamento via Pix recebido", "🏳️‍🌈 Cliente novo cadastrado",
+  "🕶️ Modo Sigilo Ativado", "🚗 Thalyson está a caminho", "⏱️ Sessão estendida agendada",
+  "🧖‍♂️ Rafael finalizou a sessão", "✨ Avaliação 5 estrelas recebida", "🔥 Agenda de Sábado abriu",
+  "📍 Atendimento na Bela Vista", "📍 Atendimento no Jardins", "📍 Atendimento em Moema",
+  "🎁 Cupom VIP foi resgatado", "🔒 Dados criptografados", "👋 Marcos mandou um 'Oi'",
+  "💼 Executivo agendou horário", "✈️ Turista do RJ agendou", "🛌 Suíte de Motel reservada"
 ];
 
 const REVIEWS_DB = [
@@ -109,25 +129,59 @@ const REVIEWS_DB = [
   { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
   { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
   { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
-];
-
-const LIVE_NOTIFICATIONS = [
-  "🔥 João acabou de agendar",
-  "👀 4 pessoas visualizando agora",
-  "📅 Agenda de Sexta quase cheia",
-  "⭐ Pedro avaliou com 5 estrelas",
-  "✅ Matheus confirmou presença",
-  "💎 Murilo usou o Cupom",
-  "🏠 Atendimento em Hotel iniciado"
+  { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
+  { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
+  { t: "Ele de cueca branca... sem comentários. Visual nota 1000.", a: "Fã", s: 5 },
+  { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
+  { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
+  { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
+  { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
+  { t: "Gostei bastante, me senti bem relaxado depois, saí mais leve.", a: "Alan SP", s: 5 },
+  { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
+  { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
+  { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
+  { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
+  { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
+  { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
+  { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
+  { t: "O lubrificante é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
+  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
+  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
+  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
+  { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
+  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anônimo", s: 5 },
+  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
+  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Motorista", s: 5 },
+  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
+  { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
+  { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
+  { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
+  { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
+  { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
+  { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
+  { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
+  { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
+  { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
+  { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
+  { t: "Fiz no meu apto e foi Prático.", a: "Morador Centro", s: 5 },
+  { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
+  { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
+  { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
+  { t: "O final foi explosivo. Recomendo.", a: "Anônimo", s: 5 },
+  { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
+  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 },
+  { t: "Paz de espírito e corpo relaxado. Obrigado.", a: "Fernando", s: 5 }
 ];
 
 // ==================================================================================
-// 2. UTILITÁRIOS & ESTILOS GLOBAIS
+// 3. UTILITÁRIOS & ESTILOS
 // ==================================================================================
 
 const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
   vibrate: (pattern = 10) => { if (navigator.vibrate) navigator.vibrate(pattern); },
+  // Embaralha sem repetir imediatamente
   shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
   isTimeBlocked: (selectedDate, timeString) => {
     if (!selectedDate) return true;
@@ -171,20 +225,39 @@ input, select, button { outline: none; }
 `;
 
 // ==================================================================================
-// 3. COMPONENTES VISUAIS
+// 4. COMPONENTES VISUAIS & LOGICA
 // ==================================================================================
 
+// Live Bubbles: Não repete até acabar a lista
 const LiveBubbles = () => {
     const [msg, setMsg] = useState(null);
+    const [queue, setQueue] = useState([]);
+
     useEffect(() => {
-      const cycle = () => {
-        setTimeout(() => setMsg(Utils.shuffle(LIVE_NOTIFICATIONS)[0]), 2000);
-        setTimeout(() => setMsg(null), 8000);
-      };
-      cycle();
-      const i = setInterval(cycle, 15000);
-      return () => clearInterval(i);
+        // Inicializa fila embaralhada
+        setQueue(Utils.shuffle([...LIVE_NOTIFICATIONS]));
     }, []);
+
+    useEffect(() => {
+        if(queue.length === 0 && LIVE_NOTIFICATIONS.length > 0) {
+             setQueue(Utils.shuffle([...LIVE_NOTIFICATIONS])); // Recarrega
+             return;
+        }
+
+        const cycle = () => {
+            if (queue.length > 0) {
+                const nextMsg = queue[0];
+                setMsg(nextMsg);
+                setQueue(q => q.slice(1)); // Remove o usado
+                setTimeout(() => setMsg(null), 8000);
+            }
+        };
+
+        const interval = setInterval(cycle, 18000); // 18 segundos entre bolhas
+        cycle(); // Primeira execução
+        return () => clearInterval(interval);
+    }, [queue]);
+
     if (!msg) return null;
     return (
       <div className="fixed top-24 left-1/2 -translate-x-1/2 z-30 w-max max-w-[90%] pointer-events-none">
@@ -205,7 +278,7 @@ const LevelBar = ({ xp }) => {
         <div className="mb-6 animate-enter bg-[#111] p-4 rounded-2xl border border-[#222]">
             <div className="flex justify-between items-end mb-2">
                 <div>
-                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Seu Status</span>
+                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Status Cliente</span>
                     <div className={`flex items-center gap-2 font-black text-xl ${currentLevel.color}`}>
                         <Crown size={20} fill="currentColor" /> {currentLevel.name.toUpperCase()}
                     </div>
@@ -218,9 +291,13 @@ const LevelBar = ({ xp }) => {
             <div className="h-2.5 w-full bg-[#222] rounded-full overflow-hidden relative shadow-inner">
                 <div className={`h-full ${currentLevel.bg} transition-all duration-1000 ease-out shadow-[0_0_15px_currentColor]`} style={{ width: `${progress}%` }}></div>
             </div>
-            {xp >= CONFIG.XP_THRESHOLDS.VIP && (
+            {xp >= CONFIG.XP_THRESHOLDS.VIP ? (
                 <p className="text-[10px] text-center mt-2 text-[#FFD60A] font-bold animate-pulse flex items-center justify-center gap-1">
-                    <Ticket size={12}/> CUPOM R$ {CONFIG.COUPON_VAL} DESBLOQUEADO
+                    <Ticket size={12}/> CUPOM DE R$ {CONFIG.COUPON_VAL} LIBERADO
+                </p>
+            ) : (
+                <p className="text-[10px] mt-2 text-gray-400 text-center">
+                   Adicione <span className="text-[#0A84FF]">Extras</span> para subir de nível e ganhar desconto.
                 </p>
             )}
         </div>
@@ -229,35 +306,48 @@ const LevelBar = ({ xp }) => {
 
 const ReviewsTicker = () => {
     const [idx, setIdx] = useState(0);
-    useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%REVIEWS_DB.length), 6000); return () => clearInterval(t); }, []);
+    // Shuffle inicial para não repetir ordem
+    const [list] = useState(() => Utils.shuffle([...REVIEWS_DB]));
+
+    useEffect(() => { 
+        const t = setInterval(() => setIdx(i => (i+1)%list.length), 7000); 
+        return () => clearInterval(t); 
+    }, [list]);
+
     return (
-        <div className="bg-[#111] border border-[#222] rounded-2xl p-4 mb-6 relative overflow-hidden shadow-lg">
-            <div className="flex text-[#FFD60A] mb-2 gap-1">{[...Array(5)].map((_,i)=><Star key={i} size={14} fill="currentColor"/>)}</div>
-            <p className="text-[14px] text-gray-300 italic mb-2 leading-relaxed animate-enter min-h-[44px]" key={idx}>"{REVIEWS_DB[idx].t}"</p>
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide flex items-center gap-1"><Shield size={10} className="text-[#32D74B]"/> {REVIEWS_DB[idx].a}</p>
+        <div className="bg-[#111] border border-[#222] rounded-2xl p-4 mb-6 relative shadow-lg flex flex-col justify-center min-h-[110px]">
+            <div className="flex text-[#FFD60A] mb-2 gap-1"><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/></div>
+            {/* Altura fixa para evitar pulo de layout */}
+            <div className="relative">
+                <p className="text-[14px] text-gray-300 italic mb-2 leading-relaxed animate-enter" key={idx}>
+                    "{list[idx].t}"
+                </p>
+            </div>
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide flex items-center gap-1 mt-auto">
+                <Shield size={10} className="text-[#32D74B]"/> {list[idx].a}
+            </p>
         </div>
     )
 };
 
 // ==================================================================================
-// 4. APLICAÇÃO PRINCIPAL
+// 5. APLICAÇÃO PRINCIPAL
 // ==================================================================================
 
 export default function BookingApp() {
   const [data, setData] = useState(() => {
      try {
-       const s = localStorage.getItem('thaly_final_v1');
+       const s = localStorage.getItem('thaly_ultimate_v2');
        if(s) { const p = JSON.parse(s); if(p.date) p.date = new Date(p.date); return p; }
      } catch(e){}
-     // ESTRUTURA DE DADOS COMPLETA
      return { 
          name: '', age: '', medical: false, 
          service: null, date: null, time: null, 
          extras: { upgrade: false, touch: false, aroma: false }, 
          payment: null,
          location: {
-             city: CURRENT_CITIES[0], 
-             type: 'home', // home, apto, hotel, motel
+             city: CURRENT_LOCATIONS[0], 
+             type: 'home', 
              street: '', number: '', district: '', reference: '', 
              building: '', block: '', aptNumber: '', intercom: '', 
              hotelName: '', roomNumber: '', 
@@ -277,10 +367,10 @@ export default function BookingApp() {
     extras: useRef(null), location: useRef(null), payment: useRef(null)
   };
 
-  useEffect(() => { localStorage.setItem('thaly_final_v1', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_ultimate_v2', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 1200); }, []);
 
-  // --- LÓGICA FINANCEIRA & XP ---
+  // --- LÓGICA FINANCEIRA & XP (GAMIFICAÇÃO BALANCEADA) ---
   const { financials, xp } = useMemo(() => {
     let xpPoints = 0;
     const base = data.service ? data.service.price : 0;
@@ -290,7 +380,7 @@ export default function BookingApp() {
     if (data.extras.upgrade) xpPoints += 25;
 
     const touch = data.extras.touch ? CONFIG.PRICES.TOUCH : 0;
-    if (data.extras.touch) xpPoints += 30;
+    if (data.extras.touch) xpPoints += 30; // + XP porque é lucrativo
 
     const aroma = data.extras.aroma ? CONFIG.PRICES.AROMA : 0;
     if (data.extras.aroma) xpPoints += 15;
@@ -308,7 +398,6 @@ export default function BookingApp() {
 
   const isVip = xp >= CONFIG.XP_THRESHOLDS.VIP;
 
-  // --- NAVEGAÇÃO ---
   const scrollToSection = (sectionRef) => {
     if (sectionRef && sectionRef.current) {
         setTimeout(() => {
@@ -325,23 +414,25 @@ export default function BookingApp() {
     scrollToSection(ref);
   };
 
-  // --- GERADOR WHATSAPP ---
+  // --- GERADOR WHATSAPP SENIOR ---
   const generateMessage = () => {
     const d = data.date;
     const loc = data.location;
     const dateStr = d ? `${d.getDate()}/${d.getMonth()+1}` : '';
     
-    let t = `🦁 *AGENDAMENTO VIP*\n`;
+    let t = `🦁 *AGENDAMENTO CONFIRMADO*\n`;
     t += `------------------------------\n`;
     t += `👤 *${data.name}* (${data.age} anos)\n`;
     t += `📅 *${dateStr} às ${data.time}*\n`;
     t += `💆 *${data.service?.name.toUpperCase()}*\n`;
     
     if(Object.values(data.extras).some(Boolean)) {
-        t += `🔥 *EXTRAS:*\n`;
-        if(data.extras.upgrade) t += `+ Upgrade Tempo (+30m)\n`;
-        if(data.extras.touch) t += `+ Interação\n`;
-        if(data.extras.aroma) t += `+ Aromaterapia\n`;
+        t += `🔥 *EXTRAS:* `;
+        const extrasList = [];
+        if(data.extras.upgrade) extrasList.push(`+30min`);
+        if(data.extras.touch) extrasList.push(`Interação`);
+        if(data.extras.aroma) extrasList.push(`Aroma`);
+        t += extrasList.join(', ') + `\n`;
     }
     
     t += `\n📍 *LOCAL: ${loc.city.name}*\n`;
@@ -354,24 +445,24 @@ export default function BookingApp() {
         t += `🏢 Edifício: ${loc.building}\n`;
         t += `🚪 Apto ${loc.aptNumber} - Bloco ${loc.block}\n`;
         t += `🏘️ Bairro: ${loc.district}\n`;
+        if(loc.intercom) t += `🔔 Interfone: ${loc.intercom}\n`;
     } else if (loc.type === 'hotel') {
         t += `🏨 Hotel: ${loc.hotelName}\n`;
         t += `🔑 Quarto: ${loc.roomNumber}\n`;
     } else if (loc.type === 'motel') {
         t += `🏩 Motel: ${loc.motelName}\n`;
         t += `🛏️ Suíte: ${loc.suiteType || 'A escolher'}\n`;
-        t += `⚠️ *Conta do Motel por minha conta*\n`;
+        t += `⚠️ *Cliente paga a suíte*\n`;
     }
 
-    t += `\n💰 *TOTAL: ${Utils.formatBRL(financials.total)}*\n`;
-    if(financials.travelFee > 0) t += `🚗 Deslocamento Incluso: ${Utils.formatBRL(financials.travelFee)}\n`;
-    if(hasCoupon) t += `🎟️ Desconto VIP Aplicado\n`;
+    t += `\n💰 *TOTAL FINAL: ${Utils.formatBRL(financials.total)}*\n`;
+    if(financials.travelFee > 0) t += `🚗 Taxa ${loc.city.zone}: ${Utils.formatBRL(financials.travelFee)} (Inclusa)\n`;
+    if(hasCoupon) t += `🎟️ Cupom VIP: -${Utils.formatBRL(financials.desc)}\n`;
     t += `💳 Pagamento: ${data.payment?.toUpperCase()}\n`;
     
     return `${CONFIG.URLS.WHATSAPP_API}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
   };
 
-  // --- VALIDAÇÃO ---
   const isAddressValid = () => {
       const l = data.location;
       if (!l.city) return false;
@@ -382,7 +473,6 @@ export default function BookingApp() {
       return false;
   };
 
-  // --- RENDERS ---
   if (loading) return (
     <div className="fixed inset-0 bg-[#050505] z-50 flex flex-col items-center justify-center">
       <style>{globalStyles}</style>
@@ -398,19 +488,19 @@ export default function BookingApp() {
        <div className="w-24 h-24 bg-[#32D74B]/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(50,215,75,0.4)] animate-scale">
          <Check className="w-10 h-10 text-[#32D74B]" strokeWidth={4} />
        </div>
-       <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Confirmado!</h2>
-       <p className="text-gray-400 mb-8 text-sm max-w-xs">Envie a mensagem gerada para o meu WhatsApp para garantir seu horário.</p>
+       <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Pedido Pronto!</h2>
+       <p className="text-gray-400 mb-8 text-sm max-w-xs">Envie a confirmação para o meu WhatsApp agora.</p>
 
        <div className="w-full max-w-sm bg-[#18181b] border border-[#333] rounded-3xl overflow-hidden shadow-2xl relative mb-8">
            <div className="h-1.5 w-full bg-gradient-to-r from-[#0A84FF] via-[#32D74B] to-[#0A84FF]"></div>
            <div className="p-6">
               <div className="flex justify-between items-start mb-4 border-b border-[#333] pb-4">
                  <div className="text-left">
-                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Total a Pagar</p>
+                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Valor Total</p>
                     <p className="text-[#32D74B] font-bold text-2xl">{Utils.formatBRL(financials.total)}</p>
                  </div>
                  <div className="text-right">
-                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Deslocamento</p>
+                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Taxa {data.location.city.zone}</p>
                     <p className="text-white font-bold">{Utils.formatBRL(financials.travelFee)}</p>
                  </div>
               </div>
@@ -433,9 +523,10 @@ export default function BookingApp() {
 
        <a href={generateMessage()} target="_blank" rel="noreferrer" 
          className="w-full max-w-sm primary-btn py-4 text-lg flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform mb-4 shadow-lg shadow-[#32D74B]/20">
-         <MessageCircle size={24} fill="currentColor" /> Enviar Agora
+         <MessageCircle size={24} fill="currentColor" /> Enviar no WhatsApp
        </a>
-       <button onClick={() => { setSuccess(false); setStage(0); window.scrollTo(0,0); }} className="text-gray-600 font-bold text-xs uppercase py-4">Voltar ao Início</button>
+       {/* RESET TOTAL AO VOLTAR */}
+       <button onClick={() => { setSuccess(false); setHasCoupon(false); setStage(0); window.scrollTo(0,0); }} className="text-gray-600 font-bold text-xs uppercase py-4">Novo Pedido</button>
     </div>
   );
 
@@ -444,7 +535,7 @@ export default function BookingApp() {
       <style>{globalStyles}</style>
       <LiveBubbles />
       
-      {/* HEADER FIXO */}
+      {/* HEADER */}
       <header className="fixed top-0 w-full z-40 glass-header py-3 px-5 flex justify-between items-center transition-all duration-300">
         <div className="flex items-center gap-2" onClick={() => window.location.reload()}>
             <div className="w-8 h-8 bg-[#0A84FF] rounded-lg flex items-center justify-center shadow-lg"><span className="font-black text-white text-sm">T.</span></div>
@@ -456,7 +547,7 @@ export default function BookingApp() {
         </div>
       </header>
 
-      {/* HELP MODAL (RESTAURADO) */}
+      {/* HELP MODAL */}
       {helpOpen && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 animate-enter">
               <div className="absolute inset-0 bg-black/80 backdrop-blur" onClick={()=>setHelpOpen(false)}></div>
@@ -474,12 +565,8 @@ export default function BookingApp() {
                           <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">2</div>
                           <div><h3 className="font-bold text-white text-sm">Preparação</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Recomendo um banho quente antes. Levo creme, óleos, lubrificantes e aromatizador.</p></div>
                       </div>
-                      <div className="flex gap-4">
-                          <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">3</div>
-                          <div><h3 className="font-bold text-white text-sm">Segurança</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Sigilo total garantido. Atendimento discreto e respeitoso.</p></div>
-                      </div>
                       <div className="bg-[#2C2C2E] p-4 rounded-xl border border-[#333]">
-                          <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Pagamento & Cancelamento</h4>
+                          <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12}/> Pagamento</h4>
                           <ul className="text-xs text-gray-400 space-y-1 list-disc pl-4">
                               <li>Pix, Cartão e Dinheiro.</li>
                               <li>Cancelamentos com min. 2 horas.</li>
@@ -497,7 +584,7 @@ export default function BookingApp() {
         <section ref={refs.intro} className={`transition-all duration-500 ${stage === 0 ? 'section-active' : 'section-blur'}`}>
             <div className="mb-6 mt-2">
                 <h1 className="text-[34px] font-extrabold leading-tight mb-2">Massagem &<br/><span className="text-[#0A84FF]">Momentos Únicos.</span></h1>
-                <p className="text-gray-400 text-sm leading-relaxed max-w-[90%]">Massoterapia masculina no conforto do seu local. Discrição total.</p>
+                <p className="text-gray-400 text-sm leading-relaxed max-w-[90%]">Massoterapia masculina no conforto do seu local. Discrição total e técnica apurada.</p>
             </div>
 
             <LevelBar xp={xp} />
@@ -566,8 +653,8 @@ export default function BookingApp() {
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-white"><span className="text-[#0A84FF]">03.</span> Turbine o Relaxamento</h3>
             <div className="card-base divide-y divide-[#222]">
                 {[
-                   { id: 'upgrade', label: '+30 Minutos', sub: 'Estenda o tempo', icon: Clock, price: data.service?.price * CONFIG.PRICES.UPGRADE_PCT, badge: '+25 XP' },
-                   { id: 'touch', label: 'Interação / Toque', sub: 'Toques recíprocos', icon: Flame, price: CONFIG.PRICES.TOUCH, badge: '+30 XP' },
+                   { id: 'upgrade', label: '+30 Minutos', sub: 'Estenda o tempo', icon: Clock, price: data.service?.price * CONFIG.PRICES.UPGRADE_PCT, badge: '+30 XP' },
+                   { id: 'touch', label: 'Interação / Toque', sub: 'Toques recíprocos', icon: Flame, price: CONFIG.PRICES.TOUCH, badge: '+25 XP' },
                    { id: 'aroma', label: 'Aromaterapia', sub: 'Óleos especiais', icon: Wind, price: CONFIG.PRICES.AROMA, badge: '+15 XP' }
                 ].map((item) => (
                     <div key={item.id} onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, [item.id]: !data.extras[item.id]}}); }} className="p-5 flex justify-between items-center cursor-pointer active:bg-[#1a1a1a]">
@@ -582,14 +669,14 @@ export default function BookingApp() {
             <button onClick={() => advanceStage(4, refs.location)} className={`w-full mt-4 py-4 rounded-2xl text-sm font-bold border transition-all ${Object.values(data.extras).some(Boolean) ? 'bg-[#0A84FF] text-white' : 'bg-[#1C1C1E] text-gray-400 border-[#333]'}`}>{Object.values(data.extras).some(Boolean) ? 'Confirmar Extras' : 'Pular Extras'}</button>
         </section>
 
-        {/* 5. LOCALIZAÇÃO COMPLETA */}
+        {/* 5. LOCALIZAÇÃO (SP & INTERIOR LOGIC) */}
         <section ref={refs.location} className={`mt-10 transition-all duration-500 ${stage === 4 ? 'section-active' : stage > 4 ? 'section-blur cursor-pointer' : 'hidden opacity-0'}`} onClick={() => {if(stage > 4) { setStage(4); scrollToSection(refs.location); }}}>
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-white"><span className="text-[#0A84FF]">04.</span> Localização</h3>
             
             <div className="mb-5">
-                <label className="text-[10px] uppercase font-bold text-gray-500 mb-2 block">Região / Bairro</label>
+                <label className="text-[10px] uppercase font-bold text-gray-500 mb-2 block">Bairro / Região</label>
                 <div className="flex gap-2 overflow-x-auto pb-2 ios-scroll">
-                    {CURRENT_CITIES.map(c => (
+                    {CURRENT_LOCATIONS.map(c => (
                         <button key={c.id} onClick={() => setData({...data, location: {...data.location, city: c}})} 
                             className={`flex-shrink-0 px-4 py-2 rounded-lg text-xs font-bold border transition-all ${data.location.city.id === c.id ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#161616] border-[#333] text-gray-400'}`}>
                             {c.name} {c.fee > 0 && `(+${Utils.formatBRL(c.fee)})`}
@@ -673,16 +760,16 @@ export default function BookingApp() {
             <div className="bg-[#111]/95 backdrop-blur-xl border-t border-white/10 p-5 rounded-t-[30px] shadow-[0_-10px_50px_rgba(0,0,0,0.8)]">
                 <div className="flex justify-between items-end mb-4">
                     <div>
-                        <p className="text-[9px] text-gray-500 uppercase font-bold mb-1">Total Estimado</p>
+                        <p className="text-[9px] text-gray-500 uppercase font-bold mb-1">Total (Serviço + Taxas)</p>
                         <div className="flex items-baseline gap-2">
                             {hasCoupon && <span className="text-xs text-gray-500 line-through">{Utils.formatBRL(financials.sub)}</span>}
                             <span className="text-3xl font-black text-white">{Utils.formatBRL(financials.total)}</span>
                         </div>
-                        {financials.travelFee > 0 && <p className="text-[9px] text-[#0A84FF] mt-1 flex items-center gap-1"><Car size={10}/> Taxa {data.location.city.name} inclusa</p>}
+                        {financials.travelFee > 0 && <p className="text-[9px] text-[#0A84FF] mt-1 flex items-center gap-1"><Car size={10}/> Taxa {data.location.city.zone} inclusa</p>}
                     </div>
                     {!hasCoupon ? (
                         isVip ? (
-                            <button onClick={() => { setHasCoupon(true); Utils.vibrate([50,50]); }} className="h-9 px-3 rounded-full bg-[#FFD60A] text-black font-bold text-xs animate-bounce shadow-[0_0_15px_rgba(255,214,10,0.4)] flex items-center gap-1"><Ticket size={12}/> RESGATAR R$ {CONFIG.COUPON_VAL}</button>
+                            <button onClick={() => { setHasCoupon(true); Utils.vibrate([50,50]); }} className="h-9 px-3 rounded-full bg-[#FFD60A] text-black font-bold text-xs animate-bounce shadow-[0_0_15px_rgba(255,214,10,0.4)] flex items-center gap-1"><Ticket size={12}/> RESGATAR</button>
                         ) : (
                             <div className="text-right">
                                 <div className="text-[9px] text-gray-500 mb-1">Falta {CONFIG.XP_THRESHOLDS.VIP - xp} XP p/ Cupom</div>
