@@ -13,36 +13,37 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v16_final_real', 
+  APP_KEY: 'thaly_v17_final_pro', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
   COUPON_VAL: 12.00, 
   PRICES: {
-    UPGRADE_PCT: 0.5, 
+    UPGRADE_PCT: 0.5, // 50% do valor do serviço
     TOUCH: 73, 
     AROMA: 5,
     RUSH_HOUR_FEE: 15,
-    MOTEL_FEE: 75, 
+    MOTEL_FEE: 75, // Taxa fixa
   },
   XP_THRESHOLDS: { VIP: 100 },
   URLS: { WHATSAPP_API: "https://api.whatsapp.com/send" }
 };
 
+// Taxas base (SERÃO MULTIPLICADAS POR 2 NO CÓDIGO PARA IDA E VOLTA)
 const LOCATIONS_DB = [
-    { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 0, zone: 'Base' },
-    { id: 'consola', name: 'Consolação / Centro', fee: 10, zone: 'Zona 1' },
-    { id: 'jardins', name: 'Jardins / Paulista', fee: 15, zone: 'Zona 1' },
-    { id: 'higien', name: 'Higienópolis / Sta Cecília', fee: 18, zone: 'Zona 1' },
-    { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 25, zone: 'Zona 2' },
-    { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 28, zone: 'Zona 2' },
-    { id: 'moema', name: 'Moema / V. Mariana', fee: 30, zone: 'Zona 2' },
-    { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 30, zone: 'Zona 2' },
-    { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 35, zone: 'Zona 3' },
-    { id: 'saude', name: 'Saúde / Jabaquara', fee: 40, zone: 'Zona 3' },
-    { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 45, zone: 'Zona 3' },
-    { id: 'morumbi', name: 'Morumbi / Panamby', fee: 50, zone: 'Zona 4' },
-    { id: 'santana', name: 'Santana / ZN', fee: 50, zone: 'Zona 4' },
+    { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 5, zone: 'Base' }, // x2 = 10
+    { id: 'consola', name: 'Consolação / Centro', fee: 8, zone: 'Zona 1' }, // x2 = 16
+    { id: 'jardins', name: 'Jardins / Paulista', fee: 10, zone: 'Zona 1' }, // x2 = 20
+    { id: 'higien', name: 'Higienópolis / Sta Cecília', fee: 12, zone: 'Zona 1' },
+    { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 15, zone: 'Zona 2' },
+    { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 18, zone: 'Zona 2' },
+    { id: 'moema', name: 'Moema / V. Mariana', fee: 20, zone: 'Zona 2' },
+    { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 20, zone: 'Zona 2' },
+    { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 25, zone: 'Zona 3' },
+    { id: 'saude', name: 'Saúde / Jabaquara', fee: 30, zone: 'Zona 3' },
+    { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 35, zone: 'Zona 3' },
+    { id: 'morumbi', name: 'Morumbi / Panamby', fee: 40, zone: 'Zona 4' },
+    { id: 'santana', name: 'Santana / ZN', fee: 40, zone: 'Zona 4' },
     { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: 'Consultar' },
 ];
 
@@ -51,7 +52,7 @@ const SERVICES = [
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    desc: 'Um momento de carinho que você merece. Começo tirando todo o peso das suas costas e evoluo para um toque pele a pele, com óleos mornos e muita atenção aos detalhes. Uma troca de energia íntima e respeitosa, com finalização manual para seu alívio total.', 
+    desc: 'O ápice do atendimento. Inicia soltando a musculatura e evolui para um contato corpo a corpo com óleos aquecidos, respiração próxima e provocações sensoriais. Finalização manual intensa e explosiva.', 
     duration: 60, 
     price: 155, 
     badge: 'A MAIS PEDIDA ❤️',
@@ -62,7 +63,7 @@ const SERVICES = [
     id: 'relax', 
     name: 'Massagem Relaxante', 
     short: 'Alívio de Dores',
-    desc: 'Para quando o corpo pede socorro. Foco total em dissolver nós de tensão, dores lombares e cansaço. Mãos firmes e acolhedoras para te devolver a paz. Sessão puramente terapêutica para você dormir melhor.', 
+    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares e pernas cansadas. Toques suaves e firmes para tirar o stress acumulado. Atenção: Nesta modalidade não há toques nas partes íntimas.', 
     duration: 60, 
     price: 125, 
     badge: null,
@@ -98,31 +99,19 @@ const RUSH_HOURS = ['18:00', '19:00', '20:00', '21:00'];
 const FAQS = [
   { q: "Como é a Experiência Completa?", a: "É um atendimento onde cuido de você por inteiro. Une relaxamento muscular com toques provocantes e sutis, criando uma conexão única e um final extremamente prazeroso." },
   { q: "Onde é feito o atendimento?", a: "No seu conforto. Vou até sua residência, hotel ou motel. O atendimento é feito na sua cama ou sofá, onde você se sentir mais à vontade." },
-  { q: "O pagamento é seguro?", a: "Totalmente. O valor do transporte (Uber) garante sua reserva. O valor do serviço você paga apenas pessoalmente, quando eu chegar." },
+  { q: "O pagamento é seguro?", a: "Totalmente. O valor do transporte (Uber Ida/Volta) garante sua reserva. O valor do serviço você paga apenas pessoalmente." },
   { q: "Atende em Motel?", a: "Sim, com total sigilo. Para motéis, existe apenas uma taxa fixa de deslocamento de R$ 75,00." }
 ];
 
 const REVIEWS_DB = [
   { t: "Estava carente e precisando disso. O Thalyson me deu uma atenção surreal. Gozei muito no final, foi intenso.", a: "Ricardo", s: 5 },
-  { t: "Gostei bastante da massagem, mão firme. Só dou 4 estrelas porque atrasou 10 min por causa da chuva.", a: "Paulo", s: 4 },
-  { t: "Sou casado, fui com receio mas ele é super discreto. Me senti vivo de novo. O toque dele arrepia.", a: "Anônimo", s: 5 },
-  { t: "O atendimento é ótimo, o menino é educado. Mas achei o ar condicionado do meu quarto muito frio kkk", a: "Felipe", s: 4 },
-  { t: "Melhor finalização que já tive. Saiu muito, me senti leve. Recomendo pra quem quer carinho de verdade.", a: "Carlos", s: 5 },
-  { t: "Muito bom, mas passou tão rápido... na próxima vou pegar 2 horas direto.", a: "Bruno", s: 4 },
-  { t: "Mãos de fada com pegada de homem. Foi uma troca de energia incrível. Obrigado por me ouvir.", a: "Marcos", s: 5 },
-  { t: "Tirou todo meu stress. O final foi explosivo, lavou a alma.", a: "André", s: 5 },
-];
-
-const LIVE_NOTIFICATIONS = [
-  "✨ Ricardo acabou de agendar", "👀 Agenda de hoje disputada", "📅 Sexta-feira com poucas vagas",
-  "⭐ Carlos avaliou com 5 estrelas", "✅ Cliente confirmado", "💎 Murilo virou VIP",
-  "🌊 Lucas ativou modo relax", "💬 Dúvida respondida", "🏠 Indo para atendimento",
-  "🚀 Bruno fechou pacote completo", "💆‍♂️ Felipe relaxando agora", "🏨 Atendimento em Hotel",
-  "🍃 Gustavo pediu Aroma", "💳 Pix recebido", "🏳️‍🌈 Cliente novo bem-vindo",
-  "🕶️ Sigilo garantido", "🚗 Thalyson a caminho", "⏱️ Sessão estendida",
-  "🧖‍♂️ Rafael finalizou renovado", "✨ Mais uma avaliação recebida", "🔥 Sábado abriu vaga",
-  "🎁 Cupom resgatado", "🔒 Dados seguros", "👋 Marcos mandou oi",
-  "💼 Executivo agendou", "✈️ Turista RJ agendou", "🛌 Motel reservado"
+  { t: "Sou casado, o sigilo foi total. O toque dele arrepia, sai de perna bamba. Recomendo.", a: "Anônimo", s: 5 },
+  { t: "Gostei da massagem, mão firme. Só dou 4 estrelas porque atrasou 10 min por causa da chuva.", a: "Paulo", s: 4 },
+  { t: "Pegada de macho mesmo. Sou passivo e ele soube exatamente como me tocar. Virei cliente fixo.", a: "Felipe", s: 5 },
+  { t: "O atendimento é ótimo, o menino é educado. Mas achei o óleo um pouco frio no começo.", a: "Carlos", s: 4 },
+  { t: "Melhor finalização que já tive. Saiu muito leite, me senti leve. Recomendo pra quem quer carinho de verdade.", a: "André", s: 5 },
+  { t: "Muito bom, mas passou tão rápido... queria ter ficado a tarde toda.", a: "Bruno", s: 4 },
+  { t: "Tirou todo meu stress. O final foi explosivo, lavou a alma. O cara entende do assunto.", a: "Marcos", s: 5 },
 ];
 
 // ==================================================================================
@@ -134,15 +123,24 @@ const Utils = {
   vibrate: (pattern = 10) => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); },
   shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
    
+  // LÓGICA DE HORÁRIO ATUALIZADA (20 MINUTOS DE INTERVALO)
   isTimeBlocked: (selectedDate, timeString) => {
     if (!selectedDate) return true;
     const now = new Date();
     const today = new Date(); today.setHours(0,0,0,0);
     const sel = new Date(selectedDate); sel.setHours(0,0,0,0);
+    
     if (sel < today) return true; 
-    if (sel > today) return false; 
-    const [hours] = timeString.split(':').map(Number);
-    return hours <= now.getHours() + 1; 
+    if (sel > today) return false; // Dia futuro, tudo livre
+
+    // Se for hoje, verifica a hora e minutos
+    const [slotH, slotM] = timeString.split(':').map(Number);
+    const slotTime = new Date();
+    slotTime.setHours(slotH, slotM || 0, 0, 0);
+
+    const minTime = new Date(now.getTime() + 20 * 60000); // Agora + 20 minutos
+
+    return slotTime < minTime;
   },
 
   getGreeting: () => {
@@ -182,19 +180,7 @@ input, select, button { outline: none; }
 .btn-pulse { animation: pulse 2s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
 
-/* FADE IN/OUT PARA NOTIFICAÇÕES */
-.fade-bubble-enter { opacity: 0; transform: translateY(10px) translateX(-50%); }
-.fade-bubble-enter-active { opacity: 1; transform: translateY(0) translateX(-50%); transition: opacity 500ms, transform 500ms; }
-.fade-bubble-exit { opacity: 1; transform: translateY(0) translateX(-50%); }
-.fade-bubble-exit-active { opacity: 0; transform: translateY(-10px) translateX(-50%); transition: opacity 500ms, transform 500ms; }
-
 /* ANIMAÇÃO LOGO */
-@keyframes slideDownFade {
-  0% { opacity: 0; transform: translateY(-10px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-.logo-anim { animation: slideDownFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-
 @keyframes slideUpFade {
   0% { opacity: 0; transform: translateY(20px); }
   100% { opacity: 1; transform: translateY(0); }
@@ -232,50 +218,6 @@ const StatusBar = () => {
   );
 };
 
-// COMPONENTE LIVE BUBBLES
-const LiveBubbles = () => {
-    const [currentMsg, setCurrentMsg] = useState('');
-    const [visible, setVisible] = useState(false);
-    
-    const [shuffledList] = useState(() => Utils.shuffle([...LIVE_NOTIFICATIONS]));
-    const indexRef = useRef(0);
-
-    useEffect(() => {
-        const showNext = () => {
-            if (indexRef.current >= shuffledList.length) indexRef.current = 0;
-            setCurrentMsg(shuffledList[indexRef.current]);
-            setVisible(true);
-            indexRef.current++;
-
-            setTimeout(() => {
-                setVisible(false);
-            }, 4000);
-        };
-
-        const t1 = setTimeout(showNext, 2000);
-        const interval = setInterval(showNext, 10000);
-
-        return () => { clearTimeout(t1); clearInterval(interval); };
-    }, [shuffledList]);
-
-    return (
-      <div 
-        className={`fixed top-28 left-1/2 z-30 w-max max-w-[90%] pointer-events-none transition-all duration-700 ease-in-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-        style={{ transform: 'translateX(-50%)' }}
-      >
-        <div className="bg-[#1C1C1E]/95 backdrop-blur-md border border-white/10 pl-3 pr-4 py-2 rounded-full flex items-center gap-3 shadow-2xl">
-           <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0">
-              <span className="text-xs">✨</span>
-           </div>
-           <div>
-               <p className="text-[10px] text-gray-400 font-bold uppercase mb-0.5">Agora</p>
-               <p className="text-xs font-medium text-white">{currentMsg}</p>
-           </div>
-        </div>
-      </div>
-    );
-};
-
 // REVIEWS COM AUTO SCROLL
 const ReviewsList = () => {
     const scrollRef = useRef(null);
@@ -285,7 +227,7 @@ const ReviewsList = () => {
         if(!el) return;
         
         let scrollAmount = 0;
-        const step = 0.5; // Velocidade suave
+        const step = 0.5; 
         const interval = setInterval(() => {
             if(el) {
                 el.scrollLeft += step;
@@ -312,7 +254,6 @@ const ReviewsList = () => {
                         <p className="text-[10px] text-gray-500 font-bold uppercase flex items-center gap-1"><Shield size={10} className="text-green-500"/> {r.a}</p>
                     </div>
                 ))}
-                {/* Espaço extra pro scroll não travar no fim imediato */}
                 <div className="min-w-[20px]"></div>
             </div>
         </div>
@@ -400,11 +341,12 @@ export default function BookingApp() {
     const isRush = data.time && RUSH_HOURS.includes(data.time);
     const rushFee = isRush ? CONFIG.PRICES.RUSH_HOUR_FEE : 0;
     
+    // CÁLCULO IDA E VOLTA (TAXA DO BANCO * 2)
     let travelFee = 0;
     if (data.location.type === 'motel') {
         travelFee = CONFIG.PRICES.MOTEL_FEE;
     } else {
-        travelFee = data.location.city ? data.location.city.fee : 0;
+        travelFee = data.location.city ? (data.location.city.fee * 2) : 0;
     }
     
     const serviceTotal = base + upg + touch + aroma + rushFee; 
@@ -440,25 +382,18 @@ export default function BookingApp() {
 
   const showToast = (msg) => setToast({msg});
 
-  // FUNÇÃO PARA ADICIONAR AO GOOGLE AGENDA
   const addToCalendar = () => {
     if (!data.date || !data.time) return;
-    
     const start = new Date(data.date);
     const [hours, minutes] = data.time.split(':').map(Number);
     start.setHours(hours, minutes, 0);
-    
     const end = new Date(start);
     end.setHours(end.getHours() + 1); 
-    
     const formatDateTime = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
-    
     const title = `Massagem c/ Thalyson`;
     const details = `Serviço: ${data.service?.name}\nLocal: ${data.location.city.name}`;
     const location = data.location.city.name;
-    
     const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatDateTime(start)}/${formatDateTime(end)}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
-    
     window.open(url, '_blank');
   };
 
@@ -467,12 +402,10 @@ export default function BookingApp() {
     const loc = data.location;
     const dateStr = d ? `${d.getDate()}/${d.getMonth()+1}` : '';
     
-    // GERA LINK DO MAPS
     let addressQuery = '';
     if (loc.type === 'motel') addressQuery = loc.motelName + ' ' + loc.city.name;
     else if (loc.type === 'hotel') addressQuery = loc.hotelName + ' ' + loc.city.name;
     else addressQuery = `${loc.street}, ${loc.number} - ${loc.district}, ${loc.city.name}`;
-    
     const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressQuery)}`;
     
     let t = `🌿 *AGENDAMENTO CONFIRMADO*\n`;
@@ -481,13 +414,12 @@ export default function BookingApp() {
     t += `📅 *${dateStr} às ${data.time}*\n`;
     t += `💆 *${data.service?.name.toUpperCase()}*\n`;
     
+    // EXTRAS DETALHADOS NO WHATSAPP
     if(Object.values(data.extras).some(Boolean)) {
-        t += `✨ *EXTRAS:* `;
-        const extrasList = [];
-        if(data.extras.upgrade) extrasList.push(`+30min`);
-        if(data.extras.touch) extrasList.push(`Interação`);
-        if(data.extras.aroma) extrasList.push(`Aroma`);
-        t += extrasList.join(', ') + `\n`;
+        t += `✨ *EXTRAS:* \n`;
+        if(data.extras.upgrade) t += `   • +30min (+${Utils.formatBRL(financials.upg)})\n`;
+        if(data.extras.touch) t += `   • Interação (+${Utils.formatBRL(financials.touch)})\n`;
+        if(data.extras.aroma) t += `   • Aroma (+${Utils.formatBRL(financials.aroma)})\n`;
     }
     
     t += `🎧 Vibe: ${data.mood?.label} | 🎵 Som: ${data.prefs.music}\n`;
@@ -508,15 +440,15 @@ export default function BookingApp() {
 
     t += `\n💰 *RESUMO FINANCEIRO:*\n`;
     t += `------------------------------\n`;
-    t += `🔹 *Serviço:* ${Utils.formatBRL(financials.serviceTotal)} (Pagar ao final)\n`;
+    t += `🔹 *Serviço + Extras:* ${Utils.formatBRL(financials.serviceTotal)} (Pagar ao final)\n`;
     
     if(financials.transportTotal > 0) {
-         t += `🚗 *Taxa Deslocamento:* ${Utils.formatBRL(financials.transportTotal)} (Pode adiantar)\n`;
+         t += `🚗 *Taxa (Ida/Volta):* ${Utils.formatBRL(financials.transportTotal)} (Confirmar)\n`;
     }
     
     if(hasCoupon) t += `🎟️ *Desconto VIP:* -${Utils.formatBRL(financials.desc)}\n`;
     
-    t += `\n✅ *TOTAL FINAL: ${Utils.formatBRL(financials.total)}*\n`;
+    t += `\n✅ *TOTAL ESTIMADO: ${Utils.formatBRL(financials.total)}*\n`;
     t += `💳 Forma de Pagto: ${data.payment?.toUpperCase()}\n`;
     
     return `${CONFIG.URLS.WHATSAPP_API}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
@@ -551,12 +483,12 @@ export default function BookingApp() {
               </div>
               <div className="text-left space-y-3 mb-6">
                   <div className="flex justify-between text-sm text-gray-400 border-b border-[#222] pb-2">
-                      <span>Serviço (Pagar depois)</span>
+                      <span>Serviço + Extras (Pagar depois)</span>
                       <span className="text-white font-bold">{Utils.formatBRL(financials.serviceTotal)}</span>
                   </div>
                   {financials.transportTotal > 0 && (
                       <div className="flex justify-between text-sm text-[#0A84FF]">
-                          <span>Taxa Deslocamento (Pagar antes)</span>
+                          <span>Taxa Ida/Volta (Pagar antes)</span>
                           <span className="font-bold">{Utils.formatBRL(financials.transportTotal)}</span>
                       </div>
                   )}
@@ -594,15 +526,14 @@ export default function BookingApp() {
   return (
     <div className="min-h-screen pb-48 relative bg-[#050505]">
       <style>{globalStyles}</style>
-      <LiveBubbles />
       {toast && <Toast msg={toast.msg} onClose={() => setToast(null)} />}
       
       {/* HEADER */}
       <header className="fixed top-0 w-full z-40 glass-header">
         <div className="px-5 py-4 flex justify-between items-center">
             {/* LOGO ANIMADO NO TOP */}
-            <div className="logo-anim">
-                <span className="font-black text-xl text-white tracking-tight">THALYSON MASSAGENS</span>
+            <div className="title-anim">
+                <span className="font-black text-xl text-white tracking-tight">Agende seu Momento</span>
             </div>
             
             <div className="flex items-center gap-3">
@@ -786,7 +717,7 @@ export default function BookingApp() {
                     {LOCATIONS_DB.map(c => (
                         <button key={c.id} onClick={() => setData({...data, location: {...data.location, city: c}})} 
                             className={`px-4 py-3 rounded-xl text-xs font-bold border whitespace-nowrap ${data.location.city.id === c.id ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#161616] border-[#333] text-gray-400'}`}>
-                            {c.name} {data.location.type !== 'motel' && c.fee > 0 && `(+${Utils.formatBRL(c.fee)})`}
+                            {c.name} {data.location.type !== 'motel' && c.fee > 0 && `(+${Utils.formatBRL(c.fee * 2)})`}
                         </button>
                     ))}
                 </div>
