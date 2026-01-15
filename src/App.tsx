@@ -5,7 +5,7 @@ import {
   CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
   Calendar as CalendarIcon, Clock, User, AlertTriangle, 
   Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee,
-  Lock, RefreshCw, Eye, ThumbsUp, Bed, Calendar, Heart, Smile
+  Lock, RefreshCw, Eye, ThumbsUp, Bed, Calendar, Heart, Smile, Map
 } from 'lucide-react';
 
 // ==================================================================================
@@ -13,27 +13,28 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v17_final_pro', 
+  APP_KEY: 'thaly_v18_ticket_nav', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
   COUPON_VAL: 12.00, 
   PRICES: {
-    UPGRADE_PCT: 0.5, // 50% do valor do serviço
+    UPGRADE_PCT: 0.5, 
     TOUCH: 73, 
     AROMA: 5,
     RUSH_HOUR_FEE: 15,
-    MOTEL_FEE: 75, // Taxa fixa
+    MOTEL_FEE: 75, 
   },
   XP_THRESHOLDS: { VIP: 100 },
   URLS: { WHATSAPP_API: "https://api.whatsapp.com/send" }
 };
 
 // Taxas base (SERÃO MULTIPLICADAS POR 2 NO CÓDIGO PARA IDA E VOLTA)
+// Bela Vista configurada com taxa 0 (Grátis)
 const LOCATIONS_DB = [
-    { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 5, zone: 'Base' }, // x2 = 10
-    { id: 'consola', name: 'Consolação / Centro', fee: 8, zone: 'Zona 1' }, // x2 = 16
-    { id: 'jardins', name: 'Jardins / Paulista', fee: 10, zone: 'Zona 1' }, // x2 = 20
+    { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 0, zone: 'Base' }, // Grátis
+    { id: 'consola', name: 'Consolação / Centro', fee: 8, zone: 'Zona 1' }, 
+    { id: 'jardins', name: 'Jardins / Paulista', fee: 10, zone: 'Zona 1' }, 
     { id: 'higien', name: 'Higienópolis / Sta Cecília', fee: 12, zone: 'Zona 1' },
     { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 15, zone: 'Zona 2' },
     { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 18, zone: 'Zona 2' },
@@ -123,7 +124,6 @@ const Utils = {
   vibrate: (pattern = 10) => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); },
   shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
    
-  // LÓGICA DE HORÁRIO ATUALIZADA (20 MINUTOS DE INTERVALO)
   isTimeBlocked: (selectedDate, timeString) => {
     if (!selectedDate) return true;
     const now = new Date();
@@ -131,15 +131,12 @@ const Utils = {
     const sel = new Date(selectedDate); sel.setHours(0,0,0,0);
     
     if (sel < today) return true; 
-    if (sel > today) return false; // Dia futuro, tudo livre
+    if (sel > today) return false; 
 
-    // Se for hoje, verifica a hora e minutos
     const [slotH, slotM] = timeString.split(':').map(Number);
     const slotTime = new Date();
     slotTime.setHours(slotH, slotM || 0, 0, 0);
-
-    const minTime = new Date(now.getTime() + 20 * 60000); // Agora + 20 minutos
-
+    const minTime = new Date(now.getTime() + 20 * 60000); 
     return slotTime < minTime;
   },
 
@@ -218,7 +215,92 @@ const StatusBar = () => {
   );
 };
 
-// REVIEWS COM AUTO SCROLL
+// COMPONENTE DE TICKET (RESUMO)
+const TicketSummary = ({ data, financials, hasCoupon, onToggleCoupon, xp, isInteractive = false }) => {
+    return (
+        <div className="bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 relative overflow-hidden shadow-2xl animate-enter mb-6">
+            {/* EFEITO DE RASGO (CÍRCULOS LATERAIS) */}
+            <div className="absolute top-1/2 -left-3 w-6 h-6 bg-[#050505] rounded-full"></div>
+            <div className="absolute top-1/2 -right-3 w-6 h-6 bg-[#050505] rounded-full"></div>
+            
+            {/* CABEÇALHO DO TICKET */}
+            <div className="text-center border-b border-dashed border-[#444] pb-6 mb-6">
+                <h3 className="text-xl font-black text-white tracking-widest uppercase mb-1">RESUMO DO PEDIDO</h3>
+                <p className="text-xs text-gray-500 uppercase">{data.date?.toLocaleDateString('pt-BR')} • {data.time}</p>
+            </div>
+
+            {/* ITENS */}
+            <div className="space-y-3 mb-6">
+                <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-300 font-medium">{data.service?.name}</span>
+                    <span className="text-white font-bold">{Utils.formatBRL(financials.base)}</span>
+                </div>
+                
+                {/* EXTRAS */}
+                {data.extras.upgrade && (
+                    <div className="flex justify-between items-center text-xs text-[#0A84FF]">
+                        <span>+ 30 Minutos</span>
+                        <span>{Utils.formatBRL(financials.upg)}</span>
+                    </div>
+                )}
+                {data.extras.touch && (
+                    <div className="flex justify-between items-center text-xs text-[#0A84FF]">
+                        <span>+ Interação</span>
+                        <span>{Utils.formatBRL(financials.touch)}</span>
+                    </div>
+                )}
+                {data.extras.aroma && (
+                    <div className="flex justify-between items-center text-xs text-[#0A84FF]">
+                        <span>+ Aromaterapia</span>
+                        <span>{Utils.formatBRL(financials.aroma)}</span>
+                    </div>
+                )}
+
+                {/* TAXA */}
+                {financials.transportTotal > 0 ? (
+                    <div className="flex justify-between items-center text-xs text-yellow-500">
+                        <span>Taxa (Ida e Volta)</span>
+                        <span>{Utils.formatBRL(financials.transportTotal)}</span>
+                    </div>
+                ) : (
+                     <div className="flex justify-between items-center text-xs text-green-500">
+                        <span>Taxa de Deslocamento</span>
+                        <span>GRÁTIS</span>
+                    </div>
+                )}
+                
+                {/* CUPOM */}
+                {hasCoupon && (
+                     <div className="flex justify-between items-center text-xs text-[#32D74B]">
+                        <span>Desconto VIP</span>
+                        <span>- {Utils.formatBRL(financials.desc)}</span>
+                    </div>
+                )}
+            </div>
+
+            {/* TOTAL */}
+            <div className="border-t border-dashed border-[#444] pt-4 mb-6">
+                 <div className="flex justify-between items-end">
+                    <span className="text-sm font-bold text-gray-400">Total Final</span>
+                    <span className="text-3xl font-black text-white">{Utils.formatBRL(financials.total)}</span>
+                 </div>
+            </div>
+
+            {/* BOTÃO CUPOM (SÓ APARECE SE INTERATIVO E ELEGIVEL) */}
+            {isInteractive && !hasCoupon && xp >= CONFIG.XP_THRESHOLDS.VIP && !data.couponRescued && (
+                <button onClick={onToggleCoupon} className="w-full py-3 bg-[#FFD60A]/10 border border-[#FFD60A] rounded-xl text-[#FFD60A] font-bold text-xs flex items-center justify-center gap-2 mb-2 animate-pulse">
+                    <Ticket size={16}/> ATIVAR CUPOM DE DESCONTO
+                </button>
+            )}
+             {isInteractive && hasCoupon && (
+                 <div className="w-full py-2 bg-[#32D74B]/10 border border-[#32D74B] rounded-xl text-[#32D74B] font-bold text-[10px] flex items-center justify-center gap-2 mb-2">
+                    <Check size={12}/> CUPOM APLICADO
+                </div>
+            )}
+        </div>
+    );
+};
+
 const ReviewsList = () => {
     const scrollRef = useRef(null);
 
@@ -414,7 +496,6 @@ export default function BookingApp() {
     t += `📅 *${dateStr} às ${data.time}*\n`;
     t += `💆 *${data.service?.name.toUpperCase()}*\n`;
     
-    // EXTRAS DETALHADOS NO WHATSAPP
     if(Object.values(data.extras).some(Boolean)) {
         t += `✨ *EXTRAS:* \n`;
         if(data.extras.upgrade) t += `   • +30min (+${Utils.formatBRL(financials.upg)})\n`;
@@ -466,69 +547,12 @@ export default function BookingApp() {
       return false;
   };
 
-  if (success) return (
-    <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 animate-enter text-center">
-       <style>{globalStyles}</style>
-       <div className="w-24 h-24 bg-[#32D74B] text-black rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(50,215,75,0.4)] animate-enter">
-         <Check size={40} strokeWidth={4} />
-       </div>
-       <h2 className="text-3xl font-black text-white mb-2">TUDO CERTO!</h2>
-       <p className="text-gray-400 mb-8 text-sm">Pedido gerado. Envie para o WhatsApp para confirmar.</p>
-
-       <div className="w-full max-w-sm bg-[#111] border border-[#222] rounded-3xl overflow-hidden shadow-2xl relative mb-6">
-           <div className="p-6">
-              <div className="flex justify-between items-baseline mb-4 border-b border-[#222] pb-4">
-                 <span className="text-xs font-bold text-gray-500 uppercase">Total Final</span>
-                 <span className="text-[#32D74B] font-black text-3xl">{Utils.formatBRL(financials.total)}</span>
-              </div>
-              <div className="text-left space-y-3 mb-6">
-                  <div className="flex justify-between text-sm text-gray-400 border-b border-[#222] pb-2">
-                      <span>Serviço + Extras (Pagar depois)</span>
-                      <span className="text-white font-bold">{Utils.formatBRL(financials.serviceTotal)}</span>
-                  </div>
-                  {financials.transportTotal > 0 && (
-                      <div className="flex justify-between text-sm text-[#0A84FF]">
-                          <span>Taxa Ida/Volta (Pagar antes)</span>
-                          <span className="font-bold">{Utils.formatBRL(financials.transportTotal)}</span>
-                      </div>
-                  )}
-              </div>
-              
-              {data.payment === 'pix' && (
-                  <div onClick={() => {navigator.clipboard.writeText(CONFIG.PIX_KEY); Utils.vibrate(); showToast('Chave Pix copiada!')}} className="p-3 bg-[#1A1A1A] rounded-xl border border-dashed border-[#444] flex items-center justify-between cursor-pointer active:bg-[#222]">
-                      <div className="text-left overflow-hidden">
-                          <p className="text-[10px] text-[#0A84FF] uppercase font-bold mb-1">Pix (Toque para copiar)</p>
-                          <p className="text-xs font-mono text-gray-400 truncate w-48">{CONFIG.PIX_KEY}</p>
-                      </div>
-                      <Copy size={16} className="text-white"/>
-                  </div>
-              )}
-           </div>
-       </div>
-
-       {/* BOTÃO WHATSAPP */}
-       <a href={generateMessage()} target="_blank" rel="noreferrer" 
-         className="w-full max-w-sm primary-btn py-4 text-lg flex items-center justify-center gap-3 shadow-lg shadow-[#32D74B]/20 btn-pulse mb-3">
-         <MessageCircle size={22} fill="currentColor" /> Enviar no WhatsApp
-       </a>
-
-       {/* BOTÃO AGENDA */}
-       <button onClick={addToCalendar} className="w-full max-w-sm h-14 rounded-2xl bg-[#1A1A1A] border border-[#333] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#222]">
-           <CalendarIcon size={18}/> Adicionar na Agenda
-       </button>
-       
-       <button onClick={() => { setData(prev => ({...prev, service: null})); setSuccess(false); setStage(0); window.scrollTo(0,0); }} className="mt-6 flex items-center gap-2 text-gray-600 font-bold text-xs uppercase hover:text-white">
-           <RefreshCw size={12}/> Fazer Novo Pedido
-       </button>
-    </div>
-  );
-
   return (
     <div className="min-h-screen pb-48 relative bg-[#050505]">
       <style>{globalStyles}</style>
       {toast && <Toast msg={toast.msg} onClose={() => setToast(null)} />}
       
-      {/* HEADER */}
+      {/* HEADER PERSISTENTE */}
       <header className="fixed top-0 w-full z-40 glass-header">
         <div className="px-5 py-4 flex justify-between items-center">
             {/* LOGO ANIMADO NO TOP */}
@@ -542,8 +566,9 @@ export default function BookingApp() {
             </div>
         </div>
         <StatusBar />
+        {/* BARRA DE PROGRESSO: AGORA VAI ATÉ 7 POR CAUSA DA TELA DE REVIEW */}
         <div className="w-full h-[2px] bg-[#111]">
-            <div className="h-full bg-[#0A84FF] transition-all duration-300" style={{width: `${(stage / 6) * 100}%`}}></div>
+            <div className="h-full bg-[#0A84FF] transition-all duration-300" style={{width: `${(stage / 7) * 100}%`}}></div>
         </div>
       </header>
 
@@ -556,7 +581,6 @@ export default function BookingApp() {
                       <h3 className="font-bold text-xl text-white">Ajuda & Dúvidas</h3>
                       <button onClick={()=>setHelpOpen(false)}><X size={20} className="text-white"/></button>
                   </div>
-                  
                   <div className="space-y-4">
                       {FAQS.map((f, i) => (
                           <div key={i} className="bg-[#111] p-4 rounded-xl border border-[#222]">
@@ -570,6 +594,45 @@ export default function BookingApp() {
           </div>
       )}
 
+      {/* TELA DE SUCESSO (COM TICKET) */}
+      {success && (
+        <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 pt-32 animate-enter text-center">
+            <div className="w-24 h-24 bg-[#32D74B] text-black rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(50,215,75,0.4)] animate-enter">
+                <Check size={40} strokeWidth={4} />
+            </div>
+            <h2 className="text-3xl font-black text-white mb-2">TUDO CERTO!</h2>
+            <p className="text-gray-400 mb-8 text-sm">Confira os detalhes abaixo e envie para o WhatsApp.</p>
+
+            {/* TICKET RESUMO VISUAL */}
+            <div className="w-full max-w-sm">
+                <TicketSummary 
+                    data={data} 
+                    financials={financials} 
+                    hasCoupon={hasCoupon} 
+                    xp={xp} 
+                    isInteractive={false} 
+                />
+            </div>
+
+            {/* BOTÃO WHATSAPP */}
+            <a href={generateMessage()} target="_blank" rel="noreferrer" 
+                className="w-full max-w-sm primary-btn py-4 text-lg flex items-center justify-center gap-3 shadow-lg shadow-[#32D74B]/20 btn-pulse mb-3">
+                <MessageCircle size={22} fill="currentColor" /> Enviar no WhatsApp
+            </a>
+
+            {/* BOTÃO AGENDA */}
+            <button onClick={addToCalendar} className="w-full max-w-sm h-14 rounded-2xl bg-[#1A1A1A] border border-[#333] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#222]">
+                <CalendarIcon size={18}/> Adicionar na Agenda
+            </button>
+            
+            <button onClick={() => { setData(prev => ({...prev, service: null})); setSuccess(false); setStage(0); window.scrollTo(0,0); }} className="mt-6 flex items-center gap-2 text-gray-600 font-bold text-xs uppercase hover:text-white">
+                <RefreshCw size={12}/> Fazer Novo Pedido
+            </button>
+        </div>
+      )}
+
+      {/* FLUXO PRINCIPAL */}
+      {!success && (
       <main className="max-w-md mx-auto pt-28 px-5">
         
         {/* INTRODUÇÃO */}
@@ -791,35 +854,25 @@ export default function BookingApp() {
             </div>
         </section>
 
-      </main>
-
-      {/* CHECKOUT BAR */}
-      {stage >= 7 && !success && (
-        <div className="fixed bottom-0 w-full z-50 animate-enter bg-[#111] border-t border-[#333] p-5 pb-8 rounded-t-3xl shadow-2xl">
-            <div className="flex justify-between items-end mb-4">
-                <div>
-                    <p className="text-[10px] text-gray-500 uppercase font-bold mb-1">Total Estimado</p>
-                    <div className="flex items-baseline gap-2">
-                        {hasCoupon && <span className="text-xs text-gray-500 line-through">{Utils.formatBRL(financials.sub)}</span>}
-                        <span className="text-3xl font-black text-white">{Utils.formatBRL(financials.total)}</span>
-                    </div>
-                </div>
-                {!hasCoupon ? (
-                    (xp >= CONFIG.XP_THRESHOLDS.VIP) && !data.couponRescued ? (
-                        <button onClick={() => { setHasCoupon(true); setData({...data, couponRescued: true}); Utils.vibrate(); showToast('Desconto Aplicado!'); }} className="h-10 px-4 rounded-full bg-[#FFD60A] text-black font-bold text-xs animate-bounce flex items-center gap-2"><Ticket size={14}/> USAR CUPOM</button>
-                    ) : (
-                        <div className="text-right">
-                             <div className="text-[9px] text-gray-500 mb-1">Falta {Math.max(0, CONFIG.XP_THRESHOLDS.VIP - xp)} XP</div>
-                             <div className="w-20 h-1.5 bg-[#333] rounded-full overflow-hidden"><div className="h-full bg-gray-600" style={{width: `${(xp/CONFIG.XP_THRESHOLDS.VIP)*100}%`}}></div></div>
-                        </div>
-                    )
-                ) : <div className="text-[10px] text-[#32D74B] font-bold border border-[#32D74B] px-3 py-1 rounded bg-[#32D74B]/10">CUPOM ATIVO</div>}
-            </div>
-            <button onClick={() => { setSuccess(true); window.scrollTo(0,0); }} className="primary-btn w-full h-14 text-lg flex items-center justify-center gap-2">
-                Finalizar Pedido <MessageCircle size={20}/>
+        {/* 7. REVISÃO (TICKET INTERATIVO) */}
+        <section className={`${stage === 7 ? 'block animate-enter' : 'hidden'}`}>
+             <h3 className="text-lg font-bold mb-4 text-white">07. Revisão</h3>
+             <TicketSummary 
+                data={data} 
+                financials={financials} 
+                hasCoupon={hasCoupon} 
+                onToggleCoupon={() => { setHasCoupon(true); setData({...data, couponRescued: true}); Utils.vibrate(); showToast('Desconto Aplicado!'); }}
+                xp={xp}
+                isInteractive={true} 
+            />
+             <button onClick={() => { setSuccess(true); window.scrollTo(0,0); }} className="primary-btn w-full h-14 text-lg flex items-center justify-center gap-2 mb-32">
+                Confirmar Agendamento <MessageCircle size={20}/>
             </button>
-        </div>
+        </section>
+
+      </main>
       )}
+
     </div>
   );
 }
