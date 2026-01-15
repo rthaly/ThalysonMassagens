@@ -13,8 +13,8 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v23_final_pro', 
-  COUPON_KEY_PERMANENT: 'thaly_coupon_used_permanent_v1', // Chave para travar o cupom para sempre
+  APP_KEY: 'thaly_v24_coupon_fixed', 
+  COUPON_KEY_PERMANENT: 'thaly_coupon_burned_v1', // Chave única e permanente
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
@@ -666,6 +666,7 @@ export default function BookingApp() {
       // 1. Marca o cupom como usado para sempre se foi aplicado
       if (hasCoupon) {
           localStorage.setItem(CONFIG.COUPON_KEY_PERMANENT, 'true');
+          setCouponUsedGlobal(true);
       }
       
       // 2. Abre o WhatsApp imediatamente
@@ -675,6 +676,17 @@ export default function BookingApp() {
       // 3. Mostra a tela de sucesso como feedback no app
       setSuccess(true);
       window.scrollTo(0,0);
+  };
+  
+  const handleReset = () => {
+      // 4. RESET COMPLETO
+      setData(prev => ({...prev, service: null, couponRescued: false})); 
+      setHasCoupon(false); // Remove cupom da sessao atual
+      setSuccess(false); 
+      setStage(0); 
+      window.scrollTo(0,0);
+      
+      // Se ele já usou, couponUsedGlobal continua true (pois vem do state/localStorage)
   };
 
   return (
@@ -777,7 +789,7 @@ export default function BookingApp() {
                 <CalendarIcon size={18}/> Adicionar na Agenda
             </button>
              
-            <button onClick={() => { setData(prev => ({...prev, service: null})); setSuccess(false); setStage(0); window.scrollTo(0,0); }} className="mt-6 flex items-center gap-2 text-gray-600 font-bold text-xs uppercase hover:text-white">
+            <button onClick={handleReset} className="mt-6 flex items-center gap-2 text-gray-600 font-bold text-xs uppercase hover:text-white">
                 <RefreshCw size={12}/> Fazer Novo Pedido
             </button>
         </div>
