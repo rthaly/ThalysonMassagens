@@ -4,7 +4,8 @@ import {
   Ticket, Flame, Wind, Crown, Shield, MapPin, Building,
   CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
   Calendar as CalendarIcon, Clock, User, AlertTriangle, 
-  Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee
+  Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee,
+  Hand, Droplet, Sparkles, Heart
 } from 'lucide-react';
 
 // ==================================================================================
@@ -12,7 +13,7 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_VERSION: '3.1.0-HOMECARE',
+  APP_VERSION: '3.2.0-FAST',
   REGION_MODE: 'SP', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
@@ -33,14 +34,6 @@ const CONFIG = {
   URLS: {
     WHATSAPP_API: "https://api.whatsapp.com/send"
   }
-};
-
-// --- IMAGENS (Unsplash - Temática Massagem) ---
-const IMAGES = {
-    MASSAGE_1: "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=150&h=150&fit=crop&q=80", // Óleo/Mãos
-    MASSAGE_2: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=150&h=150&fit=crop&q=80", // Ambiente Relax
-    MASSAGE_3: "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=150&h=150&fit=crop&q=80", // Toalhas/Spa
-    CLIENTS: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=150&h=150&fit=crop&q=80", // Feedback
 };
 
 // --- BASE DE DADOS ---
@@ -127,11 +120,12 @@ const LEVELS = [
   { name: 'ALPHA', min: CONFIG.XP_THRESHOLDS.ALPHA, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
 ];
 
+// ICONES PARA STORIES (NOVO)
 const STORIES = [
-  { id: 1, user: 'Thaly', img: IMAGES.MASSAGE_1, title: 'Técnicas' },
-  { id: 2, user: 'Thaly', img: IMAGES.MASSAGE_2, title: 'Home Care' },
-  { id: 3, user: 'Thaly', img: IMAGES.MASSAGE_3, title: 'Produtos' },
-  { id: 4, user: 'Clientes', img: IMAGES.CLIENTS, title: 'Feedback' },
+  { id: 1, title: 'Técnicas', icon: Hand, color: 'text-purple-400' },
+  { id: 2, title: 'Home Care', icon: Car, color: 'text-blue-400' },
+  { id: 3, title: 'Produtos', icon: Droplet, color: 'text-yellow-400' },
+  { id: 4, title: 'Feedback', icon: Star, color: 'text-green-400' },
 ];
 
 const FAQS = [
@@ -166,7 +160,7 @@ const REVIEWS_DB = [
 ];
 
 // ==================================================================================
-// UTILS & STYLES (CORREÇÃO DE SCROLL AQUI)
+// UTILS & STYLES
 // ==================================================================================
 
 const Utils = {
@@ -174,13 +168,6 @@ const Utils = {
   vibrate: (pattern = 10) => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); },
   shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
   
-  maskPhone: (v) => {
-    v = v.replace(/\D/g, "");
-    v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
-    v = v.replace(/(\d)(\d{4})$/, "$1-$2");
-    return v;
-  },
-
   isTimeBlocked: (selectedDate, timeString) => {
     if (!selectedDate) return true;
     const now = new Date();
@@ -214,7 +201,7 @@ input, select, button { outline: none; }
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    gap: 0.75rem; /* gap-3 */
+    gap: 0.75rem; 
 }
 .ios-scroll::-webkit-scrollbar { display: none; }
 .ios-scroll > * { flex-shrink: 0; scroll-snap-align: start; }
@@ -280,14 +267,15 @@ const ConfettiExplosion = () => {
     );
 };
 
+// STORIES COM ÍCONES
 const StoriesBar = () => {
     return (
         <div className="ios-scroll px-5 pb-4 pt-2">
             {STORIES.map(s => (
                 <div key={s.id} className="flex flex-col items-center gap-1.5 cursor-pointer active:opacity-70 transition-opacity">
                     <div className="w-[68px] h-[68px] rounded-full p-[2px] bg-gradient-to-tr from-[#FFD60A] via-[#f09433] to-[#bc1888]">
-                        <div className="w-full h-full rounded-full border-[2px] border-black overflow-hidden bg-[#222]">
-                            <img src={s.img} alt={s.title} className="w-full h-full object-cover" />
+                        <div className="w-full h-full rounded-full border-[2px] border-black overflow-hidden bg-[#222] flex items-center justify-center">
+                            <s.icon size={28} className={s.color} />
                         </div>
                     </div>
                     <span className="text-[10px] text-gray-300 font-medium truncate w-16 text-center">{s.title}</span>
@@ -423,11 +411,11 @@ const FAQSection = () => {
 export default function BookingApp() {
   const [data, setData] = useState(() => {
      try {
-       const s = localStorage.getItem('thaly_ultimate_v4');
+       const s = localStorage.getItem('thaly_ultimate_v5');
        if(s) { const p = JSON.parse(s); if(p.date) p.date = new Date(p.date); return p; }
      } catch(e){}
      return { 
-         name: '', age: '', phone: '', medical: false, 
+         name: '', age: '', medical: false, 
          mood: null, service: null, date: null, time: null, 
          extras: { upgrade: false, touch: false, aroma: false }, 
          prefs: { music: 'Chill/Lofi' },
@@ -455,7 +443,7 @@ export default function BookingApp() {
     extras: useRef(null), location: useRef(null), payment: useRef(null)
   };
 
-  useEffect(() => { localStorage.setItem('thaly_ultimate_v4', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_ultimate_v5', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 1500); }, []);
 
   const { financials, xp } = useMemo(() => {
@@ -514,7 +502,6 @@ export default function BookingApp() {
     let t = `🦁 *NOVO AGENDAMENTO*\n`;
     t += `------------------------------\n`;
     t += `👤 *${data.name}* (${data.age} anos)\n`;
-    t += `📱 *${data.phone}*\n`;
     t += `📅 *${dateStr} às ${data.time}*\n`;
     t += `💆 *${data.service?.name.toUpperCase()}*\n`;
     
@@ -700,15 +687,9 @@ export default function BookingApp() {
                     <input value={data.name} onChange={e => setData({...data, name: e.target.value})} placeholder="Como prefere ser chamado?" className="input-field"/>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 ml-1">Idade</label>
-                        <input type="tel" maxLength={2} value={data.age} onChange={e => setData({...data, age: e.target.value.replace(/\D/g,'')})} placeholder="Ex: 30" className="input-field"/>
-                    </div>
-                    <div>
-                        <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 ml-1">WhatsApp</label>
-                        <input type="tel" maxLength={15} value={data.phone} onChange={e => setData({...data, phone: Utils.maskPhone(e.target.value)})} placeholder="(00) 00000-0000" className="input-field"/>
-                    </div>
+                <div>
+                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 ml-1">Idade</label>
+                    <input type="tel" maxLength={2} value={data.age} onChange={e => setData({...data, age: e.target.value.replace(/\D/g,'')})} placeholder="Ex: 30" className="input-field"/>
                 </div>
                 
                 <div onClick={() => { Utils.vibrate(); setData({...data, medical: !data.medical}) }} 
@@ -717,7 +698,7 @@ export default function BookingApp() {
                     <div><p className={`text-sm font-bold ${data.medical ? 'text-white' : 'text-gray-400'}`}>Maior de idade e saudável</p></div>
                 </div>
 
-                {data.name.length > 2 && data.age && data.phone.length > 10 && data.medical && stage === 0 && (
+                {data.name.length > 2 && data.age && data.medical && stage === 0 && (
                     <button onClick={() => advanceStage(1, refs.mood)} className="primary-btn w-full py-4 flex items-center justify-center gap-2 animate-scale">Iniciar Agendamento <ArrowRight size={20}/></button>
                 )}
             </div>
@@ -807,7 +788,7 @@ export default function BookingApp() {
                 ))}
             </div>
             
-            {/* 4.5 PREFERÊNCIAS (Sem Bebidas) */}
+            {/* 4.5 PREFERÊNCIAS */}
             <div className="mt-4 card-base p-5 border border-[#222]">
                 <h4 className="text-xs font-bold text-gray-400 uppercase mb-3 flex items-center gap-2"><Coffee size={12}/> Preferências (Cortesia)</h4>
                 <div className="space-y-4">
