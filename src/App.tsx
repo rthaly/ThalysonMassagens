@@ -151,7 +151,7 @@ const REVIEWS_DB = [
   { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
   { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
   { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
-  { t: "Gostei muito! Um toque super bom! Foi uma experiência ótima, vou fazer de novo. :)", a: "Marcelo (Bela Vista", s: 5 },
+  { t: "Gostei muito! Um toque super bom! Foi uma experiência ótima, vou fazer de novo. :)", a: "Marcelo (Bela Vista)", s: 5 },
   { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
   { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
   { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
