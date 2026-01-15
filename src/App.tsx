@@ -13,16 +13,17 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v11_fix', // Atualizei a chave para garantir que carregue a nova config
+  APP_KEY: 'thaly_v12_final_fix', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
-  COUPON_VAL: 12.00, // <--- CORRIGIDO PARA 12 REAIS
+  COUPON_VAL: 12.00, 
   PRICES: {
     UPGRADE_PCT: 0.5, 
     TOUCH: 73, 
     AROMA: 5,
     RUSH_HOUR_FEE: 15,
+    MOTEL_FEE: 75, // Taxa fixa para motel
   },
   XP_THRESHOLDS: { VIP: 100 },
   URLS: { WHATSAPP_API: "https://api.whatsapp.com/send" }
@@ -50,7 +51,7 @@ const SERVICES = [
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    desc: 'Protocolo Premium. Inicia de bruços soltando a musculatura, vira de frente com creme e óleo, toque corpo a corpo e finalização manual intensa.', 
+    desc: 'O ápice do atendimento. Começa com massagem profunda para soltar a musculatura. Em seguida, vira de frente para um contato corpo a corpo com óleos aquecidos, respiração próxima e provocações sensoriais, culminando em uma finalização manual intensa e explosiva.', 
     duration: 60, 
     price: 155, 
     badge: 'MAIS PEDIDA 🔥',
@@ -61,7 +62,7 @@ const SERVICES = [
     id: 'relax', 
     name: 'Massagem Relaxante', 
     short: 'Tira Dores e Tensão',
-    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares e pernas cansadas. Toques suaves para tirar o stress, sem toques íntimos.', 
+    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares e pernas cansadas. Toques suaves e firmes para tirar o stress acumulado. Atenção: Nesta modalidade não há toques nas partes íntimas.', 
     duration: 60, 
     price: 125, 
     badge: null,
@@ -95,33 +96,33 @@ const TIME_SLOTS = [
 const RUSH_HOURS = ['18:00', '19:00', '20:00', '21:00'];
 
 const FAQS = [
-  { q: "Como é a Massagem Completa?", a: "A sessão começa de bruços com manobras de relaxamento profundo. Depois, de frente, utilizo óleos para um contato corpo a corpo mais sensitivo, finalizando com alívio manual total." },
-  { q: "Como é a Massagem Relaxante?", a: "Focada exclusivamente em dores musculares, nós de tensão e circulação. Não há toques nas partes íntimas. É puramente terapêutica para o corpo." },
-  { q: "Pagamento do Transporte", a: "O valor do deslocamento (Uber) pode ser pago antecipadamente para garantir a reserva. O valor da massagem você paga apenas ao final da sessão." },
-  { q: "Você leva maca?", a: "Não. O atendimento é realizado no conforto da sua cama ou sofá. Levo óleos, toalhas, música e aromaterapia para ambientar o local." }
+  { q: "Como é a Massagem Completa?", a: "Inicia com relaxamento muscular profundo e evolui para uma experiência tântrica sensorial, com toque corpo a corpo e finalização manual completa." },
+  { q: "O que você leva?", a: "Levo maca (se necessário avisar), óleos, música e aromaterapia. IMPORTANTE: Não levo toalhas de banho, peço que o cliente disponibilize." },
+  { q: "Pagamento do Transporte", a: "O valor do deslocamento (Uber) pode ser pago antecipadamente para garantir a reserva. O valor da massagem você paga apenas ao final." },
+  { q: "Atende em Motel?", a: "Sim. Para motéis é cobrada uma taxa fixa de deslocamento de R$ 75,00 adicionada ao valor do serviço." }
 ];
 
 const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida. Me senti muito conectado.", a: "Tiago (Bela Vista)", s: 5 },
-  { t: "Gostei bastante, me senti bem relaxado depois, saí mais leve. O papo fluiu bem e a técnica é ótima.", a: "Alan", s: 5 },
-  { t: "Melhor investimento da semana. Relaxamento total. O toque dele é firme na medida certa.", a: "Bruno", s: 5 },
-  { t: "Fui pra relaxar e saí renovado. A massagem tântrica é real, desbloqueou sensações que eu nem conhecia.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O creme faz diferença. Recomendo pra quem treina pesado.", a: "Curioso SP", s: 5 },
-  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório com total discrição.", a: "Empresário", s: 5 },
-  { t: "Profissionalismo raro. Pontual, limpo e educado. A experiência completa vale cada centavo.", a: "Carlos A.", s: 5 },
-  { t: "O final foi explosivo. Recomendo a todos que querem sair da rotina.", a: "Anônimo", s: 5 },
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago", s: 5 },
+  { t: "Gostei bastante, me senti bem relaxado depois, saí mais leve.", a: "Alan", s: 5 },
+  { t: "Melhor investimento da semana. Relaxamento total. O toque dele é firme.", a: "Bruno", s: 5 },
+  { t: "Fui pra relaxar e saí renovado. Desbloqueou sensações que eu nem conhecia.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. Recomendo pra quem treina pesado.", a: "Curioso SP", s: 5 },
+  { t: "Sigilo absoluto. Atendeu no meu escritório com total discrição.", a: "Empresário", s: 5 },
+  { t: "Profissionalismo raro. Pontual, limpo e educado.", a: "Carlos A.", s: 5 },
+  { t: "O final foi explosivo. Recomendo a todos.", a: "Anônimo", s: 5 },
 ];
 
 const LIVE_NOTIFICATIONS = [
-  "✨ João acabou de agendar", "👀 4 pessoas vendo a agenda", "📅 Sexta-feira com poucos horários",
-  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou presença", "💎 Murilo virou VIP",
-  "🌊 Ricardo ativou o modo relax", "💬 Lucas enviou uma dúvida", "🏠 Atendimento em domicílio iniciado",
-  "🚀 Bruno fechou o pacote completo", "💆‍♂️ Felipe adicionou interação", "🏨 Atendimento em Hotel iniciado",
-  "🍃 Gustavo pediu Aromaterapia", "💳 Pagamento via Pix recebido", "🏳️‍🌈 Cliente novo cadastrado",
-  "🕶️ Modo Sigilo Ativado", "🚗 Thalyson está a caminho", "⏱️ Sessão estendida agendada",
-  "🧖‍♂️ Rafael finalizou a sessão", "✨ Avaliação 5 estrelas recebida", "🔥 Agenda de Sábado abriu",
-  "🎁 Cupom VIP foi resgatado", "🔒 Dados criptografados", "👋 Marcos mandou um 'Oi'",
-  "💼 Executivo agendou horário", "✈️ Turista do RJ agendou", "🛌 Suíte de Motel reservada"
+  "✨ João acabou de agendar", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira disputada",
+  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou", "💎 Murilo virou VIP",
+  "🌊 Ricardo ativou o modo relax", "💬 Lucas enviou dúvida", "🏠 Atendimento em casa",
+  "🚀 Bruno fechou pacote completo", "💆‍♂️ Felipe relaxando agora", "🏨 Atendimento em Hotel",
+  "🍃 Gustavo pediu Aroma", "💳 Pix recebido", "🏳️‍🌈 Cliente novo",
+  "🕶️ Modo Sigilo ON", "🚗 Thalyson a caminho", "⏱️ Sessão estendida",
+  "🧖‍♂️ Rafael finalizou", "✨ Avaliação 5 estrelas", "🔥 Sábado abriu vaga",
+  "🎁 Cupom resgatado", "🔒 Dados seguros", "👋 Marcos deu oi",
+  "💼 Executivo agendou", "✈️ Turista RJ agendou", "🛌 Motel reservado"
 ];
 
 // ==================================================================================
@@ -180,6 +181,12 @@ input, select, button { outline: none; }
 .animate-enter { animation: fadeIn 0.4s ease-out forwards; }
 .btn-pulse { animation: pulse 2s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
+
+/* FADE IN/OUT PARA NOTIFICAÇÕES */
+.fade-bubble-enter { opacity: 0; transform: translateY(10px) translateX(-50%); }
+.fade-bubble-enter-active { opacity: 1; transform: translateY(0) translateX(-50%); transition: opacity 500ms, transform 500ms; }
+.fade-bubble-exit { opacity: 1; transform: translateY(0) translateX(-50%); }
+.fade-bubble-exit-active { opacity: 0; transform: translateY(-10px) translateX(-50%); transition: opacity 500ms, transform 500ms; }
 `;
 
 // ==================================================================================
@@ -212,39 +219,50 @@ const StatusBar = () => {
   );
 };
 
+// COMPONENTE LIVE BUBBLES CORRIGIDO
 const LiveBubbles = () => {
-    const [msg, setMsg] = useState(null);
-    const [queue, setQueue] = useState([]);
-
-    useEffect(() => { setQueue(Utils.shuffle([...LIVE_NOTIFICATIONS])); }, []);
+    const [currentMsg, setCurrentMsg] = useState('');
+    const [visible, setVisible] = useState(false);
+    
+    // Lista estática embaralhada uma vez
+    const [shuffledList] = useState(() => Utils.shuffle([...LIVE_NOTIFICATIONS]));
+    const indexRef = useRef(0);
 
     useEffect(() => {
-        if(queue.length === 0 && LIVE_NOTIFICATIONS.length > 0) {
-             setQueue(Utils.shuffle([...LIVE_NOTIFICATIONS])); return;
-        }
-        const cycle = () => {
-            if (queue.length > 0) {
-                const nextMsg = queue[0];
-                setMsg(nextMsg);
-                setQueue(q => q.slice(1));
-                setTimeout(() => setMsg(null), 5000); 
-            }
-        };
-        const interval = setInterval(cycle, 12000); 
-        cycle(); 
-        return () => clearInterval(interval);
-    }, [queue]);
+        // Função para mostrar a próxima mensagem
+        const showNext = () => {
+            if (indexRef.current >= shuffledList.length) indexRef.current = 0;
+            setCurrentMsg(shuffledList[indexRef.current]);
+            setVisible(true);
+            indexRef.current++;
 
-    if (!msg) return null;
+            // Esconder depois de 4s
+            setTimeout(() => {
+                setVisible(false);
+            }, 4000);
+        };
+
+        // Primeira execução rapida
+        const t1 = setTimeout(showNext, 2000);
+        
+        // Loop a cada 10s
+        const interval = setInterval(showNext, 10000);
+
+        return () => { clearTimeout(t1); clearInterval(interval); };
+    }, [shuffledList]);
+
     return (
-      <div className="fixed top-28 left-1/2 -translate-x-1/2 z-30 w-max max-w-[90%] pointer-events-none">
-        <div className="bg-[#1C1C1E]/95 backdrop-blur-md border border-white/10 pl-3 pr-4 py-2 rounded-full flex items-center gap-3 shadow-2xl animate-enter">
+      <div 
+        className={`fixed top-28 left-1/2 z-30 w-max max-w-[90%] pointer-events-none transition-all duration-700 ease-in-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+        style={{ transform: 'translateX(-50%)' }} // Centraliza horizontalmente sempre
+      >
+        <div className="bg-[#1C1C1E]/95 backdrop-blur-md border border-white/10 pl-3 pr-4 py-2 rounded-full flex items-center gap-3 shadow-2xl">
            <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0">
               <span className="text-xs">✨</span>
            </div>
            <div>
                <p className="text-[10px] text-gray-400 font-bold uppercase mb-0.5">Agora</p>
-               <p className="text-xs font-medium text-white">{msg}</p>
+               <p className="text-xs font-medium text-white">{currentMsg}</p>
            </div>
         </div>
       </div>
@@ -293,7 +311,6 @@ const FAQSection = () => {
 // ==================================================================================
 
 export default function BookingApp() {
-  // ESTADO INICIAL FIXO PARA EVITAR ERROS DE HYDRATION/STORAGE
   const [data, setData] = useState({ 
      name: '', age: '', medical: false, 
      mood: null, service: null, date: null, time: null, 
@@ -310,7 +327,6 @@ export default function BookingApp() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [toast, setToast] = useState(null);
 
-  // EFEITO PARA CARREGAR DADOS SOMENTE DEPOIS DE MONTAR (EVITA CRASH)
   useEffect(() => {
       try {
           const s = localStorage.getItem(CONFIG.APP_KEY);
@@ -325,7 +341,6 @@ export default function BookingApp() {
       }
   }, []);
 
-  // SALVAR DADOS
   useEffect(() => {
       localStorage.setItem(CONFIG.APP_KEY, JSON.stringify(data));
   }, [data]);
@@ -351,7 +366,14 @@ export default function BookingApp() {
 
     const isRush = data.time && RUSH_HOURS.includes(data.time);
     const rushFee = isRush ? CONFIG.PRICES.RUSH_HOUR_FEE : 0;
-    const travelFee = data.location.city ? data.location.city.fee : 0;
+    
+    // LÓGICA DE MOTEL: SE FOR MOTEL, TAXA É 75 FIXA. SENAO É A TAXA DO BAIRRO
+    let travelFee = 0;
+    if (data.location.type === 'motel') {
+        travelFee = CONFIG.PRICES.MOTEL_FEE;
+    } else {
+        travelFee = data.location.city ? data.location.city.fee : 0;
+    }
     
     const serviceTotal = base + upg + touch + aroma + rushFee; 
     const transportTotal = travelFee; 
@@ -364,17 +386,18 @@ export default function BookingApp() {
         financials: { base, upg, touch, aroma, travelFee, rushFee, sub, desc, total, serviceTotal, transportTotal },
         xp: xpPoints
     };
-  }, [data.service, data.extras, hasCoupon, data.location.city, data.time]);
+  }, [data.service, data.extras, hasCoupon, data.location.city, data.time, data.location.type]);
 
   const isVip = xp >= CONFIG.XP_THRESHOLDS.VIP;
 
   const scrollToSection = (sectionRef) => {
     if (sectionRef && sectionRef.current) {
         setTimeout(() => {
-            const yOffset = -100; 
+            // Ajuste do offset para não esconder atrás do header
+            const yOffset = -120; // Mais espaço para cima
             const y = sectionRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
-        }, 100);
+        }, 150);
     }
   };
 
@@ -409,11 +432,17 @@ export default function BookingApp() {
     t += `🎧 Vibe: ${data.mood?.label} | 🎵 Som: ${data.prefs.music}\n`;
     
     t += `\n📍 *LOCAL: ${loc.city.name}*\n`;
-    if(loc.type === 'home' || loc.type === 'apto') {
+    if(loc.type === 'home') {
         t += `🏠 End: ${loc.street}, ${loc.number} - ${loc.district}\n`;
-        if(loc.type === 'apto') t += `🏢 Compl: ${loc.building} (Apto ${loc.aptNumber})\n`;
+    } else if (loc.type === 'apto') {
+        // FORMATAÇÃO CORRIGIDA PARA APTO
+        t += `🏢 End: ${loc.street}, ${loc.number}\n`;
+        t += `🚪 Apto/Bloco: ${loc.aptNumber}\n`;
+        t += `🏙️ Bairro: ${loc.district}\n`;
+    } else if (loc.type === 'motel') {
+        t += `🏩 Motel: ${loc.motelName} (Taxa Fixa)\n`;
     } else {
-        t += `🏨 Local: ${loc.hotelName || loc.motelName} (${loc.roomNumber || loc.suiteType})\n`;
+        t += `🏨 Hotel: ${loc.hotelName} (Quarto ${loc.roomNumber})\n`;
     }
 
     t += `\n💰 *RESUMO FINANCEIRO:*\n`;
@@ -421,7 +450,7 @@ export default function BookingApp() {
     t += `🔹 *Serviço:* ${Utils.formatBRL(financials.serviceTotal)} (Pagar ao final)\n`;
     
     if(financials.transportTotal > 0) {
-         t += `🚗 *Uber/Deslocamento:* ${Utils.formatBRL(financials.transportTotal)} (Pode adiantar)\n`;
+         t += `🚗 *Uber/Taxa:* ${Utils.formatBRL(financials.transportTotal)} (Pode adiantar)\n`;
     }
     
     if(hasCoupon) t += `🎟️ *Desconto VIP:* -${Utils.formatBRL(financials.desc)}\n`;
@@ -436,10 +465,12 @@ export default function BookingApp() {
       const l = data.location;
       if (!l.city) return false;
       const basics = l.street && l.number && l.district;
+      
       if (l.type === 'home') return basics;
-      if (l.type === 'apto') return basics && l.building && l.aptNumber;
+      // APTO AGORA VALIDA RUA, NUMERO E NUMERO DO APTO
+      if (l.type === 'apto') return l.street && l.number && l.aptNumber && l.district;
       if (l.type === 'hotel') return l.hotelName && l.roomNumber;
-      if (l.type === 'motel') return l.motelName;
+      if (l.type === 'motel') return l.motelName; // Motel só precisa do nome
       return false;
   };
 
@@ -465,7 +496,7 @@ export default function BookingApp() {
                   </div>
                   {financials.transportTotal > 0 && (
                       <div className="flex justify-between text-sm text-[#0A84FF]">
-                          <span>Uber/Deslocamento (Pagar antes)</span>
+                          <span>Uber/Taxa (Pagar antes)</span>
                           <span className="font-bold">{Utils.formatBRL(financials.transportTotal)}</span>
                       </div>
                   )}
@@ -495,12 +526,13 @@ export default function BookingApp() {
   );
 
   return (
-    <div className="min-h-screen pb-40 relative bg-[#050505]">
+    // PADDING BOTTOM 40 (pb-40) AUMENTADO PARA DAR ESPAÇO NO SCROLL
+    <div className="min-h-screen pb-48 relative bg-[#050505]">
       <style>{globalStyles}</style>
       <LiveBubbles />
       {toast && <Toast msg={toast.msg} onClose={() => setToast(null)} />}
       
-      {/* HEADER SIMPLIFICADO */}
+      {/* HEADER */}
       <header className="fixed top-0 w-full z-40 glass-header">
         <div className="px-5 py-3 flex justify-between items-center">
             <div className="flex items-center gap-2" onClick={() => window.location.reload()}>
@@ -685,7 +717,7 @@ export default function BookingApp() {
                     {LOCATIONS_DB.map(c => (
                         <button key={c.id} onClick={() => setData({...data, location: {...data.location, city: c}})} 
                             className={`px-4 py-3 rounded-xl text-xs font-bold border whitespace-nowrap ${data.location.city.id === c.id ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#161616] border-[#333] text-gray-400'}`}>
-                            {c.name} {c.fee > 0 && `(+${Utils.formatBRL(c.fee)})`}
+                            {c.name} {data.location.type !== 'motel' && c.fee > 0 && `(+${Utils.formatBRL(c.fee)})`}
                         </button>
                     ))}
                 </div>
@@ -709,11 +741,37 @@ export default function BookingApp() {
                         <input placeholder="Referência" value={data.location.reference} onChange={e => setData({...data, location: {...data.location, reference: e.target.value}})} className="input-field"/>
                     </div>
                 )}
-                {['apto', 'hotel', 'motel'].includes(data.location.type) && (
+                
+                {/* LÓGICA DE APTO CORRIGIDA */}
+                {data.location.type === 'apto' && (
                      <div className="space-y-3">
-                        <input placeholder={data.location.type === 'apto' ? 'Edifício' : 'Nome do Local'} className="input-field" onChange={e => setData({...data, location: {...data.location, building: e.target.value, hotelName: e.target.value, motelName: e.target.value}})}/>
-                        <div className="flex gap-2"><input placeholder={data.location.type === 'apto' ? 'Apto' : 'Quarto/Suíte'} className="input-field" onChange={e => setData({...data, location: {...data.location, aptNumber: e.target.value, roomNumber: e.target.value, suiteType: e.target.value}})} /></div>
+                        <div className="flex gap-2">
+                             <input placeholder="Rua do Prédio" className="input-field w-2/3" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} />
+                             <input placeholder="Nº Rua" className="input-field w-1/3" value={data.location.number} onChange={e => setData({...data, location: {...data.location, number: e.target.value}})} />
+                        </div>
+                        <div className="flex gap-2">
+                             <input placeholder="Nº Apto / Bloco" className="input-field w-1/2" value={data.location.aptNumber} onChange={e => setData({...data, location: {...data.location, aptNumber: e.target.value}})} />
+                             <input placeholder="Bairro" className="input-field w-1/2" value={data.location.district} onChange={e => setData({...data, location: {...data.location, district: e.target.value}})} />
+                        </div>
                      </div>
+                )}
+
+                {/* MOTEL SIMPLIFICADO */}
+                {data.location.type === 'motel' && (
+                     <div className="space-y-3">
+                         <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-xl flex items-center gap-3">
+                            <Flame size={20} className="text-red-500"/>
+                            <p className="text-xs text-red-200">Motel: Taxa fixa de R$ 75,00 será aplicada.</p>
+                         </div>
+                         <input placeholder="Nome do Motel" className="input-field" onChange={e => setData({...data, location: {...data.location, motelName: e.target.value}})}/>
+                     </div>
+                )}
+
+                {data.location.type === 'hotel' && (
+                    <div className="space-y-3">
+                       <input placeholder="Nome do Hotel" className="input-field" onChange={e => setData({...data, location: {...data.location, hotelName: e.target.value}})}/>
+                       <input placeholder="Quarto" className="input-field" onChange={e => setData({...data, location: {...data.location, roomNumber: e.target.value}})} />
+                    </div>
                 )}
                 
                 <button disabled={!isAddressValid()} onClick={() => advanceStage(6, refs.payment)} className="primary-btn w-full py-4 mt-4 disabled:opacity-50">Confirmar Local</button>
