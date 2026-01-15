@@ -33,18 +33,18 @@ const CONFIG = {
 // Bela Vista configurada com taxa 0 (Grátis)
 const LOCATIONS_DB = [
     { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 0, zone: 'Base' }, // Grátis
-    { id: 'consola', name: 'Consolação / Centro', fee: 8, zone: 'Zona 1' }, 
-    { id: 'jardins', name: 'Jardins / Paulista', fee: 10, zone: 'Zona 1' }, 
-    { id: 'higien', name: 'Higienópolis / Sta Cecília', fee: 12, zone: 'Zona 1' },
-    { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 15, zone: 'Zona 2' },
-    { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 18, zone: 'Zona 2' },
-    { id: 'moema', name: 'Moema / V. Mariana', fee: 20, zone: 'Zona 2' },
-    { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 20, zone: 'Zona 2' },
-    { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 25, zone: 'Zona 3' },
-    { id: 'saude', name: 'Saúde / Jabaquara', fee: 30, zone: 'Zona 3' },
-    { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 35, zone: 'Zona 3' },
-    { id: 'morumbi', name: 'Morumbi / Panamby', fee: 40, zone: 'Zona 4' },
-    { id: 'santana', name: 'Santana / ZN', fee: 40, zone: 'Zona 4' },
+    { id: 'consola', name: 'Consolação / Centro', fee: 16, zone: 'Zona 1' }, 
+    { id: 'jardins', name: 'Jardins / Paulista', fee: 23, zone: 'Zona 1' }, 
+    { id: 'higien', name: 'Higienópolis / Sta Cecília', fee: 24, zone: 'Zona 1' },
+    { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 30, zone: 'Zona 2' },
+    { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 36, zone: 'Zona 2' },
+    { id: 'moema', name: 'Moema / V. Mariana', fee: 44, zone: 'Zona 2' },
+    { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 45, zone: 'Zona 2' },
+    { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 55, zone: 'Zona 3' },
+    { id: 'saude', name: 'Saúde / Jabaquara', fee: 63, zone: 'Zona 3' },
+    { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 73, zone: 'Zona 3' },
+    { id: 'morumbi', name: 'Morumbi / Panamby', fee: 80, zone: 'Zona 4' },
+    { id: 'santana', name: 'Santana / ZN', fee: 84, zone: 'Zona 4' },
     { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: 'Consultar' },
 ];
 
