@@ -7,10 +7,11 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO & DADOS
+// 1. DADOS MESTRES (CONFIGURAÇÃO)
 // ==================================================================================
 
-const SYSTEM_KEY = 'THALY_FIX_FINAL_V1'; // Chave nova para limpar erros
+// Chave única para garantir que o cliente carregue a versão nova sem erros de cache antigo
+const SYSTEM_KEY = 'THALY_V100_GOLD_MASTER'; 
 
 const CONFIG = {
   PHONE: "5517991360413", 
@@ -24,7 +25,7 @@ const CONFIG = {
     AROMA: 5,
   },
   
-  XP_THRESHOLDS: { MEMBER: 50, VIP: 150, ALPHA: 300 },
+  XP_THRESHOLDS: { MEMBER: 0, VIP: 150, ALPHA: 300 },
   URLS: { WHATSAPP: "https://api.whatsapp.com/send" }
 };
 
@@ -34,8 +35,8 @@ const LOCATIONS = [
   { id: 'paulista', name: 'Paulista / Jardins', fee: 20.00, zone: 'Nobre' },
   { id: 'higienopolis', name: 'Higienópolis', fee: 25.00, zone: 'Centro' },
   { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 30.00, zone: 'Oeste' },
-  { id: 'itaim', name: 'Itaim / V. Olímpia', fee: 35.00, zone: 'Sul' },
-  { id: 'moema', name: 'Moema / Ibirapuera', fee: 40.00, zone: 'Sul' },
+  { id: 'itaim', name: 'Itaim / V. Olímpia', fee: 40.00, zone: 'Sul' },
+  { id: 'moema', name: 'Moema / Ibirapuera', fee: 45.00, zone: 'Sul' },
   { id: 'mariana', name: 'Vila Mariana', fee: 30.00, zone: 'Sul' },
   { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 30.00, zone: 'Oeste' },
   { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 45.00, zone: 'Sul' },
@@ -75,10 +76,10 @@ const EXTRAS_OPTS = [
 const TIME_SLOTS = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
 
 const LEVELS = [
-  { name: 'Visitante', min: 0, color: 'text-gray-400', bg: 'bg-gray-700' },
-  { name: 'Membro', min: 50, color: 'text-blue-400', bg: 'bg-blue-600' },
-  { name: 'VIP', min: 150, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, 
-  { name: 'ALPHA', min: 300, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
+  { name: 'Visitante', min: 0, color: 'text-gray-400', bg: 'bg-gray-800' },
+  { name: 'Membro', min: 50, color: 'text-blue-400', bg: 'bg-blue-900' },
+  { name: 'VIP', min: 150, color: 'text-[#FFD60A]', bg: 'bg-yellow-900/30' }, 
+  { name: 'ALPHA', min: 300, color: 'text-[#32D74B]', bg: 'bg-green-900/30' }
 ];
 
 const REVIEWS_DB = [
@@ -86,9 +87,9 @@ const REVIEWS_DB = [
   { t: "O toque dele vicia. A finalização foi absurda.", a: "Anônimo", s: 5 },
   { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real.", a: "Pedro H.", s: 5 },
   { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
-  { t: "Paguei o extra pra tocar e valeu cada centavo.", a: "M. (Jardins)", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia.", a: "M. (Jardins)", s: 5 },
   { t: "Sou casado, tinha receio. O sigilo foi absoluto.", a: "Empresário", s: 5 },
-  { t: "O upgrade de 30 minutos vale a pena.", a: "Roberto", s: 5 },
+  { t: "O upgrade vale cada centavo. Não dá vontade de parar.", a: "Roberto", s: 5 },
   { t: "Visual nota 1000. Profissionalismo raro.", a: "Carlos A.", s: 5 },
   { t: "Ambiente relaxante demais.", a: "Gustavo", s: 5 },
   { t: "Gostei bastante, me senti bem relaxado depois.", a: "Alan SP", s: 5 },
@@ -103,7 +104,9 @@ const LIVE_NOTIFICATIONS = [
   "🔥 João agendou agora", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira quase cheia",
   "✅ Matheus confirmou", "💎 Murilo virou VIP", "🏠 Atendimento Hotel iniciado", 
   "💳 Pix recebido", "🚗 Thalyson a caminho", "✨ Avaliação 5 estrelas recebida",
-  "📍 Atendimento na Bela Vista", "🎁 Cupom resgatado", "🔒 Dados seguros"
+  "📍 Atendimento na Bela Vista", "🎁 Cupom resgatado", "🔒 Dados seguros",
+  "👋 Marcos mandou um 'Oi'", "💼 Executivo agendou", "🛑 Sábado Lotado",
+  "🛁 Banho tomado, pronto", "⚡ Ricardo agendou", "🏩 Chegando no Motel"
 ];
 
 const LOCATION_TYPES = [
@@ -114,11 +117,11 @@ const LOCATION_TYPES = [
 ];
 
 // ==================================================================================
-// 2. ESTILOS GLOBAIS
+// 2. ESTILOS GLOBAIS (PREMIUM & OTIMIZADO)
 // ==================================================================================
 
 const globalStyles = `
-:root { --primary: #0A84FF; --bg: #09090b; --card: #18181b; --border: #27272a; }
+:root { --primary: #0A84FF; --bg: #000000; --card: #121212; --border: #222; --success: #32D74B; }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
 html { background: var(--bg); }
 body { background: var(--bg); color: #fff; overflow-x: hidden; min-height: 100vh; padding-bottom: 40px; }
@@ -127,13 +130,12 @@ input, button { outline: none; }
 .hide-scroll::-webkit-scrollbar { display: none; }
 .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Animações */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
 
-.anim-enter { animation: fadeIn 0.5s ease-out forwards; }
+.anim-enter { animation: fadeIn 0.6s ease-out forwards; }
 .anim-pop { animation: scaleIn 0.3s cubic-bezier(0.17, 0.67, 0.23, 1.4) forwards; }
 .btn-pulse { animation: pulse 2s infinite; }
 
@@ -142,20 +144,19 @@ input, button { outline: none; }
   background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 4s infinite linear;
 }
 
-/* Componentes */
-.glass-nav { background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 50; }
+.glass-nav { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 50; }
 .card-base { background: var(--card); border: 1px solid var(--border); border-radius: 20px; transition: all 0.2s; }
-.card-active { border-color: var(--primary); background: rgba(10, 132, 255, 0.08); box-shadow: 0 4px 20px rgba(10, 132, 255, 0.1); }
-.input-clean { background: #27272a; border: 1px solid #3f3f46; color: white; border-radius: 12px; width: 100%; padding: 14px; font-size: 15px; transition: 0.2s; }
-.input-clean:focus { border-color: var(--primary); background: #3f3f46; box-shadow: 0 0 0 2px rgba(10,132,255,0.2); }
-.btn-primary { background: linear-gradient(to right, #0A84FF, #0056B3); color: white; border-radius: 16px; font-weight: 700; border: none; box-shadow: 0 8px 25px rgba(10, 132, 255, 0.25); transition: transform 0.1s; }
-.btn-primary:active { transform: scale(0.97); }
+.card-active { border-color: var(--primary); background: rgba(10, 132, 255, 0.08); box-shadow: 0 0 15px rgba(10, 132, 255, 0.1); }
+.input-clean { background: #1C1C1E; border: 1px solid #333; color: white; border-radius: 12px; width: 100%; padding: 14px; font-size: 16px; transition: 0.2s; }
+.input-clean:focus { border-color: var(--primary); background: #222; box-shadow: 0 0 0 1px var(--primary); }
+.btn-primary { background: linear-gradient(to right, #0A84FF, #0056B3); color: white; border-radius: 16px; font-weight: 700; border: none; box-shadow: 0 4px 20px rgba(10, 132, 255, 0.25); transition: transform 0.1s; }
+.btn-primary:active { transform: scale(0.98); }
 .btn-disabled { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
 .section-disabled { opacity: 0.3; pointer-events: none; }
 `;
 
 // ==================================================================================
-// 3. UTILITÁRIOS
+// 3. UTILITÁRIOS (MATEMÁTICA SEGURA)
 // ==================================================================================
 
 const Utils = {
@@ -171,7 +172,7 @@ const Utils = {
     if (sel > today) return false;
     const [h] = t.split(':').map(Number);
     const slot = new Date(); slot.setHours(h, 0, 0, 0);
-    return slot < new Date(now.getTime() + 30 * 60000); 
+    return slot < new Date(now.getTime() + 60 * 60000); 
   }
 };
 
@@ -186,8 +187,8 @@ const Header = ({ onReload, onHelp }) => (
        <span className="font-bold text-lg tracking-tight logo-shimmer">THALY.</span>
     </div>
     <div className="flex gap-3">
-        <a href={`https://instagram.com/${CONFIG.INSTAGRAM}`} target="_blank" rel="noreferrer" className="p-2 bg-[#27272a] rounded-full"><Instagram size={18}/></a>
-        <button onClick={onHelp} className="p-2 bg-[#27272a] rounded-full"><HelpCircle size={18}/></button>
+        <a href={`https://instagram.com/${CONFIG.INSTAGRAM}`} target="_blank" rel="noreferrer" className="p-2 bg-[#27272a] rounded-full active:scale-95"><Instagram size={18}/></a>
+        <button onClick={onHelp} className="p-2 bg-[#27272a] rounded-full active:scale-95"><HelpCircle size={18}/></button>
     </div>
   </header>
 );
@@ -201,15 +202,15 @@ const LiveStatus = () => {
             setMsg(msgs[i]);
             i = (i + 1) % msgs.length;
             setTimeout(() => setMsg(null), 4000);
-        }, 10000);
+        }, 12000);
         return () => clearInterval(interval);
     }, []);
     if(!msg) return null;
     return (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 w-max max-w-[90%] pointer-events-none anim-enter">
             <div className="bg-[#18181b]/95 border border-[#333] px-4 py-2 rounded-full flex items-center gap-2 shadow-xl backdrop-blur-md">
-                <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse"/>
-                <span className="text-xs font-bold text-gray-200">{msg}</span>
+                <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse shrink-0"/>
+                <span className="text-xs font-bold text-gray-200 truncate">{msg}</span>
             </div>
         </div>
     );
@@ -218,15 +219,12 @@ const LiveStatus = () => {
 const ReviewsCarousel = () => {
     const [idx, setIdx] = useState(0);
     const list = useMemo(() => Utils.shuffle([...REVIEWS_DB]), []);
-    useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%list.length), 5000); return () => clearInterval(t); }, [list]);
+    useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%list.length), 6000); return () => clearInterval(t); }, [list]);
 
     return (
         <div className="bg-[#141416] border border-[#222] rounded-3xl p-5 mb-8 shadow-lg flex flex-col justify-between min-h-[140px] relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#0A84FF]/10 to-transparent rounded-bl-full"></div>
-            <div>
-                <div className="flex text-[#FFD60A] mb-3 gap-1"><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/></div>
-                <p className="text-sm text-gray-300 italic leading-relaxed anim-enter" key={idx}>"{list[idx].t}"</p>
-            </div>
+            <div className="flex text-[#FFD60A] mb-3 gap-1"><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/></div>
+            <p className="text-sm text-gray-300 italic leading-relaxed anim-enter" key={idx}>"{list[idx].t}"</p>
             <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase"><Shield size={10} className="text-[#32D74B]"/> {list[idx].a}</div>
         </div>
     )
@@ -237,51 +235,42 @@ const LocationScroller = ({ selected, onSelect }) => (
         <div className="flex gap-3 overflow-x-auto pb-4 hide-scroll snap-x px-1">
             {LOCATIONS.map(loc => (
                 <div key={loc.id} onClick={() => onSelect(loc)}
-                    className={`snap-center flex-shrink-0 w-36 p-3 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${selected?.id === loc.id ? 'border-[#0A84FF] bg-[#0A84FF]/10' : 'border-[#27272a] bg-[#18181b]'}`}>
+                    className={`snap-center flex-shrink-0 w-36 p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${selected?.id === loc.id ? 'border-[#0A84FF] bg-[#0A84FF]/10' : 'border-[#27272a] bg-[#18181b]'}`}>
                     <p className="text-[9px] uppercase font-bold text-gray-500 mb-1">{loc.zone}</p>
                     <p className="text-sm font-bold text-white mb-2 leading-tight h-8 flex items-center">{loc.name}</p>
                     <div className="flex items-center justify-between mt-1 pt-2 border-t border-white/5">
                         <span className="text-[9px] text-gray-400">Ida+Volta</span>
                         <span className={`text-[10px] font-bold ${selected?.id === loc.id ? 'text-[#0A84FF]' : 'text-white'}`}>{loc.fee === 0 ? 'Grátis' : Utils.fmt(loc.fee)}</span>
                     </div>
+                    {selected?.id === loc.id && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#0A84FF] shadow-[0_0_10px_#0A84FF]"></div>}
                 </div>
             ))}
         </div>
     </div>
 );
 
-const CouponPopup = ({ onClose, onAccept }) => (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 anim-enter">
-        <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={onClose}/>
-        <div className="relative bg-[#18181b] w-full max-w-sm rounded-3xl border border-[#0A84FF]/50 p-6 shadow-2xl text-center">
-            <div className="w-16 h-16 bg-[#0A84FF]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Ticket size={32} className="text-[#0A84FF]"/>
-            </div>
-            <h2 className="text-2xl font-black text-white mb-2">Ganhou R$ {CONFIG.FIRST_COUPON_VAL}!</h2>
-            <p className="text-gray-400 text-sm mb-6">Presente de boas-vindas para sua primeira sessão.</p>
-            <button onClick={onAccept} className="w-full py-4 rounded-xl btn-primary mb-3 btn-pulse">USAR DESCONTO</button>
-            <button onClick={onClose} className="text-gray-500 text-xs font-bold uppercase p-2">Dispensar</button>
-        </div>
-    </div>
-);
-
 // ==================================================================================
-// 5. APP PRINCIPAL
+// 5. APLICAÇÃO PRINCIPAL (BLINDADA)
 // ==================================================================================
 
 export default function App() {
+  // --- INICIALIZAÇÃO DE ESTADO COM FAIL-SAFE ---
   const [data, setData] = useState(() => {
      try {
        const s = localStorage.getItem(SYSTEM_KEY);
        if(s) { 
            const p = JSON.parse(s); 
            if(p.date) p.date = new Date(p.date);
-           // Validação Anti-Crash
-           if(!p.location || !p.location.type) throw new Error("Reset"); 
+           // Verificação de segurança: Se a estrutura estiver errada, reseta
+           if(!p.location || !p.location.type) throw new Error("Cache Corrompido"); 
            return p; 
        }
-     } catch(e) { localStorage.removeItem(SYSTEM_KEY); }
+     } catch(e) { 
+         console.log("Resetando sistema para versão segura");
+         localStorage.removeItem(SYSTEM_KEY); 
+     }
      
+     // Estado Limpo Padrão
      return { 
          name: '', age: '', medical: false, 
          service: null, date: null, time: null, 
@@ -298,7 +287,8 @@ export default function App() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const isFirstTime = !localStorage.getItem('thaly_history_fix_v1');
+  // Verifica se é 1ª vez (Persistente)
+  const isFirstTime = !localStorage.getItem('thaly_history_final_v100');
 
   const refs = { 
       services: useRef(null), datetime: useRef(null), 
@@ -315,6 +305,7 @@ export default function App() {
       }
   }, [isFirstTime, couponActive, stage]);
 
+  // CÁLCULO FINANCEIRO
   const { financials, xp } = useMemo(() => {
     let xpPoints = 0;
     const base = data.service?.price || 0;
@@ -329,6 +320,7 @@ export default function App() {
     const aroma = data.extras?.aroma ? CONFIG.PRICES.AROMA : 0;
     if (data.extras?.aroma) xpPoints += EXTRAS_OPTS[2].xp;
 
+    // Proteção: se neighborhood for nulo, assume 0
     const travelFee = data.location?.neighborhood?.fee || 0;
     
     const sub = base + upg + touch + aroma + travelFee;
@@ -337,7 +329,7 @@ export default function App() {
     return { 
         base, upg, touch, aroma, travelFee, sub, desc, 
         total: Math.max(0, sub - desc),
-        locName: data.location?.neighborhood?.name || 'Não Selecionado'
+        locName: data.location?.neighborhood?.name || 'Selecione...'
     };
   }, [data, couponActive]);
 
@@ -355,7 +347,8 @@ export default function App() {
   };
 
   const finalizeOrder = () => {
-      if(couponActive || isFirstTime) localStorage.setItem('thaly_history_fix_v1', 'true');
+      // Grava que o cliente já fez pedido
+      if(couponActive || isFirstTime) localStorage.setItem('thaly_history_final_v100', 'true');
       setSuccess(true);
       window.scrollTo(0,0);
   };
@@ -365,18 +358,16 @@ export default function App() {
     const loc = data.location;
     const dateStr = d ? `${d.getDate()}/${d.getMonth()+1}` : '';
     
-    let t = `🦁 *PEDIDO DE AGENDAMENTO*\n──────────────────\n`;
-    t += `👤 *${data.name}* (${data.age})\n`;
+    let t = `🦁 *SOLICITAÇÃO DE AGENDAMENTO*\n──────────────────\n`;
+    t += `👤 *${data.name}* (${data.age}a)\n`;
     t += `📅 *${dateStr} às ${data.time}*\n`;
     t += `💆 *${data.service?.name}*: ${Utils.fmt(financials.base)}\n`;
     
     if(Object.values(data.extras || {}).some(Boolean)) {
-        t += `🔥 *EXTRAS:* `;
-        const l = [];
-        if(data.extras?.upgrade) l.push(`+30min`);
-        if(data.extras?.touch) l.push(`Interação`);
-        if(data.extras?.aroma) l.push(`Aroma`);
-        t += l.join(', ') + `\n`;
+        t += `🔥 *EXTRAS:*\n`;
+        if(data.extras?.upgrade) t += `   + Upgrade 30min: ${Utils.fmt(financials.upg)}\n`;
+        if(data.extras?.touch) t += `   + Interação: ${Utils.fmt(financials.touch)}\n`;
+        if(data.extras?.aroma) t += `   + Aromaterapia: ${Utils.fmt(financials.aroma)}\n`;
     }
     
     t += `\n📍 *LOCAL: ${loc.neighborhood?.name}*\n`;
@@ -386,7 +377,7 @@ export default function App() {
     else if (loc.type === 'motel') { t += `🏩 Motel: ${loc.motel} (Suíte ${loc.suite || '?'})\n`; t += `⚠️ *Eu pago a suíte*\n`; }
 
     t += `\n💰 *RESUMO FINANCEIRO:*\n`;
-    if(financials.travelFee > 0) t += `🚗 Deslocamento: ${Utils.fmt(financials.travelFee)}\n`;
+    if(financials.travelFee > 0) t += `🚗 Deslocamento Ida+Volta: ${Utils.fmt(financials.travelFee)}\n`;
     if(couponActive) t += `🎟️ Desconto 1ª Vez: -${Utils.fmt(financials.desc)}\n`;
     t += `✅ *TOTAL FINAL: ${Utils.fmt(financials.total)}*\n`;
     t += `💳 Pagamento: ${data.payment?.toUpperCase()}\n`;
@@ -394,29 +385,30 @@ export default function App() {
     return `${CONFIG.URLS.WHATSAPP}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
   };
 
-  // VALIDAÇÃO CORRIGIDA (SEM CRASH NO APTO/MOTEL)
+  // VALIDAÇÃO BLINDADA (CORREÇÃO DE CRASH)
   const isFormValid = () => {
       const l = data.location;
+      // 1. O Bairro DEVE ser selecionado para calcular o Uber
       if (!l.neighborhood) return false;
+
+      // 2. Validação condicional por tipo
       if (l.type === 'home') return l.street && l.number;
-      // APTO: Agora só precisa de Rua, Numero e Apto
       if (l.type === 'apto') return l.street && l.number && l.apt;
       if (l.type === 'hotel') return l.hotel && l.room;
-      // MOTEL: Suíte opcional
-      if (l.type === 'motel') return l.motel;
+      if (l.type === 'motel') return l.motel; // Suíte opcional
       return false;
   };
 
-  if (loading) return <div className="fixed inset-0 bg-[#09090b] z-50 flex items-center justify-center text-white font-bold tracking-widest text-xs uppercase animate-pulse">Carregando...</div>;
+  if (loading) return <div className="fixed inset-0 bg-[#050505] z-50 flex items-center justify-center text-white font-bold tracking-widest text-xs uppercase animate-pulse">Carregando...</div>;
 
   if (success) return (
-    <div className="min-h-screen bg-[#09090b] pt-20 px-6 flex flex-col items-center text-center anim-enter pb-20">
+    <div className="min-h-screen bg-[#050505] pt-20 px-6 flex flex-col items-center text-center anim-enter pb-20">
        <style>{globalStyles}</style>
        <div className="w-20 h-20 bg-[#32D74B]/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(50,215,75,0.2)]">
          <Check className="w-10 h-10 text-[#32D74B]" strokeWidth={4} />
        </div>
        <h2 className="text-3xl font-black text-white mb-2">Pedido Pronto!</h2>
-       <p className="text-gray-400 mb-8 text-sm max-w-xs">Agora é só enviar a confirmação abaixo para meu WhatsApp.</p>
+       <p className="text-gray-400 mb-8 text-sm max-w-xs">Agora envie a confirmação para garantir seu horário.</p>
 
        <div className="w-full max-w-sm bg-[#18181b] border border-[#333] rounded-3xl p-6 mb-8 text-left shadow-2xl relative overflow-hidden">
            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0A84FF] to-[#32D74B]"></div>
@@ -428,7 +420,7 @@ export default function App() {
                <p className="flex items-center gap-3"><MapPin size={16} className="text-[#0A84FF]"/> {financials.locName}</p>
                <p className="flex items-center gap-3"><CalendarIcon size={16} className="text-[#0A84FF]"/> {data.date?.toLocaleDateString()} às {data.time}</p>
            </div>
-           {data.payment === 'pix' && <div className="mt-6 p-4 bg-[#27272a] rounded-xl border border-[#333]"><p className="text-[10px] text-[#0A84FF] font-bold uppercase mb-1">Chave Pix</p><p className="text-xs font-mono text-white">{CONFIG.PIX_KEY}</p></div>}
+           {data.payment === 'pix' && <div className="mt-6 p-4 bg-[#27272a] rounded-xl border border-[#333]"><p className="text-[10px] text-[#0A84FF] font-bold uppercase mb-1">Chave Pix</p><p className="text-xs font-mono text-white select-all">{CONFIG.PIX_KEY}</p></div>}
        </div>
 
        <a href={generateMessage()} target="_blank" rel="noreferrer" className="w-full max-w-sm btn-primary py-4 text-lg flex items-center justify-center gap-2 mb-4">Enviar no WhatsApp <MessageCircle size={22}/></a>
@@ -592,7 +584,7 @@ export default function App() {
             <button onClick={() => advanceStage(4, refs.location)} className="w-full mt-5 py-4 rounded-xl text-sm font-bold bg-[#27272a] text-gray-300 border border-[#3f3f46]">Continuar</button>
         </section>
 
-        {/* 5. LOCALIZAÇÃO */}
+        {/* 5. LOCALIZAÇÃO (BLINDADA) */}
         <section ref={refs.location} className={`mt-12 transition-opacity duration-500 ${stage >= 4 ? 'opacity-100' : 'hidden'}`}>
             <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">04.</span> Localização</h3>
             
@@ -611,21 +603,18 @@ export default function App() {
 
             <div className="card-base p-6 border-[#3f3f46] space-y-4">
                 {data.location.type === 'home' && <div className="flex gap-3"><input placeholder="Rua" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input-clean w-2/3"/><input placeholder="Nº" type="tel" value={data.location.number} onChange={e => setData({...data, location: {...data.location, number: e.target.value}})} className="input-clean w-1/3"/></div>}
-                
                 {data.location.type === 'apto' && (
                     <>
                         <input placeholder="Rua / Avenida" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input-clean"/>
                         <div className="flex gap-3"><input placeholder="Nº Prédio" type="tel" value={data.location.number} onChange={e => setData({...data, location: {...data.location, number: e.target.value}})} className="input-clean w-1/2"/><input placeholder="Nº Apto" type="tel" value={data.location.apt} onChange={e => setData({...data, location: {...data.location, apt: e.target.value}})} className="input-clean w-1/2"/></div>
                     </>
                 )}
-                
                 {data.location.type === 'hotel' && (
                     <>
                         <input placeholder="Nome do Hotel" value={data.location.hotel} onChange={e => setData({...data, location: {...data.location, hotel: e.target.value}})} className="input-clean"/>
                         <input placeholder="Nº Quarto" type="tel" value={data.location.room} onChange={e => setData({...data, location: {...data.location, room: e.target.value}})} className="input-clean"/>
                     </>
                 )}
-                
                 {data.location.type === 'motel' && (
                     <>
                         <input placeholder="Nome do Motel" value={data.location.motel} onChange={e => setData({...data, location: {...data.location, motel: e.target.value}})} className="input-clean"/>
