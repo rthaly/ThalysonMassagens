@@ -5,7 +5,7 @@ import {
   CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
   Calendar as CalendarIcon, Clock, User, AlertTriangle, 
   Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee,
-  Lock, RefreshCw, Eye, ThumbsUp, Bed
+  Lock, RefreshCw, Eye, ThumbsUp, Bed, Calendar
 } from 'lucide-react';
 
 // ==================================================================================
@@ -13,7 +13,7 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v12_final_fix', 
+  APP_KEY: 'thaly_v13_maps_agenda', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
@@ -97,7 +97,7 @@ const RUSH_HOURS = ['18:00', '19:00', '20:00', '21:00'];
 
 const FAQS = [
   { q: "Como é a Massagem Completa?", a: "Inicia com relaxamento muscular profundo e evolui para uma experiência tântrica sensorial, com toque corpo a corpo e finalização manual completa." },
-  { q: "O que você leva?", a: "Levo maca (se necessário avisar), óleos, música e aromaterapia. IMPORTANTE: Não levo toalhas de banho, peço que o cliente disponibilize." },
+  { q: "Você leva maca?", a: "NÃO LEVO MACA. O atendimento é feito no conforto da sua cama ou sofá. Levo óleos e música. OBS: Não levo toalhas de banho." },
   { q: "Pagamento do Transporte", a: "O valor do deslocamento (Uber) pode ser pago antecipadamente para garantir a reserva. O valor da massagem você paga apenas ao final." },
   { q: "Atende em Motel?", a: "Sim. Para motéis é cobrada uma taxa fixa de deslocamento de R$ 75,00 adicionada ao valor do serviço." }
 ];
@@ -219,33 +219,27 @@ const StatusBar = () => {
   );
 };
 
-// COMPONENTE LIVE BUBBLES CORRIGIDO
+// COMPONENTE LIVE BUBBLES
 const LiveBubbles = () => {
     const [currentMsg, setCurrentMsg] = useState('');
     const [visible, setVisible] = useState(false);
     
-    // Lista estática embaralhada uma vez
     const [shuffledList] = useState(() => Utils.shuffle([...LIVE_NOTIFICATIONS]));
     const indexRef = useRef(0);
 
     useEffect(() => {
-        // Função para mostrar a próxima mensagem
         const showNext = () => {
             if (indexRef.current >= shuffledList.length) indexRef.current = 0;
             setCurrentMsg(shuffledList[indexRef.current]);
             setVisible(true);
             indexRef.current++;
 
-            // Esconder depois de 4s
             setTimeout(() => {
                 setVisible(false);
             }, 4000);
         };
 
-        // Primeira execução rapida
         const t1 = setTimeout(showNext, 2000);
-        
-        // Loop a cada 10s
         const interval = setInterval(showNext, 10000);
 
         return () => { clearTimeout(t1); clearInterval(interval); };
@@ -254,7 +248,7 @@ const LiveBubbles = () => {
     return (
       <div 
         className={`fixed top-28 left-1/2 z-30 w-max max-w-[90%] pointer-events-none transition-all duration-700 ease-in-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-        style={{ transform: 'translateX(-50%)' }} // Centraliza horizontalmente sempre
+        style={{ transform: 'translateX(-50%)' }}
       >
         <div className="bg-[#1C1C1E]/95 backdrop-blur-md border border-white/10 pl-3 pr-4 py-2 rounded-full flex items-center gap-3 shadow-2xl">
            <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0">
@@ -367,7 +361,6 @@ export default function BookingApp() {
     const isRush = data.time && RUSH_HOURS.includes(data.time);
     const rushFee = isRush ? CONFIG.PRICES.RUSH_HOUR_FEE : 0;
     
-    // LÓGICA DE MOTEL: SE FOR MOTEL, TAXA É 75 FIXA. SENAO É A TAXA DO BAIRRO
     let travelFee = 0;
     if (data.location.type === 'motel') {
         travelFee = CONFIG.PRICES.MOTEL_FEE;
@@ -393,8 +386,7 @@ export default function BookingApp() {
   const scrollToSection = (sectionRef) => {
     if (sectionRef && sectionRef.current) {
         setTimeout(() => {
-            // Ajuste do offset para não esconder atrás do header
-            const yOffset = -120; // Mais espaço para cima
+            const yOffset = -120; 
             const y = sectionRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
         }, 150);
@@ -409,10 +401,40 @@ export default function BookingApp() {
 
   const showToast = (msg) => setToast({msg});
 
+  // FUNÇÃO PARA ADICIONAR AO GOOGLE AGENDA
+  const addToCalendar = () => {
+    if (!data.date || !data.time) return;
+    
+    const start = new Date(data.date);
+    const [hours, minutes] = data.time.split(':').map(Number);
+    start.setHours(hours, minutes, 0);
+    
+    const end = new Date(start);
+    end.setHours(end.getHours() + 1); // Duração aproximada
+    
+    const formatDateTime = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
+    
+    const title = `Massagem c/ Thalyson`;
+    const details = `Serviço: ${data.service?.name}\nLocal: ${data.location.city.name}`;
+    const location = data.location.city.name;
+    
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatDateTime(start)}/${formatDateTime(end)}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
+    
+    window.open(url, '_blank');
+  };
+
   const generateMessage = () => {
     const d = data.date;
     const loc = data.location;
     const dateStr = d ? `${d.getDate()}/${d.getMonth()+1}` : '';
+    
+    // GERA LINK DO MAPS
+    let addressQuery = '';
+    if (loc.type === 'motel') addressQuery = loc.motelName + ' ' + loc.city.name;
+    else if (loc.type === 'hotel') addressQuery = loc.hotelName + ' ' + loc.city.name;
+    else addressQuery = `${loc.street}, ${loc.number} - ${loc.district}, ${loc.city.name}`;
+    
+    const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressQuery)}`;
     
     let t = `🌿 *AGENDAMENTO CONFIRMADO*\n`;
     t += `------------------------------\n`;
@@ -435,7 +457,6 @@ export default function BookingApp() {
     if(loc.type === 'home') {
         t += `🏠 End: ${loc.street}, ${loc.number} - ${loc.district}\n`;
     } else if (loc.type === 'apto') {
-        // FORMATAÇÃO CORRIGIDA PARA APTO
         t += `🏢 End: ${loc.street}, ${loc.number}\n`;
         t += `🚪 Apto/Bloco: ${loc.aptNumber}\n`;
         t += `🏙️ Bairro: ${loc.district}\n`;
@@ -444,13 +465,14 @@ export default function BookingApp() {
     } else {
         t += `🏨 Hotel: ${loc.hotelName} (Quarto ${loc.roomNumber})\n`;
     }
+    t += `🗺️ *Maps:* ${mapsLink}\n`;
 
     t += `\n💰 *RESUMO FINANCEIRO:*\n`;
     t += `------------------------------\n`;
     t += `🔹 *Serviço:* ${Utils.formatBRL(financials.serviceTotal)} (Pagar ao final)\n`;
     
     if(financials.transportTotal > 0) {
-         t += `🚗 *Uber/Taxa:* ${Utils.formatBRL(financials.transportTotal)} (Pode adiantar)\n`;
+         t += `🚗 *Taxa Deslocamento:* ${Utils.formatBRL(financials.transportTotal)} (Pode adiantar)\n`;
     }
     
     if(hasCoupon) t += `🎟️ *Desconto VIP:* -${Utils.formatBRL(financials.desc)}\n`;
@@ -467,10 +489,9 @@ export default function BookingApp() {
       const basics = l.street && l.number && l.district;
       
       if (l.type === 'home') return basics;
-      // APTO AGORA VALIDA RUA, NUMERO E NUMERO DO APTO
       if (l.type === 'apto') return l.street && l.number && l.aptNumber && l.district;
       if (l.type === 'hotel') return l.hotelName && l.roomNumber;
-      if (l.type === 'motel') return l.motelName; // Motel só precisa do nome
+      if (l.type === 'motel') return l.motelName; 
       return false;
   };
 
@@ -496,7 +517,7 @@ export default function BookingApp() {
                   </div>
                   {financials.transportTotal > 0 && (
                       <div className="flex justify-between text-sm text-[#0A84FF]">
-                          <span>Uber/Taxa (Pagar antes)</span>
+                          <span>Taxa Deslocamento (Pagar antes)</span>
                           <span className="font-bold">{Utils.formatBRL(financials.transportTotal)}</span>
                       </div>
                   )}
@@ -514,10 +535,16 @@ export default function BookingApp() {
            </div>
        </div>
 
+       {/* BOTÃO WHATSAPP */}
        <a href={generateMessage()} target="_blank" rel="noreferrer" 
-         className="w-full max-w-sm primary-btn py-4 text-lg flex items-center justify-center gap-3 shadow-lg shadow-[#32D74B]/20 btn-pulse">
+         className="w-full max-w-sm primary-btn py-4 text-lg flex items-center justify-center gap-3 shadow-lg shadow-[#32D74B]/20 btn-pulse mb-3">
          <MessageCircle size={22} fill="currentColor" /> Enviar no WhatsApp
        </a>
+
+       {/* BOTÃO AGENDA */}
+       <button onClick={addToCalendar} className="w-full max-w-sm h-14 rounded-2xl bg-[#1A1A1A] border border-[#333] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#222]">
+           <CalendarIcon size={18}/> Adicionar na Agenda
+       </button>
        
        <button onClick={() => { setData(prev => ({...prev, service: null})); setSuccess(false); setStage(0); window.scrollTo(0,0); }} className="mt-6 flex items-center gap-2 text-gray-600 font-bold text-xs uppercase hover:text-white">
            <RefreshCw size={12}/> Fazer Novo Pedido
@@ -526,7 +553,6 @@ export default function BookingApp() {
   );
 
   return (
-    // PADDING BOTTOM 40 (pb-40) AUMENTADO PARA DAR ESPAÇO NO SCROLL
     <div className="min-h-screen pb-48 relative bg-[#050505]">
       <style>{globalStyles}</style>
       <LiveBubbles />
