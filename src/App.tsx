@@ -7,16 +7,14 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO & DADOS (TRAVADOS PARA NÃO QUEBRAR)
+// 1. CONFIGURAÇÃO DE NEGÓCIO (CONSTANTES)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
-  
-  // CUPOM DE 1ª VEZ
-  FIRST_COUPON_VAL: 15.00, 
+  FIRST_COUPON_VAL: 15.00, // Valor do cupom de 1ª vez
   
   PRICES: {
     UPGRADE_PCT: 0.5, 
@@ -24,7 +22,7 @@ const CONFIG = {
     AROMA: 5,
   },
   
-  // GAMIFICAÇÃO
+  // Pontos para subir de nível
   XP_THRESHOLDS: { VIP: 150, ALPHA: 300 },
   
   URLS: {
@@ -32,7 +30,7 @@ const CONFIG = {
   }
 };
 
-// LOCAIS SP (PREÇOS REAIS/ESTIMADOS UBER)
+// LOCAIS SP COM TAXAS
 const SP_LOCATIONS = [
   { id: 'bela_vista', name: 'Bela Vista', fee: 0 },
   { id: 'augusta', name: 'Rua Augusta / Centro', fee: 9.90 },
@@ -48,7 +46,7 @@ const SP_LOCATIONS = [
   { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 38.50 },
   { id: 'morumbi', name: 'Morumbi', fee: 45.00 },
   { id: 'santana', name: 'Santana / ZN', fee: 42.00 },
-  { id: 'outra', name: 'Outro Bairro (Sob Consulta)', fee: 0 },
+  { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0 },
 ];
 
 const SERVICES = [
@@ -56,7 +54,7 @@ const SERVICES = [
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    desc: 'Massagista de Cueca. O protocolo premium. Massagem profunda soltando a musculatura, óleo quente, toque corpo a corpo e finalização manual intensa.', 
+    desc: 'Massagista de Cueca. O protocolo premium. Massagem profunda, óleo quente, toque corpo a corpo e finalização manual intensa.', 
     duration: 60, 
     price: 155, 
     badge: 'MAIS PEDIDA 🔥',
@@ -74,49 +72,9 @@ const SERVICES = [
   },
 ];
 
-const LIVE_NOTIFICATIONS = [
-  "🔥 João acabou de agendar", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira quase cheia",
-  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou presença", "💎 Murilo usou o Cupom",
-  "🏠 Atendimento em Hotel iniciado", "🚀 Bruno fechou o pacote completo", "😈 Felipe adicionou interação",
-  "🍃 Gustavo pediu Aromaterapia", "💳 Pagamento via Pix recebido", "🏳️‍🌈 Cliente novo cadastrado",
-  "🚗 Thalyson a caminho do Itaim", "⏱️ Sessão estendida agendada", "✨ Avaliação 5 estrelas recebida",
-  "📍 Atendimento na Bela Vista", "🎁 Cupom de 1ª Vez resgatado", "🔒 Dados seguros",
-  "👋 Marcos mandou um 'Oi'", "💼 Executivo agendou horário", "🛑 Agenda de Sábado Lotada",
-  "🛁 Banho tomado, pronto p/ atender", "💬 Lucas tirou uma dúvida", "🌚 Atendimento Noturno Iniciado",
-  "⚡ Ricardo agendou de última hora", "🏩 Chegando no Motel agora", "📝 Cadastro aprovado"
-];
-
-const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", a: "Tiago (Bela Vista)", s: 5 },
-  { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
-  { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
-  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia.", a: "M. (Jardins)", s: 5 },
-  { t: "Sou casado, tinha receio. O sigilo foi absoluto.", a: "Empresário", s: 5 },
-  { t: "Precisava desse escape. O stress sumiu na hora.", a: "M. (Casado)", s: 5 },
-  { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
-  { t: "Visual nota 1000. Profissionalismo raro hoje em dia.", a: "Carlos A.", s: 5 },
-  { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
-  { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
-  { t: "Gostei bastante, me senti bem relaxado depois.", a: "Alan SP", s: 5 },
-  { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
-  { t: "Atendimento no hotel foi super rápido e discreto.", a: "Turista RJ", s: 5 },
-  { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
-  { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
-  { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
-  { t: "Extremamente educado e com papo bom.", a: "Renan", s: 5 },
-  { t: "O lubrificante é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
-  { t: "Já fiz com vários, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
-  { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
-  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
-  { t: "Massagem terapêutica de verdade, tirou todos os nós.", a: "Motorista", s: 5 },
-  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
-  { t: "Experiência sensorial incrível. O cheiro, o toque.", a: "Designer", s: 5 },
-  { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
-  { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
-  { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
-  { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
-  { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
+const TIME_SLOTS = [
+    '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', 
+    '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
 ];
 
 const LEVELS = [
@@ -133,15 +91,60 @@ const LOCATION_TYPES = [
   { id: 'motel', label: 'Motel', icon: Flame },
 ];
 
+const REVIEWS_DB = [
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", a: "Tiago (Bela Vista)", s: 5 },
+  { t: "O toque dele vicia. A finalização foi absurda.", a: "Anônimo", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo.", a: "M. (Jardins)", s: 5 },
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto.", a: "Empresário", s: 5 },
+  { t: "Precisava desse escape. O stress sumiu na hora.", a: "M. (Casado)", s: 5 },
+  { t: "O upgrade de 30 minutos vale a pena.", a: "Roberto", s: 5 },
+  { t: "Visual nota 1000. Profissionalismo raro hoje em dia.", a: "Carlos A.", s: 5 },
+  { t: "A mistura de força e suavidade é incrível.", a: "Lucas", s: 5 },
+  { t: "Ambiente relaxante demais.", a: "Gustavo", s: 5 },
+  { t: "Gostei bastante, me senti bem relaxado depois.", a: "Alan SP", s: 5 },
+  { t: "O corpo a corpo é quente de verdade.", a: "J.P.", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto.", a: "Turista RJ", s: 5 },
+  { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
+  { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
+  { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
+  { t: "Extremamente educado e com papo bom.", a: "Renan", s: 5 },
+  { t: "O lubrificante é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
+  { t: "Já fiz com vários, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
+  { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
+  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
+  { t: "Massagem terapêutica de verdade, tirou todos os nós.", a: "Motorista", s: 5 },
+  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
+  { t: "Experiência sensorial incrível. O cheiro, o toque.", a: "Designer", s: 5 },
+  { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
+  { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
+  { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
+  { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
+  { t: "Gostei da facilidade de agendar pelo app.", a: "Tech Guy", s: 5 },
+];
+
+const LIVE_NOTIFICATIONS = [
+  "🔥 João acabou de agendar", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira quase cheia",
+  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou presença", "💎 Murilo usou o Cupom",
+  "🏠 Atendimento em Hotel iniciado", "🚀 Bruno fechou o pacote completo", "😈 Felipe adicionou interação",
+  "🍃 Gustavo pediu Aromaterapia", "💳 Pagamento via Pix recebido", "🏳️‍🌈 Cliente novo cadastrado",
+  "🚗 Thalyson a caminho do Itaim", "⏱️ Sessão estendida agendada", "✨ Avaliação 5 estrelas recebida",
+  "📍 Atendimento na Bela Vista", "🎁 Cupom de 1ª Vez resgatado", "🔒 Dados seguros",
+  "👋 Marcos mandou um 'Oi'", "💼 Executivo agendou horário", "🛑 Agenda de Sábado Lotada",
+  "🛁 Banho tomado, pronto p/ atender", "💬 Lucas tirou uma dúvida", "🌚 Atendimento Noturno Iniciado",
+  "⚡ Ricardo agendou de última hora", "🏩 Chegando no Motel agora", "📝 Cadastro aprovado"
+];
+
 // ==================================================================================
-// 2. ESTILOS OTIMIZADOS (PERFORMANCE & SCROLL FIX)
+// 2. ESTILOS GLOBAIS
 // ==================================================================================
 
 const globalStyles = `
 :root { --primary: #0A84FF; --bg-app: #050505; --card-bg: #121212; --border: #222; }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Roboto", sans-serif; }
-html { height: 100%; overflow-y: scroll; background: var(--bg-app); }
-body { min-height: 100%; background: var(--bg-app); color: #fff; overflow-x: hidden; position: relative; }
+html { height: 100%; background: var(--bg-app); }
+body { min-height: 100%; background: var(--bg-app); color: #fff; overflow-x: hidden; overflow-y: auto; }
 input, select, button { outline: none; }
 .ios-scroll::-webkit-scrollbar { display: none; }
 .ios-scroll { -ms-overflow-style: none; scrollbar-width: none; }
@@ -164,7 +167,7 @@ input, select, button { outline: none; }
 `;
 
 // ==================================================================================
-// 3. UTILITÁRIOS (SAFE MODE)
+// 3. UTILITÁRIOS
 // ==================================================================================
 
 const Utils = {
@@ -184,30 +187,27 @@ const Utils = {
 };
 
 // ==================================================================================
-// 4. COMPONENTES VISUAIS (CORRIGIDOS)
+// 4. COMPONENTES
 // ==================================================================================
 
 const LiveBubbles = () => {
     const [msg, setMsg] = useState(null);
     const [pool, setPool] = useState([]);
 
-    useEffect(() => {
-        // Inicializa pool embaralhado
-        setPool(Utils.shuffle([...LIVE_NOTIFICATIONS]));
-    }, []);
+    useEffect(() => { setPool(Utils.shuffle([...LIVE_NOTIFICATIONS])); }, []);
 
     useEffect(() => {
-        if(pool.length === 0 && LIVE_NOTIFICATIONS.length > 0) return; // Espera carregar
+        if(pool.length === 0 && LIVE_NOTIFICATIONS.length > 0) return;
         
         const timer = setInterval(() => {
             setPool(prevPool => {
-                if (prevPool.length === 0) return Utils.shuffle([...LIVE_NOTIFICATIONS]); // Recarrega se acabar
+                if (prevPool.length === 0) return Utils.shuffle([...LIVE_NOTIFICATIONS]);
                 const [next, ...rest] = prevPool;
                 setMsg(next);
-                setTimeout(() => setMsg(null), 4000); // Exibe por 4s
+                setTimeout(() => setMsg(null), 4000);
                 return rest;
             });
-        }, 10000); // A cada 10s
+        }, 10000);
 
         return () => clearInterval(timer);
     }, [pool]);
@@ -225,7 +225,6 @@ const LiveBubbles = () => {
 
 const ReviewsTicker = () => {
     const [idx, setIdx] = useState(0);
-    // Usa useMemo para garantir que a lista não mude a cada render e quebre o layout
     const list = useMemo(() => Utils.shuffle([...REVIEWS_DB]), []);
 
     useEffect(() => { 
@@ -261,27 +260,27 @@ const LevelBar = ({ xp }) => {
 };
 
 // ==================================================================================
-// 5. APLICAÇÃO PRINCIPAL (LÓGICA BLINDADA)
+// 5. APLICAÇÃO PRINCIPAL
 // ==================================================================================
 
 export default function BookingApp() {
-  // STATE: Inicialização Segura
+  // STATE: Inicialização Segura (Anti-Crash)
   const [data, setData] = useState(() => {
      try {
-       // MUDEI A CHAVE PARA "v_stable_3" PARA FORÇAR O RESET E NÃO CRASHAR
-       const s = localStorage.getItem('thaly_v_stable_3');
+       // CHAVE NOVA: thaly_production_v1 (Isso limpa os dados velhos que quebravam o site)
+       const s = localStorage.getItem('thaly_production_v1');
        if(s) { 
            const p = JSON.parse(s); 
            if(p.date) p.date = new Date(p.date);
-           // Garante que a estrutura de local existe para não crashar
-           if(!p.location || !p.location.neighborhood) throw new Error("Reset");
+           // Verificação de segurança: Se o objeto estiver incompleto, reseta.
+           if(!p.location || !p.location.neighborhood) throw new Error("Dados corrompidos");
            return p; 
        }
      } catch(e) {
-         localStorage.removeItem('thaly_v_stable_3');
+         localStorage.removeItem('thaly_production_v1');
      }
      
-     // Estado Inicial Padrão
+     // Estado Padrão Limpo
      return { 
          name: '', age: '', medical: false, 
          service: null, date: null, time: null, 
@@ -303,22 +302,21 @@ export default function BookingApp() {
   const [loading, setLoading] = useState(true);
   const [helpOpen, setHelpOpen] = useState(false);
   
-  // Verifica se o cliente já pediu antes (localStorage persistente)
-  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history');
+  // Verifica histórico para saber se já pediu (pra mostrar cupom ou não)
+  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history_v1');
 
   const refs = {
     services: useRef(null), datetime: useRef(null), 
     extras: useRef(null), location: useRef(null), payment: useRef(null)
   };
 
-  useEffect(() => { localStorage.setItem('thaly_v_stable_3', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_production_v1', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 500); }, []);
 
-  // --- LÓGICA FINANCEIRA SEGURA ---
+  // LÓGICA FINANCEIRA (Com proteções ?. para não quebrar)
   const { financials, xp } = useMemo(() => {
     let xpPoints = 0;
     
-    // Safety checks usando Optional Chaining (?.)
     const base = data.service?.price || 0;
     if (data.service) xpPoints += data.service.xp;
 
@@ -342,7 +340,6 @@ export default function BookingApp() {
     };
   }, [data, couponActive]);
 
-  // --- ACTIONS ---
   const scrollToRef = (ref) => {
     if (ref && ref.current) {
         setTimeout(() => {
@@ -360,14 +357,13 @@ export default function BookingApp() {
 
   const finalizeOrder = () => {
       // Grava que o cliente já fez pedido (queima o cupom de 1a vez)
-      if(couponActive) {
-          localStorage.setItem('thaly_client_history', 'true');
+      if(couponActive || !hasOrderedBefore) {
+          localStorage.setItem('thaly_client_history_v1', 'true');
       }
       setSuccess(true);
       window.scrollTo(0,0);
   };
 
-  // --- GERADOR WHATSAPP ---
   const generateMessage = () => {
     const d = data.date;
     const loc = data.location;
@@ -379,16 +375,16 @@ export default function BookingApp() {
     t += `📅 *${dateStr} às ${data.time}*\n`;
     t += `💆 *${data.service?.name}*\n`;
     
-    if(Object.values(data.extras).some(Boolean)) {
+    if(Object.values(data.extras || {}).some(Boolean)) {
         t += `🔥 *EXTRAS:* `;
         const l = [];
-        if(data.extras.upgrade) l.push(`+30min`);
-        if(data.extras.touch) l.push(`Interação`);
-        if(data.extras.aroma) l.push(`Aroma`);
+        if(data.extras?.upgrade) l.push(`+30min`);
+        if(data.extras?.touch) l.push(`Interação`);
+        if(data.extras?.aroma) l.push(`Aroma`);
         t += l.join(', ') + `\n`;
     }
     
-    t += `\n📍 *BAIRRO: ${loc.neighborhood?.name || 'Não Selecionado'}*\n`;
+    t += `\n📍 *BAIRRO: ${loc.neighborhood?.name || 'Não selecionado'}*\n`;
     
     if(loc.type === 'home') {
         t += `🏠 Casa: ${loc.street}, ${loc.number}\n`;
@@ -414,13 +410,12 @@ export default function BookingApp() {
       const l = data.location;
       if (!l.neighborhood) return false;
       if (l.type === 'home') return l.street && l.number;
-      if (l.type === 'apto') return l.street && l.buildingNum && l.aptNumber; // Simplificado
+      if (l.type === 'apto') return l.street && l.buildingNum && l.aptNumber; 
       if (l.type === 'hotel') return l.hotelName && l.roomNumber;
       if (l.type === 'motel') return l.motelName;
       return false;
   };
 
-  // --- RENDERS ---
   if (loading) return <div className="fixed inset-0 bg-[#050505] z-50 flex items-center justify-center text-white font-bold tracking-widest text-xs uppercase animate-pulse">Carregando...</div>;
 
   if (success) return (
@@ -446,7 +441,7 @@ export default function BookingApp() {
                  </div>
               </div>
               <div className="text-left space-y-2 text-sm text-gray-300">
-                  <p className="flex items-center gap-2"><MapPin size={14} className="text-[#0A84FF]"/> {data.location.neighborhood?.name}</p>
+                  <p className="flex items-center gap-2"><MapPin size={14} className="text-[#0A84FF]"/> {data.location?.neighborhood?.name}</p>
                   <p className="flex items-center gap-2"><CalendarIcon size={14} className="text-[#0A84FF]"/> {data.date?.toLocaleDateString()} às {data.time}</p>
                   <p className="flex items-center gap-2"><User size={14} className="text-[#0A84FF]"/> {data.name}</p>
               </div>
