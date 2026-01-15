@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO & BANCO DE DADOS
+// 1. CONFIGURAÇÃO & DADOS (TRAVADOS PARA NÃO QUEBRAR)
 // ==================================================================================
 
 const CONFIG = {
@@ -15,7 +15,7 @@ const CONFIG = {
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
   
-  // CUPOM DE PRIMEIRA VEZ
+  // CUPOM DE 1ª VEZ
   FIRST_COUPON_VAL: 15.00, 
   
   PRICES: {
@@ -24,29 +24,30 @@ const CONFIG = {
     AROMA: 5,
   },
   
-  XP_THRESHOLDS: { MEMBER: 50, VIP: 150, ALPHA: 300 },
+  // GAMIFICAÇÃO
+  XP_THRESHOLDS: { VIP: 150, ALPHA: 300 },
   
   URLS: {
     WHATSAPP_API: "https://api.whatsapp.com/send"
   }
 };
 
-// TABELA DE UBER "SIMULADO" (SP - BASE BELA VISTA)
+// LOCAIS SP (PREÇOS REAIS/ESTIMADOS UBER)
 const SP_LOCATIONS = [
   { id: 'bela_vista', name: 'Bela Vista', fee: 0 },
-  { id: 'augusta', name: 'Rua Augusta / Centro', fee: 8.90 },
+  { id: 'augusta', name: 'Rua Augusta / Centro', fee: 9.90 },
   { id: 'paulista', name: 'Av. Paulista / Jardins', fee: 12.50 },
-  { id: 'higienopolis', name: 'Higienópolis / Sta Cecília', fee: 14.90 },
-  { id: 'pinheiros', name: 'Pinheiros / Vila Madalena', fee: 18.90 },
-  { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 22.50 },
-  { id: 'moema', name: 'Moema / Ibirapuera', fee: 24.90 },
-  { id: 'vila_mariana', name: 'Vila Mariana / Paraíso', fee: 21.50 },
-  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 19.90 },
-  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 28.50 },
-  { id: 'saude', name: 'Saúde / Jabaquara', fee: 32.90 },
-  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 35.50 },
-  { id: 'morumbi', name: 'Morumbi', fee: 42.90 },
-  { id: 'santana', name: 'Santana / ZN', fee: 38.90 },
+  { id: 'higienopolis', name: 'Higienópolis / Sta Cecília', fee: 15.90 },
+  { id: 'pinheiros', name: 'Pinheiros / Vila Madalena', fee: 22.00 },
+  { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 26.50 },
+  { id: 'moema', name: 'Moema / Ibirapuera', fee: 28.90 },
+  { id: 'vila_mariana', name: 'Vila Mariana / Paraíso', fee: 24.50 },
+  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 21.00 },
+  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 32.50 },
+  { id: 'saude', name: 'Saúde / Jabaquara', fee: 36.90 },
+  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 38.50 },
+  { id: 'morumbi', name: 'Morumbi', fee: 45.00 },
+  { id: 'santana', name: 'Santana / ZN', fee: 42.00 },
   { id: 'outra', name: 'Outro Bairro (Sob Consulta)', fee: 0 },
 ];
 
@@ -73,16 +74,16 @@ const SERVICES = [
   },
 ];
 
-const TIME_SLOTS = [
-    '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', 
-    '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
-];
-
-const LEVELS = [
-  { name: 'Visitante', min: 0, color: 'text-gray-400', bg: 'bg-gray-700' },
-  { name: 'Membro', min: 50, color: 'text-blue-400', bg: 'bg-blue-500' },
-  { name: 'VIP', min: 150, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, 
-  { name: 'ALPHA', min: 300, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
+const LIVE_NOTIFICATIONS = [
+  "🔥 João acabou de agendar", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira quase cheia",
+  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou presença", "💎 Murilo usou o Cupom",
+  "🏠 Atendimento em Hotel iniciado", "🚀 Bruno fechou o pacote completo", "😈 Felipe adicionou interação",
+  "🍃 Gustavo pediu Aromaterapia", "💳 Pagamento via Pix recebido", "🏳️‍🌈 Cliente novo cadastrado",
+  "🚗 Thalyson a caminho do Itaim", "⏱️ Sessão estendida agendada", "✨ Avaliação 5 estrelas recebida",
+  "📍 Atendimento na Bela Vista", "🎁 Cupom de 1ª Vez resgatado", "🔒 Dados seguros",
+  "👋 Marcos mandou um 'Oi'", "💼 Executivo agendou horário", "🛑 Agenda de Sábado Lotada",
+  "🛁 Banho tomado, pronto p/ atender", "💬 Lucas tirou uma dúvida", "🌚 Atendimento Noturno Iniciado",
+  "⚡ Ricardo agendou de última hora", "🏩 Chegando no Motel agora", "📝 Cadastro aprovado"
 ];
 
 const REVIEWS_DB = [
@@ -118,51 +119,52 @@ const REVIEWS_DB = [
   { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
 ];
 
-const LIVE_NOTIFICATIONS = [
-  "🔥 João acabou de agendar", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira quase cheia",
-  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou presença", "💎 Murilo usou o Cupom",
-  "🏠 Atendimento em Hotel iniciado", "🚀 Bruno fechou o pacote completo", "😈 Felipe adicionou interação",
-  "🍃 Gustavo pediu Aromaterapia", "💳 Pagamento via Pix recebido", "🏳️‍🌈 Cliente novo cadastrado",
-  "🚗 Thalyson a caminho do Itaim", "⏱️ Sessão estendida agendada", "✨ Avaliação 5 estrelas recebida",
-  "📍 Atendimento na Bela Vista", "🎁 Cupom de 1ª Vez resgatado", "🔒 Dados seguros",
-  "👋 Marcos mandou um 'Oi'", "💼 Executivo agendou horário"
+const LEVELS = [
+  { name: 'Visitante', min: 0, color: 'text-gray-400', bg: 'bg-gray-700' },
+  { name: 'Membro', min: 50, color: 'text-blue-400', bg: 'bg-blue-500' },
+  { name: 'VIP', min: 150, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, 
+  { name: 'ALPHA', min: 300, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
+];
+
+const LOCATION_TYPES = [
+  { id: 'home', label: 'Casa', icon: Home },
+  { id: 'apto', label: 'Apto', icon: Building },
+  { id: 'hotel', label: 'Hotel', icon: Bed },
+  { id: 'motel', label: 'Motel', icon: Flame },
 ];
 
 // ==================================================================================
-// 2. ESTILOS OTIMIZADOS (LEVE)
+// 2. ESTILOS OTIMIZADOS (PERFORMANCE & SCROLL FIX)
 // ==================================================================================
 
 const globalStyles = `
 :root { --primary: #0A84FF; --bg-app: #050505; --card-bg: #121212; --border: #222; }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Roboto", sans-serif; }
-html, body { background: var(--bg-app); color: #fff; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+html { height: 100%; overflow-y: scroll; background: var(--bg-app); }
+body { min-height: 100%; background: var(--bg-app); color: #fff; overflow-x: hidden; position: relative; }
 input, select, button { outline: none; }
 .ios-scroll::-webkit-scrollbar { display: none; }
 .ios-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Animações Simplificadas para Performance */
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 @keyframes bubble { 0% { transform: translateY(10px); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-10px); opacity: 0; } }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
 .animate-enter { animation: slideUp 0.4s ease-out forwards; }
 .animate-bubble { animation: bubble 5s ease-in-out forwards; }
 .btn-pulse { animation: pulse 2s infinite; }
 
-/* UI Elements - Sem Blur Pesado */
-.header-solid { background: rgba(18, 18, 18, 0.95); border-bottom: 1px solid #222; }
+.header-solid { background: #050505; border-bottom: 1px solid #222; z-index: 50; }
 .card-base { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; transition: border 0.2s; }
 .card-selected { border-color: var(--primary); background: #0A84FF0D; }
-.input-field { background: #1C1C1E; border: 1px solid #333; color: white; border-radius: 12px; width: 100%; font-size: 16px; padding: 14px; }
+.input-field { background: #1C1C1E; border: 1px solid #333; color: white; border-radius: 12px; width: 100%; font-size: 16px; padding: 14px; appearance: none; }
 .input-field:focus { border-color: var(--primary); background: #262626; }
 .primary-btn { background: var(--primary); color: white; border-radius: 16px; font-weight: 800; border: none; box-shadow: 0 4px 15px rgba(10, 132, 255, 0.3); }
-
-/* Utilitários de Seção */
-.section-disabled { opacity: 0.4; pointer-events: none; }
+.section-disabled { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
 `;
 
 // ==================================================================================
-// 3. UTILITÁRIOS
+// 3. UTILITÁRIOS (SAFE MODE)
 // ==================================================================================
 
 const Utils = {
@@ -182,37 +184,64 @@ const Utils = {
 };
 
 // ==================================================================================
-// 4. COMPONENTES VISUAIS
+// 4. COMPONENTES VISUAIS (CORRIGIDOS)
 // ==================================================================================
 
 const LiveBubbles = () => {
     const [msg, setMsg] = useState(null);
-    const [queue, setQueue] = useState([]);
-
-    useEffect(() => { setQueue(Utils.shuffle(LIVE_NOTIFICATIONS)); }, []);
+    const [pool, setPool] = useState([]);
 
     useEffect(() => {
-        if(queue.length === 0 && LIVE_NOTIFICATIONS.length > 0) return;
+        // Inicializa pool embaralhado
+        setPool(Utils.shuffle([...LIVE_NOTIFICATIONS]));
+    }, []);
+
+    useEffect(() => {
+        if(pool.length === 0 && LIVE_NOTIFICATIONS.length > 0) return; // Espera carregar
+        
         const timer = setInterval(() => {
-            if(queue.length > 0) {
-                const next = queue[0];
+            setPool(prevPool => {
+                if (prevPool.length === 0) return Utils.shuffle([...LIVE_NOTIFICATIONS]); // Recarrega se acabar
+                const [next, ...rest] = prevPool;
                 setMsg(next);
-                setQueue(prev => prev.slice(1));
-                setTimeout(() => setMsg(null), 4000);
-            }
-        }, 12000);
+                setTimeout(() => setMsg(null), 4000); // Exibe por 4s
+                return rest;
+            });
+        }, 10000); // A cada 10s
+
         return () => clearInterval(timer);
-    }, [queue]);
+    }, [pool]);
 
     if (!msg) return null;
     return (
-      <div className="fixed top-20 left-1/2 -translate-x-1/2 z-30 w-max max-w-[90%] pointer-events-none">
-        <div className="bg-[#222] border border-[#333] px-4 py-2 rounded-full flex items-center gap-2 shadow-xl animate-bubble">
-           <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse"></div>
-           <span className="text-xs font-bold text-white">{msg}</span>
+      <div className="fixed top-20 left-1/2 -translate-x-1/2 z-30 w-max max-w-[95%] pointer-events-none">
+        <div className="bg-[#1C1C1E] border border-[#333] px-4 py-2 rounded-full flex items-center gap-2 shadow-2xl animate-bubble">
+           <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse shrink-0"></div>
+           <span className="text-xs font-bold text-white truncate">{msg}</span>
         </div>
       </div>
     );
+};
+
+const ReviewsTicker = () => {
+    const [idx, setIdx] = useState(0);
+    // Usa useMemo para garantir que a lista não mude a cada render e quebre o layout
+    const list = useMemo(() => Utils.shuffle([...REVIEWS_DB]), []);
+
+    useEffect(() => { 
+        const t = setInterval(() => setIdx(i => (i+1)%list.length), 5000); 
+        return () => clearInterval(t); 
+    }, [list]);
+
+    return (
+        <div className="bg-[#111] border border-[#222] rounded-2xl p-4 mb-6 shadow-lg flex flex-col justify-between min-h-[130px]">
+            <div>
+                <div className="flex text-[#FFD60A] mb-2 gap-1"><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/></div>
+                <p className="text-sm text-gray-300 italic leading-relaxed">"{list[idx].t}"</p>
+            </div>
+            <p className="text-[10px] text-gray-500 font-bold uppercase mt-3 flex items-center gap-1"><Shield size={10} className="text-[#32D74B]"/> {list[idx].a}</p>
+        </div>
+    )
 };
 
 const LevelBar = ({ xp }) => {
@@ -223,40 +252,36 @@ const LevelBar = ({ xp }) => {
     return (
         <div className="mb-6 bg-[#111] p-4 rounded-2xl border border-[#222]">
             <div className="flex justify-between items-end mb-2">
-                <div><span className="text-[10px] uppercase font-bold text-gray-500">Nível</span><div className={`flex items-center gap-2 font-black text-lg ${current.color}`}><Crown size={18}/> {current.name.toUpperCase()}</div></div>
-                <div className="text-right"><span className="text-[10px] text-gray-500">XP</span><span className="text-sm font-bold block">{xp} / {next ? next.min : 'MAX'}</span></div>
+                <div><span className="text-[10px] uppercase font-bold text-gray-500">Nível Cliente</span><div className={`flex items-center gap-2 font-black text-lg ${current.color}`}><Crown size={18}/> {current.name.toUpperCase()}</div></div>
+                <div className="text-right"><span className="text-[10px] text-gray-500">XP</span><span className="text-sm font-bold block text-white">{xp} / {next ? next.min : 'MAX'}</span></div>
             </div>
             <div className="h-2 w-full bg-[#222] rounded-full overflow-hidden"><div className={`h-full ${current.bg} transition-all duration-500`} style={{ width: `${progress}%` }}></div></div>
         </div>
     );
 };
 
-const ReviewsTicker = () => {
-    const [idx, setIdx] = useState(0);
-    const [list] = useState(() => Utils.shuffle(REVIEWS_DB));
-    useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%list.length), 5000); return () => clearInterval(t); }, [list]);
-
-    return (
-        <div className="bg-[#111] border border-[#222] rounded-2xl p-4 mb-6 shadow-lg flex flex-col justify-between min-h-[120px]">
-            <div>
-                <div className="flex text-[#FFD60A] mb-2 gap-1"><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/></div>
-                <p className="text-sm text-gray-300 italic leading-relaxed">"{list[idx].t}"</p>
-            </div>
-            <p className="text-[10px] text-gray-500 font-bold uppercase mt-2 flex items-center gap-1"><Shield size={10} className="text-[#32D74B]"/> {list[idx].a}</p>
-        </div>
-    )
-};
-
 // ==================================================================================
-// 5. APP PRINCIPAL
+// 5. APLICAÇÃO PRINCIPAL (LÓGICA BLINDADA)
 // ==================================================================================
 
 export default function BookingApp() {
+  // STATE: Inicialização Segura
   const [data, setData] = useState(() => {
      try {
-       const s = localStorage.getItem('thaly_v_opt_2');
-       if(s) { const p = JSON.parse(s); if(p.date) p.date = new Date(p.date); return p; }
-     } catch(e){}
+       // MUDEI A CHAVE PARA "v_stable_3" PARA FORÇAR O RESET E NÃO CRASHAR
+       const s = localStorage.getItem('thaly_v_stable_3');
+       if(s) { 
+           const p = JSON.parse(s); 
+           if(p.date) p.date = new Date(p.date);
+           // Garante que a estrutura de local existe para não crashar
+           if(!p.location || !p.location.neighborhood) throw new Error("Reset");
+           return p; 
+       }
+     } catch(e) {
+         localStorage.removeItem('thaly_v_stable_3');
+     }
+     
+     // Estado Inicial Padrão
      return { 
          name: '', age: '', medical: false, 
          service: null, date: null, time: null, 
@@ -278,33 +303,35 @@ export default function BookingApp() {
   const [loading, setLoading] = useState(true);
   const [helpOpen, setHelpOpen] = useState(false);
   
-  // Verifica se é primeira vez (para cupom)
-  const isFirstTime = !localStorage.getItem('thaly_first_order_done');
+  // Verifica se o cliente já pediu antes (localStorage persistente)
+  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history');
 
   const refs = {
-    intro: useRef(null), services: useRef(null), datetime: useRef(null), 
+    services: useRef(null), datetime: useRef(null), 
     extras: useRef(null), location: useRef(null), payment: useRef(null)
   };
 
-  useEffect(() => { localStorage.setItem('thaly_v_opt_2', JSON.stringify(data)); }, [data]);
-  useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
+  useEffect(() => { localStorage.setItem('thaly_v_stable_3', JSON.stringify(data)); }, [data]);
+  useEffect(() => { setTimeout(() => setLoading(false), 500); }, []);
 
-  // --- LÓGICA FINANCEIRA ---
+  // --- LÓGICA FINANCEIRA SEGURA ---
   const { financials, xp } = useMemo(() => {
     let xpPoints = 0;
-    const base = data.service ? data.service.price : 0;
+    
+    // Safety checks usando Optional Chaining (?.)
+    const base = data.service?.price || 0;
     if (data.service) xpPoints += data.service.xp;
 
-    const upg = data.extras.upgrade ? (base * CONFIG.PRICES.UPGRADE_PCT) : 0;
-    if (data.extras.upgrade) xpPoints += 25;
+    const upg = data.extras?.upgrade ? (base * CONFIG.PRICES.UPGRADE_PCT) : 0;
+    if (data.extras?.upgrade) xpPoints += 25;
 
-    const touch = data.extras.touch ? CONFIG.PRICES.TOUCH : 0;
-    if (data.extras.touch) xpPoints += 30;
+    const touch = data.extras?.touch ? CONFIG.PRICES.TOUCH : 0;
+    if (data.extras?.touch) xpPoints += 30;
 
-    const aroma = data.extras.aroma ? CONFIG.PRICES.AROMA : 0;
-    if (data.extras.aroma) xpPoints += 15;
+    const aroma = data.extras?.aroma ? CONFIG.PRICES.AROMA : 0;
+    if (data.extras?.aroma) xpPoints += 15;
 
-    const travelFee = data.location.neighborhood ? data.location.neighborhood.fee : 0;
+    const travelFee = data.location?.neighborhood?.fee || 0;
     
     const sub = base + upg + touch + aroma + travelFee;
     const desc = couponActive ? CONFIG.FIRST_COUPON_VAL : 0;
@@ -313,16 +340,15 @@ export default function BookingApp() {
         financials: { base, upg, touch, aroma, travelFee, sub, desc, total: Math.max(0, sub - desc) },
         xp: xpPoints
     };
-  }, [data.service, data.extras, couponActive, data.location.neighborhood]);
+  }, [data, couponActive]);
 
-  // --- NAVEGAÇÃO ---
+  // --- ACTIONS ---
   const scrollToRef = (ref) => {
     if (ref && ref.current) {
-        // Pequeno timeout para garantir renderização
         setTimeout(() => {
-            const y = ref.current.getBoundingClientRect().top + window.pageYOffset - 80;
+            const y = ref.current.getBoundingClientRect().top + window.pageYOffset - 90;
             window.scrollTo({ top: y, behavior: 'smooth' });
-        }, 100);
+        }, 150);
     }
   };
 
@@ -333,15 +359,15 @@ export default function BookingApp() {
   };
 
   const finalizeOrder = () => {
-      // Marca cupom como usado para sempre
+      // Grava que o cliente já fez pedido (queima o cupom de 1a vez)
       if(couponActive) {
-          localStorage.setItem('thaly_first_order_done', 'true');
+          localStorage.setItem('thaly_client_history', 'true');
       }
       setSuccess(true);
       window.scrollTo(0,0);
   };
 
-  // --- MENSAGEM WHATSAPP ---
+  // --- GERADOR WHATSAPP ---
   const generateMessage = () => {
     const d = data.date;
     const loc = data.location;
@@ -362,17 +388,18 @@ export default function BookingApp() {
         t += l.join(', ') + `\n`;
     }
     
-    t += `\n📍 *BAIRRO: ${loc.neighborhood.name}*\n`;
+    t += `\n📍 *BAIRRO: ${loc.neighborhood?.name || 'Não Selecionado'}*\n`;
     
     if(loc.type === 'home') {
         t += `🏠 Casa: ${loc.street}, ${loc.number}\n`;
     } else if (loc.type === 'apto') {
-        t += `🏢 Apto: ${loc.street}, ${loc.buildingNum} - Apto ${loc.aptNumber}\n`;
+        t += `🏢 Apto: ${loc.street}, ${loc.buildingNum}\n`;
+        t += `🚪 Unidade: ${loc.aptNumber}\n`;
     } else if (loc.type === 'hotel') {
         t += `🏨 Hotel: ${loc.hotelName} (Qto ${loc.roomNumber})\n`;
     } else if (loc.type === 'motel') {
         t += `🏩 Motel: ${loc.motelName} (Suíte ${loc.suiteType || '?'})\n`;
-        t += `⚠️ *Eu pago a suíte*\n`;
+        t += `⚠️ *Cliente paga a suíte*\n`;
     }
 
     t += `\n💰 *TOTAL: ${Utils.formatBRL(financials.total)}*\n`;
@@ -387,26 +414,26 @@ export default function BookingApp() {
       const l = data.location;
       if (!l.neighborhood) return false;
       if (l.type === 'home') return l.street && l.number;
-      if (l.type === 'apto') return l.street && l.buildingNum && l.aptNumber;
+      if (l.type === 'apto') return l.street && l.buildingNum && l.aptNumber; // Simplificado
       if (l.type === 'hotel') return l.hotelName && l.roomNumber;
       if (l.type === 'motel') return l.motelName;
       return false;
   };
 
-  // --- TELAS AUXILIARES ---
+  // --- RENDERS ---
   if (loading) return <div className="fixed inset-0 bg-[#050505] z-50 flex items-center justify-center text-white font-bold tracking-widest text-xs uppercase animate-pulse">Carregando...</div>;
 
   if (success) return (
-    <div className="min-h-screen bg-[#050505] pt-12 px-6 flex flex-col items-center text-center animate-enter">
+    <div className="min-h-screen bg-[#050505] pt-12 px-6 flex flex-col items-center text-center animate-enter pb-20">
        <style>{globalStyles}</style>
        <div className="w-20 h-20 bg-[#32D74B]/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(50,215,75,0.3)]">
          <Check className="w-10 h-10 text-[#32D74B]" strokeWidth={4} />
        </div>
        <h2 className="text-3xl font-bold text-white mb-2">Pedido Pronto!</h2>
-       <p className="text-gray-400 mb-8 text-sm max-w-xs">Agora é só enviar a confirmação no WhatsApp.</p>
+       <p className="text-gray-400 mb-8 text-sm max-w-xs">Envie a confirmação no WhatsApp para garantir o horário.</p>
 
        <div className="w-full max-w-sm bg-[#18181b] border border-[#333] rounded-3xl overflow-hidden shadow-2xl relative mb-8">
-           <div className="h-1 bg-gradient-to-r from-[#0A84FF] via-[#32D74B] to-[#0A84FF]"></div>
+           <div className="h-1.5 bg-gradient-to-r from-[#0A84FF] via-[#32D74B] to-[#0A84FF]"></div>
            <div className="p-6">
               <div className="flex justify-between items-start mb-4 border-b border-[#333] pb-4">
                  <div className="text-left">
@@ -419,8 +446,9 @@ export default function BookingApp() {
                  </div>
               </div>
               <div className="text-left space-y-2 text-sm text-gray-300">
-                  <p className="flex items-center gap-2"><MapPin size={14} className="text-[#0A84FF]"/> {data.location.neighborhood.name}</p>
+                  <p className="flex items-center gap-2"><MapPin size={14} className="text-[#0A84FF]"/> {data.location.neighborhood?.name}</p>
                   <p className="flex items-center gap-2"><CalendarIcon size={14} className="text-[#0A84FF]"/> {data.date?.toLocaleDateString()} às {data.time}</p>
+                  <p className="flex items-center gap-2"><User size={14} className="text-[#0A84FF]"/> {data.name}</p>
               </div>
               {data.payment === 'pix' && (
                   <div onClick={() => {navigator.clipboard.writeText(CONFIG.PIX_KEY); Utils.vibrate()}} className="mt-4 p-3 bg-black/50 rounded-xl border border-white/5 flex items-center justify-between cursor-pointer active:bg-white/10">
@@ -432,17 +460,17 @@ export default function BookingApp() {
        </div>
 
        <a href={generateMessage()} target="_blank" rel="noreferrer" className="w-full max-w-sm primary-btn py-4 text-lg flex items-center justify-center gap-3 mb-4 shadow-lg shadow-[#32D74B]/20">Enviar no WhatsApp <MessageCircle size={22}/></a>
-       <button onClick={() => { setSuccess(false); setStage(0); }} className="text-gray-600 font-bold text-xs uppercase py-4">Novo Pedido</button>
+       <button onClick={() => { setSuccess(false); setStage(0); setCouponActive(false); window.scrollTo(0,0); }} className="text-gray-600 font-bold text-xs uppercase py-4">Fazer Novo Pedido</button>
     </div>
   );
 
   return (
-    <div className="min-h-screen pb-40 relative">
+    <div className="min-h-screen pb-48 relative">
       <style>{globalStyles}</style>
       <LiveBubbles />
       
       {/* HEADER */}
-      <header className="fixed top-0 w-full z-40 header-solid py-3 px-5 flex justify-between items-center">
+      <header className="fixed top-0 w-full header-solid py-3 px-5 flex justify-between items-center">
         <div className="flex items-center gap-2" onClick={() => window.location.reload()}>
             <div className="w-8 h-8 bg-[#0A84FF] rounded-lg flex items-center justify-center"><span className="font-black text-white text-sm">T.</span></div>
             <span className="font-bold text-lg tracking-tight text-white">THALY.</span>
@@ -453,7 +481,7 @@ export default function BookingApp() {
         </div>
       </header>
 
-      {/* HELP MODAL */}
+      {/* AJUDA */}
       {helpOpen && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 animate-enter">
               <div className="absolute inset-0 bg-black/80" onClick={()=>setHelpOpen(false)}></div>
@@ -464,7 +492,7 @@ export default function BookingApp() {
                   </div>
                   <div className="space-y-4 text-sm text-gray-300">
                       <div className="bg-[#111] p-3 rounded-xl border border-[#222]"><p className="font-bold text-white mb-1">Sigilo?</p><p>Total. Atendo em residências e hotéis com discrição.</p></div>
-                      <div className="bg-[#111] p-3 rounded-xl border border-[#222]"><p className="font-bold text-white mb-1">Pagamento?</p><p>Pix, Dinheiro ou Cartão.</p></div>
+                      <div className="bg-[#111] p-3 rounded-xl border border-[#222]"><p className="font-bold text-white mb-1">Pagamento?</p><p>Pix, Dinheiro ou Cartão (Maquininha).</p></div>
                   </div>
               </div>
           </div>
@@ -473,7 +501,7 @@ export default function BookingApp() {
       <main className="max-w-md mx-auto pt-24 px-5">
         
         {/* 1. INTRODUÇÃO */}
-        <section ref={refs.intro} className={`transition-opacity duration-500 ${stage === 0 ? 'opacity-100' : 'section-disabled'}`}>
+        <section className={`transition-opacity duration-500 ${stage === 0 ? 'opacity-100' : 'section-disabled'}`}>
             <div className="mb-6 mt-2">
                 <h1 className="text-3xl font-extrabold mb-2">Massagem &<br/><span className="text-[#0A84FF]">Momentos Únicos.</span></h1>
                 <p className="text-gray-400 text-sm">Atendimento masculino exclusivo. Sigilo total.</p>
@@ -550,7 +578,7 @@ export default function BookingApp() {
                 ].map((item) => (
                     <div key={item.id} onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, [item.id]: !data.extras[item.id]}}); }} className="p-4 flex justify-between items-center cursor-pointer">
                         <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${data.extras[item.id] ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333]'}`}>{data.extras[item.id] ? <Check size={14} className="text-white"/> : <item.icon size={14} className="text-gray-500"/>}</div>
+                            <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${data.extras?.[item.id] ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333]'}`}>{data.extras?.[item.id] ? <Check size={14} className="text-white"/> : <item.icon size={14} className="text-gray-500"/>}</div>
                             <p className="font-bold text-white text-sm">{item.label}</p>
                         </div>
                         <span className="text-[#0A84FF] font-bold text-sm">+ {Utils.formatBRL(item.price)}</span>
@@ -565,8 +593,8 @@ export default function BookingApp() {
             <h3 className="text-lg font-bold mb-3 text-white"><span className="text-[#0A84FF]">04.</span> Localização</h3>
             
             <div className="mb-4">
-                <label className="text-[10px] uppercase font-bold text-gray-500 mb-2 block">Bairro (Para cálculo do Uber)</label>
-                <select className="input-field" value={data.location.neighborhood.id} onChange={e => setData({...data, location: {...data.location, neighborhood: SP_LOCATIONS.find(l => l.id === e.target.value)}})}>
+                <label className="text-[10px] uppercase font-bold text-gray-500 mb-2 block">Selecione o Bairro (Uber)</label>
+                <select className="input-field" value={data.location.neighborhood?.id} onChange={e => setData({...data, location: {...data.location, neighborhood: SP_LOCATIONS.find(l => l.id === e.target.value)}})}>
                     {SP_LOCATIONS.map(l => <option key={l.id} value={l.id}>{l.name} (+{Utils.formatBRL(l.fee)})</option>)}
                 </select>
             </div>
@@ -587,10 +615,14 @@ export default function BookingApp() {
                         <div className="flex gap-2"><input placeholder="Rua" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input-field w-2/3"/><input placeholder="Nº" type="tel" value={data.location.number} onChange={e => setData({...data, location: {...data.location, number: e.target.value}})} className="input-field w-1/3"/></div>
                     </div>
                 )}
+                {/* APTO SIMPLIFICADO */}
                 {data.location.type === 'apto' && (
                     <div className="space-y-3">
                         <input placeholder="Rua / Avenida" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input-field"/>
-                        <div className="flex gap-2"><input placeholder="Nº Prédio" type="tel" value={data.location.buildingNum} onChange={e => setData({...data, location: {...data.location, buildingNum: e.target.value}})} className="input-field w-1/2"/><input placeholder="Nº Apto" type="tel" value={data.location.aptNumber} onChange={e => setData({...data, location: {...data.location, aptNumber: e.target.value}})} className="input-field w-1/2"/></div>
+                        <div className="flex gap-2">
+                            <input placeholder="Nº do Prédio" type="tel" value={data.location.buildingNum} onChange={e => setData({...data, location: {...data.location, buildingNum: e.target.value}})} className="input-field w-1/2"/>
+                            <input placeholder="Nº do Apto" type="tel" value={data.location.aptNumber} onChange={e => setData({...data, location: {...data.location, aptNumber: e.target.value}})} className="input-field w-1/2"/>
+                        </div>
                     </div>
                 )}
                 {data.location.type === 'hotel' && (
@@ -637,7 +669,8 @@ export default function BookingApp() {
                             <span className="text-3xl font-black text-white">{Utils.formatBRL(financials.total)}</span>
                         </div>
                     </div>
-                    {isFirstTime && !couponActive ? (
+                    {/* LOGICA CUPOM 1ª VEZ: SÓ APARECE SE NÃO PEDIU ANTES */}
+                    {!hasOrderedBefore && !couponActive ? (
                         <button onClick={() => { setCouponActive(true); Utils.vibrate(); }} className="h-9 px-3 rounded-full bg-[#FFD60A] text-black font-bold text-xs animate-bounce shadow-[0_0_15px_rgba(255,214,10,0.4)] flex items-center gap-1"><Ticket size={12}/> CUPOM 1ª VEZ</button>
                     ) : couponActive ? <div className="text-[10px] text-[#32D74B] font-bold border border-[#32D74B] px-2 py-1 rounded bg-[#32D74B]/10">DESCONTO ATIVO</div> : null}
                 </div>
