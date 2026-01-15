@@ -3,51 +3,69 @@ import {
   Check, Star, ArrowRight, Bed, Home, MessageCircle, 
   Ticket, Lock, Flame, Wind, Crown, Shield, MapPin, Building,
   CreditCard, Banknote, QrCode, ChevronRight, Menu, X, 
-  HelpCircle, Instagram, Calendar as CalendarIcon, Clock, User, AlertTriangle, Car, Copy, Info, Sparkles
+  HelpCircle, Instagram, Calendar as CalendarIcon, Clock, User, AlertTriangle, Car, Copy, Info, Sparkles, Activity
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO DE NEGÓCIO (ORIGINAL RESTAURADA)
+// 1. CONFIGURAÇÃO DE VIAGEM & NEGÓCIO
 // ==================================================================================
 
 const CONFIG = {
+  // --- SELETOR DE REGIÃO (MUDE AQUI) ---
+  // 'SP'  = São Paulo Capital
+  // 'LDR' = Londrina (PR)
+  // 'INT' = Interior (Santa Fé/Região)
+  CURRENT_REGION: 'LDR', 
+
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
   
-  // CUPOM E PREÇOS ORIGINAIS
   FIRST_COUPON_VAL: 15.00, 
+  
   PRICES: {
     UPGRADE_PCT: 0.5, 
     TOUCH: 73, 
     AROMA: 5,
   },
   
-  // GAMIFICAÇÃO
-  XP_THRESHOLDS: { VIP: 150, ALPHA: 300 },
+  // GAMIFICAÇÃO (HARD MODE - Mais difícil upar)
+  XP_THRESHOLDS: { MEMBER: 100, VIP: 300, ALPHA: 600 },
   
   URLS: {
     WHATSAPP_API: "https://api.whatsapp.com/send"
   }
 };
 
-// LOCAIS SP (PREÇOS REAIS/ESTIMADOS UBER IDA E VOLTA)
-const SP_LOCATIONS = [
-  { id: 'bela_vista', name: 'Bela Vista', fee: 0, zone: 'Base' },
-  { id: 'augusta', name: 'Rua Augusta / Centro', fee: 10.00, zone: 'Centro' },
-  { id: 'paulista', name: 'Av. Paulista / Jardins', fee: 15.00, zone: 'Nobre' },
-  { id: 'higienopolis', name: 'Higienópolis', fee: 18.00, zone: 'Centro' },
-  { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 25.00, zone: 'Oeste' },
-  { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 30.00, zone: 'Sul' },
-  { id: 'moema', name: 'Moema / Ibirapuera', fee: 35.00, zone: 'Sul' },
-  { id: 'vila_mariana', name: 'Vila Mariana', fee: 28.00, zone: 'Sul' },
-  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 25.00, zone: 'Oeste' },
-  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 40.00, zone: 'Sul' },
-  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 45.00, zone: 'Leste' },
-  { id: 'morumbi', name: 'Morumbi', fee: 50.00, zone: 'Sul' },
-  { id: 'santana', name: 'Santana / ZN', fee: 45.00, zone: 'Norte' },
-  { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: '?' },
-];
+// --- BANCO DE DADOS DE LOCAIS (MULTI-CIDADE) ---
+const LOCATIONS_DB = {
+  SP: [
+    { id: 'bela_vista', name: 'Bela Vista / Centro', fee: 10, zone: 'Base' },
+    { id: 'paulista', name: 'Paulista / Jardins', fee: 15, zone: 'Nobre' },
+    { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 25, zone: 'Oeste' },
+    { id: 'itaim', name: 'Itaim / V. Olímpia', fee: 30, zone: 'Sul' },
+    { id: 'moema', name: 'Moema / Ibirapuera', fee: 35, zone: 'Sul' },
+    { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: 'Sob Consulta' }
+  ],
+  LDR: [
+    { id: 'centro_ldr', name: 'Centro Londrina', fee: 10, zone: 'Central' },
+    { id: 'gleba', name: 'Gleba Palhano', fee: 15, zone: 'Nobre' },
+    { id: 'aeroporto', name: 'Aeroporto / Z. Leste', fee: 20, zone: 'Leste' },
+    { id: 'catuai', name: 'Shopping Catuaí / Z. Sul', fee: 20, zone: 'Sul' },
+    { id: 'zs_outros', name: 'Zona Sul (Outros)', fee: 25, zone: 'Sul' },
+    { id: 'zn_ldr', name: 'Zona Norte', fee: 30, zone: 'Norte' },
+    { id: 'cambe', name: 'Cambé / Ibiporã', fee: 40, zone: 'Região' }
+  ],
+  INT: [
+    { id: 'santafe', name: 'Santa Fé do Sul', fee: 0, zone: 'Base' },
+    { id: 'tresfron', name: 'Três Fronteiras', fee: 20, zone: 'Vizinha' },
+    { id: 'rubineia', name: 'Rubinéia', fee: 25, zone: 'Vizinha' },
+    { id: 'jales', name: 'Jales', fee: 60, zone: 'Viagem' },
+    { id: 'aparecida', name: 'Ap. do Taboado (MS)', fee: 70, zone: 'Viagem' }
+  ]
+};
+
+const CURRENT_LOCATIONS = LOCATIONS_DB[CONFIG.CURRENT_REGION];
 
 const SERVICES = [
   { 
@@ -58,7 +76,7 @@ const SERVICES = [
     duration: 60, 
     price: 155, 
     badge: 'MAIS PEDIDA 🔥',
-    xp: 100
+    xp: 50 // XP Base
   },
   { 
     id: 'relax', 
@@ -68,20 +86,13 @@ const SERVICES = [
     duration: 60, 
     price: 125, 
     badge: null,
-    xp: 50
+    xp: 25 // Menos XP
   },
 ];
 
 const TIME_SLOTS = [
     '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', 
     '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
-];
-
-const LEVELS = [
-  { name: 'Visitante', min: 0, color: 'text-gray-400', bg: 'bg-gray-700' },
-  { name: 'Membro', min: 50, color: 'text-blue-400', bg: 'bg-blue-500' },
-  { name: 'VIP', min: 150, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, 
-  { name: 'ALPHA', min: 300, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
 ];
 
 const LOCATION_TYPES = [
@@ -91,11 +102,43 @@ const LOCATION_TYPES = [
   { id: 'motel', label: 'Motel', icon: Flame },
 ];
 
+const LEVELS = [
+  { name: 'Visitante', min: 0, color: 'text-gray-500', bg: 'bg-gray-800' },
+  { name: 'Membro', min: 100, color: 'text-blue-400', bg: 'bg-blue-600' },
+  { name: 'VIP', min: 300, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, 
+  { name: 'ALPHA', min: 600, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
+];
+
+// --- GATILHOS MENTAIS (LIVE STATUS) ---
+const LIVE_NOTIFICATIONS = [
+  "🔥 Último horário de Domingo preenchido", 
+  "👀 6 pessoas visualizando a agenda agora",
+  "📅 Agenda da noite quase lotada",
+  "⭐ Pedro avaliou: 'Melhor da cidade'",
+  "✅ Matheus confirmou presença",
+  "💎 Murilo atingiu nível VIP",
+  "🏠 Atendimento em Hotel iniciado",
+  "🚀 Bruno fechou o pacote completo + extras",
+  "😈 Felipe adicionou interação extra",
+  "🍃 Gustavo pediu Aromaterapia",
+  "💳 Pagamento via Pix recebido",
+  "🏳️‍🌈 Cliente novo cadastrado com sucesso",
+  "🚗 Thalyson está a caminho",
+  "⚡ Ricardo agendou de última hora",
+  "🔒 Dados criptografados e seguros",
+  "💼 Executivo agendou horário de almoço",
+  "🛑 Sábado restam apenas 2 vagas",
+  "✨ 'Mão firme e pegada forte' - Review Recente",
+  "📍 Atendimento realizado na Gleba Palhano",
+  "🛁 Banho tomado, pronto para atender"
+];
+
+// --- AVALIAÇÕES COMPLETAS (50+) ---
 const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
   { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
+  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso", s: 5 },
   { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
   { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
   { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
@@ -105,62 +148,68 @@ const REVIEWS_DB = [
   { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
   { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
   { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
-  { t: "Gostei bastante, me senti bem relaxado depois, saí mais leve.", a: "Alan SP", s: 5 },
+  { t: "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois.", a: "Alan", s: 5 },
   { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
   { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
-  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista", s: 5 },
   { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
+  { t: "Thalyson, quero dizer que sua massagem foi muito bem executada.", a: "Bruno", s: 5 },
+  { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
   { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
   { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
-  { t: "Extremamente educado e com papo bom.", a: "Renan", s: 5 },
-  { t: "Já fiz com vários, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
-  { t: "Massagem terapêutica de verdade, tirou todos os nós.", a: "Motorista", s: 5 },
-  { t: "Experiência sensorial incrível. O cheiro, o toque.", a: "Designer", s: 5 },
+  { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
+  { t: "O lubrificante é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
+  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
+  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
+  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado", s: 5 },
+  { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
+  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anônimo", s: 5 },
+  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
+  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Motorista", s: 5 },
+  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
+  { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
+  { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
   { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
   { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
   { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
   { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
   { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
-];
-
-const LIVE_NOTIFICATIONS = [
-  "🔥 João acabou de agendar", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira quase cheia",
-  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou presença", "💎 Murilo usou o Cupom",
-  "🏠 Atendimento em Hotel iniciado", "🚀 Bruno fechou o pacote completo", "😈 Felipe adicionou interação",
-  "🍃 Gustavo pediu Aromaterapia", "💳 Pagamento via Pix recebido", "🏳️‍🌈 Cliente novo cadastrado",
-  "🚗 Thalyson a caminho do Itaim", "⏱️ Sessão estendida agendada", "✨ Avaliação 5 estrelas recebida",
-  "📍 Atendimento na Bela Vista", "🎁 Cupom de 1ª Vez resgatado", "🔒 Dados seguros",
-  "👋 Marcos mandou um 'Oi'", "💼 Executivo agendou horário", "🛑 Agenda de Sábado Lotada",
-  "🛁 Banho tomado, pronto p/ atender", "💬 Lucas tirou uma dúvida", "🌚 Atendimento Noturno Iniciado",
-  "⚡ Ricardo agendou de última hora", "🏩 Chegando no Motel agora", "📝 Cadastro aprovado"
+  { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
+  { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
+  { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
+  { t: "Fiz no meu apto e foi Prático.", a: "Morador Centro", s: 5 },
+  { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
+  { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
+  { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
+  { t: "O final foi explosivo. Recomendo.", a: "Anônimo", s: 5 },
+  { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
+  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 },
+  { t: "Paz de espírito e corpo relaxado. Obrigado.", a: "Fernando", s: 5 }
 ];
 
 // ==================================================================================
-// 2. ESTILOS GLOBAIS (GLASSMORPHISM & FLUID ANIMATIONS)
+// 2. ESTILOS (PERFORMANCE & SCROLL)
 // ==================================================================================
 
 const globalStyles = `
 :root { --primary: #0A84FF; --bg-app: #050507; --card-bg: #141416; --border: #222; }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif; }
 html { height: 100%; background: var(--bg-app); overflow-y: scroll; }
-body { min-height: 100%; background: var(--bg-app); color: #fff; overflow-x: hidden; position: relative; }
+body { min-height: 100%; background: var(--bg-app); color: #fff; overflow-x: hidden; position: relative; padding-bottom: 20px; }
 input, select, button { outline: none; }
 .ios-scroll::-webkit-scrollbar { display: none; }
 .ios-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Animações Elásticas (Spring Physics) */
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(40px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes bubble { 0% { transform: translateY(10px); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-10px); opacity: 0; } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-.animate-enter { animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.animate-enter { animation: fadeInUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 .animate-bubble { animation: bubble 6s ease-in-out forwards; }
 
-/* Navbar Glass */
-.navbar { transition: all 0.4s ease; background: transparent; border-bottom: 1px solid transparent; }
-.navbar.glass { background: rgba(5, 5, 7, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.08); }
+.navbar { transition: all 0.4s ease; background: transparent; border-bottom: 1px solid transparent; z-index: 50; }
+.navbar.glass { background: rgba(5, 5, 7, 0.85); border-bottom: 1px solid rgba(255,255,255,0.08); }
 
-/* Logo Shimmer */
 .logo-shimmer {
   background: linear-gradient(90deg, #fff 0%, #0A84FF 50%, #fff 100%);
   background-size: 200% auto;
@@ -169,16 +218,14 @@ input, select, button { outline: none; }
   animation: shimmer 4s infinite linear;
 }
 
-/* UI Elements */
-.card-base { background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-.card-base:active { transform: scale(0.98); }
+.card-base { background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; transition: all 0.2s ease; }
 .card-selected { border-color: var(--primary); background: linear-gradient(145deg, rgba(10,132,255,0.08) 0%, rgba(20,20,22,0) 100%); box-shadow: 0 4px 30px rgba(10, 132, 255, 0.1); }
 
 .input-field { background: #1C1C1E; border: 1px solid #333; color: white; border-radius: 14px; width: 100%; font-size: 16px; padding: 16px; appearance: none; transition: all 0.3s; }
 .input-field:focus { border-color: var(--primary); background: #262626; box-shadow: 0 0 0 2px rgba(10,132,255,0.2); }
 
 .primary-btn { background: linear-gradient(135deg, #0A84FF 0%, #0066CC 100%); color: white; border-radius: 18px; font-weight: 800; border: none; box-shadow: 0 10px 30px rgba(10, 132, 255, 0.3); }
-.primary-btn:active { transform: scale(0.96); }
+.primary-btn:active { transform: scale(0.97); }
 
 .section-disabled { opacity: 0.3; pointer-events: none; filter: grayscale(1); transition: all 0.5s; }
 `;
@@ -200,13 +247,12 @@ const Utils = {
     if (sel > today) return false;
     const [h, m] = t.split(':').map(Number);
     const slot = new Date(); slot.setHours(h, m||0, 0, 0);
-    // Permite agendar se faltar mais de 30 min
     return slot < new Date(now.getTime() + 30 * 60000);
   }
 };
 
 // ==================================================================================
-// 4. COMPONENTES VISUAIS PREMIUM
+// 4. COMPONENTES VISUAIS
 // ==================================================================================
 
 const LiveBubbles = () => {
@@ -230,9 +276,9 @@ const LiveBubbles = () => {
     if (!msg) return null;
     return (
       <div className="fixed top-24 left-1/2 -translate-x-1/2 z-30 w-max max-w-[95%] pointer-events-none">
-        <div className="bg-[#1C1C1E]/90 backdrop-blur-md border border-[#333] px-4 py-2 rounded-full flex items-center gap-2 shadow-2xl animate-bubble">
+        <div className="bg-[#1C1C1E]/95 border border-[#333] px-4 py-2 rounded-full flex items-center gap-2 shadow-2xl animate-bubble">
            <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse shrink-0"></div>
-           <span className="text-xs font-bold text-white truncate">{msg}</span>
+           <span className="text-xs font-bold text-gray-200 truncate">{msg}</span>
         </div>
       </div>
     );
@@ -244,8 +290,8 @@ const ReviewsTicker = () => {
     useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%list.length), 6000); return () => clearInterval(t); }, [list]);
 
     return (
-        <div className="bg-[#141416] border border-[#222] rounded-3xl p-6 mb-8 shadow-lg flex flex-col justify-between min-h-[140px] relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#0A84FF]/10 to-transparent rounded-bl-full transition-opacity group-hover:opacity-50"></div>
+        <div className="bg-[#141416] border border-[#222] rounded-3xl p-6 mb-8 shadow-lg flex flex-col justify-between min-h-[150px] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#0A84FF]/10 to-transparent rounded-bl-full"></div>
             <div>
                 <div className="flex text-[#FFD60A] mb-3 gap-1"><Star size={13} fill="currentColor"/><Star size={13} fill="currentColor"/><Star size={13} fill="currentColor"/><Star size={13} fill="currentColor"/><Star size={13} fill="currentColor"/></div>
                 <p className="text-[15px] text-gray-300 italic leading-relaxed font-light">"{list[idx].t}"</p>
@@ -262,7 +308,7 @@ const LocationSelector = ({ selected, onSelect }) => {
     return (
         <div className="mb-6 -mx-5 px-5">
             <div className="flex gap-3 overflow-x-auto pb-6 ios-scroll snap-x px-1">
-                {SP_LOCATIONS.map(loc => (
+                {CURRENT_LOCATIONS.map(loc => (
                     <div key={loc.id} onClick={() => onSelect(loc)}
                         className={`snap-center flex-shrink-0 w-40 p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${selected?.id === loc.id ? 'border-[#0A84FF] bg-[#0A84FF]/10' : 'border-[#222] bg-[#141416]'}`}>
                         <p className="text-[10px] uppercase font-bold text-gray-500 mb-1">{loc.zone}</p>
@@ -286,14 +332,14 @@ const LocationSelector = ({ selected, onSelect }) => {
 export default function BookingApp() {
   const [data, setData] = useState(() => {
      try {
-       const s = localStorage.getItem('thaly_v_ultra_1'); 
+       const s = localStorage.getItem('thaly_travel_v1'); 
        if(s) { 
            const p = JSON.parse(s); 
            if(p.date) p.date = new Date(p.date);
            if(!p.location || !p.location.neighborhood) throw new Error("Reset");
            return p; 
        }
-     } catch(e) { localStorage.removeItem('thaly_v_ultra_1'); }
+     } catch(e) { localStorage.removeItem('thaly_travel_v1'); }
      
      return { 
          name: '', age: '', medical: false, 
@@ -301,7 +347,7 @@ export default function BookingApp() {
          extras: { upgrade: false, touch: false, aroma: false }, 
          payment: null,
          location: {
-             neighborhood: null, // Force selection
+             neighborhood: null, 
              type: 'home', 
              street: '', number: '', buildingNum: '', aptNumber: '', 
              hotelName: '', roomNumber: '', motelName: '', suiteType: '' 
@@ -316,10 +362,10 @@ export default function BookingApp() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
-  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history_v2');
+  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history_travel');
   const refs = { services: useRef(null), datetime: useRef(null), extras: useRef(null), location: useRef(null), payment: useRef(null) };
 
-  useEffect(() => { localStorage.setItem('thaly_v_ultra_1', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_travel_v1', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
   
   useEffect(() => {
@@ -334,13 +380,13 @@ export default function BookingApp() {
     if (data.service) xpPoints += data.service.xp;
 
     const upg = data.extras?.upgrade ? (base * CONFIG.PRICES.UPGRADE_PCT) : 0;
-    if (data.extras?.upgrade) xpPoints += 25;
+    if (data.extras?.upgrade) xpPoints += 15;
 
     const touch = data.extras?.touch ? CONFIG.PRICES.TOUCH : 0;
-    if (data.extras?.touch) xpPoints += 30;
+    if (data.extras?.touch) xpPoints += 20;
 
     const aroma = data.extras?.aroma ? CONFIG.PRICES.AROMA : 0;
-    if (data.extras?.aroma) xpPoints += 15;
+    if (data.extras?.aroma) xpPoints += 10;
 
     const travelFee = data.location?.neighborhood?.fee || 0;
     const sub = base + upg + touch + aroma + travelFee;
@@ -368,7 +414,7 @@ export default function BookingApp() {
   };
 
   const finalizeOrder = () => {
-      if(couponActive || !hasOrderedBefore) localStorage.setItem('thaly_client_history_v2', 'true');
+      if(couponActive || !hasOrderedBefore) localStorage.setItem('thaly_client_history_travel', 'true');
       setSuccess(true);
       window.scrollTo(0,0);
   };
@@ -393,7 +439,7 @@ export default function BookingApp() {
         t += l.join(', ') + `\n`;
     }
     
-    t += `\n📍 *BAIRRO: ${loc.neighborhood?.name}*\n`;
+    t += `\n📍 *LOCAL: ${loc.neighborhood?.name}*\n`;
     if(loc.type === 'home') t += `🏠 Casa: ${loc.street}, ${loc.number}\n`;
     else if (loc.type === 'apto') t += `🏢 Apto: ${loc.street}, ${loc.buildingNum} - Unid ${loc.aptNumber}\n`;
     else if (loc.type === 'hotel') t += `🏨 Hotel: ${loc.hotelName} (Qto ${loc.roomNumber})\n`;
@@ -458,7 +504,7 @@ export default function BookingApp() {
        </div>
 
        <a href={generateMessage()} target="_blank" rel="noreferrer" className="w-full max-w-sm primary-btn py-4 text-lg flex items-center justify-center gap-3 mb-4 shadow-lg shadow-[#32D74B]/20">Enviar no WhatsApp <MessageCircle size={22}/></a>
-       <button onClick={() => { setSuccess(false); setStage(0); setCouponActive(false); window.scrollTo(0,0); }} className="text-gray-600 font-bold text-xs uppercase py-4">Fazer Novo Pedido</button>
+       <button onClick={() => { setSuccess(false); setStage(0); setCouponActive(false); window.scrollTo(0,0); }} className="text-gray-600 font-bold text-xs uppercase py-4 hover:text-white transition-colors">Fazer Novo Pedido</button>
     </div>
   );
 
