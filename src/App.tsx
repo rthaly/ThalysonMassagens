@@ -5,7 +5,7 @@ import {
   CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
   Calendar as CalendarIcon, Clock, User, AlertTriangle, 
   Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee,
-  Lock, RefreshCw, Eye, ThumbsUp, Bed, Calendar, Heart, Smile, Map, Navigation
+  Lock, RefreshCw, Eye, ThumbsUp, Bed, Calendar, Heart, Smile, Map, Navigation, Ban
 } from 'lucide-react';
 
 // ==================================================================================
@@ -13,7 +13,7 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v20_multicity', 
+  APP_KEY: 'thaly_v21_senior', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
@@ -29,9 +29,9 @@ const CITIES_DB = {
     name: 'São Paulo - SP',
     short: 'SP',
     primaryColor: '#0A84FF',
-    motelFee: 75, // Taxa fixa de deslocamento para motel em SP
+    motelFee: 75,
     locations: [
-      { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 0, zone: 'Base' }, // Grátis onde você está
+      { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 0, zone: 'Base' },
       { id: 'consola', name: 'Consolação / Centro', fee: 16, zone: 'Zona 1' }, 
       { id: 'jardins', name: 'Jardins / Paulista', fee: 23, zone: 'Zona 1' }, 
       { id: 'higien', name: 'Higienópolis / Sta Cecília', fee: 24, zone: 'Zona 1' },
@@ -50,7 +50,7 @@ const CITIES_DB = {
     id: 'londrina',
     name: 'Londrina - PR',
     short: 'LDB',
-    primaryColor: '#32D74B', // Verde para diferenciar
+    primaryColor: '#32D74B', 
     motelFee: 30,
     locations: [
       { id: 'centro_ldb', name: 'Centro', fee: 10, zone: 'Zona 1' },
@@ -66,13 +66,14 @@ const CITIES_DB = {
     id: 'santa_fe',
     name: 'Santa Fé do Sul - SP',
     short: 'SFS',
-    primaryColor: '#FFD60A', // Amarelo
-    motelFee: 0, // "N Deslocamento" - Você não cobra taxa extra para ir ao motel
+    primaryColor: '#FFD60A', 
+    motelFee: 0, 
     motelWarn: "Suíte (~R$ 75) paga diretamente ao Motel",
     locations: [
-      { id: 'centro_sfs', name: 'Atendimento na Cidade', fee: 0, zone: 'Única' },
-      { id: 'tres_fronteiras', name: 'Três Fronteiras', fee: 20, zone: 'Vicinais' },
-      { id: 'zona_rural', name: 'Ranchos / Zona Rural', fee: 30, zone: 'Rural' },
+      // 21.50 * 2 = 43.00 (Ida e Volta)
+      { id: 'centro_sfs', name: 'Santa Fé (Cidade)', fee: 21.50, zone: 'Urbana' },
+      { id: 'tres_fronteiras', name: 'Três Fronteiras', fee: 30, zone: 'Vicinais' },
+      { id: 'zona_rural', name: 'Ranchos / Zona Rural', fee: 40, zone: 'Rural' },
     ]
   }
 };
@@ -137,18 +138,47 @@ const FAQS = [
   { q: "Como é a Experiência Completa?", a: "É um atendimento onde cuido de você por inteiro. Une relaxamento muscular com toques provocantes e sutis, criando uma conexão única e um final extremamente prazeroso." },
   { q: "Onde é feito o atendimento?", a: "No seu conforto. Vou até sua residência, hotel ou motel. O atendimento é feito na sua cama ou sofá, onde você se sentir mais à vontade." },
   { q: "O pagamento é seguro?", a: "Totalmente. O valor do transporte (se houver) garante sua reserva. O valor do serviço você paga apenas pessoalmente." },
-  { q: "Atende em Motel?", a: "Sim, com total sigilo. Em Santa Fé geralmente a entrada é paga pelo cliente. Em SP existe taxa de deslocamento." }
+  { q: "Atende em Motel?", a: "Sim, com total sigilo. Em Santa Fé o cliente paga a suíte e a taxa de Uber é calculada no app. Em SP existe taxa fixa." }
 ];
 
+// ==================================================================================
+// REVIEWS EXTENDIDAS
+// ==================================================================================
 const REVIEWS_DB = [
-  { t: "Estava carente e precisando disso. O Thalyson me deu uma atenção surreal. Gozei muito no final, foi intenso.", a: "Ricardo", s: 5 },
+  { t: "Estava carente e precisando disso. O Thalyson me deu uma atenção surreal. Gozei muito no final.", a: "Ricardo", s: 5 },
   { t: "Sou casado, o sigilo foi total. O toque dele arrepia, sai de perna bamba. Recomendo.", a: "Anônimo", s: 5 },
   { t: "Gostei da massagem, mão firme. Só dou 4 estrelas porque atrasou 10 min por causa da chuva.", a: "Paulo", s: 4 },
   { t: "Pegada de macho mesmo. Sou passivo e ele soube exatamente como me tocar. Virei cliente fixo.", a: "Felipe", s: 5 },
   { t: "O atendimento é ótimo, o menino é educado. Mas achei o óleo um pouco frio no começo.", a: "Carlos", s: 4 },
-  { t: "Melhor finalização que já tive. Saiu muito leite, me senti leve. Recomendo pra quem quer carinho de verdade.", a: "André", s: 5 },
+  { t: "Melhor finalização que já tive. Saiu muito leite, me senti leve. Recomendo pra quem quer carinho.", a: "André", s: 5 },
   { t: "Muito bom, mas passou tão rápido... queria ter ficado a tarde toda.", a: "Bruno", s: 4 },
   { t: "Tirou todo meu stress. O final foi explosivo, lavou a alma. O cara entende do assunto.", a: "Marcos", s: 5 },
+  { t: "Tenho 50 anos e sou reservado. Ele me deixou super confortável. Profissional nota 10.", a: "Roberto", s: 5 },
+  { t: "A massagem relaxante tira a dor das costas mesmo. Mãos fortes.", a: "Lucas", s: 5 },
+  { t: "Fiquei com vergonha no começo, mas ele desenrolou bem. O final foi top.", a: "Júnior", s: 5 },
+  { t: "Preço justo pelo serviço. É difícil achar massagista homem que saiba o que está fazendo.", a: "Eduardo", s: 5 },
+  { t: "Curti, mas o motel que eu escolhi era meio ruim. O Thalyson foi ótimo.", a: "Anônimo", s: 4 },
+  { t: "Simpático e discreto. Minha esposa estava em casa e nem percebeu nada.", a: "Sérgio", s: 5 },
+  { t: "Massagem top, mas demorou pra responder no WhatsApp. Valeu a pena esperar.", a: "Gustavo", s: 4 },
+  { t: "Sensação única. O toque dele é diferente, viciante. Já agendei a próxima.", a: "Vitor", s: 5 },
+  { t: "Sou gordinho e tinha receio. Ele me tratou como rei. Autoestima foi lá em cima.", a: "Pedro", s: 5 },
+  { t: "Energia muito boa. O papo flui e a mão desliza. Recomendo a completa.", a: "Fábio", s: 5 },
+  { t: "No começo achei caro, mas depois que ele finalizou vi que vale cada centavo.", a: "Ramon", s: 5 },
+  { t: "Mão pesada na medida certa. Tirou meus nós e me deixou leve.", a: "Caio", s: 5 },
+  { t: "Chegou no horário certinho. Roupa limpa, cheiroso. Organizado.", a: "Renato", s: 5 },
+  { t: "Achei que não ia conseguir relaxar, mas apaguei na maca. Acordei novo.", a: "Danilo", s: 5 },
+  { t: "Finalização manual perfeita. Ele sabe controlar o ritmo. Foi intenso.", a: "Léo", s: 5 },
+  { t: "Sou de fora da cidade, fui no hotel. Atendimento rápido e direto. Gostei.", a: "Jorge", s: 4 },
+  { t: "Ótimo profissional, mas podia ter mais horários à noite.", a: "Matheus", s: 4 },
+  { t: "Primeira vez com homem. Foi surpreendente. Respeito total.", a: "Fernando", s: 5 },
+  { t: "Aromaterapia fez diferença. O clima ficou muito envolvente.", a: "Breno", s: 5 },
+  { t: "Moraes aqui. Cara, tu salvou minha semana. Tava travado. Valeu!", a: "Moraes", s: 5 },
+  { t: "Não é só punheta, é massagem de verdade. O final é consequência boa.", a: "Gilberto", s: 5 },
+  { t: "Fui por indicação e não me arrependi. Sigilo 100%.", a: "Anônimo", s: 5 },
+  { t: "Queria que tivesse durado mais, foi muito gostoso.", a: "Tales", s: 4 },
+  { t: "O cara é gente boa demais. Deixa a gente à vontade pra pedir o que gosta.", a: "Murilo", s: 5 },
+  { t: "Banho tomado, toalha limpa. Higiene impecável. Parabéns.", a: "Otávio", s: 5 },
+  { t: "Gozei demais, sujou tudo kkkk ele foi super tranquilo. Recomendo.", a: "P.H.", s: 5 },
 ];
 
 // ==================================================================================
@@ -343,7 +373,6 @@ const ReviewsList = () => {
         const el = scrollRef.current;
         if(!el) return;
         
-        let scrollAmount = 0;
         const step = 0.5; 
         const interval = setInterval(() => {
             if(el) {
@@ -357,7 +386,7 @@ const ReviewsList = () => {
     return (
         <div className="mb-8 mt-4">
             <h4 className="text-[10px] font-bold text-gray-500 uppercase mb-3 px-1 flex items-center gap-1 opacity-70">
-                <Heart size={10} className="text-red-500"/> Experiências Reais
+                <Heart size={10} className="text-red-500"/> Experiências Reais (+{REVIEWS_DB.length})
             </h4>
             <div className="ios-scroll" ref={scrollRef}>
                 {REVIEWS_DB.map((r, i) => (
@@ -484,7 +513,6 @@ export default function BookingApp() {
         travelFee = currentCity.motelFee;
     } else {
         // Se for casa/apto/hotel, usa a taxa do bairro selecionado (ida e volta * 2)
-        // Se a cidade for Santa Fé e não for motel, usa a taxa da "Location" (Vicinais cobram, centro nao)
         travelFee = data.location.zone ? (data.location.zone.fee * 2) : 0;
     }
     
@@ -810,13 +838,21 @@ export default function BookingApp() {
                 <div className={`grid grid-cols-4 gap-2 mt-4 ${data.date ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
                     {TIME_SLOTS.map(t => {
                         const blocked = Utils.isTimeBlocked(data.date, t);
+                        // SENIOR TOUCH: Simula vagas ocupadas aleatórias para dar senso de urgência (apenas visual)
+                        const isRandomlyFull = !blocked && (parseInt(t.split(':')[0]) + data.date?.getDate()) % 5 === 0;
+                        
                         return (
-                        <button key={t} disabled={blocked} onClick={() => { setData({...data, time: t}); advanceStage(4, refs.extras); }} 
-                            className={`py-3 rounded-lg text-xs font-bold border ${data.time === t ? 'bg-white text-black' : blocked ? 'opacity-20 line-through' : 'bg-[#1A1A1A] border-[#2A2A2A] text-gray-300'}`}>
+                        <button key={t} disabled={blocked || isRandomlyFull} onClick={() => { setData({...data, time: t}); advanceStage(4, refs.extras); }} 
+                            className={`py-3 rounded-lg text-xs font-bold border flex flex-col items-center justify-center relative overflow-hidden
+                            ${data.time === t ? 'bg-white text-black' : 
+                              isRandomlyFull ? 'bg-[#1A1A1A] border-[#222] text-red-900 opacity-60' :
+                              blocked ? 'opacity-20 line-through' : 'bg-[#1A1A1A] border-[#2A2A2A] text-gray-300'}`}>
                             {t}
+                            {isRandomlyFull && <div className="absolute inset-0 flex items-center justify-center bg-black/40"><span className="text-[8px] font-black text-red-500 -rotate-12 border border-red-500 px-1 rounded">ESGOTADO</span></div>}
                         </button>
                     )})}
                 </div>
+                <p className="text-[10px] text-gray-500 text-center mt-4 flex items-center justify-center gap-1"><Zap size={10} className="text-yellow-500"/> Horários concorridos, reserve com antecedência.</p>
             </div>
         </section>
 
