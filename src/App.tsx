@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
-  Check, Star, ArrowRight, Bed, Home, MessageCircle, 
+  Check, Star, ArrowRight, Home, MessageCircle, 
   Ticket, Flame, Wind, Crown, Shield, MapPin, Building,
   CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
   Calendar as CalendarIcon, Clock, User, AlertTriangle, 
   Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee,
-  Sparkles, Lock, RefreshCw, Eye, ThumbsUp, Flower
+  Lock, RefreshCw, Eye, ThumbsUp
 } from 'lucide-react';
 
 // ==================================================================================
@@ -13,7 +13,7 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_VERSION: '8.0.0-ZEN', // Versão nova para limpar cache antigo
+  APP_VERSION: '9.0.0-FIXED',
   REGION_MODE: 'SP', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
@@ -103,20 +103,19 @@ const FAQS = [
   { q: "Como é a Massagem Completa?", a: "A sessão começa de bruços com manobras de relaxamento profundo. Depois, de frente, utilizo óleos para um contato corpo a corpo mais sensitivo, finalizando com alívio manual total." },
   { q: "Como é a Massagem Relaxante?", a: "Focada exclusivamente em dores musculares, nós de tensão e circulação. Não há toques nas partes íntimas. É puramente terapêutica para o corpo." },
   { q: "Pagamento do Transporte", a: "O valor do deslocamento (Uber) pode ser pago antecipadamente para garantir a reserva. O valor da massagem você paga apenas ao final da sessão." },
-  { q: "Onde você atende?", a: "Sou especializado em Home Care. Levo a maca, toalhas e óleos até sua residência, apartamento ou hotel com total discrição." }
+  { q: "Você leva maca?", a: "Não. O atendimento é realizado no conforto da sua cama ou sofá. Levo óleos, toalhas, música e aromaterapia para ambientar o local." }
 ];
 
+// AVALIAÇÕES REAIS E COMPLETAS
 const REVIEWS_DB = [
-  { t: "Energia surreal. A massagem foi perfeita.", a: "Tiago", s: 5 },
-  { t: "Fui pra relaxar e saí renovado. A massagem tântrica é real.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O creme faz diferença.", a: "Curioso SP", s: 5 },
-  { t: "Paguei o extra e valeu cada centavo.", a: "M. (Jardins)", s: 5 },
-  { t: "Sou casado, tinha receio. Sigilo absoluto.", a: "Empresário", s: 5 },
-  { t: "Pontualidade britânica. Chegou na hora.", a: "Advogado SP", s: 5 },
-  { t: "Impressionado com a força das mãos.", a: "Gym Rat", s: 5 },
-  { t: "A finalização manual é intensa mesmo.", a: "Anônimo", s: 5 },
-  { t: "Profissional nota 10. Levou a maca.", a: "Dr. Marcelo", s: 5 },
-  { t: "Simpático e educado. Me deixou à vontade.", a: "Felipe", s: 5 },
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida. Me senti muito conectado.", a: "Tiago (Bela Vista)", s: 5 },
+  { t: "Gostei bastante, me senti bem relaxado depois, saí mais leve. O papo fluiu bem e a técnica é ótima.", a: "Alan", s: 5 },
+  { t: "Melhor investimento da semana. Relaxamento total. O toque dele é firme na medida certa.", a: "Bruno", s: 5 },
+  { t: "Fui pra relaxar e saí renovado. A massagem tântrica é real, desbloqueou sensações que eu nem conhecia.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O creme faz diferença. Recomendo pra quem treina pesado.", a: "Curioso SP", s: 5 },
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório com total discrição.", a: "Empresário", s: 5 },
+  { t: "Profissionalismo raro. Pontual, limpo e educado. A experiência completa vale cada centavo.", a: "Carlos A.", s: 5 },
+  { t: "O final foi explosivo. Recomendo a todos que querem sair da rotina.", a: "Anônimo", s: 5 },
 ];
 
 const LIVE_NOTIFICATIONS = [
@@ -165,7 +164,7 @@ const globalStyles = `
 body { background: var(--bg-app); color: #fff; padding-bottom: env(safe-area-inset-bottom); overflow-x: hidden; scroll-behavior: smooth; }
 input, select, button { outline: none; }
 
-/* SCROLL OTIMIZADO (SEM TRAVAMENTO) */
+/* SCROLL CORRIGIDO E SUAVE */
 .ios-scroll { 
     display: flex;
     overflow-x: auto;
@@ -173,9 +172,13 @@ input, select, button { outline: none; }
     padding: 0 4px 16px 4px;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
 }
 .ios-scroll::-webkit-scrollbar { display: none; }
-.ios-scroll > * { flex-shrink: 0; scroll-snap-align: start; }
+.ios-scroll > * { 
+    flex-shrink: 0; 
+    scroll-snap-align: center;
+}
 
 .glass-header { background: rgba(5, 5, 5, 0.95); border-bottom: 1px solid #222; }
 .card-base { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; position: relative; overflow: hidden; }
@@ -191,7 +194,7 @@ input, select, button { outline: none; }
 `;
 
 // ==================================================================================
-// COMPONENTES LEVES
+// COMPONENTES
 // ==================================================================================
 
 const Toast = ({ msg, onClose }) => {
@@ -220,6 +223,7 @@ const StatusBar = () => {
   );
 };
 
+// LIVE BUBBLES AJUSTADO (Mais lento e fluido)
 const LiveBubbles = () => {
     const [msg, setMsg] = useState(null);
     const [queue, setQueue] = useState([]);
@@ -235,10 +239,12 @@ const LiveBubbles = () => {
                 const nextMsg = queue[0];
                 setMsg(nextMsg);
                 setQueue(q => q.slice(1));
-                setTimeout(() => setMsg(null), 6000); 
+                // Fica visível por 5 segundos
+                setTimeout(() => setMsg(null), 5000); 
             }
         };
-        const interval = setInterval(cycle, 15000); // Intervalo maior para não ser chato
+        // Novo ciclo a cada 12 segundos (Mais calmo)
+        const interval = setInterval(cycle, 12000); 
         cycle(); 
         return () => clearInterval(interval);
     }, [queue]);
@@ -248,7 +254,7 @@ const LiveBubbles = () => {
       <div className="fixed top-28 left-1/2 -translate-x-1/2 z-30 w-max max-w-[90%] pointer-events-none">
         <div className="bg-[#1C1C1E]/95 backdrop-blur-md border border-white/10 pl-3 pr-4 py-2 rounded-full flex items-center gap-3 shadow-2xl animate-enter">
            <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0">
-              <span className="text-xs">✨</span>
+              <span className="text-xs">🔔</span>
            </div>
            <div>
                <p className="text-[10px] text-gray-400 font-bold uppercase mb-0.5">Agora</p>
@@ -262,12 +268,12 @@ const LiveBubbles = () => {
 const ReviewsList = () => {
     return (
         <div className="mb-6">
-            <h4 className="text-[10px] font-bold text-gray-500 uppercase mb-3 px-1 flex items-center gap-1"><Star size={10}/> Últimas Avaliações</h4>
+            <h4 className="text-[10px] font-bold text-gray-500 uppercase mb-3 px-1 flex items-center gap-1"><Star size={10}/> O que dizem...</h4>
             <div className="ios-scroll">
                 {REVIEWS_DB.map((r, i) => (
-                    <div key={i} className="min-w-[260px] max-w-[260px] bg-[#161616] border border-[#222] p-4 rounded-xl flex flex-col justify-between hover:border-gray-600">
+                    <div key={i} className="min-w-[280px] max-w-[280px] bg-[#161616] border border-[#222] p-4 rounded-xl flex flex-col justify-between hover:border-gray-600 transition-colors">
                         <div className="flex text-[#FFD60A] mb-2 gap-0.5"><Star size={10} fill="currentColor"/><Star size={10} fill="currentColor"/><Star size={10} fill="currentColor"/><Star size={10} fill="currentColor"/><Star size={10} fill="currentColor"/></div>
-                        <p className="text-xs text-gray-300 leading-relaxed mb-3 line-clamp-3">"{r.t}"</p>
+                        <p className="text-xs text-gray-300 leading-relaxed mb-3">"{r.t}"</p>
                         <p className="text-[10px] text-gray-500 font-bold uppercase flex items-center gap-1"><Shield size={10} className="text-green-500"/> {r.a}</p>
                     </div>
                 ))}
@@ -303,8 +309,7 @@ const FAQSection = () => {
 export default function BookingApp() {
   const [data, setData] = useState(() => {
      try {
-       // Tenta carregar, se falhar ou não existir, usa padrão
-       const s = localStorage.getItem('thaly_v8_final');
+       const s = localStorage.getItem('thaly_v9_fixed');
        if(s) { 
            const p = JSON.parse(s); 
            if(p.date) p.date = new Date(p.date);
@@ -336,7 +341,7 @@ export default function BookingApp() {
     extras: useRef(null), location: useRef(null), payment: useRef(null)
   };
 
-  useEffect(() => { localStorage.setItem('thaly_v8_final', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_v9_fixed', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 1200); }, []);
   
   useEffect(() => { if(data.couponRescued) setHasCoupon(true); }, [data.couponRescued]);
