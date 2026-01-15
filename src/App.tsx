@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO DE NEGÓCIO (AJUSTADO)
+// 1. CONFIGURAÇÃO DE NEGÓCIO
 // ==================================================================================
 
 const CONFIG = {
@@ -15,16 +15,15 @@ const CONFIG = {
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
   
-  // CUPOM DE 1ª VEZ (Valor Original)
-  FIRST_COUPON_VAL: 13.00, 
+  // CUPOM DE 1ª VEZ
+  FIRST_COUPON_VAL: 15.00, 
   
   PRICES: {
-    UPGRADE_PCT: 0.5, // 50% do valor
+    UPGRADE_PCT: 0.5, 
     TOUCH: 73, 
     AROMA: 5,
   },
   
-  // GAMIFICAÇÃO
   XP_THRESHOLDS: { VIP: 120, ALPHA: 250 },
   
   URLS: {
@@ -32,23 +31,21 @@ const CONFIG = {
   }
 };
 
-// LOCAIS SP - CÁLCULO REALISTA DE UBER (IDA E VOLTA)
-// Base: Bela Vista. Mínimo Uber/99 ~R$10 o trecho -> R$20 Ida/Volta.
+// LOCAIS SP (PREÇOS REAIS/ESTIMADOS UBER - IDA E VOLTA)
 const SP_LOCATIONS = [
-  { id: 'bela_vista', name: 'Bela Vista', fee: 0, zone: 'Base' }, // Grátis/Pé
-  { id: 'augusta', name: 'Rua Augusta / Centro', fee: 18.00, zone: 'Centro' },
-  { id: 'paulista', name: 'Av. Paulista / Jardins', fee: 20.00, zone: 'Nobre' },
-  { id: 'higienopolis', name: 'Higienópolis / Sta Cecília', fee: 22.00, zone: 'Centro' },
-  { id: 'liberdade', name: 'Liberdade / Aclimação', fee: 24.00, zone: 'Centro' },
-  { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 32.00, zone: 'Oeste' },
-  { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 35.00, zone: 'Sul' },
-  { id: 'moema', name: 'Moema / Ibirapuera', fee: 38.00, zone: 'Sul' },
-  { id: 'vila_mariana', name: 'Vila Mariana / Paraíso', fee: 30.00, zone: 'Sul' },
-  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 28.00, zone: 'Oeste' },
-  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 45.00, zone: 'Sul' },
-  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 50.00, zone: 'Leste' },
-  { id: 'morumbi', name: 'Morumbi', fee: 60.00, zone: 'Sul' },
-  { id: 'santana', name: 'Santana / ZN', fee: 55.00, zone: 'Norte' },
+  { id: 'bela_vista', name: 'Bela Vista', fee: 0, zone: 'Base' },
+  { id: 'augusta', name: 'Rua Augusta / Centro', fee: 10.00, zone: 'Centro' },
+  { id: 'paulista', name: 'Av. Paulista / Jardins', fee: 15.00, zone: 'Nobre' },
+  { id: 'higienopolis', name: 'Higienópolis / Sta Cecília', fee: 18.00, zone: 'Centro' },
+  { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 25.00, zone: 'Oeste' },
+  { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 30.00, zone: 'Sul' },
+  { id: 'moema', name: 'Moema / Ibirapuera', fee: 35.00, zone: 'Sul' },
+  { id: 'vila_mariana', name: 'Vila Mariana / Paraíso', fee: 28.00, zone: 'Sul' },
+  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 25.00, zone: 'Oeste' },
+  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 40.00, zone: 'Sul' },
+  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 45.00, zone: 'Leste' },
+  { id: 'morumbi', name: 'Morumbi', fee: 50.00, zone: 'Sul' },
+  { id: 'santana', name: 'Santana / ZN', fee: 45.00, zone: 'Norte' },
   { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: '?' },
 ];
 
@@ -57,7 +54,6 @@ const SERVICES = [
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    // DESCRIÇÃO CORRIGIDA (SEM ÓLEO QUENTE)
     desc: 'Massagista de Cueca. O protocolo premium. Inicia de bruços soltando a musculatura, vira de frente com creme e óleos, toque corpo a corpo e finalização manual intensa.', 
     duration: 60, 
     price: 155, 
@@ -83,7 +79,7 @@ const TIME_SLOTS = [
 
 const LEVELS = [
   { name: 'Visitante', min: 0, color: 'text-gray-400', bg: 'bg-gray-700' },
-  { name: 'Membro', min: 50, color: 'text-blue-400', bg: 'bg-blue-500' },
+  { name: 'Membro', min: 50, color: 'text-blue-400', bg: 'bg-blue-600' },
   { name: 'VIP', min: 120, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, 
   { name: 'ALPHA', min: 250, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
 ];
@@ -96,56 +92,32 @@ const LOCATION_TYPES = [
 ];
 
 const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", a: "Tiago (Bela Vista)", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
   { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
   { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
-  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
-  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
-  { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia.", a: "M. (Jardins)", s: 5 },
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto.", a: "Empresário", s: 5 },
+  { t: "Precisava desse escape. O stress sumiu na hora.", a: "M. (Casado)", s: 5 },
   { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
-  { t: "Ele de cueca branca... sem comentários. Visual nota 1000.", a: "Fã", s: 5 },
-  { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
+  { t: "Visual nota 1000. Profissionalismo raro hoje em dia.", a: "Carlos A.", s: 5 },
   { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
-  { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
-  { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
-  { t: "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve.", a: "Alan SP", s: 5 },
-  { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
-  { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
-  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
+  { t: "Ambiente relaxante demais.", a: "Gustavo", s: 5 },
+  { t: "Gostei bastante, me senti bem relaxado depois.", a: "Alan SP", s: 5 },
+  { t: "O corpo a corpo é quente de verdade.", a: "J.P.", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto.", a: "Turista RJ", s: 5 },
   { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
-  { t: "Thalyson, quero dizer que sua massagem foi muito bem executada.", a: "Bruno", s: 5 },
-  { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
   { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
   { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
-  { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
-  { t: "O lubrificante é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
-  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
-  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
-  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
-  { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
-  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anônimo", s: 5 },
-  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
-  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Motorista", s: 5 },
-  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
-  { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
-  { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
+  { t: "Extremamente educado e com papo bom.", a: "Renan", s: 5 },
+  { t: "Já fiz com vários, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
+  { t: "Massagem terapêutica de verdade, tirou todos os nós.", a: "Motorista", s: 5 },
+  { t: "Experiência sensorial incrível. O cheiro, o toque.", a: "Designer", s: 5 },
   { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
   { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
   { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
   { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
-  { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
-  { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
-  { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
-  { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
-  { t: "Fiz no meu apto e foi Prático.", a: "Morador Centro", s: 5 },
-  { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
-  { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
-  { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
-  { t: "O final foi explosivo. Recomendo.", a: "Anônimo", s: 5 },
-  { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
-  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 },
-  { t: "Paz de espírito e corpo relaxado. Obrigado.", a: "Fernando", s: 5 }
+  { t: "Gostei da facilidade de agendar pelo app.", a: "Tech Guy", s: 5 },
 ];
 
 const LIVE_NOTIFICATIONS = [
@@ -177,9 +149,11 @@ input, select, button { outline: none; }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes bubble { 0% { transform: translateY(10px); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-10px); opacity: 0; } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 20px); } 10% { opacity: 1; transform: translate(-50%, 0); } 90% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -20px); } }
 
 .animate-enter { animation: fadeInUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 .animate-bubble { animation: bubble 6s ease-in-out forwards; }
+.animate-toast { animation: floatUp 3s ease-in-out forwards; }
 
 .navbar { transition: all 0.4s ease; background: transparent; border-bottom: 1px solid transparent; z-index: 50; }
 .navbar.glass { background: rgba(5, 5, 7, 0.85); border-bottom: 1px solid rgba(255,255,255,0.08); }
@@ -205,13 +179,39 @@ input, select, button { outline: none; }
 `;
 
 // ==================================================================================
-// 3. UTILITÁRIOS
+// 3. UTILITÁRIOS (COM CORREÇÃO DE CRASH)
 // ==================================================================================
 
 const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+  
   vibrate: () => { if (navigator.vibrate) navigator.vibrate(10); },
+  
   shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
+  
+  // FUNÇÃO BLINDADA DE CÓPIA (CORRIGE O CRASH)
+  safeCopy: (text) => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text);
+      } else {
+        // Método antigo (Fallback) para celulares que bloqueiam clipboard
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      return true; // Sucesso
+    } catch (err) {
+      console.error("Erro ao copiar", err);
+      return false;
+    }
+  },
+
   isTimeBlocked: (d, t) => {
     if (!d) return true;
     const now = new Date();
@@ -306,15 +306,16 @@ const LocationSelector = ({ selected, onSelect }) => {
 export default function BookingApp() {
   const [data, setData] = useState(() => {
      try {
-       // CHAVE DE DADOS: v_uber_real
-       const s = localStorage.getItem('thaly_v_uber_real'); 
+       // CHAVE DE RESET: thaly_safe_v1
+       const s = localStorage.getItem('thaly_safe_v1'); 
        if(s) { 
            const p = JSON.parse(s); 
            if(p.date) p.date = new Date(p.date);
+           // Proteção contra dados corrompidos
            if(!p.location || !p.location.neighborhood) throw new Error("Reset");
            return p; 
        }
-     } catch(e) { localStorage.removeItem('thaly_v_uber_real'); }
+     } catch(e) { localStorage.removeItem('thaly_safe_v1'); }
      
      return { 
          name: '', age: '', medical: false, 
@@ -322,7 +323,7 @@ export default function BookingApp() {
          extras: { upgrade: false, touch: false, aroma: false }, 
          payment: null,
          location: {
-             neighborhood: null, // Force selection
+             neighborhood: null, 
              type: 'home', 
              street: '', number: '', buildingNum: '', aptNumber: '', 
              hotelName: '', roomNumber: '', motelName: '', suiteType: '' 
@@ -336,11 +337,12 @@ export default function BookingApp() {
   const [loading, setLoading] = useState(true);
   const [helpOpen, setHelpOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [toast, setToast] = useState(null); // Feedback de cópia
   
-  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history_uber');
+  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history_safe');
   const refs = { services: useRef(null), datetime: useRef(null), extras: useRef(null), location: useRef(null), payment: useRef(null) };
 
-  useEffect(() => { localStorage.setItem('thaly_v_uber_real', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_safe_v1', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
   
   useEffect(() => {
@@ -348,6 +350,11 @@ export default function BookingApp() {
       window.addEventListener('scroll', onScroll);
       return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  const showToast = (msg) => {
+      setToast(msg);
+      setTimeout(() => setToast(null), 3000);
+  };
 
   const { financials, xp } = useMemo(() => {
     let xpPoints = 0;
@@ -388,13 +395,20 @@ export default function BookingApp() {
     scrollToRef(ref);
   };
 
+  const handleCopyPix = () => {
+      const copied = Utils.safeCopy(CONFIG.PIX_KEY);
+      if(copied) {
+          Utils.vibrate();
+          showToast("Chave Pix Copiada!");
+      }
+  };
+
   const finalizeOrder = () => {
-      if(couponActive || !hasOrderedBefore) localStorage.setItem('thaly_client_history_uber', 'true');
+      if(couponActive || !hasOrderedBefore) localStorage.setItem('thaly_client_history_safe', 'true');
       setSuccess(true);
       window.scrollTo(0,0);
   };
 
-  // --- WHATSAPP DETALHADO (NOTA FISCAL) ---
   const generateMessage = () => {
     const d = data.date;
     const loc = data.location;
@@ -405,10 +419,10 @@ export default function BookingApp() {
     t += `👤 *${data.name}* (${data.age}a)\n`;
     t += `📅 *${dateStr} às ${data.time}*\n`;
     
-    // DETALHE DO SERVIÇO
+    // SERVIÇO
     t += `💆 *${data.service?.name}*: ${Utils.formatBRL(financials.base)}\n`;
     
-    // DETALHE DOS EXTRAS COM VALOR
+    // EXTRAS COM PREÇOS DISCRIMINADOS
     if(Object.values(data.extras || {}).some(Boolean)) {
         t += `🔥 *EXTRAS:*\n`;
         if(data.extras?.upgrade) t += `   + Upgrade 30min: ${Utils.formatBRL(financials.upg)}\n`;
@@ -422,12 +436,12 @@ export default function BookingApp() {
     else if (loc.type === 'hotel') t += `🏨 Hotel: ${loc.hotelName} (Qto ${loc.roomNumber})\n`;
     else if (loc.type === 'motel') { t += `🏩 Motel: ${loc.motelName} (Suíte ${loc.suiteType || '?'})\n`; t += `⚠️ *Eu pago a suíte*\n`; }
 
-    // VALORES FINAIS DISCRIMINADOS
+    // FINANCEIRO DETALHADO
     t += `\n💰 *RESUMO FINANCEIRO:*\n`;
-    if(financials.travelFee > 0) t += `🚗 Deslocamento (Ida+Volta): ${Utils.formatBRL(financials.travelFee)}\n`;
+    if(financials.travelFee > 0) t += `🚗 Taxa Ida+Volta: ${Utils.formatBRL(financials.travelFee)}\n`;
     if(couponActive) t += `🎟️ Desconto 1ª Vez: -${Utils.formatBRL(financials.desc)}\n`;
     
-    t += `\n✅ *TOTAL A PAGAR: ${Utils.formatBRL(financials.total)}*\n`;
+    t += `\n✅ *TOTAL FINAL: ${Utils.formatBRL(financials.total)}*\n`;
     t += `💳 Pagamento: ${data.payment?.toUpperCase()}\n`;
     
     return `${CONFIG.URLS.WHATSAPP_API}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
@@ -448,6 +462,13 @@ export default function BookingApp() {
   if (success) return (
     <div className="min-h-screen bg-[#050507] pt-20 px-6 flex flex-col items-center text-center animate-enter pb-20">
        <style>{globalStyles}</style>
+       
+       {toast && (
+           <div className="fixed top-10 left-1/2 -translate-x-1/2 bg-[#32D74B] text-black font-bold px-6 py-3 rounded-full shadow-2xl z-[100] animate-toast flex items-center gap-2">
+               <Check size={18}/> {toast}
+           </div>
+       )}
+
        <div className="w-24 h-24 bg-[#32D74B]/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(50,215,75,0.2)]">
          <Check className="w-12 h-12 text-[#32D74B]" strokeWidth={4} />
        </div>
@@ -463,7 +484,7 @@ export default function BookingApp() {
                     <p className="text-[#32D74B] font-black text-3xl">{Utils.formatBRL(financials.total)}</p>
                  </div>
                  <div className="text-right">
-                    <p className="text-[10px] text-gray-500 uppercase font-bold mb-1 tracking-wider">Taxa Ida/Volta</p>
+                    <p className="text-[10px] text-gray-500 uppercase font-bold mb-1 tracking-wider">Taxa</p>
                     <p className="text-white font-bold">{Utils.formatBRL(financials.travelFee)}</p>
                  </div>
               </div>
@@ -473,7 +494,7 @@ export default function BookingApp() {
                   <p className="flex items-center gap-3"><User size={16} className="text-[#0A84FF]"/> {data.name}</p>
               </div>
               {data.payment === 'pix' && (
-                  <div onClick={() => {navigator.clipboard.writeText(CONFIG.PIX_KEY); Utils.vibrate()}} className="mt-6 p-4 bg-[#0A84FF]/10 rounded-xl border border-[#0A84FF]/20 flex items-center justify-between cursor-pointer active:scale-[0.98]">
+                  <div onClick={handleCopyPix} className="mt-6 p-4 bg-[#0A84FF]/10 rounded-xl border border-[#0A84FF]/20 flex items-center justify-between cursor-pointer active:scale-[0.98]">
                       <div><p className="text-[10px] text-[#0A84FF] font-bold uppercase mb-1">Toque para Copiar Chave Pix</p><p className="text-xs font-mono text-white tracking-wide">{CONFIG.PIX_KEY}</p></div>
                       <Copy size={18} className="text-[#0A84FF]"/>
                   </div>
@@ -504,7 +525,7 @@ export default function BookingApp() {
         </div>
       </header>
 
-      {/* AJUDA */}
+      {/* AJUDA COMPLETA */}
       {helpOpen && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 animate-enter">
               <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={()=>setHelpOpen(false)}></div>
@@ -646,7 +667,7 @@ export default function BookingApp() {
             <div className="card-base divide-y divide-[#222]">
                 {[
                    { id: 'upgrade', label: '+30 Minutos', desc: 'Mais tempo para curtir cada detalhe.', icon: Clock, price: data.service?.price * CONFIG.PRICES.UPGRADE_PCT },
-                   { id: 'touch', label: 'Interação / Toque', desc: 'Toque recíproco. Você no controle.', icon: Flame, price: CONFIG.PRICES.TOUCH },
+                   { id: 'touch', label: 'Interação / Toque', desc: 'Você no controle. Toques recíprocos.', icon: Flame, price: CONFIG.PRICES.TOUCH },
                    { id: 'aroma', label: 'Aromaterapia', desc: 'Óleos essenciais que acalmam a mente.', icon: Wind, price: CONFIG.PRICES.AROMA }
                 ].map((item) => (
                     <div key={item.id} onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, [item.id]: !data.extras[item.id]}}); }} className="p-5 flex justify-between items-center cursor-pointer hover:bg-[#1A1A1E] transition-colors">
