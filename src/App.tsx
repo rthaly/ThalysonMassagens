@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO DE NEGÓCIO
+// 1. CONFIGURAÇÃO DE NEGÓCIO (AJUSTADO)
 // ==================================================================================
 
 const CONFIG = {
@@ -15,16 +15,16 @@ const CONFIG = {
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
   
-  // CUPOM (Só ganha se atingir nível VIP na 1ª vez)
-  FIRST_COUPON_VAL: 15.00, 
+  // CUPOM DE 1ª VEZ (Valor Original)
+  FIRST_COUPON_VAL: 13.00, 
   
   PRICES: {
-    UPGRADE_PCT: 0.5, // 50% do valor do serviço
+    UPGRADE_PCT: 0.5, // 50% do valor
     TOUCH: 73, 
     AROMA: 5,
   },
   
-  // GAMIFICAÇÃO: Pontos necessários para liberar o cupom
+  // GAMIFICAÇÃO
   XP_THRESHOLDS: { VIP: 120, ALPHA: 250 },
   
   URLS: {
@@ -32,45 +32,47 @@ const CONFIG = {
   }
 };
 
-// LOCAIS SP (Taxas Ida e Volta)
+// LOCAIS SP - CÁLCULO REALISTA DE UBER (IDA E VOLTA)
+// Base: Bela Vista. Mínimo Uber/99 ~R$10 o trecho -> R$20 Ida/Volta.
 const SP_LOCATIONS = [
-  { id: 'bela_vista', name: 'Bela Vista', fee: 0, zone: 'Base' },
-  { id: 'augusta', name: 'Rua Augusta / Centro', fee: 10.00, zone: 'Centro' },
-  { id: 'paulista', name: 'Av. Paulista / Jardins', fee: 15.00, zone: 'Nobre' },
-  { id: 'higienopolis', name: 'Higienópolis / Sta Cecília', fee: 18.00, zone: 'Centro' },
-  { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 25.00, zone: 'Oeste' },
-  { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 30.00, zone: 'Sul' },
-  { id: 'moema', name: 'Moema / Ibirapuera', fee: 35.00, zone: 'Sul' },
-  { id: 'vila_mariana', name: 'Vila Mariana / Paraíso', fee: 28.00, zone: 'Sul' },
-  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 25.00, zone: 'Oeste' },
-  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 40.00, zone: 'Sul' },
-  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 45.00, zone: 'Leste' },
-  { id: 'morumbi', name: 'Morumbi', fee: 50.00, zone: 'Sul' },
-  { id: 'santana', name: 'Santana / ZN', fee: 45.00, zone: 'Norte' },
+  { id: 'bela_vista', name: 'Bela Vista', fee: 0, zone: 'Base' }, // Grátis/Pé
+  { id: 'augusta', name: 'Rua Augusta / Centro', fee: 18.00, zone: 'Centro' },
+  { id: 'paulista', name: 'Av. Paulista / Jardins', fee: 20.00, zone: 'Nobre' },
+  { id: 'higienopolis', name: 'Higienópolis / Sta Cecília', fee: 22.00, zone: 'Centro' },
+  { id: 'liberdade', name: 'Liberdade / Aclimação', fee: 24.00, zone: 'Centro' },
+  { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 32.00, zone: 'Oeste' },
+  { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 35.00, zone: 'Sul' },
+  { id: 'moema', name: 'Moema / Ibirapuera', fee: 38.00, zone: 'Sul' },
+  { id: 'vila_mariana', name: 'Vila Mariana / Paraíso', fee: 30.00, zone: 'Sul' },
+  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 28.00, zone: 'Oeste' },
+  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 45.00, zone: 'Sul' },
+  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 50.00, zone: 'Leste' },
+  { id: 'morumbi', name: 'Morumbi', fee: 60.00, zone: 'Sul' },
+  { id: 'santana', name: 'Santana / ZN', fee: 55.00, zone: 'Norte' },
   { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: '?' },
 ];
 
-// SERVIÇOS (TEXTOS CONVIDATIVOS)
 const SERVICES = [
   { 
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    desc: 'A favorita. Começa de bruços com massagem profunda, vira de frente com muito óleo quente, contato pele na pele intenso e finalização manual explosiva.', 
+    // DESCRIÇÃO CORRIGIDA (SEM ÓLEO QUENTE)
+    desc: 'Massagista de Cueca. O protocolo premium. Inicia de bruços soltando a musculatura, vira de frente com creme e óleos, toque corpo a corpo e finalização manual intensa.', 
     duration: 60, 
     price: 155, 
     badge: 'MAIS PEDIDA 🔥',
-    xp: 80 // XP Alto
+    xp: 100
   },
   { 
     id: 'relax', 
     name: 'Massagem Relaxante', 
     short: 'Tira Dores e Tensão',
-    desc: 'Foco 100% terapêutico. Ideal para quem treina pesado ou trabalha sentado. Manobras firmes para dissolver nós e zerar o stress. Sem toques íntimos.', 
+    desc: 'Foco 100% terapêutico e relaxante. Ideal para remover dores lombares, pernas cansadas. Toques suaves para relaxar e tirar o stress, sem toques íntimos.', 
     duration: 60, 
     price: 125, 
     badge: null,
-    xp: 40 // XP Médio
+    xp: 50
   },
 ];
 
@@ -81,8 +83,8 @@ const TIME_SLOTS = [
 
 const LEVELS = [
   { name: 'Visitante', min: 0, color: 'text-gray-400', bg: 'bg-gray-700' },
-  { name: 'Membro', min: 50, color: 'text-blue-400', bg: 'bg-blue-600' },
-  { name: 'VIP', min: 120, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, // Desbloqueia Cupom
+  { name: 'Membro', min: 50, color: 'text-blue-400', bg: 'bg-blue-500' },
+  { name: 'VIP', min: 120, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, 
   { name: 'ALPHA', min: 250, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
 ];
 
@@ -93,7 +95,6 @@ const LOCATION_TYPES = [
   { id: 'motel', label: 'Motel', icon: Flame },
 ];
 
-// AVALIAÇÕES ORIGINAIS (MANTIDAS)
 const REVIEWS_DB = [
   { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
@@ -108,10 +109,10 @@ const REVIEWS_DB = [
   { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
   { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
   { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
-  { t: "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois.", a: "Alan", s: 5 },
+  { t: "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve.", a: "Alan SP", s: 5 },
   { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
   { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
-  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
   { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
   { t: "Thalyson, quero dizer que sua massagem foi muito bem executada.", a: "Bruno", s: 5 },
   { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
@@ -121,7 +122,7 @@ const REVIEWS_DB = [
   { t: "O lubrificante é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
   { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
   { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
-  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado", s: 5 },
+  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
   { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
   { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anônimo", s: 5 },
   { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
@@ -287,7 +288,7 @@ const LocationSelector = ({ selected, onSelect }) => {
                         <p className="text-[10px] uppercase font-bold text-gray-500 mb-1">{loc.zone}</p>
                         <p className="text-sm font-bold text-white mb-2 leading-tight h-10">{loc.name}</p>
                         <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
-                            <span className="text-[10px] text-gray-400">Taxa</span>
+                            <span className="text-[10px] text-gray-400">Ida+Volta</span>
                             <span className={`text-xs font-bold ${selected?.id === loc.id ? 'text-[#0A84FF]' : 'text-white'}`}>{loc.fee === 0 ? 'Grátis' : Utils.formatBRL(loc.fee)}</span>
                         </div>
                         {selected?.id === loc.id && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#0A84FF] shadow-[0_0_10px_#0A84FF]"></div>}
@@ -305,15 +306,15 @@ const LocationSelector = ({ selected, onSelect }) => {
 export default function BookingApp() {
   const [data, setData] = useState(() => {
      try {
-       // NOVA CHAVE PARA LIMPAR CACHE ANTIGO
-       const s = localStorage.getItem('thaly_v_gold_1'); 
+       // CHAVE DE DADOS: v_uber_real
+       const s = localStorage.getItem('thaly_v_uber_real'); 
        if(s) { 
            const p = JSON.parse(s); 
            if(p.date) p.date = new Date(p.date);
            if(!p.location || !p.location.neighborhood) throw new Error("Reset");
            return p; 
        }
-     } catch(e) { localStorage.removeItem('thaly_v_gold_1'); }
+     } catch(e) { localStorage.removeItem('thaly_v_uber_real'); }
      
      return { 
          name: '', age: '', medical: false, 
@@ -336,12 +337,10 @@ export default function BookingApp() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
-  // Verifica histórico de pedidos para permitir cupom
-  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history_gold');
-  
+  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history_uber');
   const refs = { services: useRef(null), datetime: useRef(null), extras: useRef(null), location: useRef(null), payment: useRef(null) };
 
-  useEffect(() => { localStorage.setItem('thaly_v_gold_1', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_v_uber_real', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
   
   useEffect(() => {
@@ -350,15 +349,11 @@ export default function BookingApp() {
       return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // --- LÓGICA DE GAMIFICAÇÃO & PREÇO ---
   const { financials, xp } = useMemo(() => {
     let xpPoints = 0;
     const base = data.service?.price || 0;
-    
-    // XP pelo serviço
     if (data.service) xpPoints += data.service.xp;
 
-    // Preços e XP dos Extras
     const upg = data.extras?.upgrade ? (base * CONFIG.PRICES.UPGRADE_PCT) : 0;
     if (data.extras?.upgrade) xpPoints += 25;
 
@@ -368,7 +363,6 @@ export default function BookingApp() {
     const aroma = data.extras?.aroma ? CONFIG.PRICES.AROMA : 0;
     if (data.extras?.aroma) xpPoints += 15;
 
-    // Soma final
     const travelFee = data.location?.neighborhood?.fee || 0;
     const sub = base + upg + touch + aroma + travelFee;
     const desc = couponActive ? CONFIG.FIRST_COUPON_VAL : 0;
@@ -379,9 +373,6 @@ export default function BookingApp() {
     };
   }, [data, couponActive]);
 
-  const isVip = xp >= CONFIG.XP_THRESHOLDS.VIP;
-
-  // --- NAVEGAÇÃO ---
   const scrollToRef = (ref) => {
     if (ref && ref.current) {
         setTimeout(() => {
@@ -398,13 +389,12 @@ export default function BookingApp() {
   };
 
   const finalizeOrder = () => {
-      // Grava que o cliente já fez pedido (queima o cupom)
-      if(couponActive || !hasOrderedBefore) localStorage.setItem('thaly_client_history_gold', 'true');
+      if(couponActive || !hasOrderedBefore) localStorage.setItem('thaly_client_history_uber', 'true');
       setSuccess(true);
       window.scrollTo(0,0);
   };
 
-  // --- MENSAGEM WHATSAPP COMPLETA ---
+  // --- WHATSAPP DETALHADO (NOTA FISCAL) ---
   const generateMessage = () => {
     const d = data.date;
     const loc = data.location;
@@ -414,33 +404,30 @@ export default function BookingApp() {
     t += `──────────────────────\n`;
     t += `👤 *${data.name}* (${data.age}a)\n`;
     t += `📅 *${dateStr} às ${data.time}*\n`;
-    t += `💆 *${data.service?.name}*\n`;
     
-    // Lista Extras explicitamente
+    // DETALHE DO SERVIÇO
+    t += `💆 *${data.service?.name}*: ${Utils.formatBRL(financials.base)}\n`;
+    
+    // DETALHE DOS EXTRAS COM VALOR
     if(Object.values(data.extras || {}).some(Boolean)) {
         t += `🔥 *EXTRAS:*\n`;
-        if(data.extras?.upgrade) t += `+ Upgrade Tempo (+30m)\n`;
-        if(data.extras?.touch) t += `+ Interação Recíproca\n`;
-        if(data.extras?.aroma) t += `+ Aromaterapia\n`;
+        if(data.extras?.upgrade) t += `   + Upgrade 30min: ${Utils.formatBRL(financials.upg)}\n`;
+        if(data.extras?.touch) t += `   + Interação: ${Utils.formatBRL(financials.touch)}\n`;
+        if(data.extras?.aroma) t += `   + Aromaterapia: ${Utils.formatBRL(financials.aroma)}\n`;
     }
     
     t += `\n📍 *LOCAL: ${loc.neighborhood?.name}*\n`;
-    
-    if(loc.type === 'home') {
-        t += `🏠 Casa: ${loc.street}, ${loc.number}\n`;
-    } else if (loc.type === 'apto') {
-        t += `🏢 Apto: ${loc.street}, ${loc.buildingNum}\n`;
-        t += `🚪 Unidade: ${loc.aptNumber}\n`;
-    } else if (loc.type === 'hotel') {
-        t += `🏨 Hotel: ${loc.hotelName} (Qto ${loc.roomNumber})\n`;
-    } else if (loc.type === 'motel') {
-        t += `🏩 Motel: ${loc.motelName} (Suíte ${loc.suiteType || '?'})\n`;
-        t += `⚠️ *Eu pago a suíte*\n`;
-    }
+    if(loc.type === 'home') t += `🏠 Casa: ${loc.street}, ${loc.number}\n`;
+    else if (loc.type === 'apto') t += `🏢 Apto: ${loc.street}, ${loc.buildingNum} - Unid ${loc.aptNumber}\n`;
+    else if (loc.type === 'hotel') t += `🏨 Hotel: ${loc.hotelName} (Qto ${loc.roomNumber})\n`;
+    else if (loc.type === 'motel') { t += `🏩 Motel: ${loc.motelName} (Suíte ${loc.suiteType || '?'})\n`; t += `⚠️ *Eu pago a suíte*\n`; }
 
-    t += `\n💰 *TOTAL FINAL: ${Utils.formatBRL(financials.total)}*\n`;
-    if(financials.travelFee > 0) t += `🚗 Taxa Deslocamento: ${Utils.formatBRL(financials.travelFee)}\n`;
-    if(couponActive) t += `🎟️ Cupom 1ª Vez: -${Utils.formatBRL(financials.desc)}\n`;
+    // VALORES FINAIS DISCRIMINADOS
+    t += `\n💰 *RESUMO FINANCEIRO:*\n`;
+    if(financials.travelFee > 0) t += `🚗 Deslocamento (Ida+Volta): ${Utils.formatBRL(financials.travelFee)}\n`;
+    if(couponActive) t += `🎟️ Desconto 1ª Vez: -${Utils.formatBRL(financials.desc)}\n`;
+    
+    t += `\n✅ *TOTAL A PAGAR: ${Utils.formatBRL(financials.total)}*\n`;
     t += `💳 Pagamento: ${data.payment?.toUpperCase()}\n`;
     
     return `${CONFIG.URLS.WHATSAPP_API}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
@@ -476,7 +463,7 @@ export default function BookingApp() {
                     <p className="text-[#32D74B] font-black text-3xl">{Utils.formatBRL(financials.total)}</p>
                  </div>
                  <div className="text-right">
-                    <p className="text-[10px] text-gray-500 uppercase font-bold mb-1 tracking-wider">Taxa</p>
+                    <p className="text-[10px] text-gray-500 uppercase font-bold mb-1 tracking-wider">Taxa Ida/Volta</p>
                     <p className="text-white font-bold">{Utils.formatBRL(financials.travelFee)}</p>
                  </div>
               </div>
@@ -582,7 +569,7 @@ export default function BookingApp() {
                     <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-1000 ease-out" style={{ width: `${Math.min(100, (xp/300)*100)}%` }}></div>
                 </div>
                 {xp >= CONFIG.XP_THRESHOLDS.VIP && (
-                    <p className="text-[10px] text-[#FFD60A] text-center mt-2 font-bold animate-pulse">CUPOM R$ 15,00 DISPONÍVEL NO FINAL!</p>
+                    <p className="text-[10px] text-[#FFD60A] text-center mt-2 font-bold animate-pulse">CUPOM R$ 13,00 DISPONÍVEL NO FINAL!</p>
                 )}
             </div>
 
@@ -622,6 +609,7 @@ export default function BookingApp() {
                             <div><h3 className={`text-xl font-bold ${data.service?.id === s.id ? 'text-[#0A84FF]' : 'text-white'}`}>{s.name}</h3></div>
                             <span className="text-white font-bold bg-[#222] border border-[#333] px-3 py-1 rounded-lg text-sm">{Utils.formatBRL(s.price)}</span>
                         </div>
+                        <p className="text-[11px] font-bold text-[#0A84FF] uppercase tracking-wide border border-[#0A84FF]/30 inline-block px-2 py-1 rounded mb-3">{s.short}</p>
                         <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
                     </div>
                 ))}
