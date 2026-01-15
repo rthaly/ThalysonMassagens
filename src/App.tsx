@@ -750,7 +750,7 @@ export default function BookingApp() {
                  </div>
                  
                  <div className="pt-6 border-t border-[#333]">
-                     <p className="text-[10px] text-gray-500 text-center uppercase">Thalyson Massagens © 2024</p>
+                     <p className="text-[10px] text-gray-500 text-center uppercase">Thalyson Massagens © 2026</p>
                  </div>
              </div>
         </div>
