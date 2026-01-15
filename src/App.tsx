@@ -864,7 +864,7 @@ export default function BookingApp() {
                 <p className="text-[var(--primary)] font-bold text-[10px] uppercase tracking-widest mb-1">{Utils.getGreeting()}</p>
                 {/* TITULO ANIMADO */}
                 <h1 className="text-3xl font-bold text-white leading-tight title-anim">
-                    Thalyson<br/>Massagens.
+                    Agende seu relaxamento<br/>hoje mesmo.
                 </h1>
                 <div onClick={() => setCitySelectorOpen(true)} className="inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-full bg-[#222] border border-[#333] cursor-pointer">
                     <MapPin size={12} className="text-gray-400"/>
