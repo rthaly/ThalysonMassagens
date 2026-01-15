@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Check, Star, ArrowRight, Home, MessageCircle, 
   Ticket, Flame, Wind, Crown, Shield, MapPin, Building,
@@ -13,13 +13,10 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_VERSION: '9.0.0-FIXED',
-  REGION_MODE: 'SP', 
+  APP_KEY: 'thaly_v10_reset', // Chave nova para não dar conflito
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
-  
-  // FINANCEIRO
   COUPON_VAL: 15.00, 
   PRICES: {
     UPGRADE_PCT: 0.5, 
@@ -27,12 +24,10 @@ const CONFIG = {
     AROMA: 5,
     RUSH_HOUR_FEE: 15,
   },
-  
-  XP_THRESHOLDS: { VIP: 100, ALPHA: 150 },
+  XP_THRESHOLDS: { VIP: 100 },
   URLS: { WHATSAPP_API: "https://api.whatsapp.com/send" }
 };
 
-// LOCAIS
 const LOCATIONS_DB = [
     { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 0, zone: 'Base' },
     { id: 'consola', name: 'Consolação / Centro', fee: 10, zone: 'Zona 1' },
@@ -60,7 +55,7 @@ const SERVICES = [
     price: 155, 
     badge: 'MAIS PEDIDA 🔥',
     xp: 60,
-    highlight: true // Borda dourada
+    highlight: true 
   },
   { 
     id: 'relax', 
@@ -106,7 +101,6 @@ const FAQS = [
   { q: "Você leva maca?", a: "Não. O atendimento é realizado no conforto da sua cama ou sofá. Levo óleos, toalhas, música e aromaterapia para ambientar o local." }
 ];
 
-// AVALIAÇÕES REAIS E COMPLETAS
 const REVIEWS_DB = [
   { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida. Me senti muito conectado.", a: "Tiago (Bela Vista)", s: 5 },
   { t: "Gostei bastante, me senti bem relaxado depois, saí mais leve. O papo fluiu bem e a técnica é ótima.", a: "Alan", s: 5 },
@@ -131,7 +125,7 @@ const LIVE_NOTIFICATIONS = [
 ];
 
 // ==================================================================================
-// UTILS & STYLES
+// UTILS
 // ==================================================================================
 
 const Utils = {
@@ -164,21 +158,16 @@ const globalStyles = `
 body { background: var(--bg-app); color: #fff; padding-bottom: env(safe-area-inset-bottom); overflow-x: hidden; scroll-behavior: smooth; }
 input, select, button { outline: none; }
 
-/* SCROLL CORRIGIDO E SUAVE */
+/* SCROLL NATIVO CORRIGIDO */
 .ios-scroll { 
     display: flex;
     overflow-x: auto;
     gap: 12px;
     padding: 0 4px 16px 4px;
     -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
 }
 .ios-scroll::-webkit-scrollbar { display: none; }
-.ios-scroll > * { 
-    flex-shrink: 0; 
-    scroll-snap-align: center;
-}
+.ios-scroll > * { flex-shrink: 0; }
 
 .glass-header { background: rgba(5, 5, 5, 0.95); border-bottom: 1px solid #222; }
 .card-base { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; position: relative; overflow: hidden; }
@@ -223,7 +212,6 @@ const StatusBar = () => {
   );
 };
 
-// LIVE BUBBLES AJUSTADO (Mais lento e fluido)
 const LiveBubbles = () => {
     const [msg, setMsg] = useState(null);
     const [queue, setQueue] = useState([]);
@@ -239,11 +227,9 @@ const LiveBubbles = () => {
                 const nextMsg = queue[0];
                 setMsg(nextMsg);
                 setQueue(q => q.slice(1));
-                // Fica visível por 5 segundos
                 setTimeout(() => setMsg(null), 5000); 
             }
         };
-        // Novo ciclo a cada 12 segundos (Mais calmo)
         const interval = setInterval(cycle, 12000); 
         cycle(); 
         return () => clearInterval(interval);
@@ -254,7 +240,7 @@ const LiveBubbles = () => {
       <div className="fixed top-28 left-1/2 -translate-x-1/2 z-30 w-max max-w-[90%] pointer-events-none">
         <div className="bg-[#1C1C1E]/95 backdrop-blur-md border border-white/10 pl-3 pr-4 py-2 rounded-full flex items-center gap-3 shadow-2xl animate-enter">
            <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0">
-              <span className="text-xs">🔔</span>
+              <span className="text-xs">✨</span>
            </div>
            <div>
                <p className="text-[10px] text-gray-400 font-bold uppercase mb-0.5">Agora</p>
@@ -307,44 +293,47 @@ const FAQSection = () => {
 // ==================================================================================
 
 export default function BookingApp() {
-  const [data, setData] = useState(() => {
-     try {
-       const s = localStorage.getItem('thaly_v9_fixed');
-       if(s) { 
-           const p = JSON.parse(s); 
-           if(p.date) p.date = new Date(p.date);
-           return p; 
-       }
-     } catch(e) { console.error("Resetting data", e); }
-     
-     // Estado Seguro
-     return { 
-         name: '', age: '', medical: false, 
-         mood: null, service: null, date: null, time: null, 
-         extras: { upgrade: false, touch: false, aroma: false }, 
-         prefs: { music: 'Zen / Spa' },
-         payment: null,
-         couponRescued: false,
-         location: { city: LOCATIONS_DB[0], type: 'home', street: '', number: '', district: '', reference: '', building: '', block: '', aptNumber: '', intercom: '', hotelName: '', roomNumber: '', motelName: '', suiteType: '' }
-     };
+  // ESTADO INICIAL FIXO PARA EVITAR ERROS DE HYDRATION/STORAGE
+  const [data, setData] = useState({ 
+     name: '', age: '', medical: false, 
+     mood: null, service: null, date: null, time: null, 
+     extras: { upgrade: false, touch: false, aroma: false }, 
+     prefs: { music: 'Zen / Spa' },
+     payment: null,
+     couponRescued: false,
+     location: { city: LOCATIONS_DB[0], type: 'home', street: '', number: '', district: '', reference: '', building: '', block: '', aptNumber: '', intercom: '', hotelName: '', roomNumber: '', motelName: '', suiteType: '' }
   });
 
   const [stage, setStage] = useState(0); 
   const [hasCoupon, setHasCoupon] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [helpOpen, setHelpOpen] = useState(false);
   const [toast, setToast] = useState(null);
+
+  // EFEITO PARA CARREGAR DADOS SOMENTE DEPOIS DE MONTAR (EVITA CRASH)
+  useEffect(() => {
+      try {
+          const s = localStorage.getItem(CONFIG.APP_KEY);
+          if (s) {
+              const p = JSON.parse(s);
+              if (p.date) p.date = new Date(p.date);
+              setData(p);
+              if(p.couponRescued) setHasCoupon(true);
+          }
+      } catch (e) {
+          console.log("Erro ao carregar dados, iniciando limpo.");
+      }
+  }, []);
+
+  // SALVAR DADOS
+  useEffect(() => {
+      localStorage.setItem(CONFIG.APP_KEY, JSON.stringify(data));
+  }, [data]);
 
   const refs = {
     intro: useRef(null), mood: useRef(null), services: useRef(null), datetime: useRef(null), 
     extras: useRef(null), location: useRef(null), payment: useRef(null)
   };
-
-  useEffect(() => { localStorage.setItem('thaly_v9_fixed', JSON.stringify(data)); }, [data]);
-  useEffect(() => { setTimeout(() => setLoading(false), 1200); }, []);
-  
-  useEffect(() => { if(data.couponRescued) setHasCoupon(true); }, [data.couponRescued]);
 
   const { financials, xp } = useMemo(() => {
     let xpPoints = 0;
@@ -364,9 +353,8 @@ export default function BookingApp() {
     const rushFee = isRush ? CONFIG.PRICES.RUSH_HOUR_FEE : 0;
     const travelFee = data.location.city ? data.location.city.fee : 0;
     
-    // Separação de valores
-    const serviceTotal = base + upg + touch + aroma + rushFee; // Massagista
-    const transportTotal = travelFee; // Uber
+    const serviceTotal = base + upg + touch + aroma + rushFee; 
+    const transportTotal = travelFee; 
     
     const sub = serviceTotal + transportTotal;
     const desc = hasCoupon ? CONFIG.COUPON_VAL : 0;
@@ -398,7 +386,6 @@ export default function BookingApp() {
 
   const showToast = (msg) => setToast({msg});
 
-  // MENSAGEM WHATSAPP
   const generateMessage = () => {
     const d = data.date;
     const loc = data.location;
@@ -455,18 +442,6 @@ export default function BookingApp() {
       if (l.type === 'motel') return l.motelName;
       return false;
   };
-
-  if (loading) return (
-    <div className="fixed inset-0 bg-[#050505] z-50 flex flex-col items-center justify-center">
-      <style>{globalStyles}</style>
-      <div className="relative">
-          <div className="w-20 h-20 bg-[#111] border-2 border-[#222] rounded-2xl flex items-center justify-center animate-pulse">
-              <span className="text-3xl">🌿</span>
-          </div>
-      </div>
-      <p className="text-gray-500 text-[10px] uppercase tracking-widest mt-4 font-bold">Carregando...</p>
-    </div>
-  );
 
   if (success) return (
     <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 animate-enter text-center">
@@ -772,11 +747,11 @@ export default function BookingApp() {
                     </div>
                 </div>
                 {!hasCoupon ? (
-                    isVip && !data.couponRescued ? (
+                    (xp >= CONFIG.XP_THRESHOLDS.VIP) && !data.couponRescued ? (
                         <button onClick={() => { setHasCoupon(true); setData({...data, couponRescued: true}); Utils.vibrate(); showToast('Desconto Aplicado!'); }} className="h-10 px-4 rounded-full bg-[#FFD60A] text-black font-bold text-xs animate-bounce flex items-center gap-2"><Ticket size={14}/> USAR CUPOM</button>
                     ) : (
                         <div className="text-right">
-                             <div className="text-[9px] text-gray-500 mb-1">Falta {CONFIG.XP_THRESHOLDS.VIP - xp} XP</div>
+                             <div className="text-[9px] text-gray-500 mb-1">Falta {Math.max(0, CONFIG.XP_THRESHOLDS.VIP - xp)} XP</div>
                              <div className="w-20 h-1.5 bg-[#333] rounded-full overflow-hidden"><div className="h-full bg-gray-600" style={{width: `${(xp/CONFIG.XP_THRESHOLDS.VIP)*100}%`}}></div></div>
                         </div>
                     )
