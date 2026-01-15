@@ -13,7 +13,8 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v21_senior', 
+  APP_KEY: 'thaly_v23_final_pro', 
+  COUPON_KEY_PERMANENT: 'thaly_coupon_used_permanent_v1', // Chave para travar o cupom para sempre
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
@@ -70,8 +71,7 @@ const CITIES_DB = {
     motelFee: 0, 
     motelWarn: "Suíte (~R$ 75) paga diretamente ao Motel",
     locations: [
-      // 21.50 * 2 = 43.00 (Ida e Volta)
-      { id: 'centro_sfs', name: 'Santa Fé (Cidade)', fee: 21.50, zone: 'Urbana' },
+      { id: 'centro_sfs', name: 'Santa Fé (Cidade)', fee: 21.50, zone: 'Urbana' }, // x2 = 43
       { id: 'tres_fronteiras', name: 'Três Fronteiras', fee: 30, zone: 'Vicinais' },
       { id: 'zona_rural', name: 'Ranchos / Zona Rural', fee: 40, zone: 'Rural' },
     ]
@@ -142,43 +142,62 @@ const FAQS = [
 ];
 
 // ==================================================================================
-// REVIEWS EXTENDIDAS
+// REVIEWS DATABASE
 // ==================================================================================
 const REVIEWS_DB = [
-  { t: "Estava carente e precisando disso. O Thalyson me deu uma atenção surreal. Gozei muito no final.", a: "Ricardo", s: 5 },
-  { t: "Sou casado, o sigilo foi total. O toque dele arrepia, sai de perna bamba. Recomendo.", a: "Anônimo", s: 5 },
-  { t: "Gostei da massagem, mão firme. Só dou 4 estrelas porque atrasou 10 min por causa da chuva.", a: "Paulo", s: 4 },
-  { t: "Pegada de macho mesmo. Sou passivo e ele soube exatamente como me tocar. Virei cliente fixo.", a: "Felipe", s: 5 },
-  { t: "O atendimento é ótimo, o menino é educado. Mas achei o óleo um pouco frio no começo.", a: "Carlos", s: 4 },
-  { t: "Melhor finalização que já tive. Saiu muito leite, me senti leve. Recomendo pra quem quer carinho.", a: "André", s: 5 },
-  { t: "Muito bom, mas passou tão rápido... queria ter ficado a tarde toda.", a: "Bruno", s: 4 },
-  { t: "Tirou todo meu stress. O final foi explosivo, lavou a alma. O cara entende do assunto.", a: "Marcos", s: 5 },
-  { t: "Tenho 50 anos e sou reservado. Ele me deixou super confortável. Profissional nota 10.", a: "Roberto", s: 5 },
-  { t: "A massagem relaxante tira a dor das costas mesmo. Mãos fortes.", a: "Lucas", s: 5 },
-  { t: "Fiquei com vergonha no começo, mas ele desenrolou bem. O final foi top.", a: "Júnior", s: 5 },
-  { t: "Preço justo pelo serviço. É difícil achar massagista homem que saiba o que está fazendo.", a: "Eduardo", s: 5 },
-  { t: "Curti, mas o motel que eu escolhi era meio ruim. O Thalyson foi ótimo.", a: "Anônimo", s: 4 },
-  { t: "Simpático e discreto. Minha esposa estava em casa e nem percebeu nada.", a: "Sérgio", s: 5 },
-  { t: "Massagem top, mas demorou pra responder no WhatsApp. Valeu a pena esperar.", a: "Gustavo", s: 4 },
-  { t: "Sensação única. O toque dele é diferente, viciante. Já agendei a próxima.", a: "Vitor", s: 5 },
-  { t: "Sou gordinho e tinha receio. Ele me tratou como rei. Autoestima foi lá em cima.", a: "Pedro", s: 5 },
-  { t: "Energia muito boa. O papo flui e a mão desliza. Recomendo a completa.", a: "Fábio", s: 5 },
-  { t: "No começo achei caro, mas depois que ele finalizou vi que vale cada centavo.", a: "Ramon", s: 5 },
-  { t: "Mão pesada na medida certa. Tirou meus nós e me deixou leve.", a: "Caio", s: 5 },
-  { t: "Chegou no horário certinho. Roupa limpa, cheiroso. Organizado.", a: "Renato", s: 5 },
-  { t: "Achei que não ia conseguir relaxar, mas apaguei na maca. Acordei novo.", a: "Danilo", s: 5 },
-  { t: "Finalização manual perfeita. Ele sabe controlar o ritmo. Foi intenso.", a: "Léo", s: 5 },
-  { t: "Sou de fora da cidade, fui no hotel. Atendimento rápido e direto. Gostei.", a: "Jorge", s: 4 },
-  { t: "Ótimo profissional, mas podia ter mais horários à noite.", a: "Matheus", s: 4 },
-  { t: "Primeira vez com homem. Foi surpreendente. Respeito total.", a: "Fernando", s: 5 },
-  { t: "Aromaterapia fez diferença. O clima ficou muito envolvente.", a: "Breno", s: 5 },
-  { t: "Moraes aqui. Cara, tu salvou minha semana. Tava travado. Valeu!", a: "Moraes", s: 5 },
-  { t: "Não é só punheta, é massagem de verdade. O final é consequência boa.", a: "Gilberto", s: 5 },
-  { t: "Fui por indicação e não me arrependi. Sigilo 100%.", a: "Anônimo", s: 5 },
-  { t: "Queria que tivesse durado mais, foi muito gostoso.", a: "Tales", s: 4 },
-  { t: "O cara é gente boa demais. Deixa a gente à vontade pra pedir o que gosta.", a: "Murilo", s: 5 },
-  { t: "Banho tomado, toalha limpa. Higiene impecável. Parabéns.", a: "Otávio", s: 5 },
-  { t: "Gozei demais, sujou tudo kkkk ele foi super tranquilo. Recomendo.", a: "P.H.", s: 5 },
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
+  { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
+  { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
+  { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
+  { t: "Ele de cueca branca... sem comentários. Visual nota 1000.", a: "Fã", s: 5 },
+  { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
+  { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
+  { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
+  { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
+  { t: "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve. Da pra ver que ele manda bem no que faz. Obrigado!", a: "Alan SP ", s: 5 },
+  { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
+  { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
+  { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
+  { t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito e com certeza vou repetir logo, logo", a: "Bruno (Bela Vista)", s: 5 },
+  { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
+  { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
+  { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
+  { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
+  { t: "O lubrificante é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
+  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
+  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
+  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
+  { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
+  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anônimo", s: 5 },
+  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
+  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Motorista", s: 5 },
+  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
+  { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
+  { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
+  { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
+  { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
+  { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
+  { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
+  { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
+  { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
+  { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
+  { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
+  { t: "Fiz no meu apto e foi Prático.", a: "Morador Centro", s: 5 },
+  { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
+  { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
+  { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
+  { t: "O final foi explosivo. Recomendo.", a: "Anônimo", s: 5 },
+  { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
+  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 },
+  { t: "Paz de espírito e corpo relaxado. Obrigado.", a: "Fernando", s: 5 },
+  { t: "Gostei da massagem, mão firme. Só dou 4 estrelas porque atrasou 10 min por causa da chuva.", a: "Paulo", s: 4 }, // Mantido estrategicamente
+  { t: "O atendimento é ótimo, o menino é educado. Mas achei o óleo um pouco frio no começo.", a: "Carlos", s: 4 }, // Mantido estrategicamente
+  { t: "Muito bom, mas passou tão rápido... queria ter ficado a tarde toda.", a: "Bruno", s: 4 } // Mantido estrategicamente
 ];
 
 // ==================================================================================
@@ -282,7 +301,7 @@ const StatusBar = ({ cityName, onSwitchCity }) => {
 };
 
 // COMPONENTE DE TICKET (RESUMO)
-const TicketSummary = ({ data, financials, hasCoupon, onToggleCoupon, xp, isInteractive = false }) => {
+const TicketSummary = ({ data, financials, hasCoupon, onToggleCoupon, xp, isInteractive = false, couponUsedGlobal }) => {
     return (
         <div className="bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 relative overflow-hidden shadow-2xl animate-enter mb-6">
             <div className="absolute top-1/2 -left-3 w-6 h-6 bg-[#050505] rounded-full"></div>
@@ -352,7 +371,8 @@ const TicketSummary = ({ data, financials, hasCoupon, onToggleCoupon, xp, isInte
                  )}
             </div>
 
-            {isInteractive && !hasCoupon && xp >= CONFIG.XP_THRESHOLDS.VIP && !data.couponRescued && (
+            {/* SÓ MOSTRA SE NÃO USOU O CUPOM AINDA NA VIDA E SE É VIP */}
+            {isInteractive && !hasCoupon && !couponUsedGlobal && xp >= CONFIG.XP_THRESHOLDS.VIP && !data.couponRescued && (
                 <button onClick={onToggleCoupon} className="w-full py-3 bg-[#FFD60A]/10 border border-[#FFD60A] rounded-xl text-[#FFD60A] font-bold text-xs flex items-center justify-center gap-2 mb-2 animate-pulse">
                     <Ticket size={16}/> ATIVAR CUPOM DE DESCONTO
                 </button>
@@ -386,7 +406,7 @@ const ReviewsList = () => {
     return (
         <div className="mb-8 mt-4">
             <h4 className="text-[10px] font-bold text-gray-500 uppercase mb-3 px-1 flex items-center gap-1 opacity-70">
-                <Heart size={10} className="text-red-500"/> Experiências Reais (+{REVIEWS_DB.length})
+                <Heart size={10} className="text-red-500"/> Experiências Reais ({REVIEWS_DB.length})
             </h4>
             <div className="ios-scroll" ref={scrollRef}>
                 {REVIEWS_DB.map((r, i) => (
@@ -451,6 +471,14 @@ export default function BookingApp() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [citySelectorOpen, setCitySelectorOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  const [couponUsedGlobal, setCouponUsedGlobal] = useState(false);
+
+  // Check if coupon was EVER used in this browser
+  useEffect(() => {
+    if (localStorage.getItem(CONFIG.COUPON_KEY_PERMANENT)) {
+        setCouponUsedGlobal(true);
+    }
+  }, []);
 
   // Update data.city when activeCityId changes
   useEffect(() => {
@@ -634,6 +662,21 @@ export default function BookingApp() {
       return false;
   };
 
+  const handleConfirmAndSend = () => {
+      // 1. Marca o cupom como usado para sempre se foi aplicado
+      if (hasCoupon) {
+          localStorage.setItem(CONFIG.COUPON_KEY_PERMANENT, 'true');
+      }
+      
+      // 2. Abre o WhatsApp imediatamente
+      const link = generateMessage();
+      window.open(link, '_blank');
+      
+      // 3. Mostra a tela de sucesso como feedback no app
+      setSuccess(true);
+      window.scrollTo(0,0);
+  };
+
   return (
     <div className="min-h-screen pb-48 relative bg-[#050505]">
       <style>{globalStyles}</style>
@@ -709,7 +752,7 @@ export default function BookingApp() {
                 <Check size={40} strokeWidth={4} />
             </div>
             <h2 className="text-3xl font-black text-white mb-2">TUDO CERTO!</h2>
-            <p className="text-gray-400 mb-8 text-sm">Confira os detalhes abaixo e envie para o WhatsApp.</p>
+            <p className="text-gray-400 mb-8 text-sm">Se o WhatsApp não abriu, clique abaixo.</p>
 
             {/* TICKET RESUMO VISUAL */}
             <div className="w-full max-w-sm">
@@ -718,7 +761,8 @@ export default function BookingApp() {
                     financials={financials} 
                     hasCoupon={hasCoupon} 
                     xp={xp} 
-                    isInteractive={false} 
+                    isInteractive={false}
+                    couponUsedGlobal={true} // Força esconder cupom na view de sucesso
                 />
             </div>
 
@@ -988,8 +1032,9 @@ export default function BookingApp() {
                 onToggleCoupon={() => { setHasCoupon(true); setData({...data, couponRescued: true}); Utils.vibrate(); showToast('Desconto Aplicado!'); }}
                 xp={xp}
                 isInteractive={true} 
+                couponUsedGlobal={couponUsedGlobal}
             />
-             <button onClick={() => { setSuccess(true); window.scrollTo(0,0); }} className="primary-btn w-full h-14 text-lg flex items-center justify-center gap-2 mb-32">
+             <button onClick={handleConfirmAndSend} className="primary-btn w-full h-14 text-lg flex items-center justify-center gap-2 mb-32">
                 Confirmar Agendamento <MessageCircle size={20}/>
             </button>
         </section>
