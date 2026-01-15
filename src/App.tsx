@@ -1,672 +1,551 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  Check, Star, ArrowRight, Bed, Home, MessageCircle, 
-  Ticket, Lock, Flame, Wind, Crown, Shield, MapPin, Building,
-  CreditCard, Banknote, QrCode, ChevronLeft, Menu, X, 
-  HelpCircle, Instagram, Calendar as CalendarIcon, Clock, User, AlertTriangle, Car, Copy, Info, Sparkles, Navigation, Zap
+  Check, Star, ArrowRight, Home, Building, Bed, Flame, 
+  MapPin, Calendar as CalendarIcon, Clock, User, 
+  Ticket, Shield, Zap, Info, ChevronRight, X, Copy, 
+  CreditCard, Banknote, QrCode, Navigation
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONSTANTES & DADOS (IMUTÁVEIS)
+// 1. CORE BUSINESS & DATA (FIXOS)
 // ==================================================================================
 
-const APP_VERSION = 'THALY_V200_ULTRA_STABLE'; // Mudança de chave para limpar cache bugado
+const SYSTEM_VERSION = 'THALY_REBOOT_V10_FINAL'; // Chave única para resetar cache
 
 const CONFIG = {
-  PHONE: "5517991360413", 
-  INSTAGRAM: "thalymassagens",
-  PIX_KEY: "62922530000144", 
-  FIRST_COUPON_VAL: 15.00,
-  
+  PHONE: "5517991360413",
+  PIX: "62922530000144",
+  COUPON_VALUE: 15.00,
   PRICES: {
-    UPGRADE_PCT: 0.5, 
-    TOUCH: 73, 
-    AROMA: 5,
+    UPGRADE_PCT: 0.5, // 50%
+    TOUCH: 73,
+    AROMA: 5
   },
-  
-  XP_THRESHOLDS: { MEMBER: 50, VIP: 150, ALPHA: 300 },
-  URLS: { WHATSAPP: "https://api.whatsapp.com/send" }
+  XP_LEVELS: { VIP: 150, ALPHA: 300 }
 };
 
-const LOCATIONS = [
-  { id: 'bela_vista', name: 'Bela Vista', fee: 0, zone: 'Base' },
-  { id: 'augusta', name: 'Augusta / Centro', fee: 15.00, zone: 'Centro' },
-  { id: 'paulista', name: 'Paulista / Jardins', fee: 20.00, zone: 'Nobre' },
-  { id: 'higienopolis', name: 'Higienópolis', fee: 25.00, zone: 'Centro' },
-  { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 30.00, zone: 'Oeste' },
-  { id: 'itaim', name: 'Itaim / V. Olímpia', fee: 35.00, zone: 'Sul' },
-  { id: 'moema', name: 'Moema / Ibirapuera', fee: 35.00, zone: 'Sul' },
-  { id: 'mariana', name: 'Vila Mariana', fee: 30.00, zone: 'Sul' },
-  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 30.00, zone: 'Oeste' },
-  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 40.00, zone: 'Sul' },
-  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 50.00, zone: 'Leste' },
-  { id: 'morumbi', name: 'Morumbi', fee: 60.00, zone: 'Sul' },
-  { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: '?' },
+// CÁLCULO REALISTA DE UBER (IDA E VOLTA)
+// Base: Bela Vista. Mínimo R$10 trecho -> R$20 Total.
+const ZONES = [
+  { id: 'bela_vista', name: 'Bela Vista', fee: 0, time: '5 min' },
+  { id: 'augusta', name: 'Augusta / Centro', fee: 18.00, time: '10 min' },
+  { id: 'paulista', name: 'Paulista / Jardins', fee: 22.00, time: '15 min' },
+  { id: 'higienopolis', name: 'Higienópolis', fee: 25.00, time: '20 min' },
+  { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 32.00, time: '25 min' },
+  { id: 'itaim', name: 'Itaim / V. Olímpia', fee: 38.00, time: '30 min' },
+  { id: 'moema', name: 'Moema / Ibirapuera', fee: 42.00, time: '35 min' },
+  { id: 'vila_mariana', name: 'Vila Mariana', fee: 30.00, time: '25 min' },
+  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 28.00, time: '25 min' },
+  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 45.00, time: '40 min' },
+  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 55.00, time: '45 min' },
+  { id: 'morumbi', name: 'Morumbi', fee: 65.00, time: '50 min' },
+  { id: 'santana', name: 'Santana / ZN', fee: 50.00, time: '45 min' },
+  { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, time: '?' },
 ];
 
 const SERVICES = [
   { 
     id: 'completa', 
     name: 'Experiência Completa', 
-    desc: 'Massagista de Cueca. O protocolo premium. Inicia de bruços soltando a musculatura, vira de frente com creme e óleos, toque corpo a corpo e finalização manual intensa.', 
-    duration: 60, 
+    tag: 'PREMIUM 🔥',
+    desc: 'O protocolo exclusivo. Massagem profunda para soltar a musculatura, cremes e óleos de alta qualidade, toque corpo a corpo e finalização manual intensa.', 
     price: 155, 
-    badge: 'MAIS PEDIDA 🔥',
-    xp: 100
+    duration: 60,
+    xp: 100 
   },
   { 
     id: 'relax', 
     name: 'Massagem Relaxante', 
-    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares, pernas cansadas. Toques firmes para tirar o stress, sem toques íntimos.', 
-    duration: 60, 
+    tag: 'TERAPÊUTICA 🌿',
+    desc: 'Foco 100% no alívio de dores e tensão muscular. Toques firmes e técnicos para zerar o stress. Sem toques íntimos.', 
     price: 125, 
-    badge: null,
-    xp: 50
-  },
+    duration: 60,
+    xp: 50 
+  }
 ];
 
-const EXTRAS_OPTS = [
-  { id: 'upgrade', label: '+30 Minutos', desc: 'Mais tempo de sessão.', icon: Clock, getPrice: (base) => base * CONFIG.PRICES.UPGRADE_PCT, xp: 30 },
-  { id: 'touch', label: 'Interação / Toque', desc: 'Toques recíprocos permitidos.', icon: Flame, getPrice: () => CONFIG.PRICES.TOUCH, xp: 40 },
-  { id: 'aroma', label: 'Aromaterapia', desc: 'Essências que acalmam.', icon: Wind, getPrice: () => CONFIG.PRICES.AROMA, xp: 15 }
+const EXTRAS = [
+  { id: 'upgrade', name: 'Upgrade 30min', desc: 'Mais tempo de sessão', icon: Clock, price: (base) => base * 0.5, xp: 30 },
+  { id: 'touch', name: 'Interação', desc: 'Toques recíprocos', icon: Flame, price: () => 73, xp: 40 },
+  { id: 'aroma', name: 'Aromaterapia', desc: 'Essências relaxantes', icon: Wind, price: () => 5, xp: 15 },
 ];
-
-const TIME_SLOTS = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
 
 const REVIEWS = [
-  { t: "O toque dele vicia. A finalização foi absurda.", a: "Anônimo", s: 5 },
-  { t: "Fui pra relaxar e saí de perna bamba. Surreal.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
-  { t: "Sou casado, tinha receio. O sigilo foi absoluto.", a: "Empresário", s: 5 },
-  { t: "O upgrade vale cada centavo. Não dá vontade de parar.", a: "Roberto", s: 5 },
+  { text: "Melhor massagem da vida. O toque é surreal.", author: "Tiago", stars: 5 },
+  { text: "Sigilo absoluto. Atendeu no meu escritório.", author: "Empresário", stars: 5 },
+  { text: "A finalização foi absurda. Recomendo.", author: "Anônimo", stars: 5 },
+  { text: "Mão firme e pegada de macho. Gostei.", author: "Curioso SP", stars: 5 },
 ];
 
-const LIVE_ALERTS = [
-  "🔥 João agendou agora", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira quase cheia",
-  "✅ Matheus confirmou", "💎 Murilo virou VIP", "🏠 Atendimento Hotel iniciado", 
-  "💳 Pix recebido", "🚗 Thalyson a caminho", "✨ Avaliação 5 estrelas recebida",
-  "📍 Atendimento na Bela Vista", "🎁 Cupom resgatado", "🔒 Dados seguros"
-];
-
-const LOCATION_TYPES = [
-  { id: 'home', label: 'Casa', icon: Home },
-  { id: 'apto', label: 'Apto', icon: Building },
-  { id: 'hotel', label: 'Hotel', icon: Bed },
-  { id: 'motel', label: 'Motel', icon: Flame },
+const NOTIFICATIONS = [
+  "🔥 João agendou agora", "👀 5 pessoas vendo a agenda", "📅 Sexta quase lotada",
+  "✅ Matheus confirmou", "💎 Murilo virou VIP", "🏠 Atendimento Hotel iniciado",
+  "🚗 Thalyson a caminho", "✨ Avaliação 5 estrelas recebida", "💳 Pix recebido"
 ];
 
 // ==================================================================================
-// 2. ESTILOS GLOBAIS (DESIGN SYSTEM PREMIUM)
+// 2. ESTILOS GLOBAIS (NOVO VISUAL "OBSIDIAN")
 // ==================================================================================
 
-const globalStyles = `
-:root { --primary: #0A84FF; --bg: #050505; --card: #121212; --border: #222; --success: #32D74B; }
+const styles = `
+:root { --primary: #2563EB; --accent: #34D399; --bg: #000000; --surface: #09090B; --border: #27272A; }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
-html { background: var(--bg); }
-body { background: var(--bg); color: #fff; overflow-x: hidden; min-height: 100vh; padding-bottom: 140px; }
-input, button { outline: none; }
+body { background: var(--bg); color: #fff; overflow-x: hidden; padding-bottom: 140px; }
+input, button, select { outline: none; }
 
+/* Scrollbars */
 .hide-scroll::-webkit-scrollbar { display: none; }
 .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* Animações */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
 
-.anim-enter { animation: fadeIn 0.5s ease-out forwards; }
-.anim-pop { animation: scaleIn 0.3s cubic-bezier(0.17, 0.67, 0.23, 1.4) forwards; }
+.anim-enter { animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 .btn-pulse { animation: pulse 2s infinite; }
 
-.logo-shimmer {
-  background: linear-gradient(90deg, #fff 0%, #0A84FF 50%, #fff 100%);
-  background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 4s infinite linear;
-}
-
 /* Componentes */
-.glass-nav { background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 50; }
-.card-base { background: var(--card); border: 1px solid var(--border); border-radius: 20px; transition: all 0.2s; }
-.card-active { border-color: var(--primary); background: rgba(10, 132, 255, 0.08); box-shadow: 0 4px 20px rgba(10, 132, 255, 0.1); }
-.input-clean { background: #1C1C1E; border: 1px solid #333; color: white; border-radius: 14px; width: 100%; padding: 16px; font-size: 16px; transition: 0.2s; }
-.input-clean:focus { border-color: var(--primary); background: #262626; box-shadow: 0 0 0 2px rgba(10,132,255,0.2); }
-.btn-primary { background: linear-gradient(135deg, #0A84FF 0%, #0056B3 100%); color: white; border-radius: 18px; font-weight: 700; border: none; box-shadow: 0 8px 25px rgba(10, 132, 255, 0.25); transition: transform 0.1s; }
-.btn-primary:active { transform: scale(0.97); }
-.btn-disabled { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
-.section-disabled { opacity: 0.3; pointer-events: none; }
+.glass { background: rgba(9, 9, 11, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; transition: all 0.2s; position: relative; overflow: hidden; }
+.card.active { border-color: var(--primary); background: rgba(37, 99, 235, 0.08); box-shadow: 0 0 20px rgba(37, 99, 235, 0.1); }
+
+.input { width: 100%; background: #18181B; border: 1px solid #333; color: white; padding: 16px; border-radius: 14px; font-size: 16px; transition: 0.2s; }
+.input:focus { border-color: var(--primary); background: #202025; }
+
+.btn-main { background: linear-gradient(135deg, #2563EB, #1D4ED8); color: white; width: 100%; padding: 18px; border-radius: 18px; font-weight: 800; border: none; font-size: 16px; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-main:active { transform: scale(0.98); }
+.btn-main:disabled { opacity: 0.5; filter: grayscale(1); }
+
+.badge-shimmer { background: linear-gradient(90deg, #fff 0%, #2563EB 50%, #fff 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s infinite linear; font-weight: 900; }
 `;
 
 // ==================================================================================
-// 3. UTILITÁRIOS (ROBUSTEZ)
+// 3. UTILITÁRIOS
 // ==================================================================================
 
 const Utils = {
   fmt: (v) => v ? v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ 0,00',
   vibrate: () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10); },
   shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
-  
-  getGreeting: () => {
-    const h = new Date().getHours();
-    return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
-  },
-
   isBlocked: (d, t) => {
     if (!d) return true;
     const now = new Date();
     const sel = new Date(d); sel.setHours(0,0,0,0);
     const today = new Date(); today.setHours(0,0,0,0);
-    if (sel < today) return true; // Passado
-    if (sel > today) return false; // Futuro
+    if (sel < today) return true;
+    if (sel > today) return false;
     const [h] = t.split(':').map(Number);
-    return h <= now.getHours() + 1; // Bloqueia próxima 1h
+    const slot = new Date(); slot.setHours(h, 0, 0, 0);
+    return slot < new Date(now.getTime() + 60 * 60000); // Bloqueia 1h
   }
 };
 
 // ==================================================================================
-// 4. COMPONENTES VISUAIS
-// ==================================================================================
-
-const Header = ({ onHelp }) => (
-  <header className="fixed top-0 w-full glass-nav py-3 px-5 flex justify-between items-center transition-all">
-    <div className="flex items-center gap-2" onClick={() => window.location.reload()}>
-       <div className="w-8 h-8 bg-[#0A84FF] rounded-lg flex items-center justify-center shadow-lg"><span className="font-black text-white text-sm">T.</span></div>
-       <span className="font-bold text-lg tracking-tight logo-shimmer">THALY.</span>
-    </div>
-    <div className="flex gap-3">
-        <a href={`https://instagram.com/${CONFIG.INSTAGRAM}`} target="_blank" rel="noreferrer" className="p-2 bg-[#27272a] rounded-full active:scale-95"><Instagram size={18}/></a>
-        <button onClick={onHelp} className="p-2 bg-[#27272a] rounded-full active:scale-95"><HelpCircle size={18}/></button>
-    </div>
-  </header>
-);
-
-const LiveStatus = () => {
-    const [msg, setMsg] = useState(null);
-    useEffect(() => {
-        const msgs = Utils.shuffle([...LIVE_ALERTS]);
-        let i = 0;
-        const interval = setInterval(() => {
-            setMsg(msgs[i]);
-            i = (i + 1) % msgs.length;
-            setTimeout(() => setMsg(null), 4000);
-        }, 12000);
-        return () => clearInterval(interval);
-    }, []);
-    if(!msg) return null;
-    return (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 w-max max-w-[90%] pointer-events-none anim-enter">
-            <div className="bg-[#18181b]/95 border border-[#333] px-4 py-2 rounded-full flex items-center gap-2 shadow-xl backdrop-blur-md">
-                <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse"/>
-                <span className="text-xs font-bold text-gray-200">{msg}</span>
-            </div>
-        </div>
-    );
-};
-
-const LocationScroller = ({ selected, onSelect }) => (
-    <div className="mb-6 -mx-5 px-5">
-        <div className="flex gap-3 overflow-x-auto pb-4 hide-scroll snap-x px-1">
-            {LOCATIONS.map(loc => (
-                <div key={loc.id} onClick={() => onSelect(loc)}
-                    className={`snap-center flex-shrink-0 w-36 p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${selected?.id === loc.id ? 'border-[#0A84FF] bg-[#0A84FF]/10' : 'border-[#27272a] bg-[#18181b]'}`}>
-                    <p className="text-[9px] uppercase font-bold text-gray-500 mb-1">{loc.zone}</p>
-                    <p className="text-sm font-bold text-white mb-2 leading-tight h-8 flex items-center">{loc.name}</p>
-                    <div className="flex items-center justify-between mt-1 pt-2 border-t border-white/5">
-                        <span className="text-[9px] text-gray-400">Ida+Volta</span>
-                        <span className={`text-[10px] font-bold ${selected?.id === loc.id ? 'text-[#0A84FF]' : 'text-white'}`}>{loc.fee === 0 ? 'Grátis' : Utils.fmt(loc.fee)}</span>
-                    </div>
-                    {selected?.id === loc.id && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#0A84FF] shadow-[0_0_10px_#0A84FF]"></div>}
-                </div>
-            ))}
-        </div>
-    </div>
-);
-
-const ReviewsCarousel = () => {
-    const [idx, setIdx] = useState(0);
-    const list = useMemo(() => Utils.shuffle([...REVIEWS]), []);
-    useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%list.length), 5000); return () => clearInterval(t); }, [list]);
-
-    return (
-        <div className="bg-[#141416] border border-[#222] rounded-3xl p-5 mb-8 shadow-lg flex flex-col justify-between min-h-[140px] relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#0A84FF]/10 to-transparent rounded-bl-full"></div>
-            <div>
-                <div className="flex text-[#FFD60A] mb-3 gap-1"><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/></div>
-                <p className="text-sm text-gray-300 italic leading-relaxed anim-enter" key={idx}>"{list[idx].t}"</p>
-            </div>
-            <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase"><Shield size={10} className="text-[#32D74B]"/> {list[idx].a}</div>
-        </div>
-    )
-};
-
-// ==================================================================================
-// 5. APP PRINCIPAL
+// 4. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
   // --- INICIALIZAÇÃO SEGURA (ANTI-CRASH) ---
   const [data, setData] = useState(() => {
-     try {
-       const s = localStorage.getItem(APP_VERSION);
-       if(s) { 
-           const p = JSON.parse(s); 
-           if(p.date) p.date = new Date(p.date);
-           // Se a localização estiver quebrada, reseta para evitar tela branca
-           if(!p.location || typeof p.location !== 'object') throw new Error("Reset");
-           return p; 
-       }
-     } catch(e) { localStorage.removeItem(APP_VERSION); }
-     
-     // Estado Limpo Padrão
-     return { 
-         name: '', age: '', medical: false, 
-         service: null, date: null, time: null, 
-         extras: { upgrade: false, touch: false, aroma: false }, 
-         payment: null,
-         location: { neighborhood: null, type: 'home', street: '', number: '', apt: '', hotel: '', room: '', motel: '', suite: '' }
-     };
+    // 1. Tenta recuperar dados
+    try {
+      const s = localStorage.getItem(SYSTEM_VERSION);
+      if (s) {
+        const p = JSON.parse(s);
+        if (p.date) p.date = new Date(p.date);
+        // Validação de integridade
+        if (!p.location || !p.extras) throw new Error("Dados inválidos");
+        return p;
+      }
+    } catch (e) {
+      // 2. Se falhar, limpa o cache silenciosamente
+      localStorage.removeItem(SYSTEM_VERSION);
+    }
+    // 3. Retorna estado inicial limpo
+    return {
+      name: '', age: '', medical: false,
+      service: null, date: null, time: null,
+      extras: { upgrade: false, touch: false, aroma: false },
+      payment: null,
+      location: { zone: null, type: 'home', street: '', num: '', comp: '', obs: '' },
+      couponUsed: false
+    };
   });
 
-  const [stage, setStage] = useState(0); 
-  const [couponActive, setCouponActive] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  // STATES DE UI
+  const [loading, setLoading] = useState(true);
+  const [showCoupon, setShowCoupon] = useState(false);
   const [success, setSuccess] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState(null);
-
-  // Histórico para saber se é 1ª vez
-  const isFirstTime = !localStorage.getItem('thaly_client_history');
-
-  const refs = { 
-      services: useRef(null), datetime: useRef(null), 
-      extras: useRef(null), location: useRef(null), payment: useRef(null) 
-  };
-
-  useEffect(() => { localStorage.setItem(APP_VERSION, JSON.stringify(data)); }, [data]);
   
+  // Histórico
+  const isFirstTime = !localStorage.getItem('thaly_history_final');
+
+  // Efeitos
+  useEffect(() => { localStorage.setItem(SYSTEM_VERSION, JSON.stringify(data)); }, [data]);
   useEffect(() => { 
-      setTimeout(() => setLoading(false), 500);
-      if(isFirstTime && !couponActive && stage === 0) {
-          const t = setTimeout(() => setShowPopup(true), 2000);
-          return () => clearTimeout(t);
-      }
-  }, [isFirstTime, couponActive, stage]);
+    setTimeout(() => setLoading(false), 600); // Fake load para evitar FOUC
+    if (isFirstTime && !data.couponUsed) setTimeout(() => setShowCoupon(true), 2000);
+  }, []);
 
-  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
-
-  // CÁLCULOS
-  const { financials, xp } = useMemo(() => {
-    let xpPoints = 0;
-    // Proteção contra nulos (?. || 0)
+  // CÁLCULOS (MEMOIZED & SAFE)
+  const stats = useMemo(() => {
+    let xp = 0;
     const base = data.service?.price || 0;
-    if (data.service) xpPoints += data.service.xp;
+    if (data.service) xp += data.service.xp;
 
-    const upg = data.extras?.upgrade ? (base * CONFIG.PRICES.UPGRADE_PCT) : 0;
-    if (data.extras?.upgrade) xpPoints += EXTRAS_OPTS[0].xp;
+    let extrasTotal = 0;
+    if (data.extras?.upgrade) { extrasTotal += (base * 0.5); xp += 30; }
+    if (data.extras?.touch) { extrasTotal += 73; xp += 40; }
+    if (data.extras?.aroma) { extrasTotal += 5; xp += 15; }
 
-    const touch = data.extras?.touch ? CONFIG.PRICES.TOUCH : 0;
-    if (data.extras?.touch) xpPoints += EXTRAS_OPTS[1].xp;
-
-    const aroma = data.extras?.aroma ? CONFIG.PRICES.AROMA : 0;
-    if (data.extras?.aroma) xpPoints += EXTRAS_OPTS[2].xp;
-
-    const travelFee = data.location?.neighborhood?.fee || 0;
+    const fee = data.location?.zone?.fee || 0;
+    const sub = base + extrasTotal + fee;
+    const discount = data.couponUsed ? CONFIG.COUPON_VALUE : 0;
     
-    const sub = base + upg + touch + aroma + travelFee;
-    const desc = couponActive ? CONFIG.FIRST_COUPON_VAL : 0;
-    
-    return { 
-        base, upg, touch, aroma, travelFee, sub, desc, 
-        total: Math.max(0, sub - desc),
-        locName: data.location?.neighborhood?.name || 'Local não definido'
+    return {
+      base, extrasTotal, fee, sub, discount,
+      total: Math.max(0, sub - discount),
+      xp
     };
-  }, [data, couponActive]);
+  }, [data]);
 
-  const scrollToRef = (ref) => {
-    if (ref && ref.current) {
-        const y = ref.current.getBoundingClientRect().top + window.pageYOffset - 90;
-        window.scrollTo({ top: y, behavior: 'smooth' });
+  // NAVEGAÇÃO
+  const scrollTo = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.pageYOffset - 100;
+      window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
 
-  const advanceStage = (next, ref) => {
-    Utils.vibrate();
-    if(next > stage) setStage(next);
-    setTimeout(() => scrollToRef(ref), 100);
+  const handleFinish = () => {
+    if (data.couponUsed || isFirstTime) localStorage.setItem('thaly_history_final', 'true');
+    setSuccess(true);
+    window.scrollTo(0,0);
   };
 
-  const finalizeOrder = () => {
-      if(couponActive || isFirstTime) localStorage.setItem('thaly_client_history', 'true');
-      setSuccess(true);
-      window.scrollTo(0,0);
-  };
-
-  // WHATSAPP "NOTA FISCAL"
-  const generateMessage = () => {
+  // WHATSAPP GENERATOR (NOTA FISCAL)
+  const getLink = () => {
     const d = data.date;
-    const loc = data.location;
     const dateStr = d ? `${d.getDate()}/${d.getMonth()+1}` : '';
-    
-    let t = `🦁 *PEDIDO DE AGENDAMENTO*\n──────────────────\n`;
+    let t = `🦁 *AGENDAMENTO NOVO*\n────────────────\n`;
     t += `👤 *${data.name}* (${data.age})\n`;
     t += `📅 *${dateStr} às ${data.time}*\n`;
-    t += `💆 *${data.service?.name}*: ${Utils.fmt(financials.base)}\n`;
+    t += `💆 *${data.service?.name}*: ${Utils.fmt(stats.base)}\n`;
     
-    if(Object.values(data.extras || {}).some(Boolean)) {
-        t += `🔥 *EXTRAS:*\n`;
-        if(data.extras?.upgrade) t += `   + Upgrade 30min: ${Utils.fmt(financials.upg)}\n`;
-        if(data.extras?.touch) t += `   + Interação: ${Utils.fmt(financials.touch)}\n`;
-        if(data.extras?.aroma) t += `   + Aromaterapia: ${Utils.fmt(financials.aroma)}\n`;
+    if (stats.extrasTotal > 0) {
+      t += `🔥 *EXTRAS:* `;
+      const l = [];
+      if (data.extras.upgrade) l.push('+30min');
+      if (data.extras.touch) l.push('Interação');
+      if (data.extras.aroma) l.push('Aroma');
+      t += l.join(', ') + `\n`;
     }
-    
-    t += `\n📍 *LOCAL: ${loc.neighborhood?.name || '?' }*\n`;
-    if(loc.type === 'home') t += `🏠 Casa: ${loc.street}, ${loc.number}\n`;
-    else if (loc.type === 'apto') t += `🏢 Apto: ${loc.street}, ${loc.number} - Ap ${loc.apt}\n`;
-    else if (loc.type === 'hotel') t += `🏨 Hotel: ${loc.hotel} (Qto ${loc.room})\n`;
-    else if (loc.type === 'motel') { t += `🏩 Motel: ${loc.motel} (Suíte ${loc.suite || '?'})\n`; t += `⚠️ *Eu pago a suíte*\n`; }
 
-    t += `\n💰 *RESUMO FINANCEIRO:*\n`;
-    if(financials.travelFee > 0) t += `🚗 Deslocamento: ${Utils.fmt(financials.travelFee)}\n`;
-    if(couponActive) t += `🎟️ Desconto 1ª Vez: -${Utils.fmt(financials.desc)}\n`;
-    
-    t += `\n✅ *TOTAL FINAL: ${Utils.fmt(financials.total)}*\n`;
-    t += `💳 Pagamento: ${data.payment?.toUpperCase()}\n`;
-    
+    t += `\n📍 *LOCAL: ${data.location.zone?.name || '?'}*\n`;
+    if (data.location.type === 'home') t += `🏠 Casa: ${data.location.street}, ${data.location.num}\n`;
+    else if (data.location.type === 'apto') t += `🏢 Apto: ${data.location.street}, ${data.location.num} - ${data.location.comp}\n`;
+    else if (data.location.type === 'hotel') t += `🏨 Hotel: ${data.location.street} (Qto ${data.location.num})\n`;
+    else if (data.location.type === 'motel') t += `🏩 Motel: ${data.location.street} (Suíte ${data.location.num})\n⚠️ *Eu pago a suíte*\n`;
+
+    t += `\n💰 *DETALHES:*\n`;
+    if (stats.fee > 0) t += `🚗 Deslocamento: ${Utils.fmt(stats.fee)}\n`;
+    if (data.couponUsed) t += `🎟️ Desconto 1ª Vez: -${Utils.fmt(stats.discount)}\n`;
+    t += `✅ *TOTAL: ${Utils.fmt(stats.total)}*\n`;
+    t += `💳 Pagamento: ${data.payment}\n`;
+
     return `${CONFIG.URLS.WHATSAPP}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
   };
 
-  // VALIDAÇÃO DE ENDEREÇO (EVITA CRASH NO SUBMIT)
-  const isFormValid = () => {
-      const l = data.location;
-      if (!l.neighborhood) return false;
-      if (l.type === 'home') return l.street && l.number;
-      if (l.type === 'apto') return l.street && l.number && l.apt;
-      if (l.type === 'hotel') return l.hotel && l.room;
-      if (l.type === 'motel') return l.motel;
-      return false;
+  // VALIDAÇÃO DE PASSO
+  const isReady = () => {
+    if (!data.name || !data.age || !data.medical) return false;
+    if (!data.service || !data.date || !data.time) return false;
+    if (!data.location.zone) return false;
+    if (data.location.type !== 'motel' && (!data.location.street || !data.location.num)) return false;
+    if (data.location.type === 'motel' && !data.location.street) return false;
+    if (!data.payment) return false;
+    return true;
   };
 
-  if (loading) return <div className="fixed inset-0 bg-[#050505] z-50 flex items-center justify-center text-white font-bold tracking-widest text-xs uppercase animate-pulse">Carregando...</div>;
+  if (loading) return <div className="fixed inset-0 bg-[#000] flex items-center justify-center"><div className="w-10 h-10 border-4 border-blue-600 rounded-full animate-spin border-t-transparent"/></div>;
 
   if (success) return (
-    <div className="min-h-screen bg-[#050505] pt-20 px-6 flex flex-col items-center text-center anim-enter pb-20">
-       <style>{globalStyles}</style>
-       <div className="w-20 h-20 bg-[#32D74B]/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(50,215,75,0.2)]">
-         <Check className="w-10 h-10 text-[#32D74B]" strokeWidth={4} />
-       </div>
-       <h2 className="text-3xl font-black text-white mb-2">Pedido Pronto!</h2>
-       <p className="text-gray-400 mb-8 text-sm max-w-xs">Agora é só enviar a confirmação abaixo para meu WhatsApp.</p>
+    <div className="min-h-screen pt-20 px-6 text-center anim-enter">
+      <style>{styles}</style>
+      <div className="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6"><Check size={40} className="text-green-500"/></div>
+      <h1 className="text-3xl font-black mb-2">Pedido Pronto!</h1>
+      <p className="text-gray-400 mb-8">Envie a confirmação no WhatsApp.</p>
+      
+      <div className="bg-[#111] border border-[#222] rounded-3xl p-6 text-left mb-6 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-green-500"/>
+        <div className="flex justify-between items-end mb-6 pb-6 border-b border-[#222]">
+          <div><p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Total Final</p><p className="text-3xl font-black text-white">{Utils.fmt(stats.total)}</p></div>
+          <div className="text-right"><p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Taxa</p><p className="text-white font-bold">{Utils.fmt(stats.fee)}</p></div>
+        </div>
+        <div className="space-y-3 text-sm text-gray-300">
+          <p className="flex gap-3"><User size={16} className="text-blue-500"/> {data.name}</p>
+          <p className="flex gap-3"><MapPin size={16} className="text-blue-500"/> {data.location.zone?.name}</p>
+          <p className="flex gap-3"><CalendarIcon size={16} className="text-blue-500"/> {data.date?.toLocaleDateString()} às {data.time}</p>
+        </div>
+      </div>
 
-       <div className="w-full max-w-sm bg-[#18181b] border border-[#333] rounded-3xl p-6 mb-8 text-left shadow-2xl relative overflow-hidden">
-           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0A84FF] to-[#32D74B]"></div>
-           <div className="flex justify-between items-end mb-6 border-b border-[#333] pb-6">
-               <div><p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Total Final</p><p className="text-[#32D74B] font-black text-3xl">{Utils.fmt(financials.total)}</p></div>
-               <div className="text-right"><p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Taxa Inclusa</p><p className="text-white font-bold">{Utils.fmt(financials.travelFee)}</p></div>
-           </div>
-           <div className="space-y-3 text-sm text-gray-300">
-               <p className="flex items-center gap-3"><MapPin size={16} className="text-[#0A84FF]"/> {financials.locName}</p>
-               <p className="flex items-center gap-3"><CalendarIcon size={16} className="text-[#0A84FF]"/> {data.date?.toLocaleDateString()} às {data.time}</p>
-           </div>
-           {data.payment === 'pix' && <div className="mt-6 p-4 bg-[#27272a] rounded-xl border border-[#333]"><p className="text-[10px] text-[#0A84FF] font-bold uppercase mb-1">Chave Pix</p><p className="text-xs font-mono text-white">{CONFIG.PIX_KEY}</p></div>}
-       </div>
-
-       <a href={generateMessage()} target="_blank" rel="noreferrer" className="w-full max-w-sm btn-primary py-4 text-lg flex items-center justify-center gap-2 mb-4">Enviar no WhatsApp <MessageCircle size={22}/></a>
-       <button onClick={() => { setSuccess(false); setStage(0); setCouponActive(false); window.scrollTo(0,0); }} className="text-gray-500 font-bold text-xs uppercase py-4">Fazer Novo Pedido</button>
+      <a href={getLink()} className="btn-main mb-4">Enviar no WhatsApp <MessageCircle size={20}/></a>
+      <button onClick={() => { setSuccess(false); window.location.reload(); }} className="text-sm font-bold text-gray-500 py-4">Voltar</button>
     </div>
   );
 
   return (
-    <div className="min-h-screen pb-40 relative">
-      <style>{globalStyles}</style>
-      <LiveStatus />
+    <div className="pb-40">
+      <style>{styles}</style>
       
       {/* HEADER */}
-      <header className="fixed top-0 w-full glass-nav py-3 px-5 flex justify-between items-center transition-all">
+      <div className="fixed top-0 w-full glass py-4 px-6 flex justify-between items-center z-50">
         <div className="flex items-center gap-2" onClick={() => window.location.reload()}>
-            <div className="w-8 h-8 bg-[#0A84FF] rounded-lg flex items-center justify-center shadow-lg"><span className="font-black text-white text-sm">T.</span></div>
-            <span className="font-bold text-lg tracking-tight logo-shimmer">THALY.</span>
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">T</div>
+          <span className="font-bold text-xl badge-shimmer">THALY.</span>
         </div>
         <div className="flex gap-3">
-            <a href={`https://instagram.com/${CONFIG.INSTAGRAM}`} target="_blank" rel="noreferrer" className="p-2 bg-[#27272a] rounded-full"><Instagram size={18}/></a>
-            <button onClick={()=>setHelpOpen(true)} className="p-2 bg-[#27272a] rounded-full"><HelpCircle size={18}/></button>
+          <a href={`https://instagram.com/${CONFIG.INSTAGRAM}`} className="p-2 bg-[#222] rounded-full"><Instagram size={18}/></a>
+          <button onClick={() => setHelpOpen(true)} className="p-2 bg-[#222] rounded-full"><Info size={18}/></button>
         </div>
-      </header>
+      </div>
 
       {/* POPUP CUPOM */}
-      {showPopup && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 anim-enter">
-            <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setShowPopup(false)}/>
-            <div className="relative bg-[#18181b] w-full max-w-sm rounded-3xl border border-[#0A84FF]/50 p-6 shadow-2xl text-center">
-                <div className="w-16 h-16 bg-[#0A84FF]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Ticket size={32} className="text-[#0A84FF]"/>
-                </div>
-                <h2 className="text-2xl font-black text-white mb-2">Ganhou R$ {CONFIG.FIRST_COUPON_VAL}!</h2>
-                <p className="text-gray-400 text-sm mb-6">Presente de boas-vindas para sua primeira sessão.</p>
-                <button onClick={() => { setCouponActive(true); setShowPopup(false); Utils.vibrate(); showToast("Desconto Aplicado!"); }} className="w-full py-4 rounded-xl btn-primary mb-3 btn-pulse">USAR DESCONTO</button>
-                <button onClick={() => setShowPopup(false)} className="text-gray-500 text-xs font-bold uppercase p-2">Dispensar</button>
-            </div>
+      {showCoupon && (
+        <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-6 anim-enter">
+          <div className="bg-[#111] w-full max-w-sm rounded-3xl border border-blue-500/50 p-8 text-center shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"/>
+            <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4"><Ticket size={32} className="text-blue-500"/></div>
+            <h2 className="text-2xl font-black mb-2">R$ {CONFIG.COUPON_VALUE} OFF!</h2>
+            <p className="text-gray-400 text-sm mb-6">Presente exclusivo para sua primeira sessão.</p>
+            <button onClick={() => { setData({...data, couponUsed: true}); setShowCoupon(false); Utils.vibrate(); }} className="btn-main mb-3 btn-pulse">USAR AGORA</button>
+            <button onClick={() => setShowCoupon(false)} className="text-xs font-bold text-gray-500 uppercase">Dispensar</button>
+          </div>
         </div>
       )}
 
-      {/* AJUDA MODAL */}
+      {/* HELP MODAL */}
       {helpOpen && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 anim-enter">
-              <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={()=>setHelpOpen(false)}></div>
-              <div className="relative bg-[#18181b] w-full max-w-sm rounded-3xl border border-[#222] p-6 shadow-2xl">
-                  <div className="flex justify-between items-center mb-6">
-                      <h3 className="font-bold text-xl flex items-center gap-2 text-white"><Info size={20} className="text-[#0A84FF]"/> Guia Rápido</h3>
-                      <button onClick={()=>setHelpOpen(false)} className="bg-[#27272a] p-1.5 rounded-full"><X size={16}/></button>
-                  </div>
-                  <div className="space-y-4">
-                      <div className="bg-[#27272a] p-4 rounded-2xl">
-                          <h4 className="font-bold text-white text-sm mb-1 flex gap-2"><Sparkles size={14}/> Preparação</h4>
-                          <p className="text-xs text-gray-400">Recomendo um banho quente antes. Levo creme, óleos, lubrificantes e som ambiente.</p>
-                      </div>
-                      <div className="bg-[#27272a] p-4 rounded-2xl">
-                          <h4 className="font-bold text-white text-sm mb-1 flex gap-2"><Shield size={14}/> Sigilo & Segurança</h4>
-                          <p className="text-xs text-gray-400">Atendimento estritamente profissional. Sigilo total garantido.</p>
-                      </div>
-                      <div className="bg-[#27272a] p-4 rounded-2xl">
-                          <h4 className="font-bold text-white text-sm mb-1 flex gap-2"><Lock size={14}/> Pagamento</h4>
-                          <p className="text-xs text-gray-400">Pix, Dinheiro e Cartão. Cancelamento com 2h de antecedência.</p>
-                      </div>
-                  </div>
-              </div>
+        <div className="fixed inset-0 z-[90] bg-black/90 flex items-center justify-center p-6 anim-enter" onClick={() => setHelpOpen(false)}>
+          <div className="bg-[#111] w-full max-w-sm rounded-3xl border border-[#333] p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between mb-6">
+              <h3 className="font-bold text-xl flex gap-2"><Info className="text-blue-500"/> Ajuda</h3>
+              <button onClick={() => setHelpOpen(false)}><X size={20}/></button>
+            </div>
+            <div className="space-y-4 text-sm text-gray-300">
+              <div className="p-4 bg-[#18181B] rounded-xl"><h4 className="font-bold text-white mb-1">Sigilo?</h4> Total. Atendo em residências e hotéis.</div>
+              <div className="p-4 bg-[#18181B] rounded-xl"><h4 className="font-bold text-white mb-1">Pagamento?</h4> Pix, Dinheiro e Cartão.</div>
+            </div>
           </div>
+        </div>
       )}
 
-      <main className="max-w-md mx-auto pt-28 px-5">
+      <main className="max-w-md mx-auto pt-24 px-5 space-y-12">
         
         {/* 1. INTRODUÇÃO */}
-        <section className={`transition-all duration-500 ${stage === 0 ? 'opacity-100' : 'section-disabled'}`}>
-            <div className="mb-8">
-                <h1 className="text-4xl font-extrabold mb-3 leading-[1.1] tracking-tight">Massagem &<br/><span className="logo-shimmer">Experiência.</span></h1>
-                <p className="text-gray-400 text-[15px] leading-relaxed">Massoterapia masculina no conforto do seu local. Técnica apurada e experiência premium.</p>
-            </div>
+        <section id="intro" className="anim-enter">
+          <div className="mb-8">
+            <h1 className="text-4xl font-extrabold mb-3 leading-[1.1]">Massagem &<br/><span className="badge-shimmer">Exclusividade.</span></h1>
+            <p className="text-gray-400">Atendimento masculino premium. Técnica apurada e total discrição.</p>
+          </div>
 
-            {/* LEVEL BAR */}
-            <div className="mb-8 bg-[#18181b] p-5 rounded-3xl border border-[#222] relative overflow-hidden">
-                <div className="flex justify-between items-end mb-3 relative z-10">
-                    <div>
-                        <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Nível VIP</span>
-                        <div className="flex items-center gap-2 font-black text-xl mt-0.5">
-                            <Crown size={20} className={xp >= CONFIG.XP_THRESHOLDS.VIP ? "text-[#FFD60A]" : "text-gray-500"} /> 
-                            <span className={xp >= CONFIG.XP_THRESHOLDS.VIP ? "text-[#FFD60A]" : "text-white"}>
-                                {xp >= CONFIG.XP_THRESHOLDS.ALPHA ? 'ALPHA' : xp >= CONFIG.XP_THRESHOLDS.VIP ? 'VIP' : 'MEMBRO'}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="text-right">
-                        <span className="text-[10px] text-gray-500">XP</span>
-                        <span className="text-sm font-bold block text-white">{xp} / 300</span>
-                    </div>
+          <div className="bg-[#111] border border-[#222] rounded-3xl p-5 mb-8 relative overflow-hidden">
+            <div className="flex justify-between items-end relative z-10">
+              <div>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Nível</span>
+                <div className="flex items-center gap-2 font-black text-xl text-white mt-1">
+                  <Crown size={20} className={stats.xp > 150 ? "text-yellow-500" : "text-gray-600"}/> 
+                  {stats.xp > 300 ? 'ALPHA' : stats.xp > 150 ? 'VIP' : 'MEMBRO'}
                 </div>
-                <div className="h-2 w-full bg-[#131316] rounded-full overflow-hidden relative z-10">
-                    <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-1000" style={{ width: `${Math.min(100, (xp/300)*100)}%` }}></div>
-                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-bold text-gray-500 uppercase">XP</span>
+                <span className="text-sm font-bold block">{stats.xp} / 300</span>
+              </div>
             </div>
-
-            <ReviewsCarousel />
-
-            <div className="card-base p-6 space-y-5 shadow-2xl border-[#222]">
-                <div className="space-y-4">
-                    <input value={data.name} onChange={e => setData({...data, name: e.target.value})} placeholder="Seu Nome / Apelido" className="input-clean"/>
-                    <input type="tel" maxLength={2} value={data.age} onChange={e => setData({...data, age: e.target.value.replace(/\D/g,'')})} placeholder="Sua Idade" className="input-clean"/>
-                </div>
-                <div onClick={() => { Utils.vibrate(); setData({...data, medical: !data.medical}) }} 
-                    className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${data.medical ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#27272a] border-[#333]'}`}>
-                    <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${data.medical ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#444]'}`}>{data.medical && <Check size={14} className="text-white"/>}</div>
-                    <p className="text-sm font-bold text-white">Sou maior de idade e saudável</p>
-                </div>
-                {data.name.length > 2 && data.age && data.medical && stage === 0 && (
-                    <button onClick={() => advanceStage(1, refs.services)} className="btn-primary w-full py-4 flex items-center justify-center gap-2 mt-2 anim-enter">Começar Agendamento <ArrowRight size={20}/></button>
-                )}
+            <div className="h-2 w-full bg-[#222] rounded-full mt-3 overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-1000" style={{ width: `${Math.min(100, (stats.xp/300)*100)}%` }}></div>
             </div>
+          </div>
+
+          <div className="card p-6 space-y-4 shadow-xl">
+            <input value={data.name} onChange={e => setData({...data, name: e.target.value})} placeholder="Seu Nome" className="input"/>
+            <input type="tel" maxLength={2} value={data.age} onChange={e => setData({...data, age: e.target.value})} placeholder="Idade" className="input"/>
+            <div onClick={() => { Utils.vibrate(); setData({...data, medical: !data.medical}) }} 
+              className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${data.medical ? 'border-blue-500 bg-blue-500/10' : 'border-[#333] bg-[#18181B]'}`}>
+              <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${data.medical ? 'bg-blue-500 border-blue-500' : 'border-[#555]'}`}>{data.medical && <Check size={14} className="text-white"/>}</div>
+              <span className="text-sm font-bold text-white">Maior de idade e saudável</span>
+            </div>
+            {data.name.length > 2 && data.age && data.medical && (
+              <button onClick={() => { Utils.vibrate(); scrollTo('services'); }} className="btn-main mt-2">Começar <ArrowRight size={20}/></button>
+            )}
+          </div>
         </section>
 
         {/* 2. SERVIÇOS */}
-        <section ref={refs.services} className={`mt-12 transition-opacity duration-500 ${stage >= 1 ? 'opacity-100' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">01.</span> Escolha</h3>
-            <div className="space-y-5">
-                {SERVICES.map(s => (
-                    <div key={s.id} onClick={() => { if(stage === 1) { setData({...data, service: s}); advanceStage(2, refs.datetime); }}} className={`card-base p-6 cursor-pointer relative group ${data.service?.id === s.id ? 'card-active' : ''}`}>
-                        {s.badge && <div className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[9px] font-black px-3 py-1.5 rounded-bl-2xl shadow-lg">{s.badge}</div>}
-                        <div className="flex justify-between items-start mb-3">
-                            <h3 className="text-xl font-bold text-white">{s.name}</h3>
-                            <span className="text-white font-bold bg-[#27272a] px-3 py-1 rounded-lg text-sm">{Utils.fmt(s.price)}</span>
-                        </div>
-                        <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+        {data.medical && (
+          <section id="services" className="anim-enter">
+            <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-blue-500">01.</span> Escolha</h3>
+            <div className="space-y-4">
+              {SERVICES.map(s => (
+                <div key={s.id} onClick={() => { setData({...data, service: s}); Utils.vibrate(); scrollTo('agenda'); }} 
+                  className={`card p-6 cursor-pointer ${data.service?.id === s.id ? 'active' : ''}`}>
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <span className="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded mb-2 inline-block">{s.tag}</span>
+                      <h3 className="text-xl font-bold text-white">{s.name}</h3>
                     </div>
-                ))}
+                    <span className="text-white font-bold bg-[#222] px-3 py-1 rounded-lg text-sm">{Utils.fmt(s.price)}</span>
+                  </div>
+                  <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+                </div>
+              ))}
             </div>
-        </section>
+          </section>
+        )}
 
-        {/* 3. DATA E HORA */}
-        <section ref={refs.datetime} className={`mt-12 transition-opacity duration-500 ${stage >= 2 ? 'opacity-100' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">02.</span> Agenda</h3>
-            <div className="card-base p-6 border-[#222]">
-                <div className="flex gap-3 overflow-x-auto pb-6 hide-scroll snap-x">
-                    {[...Array(10)].map((_, i) => {
-                        const d = new Date(); d.setDate(d.getDate() + i);
-                        const isSel = data.date && new Date(data.date).getDate() === d.getDate();
-                        return (
-                            <button key={i} onClick={() => { Utils.vibrate(); setData({...data, date: d, time: null}); }} className={`snap-center min-w-[72px] h-[84px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF] text-white shadow-lg' : 'bg-[#27272a] border-[#3f3f46] text-gray-400'}`}>
-                                <span className="text-[10px] font-bold uppercase mb-1 opacity-70">{d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
-                                <span className="text-2xl font-bold">{d.getDate()}</span>
-                            </button>
-                        )
-                    })}
-                </div>
-                <div className={`grid grid-cols-4 gap-3 mt-2 ${data.date ? '' : 'opacity-30 pointer-events-none'}`}>
-                    {TIME_SLOTS.map(t => (
-                        <button key={t} disabled={Utils.isBlocked(data.date, t)} onClick={() => { setData({...data, time: t}); advanceStage(3, refs.extras); }} className={`py-3 rounded-xl text-xs font-bold border transition-all ${data.time === t ? 'bg-white text-black' : Utils.isBlocked(data.date, t) ? 'opacity-20 line-through border-transparent' : 'bg-[#27272a] border-[#3f3f46] text-gray-300'}`}>{t}</button>
-                    ))}
-                </div>
+        {/* 3. AGENDA */}
+        {data.service && (
+          <section id="agenda" className="anim-enter">
+            <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-blue-500">02.</span> Data e Hora</h3>
+            <div className="card p-6">
+              <div className="flex gap-3 overflow-x-auto pb-6 hide-scroll snap-x">
+                {[...Array(14)].map((_, i) => {
+                  const d = new Date(); d.setDate(d.getDate() + i);
+                  const isSel = data.date && new Date(data.date).getDate() === d.getDate();
+                  return (
+                    <button key={i} onClick={() => { setData({...data, date: d, time: null}); Utils.vibrate(); }} 
+                      className={`snap-center min-w-[70px] h-[80px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-blue-600 border-blue-600 text-white' : 'bg-[#18181B] border-[#333] text-gray-400'}`}>
+                      <span className="text-[10px] font-bold uppercase mb-1 opacity-70">{d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
+                      <span className="text-2xl font-bold">{d.getDate()}</span>
+                    </button>
+                  )
+                })}
+              </div>
+              <div className={`grid grid-cols-4 gap-3 ${data.date ? '' : 'opacity-30 pointer-events-none'}`}>
+                {TIME_SLOTS.map(t => (
+                  <button key={t} disabled={Utils.isBlocked(data.date, t)} onClick={() => { setData({...data, time: t}); Utils.vibrate(); scrollTo('extras'); }} 
+                    className={`py-3 rounded-xl text-xs font-bold border transition-all ${data.time === t ? 'bg-white text-black border-white' : Utils.isBlocked(data.date, t) ? 'opacity-20 line-through border-transparent' : 'bg-[#18181B] border-[#333] text-gray-300'}`}>
+                    {t}
+                  </button>
+                ))}
+              </div>
             </div>
-        </section>
+          </section>
+        )}
 
         {/* 4. EXTRAS */}
-        <section ref={refs.extras} className={`mt-12 transition-opacity duration-500 ${stage >= 3 ? 'opacity-100' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">03.</span> Adicionais</h3>
-            <div className="card-base divide-y divide-[#27272a]">
-                {EXTRAS_OPTS.map((item) => (
-                    <div key={item.id} onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, [item.id]: !data.extras[item.id]}}); }} className="p-5 flex justify-between items-center cursor-pointer hover:bg-[#27272a] transition-colors">
-                        <div className="flex items-center gap-4">
-                            <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${data.extras?.[item.id] ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#3f3f46]'}`}>{data.extras?.[item.id] ? <Check size={16} className="text-white"/> : <item.icon size={16} className="text-gray-500"/>}</div>
-                            <div><p className="font-bold text-white text-base">{item.label}</p><p className="text-[11px] text-gray-500 mt-0.5">{item.desc}</p></div>
-                        </div>
-                        <span className="text-[#0A84FF] font-bold text-sm">+ {Utils.fmt(item.getPrice(data.service?.price || 0))}</span>
+        {data.time && (
+          <section id="extras" className="anim-enter">
+            <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-blue-500">03.</span> Adicionais</h3>
+            <div className="card divide-y divide-[#222]">
+              {EXTRAS.map((item) => (
+                <div key={item.id} onClick={() => { setData({...data, extras: {...data.extras, [item.id]: !data.extras[item.id]}}); Utils.vibrate(); }} 
+                  className="p-5 flex justify-between items-center cursor-pointer hover:bg-[#18181B]">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all ${data.extras?.[item.id] ? 'bg-blue-500 border-blue-500 text-white' : 'border-[#333] text-gray-500'}`}>
+                      {data.extras?.[item.id] ? <Check size={16}/> : <item.icon size={16}/>}
                     </div>
-                ))}
+                    <div><p className="font-bold text-white">{item.name}</p><p className="text-[11px] text-gray-500">{item.desc}</p></div>
+                  </div>
+                  <span className="text-blue-500 font-bold text-sm">+ {Utils.fmt(item.price(data.service?.price || 0))}</span>
+                </div>
+              ))}
             </div>
-            <button onClick={() => advanceStage(4, refs.location)} className="w-full mt-5 py-4 rounded-xl text-sm font-bold bg-[#27272a] text-gray-300 border border-[#3f3f46]">Continuar</button>
-        </section>
+            <button onClick={() => scrollTo('location')} className="w-full mt-4 py-4 rounded-xl text-sm font-bold bg-[#18181B] text-gray-300 border border-[#333]">Continuar</button>
+          </section>
+        )}
 
         {/* 5. LOCALIZAÇÃO */}
-        <section ref={refs.location} className={`mt-12 transition-opacity duration-500 ${stage >= 4 ? 'opacity-100' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">04.</span> Localização</h3>
+        {data.time && (
+          <section id="location" className="anim-enter">
+            <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-blue-500">04.</span> Localização</h3>
             
             <p className="text-[10px] uppercase font-bold text-gray-500 mb-3 ml-1">Selecione o Bairro (Taxa Uber Ida+Volta)</p>
-            <LocationScroller selected={data.location.neighborhood} onSelect={(loc) => setData({...data, location: {...data.location, neighborhood: loc}})} />
+            <div className="flex gap-3 overflow-x-auto pb-4 hide-scroll snap-x -mx-5 px-5 mb-4">
+              {ZONES.map(z => (
+                <div key={z.id} onClick={() => setData({...data, location: {...data.location, zone: z}})}
+                  className={`snap-center flex-shrink-0 w-36 p-4 rounded-2xl border cursor-pointer relative ${data.location.zone?.id === z.id ? 'border-blue-500 bg-blue-500/10' : 'border-[#222] bg-[#18181B]'}`}>
+                  <p className="text-sm font-bold text-white mb-1 truncate">{z.name}</p>
+                  <p className={`text-xs font-bold ${data.location.zone?.id === z.id ? 'text-blue-400' : 'text-gray-500'}`}>{z.fee === 0 ? 'Grátis' : Utils.fmt(z.fee)}</p>
+                  {data.location.zone?.id === z.id && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_#2563EB]"/>}
+                </div>
+              ))}
+            </div>
 
             <div className="grid grid-cols-4 gap-3 mb-5">
-                {LOCATION_TYPES.map(t => (
-                    <button key={t.id} onClick={() => setData({...data, location: {...data.location, type: t.id}})}
-                        className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${data.location.type === t.id ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-[#0A84FF]' : 'bg-[#18181b] border-[#3f3f46] text-gray-500'}`}>
-                        <t.icon size={20} className="mb-1.5"/>
-                        <span className="text-[10px] font-bold uppercase">{t.label}</span>
-                    </button>
-                ))}
+              {LOCATION_TYPES.map(t => (
+                <button key={t.id} onClick={() => setData({...data, location: {...data.location, type: t.id}})}
+                  className={`flex flex-col items-center justify-center p-3 rounded-xl border ${data.location.type === t.id ? 'bg-blue-500/20 border-blue-500 text-blue-500' : 'bg-[#18181B] border-[#333] text-gray-500'}`}>
+                  <t.icon size={20} className="mb-1"/><span className="text-[10px] font-bold uppercase">{t.label}</span>
+                </button>
+              ))}
             </div>
 
-            <div className="card-base p-6 border-[#3f3f46] space-y-4">
-                {data.location.type === 'home' && <div className="flex gap-3"><input placeholder="Rua" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input-clean w-2/3"/><input placeholder="Nº" type="tel" value={data.location.number} onChange={e => setData({...data, location: {...data.location, number: e.target.value}})} className="input-clean w-1/3"/></div>}
-                {data.location.type === 'apto' && (
-                    <>
-                        <input placeholder="Rua / Avenida" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input-clean"/>
-                        <div className="flex gap-3"><input placeholder="Nº Prédio" type="tel" value={data.location.number} onChange={e => setData({...data, location: {...data.location, number: e.target.value}})} className="input-clean w-1/2"/><input placeholder="Nº Apto" type="tel" value={data.location.apt} onChange={e => setData({...data, location: {...data.location, apt: e.target.value}})} className="input-clean w-1/2"/></div>
-                    </>
-                )}
-                {data.location.type === 'hotel' && (
-                    <>
-                        <input placeholder="Nome do Hotel" value={data.location.hotel} onChange={e => setData({...data, location: {...data.location, hotel: e.target.value}})} className="input-clean"/>
-                        <input placeholder="Nº Quarto" type="tel" value={data.location.room} onChange={e => setData({...data, location: {...data.location, room: e.target.value}})} className="input-clean"/>
-                    </>
-                )}
-                {data.location.type === 'motel' && (
-                    <>
-                        <input placeholder="Nome do Motel" value={data.location.motel} onChange={e => setData({...data, location: {...data.location, motel: e.target.value}})} className="input-clean"/>
-                        <input placeholder="Suíte (Ex: Hidro)" value={data.location.suite} onChange={e => setData({...data, location: {...data.location, suite: e.target.value}})} className="input-clean"/>
-                        <p className="text-[10px] text-yellow-500 flex items-center gap-1.5"><AlertTriangle size={12}/> O valor da suíte é pago por você.</p>
-                    </>
-                )}
-                <button disabled={!isFormValid()} onClick={() => advanceStage(5, refs.payment)} className="btn-primary w-full py-4 mt-2 disabled:opacity-50">Confirmar Endereço</button>
+            <div className="card p-5 space-y-3 border-[#333]">
+              {data.location.type === 'home' && <div className="flex gap-3"><input placeholder="Rua" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input w-2/3"/><input placeholder="Nº" type="tel" value={data.location.num} onChange={e => setData({...data, location: {...data.location, num: e.target.value}})} className="input w-1/3"/></div>}
+              
+              {data.location.type === 'apto' && (
+                <>
+                  <input placeholder="Rua / Avenida" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input"/>
+                  <div className="flex gap-3"><input placeholder="Nº Prédio" type="tel" value={data.location.num} onChange={e => setData({...data, location: {...data.location, num: e.target.value}})} className="input w-1/2"/><input placeholder="Nº Apto" type="tel" value={data.location.comp} onChange={e => setData({...data, location: {...data.location, comp: e.target.value}})} className="input w-1/2"/></div>
+                </>
+              )}
+              
+              {data.location.type === 'hotel' && (
+                <>
+                  <input placeholder="Nome do Hotel" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input"/>
+                  <input placeholder="Nº Quarto" type="tel" value={data.location.num} onChange={e => setData({...data, location: {...data.location, num: e.target.value}})} className="input"/>
+                </>
+              )}
+              
+              {data.location.type === 'motel' && (
+                <>
+                  <input placeholder="Nome do Motel" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input"/>
+                  <input placeholder="Suíte (Ex: Hidro)" value={data.location.num} onChange={e => setData({...data, location: {...data.location, num: e.target.value}})} className="input"/>
+                  <p className="text-[10px] text-yellow-500 flex items-center gap-1.5"><AlertTriangle size={12}/> O valor da suíte é pago por você.</p>
+                </>
+              )}
+              <button onClick={() => scrollTo('payment')} className="btn-main mt-2">Confirmar Endereço</button>
             </div>
-        </section>
+          </section>
+        )}
 
         {/* 6. PAGAMENTO */}
-        <section ref={refs.payment} className={`mt-10 transition-opacity duration-500 ${stage === 5 ? 'opacity-100' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">05.</span> Forma de Pagamento</h3>
-            <div className="card-base p-4 grid grid-cols-3 gap-3 mb-32">
+        {data.location.zone && (
+          <section id="payment" className="anim-enter">
+            <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-blue-500">05.</span> Pagamento</h3>
+            <div className="card p-4 grid grid-cols-3 gap-3">
                 {['pix', 'dinheiro', 'cartao'].map(m => (
-                    <button key={m} onClick={() => { setData({...data, payment: m}); }} 
-                        className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${data.payment === m ? 'bg-[#0A84FF]/20 border-[#0A84FF]' : 'border-[#333] hover:bg-[#1A1A1E]'}`}>
-                        {m==='pix' && <QrCode className="text-[#0A84FF]"/>}
-                        {m==='dinheiro' && <Banknote className="text-[#32D74B]"/>}
-                        {m==='cartao' && <CreditCard className="text-[#FFD60A]"/>}
+                    <button key={m} onClick={() => setData({...data, payment: m})} 
+                        className={`flex flex-col items-center gap-2 p-3 rounded-xl border ${data.payment === m ? 'bg-blue-500/20 border-blue-500' : 'border-[#333] hover:bg-[#18181B]'}`}>
                         <span className="text-[10px] font-bold uppercase tracking-wider">{m}</span>
                     </button>
                 ))}
             </div>
-        </section>
+          </section>
+        )}
 
       </main>
 
-      {/* CHECKOUT BAR */}
-      {stage >= 5 && !success && (
-        <div className="fixed bottom-0 w-full z-50 anim-enter">
-            <div className="bg-[#18181b]/95 border-t border-[#333] p-6 rounded-t-[32px] shadow-[0_-10px_60px_rgba(0,0,0,0.9)] backdrop-blur-md">
-                <div className="flex justify-between items-end mb-5">
-                    <div>
-                        <p className="text-[10px] text-gray-500 uppercase font-bold mb-1 tracking-widest">Total (+ Deslocamento)</p>
-                        <div className="flex items-baseline gap-2">
-                            {couponActive && <span className="text-xs text-gray-500 line-through decoration-red-500">{Utils.fmt(financials.sub)}</span>}
-                            <span className="text-4xl font-black text-white tracking-tighter">{Utils.fmt(financials.total)}</span>
-                        </div>
-                    </div>
-                    {couponActive && <div className="text-[10px] text-[#32D74B] font-bold border border-[#32D74B] px-3 py-1.5 rounded-full bg-[#32D74B]/10 flex items-center gap-1"><Check size={12}/> DESCONTO ATIVO</div>}
-                </div>
-                <button disabled={!data.payment} onClick={finalizeOrder} className="btn-primary w-full h-16 text-lg flex items-center justify-center gap-3 disabled:opacity-50">Finalizar Pedido <MessageCircle size={24} fill="currentColor"/></button>
+      {/* STICKY BOTTOM BAR */}
+      <div className="fixed bottom-0 w-full z-50 bg-[#09090B]/95 border-t border-[#222] p-5 pb-8 backdrop-blur-lg shadow-[0_-10px_40px_rgba(0,0,0,0.5)] anim-enter">
+        <div className="flex justify-between items-end mb-4">
+          <div>
+            <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Total (+ Deslocamento)</p>
+            <div className="flex items-baseline gap-2">
+              {data.couponUsed && <span className="text-xs text-gray-500 line-through">{Utils.fmt(stats.sub)}</span>}
+              <span className="text-3xl font-black text-white">{Utils.fmt(stats.total)}</span>
             </div>
-        </div>
-      )}
-      
-      {/* TOAST DE AVISO */}
-      {toast && (
-          <div className="fixed top-10 left-1/2 -translate-x-1/2 bg-[#32D74B] text-black font-bold px-6 py-3 rounded-full shadow-2xl z-[100] anim-enter flex items-center gap-2">
-              <Check size={18}/> {toast}
           </div>
-      )}
+          {data.couponUsed && <div className="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded border border-green-500/20 flex items-center gap-1"><Check size={12}/> CUPOM ATIVO</div>}
+        </div>
+        <button disabled={!isReady()} onClick={handleFinish} className="btn-main">Finalizar Pedido <MessageCircle size={20}/></button>
+      </div>
+
     </div>
   );
 }
