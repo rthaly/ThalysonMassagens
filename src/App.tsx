@@ -91,7 +91,7 @@ const SERVICES = [
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    desc: 'O ápice do atendimento. Inicia soltando a musculatura e evolui para um contato corpo a corpo com óleos aquecidos, respiração próxima e provocações sensoriais. Finalização manual intensa e explosiva.', 
+    desc: 'O ápice do relaxamento. Inicia soltando a musculatura e evolui para um contato corpo a corpo com cremes e óleos, respiração próxima e provocações sensoriais. Finalização manual intensa e explosiva.', 
     duration: 60, 
     price: 155, 
     badge: 'A MAIS PEDIDA ❤️',
@@ -102,7 +102,7 @@ const SERVICES = [
     id: 'relax', 
     name: 'Massagem Relaxante', 
     short: 'Alívio de Dores',
-    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares e pernas cansadas. Toques suaves e firmes para tirar o stress acumulado. Atenção: Nesta modalidade não há toques nas partes íntimas.', 
+    desc: 'Foco 100% terapêutico. Ideal para remover dores no corpo cansado. Toques suaves e firmes para tirar o stress acumulado. Atenção: Nesta modalidade não há toques nas partes íntimas.', 
     duration: 60, 
     price: 125, 
     badge: null,
@@ -118,7 +118,7 @@ const MOODS = [
 ];
 
 const PREFERENCES = {
-  music: ['Zen / Spa', 'Sons da Natureza', 'Silêncio Total', 'Minha Playlist']
+  music: ['Zen', 'Sons da Natureza', 'Silêncio Total', 'Minha Playlist']
 };
 
 const LOCATION_TYPES = [
@@ -151,7 +151,7 @@ const REVIEWS_DB = [
   { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
   { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
   { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
-  { t: "Ele de cueca branca... sem comentários. Visual nota 1000.", a: "Fã", s: 5 },
+  { t: "Gostei muito! Um toque super bom! Foi uma experiência ótima, vou fazer de novo. :)", a: "Marcelo (Bela Vista", s: 5 },
   { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
   { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
   { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
