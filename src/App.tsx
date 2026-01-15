@@ -1,20 +1,18 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Check, Star, ArrowRight, Bed, Home, MessageCircle, 
-  Ticket, Lock, Flame, Wind, Crown, Shield, MapPin, Building,
-  CreditCard, Banknote, QrCode, ChevronRight, Menu, X, 
-  HelpCircle, Instagram, Calendar as CalendarIcon, Clock, User, 
-  AlertTriangle, Car, Copy, Info, Camera, Music, Coffee, 
-  Gift, Share2, Zap, Map, ChevronDown, Smile, Heart, Play
+  Ticket, Flame, Wind, Crown, Shield, MapPin, Building,
+  CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
+  Calendar as CalendarIcon, Clock, User, AlertTriangle, 
+  Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO DE NEGÓCIO & CONSTANTES (EXPANDIDO)
+// 1. CONFIGURAÇÃO DE NEGÓCIO
 // ==================================================================================
 
 const CONFIG = {
-  // CONFIGURAÇÕES GERAIS
-  APP_VERSION: '3.0.0-ULTIMATE',
+  APP_VERSION: '3.1.0-HOMECARE',
   REGION_MODE: 'SP', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
@@ -26,26 +24,26 @@ const CONFIG = {
     UPGRADE_PCT: 0.5, 
     TOUCH: 73, 
     AROMA: 5,
-    RUSH_HOUR_FEE: 10, // Taxa de horário de pico
+    RUSH_HOUR_FEE: 10,
   },
   
   // GAMIFICAÇÃO
   XP_THRESHOLDS: { VIP: 100, ALPHA: 150 },
   
-  // EXTERNOS
   URLS: {
-    WHATSAPP_API: "https://api.whatsapp.com/send",
-    MAPS_BASE: "https://www.google.com/maps/search/?api=1&query="
-  },
-
-  // ASSETS (Novos placeholders para Stories/Galeria)
-  ASSETS: {
-    AVATAR: "https://ui-avatars.com/api/?name=Thaly+Massagens&background=0A84FF&color=fff&size=128",
-    STORY_PREVIEW: "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=150&h=150&fit=crop&q=80",
+    WHATSAPP_API: "https://api.whatsapp.com/send"
   }
 };
 
-// --- BASE DE DADOS (PRESERVADA E EXPANDIDA) ---
+// --- IMAGENS (Unsplash - Temática Massagem) ---
+const IMAGES = {
+    MASSAGE_1: "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=150&h=150&fit=crop&q=80", // Óleo/Mãos
+    MASSAGE_2: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=150&h=150&fit=crop&q=80", // Ambiente Relax
+    MASSAGE_3: "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=150&h=150&fit=crop&q=80", // Toalhas/Spa
+    CLIENTS: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=150&h=150&fit=crop&q=80", // Feedback
+};
+
+// --- BASE DE DADOS ---
 const LOCATIONS_DB = {
   SP: [
     { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 0, zone: 'Base' },
@@ -105,7 +103,6 @@ const MOODS = [
 ];
 
 const PREFERENCES = {
-  drinks: ['Água', 'Chá Quente', 'Chá Gelado', 'Nenhuma'],
   music: ['Chill/Lofi', 'Jazz Suave', 'Pop Acústico', 'Silêncio', 'Minha Playlist']
 };
 
@@ -121,7 +118,7 @@ const TIME_SLOTS = [
     '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
 ];
 
-const RUSH_HOURS = ['18:00', '19:00', '20:00']; // Horários de pico
+const RUSH_HOURS = ['18:00', '19:00', '20:00'];
 
 const LEVELS = [
   { name: 'Visitante', min: 0, color: 'text-gray-500', bg: 'bg-gray-700' },
@@ -131,18 +128,18 @@ const LEVELS = [
 ];
 
 const STORIES = [
-  { id: 1, user: 'Thaly', img: CONFIG.ASSETS.STORY_PREVIEW, title: 'Studio' },
-  { id: 2, user: 'Thaly', img: CONFIG.ASSETS.STORY_PREVIEW, title: 'Técnicas' },
-  { id: 3, user: 'Clientes', img: CONFIG.ASSETS.STORY_PREVIEW, title: 'Feedback' },
+  { id: 1, user: 'Thaly', img: IMAGES.MASSAGE_1, title: 'Técnicas' },
+  { id: 2, user: 'Thaly', img: IMAGES.MASSAGE_2, title: 'Home Care' },
+  { id: 3, user: 'Thaly', img: IMAGES.MASSAGE_3, title: 'Produtos' },
+  { id: 4, user: 'Clientes', img: IMAGES.CLIENTS, title: 'Feedback' },
 ];
 
 const FAQS = [
   { q: "Aceita cartão de crédito?", a: "Sim, aceitamos todas as bandeiras e Pix." },
-  { q: "Tem local próprio?", a: "No momento atendo exclusivamente delivery (sua casa/hotel)." },
+  { q: "Atende em local próprio?", a: "Não. O atendimento é 100% Home Care (Vou até você)." },
   { q: "O sigilo é garantido?", a: "Absolutamente. Profissionalismo e discrição total." }
 ];
 
-// --- TEXTOS ---
 const LIVE_NOTIFICATIONS = [
   "🔥 João acabou de agendar", "👀 4 pessoas vendo a agenda", "📅 Agenda de Sexta quase cheia",
   "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou presença", "💎 Murilo virou VIP",
@@ -165,11 +162,11 @@ const REVIEWS_DB = [
   { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
   { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
   { t: "A finalização manual é intensa mesmo.", a: "Anônimo", s: 5 },
-  { t: "Profissional nota 10.", a: "Dr. Marcelo", s: 5 },
+  { t: "Profissional nota 10. Levou a maca e tudo.", a: "Dr. Marcelo", s: 5 },
 ];
 
 // ==================================================================================
-// 3. UTILITÁRIOS & ESTILOS (MELHORADOS)
+// UTILS & STYLES (CORREÇÃO DE SCROLL AQUI)
 // ==================================================================================
 
 const Utils = {
@@ -177,7 +174,6 @@ const Utils = {
   vibrate: (pattern = 10) => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); },
   shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
   
-  // Nova função de máscara
   maskPhone: (v) => {
     v = v.replace(/\D/g, "");
     v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
@@ -193,7 +189,7 @@ const Utils = {
     if (sel < today) return true; 
     if (sel > today) return false; 
     const [hours] = timeString.split(':').map(Number);
-    return hours <= now.getHours() + 1; // Reduzido buffer para 1h
+    return hours <= now.getHours() + 1; 
   },
 
   getGreeting: () => {
@@ -209,8 +205,19 @@ const globalStyles = `
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Roboto", sans-serif; }
 body { background: var(--bg-app); color: #fff; padding-bottom: env(safe-area-inset-bottom); overflow-x: hidden; scroll-behavior: smooth; }
 input, select, button { outline: none; }
+
+/* SCROLL FIX */
+.ios-scroll { 
+    -webkit-overflow-scrolling: touch; 
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 0.75rem; /* gap-3 */
+}
 .ios-scroll::-webkit-scrollbar { display: none; }
-.ios-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+.ios-scroll > * { flex-shrink: 0; scroll-snap-align: start; }
 
 @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -236,16 +243,13 @@ input, select, button { outline: none; }
 
 .section-blur { opacity: 0.4; filter: blur(2px); pointer-events: none; transition: all 0.6s ease; transform: scale(0.98); }
 .section-active { opacity: 1; filter: blur(0); pointer-events: auto; transform: scale(1); }
-
-/* Confetti Particles */
 .confetti-piece { position: absolute; width: 10px; height: 10px; background: #FFD60A; top: -10px; animation: confetti 3s ease-in-out forwards; }
 `;
 
 // ==================================================================================
-// 4. COMPONENTES VISUAIS & LOGICA (NOVOS & ATUALIZADOS)
+// COMPONENTES
 // ==================================================================================
 
-// Toast Notification System (NOVO)
 const Toast = ({ msg, type = 'success', onClose }) => {
     useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, [onClose]);
     const icons = { success: Check, error: AlertTriangle, info: Info };
@@ -262,7 +266,6 @@ const Toast = ({ msg, type = 'success', onClose }) => {
     );
 };
 
-// Componente de Confete (NOVO)
 const ConfettiExplosion = () => {
     return (
         <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
@@ -277,16 +280,14 @@ const ConfettiExplosion = () => {
     );
 };
 
-// Stories Component (NOVO)
 const StoriesBar = () => {
     return (
-        <div className="flex gap-4 overflow-x-auto px-5 pb-4 pt-2 ios-scroll">
+        <div className="ios-scroll px-5 pb-4 pt-2">
             {STORIES.map(s => (
                 <div key={s.id} className="flex flex-col items-center gap-1.5 cursor-pointer active:opacity-70 transition-opacity">
                     <div className="w-[68px] h-[68px] rounded-full p-[2px] bg-gradient-to-tr from-[#FFD60A] via-[#f09433] to-[#bc1888]">
                         <div className="w-full h-full rounded-full border-[2px] border-black overflow-hidden bg-[#222]">
-                             {/* Placeholder image */}
-                            <div className="w-full h-full bg-gray-800 flex items-center justify-center text-xs text-gray-500">Foto</div>
+                            <img src={s.img} alt={s.title} className="w-full h-full object-cover" />
                         </div>
                     </div>
                     <span className="text-[10px] text-gray-300 font-medium truncate w-16 text-center">{s.title}</span>
@@ -371,7 +372,6 @@ const LevelBar = ({ xp }) => {
     );
 };
 
-// Ticker melhorado com Shuffle real
 const ReviewsTicker = () => {
     const [idx, setIdx] = useState(0);
     const [list] = useState(() => Utils.shuffle([...REVIEWS_DB]));
@@ -396,7 +396,6 @@ const ReviewsTicker = () => {
     )
 };
 
-// FAQ Accordion (NOVO)
 const FAQSection = () => {
     const [open, setOpen] = useState(null);
     return (
@@ -418,20 +417,20 @@ const FAQSection = () => {
 };
 
 // ==================================================================================
-// 5. APLICAÇÃO PRINCIPAL (REFATORADA)
+// APLICAÇÃO PRINCIPAL
 // ==================================================================================
 
 export default function BookingApp() {
   const [data, setData] = useState(() => {
      try {
-       const s = localStorage.getItem('thaly_ultimate_v3');
+       const s = localStorage.getItem('thaly_ultimate_v4');
        if(s) { const p = JSON.parse(s); if(p.date) p.date = new Date(p.date); return p; }
      } catch(e){}
      return { 
          name: '', age: '', phone: '', medical: false, 
          mood: null, service: null, date: null, time: null, 
          extras: { upgrade: false, touch: false, aroma: false }, 
-         prefs: { drink: 'Água', music: 'Chill/Lofi' },
+         prefs: { music: 'Chill/Lofi' },
          payment: null,
          location: {
              city: CURRENT_LOCATIONS[0], 
@@ -449,17 +448,16 @@ export default function BookingApp() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [toast, setToast] = useState(null); // Sistema de toast
+  const [toast, setToast] = useState(null);
 
   const refs = {
     intro: useRef(null), mood: useRef(null), services: useRef(null), datetime: useRef(null), 
-    extras: useRef(null), preferences: useRef(null), location: useRef(null), payment: useRef(null)
+    extras: useRef(null), location: useRef(null), payment: useRef(null)
   };
 
-  useEffect(() => { localStorage.setItem('thaly_ultimate_v3', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_ultimate_v4', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 1500); }, []);
 
-  // --- LÓGICA FINANCEIRA & XP (GAMIFICAÇÃO AVANÇADA) ---
   const { financials, xp } = useMemo(() => {
     let xpPoints = 0;
     const base = data.service ? data.service.price : 0;
@@ -474,7 +472,6 @@ export default function BookingApp() {
     const aroma = data.extras.aroma ? CONFIG.PRICES.AROMA : 0;
     if (data.extras.aroma) xpPoints += 15;
 
-    // Lógica Rush Hour (NOVA)
     const isRush = data.time && RUSH_HOURS.includes(data.time);
     const rushFee = isRush ? CONFIG.PRICES.RUSH_HOUR_FEE : 0;
 
@@ -509,7 +506,6 @@ export default function BookingApp() {
 
   const showToast = (msg, type='success') => setToast({msg, type});
 
-  // --- GERADOR WHATSAPP V3 ---
   const generateMessage = () => {
     const d = data.date;
     const loc = data.location;
@@ -584,7 +580,6 @@ export default function BookingApp() {
     </div>
   );
 
-  // --- TELA DE SUCESSO ---
   if (success) return (
     <div className="min-h-screen bg-[#050505] pt-12 pb-12 px-6 flex flex-col items-center animate-enter text-center">
        <style>{globalStyles}</style>
@@ -647,7 +642,6 @@ export default function BookingApp() {
             <span className="font-bold text-lg tracking-tight text-white">THALY.</span>
         </div>
         <div className="flex items-center gap-3">
-            {/* Share Button (Novo) */}
             <button onClick={() => {
                 if(navigator.share) navigator.share({title: 'Thaly Massagens', text: 'Agende sua massagem!', url: window.location.href});
                 else showToast('Link copiado!');
@@ -669,7 +663,7 @@ export default function BookingApp() {
                   <div className="space-y-4">
                       <div className="flex gap-4">
                           <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">1</div>
-                          <div><h3 className="font-bold text-white text-sm">O Serviço</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Massagem profissional masculina delivery.</p></div>
+                          <div><h3 className="font-bold text-white text-sm">O Serviço</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Massagem profissional delivery (vou até você).</p></div>
                       </div>
                       <div className="flex gap-4">
                           <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">2</div>
@@ -681,14 +675,13 @@ export default function BookingApp() {
           </div>
       )}
 
-      {/* PROGRESS BAR STICKY (NOVO) */}
+      {/* PROGRESS BAR STICKY */}
       <div className="fixed top-[60px] left-0 w-full h-1 bg-[#222] z-30">
           <div className="h-full bg-[#0A84FF] transition-all duration-500" style={{width: `${(stage / 6) * 100}%`}}></div>
       </div>
 
       <main className="max-w-md mx-auto pt-24 px-5">
         
-        {/* STORIES SECTION (NOVO) */}
         {stage === 0 && <StoriesBar />}
 
         {/* 1. INTRODUÇÃO */}
@@ -732,7 +725,7 @@ export default function BookingApp() {
             {stage === 0 && <FAQSection />}
         </section>
 
-        {/* 1.5 SELETOR DE MOOD (NOVO STAGE) */}
+        {/* 1.5 SELETOR DE MOOD */}
         <section ref={refs.mood} className={`mt-10 transition-all duration-500 ${stage === 1 ? 'section-active' : stage > 1 ? 'section-blur cursor-pointer' : 'hidden opacity-0'}`} onClick={() => {if(stage > 1) { setStage(1); scrollToSection(refs.mood); }}}>
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-white"><span className="text-[#0A84FF]">01.</span> Qual sua Vibe hoje?</h3>
             <div className="grid grid-cols-3 gap-3">
@@ -768,7 +761,7 @@ export default function BookingApp() {
         <section ref={refs.datetime} className={`mt-10 transition-all duration-500 ${stage === 3 ? 'section-active' : stage > 3 ? 'section-blur cursor-pointer' : 'hidden opacity-0'}`} onClick={() => {if(stage > 3) { setStage(3); scrollToSection(refs.datetime); }}}>
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-white"><span className="text-[#0A84FF]">03.</span> Data e Hora</h3>
             <div className="card-base p-6">
-                <div className="flex gap-2 overflow-x-auto pb-4 ios-scroll snap-x">
+                <div className="ios-scroll pb-4">
                     {[...Array(14)].map((_, i) => {
                         const d = new Date(); d.setDate(d.getDate() + i);
                         const isSel = data.date && new Date(data.date).getDate() === d.getDate();
@@ -814,22 +807,13 @@ export default function BookingApp() {
                 ))}
             </div>
             
-            {/* 4.5 PREFERÊNCIAS (SUB-SECTION) */}
+            {/* 4.5 PREFERÊNCIAS (Sem Bebidas) */}
             <div className="mt-4 card-base p-5 border border-[#222]">
                 <h4 className="text-xs font-bold text-gray-400 uppercase mb-3 flex items-center gap-2"><Coffee size={12}/> Preferências (Cortesia)</h4>
                 <div className="space-y-4">
                     <div>
-                        <label className="text-[10px] text-gray-500 mb-2 block">Bebida de Boas-vindas</label>
-                        <div className="flex gap-2 overflow-x-auto pb-1 ios-scroll">
-                            {PREFERENCES.drinks.map(d => (
-                                <button key={d} onClick={() => setData({...data, prefs: {...data.prefs, drink: d}})} 
-                                    className={`px-3 py-1.5 rounded-lg text-[11px] font-bold border whitespace-nowrap ${data.prefs.drink === d ? 'bg-[#32D74B]/20 border-[#32D74B] text-[#32D74B]' : 'bg-[#161616] border-[#333] text-gray-400'}`}>{d}</button>
-                            ))}
-                        </div>
-                    </div>
-                    <div>
                         <label className="text-[10px] text-gray-500 mb-2 block">Trilha Sonora</label>
-                        <div className="flex gap-2 overflow-x-auto pb-1 ios-scroll">
+                        <div className="ios-scroll pb-1">
                             {PREFERENCES.music.map(m => (
                                 <button key={m} onClick={() => setData({...data, prefs: {...data.prefs, music: m}})} 
                                     className={`px-3 py-1.5 rounded-lg text-[11px] font-bold border whitespace-nowrap ${data.prefs.music === m ? 'bg-[#FFD60A]/20 border-[#FFD60A] text-[#FFD60A]' : 'bg-[#161616] border-[#333] text-gray-400'}`}>{m}</button>
@@ -848,7 +832,7 @@ export default function BookingApp() {
             
             <div className="mb-5">
                 <label className="text-[10px] uppercase font-bold text-gray-500 mb-2 block">Bairro / Região</label>
-                <div className="flex gap-2 overflow-x-auto pb-2 ios-scroll">
+                <div className="ios-scroll pb-2">
                     {CURRENT_LOCATIONS.map(c => (
                         <button key={c.id} onClick={() => setData({...data, location: {...data.location, city: c}})} 
                             className={`flex-shrink-0 px-4 py-2 rounded-lg text-xs font-bold border transition-all ${data.location.city.id === c.id ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#161616] border-[#333] text-gray-400'}`}>
