@@ -5,7 +5,7 @@ import {
   CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
   Calendar as CalendarIcon, Clock, User, AlertTriangle, 
   Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee,
-  Lock, RefreshCw, Eye, ThumbsUp, Bed, Calendar
+  Lock, RefreshCw, Eye, ThumbsUp, Bed, Calendar, Heart, Smile
 } from 'lucide-react';
 
 // ==================================================================================
@@ -13,7 +13,7 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v13_maps_agenda', 
+  APP_KEY: 'thaly_v16_final_real', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
@@ -23,7 +23,7 @@ const CONFIG = {
     TOUCH: 73, 
     AROMA: 5,
     RUSH_HOUR_FEE: 15,
-    MOTEL_FEE: 75, // Taxa fixa para motel
+    MOTEL_FEE: 75, 
   },
   XP_THRESHOLDS: { VIP: 100 },
   URLS: { WHATSAPP_API: "https://api.whatsapp.com/send" }
@@ -51,18 +51,18 @@ const SERVICES = [
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    desc: 'O ápice do atendimento. Começa com massagem profunda para soltar a musculatura. Em seguida, vira de frente para um contato corpo a corpo com óleos aquecidos, respiração próxima e provocações sensoriais, culminando em uma finalização manual intensa e explosiva.', 
+    desc: 'Um momento de carinho que você merece. Começo tirando todo o peso das suas costas e evoluo para um toque pele a pele, com óleos mornos e muita atenção aos detalhes. Uma troca de energia íntima e respeitosa, com finalização manual para seu alívio total.', 
     duration: 60, 
     price: 155, 
-    badge: 'MAIS PEDIDA 🔥',
+    badge: 'A MAIS PEDIDA ❤️',
     xp: 60,
     highlight: true 
   },
   { 
     id: 'relax', 
     name: 'Massagem Relaxante', 
-    short: 'Tira Dores e Tensão',
-    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares e pernas cansadas. Toques suaves e firmes para tirar o stress acumulado. Atenção: Nesta modalidade não há toques nas partes íntimas.', 
+    short: 'Alívio de Dores',
+    desc: 'Para quando o corpo pede socorro. Foco total em dissolver nós de tensão, dores lombares e cansaço. Mãos firmes e acolhedoras para te devolver a paz. Sessão puramente terapêutica para você dormir melhor.', 
     duration: 60, 
     price: 125, 
     badge: null,
@@ -72,9 +72,9 @@ const SERVICES = [
 ];
 
 const MOODS = [
-  { id: 'relax', label: 'Relaxar', icon: Wind, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-  { id: 'energy', label: 'Energia', icon: Zap, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
-  { id: 'intense', label: 'Intenso', icon: Flame, color: 'text-red-400', bg: 'bg-red-500/10' },
+  { id: 'relax', label: 'Paz', icon: Wind, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+  { id: 'energy', label: 'Renovar', icon: Zap, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
+  { id: 'intense', label: 'Prazer', icon: Heart, color: 'text-red-400', bg: 'bg-red-500/10' },
 ];
 
 const PREFERENCES = {
@@ -96,32 +96,32 @@ const TIME_SLOTS = [
 const RUSH_HOURS = ['18:00', '19:00', '20:00', '21:00'];
 
 const FAQS = [
-  { q: "Como é a Massagem Completa?", a: "Inicia com relaxamento muscular profundo e evolui para uma experiência tântrica sensorial, com toque corpo a corpo e finalização manual completa." },
-  { q: "Você leva maca?", a: "NÃO LEVO MACA. O atendimento é feito no conforto da sua cama ou sofá. Levo óleos e música. OBS: Não levo toalhas de banho." },
-  { q: "Pagamento do Transporte", a: "O valor do deslocamento (Uber) pode ser pago antecipadamente para garantir a reserva. O valor da massagem você paga apenas ao final." },
-  { q: "Atende em Motel?", a: "Sim. Para motéis é cobrada uma taxa fixa de deslocamento de R$ 75,00 adicionada ao valor do serviço." }
+  { q: "Como é a Experiência Completa?", a: "É um atendimento onde cuido de você por inteiro. Une relaxamento muscular com toques provocantes e sutis, criando uma conexão única e um final extremamente prazeroso." },
+  { q: "Onde é feito o atendimento?", a: "No seu conforto. Vou até sua residência, hotel ou motel. O atendimento é feito na sua cama ou sofá, onde você se sentir mais à vontade." },
+  { q: "O pagamento é seguro?", a: "Totalmente. O valor do transporte (Uber) garante sua reserva. O valor do serviço você paga apenas pessoalmente, quando eu chegar." },
+  { q: "Atende em Motel?", a: "Sim, com total sigilo. Para motéis, existe apenas uma taxa fixa de deslocamento de R$ 75,00." }
 ];
 
 const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago", s: 5 },
-  { t: "Gostei bastante, me senti bem relaxado depois, saí mais leve.", a: "Alan", s: 5 },
-  { t: "Melhor investimento da semana. Relaxamento total. O toque dele é firme.", a: "Bruno", s: 5 },
-  { t: "Fui pra relaxar e saí renovado. Desbloqueou sensações que eu nem conhecia.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. Recomendo pra quem treina pesado.", a: "Curioso SP", s: 5 },
-  { t: "Sigilo absoluto. Atendeu no meu escritório com total discrição.", a: "Empresário", s: 5 },
-  { t: "Profissionalismo raro. Pontual, limpo e educado.", a: "Carlos A.", s: 5 },
-  { t: "O final foi explosivo. Recomendo a todos.", a: "Anônimo", s: 5 },
+  { t: "Estava carente e precisando disso. O Thalyson me deu uma atenção surreal. Gozei muito no final, foi intenso.", a: "Ricardo", s: 5 },
+  { t: "Gostei bastante da massagem, mão firme. Só dou 4 estrelas porque atrasou 10 min por causa da chuva.", a: "Paulo", s: 4 },
+  { t: "Sou casado, fui com receio mas ele é super discreto. Me senti vivo de novo. O toque dele arrepia.", a: "Anônimo", s: 5 },
+  { t: "O atendimento é ótimo, o menino é educado. Mas achei o ar condicionado do meu quarto muito frio kkk", a: "Felipe", s: 4 },
+  { t: "Melhor finalização que já tive. Saiu muito, me senti leve. Recomendo pra quem quer carinho de verdade.", a: "Carlos", s: 5 },
+  { t: "Muito bom, mas passou tão rápido... na próxima vou pegar 2 horas direto.", a: "Bruno", s: 4 },
+  { t: "Mãos de fada com pegada de homem. Foi uma troca de energia incrível. Obrigado por me ouvir.", a: "Marcos", s: 5 },
+  { t: "Tirou todo meu stress. O final foi explosivo, lavou a alma.", a: "André", s: 5 },
 ];
 
 const LIVE_NOTIFICATIONS = [
-  "✨ João acabou de agendar", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira disputada",
-  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou", "💎 Murilo virou VIP",
-  "🌊 Ricardo ativou o modo relax", "💬 Lucas enviou dúvida", "🏠 Atendimento em casa",
+  "✨ Ricardo acabou de agendar", "👀 Agenda de hoje disputada", "📅 Sexta-feira com poucas vagas",
+  "⭐ Carlos avaliou com 5 estrelas", "✅ Cliente confirmado", "💎 Murilo virou VIP",
+  "🌊 Lucas ativou modo relax", "💬 Dúvida respondida", "🏠 Indo para atendimento",
   "🚀 Bruno fechou pacote completo", "💆‍♂️ Felipe relaxando agora", "🏨 Atendimento em Hotel",
-  "🍃 Gustavo pediu Aroma", "💳 Pix recebido", "🏳️‍🌈 Cliente novo",
-  "🕶️ Modo Sigilo ON", "🚗 Thalyson a caminho", "⏱️ Sessão estendida",
-  "🧖‍♂️ Rafael finalizou", "✨ Avaliação 5 estrelas", "🔥 Sábado abriu vaga",
-  "🎁 Cupom resgatado", "🔒 Dados seguros", "👋 Marcos deu oi",
+  "🍃 Gustavo pediu Aroma", "💳 Pix recebido", "🏳️‍🌈 Cliente novo bem-vindo",
+  "🕶️ Sigilo garantido", "🚗 Thalyson a caminho", "⏱️ Sessão estendida",
+  "🧖‍♂️ Rafael finalizou renovado", "✨ Mais uma avaliação recebida", "🔥 Sábado abriu vaga",
+  "🎁 Cupom resgatado", "🔒 Dados seguros", "👋 Marcos mandou oi",
   "💼 Executivo agendou", "✈️ Turista RJ agendou", "🛌 Motel reservado"
 ];
 
@@ -178,7 +178,7 @@ input, select, button { outline: none; }
 .primary-btn { background: var(--primary); color: white; border-radius: 16px; font-weight: 800; border: none; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.animate-enter { animation: fadeIn 0.4s ease-out forwards; }
+.animate-enter { animation: fadeIn 0.8s ease-out forwards; }
 .btn-pulse { animation: pulse 2s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
 
@@ -187,6 +187,19 @@ input, select, button { outline: none; }
 .fade-bubble-enter-active { opacity: 1; transform: translateY(0) translateX(-50%); transition: opacity 500ms, transform 500ms; }
 .fade-bubble-exit { opacity: 1; transform: translateY(0) translateX(-50%); }
 .fade-bubble-exit-active { opacity: 0; transform: translateY(-10px) translateX(-50%); transition: opacity 500ms, transform 500ms; }
+
+/* ANIMAÇÃO LOGO */
+@keyframes slideDownFade {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.logo-anim { animation: slideDownFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+@keyframes slideUpFade {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.title-anim { animation: slideUpFade 1s ease-out forwards; }
 `;
 
 // ==================================================================================
@@ -263,18 +276,44 @@ const LiveBubbles = () => {
     );
 };
 
+// REVIEWS COM AUTO SCROLL
 const ReviewsList = () => {
+    const scrollRef = useRef(null);
+
+    useEffect(() => {
+        const el = scrollRef.current;
+        if(!el) return;
+        
+        let scrollAmount = 0;
+        const step = 0.5; // Velocidade suave
+        const interval = setInterval(() => {
+            if(el) {
+                el.scrollLeft += step;
+            }
+        }, 20);
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
-        <div className="mb-6">
-            <h4 className="text-[10px] font-bold text-gray-500 uppercase mb-3 px-1 flex items-center gap-1"><Star size={10}/> O que dizem...</h4>
-            <div className="ios-scroll">
+        <div className="mb-8 mt-4">
+            <h4 className="text-[10px] font-bold text-gray-500 uppercase mb-3 px-1 flex items-center gap-1 opacity-70">
+                <Heart size={10} className="text-red-500"/> Experiências Reais
+            </h4>
+            <div className="ios-scroll" ref={scrollRef}>
                 {REVIEWS_DB.map((r, i) => (
-                    <div key={i} className="min-w-[280px] max-w-[280px] bg-[#161616] border border-[#222] p-4 rounded-xl flex flex-col justify-between hover:border-gray-600 transition-colors">
-                        <div className="flex text-[#FFD60A] mb-2 gap-0.5"><Star size={10} fill="currentColor"/><Star size={10} fill="currentColor"/><Star size={10} fill="currentColor"/><Star size={10} fill="currentColor"/><Star size={10} fill="currentColor"/></div>
-                        <p className="text-xs text-gray-300 leading-relaxed mb-3">"{r.t}"</p>
+                    <div key={i} className="min-w-[260px] max-w-[260px] bg-[#161616] border border-[#222] p-4 rounded-2xl flex flex-col justify-between relative overflow-hidden">
+                        <div className="flex text-[#FFD60A] mb-2 gap-0.5">
+                           {[...Array(5)].map((_,starI) => (
+                               <Star key={starI} size={10} fill={starI < r.s ? "currentColor" : "none"} className={starI >= r.s ? "text-gray-700" : ""}/>
+                           ))}
+                        </div>
+                        <p className="text-xs text-gray-300 leading-relaxed mb-3 italic">"{r.t}"</p>
                         <p className="text-[10px] text-gray-500 font-bold uppercase flex items-center gap-1"><Shield size={10} className="text-green-500"/> {r.a}</p>
                     </div>
                 ))}
+                {/* Espaço extra pro scroll não travar no fim imediato */}
+                <div className="min-w-[20px]"></div>
             </div>
         </div>
     )
@@ -410,7 +449,7 @@ export default function BookingApp() {
     start.setHours(hours, minutes, 0);
     
     const end = new Date(start);
-    end.setHours(end.getHours() + 1); // Duração aproximada
+    end.setHours(end.getHours() + 1); 
     
     const formatDateTime = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
     
@@ -560,11 +599,12 @@ export default function BookingApp() {
       
       {/* HEADER */}
       <header className="fixed top-0 w-full z-40 glass-header">
-        <div className="px-5 py-3 flex justify-between items-center">
-            <div className="flex items-center gap-2" onClick={() => window.location.reload()}>
-                <div className="w-8 h-8 bg-[#0A84FF] rounded-lg flex items-center justify-center font-black text-white text-sm shadow-lg">T.</div>
-                <span className="font-bold text-lg text-white">THALY.</span>
+        <div className="px-5 py-4 flex justify-between items-center">
+            {/* LOGO ANIMADO NO TOP */}
+            <div className="logo-anim">
+                <span className="font-black text-xl text-white tracking-tight">THALYSON MASSAGENS</span>
             </div>
+            
             <div className="flex items-center gap-3">
                 <button onClick={() => {if(navigator.share) navigator.share({url: window.location.href});}} className="text-gray-400 hover:text-white"><Share2 size={20}/></button>
                 <button onClick={()=>setHelpOpen(true)} className="text-gray-400 hover:text-white"><HelpCircle size={20}/></button>
@@ -605,7 +645,10 @@ export default function BookingApp() {
         <section ref={refs.intro} className={`${stage === 0 ? 'block animate-enter' : 'hidden'}`}>
             <div className="my-6">
                 <p className="text-[#0A84FF] font-bold text-[10px] uppercase tracking-widest mb-1">{Utils.getGreeting()}</p>
-                <h1 className="text-3xl font-bold text-white leading-tight">Agende seu<br/>Relaxamento.</h1>
+                {/* TITULO ANIMADO */}
+                <h1 className="text-3xl font-bold text-white leading-tight title-anim">
+                    Thalyson<br/>Massagens.
+                </h1>
             </div>
 
             <ReviewsList />
@@ -637,7 +680,7 @@ export default function BookingApp() {
 
         {/* 1. VIBE */}
         <section ref={refs.mood} className={`${stage === 1 ? 'block animate-enter' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white">01. Qual sua Vibe?</h3>
+            <h3 className="text-lg font-bold mb-4 text-white">01. O que você busca hoje?</h3>
             <div className="grid grid-cols-3 gap-3">
                 {MOODS.map(m => (
                     <button key={m.id} onClick={() => { setData({...data, mood: m}); advanceStage(2, refs.services); }}
