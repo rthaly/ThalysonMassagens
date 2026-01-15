@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Check, Star, ArrowRight, Bed, Home, MessageCircle, 
   Ticket, Lock, Flame, Wind, Crown, Shield, MapPin, Building,
-  CreditCard, Banknote, QrCode, ChevronRight, Menu, X, 
+  CreditCard, Banknote, QrCode, ChevronLeft, Menu, X, 
   HelpCircle, Instagram, Calendar as CalendarIcon, Clock, User, AlertTriangle, Car, Copy, Info, Sparkles, Navigation, Zap
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO DE NEGÓCIO (BUSINESS CORE)
+// 1. CONSTANTES & DADOS (IMUTÁVEIS)
 // ==================================================================================
+
+const APP_VERSION = 'THALY_V200_ULTRA_STABLE'; // Mudança de chave para limpar cache bugado
 
 const CONFIG = {
   PHONE: "5517991360413", 
@@ -22,13 +24,10 @@ const CONFIG = {
     AROMA: 5,
   },
   
-  // Gamificação: XP necessário para cada nível
   XP_THRESHOLDS: { MEMBER: 50, VIP: 150, ALPHA: 300 },
-  
   URLS: { WHATSAPP: "https://api.whatsapp.com/send" }
 };
 
-// LOCAIS SP (PREÇOS DE UBER IDA+VOLTA INCLUSOS)
 const LOCATIONS = [
   { id: 'bela_vista', name: 'Bela Vista', fee: 0, zone: 'Base' },
   { id: 'augusta', name: 'Augusta / Centro', fee: 15.00, zone: 'Centro' },
@@ -58,7 +57,7 @@ const SERVICES = [
   { 
     id: 'relax', 
     name: 'Massagem Relaxante', 
-    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares e pernas cansadas. Toques firmes para tirar o stress, sem toques íntimos.', 
+    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares, pernas cansadas. Toques firmes para tirar o stress, sem toques íntimos.', 
     duration: 60, 
     price: 125, 
     badge: null,
@@ -67,9 +66,9 @@ const SERVICES = [
 ];
 
 const EXTRAS_OPTS = [
-  { id: 'upgrade', label: '+30 Minutos', desc: 'Sessão estendida.', icon: Clock, getPrice: (base) => base * CONFIG.PRICES.UPGRADE_PCT, xp: 30 },
-  { id: 'touch', label: 'Interação / Toque', desc: 'Toques recíprocos.', icon: Flame, getPrice: () => CONFIG.PRICES.TOUCH, xp: 40 },
-  { id: 'aroma', label: 'Aromaterapia', desc: 'Essências calmantes.', icon: Wind, getPrice: () => CONFIG.PRICES.AROMA, xp: 15 }
+  { id: 'upgrade', label: '+30 Minutos', desc: 'Mais tempo de sessão.', icon: Clock, getPrice: (base) => base * CONFIG.PRICES.UPGRADE_PCT, xp: 30 },
+  { id: 'touch', label: 'Interação / Toque', desc: 'Toques recíprocos permitidos.', icon: Flame, getPrice: () => CONFIG.PRICES.TOUCH, xp: 40 },
+  { id: 'aroma', label: 'Aromaterapia', desc: 'Essências que acalmam.', icon: Wind, getPrice: () => CONFIG.PRICES.AROMA, xp: 15 }
 ];
 
 const TIME_SLOTS = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
@@ -97,125 +96,88 @@ const LOCATION_TYPES = [
 ];
 
 // ==================================================================================
-// 2. ESTILOS GLOBAIS (DESIGN SYSTEM "MIDNIGHT GLASS")
+// 2. ESTILOS GLOBAIS (DESIGN SYSTEM PREMIUM)
 // ==================================================================================
 
 const globalStyles = `
-:root { 
-  --primary: #0A84FF; 
-  --primary-glow: rgba(10, 132, 255, 0.5);
-  --bg: #050505; 
-  --card: #121212; 
-  --border: #222; 
-  --success: #32D74B;
-  --gold: #FFD60A;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif; }
+:root { --primary: #0A84FF; --bg: #050505; --card: #121212; --border: #222; --success: #32D74B; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
 html { background: var(--bg); }
-body { background: var(--bg); color: #fff; overflow-x: hidden; min-height: 100vh; padding-bottom: 120px; }
-input, button, select { outline: none; }
+body { background: var(--bg); color: #fff; overflow-x: hidden; min-height: 100vh; padding-bottom: 140px; }
+input, button { outline: none; }
 
-/* Scrollbars ocultas */
 .hide-scroll::-webkit-scrollbar { display: none; }
 .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Animações de Alta Performance */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+/* Animações */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-@keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--primary-glow); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
-@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
 
-.anim-enter { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.anim-pop { animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.anim-enter { animation: fadeIn 0.5s ease-out forwards; }
+.anim-pop { animation: scaleIn 0.3s cubic-bezier(0.17, 0.67, 0.23, 1.4) forwards; }
 .btn-pulse { animation: pulse 2s infinite; }
-.anim-float { animation: float 3s ease-in-out infinite; }
-
-/* Componentes UI */
-.glass-nav { 
-  background: rgba(5, 5, 5, 0.85); 
-  backdrop-filter: blur(20px); 
-  -webkit-backdrop-filter: blur(20px); 
-  border-bottom: 1px solid rgba(255,255,255,0.08); 
-  z-index: 100; 
-}
 
 .logo-shimmer {
   background: linear-gradient(90deg, #fff 0%, #0A84FF 50%, #fff 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer 3s infinite linear;
+  background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 4s infinite linear;
 }
 
-.card-base { 
-  background: var(--card); 
-  border: 1px solid var(--border); 
-  border-radius: 24px; 
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
-}
-.card-active { 
-  border-color: var(--primary); 
-  background: linear-gradient(145deg, rgba(10,132,255,0.1) 0%, rgba(18,18,18,0) 100%); 
-  box-shadow: 0 8px 32px rgba(10, 132, 255, 0.1); 
-  transform: scale(1.01);
-}
-
-.input-clean { 
-  background: #1C1C1E; 
-  border: 1px solid #333; 
-  color: white; 
-  border-radius: 16px; 
-  width: 100%; 
-  padding: 16px; 
-  font-size: 16px; 
-  transition: 0.2s; 
-}
-.input-clean:focus { 
-  border-color: var(--primary); 
-  background: #222; 
-  box-shadow: 0 0 0 2px rgba(10,132,255,0.2); 
-}
-
-.btn-primary { 
-  background: linear-gradient(135deg, #0A84FF 0%, #0056B3 100%); 
-  color: white; 
-  border-radius: 20px; 
-  font-weight: 700; 
-  border: none; 
-  box-shadow: 0 8px 25px rgba(10, 132, 255, 0.3); 
-  transition: transform 0.1s;
-}
-.btn-primary:active { transform: scale(0.96); }
+/* Componentes */
+.glass-nav { background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 50; }
+.card-base { background: var(--card); border: 1px solid var(--border); border-radius: 20px; transition: all 0.2s; }
+.card-active { border-color: var(--primary); background: rgba(10, 132, 255, 0.08); box-shadow: 0 4px 20px rgba(10, 132, 255, 0.1); }
+.input-clean { background: #1C1C1E; border: 1px solid #333; color: white; border-radius: 14px; width: 100%; padding: 16px; font-size: 16px; transition: 0.2s; }
+.input-clean:focus { border-color: var(--primary); background: #262626; box-shadow: 0 0 0 2px rgba(10,132,255,0.2); }
+.btn-primary { background: linear-gradient(135deg, #0A84FF 0%, #0056B3 100%); color: white; border-radius: 18px; font-weight: 700; border: none; box-shadow: 0 8px 25px rgba(10, 132, 255, 0.25); transition: transform 0.1s; }
+.btn-primary:active { transform: scale(0.97); }
 .btn-disabled { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
-
-.section-blur { opacity: 0.3; filter: blur(2px); pointer-events: none; transition: all 0.5s; }
+.section-disabled { opacity: 0.3; pointer-events: none; }
 `;
 
 // ==================================================================================
-// 3. UTILITÁRIOS ROBUSTOS
+// 3. UTILITÁRIOS (ROBUSTEZ)
 // ==================================================================================
 
 const Utils = {
-  fmt: (v) => (v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-  vibrate: () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12); },
+  fmt: (v) => v ? v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ 0,00',
+  vibrate: () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10); },
   shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
+  
+  getGreeting: () => {
+    const h = new Date().getHours();
+    return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
+  },
+
   isBlocked: (d, t) => {
     if (!d) return true;
     const now = new Date();
     const sel = new Date(d); sel.setHours(0,0,0,0);
     const today = new Date(); today.setHours(0,0,0,0);
-    if (sel < today) return true;
-    if (sel > today) return false;
+    if (sel < today) return true; // Passado
+    if (sel > today) return false; // Futuro
     const [h] = t.split(':').map(Number);
-    const slot = new Date(); slot.setHours(h, 0, 0, 0);
-    return slot < new Date(now.getTime() + 60 * 60000); // Bloqueia próxima 1h
+    return h <= now.getHours() + 1; // Bloqueia próxima 1h
   }
 };
 
 // ==================================================================================
-// 4. COMPONENTES VISUAIS APRIMORADOS
+// 4. COMPONENTES VISUAIS
 // ==================================================================================
+
+const Header = ({ onHelp }) => (
+  <header className="fixed top-0 w-full glass-nav py-3 px-5 flex justify-between items-center transition-all">
+    <div className="flex items-center gap-2" onClick={() => window.location.reload()}>
+       <div className="w-8 h-8 bg-[#0A84FF] rounded-lg flex items-center justify-center shadow-lg"><span className="font-black text-white text-sm">T.</span></div>
+       <span className="font-bold text-lg tracking-tight logo-shimmer">THALY.</span>
+    </div>
+    <div className="flex gap-3">
+        <a href={`https://instagram.com/${CONFIG.INSTAGRAM}`} target="_blank" rel="noreferrer" className="p-2 bg-[#27272a] rounded-full active:scale-95"><Instagram size={18}/></a>
+        <button onClick={onHelp} className="p-2 bg-[#27272a] rounded-full active:scale-95"><HelpCircle size={18}/></button>
+    </div>
+  </header>
+);
 
 const LiveStatus = () => {
     const [msg, setMsg] = useState(null);
@@ -231,33 +193,13 @@ const LiveStatus = () => {
     }, []);
     if(!msg) return null;
     return (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-40 w-max max-w-[90%] pointer-events-none anim-enter">
-            <div className="bg-[#18181b]/95 border border-[#333] px-4 py-2 rounded-full flex items-center gap-2.5 shadow-xl backdrop-blur-md">
-                <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse shrink-0"/>
-                <span className="text-xs font-bold text-gray-200 truncate">{msg}</span>
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 w-max max-w-[90%] pointer-events-none anim-enter">
+            <div className="bg-[#18181b]/95 border border-[#333] px-4 py-2 rounded-full flex items-center gap-2 shadow-xl backdrop-blur-md">
+                <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse"/>
+                <span className="text-xs font-bold text-gray-200">{msg}</span>
             </div>
         </div>
     );
-};
-
-const ReviewsCarousel = () => {
-    const [idx, setIdx] = useState(0);
-    const list = useMemo(() => Utils.shuffle([...REVIEWS]), []);
-    useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%list.length), 6000); return () => clearInterval(t); }, [list]);
-
-    return (
-        <div className="bg-[#141416] border border-[#222] rounded-3xl p-6 mb-8 shadow-lg flex flex-col justify-between min-h-[160px] relative overflow-hidden group transition-colors hover:border-[#333]">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#0A84FF]/10 to-transparent rounded-bl-full pointer-events-none"></div>
-            <div>
-                <div className="flex text-[#FFD60A] mb-3 gap-1"><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/></div>
-                <p className="text-[15px] text-gray-300 italic leading-relaxed font-light anim-enter" key={idx}>"{list[idx].t}"</p>
-            </div>
-            <div className="mt-4 flex items-center gap-2">
-                <Shield size={14} className="text-[#32D74B]"/>
-                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wide">{list[idx].a}</p>
-            </div>
-        </div>
-    )
 };
 
 const LocationScroller = ({ selected, onSelect }) => (
@@ -269,7 +211,7 @@ const LocationScroller = ({ selected, onSelect }) => (
                     <p className="text-[9px] uppercase font-bold text-gray-500 mb-1">{loc.zone}</p>
                     <p className="text-sm font-bold text-white mb-2 leading-tight h-8 flex items-center">{loc.name}</p>
                     <div className="flex items-center justify-between mt-1 pt-2 border-t border-white/5">
-                        <span className="text-[9px] text-gray-400">Taxa</span>
+                        <span className="text-[9px] text-gray-400">Ida+Volta</span>
                         <span className={`text-[10px] font-bold ${selected?.id === loc.id ? 'text-[#0A84FF]' : 'text-white'}`}>{loc.fee === 0 ? 'Grátis' : Utils.fmt(loc.fee)}</span>
                     </div>
                     {selected?.id === loc.id && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#0A84FF] shadow-[0_0_10px_#0A84FF]"></div>}
@@ -279,25 +221,42 @@ const LocationScroller = ({ selected, onSelect }) => (
     </div>
 );
 
+const ReviewsCarousel = () => {
+    const [idx, setIdx] = useState(0);
+    const list = useMemo(() => Utils.shuffle([...REVIEWS]), []);
+    useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%list.length), 5000); return () => clearInterval(t); }, [list]);
+
+    return (
+        <div className="bg-[#141416] border border-[#222] rounded-3xl p-5 mb-8 shadow-lg flex flex-col justify-between min-h-[140px] relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#0A84FF]/10 to-transparent rounded-bl-full"></div>
+            <div>
+                <div className="flex text-[#FFD60A] mb-3 gap-1"><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/></div>
+                <p className="text-sm text-gray-300 italic leading-relaxed anim-enter" key={idx}>"{list[idx].t}"</p>
+            </div>
+            <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase"><Shield size={10} className="text-[#32D74B]"/> {list[idx].a}</div>
+        </div>
+    )
+};
+
 // ==================================================================================
-// 5. APP PRINCIPAL (LÓGICA BLINDADA)
+// 5. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
-  // STATE INICIAL SEGURO (ANTI-CRASH)
+  // --- INICIALIZAÇÃO SEGURA (ANTI-CRASH) ---
   const [data, setData] = useState(() => {
      try {
-       const s = localStorage.getItem('THALY_V100_ULTIMATE');
+       const s = localStorage.getItem(APP_VERSION);
        if(s) { 
            const p = JSON.parse(s); 
            if(p.date) p.date = new Date(p.date);
-           // Verificação de integridade (se faltar algo, reseta)
-           if(!p.location || !p.location.type) throw new Error("Reset"); 
+           // Se a localização estiver quebrada, reseta para evitar tela branca
+           if(!p.location || typeof p.location !== 'object') throw new Error("Reset");
            return p; 
        }
-     } catch(e) { localStorage.removeItem('THALY_V100_ULTIMATE'); }
+     } catch(e) { localStorage.removeItem(APP_VERSION); }
      
-     // Estado Padrão
+     // Estado Limpo Padrão
      return { 
          name: '', age: '', medical: false, 
          service: null, date: null, time: null, 
@@ -313,16 +272,17 @@ export default function App() {
   const [success, setSuccess] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
 
-  // Histórico de Primeira Vez (Persistente)
-  const isFirstTime = !localStorage.getItem('thaly_history_v100');
+  // Histórico para saber se é 1ª vez
+  const isFirstTime = !localStorage.getItem('thaly_client_history');
 
   const refs = { 
       services: useRef(null), datetime: useRef(null), 
       extras: useRef(null), location: useRef(null), payment: useRef(null) 
   };
 
-  useEffect(() => { localStorage.setItem('THALY_V100_ULTIMATE', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem(APP_VERSION, JSON.stringify(data)); }, [data]);
   
   useEffect(() => { 
       setTimeout(() => setLoading(false), 500);
@@ -332,10 +292,12 @@ export default function App() {
       }
   }, [isFirstTime, couponActive, stage]);
 
-  // CÁLCULO FINANCEIRO
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
+
+  // CÁLCULOS
   const { financials, xp } = useMemo(() => {
     let xpPoints = 0;
-    // Uso de ?. e || 0 para evitar crash matemático
+    // Proteção contra nulos (?. || 0)
     const base = data.service?.price || 0;
     if (data.service) xpPoints += data.service.xp;
 
@@ -356,7 +318,7 @@ export default function App() {
     return { 
         base, upg, touch, aroma, travelFee, sub, desc, 
         total: Math.max(0, sub - desc),
-        locName: data.location?.neighborhood?.name || 'Não Selecionado'
+        locName: data.location?.neighborhood?.name || 'Local não definido'
     };
   }, [data, couponActive]);
 
@@ -374,8 +336,7 @@ export default function App() {
   };
 
   const finalizeOrder = () => {
-      // Grava que o cliente já fez pedido
-      if(couponActive || isFirstTime) localStorage.setItem('thaly_history_v100', 'true');
+      if(couponActive || isFirstTime) localStorage.setItem('thaly_client_history', 'true');
       setSuccess(true);
       window.scrollTo(0,0);
   };
@@ -386,8 +347,8 @@ export default function App() {
     const loc = data.location;
     const dateStr = d ? `${d.getDate()}/${d.getMonth()+1}` : '';
     
-    let t = `🦁 *AGENDAMENTO CONFIRMADO*\n──────────────────\n`;
-    t += `👤 *${data.name}* (${data.age}a)\n`;
+    let t = `🦁 *PEDIDO DE AGENDAMENTO*\n──────────────────\n`;
+    t += `👤 *${data.name}* (${data.age})\n`;
     t += `📅 *${dateStr} às ${data.time}*\n`;
     t += `💆 *${data.service?.name}*: ${Utils.fmt(financials.base)}\n`;
     
@@ -398,21 +359,23 @@ export default function App() {
         if(data.extras?.aroma) t += `   + Aromaterapia: ${Utils.fmt(financials.aroma)}\n`;
     }
     
-    t += `\n📍 *LOCAL: ${loc.neighborhood?.name}*\n`;
+    t += `\n📍 *LOCAL: ${loc.neighborhood?.name || '?' }*\n`;
     if(loc.type === 'home') t += `🏠 Casa: ${loc.street}, ${loc.number}\n`;
     else if (loc.type === 'apto') t += `🏢 Apto: ${loc.street}, ${loc.number} - Ap ${loc.apt}\n`;
     else if (loc.type === 'hotel') t += `🏨 Hotel: ${loc.hotel} (Qto ${loc.room})\n`;
-    else if (loc.type === 'motel') { t += `🏩 Motel: ${loc.motel} (Suíte ${loc.suite || '?'})\n`; t += `⚠️ *Cliente paga a suíte*\n`; }
+    else if (loc.type === 'motel') { t += `🏩 Motel: ${loc.motel} (Suíte ${loc.suite || '?'})\n`; t += `⚠️ *Eu pago a suíte*\n`; }
 
-    t += `\n💰 *DETALHAMENTO:*\n`;
+    t += `\n💰 *RESUMO FINANCEIRO:*\n`;
     if(financials.travelFee > 0) t += `🚗 Deslocamento: ${Utils.fmt(financials.travelFee)}\n`;
     if(couponActive) t += `🎟️ Desconto 1ª Vez: -${Utils.fmt(financials.desc)}\n`;
-    t += `✅ *TOTAL FINAL: ${Utils.fmt(financials.total)}*\n`;
+    
+    t += `\n✅ *TOTAL FINAL: ${Utils.fmt(financials.total)}*\n`;
     t += `💳 Pagamento: ${data.payment?.toUpperCase()}\n`;
     
     return `${CONFIG.URLS.WHATSAPP}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
   };
 
+  // VALIDAÇÃO DE ENDEREÇO (EVITA CRASH NO SUBMIT)
   const isFormValid = () => {
       const l = data.location;
       if (!l.neighborhood) return false;
@@ -423,32 +386,32 @@ export default function App() {
       return false;
   };
 
-  if (loading) return <div className="fixed inset-0 bg-[#09090b] z-50 flex items-center justify-center text-white font-bold tracking-widest text-xs uppercase animate-pulse">Carregando...</div>;
+  if (loading) return <div className="fixed inset-0 bg-[#050505] z-50 flex items-center justify-center text-white font-bold tracking-widest text-xs uppercase animate-pulse">Carregando...</div>;
 
   if (success) return (
-    <div className="min-h-screen bg-[#09090b] pt-20 px-6 flex flex-col items-center text-center anim-enter pb-20">
+    <div className="min-h-screen bg-[#050505] pt-20 px-6 flex flex-col items-center text-center anim-enter pb-20">
        <style>{globalStyles}</style>
        <div className="w-20 h-20 bg-[#32D74B]/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(50,215,75,0.2)]">
          <Check className="w-10 h-10 text-[#32D74B]" strokeWidth={4} />
        </div>
-       <h2 className="text-3xl font-black text-white mb-2">Tudo Certo!</h2>
-       <p className="text-gray-400 mb-8 text-sm max-w-xs">Pedido gerado com sucesso. Envie no WhatsApp para confirmar.</p>
+       <h2 className="text-3xl font-black text-white mb-2">Pedido Pronto!</h2>
+       <p className="text-gray-400 mb-8 text-sm max-w-xs">Agora é só enviar a confirmação abaixo para meu WhatsApp.</p>
 
        <div className="w-full max-w-sm bg-[#18181b] border border-[#333] rounded-3xl p-6 mb-8 text-left shadow-2xl relative overflow-hidden">
            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0A84FF] to-[#32D74B]"></div>
            <div className="flex justify-between items-end mb-6 border-b border-[#333] pb-6">
-               <div><p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Total</p><p className="text-[#32D74B] font-black text-3xl">{Utils.fmt(financials.total)}</p></div>
-               <div className="text-right"><p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Taxa</p><p className="text-white font-bold">{Utils.fmt(financials.travelFee)}</p></div>
+               <div><p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Total Final</p><p className="text-[#32D74B] font-black text-3xl">{Utils.fmt(financials.total)}</p></div>
+               <div className="text-right"><p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Taxa Inclusa</p><p className="text-white font-bold">{Utils.fmt(financials.travelFee)}</p></div>
            </div>
            <div className="space-y-3 text-sm text-gray-300">
                <p className="flex items-center gap-3"><MapPin size={16} className="text-[#0A84FF]"/> {financials.locName}</p>
                <p className="flex items-center gap-3"><CalendarIcon size={16} className="text-[#0A84FF]"/> {data.date?.toLocaleDateString()} às {data.time}</p>
            </div>
-           {data.payment === 'pix' && <div className="mt-6 p-4 bg-[#27272a] rounded-xl border border-[#333]"><p className="text-[10px] text-[#0A84FF] font-bold uppercase mb-1">Chave Pix</p><p className="text-xs font-mono text-white select-all">{CONFIG.PIX_KEY}</p></div>}
+           {data.payment === 'pix' && <div className="mt-6 p-4 bg-[#27272a] rounded-xl border border-[#333]"><p className="text-[10px] text-[#0A84FF] font-bold uppercase mb-1">Chave Pix</p><p className="text-xs font-mono text-white">{CONFIG.PIX_KEY}</p></div>}
        </div>
 
        <a href={generateMessage()} target="_blank" rel="noreferrer" className="w-full max-w-sm btn-primary py-4 text-lg flex items-center justify-center gap-2 mb-4">Enviar no WhatsApp <MessageCircle size={22}/></a>
-       <button onClick={() => { setSuccess(false); setStage(0); setCouponActive(false); window.scrollTo(0,0); }} className="text-gray-500 font-bold text-xs uppercase py-4">Voltar</button>
+       <button onClick={() => { setSuccess(false); setStage(0); setCouponActive(false); window.scrollTo(0,0); }} className="text-gray-500 font-bold text-xs uppercase py-4">Fazer Novo Pedido</button>
     </div>
   );
 
@@ -469,17 +432,17 @@ export default function App() {
         </div>
       </header>
 
-      {/* POPUP CUPOM (1ª VEZ) */}
+      {/* POPUP CUPOM */}
       {showPopup && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 anim-enter">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setShowPopup(false)}/>
             <div className="relative bg-[#18181b] w-full max-w-sm rounded-3xl border border-[#0A84FF]/50 p-6 shadow-2xl text-center">
-                <div className="w-16 h-16 bg-[#0A84FF]/20 rounded-full flex items-center justify-center mx-auto mb-4 anim-float">
+                <div className="w-16 h-16 bg-[#0A84FF]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Ticket size={32} className="text-[#0A84FF]"/>
                 </div>
                 <h2 className="text-2xl font-black text-white mb-2">Ganhou R$ {CONFIG.FIRST_COUPON_VAL}!</h2>
-                <p className="text-gray-400 text-sm mb-6">Presente exclusivo de primeira visita.</p>
-                <button onClick={() => { setCouponActive(true); setShowPopup(false); Utils.vibrate(); }} className="w-full py-4 rounded-xl btn-primary mb-3 btn-pulse">USAR DESCONTO</button>
+                <p className="text-gray-400 text-sm mb-6">Presente de boas-vindas para sua primeira sessão.</p>
+                <button onClick={() => { setCouponActive(true); setShowPopup(false); Utils.vibrate(); showToast("Desconto Aplicado!"); }} className="w-full py-4 rounded-xl btn-primary mb-3 btn-pulse">USAR DESCONTO</button>
                 <button onClick={() => setShowPopup(false)} className="text-gray-500 text-xs font-bold uppercase p-2">Dispensar</button>
             </div>
         </div>
@@ -556,7 +519,7 @@ export default function App() {
                     <p className="text-sm font-bold text-white">Sou maior de idade e saudável</p>
                 </div>
                 {data.name.length > 2 && data.age && data.medical && stage === 0 && (
-                    <button onClick={() => { setStage(1); window.scrollTo(0, 400); }} className="btn-primary w-full py-4 flex items-center justify-center gap-2 mt-2 anim-enter">Começar Agendamento <ArrowRight size={20}/></button>
+                    <button onClick={() => advanceStage(1, refs.services)} className="btn-primary w-full py-4 flex items-center justify-center gap-2 mt-2 anim-enter">Começar Agendamento <ArrowRight size={20}/></button>
                 )}
             </div>
         </section>
@@ -583,7 +546,7 @@ export default function App() {
             <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">02.</span> Agenda</h3>
             <div className="card-base p-6 border-[#222]">
                 <div className="flex gap-3 overflow-x-auto pb-6 hide-scroll snap-x">
-                    {[...Array(14)].map((_, i) => {
+                    {[...Array(10)].map((_, i) => {
                         const d = new Date(); d.setDate(d.getDate() + i);
                         const isSel = data.date && new Date(data.date).getDate() === d.getDate();
                         return (
@@ -696,6 +659,13 @@ export default function App() {
                 <button disabled={!data.payment} onClick={finalizeOrder} className="btn-primary w-full h-16 text-lg flex items-center justify-center gap-3 disabled:opacity-50">Finalizar Pedido <MessageCircle size={24} fill="currentColor"/></button>
             </div>
         </div>
+      )}
+      
+      {/* TOAST DE AVISO */}
+      {toast && (
+          <div className="fixed top-10 left-1/2 -translate-x-1/2 bg-[#32D74B] text-black font-bold px-6 py-3 rounded-full shadow-2xl z-[100] anim-enter flex items-center gap-2">
+              <Check size={18}/> {toast}
+          </div>
       )}
     </div>
   );
