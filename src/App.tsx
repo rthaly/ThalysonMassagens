@@ -5,7 +5,8 @@ import {
   CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
   Calendar as CalendarIcon, Clock, User, AlertTriangle, 
   Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee,
-  Lock, RefreshCw, Eye, ThumbsUp, Bed, Calendar, Heart, Smile, Map, Navigation, Ban
+  Lock, RefreshCw, Eye, ThumbsUp, Bed, Calendar, Heart, Smile, Map, Navigation, Ban,
+  ChevronRight, Menu, LogOut
 } from 'lucide-react';
 
 // ==================================================================================
@@ -13,8 +14,8 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v24_coupon_fixed', 
-  COUPON_KEY_PERMANENT: 'thaly_coupon_burned_v1', // Chave única e permanente
+  APP_KEY: 'thaly_v25_header_pro', 
+  COUPON_KEY_PERMANENT: 'thaly_coupon_burned_v1', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
@@ -141,9 +142,6 @@ const FAQS = [
   { q: "Atende em Motel?", a: "Sim, com total sigilo. Em Santa Fé o cliente paga a suíte e a taxa de Uber é calculada no app. Em SP existe taxa fixa." }
 ];
 
-// ==================================================================================
-// REVIEWS DATABASE
-// ==================================================================================
 const REVIEWS_DB = [
   { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
@@ -163,7 +161,7 @@ const REVIEWS_DB = [
   { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
   { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
   { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
-  { t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito e com certeza vou repetir logo, logo", a: "Bruno (Bela Vista)", s: 5 },
+  { t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito.", a: "Bruno (Bela Vista)", s: 5 },
   { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
   { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
   { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
@@ -195,9 +193,9 @@ const REVIEWS_DB = [
   { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
   { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 },
   { t: "Paz de espírito e corpo relaxado. Obrigado.", a: "Fernando", s: 5 },
-  { t: "Gostei da massagem, mão firme. Só dou 4 estrelas porque atrasou 10 min por causa da chuva.", a: "Paulo", s: 4 }, // Mantido estrategicamente
-  { t: "O atendimento é ótimo, o menino é educado. Mas achei o óleo um pouco frio no começo.", a: "Carlos", s: 4 }, // Mantido estrategicamente
-  { t: "Muito bom, mas passou tão rápido... queria ter ficado a tarde toda.", a: "Bruno", s: 4 } // Mantido estrategicamente
+  { t: "Gostei da massagem, mão firme. Só dou 4 estrelas porque atrasou 10 min por causa da chuva.", a: "Paulo", s: 4 }, 
+  { t: "O atendimento é ótimo, o menino é educado. Mas achei o óleo um pouco frio no começo.", a: "Carlos", s: 4 }, 
+  { t: "Muito bom, mas passou tão rápido... queria ter ficado a tarde toda.", a: "Bruno", s: 4 } 
 ];
 
 // ==================================================================================
@@ -261,6 +259,21 @@ input, select, button { outline: none; }
 .animate-enter { animation: fadeIn 0.8s ease-out forwards; }
 .btn-pulse { animation: pulse 2s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
+
+/* EFEITO SHIMMER NO TITULO */
+@keyframes shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+.text-shimmer {
+  background: linear-gradient(to right, #fff 20%, #999 40%, #fff 60%, #999 80%);
+  background-size: 200% auto;
+  color: #fff;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
 
 /* ANIMAÇÃO LOGO */
 @keyframes slideUpFade {
@@ -470,6 +483,7 @@ export default function BookingApp() {
   const [success, setSuccess] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [citySelectorOpen, setCitySelectorOpen] = useState(false);
+  const [showMenu, setShowMenu] = useState(false); // NOVO STATE DO MENU
   const [toast, setToast] = useState(null);
   const [couponUsedGlobal, setCouponUsedGlobal] = useState(false);
 
@@ -685,8 +699,6 @@ export default function BookingApp() {
       setSuccess(false); 
       setStage(0); 
       window.scrollTo(0,0);
-      
-      // Se ele já usou, couponUsedGlobal continua true (pois vem do state/localStorage)
   };
 
   return (
@@ -715,25 +727,72 @@ export default function BookingApp() {
         </div>
       )}
 
-      {/* HEADER PERSISTENTE */}
-      <header className="fixed top-0 w-full z-40 glass-header">
-        <div className="px-5 py-4 flex justify-between items-center">
-            {/* LOGO ANIMADO NO TOP */}
-            <div className="title-anim">
-                <span className="font-black text-xl text-white tracking-tight">Thalyson Massagens</span>
-            </div>
-            
-            <div className="flex items-center gap-3">
-                <button onClick={() => {if(navigator.share) navigator.share({url: window.location.href});}} className="text-gray-400 hover:text-white"><Share2 size={20}/></button>
-                <button onClick={()=>setHelpOpen(true)} className="text-gray-400 hover:text-white"><HelpCircle size={20}/></button>
-            </div>
+      {/* MENU LATERAL MODAL */}
+      {showMenu && (
+        <div className="fixed inset-0 z-[110] flex justify-end animate-enter">
+             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setShowMenu(false)}></div>
+             <div className="relative w-3/4 max-w-xs h-full bg-[#1C1C1E] border-l border-[#333] p-6 shadow-2xl flex flex-col">
+                 <div className="flex justify-between items-center mb-8">
+                     <span className="text-white font-bold text-lg">Menu</span>
+                     <button onClick={()=>setShowMenu(false)}><X size={24} className="text-gray-400"/></button>
+                 </div>
+                 
+                 <div className="space-y-4 flex-1">
+                     <button onClick={() => { setCitySelectorOpen(true); setShowMenu(false); }} className="w-full p-4 rounded-xl bg-[#222] border border-[#333] flex items-center gap-3 text-white font-bold">
+                        <MapPin size={20} className="text-[var(--primary)]"/> Alterar Cidade
+                     </button>
+                     <button onClick={() => { setHelpOpen(true); setShowMenu(false); }} className="w-full p-4 rounded-xl bg-[#222] border border-[#333] flex items-center gap-3 text-white font-bold">
+                        <HelpCircle size={20} className="text-gray-400"/> Dúvidas & Ajuda
+                     </button>
+                     <button onClick={() => { if(navigator.share) navigator.share({url: window.location.href}); }} className="w-full p-4 rounded-xl bg-[#222] border border-[#333] flex items-center gap-3 text-white font-bold">
+                        <Share2 size={20} className="text-gray-400"/> Compartilhar App
+                     </button>
+                 </div>
+                 
+                 <div className="pt-6 border-t border-[#333]">
+                     <p className="text-[10px] text-gray-500 text-center uppercase">Thalyson Massagens © 2024</p>
+                 </div>
+             </div>
         </div>
+      )}
+
+      {/* HEADER FIXO NOVO */}
+      <div className="fixed top-0 w-full z-40">
+        <header className="bg-black/80 backdrop-blur-xl border-b border-white/5 py-3 px-6 flex justify-between items-center transition-all duration-300">
+          <div className="flex items-center gap-3">
+            {/* SÓ MOSTRA VOLTAR SE STAGE > 0 E NÃO SUCESSO */}
+            {stage > 0 && !success ? (
+              <button 
+                onClick={() => { Utils.vibrate(); setStage(s => s - 1); }} 
+                className="p-2 -ml-2 text-gray-400 hover:text-white transition-colors active:scale-95"
+              >
+                <ChevronRight size={24} className="rotate-180" />
+              </button>
+            ) : null}
+            
+            <span 
+              className="font-extrabold text-lg tracking-tight text-shimmer cursor-pointer" 
+              onClick={() => { 
+                if(stage === 0 || window.confirm("Deseja voltar ao início e limpar o agendamento?")) { 
+                   handleReset();
+                }
+              }}
+            >
+              THALYMASSAGENS
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-3">
+             <button onClick={() => { setShowMenu(true); }} className="p-2 bg-[#1C1C1E] rounded-full border border-[#333] active:scale-95 transition-transform">
+                <Menu size={18} className="text-white"/>
+             </button>
+          </div>
+        </header>
         <StatusBar cityName={currentCity.name} onSwitchCity={() => setCitySelectorOpen(true)} />
-        {/* BARRA DE PROGRESSO */}
         <div className="w-full h-[2px] bg-[#111]">
             <div className="h-full bg-[var(--primary)] transition-all duration-300" style={{width: `${(stage / 7) * 100}%`}}></div>
         </div>
-      </header>
+      </div>
 
       {/* MODAL AJUDA */}
       {helpOpen && (
@@ -797,7 +856,7 @@ export default function BookingApp() {
 
       {/* FLUXO PRINCIPAL */}
       {!success && (
-      <main className="max-w-md mx-auto pt-28 px-5">
+      <main className="max-w-md mx-auto pt-32 px-5">
         
         {/* INTRODUÇÃO */}
         <section ref={refs.intro} className={`${stage === 0 ? 'block animate-enter' : 'hidden'}`}>
@@ -805,7 +864,7 @@ export default function BookingApp() {
                 <p className="text-[var(--primary)] font-bold text-[10px] uppercase tracking-widest mb-1">{Utils.getGreeting()}</p>
                 {/* TITULO ANIMADO */}
                 <h1 className="text-3xl font-bold text-white leading-tight title-anim">
-                    Agende<br/>Seu Momento hoje.
+                    Thalyson<br/>Massagens.
                 </h1>
                 <div onClick={() => setCitySelectorOpen(true)} className="inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-full bg-[#222] border border-[#333] cursor-pointer">
                     <MapPin size={12} className="text-gray-400"/>
