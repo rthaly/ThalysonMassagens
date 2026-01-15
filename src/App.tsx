@@ -720,7 +720,7 @@ export default function BookingApp() {
         <div className="px-5 py-4 flex justify-between items-center">
             {/* LOGO ANIMADO NO TOP */}
             <div className="title-anim">
-                <span className="font-black text-xl text-white tracking-tight">Agende seu Momento</span>
+                <span className="font-black text-xl text-white tracking-tight">Thalyson Massagens</span>
             </div>
             
             <div className="flex items-center gap-3">
@@ -805,7 +805,7 @@ export default function BookingApp() {
                 <p className="text-[var(--primary)] font-bold text-[10px] uppercase tracking-widest mb-1">{Utils.getGreeting()}</p>
                 {/* TITULO ANIMADO */}
                 <h1 className="text-3xl font-bold text-white leading-tight title-anim">
-                    Thalyson<br/>Massagens.
+                    Agende<br/>Seu Momento hoje.
                 </h1>
                 <div onClick={() => setCitySelectorOpen(true)} className="inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-full bg-[#222] border border-[#333] cursor-pointer">
                     <MapPin size={12} className="text-gray-400"/>
