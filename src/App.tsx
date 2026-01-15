@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, Home, MessageCircle, 
   Ticket, Flame, Wind, Crown, Shield, MapPin, Building,
   CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
   Calendar as CalendarIcon, Clock, User, AlertTriangle, 
   Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee,
-  Lock, RefreshCw, Eye, ThumbsUp
+  Lock, RefreshCw, Eye, ThumbsUp, Bed
 } from 'lucide-react';
 
 // ==================================================================================
@@ -13,11 +13,11 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v10_reset', // Chave nova para não dar conflito
+  APP_KEY: 'thaly_v11_fix', // Atualizei a chave para garantir que carregue a nova config
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
-  COUPON_VAL: 15.00, 
+  COUPON_VAL: 12.00, // <--- CORRIGIDO PARA 12 REAIS
   PRICES: {
     UPGRADE_PCT: 0.5, 
     TOUCH: 73, 
@@ -132,7 +132,7 @@ const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
   vibrate: (pattern = 10) => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); },
   shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
-  
+   
   isTimeBlocked: (selectedDate, timeString) => {
     if (!selectedDate) return true;
     const now = new Date();
