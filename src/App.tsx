@@ -3,96 +3,87 @@ import {
   Check, Star, ArrowRight, Bed, Home, MessageCircle, 
   Ticket, Lock, Flame, Wind, Crown, Shield, MapPin, Building,
   CreditCard, Banknote, QrCode, ChevronRight, Menu, X, 
-  HelpCircle, Instagram, Calendar as CalendarIcon, Clock, User, AlertTriangle, Car, Copy, Info, Sparkles, Activity
+  HelpCircle, Instagram, Calendar as CalendarIcon, Clock, User, AlertTriangle, Car, Copy, Info, Sparkles
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO DE VIAGEM & NEGÓCIO
+// 1. CONFIGURAÇÃO DE NEGÓCIO
 // ==================================================================================
 
 const CONFIG = {
-  // --- SELETOR DE REGIÃO (MUDE AQUI) ---
-  // 'SP'  = São Paulo Capital
-  // 'LDR' = Londrina (PR)
-  // 'INT' = Interior (Santa Fé/Região)
-  CURRENT_REGION: 'LDR', 
-
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
   PIX_KEY: "62922530000144", 
   
+  // CUPOM (Só ganha se atingir nível VIP na 1ª vez)
   FIRST_COUPON_VAL: 15.00, 
   
   PRICES: {
-    UPGRADE_PCT: 0.5, 
+    UPGRADE_PCT: 0.5, // 50% do valor do serviço
     TOUCH: 73, 
     AROMA: 5,
   },
   
-  // GAMIFICAÇÃO (HARD MODE - Mais difícil upar)
-  XP_THRESHOLDS: { MEMBER: 100, VIP: 300, ALPHA: 600 },
+  // GAMIFICAÇÃO: Pontos necessários para liberar o cupom
+  XP_THRESHOLDS: { VIP: 120, ALPHA: 250 },
   
   URLS: {
     WHATSAPP_API: "https://api.whatsapp.com/send"
   }
 };
 
-// --- BANCO DE DADOS DE LOCAIS (MULTI-CIDADE) ---
-const LOCATIONS_DB = {
-  SP: [
-    { id: 'bela_vista', name: 'Bela Vista / Centro', fee: 10, zone: 'Base' },
-    { id: 'paulista', name: 'Paulista / Jardins', fee: 15, zone: 'Nobre' },
-    { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 25, zone: 'Oeste' },
-    { id: 'itaim', name: 'Itaim / V. Olímpia', fee: 30, zone: 'Sul' },
-    { id: 'moema', name: 'Moema / Ibirapuera', fee: 35, zone: 'Sul' },
-    { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: 'Sob Consulta' }
-  ],
-  LDR: [
-    { id: 'centro_ldr', name: 'Centro Londrina', fee: 10, zone: 'Central' },
-    { id: 'gleba', name: 'Gleba Palhano', fee: 15, zone: 'Nobre' },
-    { id: 'aeroporto', name: 'Aeroporto / Z. Leste', fee: 20, zone: 'Leste' },
-    { id: 'catuai', name: 'Shopping Catuaí / Z. Sul', fee: 20, zone: 'Sul' },
-    { id: 'zs_outros', name: 'Zona Sul (Outros)', fee: 25, zone: 'Sul' },
-    { id: 'zn_ldr', name: 'Zona Norte', fee: 30, zone: 'Norte' },
-    { id: 'cambe', name: 'Cambé / Ibiporã', fee: 40, zone: 'Região' }
-  ],
-  INT: [
-    { id: 'santafe', name: 'Santa Fé do Sul', fee: 0, zone: 'Base' },
-    { id: 'tresfron', name: 'Três Fronteiras', fee: 20, zone: 'Vizinha' },
-    { id: 'rubineia', name: 'Rubinéia', fee: 25, zone: 'Vizinha' },
-    { id: 'jales', name: 'Jales', fee: 60, zone: 'Viagem' },
-    { id: 'aparecida', name: 'Ap. do Taboado (MS)', fee: 70, zone: 'Viagem' }
-  ]
-};
+// LOCAIS SP (Taxas Ida e Volta)
+const SP_LOCATIONS = [
+  { id: 'bela_vista', name: 'Bela Vista', fee: 0, zone: 'Base' },
+  { id: 'augusta', name: 'Rua Augusta / Centro', fee: 10.00, zone: 'Centro' },
+  { id: 'paulista', name: 'Av. Paulista / Jardins', fee: 15.00, zone: 'Nobre' },
+  { id: 'higienopolis', name: 'Higienópolis / Sta Cecília', fee: 18.00, zone: 'Centro' },
+  { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 25.00, zone: 'Oeste' },
+  { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 30.00, zone: 'Sul' },
+  { id: 'moema', name: 'Moema / Ibirapuera', fee: 35.00, zone: 'Sul' },
+  { id: 'vila_mariana', name: 'Vila Mariana / Paraíso', fee: 28.00, zone: 'Sul' },
+  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 25.00, zone: 'Oeste' },
+  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 40.00, zone: 'Sul' },
+  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 45.00, zone: 'Leste' },
+  { id: 'morumbi', name: 'Morumbi', fee: 50.00, zone: 'Sul' },
+  { id: 'santana', name: 'Santana / ZN', fee: 45.00, zone: 'Norte' },
+  { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: '?' },
+];
 
-const CURRENT_LOCATIONS = LOCATIONS_DB[CONFIG.CURRENT_REGION];
-
+// SERVIÇOS (TEXTOS CONVIDATIVOS)
 const SERVICES = [
   { 
     id: 'completa', 
     name: 'Experiência Completa', 
     short: 'Relaxamento + Finalização',
-    desc: 'Massagista de Cueca. O protocolo premium. Inicia de bruços soltando a musculatura, vira de frente com creme e óleo, toque corpo a corpo e finalização manual intensa.', 
+    desc: 'A favorita. Começa de bruços com massagem profunda, vira de frente com muito óleo quente, contato pele na pele intenso e finalização manual explosiva.', 
     duration: 60, 
     price: 155, 
     badge: 'MAIS PEDIDA 🔥',
-    xp: 50 // XP Base
+    xp: 80 // XP Alto
   },
   { 
     id: 'relax', 
     name: 'Massagem Relaxante', 
     short: 'Tira Dores e Tensão',
-    desc: 'Foco 100% terapêutico e relaxante. Ideal para remover dores lombares, pernas cansadas. Toques suaves para relaxar e tirar o stress, sem toques íntimos.', 
+    desc: 'Foco 100% terapêutico. Ideal para quem treina pesado ou trabalha sentado. Manobras firmes para dissolver nós e zerar o stress. Sem toques íntimos.', 
     duration: 60, 
     price: 125, 
     badge: null,
-    xp: 25 // Menos XP
+    xp: 40 // XP Médio
   },
 ];
 
 const TIME_SLOTS = [
     '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', 
     '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
+];
+
+const LEVELS = [
+  { name: 'Visitante', min: 0, color: 'text-gray-400', bg: 'bg-gray-700' },
+  { name: 'Membro', min: 50, color: 'text-blue-400', bg: 'bg-blue-600' },
+  { name: 'VIP', min: 120, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, // Desbloqueia Cupom
+  { name: 'ALPHA', min: 250, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
 ];
 
 const LOCATION_TYPES = [
@@ -102,43 +93,12 @@ const LOCATION_TYPES = [
   { id: 'motel', label: 'Motel', icon: Flame },
 ];
 
-const LEVELS = [
-  { name: 'Visitante', min: 0, color: 'text-gray-500', bg: 'bg-gray-800' },
-  { name: 'Membro', min: 100, color: 'text-blue-400', bg: 'bg-blue-600' },
-  { name: 'VIP', min: 300, color: 'text-[#FFD60A]', bg: 'bg-[#FFD60A]' }, 
-  { name: 'ALPHA', min: 600, color: 'text-[#32D74B]', bg: 'bg-[#32D74B]' }
-];
-
-// --- GATILHOS MENTAIS (LIVE STATUS) ---
-const LIVE_NOTIFICATIONS = [
-  "🔥 Último horário de Domingo preenchido", 
-  "👀 6 pessoas visualizando a agenda agora",
-  "📅 Agenda da noite quase lotada",
-  "⭐ Pedro avaliou: 'Melhor da cidade'",
-  "✅ Matheus confirmou presença",
-  "💎 Murilo atingiu nível VIP",
-  "🏠 Atendimento em Hotel iniciado",
-  "🚀 Bruno fechou o pacote completo + extras",
-  "😈 Felipe adicionou interação extra",
-  "🍃 Gustavo pediu Aromaterapia",
-  "💳 Pagamento via Pix recebido",
-  "🏳️‍🌈 Cliente novo cadastrado com sucesso",
-  "🚗 Thalyson está a caminho",
-  "⚡ Ricardo agendou de última hora",
-  "🔒 Dados criptografados e seguros",
-  "💼 Executivo agendou horário de almoço",
-  "🛑 Sábado restam apenas 2 vagas",
-  "✨ 'Mão firme e pegada forte' - Review Recente",
-  "📍 Atendimento realizado na Gleba Palhano",
-  "🛁 Banho tomado, pronto para atender"
-];
-
-// --- AVALIAÇÕES COMPLETAS (50+) ---
+// AVALIAÇÕES ORIGINAIS (MANTIDAS)
 const REVIEWS_DB = [
-  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago", s: 5 },
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago (Bela Vista)", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
   { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso", s: 5 },
+  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
   { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
   { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
   { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
@@ -187,15 +147,28 @@ const REVIEWS_DB = [
   { t: "Paz de espírito e corpo relaxado. Obrigado.", a: "Fernando", s: 5 }
 ];
 
+const LIVE_NOTIFICATIONS = [
+  "🔥 João acabou de agendar", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira quase cheia",
+  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou presença", "💎 Murilo usou o Cupom",
+  "🏠 Atendimento em Hotel iniciado", "🚀 Bruno fechou o pacote completo", "😈 Felipe adicionou interação",
+  "🍃 Gustavo pediu Aromaterapia", "💳 Pagamento via Pix recebido", "🏳️‍🌈 Cliente novo cadastrado",
+  "🚗 Thalyson a caminho do Itaim", "⏱️ Sessão estendida agendada", "✨ Avaliação 5 estrelas recebida",
+  "📍 Atendimento na Bela Vista", "🎁 Cupom de 1ª Vez resgatado", "🔒 Dados seguros",
+  "👋 Marcos mandou um 'Oi'", "💼 Executivo agendou horário", "🛑 Agenda de Sábado Lotada",
+  "🛁 Banho tomado, pronto p/ atender", "💬 Lucas tirou uma dúvida", "🌚 Atendimento Noturno Iniciado",
+  "⚡ Ricardo agendou de última hora", "🏩 Chegando no Motel agora", "📝 Cadastro aprovado",
+  "🍷 Cliente VIP pediu vinho", "🗝️ Check-in no Hotel realizado"
+];
+
 // ==================================================================================
-// 2. ESTILOS (PERFORMANCE & SCROLL)
+// 2. ESTILOS GLOBAIS
 // ==================================================================================
 
 const globalStyles = `
 :root { --primary: #0A84FF; --bg-app: #050507; --card-bg: #141416; --border: #222; }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif; }
 html { height: 100%; background: var(--bg-app); overflow-y: scroll; }
-body { min-height: 100%; background: var(--bg-app); color: #fff; overflow-x: hidden; position: relative; padding-bottom: 20px; }
+body { min-height: 100%; background: var(--bg-app); color: #fff; overflow-x: hidden; position: relative; }
 input, select, button { outline: none; }
 .ios-scroll::-webkit-scrollbar { display: none; }
 .ios-scroll { -ms-overflow-style: none; scrollbar-width: none; }
@@ -290,7 +263,7 @@ const ReviewsTicker = () => {
     useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%list.length), 6000); return () => clearInterval(t); }, [list]);
 
     return (
-        <div className="bg-[#141416] border border-[#222] rounded-3xl p-6 mb-8 shadow-lg flex flex-col justify-between min-h-[150px] relative overflow-hidden group">
+        <div className="bg-[#141416] border border-[#222] rounded-3xl p-6 mb-8 shadow-lg flex flex-col justify-between min-h-[160px] relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#0A84FF]/10 to-transparent rounded-bl-full"></div>
             <div>
                 <div className="flex text-[#FFD60A] mb-3 gap-1"><Star size={13} fill="currentColor"/><Star size={13} fill="currentColor"/><Star size={13} fill="currentColor"/><Star size={13} fill="currentColor"/><Star size={13} fill="currentColor"/></div>
@@ -308,7 +281,7 @@ const LocationSelector = ({ selected, onSelect }) => {
     return (
         <div className="mb-6 -mx-5 px-5">
             <div className="flex gap-3 overflow-x-auto pb-6 ios-scroll snap-x px-1">
-                {CURRENT_LOCATIONS.map(loc => (
+                {SP_LOCATIONS.map(loc => (
                     <div key={loc.id} onClick={() => onSelect(loc)}
                         className={`snap-center flex-shrink-0 w-40 p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${selected?.id === loc.id ? 'border-[#0A84FF] bg-[#0A84FF]/10' : 'border-[#222] bg-[#141416]'}`}>
                         <p className="text-[10px] uppercase font-bold text-gray-500 mb-1">{loc.zone}</p>
@@ -332,14 +305,15 @@ const LocationSelector = ({ selected, onSelect }) => {
 export default function BookingApp() {
   const [data, setData] = useState(() => {
      try {
-       const s = localStorage.getItem('thaly_travel_v1'); 
+       // NOVA CHAVE PARA LIMPAR CACHE ANTIGO
+       const s = localStorage.getItem('thaly_v_gold_1'); 
        if(s) { 
            const p = JSON.parse(s); 
            if(p.date) p.date = new Date(p.date);
            if(!p.location || !p.location.neighborhood) throw new Error("Reset");
            return p; 
        }
-     } catch(e) { localStorage.removeItem('thaly_travel_v1'); }
+     } catch(e) { localStorage.removeItem('thaly_v_gold_1'); }
      
      return { 
          name: '', age: '', medical: false, 
@@ -347,7 +321,7 @@ export default function BookingApp() {
          extras: { upgrade: false, touch: false, aroma: false }, 
          payment: null,
          location: {
-             neighborhood: null, 
+             neighborhood: null, // Force selection
              type: 'home', 
              street: '', number: '', buildingNum: '', aptNumber: '', 
              hotelName: '', roomNumber: '', motelName: '', suiteType: '' 
@@ -362,10 +336,12 @@ export default function BookingApp() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
-  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history_travel');
+  // Verifica histórico de pedidos para permitir cupom
+  const hasOrderedBefore = !!localStorage.getItem('thaly_client_history_gold');
+  
   const refs = { services: useRef(null), datetime: useRef(null), extras: useRef(null), location: useRef(null), payment: useRef(null) };
 
-  useEffect(() => { localStorage.setItem('thaly_travel_v1', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem('thaly_v_gold_1', JSON.stringify(data)); }, [data]);
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
   
   useEffect(() => {
@@ -374,20 +350,25 @@ export default function BookingApp() {
       return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // --- LÓGICA DE GAMIFICAÇÃO & PREÇO ---
   const { financials, xp } = useMemo(() => {
     let xpPoints = 0;
     const base = data.service?.price || 0;
+    
+    // XP pelo serviço
     if (data.service) xpPoints += data.service.xp;
 
+    // Preços e XP dos Extras
     const upg = data.extras?.upgrade ? (base * CONFIG.PRICES.UPGRADE_PCT) : 0;
-    if (data.extras?.upgrade) xpPoints += 15;
+    if (data.extras?.upgrade) xpPoints += 25;
 
     const touch = data.extras?.touch ? CONFIG.PRICES.TOUCH : 0;
-    if (data.extras?.touch) xpPoints += 20;
+    if (data.extras?.touch) xpPoints += 30;
 
     const aroma = data.extras?.aroma ? CONFIG.PRICES.AROMA : 0;
-    if (data.extras?.aroma) xpPoints += 10;
+    if (data.extras?.aroma) xpPoints += 15;
 
+    // Soma final
     const travelFee = data.location?.neighborhood?.fee || 0;
     const sub = base + upg + touch + aroma + travelFee;
     const desc = couponActive ? CONFIG.FIRST_COUPON_VAL : 0;
@@ -398,6 +379,9 @@ export default function BookingApp() {
     };
   }, [data, couponActive]);
 
+  const isVip = xp >= CONFIG.XP_THRESHOLDS.VIP;
+
+  // --- NAVEGAÇÃO ---
   const scrollToRef = (ref) => {
     if (ref && ref.current) {
         setTimeout(() => {
@@ -414,11 +398,13 @@ export default function BookingApp() {
   };
 
   const finalizeOrder = () => {
-      if(couponActive || !hasOrderedBefore) localStorage.setItem('thaly_client_history_travel', 'true');
+      // Grava que o cliente já fez pedido (queima o cupom)
+      if(couponActive || !hasOrderedBefore) localStorage.setItem('thaly_client_history_gold', 'true');
       setSuccess(true);
       window.scrollTo(0,0);
   };
 
+  // --- MENSAGEM WHATSAPP COMPLETA ---
   const generateMessage = () => {
     const d = data.date;
     const loc = data.location;
@@ -430,23 +416,30 @@ export default function BookingApp() {
     t += `📅 *${dateStr} às ${data.time}*\n`;
     t += `💆 *${data.service?.name}*\n`;
     
+    // Lista Extras explicitamente
     if(Object.values(data.extras || {}).some(Boolean)) {
-        t += `🔥 *EXTRAS:* `;
-        const l = [];
-        if(data.extras?.upgrade) l.push(`+30min`);
-        if(data.extras?.touch) l.push(`Interação`);
-        if(data.extras?.aroma) l.push(`Aroma`);
-        t += l.join(', ') + `\n`;
+        t += `🔥 *EXTRAS:*\n`;
+        if(data.extras?.upgrade) t += `+ Upgrade Tempo (+30m)\n`;
+        if(data.extras?.touch) t += `+ Interação Recíproca\n`;
+        if(data.extras?.aroma) t += `+ Aromaterapia\n`;
     }
     
     t += `\n📍 *LOCAL: ${loc.neighborhood?.name}*\n`;
-    if(loc.type === 'home') t += `🏠 Casa: ${loc.street}, ${loc.number}\n`;
-    else if (loc.type === 'apto') t += `🏢 Apto: ${loc.street}, ${loc.buildingNum} - Unid ${loc.aptNumber}\n`;
-    else if (loc.type === 'hotel') t += `🏨 Hotel: ${loc.hotelName} (Qto ${loc.roomNumber})\n`;
-    else if (loc.type === 'motel') { t += `🏩 Motel: ${loc.motelName} (Suíte ${loc.suiteType || '?'})\n`; t += `⚠️ *Eu pago a suíte*\n`; }
+    
+    if(loc.type === 'home') {
+        t += `🏠 Casa: ${loc.street}, ${loc.number}\n`;
+    } else if (loc.type === 'apto') {
+        t += `🏢 Apto: ${loc.street}, ${loc.buildingNum}\n`;
+        t += `🚪 Unidade: ${loc.aptNumber}\n`;
+    } else if (loc.type === 'hotel') {
+        t += `🏨 Hotel: ${loc.hotelName} (Qto ${loc.roomNumber})\n`;
+    } else if (loc.type === 'motel') {
+        t += `🏩 Motel: ${loc.motelName} (Suíte ${loc.suiteType || '?'})\n`;
+        t += `⚠️ *Eu pago a suíte*\n`;
+    }
 
-    t += `\n💰 *TOTAL: ${Utils.formatBRL(financials.total)}*\n`;
-    if(financials.travelFee > 0) t += `🚗 Taxa Ida+Volta: ${Utils.formatBRL(financials.travelFee)}\n`;
+    t += `\n💰 *TOTAL FINAL: ${Utils.formatBRL(financials.total)}*\n`;
+    if(financials.travelFee > 0) t += `🚗 Taxa Deslocamento: ${Utils.formatBRL(financials.travelFee)}\n`;
     if(couponActive) t += `🎟️ Cupom 1ª Vez: -${Utils.formatBRL(financials.desc)}\n`;
     t += `💳 Pagamento: ${data.payment?.toUpperCase()}\n`;
     
@@ -513,7 +506,7 @@ export default function BookingApp() {
       <style>{globalStyles}</style>
       <LiveBubbles />
       
-      {/* NAVBAR GLASSMORPHISM */}
+      {/* NAVBAR */}
       <header className={`fixed top-0 w-full py-4 px-6 flex justify-between items-center z-50 navbar ${scrolled ? 'glass' : ''}`}>
         <div className="flex items-center gap-2" onClick={() => window.location.reload()}>
             <span className="font-black text-xl tracking-tight logo-shimmer">Thaly Massagens</span>
@@ -524,7 +517,7 @@ export default function BookingApp() {
         </div>
       </header>
 
-      {/* AJUDA COMPLETA */}
+      {/* AJUDA */}
       {helpOpen && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 animate-enter">
               <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={()=>setHelpOpen(false)}></div>
@@ -561,11 +554,36 @@ export default function BookingApp() {
 
       <main className="max-w-md mx-auto pt-32 px-5">
         
-        {/* 1. INTRODUÇÃO */}
+        {/* 1. INTRODUÇÃO & GAMIFICAÇÃO */}
         <section className={`transition-all duration-500 ${stage === 0 ? 'opacity-100' : 'section-disabled'}`}>
             <div className="mb-8">
                 <h1 className="text-4xl font-extrabold mb-3 leading-[1.1] tracking-tight">Massagem &<br/><span className="text-gradient">Momentos Únicos.</span></h1>
                 <p className="text-gray-400 text-[15px] leading-relaxed">Massoterapia masculina no conforto do seu local. Técnica apurada e experiência premium.</p>
+            </div>
+
+            {/* LEVEL BAR (GAMIFICAÇÃO) */}
+            <div className="mb-8 bg-[#131316] p-5 rounded-3xl border border-[#222] relative overflow-hidden">
+                <div className="flex justify-between items-end mb-3 relative z-10">
+                    <div>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Status VIP</span>
+                        <div className={`flex items-center gap-2 font-black text-xl mt-0.5`}>
+                            <Crown size={20} className={xp >= CONFIG.XP_THRESHOLDS.VIP ? "text-[#FFD60A]" : "text-gray-500"} /> 
+                            <span className={xp >= CONFIG.XP_THRESHOLDS.VIP ? "text-[#FFD60A]" : "text-white"}>
+                                {xp >= CONFIG.XP_THRESHOLDS.ALPHA ? 'ALPHA' : xp >= CONFIG.XP_THRESHOLDS.VIP ? 'VIP' : 'MEMBRO'}
+                            </span>
+                        </div>
+                    </div>
+                    <div className="text-right">
+                        <span className="text-[10px] text-gray-500">XP Atual</span>
+                        <span className="text-sm font-bold block text-white">{xp} <span className="text-gray-600">/ 300</span></span>
+                    </div>
+                </div>
+                <div className="h-3 w-full bg-[#1A1A1E] rounded-full overflow-hidden relative z-10 box-border border border-[#222]">
+                    <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-1000 ease-out" style={{ width: `${Math.min(100, (xp/300)*100)}%` }}></div>
+                </div>
+                {xp >= CONFIG.XP_THRESHOLDS.VIP && (
+                    <p className="text-[10px] text-[#FFD60A] text-center mt-2 font-bold animate-pulse">CUPOM R$ 15,00 DISPONÍVEL NO FINAL!</p>
+                )}
             </div>
 
             <ReviewsTicker />
@@ -604,7 +622,6 @@ export default function BookingApp() {
                             <div><h3 className={`text-xl font-bold ${data.service?.id === s.id ? 'text-[#0A84FF]' : 'text-white'}`}>{s.name}</h3></div>
                             <span className="text-white font-bold bg-[#222] border border-[#333] px-3 py-1 rounded-lg text-sm">{Utils.formatBRL(s.price)}</span>
                         </div>
-                        <p className="text-[11px] font-bold text-[#0A84FF] uppercase tracking-wide border border-[#0A84FF]/30 inline-block px-2 py-1 rounded mb-3">{s.short}</p>
                         <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
                     </div>
                 ))}
@@ -640,14 +657,17 @@ export default function BookingApp() {
             <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">03.</span> Adicionais</h3>
             <div className="card-base divide-y divide-[#222]">
                 {[
-                   { id: 'upgrade', label: '+30 Minutos', icon: Clock, price: data.service?.price * CONFIG.PRICES.UPGRADE_PCT },
-                   { id: 'touch', label: 'Interação / Toque', icon: Flame, price: CONFIG.PRICES.TOUCH },
-                   { id: 'aroma', label: 'Aromaterapia', icon: Wind, price: CONFIG.PRICES.AROMA }
+                   { id: 'upgrade', label: '+30 Minutos', desc: 'Mais tempo para curtir cada detalhe.', icon: Clock, price: data.service?.price * CONFIG.PRICES.UPGRADE_PCT },
+                   { id: 'touch', label: 'Interação / Toque', desc: 'Toque recíproco. Você no controle.', icon: Flame, price: CONFIG.PRICES.TOUCH },
+                   { id: 'aroma', label: 'Aromaterapia', desc: 'Óleos essenciais que acalmam a mente.', icon: Wind, price: CONFIG.PRICES.AROMA }
                 ].map((item) => (
                     <div key={item.id} onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, [item.id]: !data.extras[item.id]}}); }} className="p-5 flex justify-between items-center cursor-pointer hover:bg-[#1A1A1E] transition-colors">
                         <div className="flex items-center gap-4">
                             <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${data.extras?.[item.id] ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333]'}`}>{data.extras?.[item.id] ? <Check size={16} className="text-white"/> : <item.icon size={16} className="text-gray-500"/>}</div>
-                            <p className="font-bold text-white text-base">{item.label}</p>
+                            <div>
+                                <p className="font-bold text-white text-base">{item.label}</p>
+                                <p className="text-[11px] text-gray-500 mt-0.5">{item.desc}</p>
+                            </div>
                         </div>
                         <span className="text-[#0A84FF] font-bold text-sm">+ {Utils.formatBRL(item.price)}</span>
                     </div>
@@ -656,7 +676,7 @@ export default function BookingApp() {
             <button onClick={() => advanceStage(4, refs.location)} className="w-full mt-5 py-4 rounded-xl text-sm font-bold bg-[#1A1A1E] text-gray-300 border border-[#333] hover:bg-[#222] transition-colors">Continuar</button>
         </section>
 
-        {/* 5. LOCALIZAÇÃO (SELETOR VISUAL INOVADOR) */}
+        {/* 5. LOCALIZAÇÃO */}
         <section ref={refs.location} className={`mt-12 transition-opacity duration-500 ${stage >= 4 ? 'opacity-100' : 'hidden'}`}>
             <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">04.</span> Localização</h3>
             
@@ -724,7 +744,7 @@ export default function BookingApp() {
 
       </main>
 
-      {/* CHECKOUT STICKY */}
+      {/* CHECKOUT BAR */}
       {stage >= 6 && !success && (
         <div className="fixed bottom-0 w-full z-50 animate-enter">
             <div className="bg-[#131316]/95 border-t border-[#333] p-6 rounded-t-[32px] shadow-[0_-10px_60px_rgba(0,0,0,0.9)] backdrop-blur-md">
@@ -736,9 +756,16 @@ export default function BookingApp() {
                             <span className="text-4xl font-black text-white tracking-tighter">{Utils.formatBRL(financials.total)}</span>
                         </div>
                     </div>
-                    {/* LOGICA CUPOM 1ª VEZ */}
+                    {/* SÓ MOSTRA CUPOM SE NÃO TIVER USADO ANTES E SE FOR VIP */}
                     {!hasOrderedBefore && !couponActive ? (
-                        <button onClick={() => { setCouponActive(true); Utils.vibrate(); }} className="h-10 px-4 rounded-full bg-[#FFD60A] text-black font-bold text-xs animate-bounce shadow-[0_0_20px_rgba(255,214,10,0.3)] flex items-center gap-2"><Ticket size={14} fill="black"/> CUPOM 1ª VEZ</button>
+                        isVip ? (
+                            <button onClick={() => { setCouponActive(true); Utils.vibrate(); }} className="h-10 px-4 rounded-full bg-[#FFD60A] text-black font-bold text-xs animate-bounce shadow-[0_0_20px_rgba(255,214,10,0.3)] flex items-center gap-2"><Ticket size={14} fill="black"/> USAR CUPOM 1ª VEZ</button>
+                        ) : (
+                            <div className="text-right">
+                                <p className="text-[9px] text-gray-500 mb-1">Falta {CONFIG.XP_THRESHOLDS.VIP - xp} XP p/ Cupom</p>
+                                <div className="w-20 h-1 bg-[#333] rounded-full overflow-hidden ml-auto"><div className="h-full bg-gray-500" style={{width: `${(xp/CONFIG.XP_THRESHOLDS.VIP)*100}%`}}></div></div>
+                            </div>
+                        )
                     ) : couponActive ? <div className="text-[10px] text-[#32D74B] font-bold border border-[#32D74B] px-3 py-1.5 rounded-full bg-[#32D74B]/10 flex items-center gap-1"><Check size={12}/> DESCONTO ATIVO</div> : null}
                 </div>
                 <button onClick={finalizeOrder} className="primary-btn w-full h-16 text-lg flex items-center justify-center gap-3">Finalizar Pedido <MessageCircle size={24} fill="currentColor"/></button>
