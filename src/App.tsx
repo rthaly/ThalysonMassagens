@@ -80,7 +80,7 @@ const CITIES_DB = {
 };
 
 const PRICES_BASE = {
-  UPGRADE_PCT: 0.4, 
+  UPGRADE_PCT: 0.3, 
   TOUCH: 63, 
   AROMA: 5,
   RUSH_HOUR_FEE: 15,
