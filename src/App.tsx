@@ -114,7 +114,7 @@ const SERVICES = [
 const MOODS = [
   { id: 'relax', label: 'Paz', icon: Wind, color: 'text-blue-400', bg: 'bg-blue-500/10' },
   { id: 'energy', label: 'Renovar', icon: Zap, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
-  { id: 'intense', label: 'Sensorial, icon: Heart, color: 'text-red-400', bg: 'bg-red-500/10' },
+  { id: 'intense', label: 'Sensorial', icon: Heart, color: 'text-red-400', bg: 'bg-red-500/10' },
 ];
 
 const PREFERENCES = {
