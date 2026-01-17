@@ -18,7 +18,7 @@ const CONFIG = {
   COUPON_KEY_PERMANENT: 'thaly_coupon_burned_v1', 
   PHONE: "5517991360413", 
   INSTAGRAM: "thalymassagens",
-  PIX_KEY: "629225300001444", 
+  PIX_KEY: "62922530000144", 
   COUPON_VAL: 12.00, 
   XP_THRESHOLDS: { VIP: 100 },
   URLS: { WHATSAPP_API: "https://api.whatsapp.com/send" }
