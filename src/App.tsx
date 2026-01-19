@@ -1,510 +1,538 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useReducer, useCallback } from 'react';
 import {
-  ChevronLeft, Check, Star, MapPin, Calendar, Clock,
-  ArrowRight, ShieldCheck, Zap, Hand, Bed, Crown,
-  CreditCard, Banknote, QrCode, Send, Sparkles, AlertCircle
+  Check, Star, ArrowRight, Home, MessageCircle, 
+  Ticket, Flame, Wind, Crown, Shield, MapPin, Building,
+  CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
+  Calendar as CalendarIcon, Clock, User, AlertTriangle, 
+  Car, Copy, Info, Zap, ChevronDown, Share2, Music, Bed, Heart, 
+  Navigation, Ban, ChevronRight, Menu, RefreshCw, Lock, Smartphone
 } from 'lucide-react';
 
-/* ==================================================================================
-   1. ESTILOS CSS INJETADOS (Para funcionar sem arquivos .css externos)
-   ================================================================================== */
-const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+// ==================================================================================
+// 1. CONSTANTES & CONFIG (Imutáveis)
+// ==================================================================================
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body, html { margin: 0; padding: 0; background-color: #000; color: #fff; font-family: 'Inter', -apple-system, sans-serif; }
-  
-  /* Utilitários de Scroll */
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* Animações */
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  .animate-enter { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-  
-  /* Efeitos de Vidro (Glassmorphism Premium) */
-  .glass-panel {
-    background: rgba(28, 28, 30, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-  
-  /* Inputs Customizados */
-  .custom-input {
-    background: #1C1C1E;
-    border: 1px solid #333;
-    color: white;
-    font-size: 16px;
-    border-radius: 12px;
-    width: 100%;
-    padding: 16px;
-    transition: 0.2s;
-  }
-  .custom-input:focus { border-color: #0A84FF; outline: none; }
-
-  /* Botão Principal */
-  .btn-primary {
-    background: #0A84FF;
-    color: white;
-    font-weight: 700;
-    border-radius: 16px;
-    padding: 18px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 24px rgba(10, 132, 255, 0.25);
-    border: none;
-    cursor: pointer;
-    transition: transform 0.1s;
-  }
-  .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
-  .btn-primary:disabled { background: #333; color: #666; box-shadow: none; }
-
-  /* Cards Selecionáveis */
-  .selection-card {
-    transition: all 0.2s ease;
-    border: 1px solid rgba(255,255,255,0.05);
-  }
-  .selection-card.selected {
-    background: rgba(10, 132, 255, 0.1);
-    border-color: #0A84FF;
-    box-shadow: 0 0 0 1px #0A84FF;
-  }
-`;
-
-/* ==================================================================================
-   2. DADOS E CONFIGURAÇÃO
-   ================================================================================== */
-const DATA = {
-  services: [
-    { 
-      id: 'masculina', 
-      title: 'Massagem Masculina', 
-      price: 155, 
-      desc: 'Relaxante + Tântrica. Finalização manual inclusa. A experiência completa.',
-      tag: 'MAIS PEDIDA 🔥'
-    },
-    { 
-      id: 'relaxante', 
-      title: 'Massagem Relaxante', 
-      price: 125, 
-      desc: 'Foco em dores musculares e stress. Corpo todo. Sem toques íntimos.',
-      tag: null
-    }
-  ],
-  extras: [
-    { id: 'upgrade', label: '+30 Minutos', price: 77, sub: 'Estenda seu relaxamento' },
-    { id: 'touch', label: 'Tocar o Massagista', price: 55, sub: 'Interação corporal permitida' }, // ITEM SOLICITADO
-    { id: 'table', label: 'Levar Maca', price: 20, sub: 'Experiência profissional' },
-    { id: 'aroma', label: 'Aromaterapia', price: 10, sub: 'Óleos essenciais' }
-  ],
-  locations: [
-    { id: 'motel', label: 'Suíte / Motel', fee: 75, icon: <Bed size={20}/>, details: 'Vou até você' },
-    { id: 'home', label: 'Domicílio (Santa Fé)', fee: 23, icon: <MapPin size={20}/>, details: 'No seu conforto' },
-    { id: 'other', label: 'Outra Cidade', fee: 0, icon: <MapPin size={20}/>, details: 'Combinar taxa' }
-  ],
-  reviews: [
-    { t: "Sou casado, sigilo foi total. Gostei muito.", a: "Anônimo", s: 5 },
-    { t: "O extra de tocar nele vale cada centavo.", a: "Empresário", s: 5 },
-    { t: "Tira todo o stress. Mãos firmes.", a: "Ricardo", s: 5 }
-  ]
+const CONFIG = {
+  APP_KEY: 'thaly_v26_pro_store', 
+  PHONE: "5517991360413", 
+  PIX_KEY: "62922530000144", 
+  COUPON_VAL: 12.00, 
+  XP_THRESHOLDS: { VIP: 100 },
+  ANIMATION_DELAY_MS: 50,
+  PRICING: { UPGRADE_PCT: 0.3, TOUCH: 63, AROMA: 5, RUSH_HOUR_FEE: 15 }
 };
 
-/* ==================================================================================
-   3. COMPONENTES INTERNOS
-   ================================================================================== */
-const Header = ({ step, onBack }) => (
-  <div className="flex items-center justify-between p-6 pt-8 bg-black sticky top-0 z-50 border-b border-white/5">
-    <div className="flex items-center gap-4">
-      {step !== 'home' && step !== 'success' && (
-        <button onClick={onBack} className="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center text-[#0A84FF]">
-          <ChevronLeft />
-        </button>
-      )}
-      <span className="font-bold text-lg tracking-tight">Thalyson VIP</span>
-    </div>
-    <div className="px-3 py-1 rounded-full bg-green-900/30 border border-green-500/30 flex items-center gap-2">
-      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-      <span className="text-[10px] font-bold text-green-400 uppercase">Online Agora</span>
-    </div>
-  </div>
-);
+const CITIES_DB = {
+  sp: { id: 'sp', name: 'São Paulo', short: 'SP', theme: '#0A84FF', motelFee: 75, locations: [
+      { id: 'centro', name: 'Consolação / Centro', fee: 16 }, 
+      { id: 'jardins', name: 'Jardins / Paulista', fee: 23 }, 
+      { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 30 },
+      { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 36 },
+      { id: 'moema', name: 'Moema / V. Mariana', fee: 44 },
+      { id: 'outros', name: 'Outros Bairros (Consultar)', fee: 50 }
+  ]},
+  londrina: { id: 'londrina', name: 'Londrina', short: 'LDB', theme: '#32D74B', motelFee: 30, locations: [
+      { id: 'centro', name: 'Centro / Gleba', fee: 15 },
+      { id: 'zona_sul', name: 'Zona Sul', fee: 20 },
+      { id: 'zona_norte', name: 'Zona Norte', fee: 25 }
+  ]},
+  santa_fe: { id: 'santa_fe', name: 'Santa Fé do Sul', short: 'SFS', theme: '#FFD60A', motelFee: 0, locations: [
+      { id: 'cidade', name: 'Perímetro Urbano', fee: 21.50 },
+      { id: 'rural', name: 'Ranchos / Rural', fee: 40 }
+  ]}
+};
 
-const StepTitle = ({ title, sub }) => (
-  <div className="mb-6">
-    <h2 className="text-2xl font-bold text-white mb-1">{title}</h2>
-    <p className="text-gray-400 text-sm">{sub}</p>
-  </div>
-);
+const SERVICES = [
+  { id: 'completa', name: 'Experiência Completa', desc: 'Relaxamento muscular + Finalização intensa.', duration: 60, price: 175, xp: 60, highlight: true },
+  { id: 'relax', name: 'Massagem Relaxante', desc: 'Foco 100% terapêutico. Alívio de dores.', duration: 60, price: 145, xp: 30, highlight: false },
+];
 
-/* ==================================================================================
-   4. APP PRINCIPAL
-   ================================================================================== */
-export default function App() {
-  // --- STATES ---
-  const [step, setStep] = useState('home'); // home, identity, service, config, checkout, success
-  const [user, setUser] = useState({ name: '' });
-  const [cart, setCart] = useState({
-    service: null,
-    date: null,
-    time: null,
-    location: null,
-    address: '',
-    city: '',
-    selectedExtras: [], // Array de IDs
-    payment: 'pix'
+const TIME_SLOTS = {
+  morning: ['08:00', '09:00', '10:00', '11:00'],
+  afternoon: ['12:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
+  night: ['18:00', '19:00', '20:00', '21:00']
+};
+
+// ==================================================================================
+// 2. HOOKS & UTILS (Lógica Pura)
+// ==================================================================================
+
+const useHaptic = () => {
+  return useCallback((pattern = 10) => {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern);
+  }, []);
+};
+
+const usePersistedState = (key, initial) => {
+  const [state, setState] = useState(() => {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : initial;
+    } catch (e) { return initial; }
   });
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(state));
+  }, [key, state]);
+  return [state, setState];
+};
 
-  // --- CALCS ---
-  const total = useMemo(() => {
-    let t = 0;
-    if (cart.service) t += cart.service.price;
-    if (cart.location) t += cart.location.fee;
-    cart.selectedExtras.forEach(exId => {
-      const item = DATA.extras.find(e => e.id === exId);
-      if (item) t += item.price;
-    });
-    return t;
-  }, [cart]);
+// REDUCER PARA MÁQUINA DE ESTADO DO PEDIDO
+const bookingReducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_CITY':
+      return { ...state, city: action.payload, location: { ...state.location, zone: action.payload.locations[0] } };
+    case 'UPDATE_FIELD':
+      return { ...state, [action.field]: action.value };
+    case 'UPDATE_NESTED':
+      return { ...state, [action.parent]: { ...state[action.parent], [action.field]: action.value } };
+    case 'TOGGLE_EXTRA':
+      return { ...state, extras: { ...state.extras, [action.extra]: !state.extras[action.extra] } };
+    case 'RESET':
+      return action.payload;
+    default:
+      return state;
+  }
+};
 
-  // --- ACTIONS ---
-  const handleNext = (next) => { 
-    if (navigator.vibrate) navigator.vibrate(10); // Haptic
-    window.scrollTo(0,0);
-    setStep(next); 
-  };
+const initialBookingState = {
+  city: CITIES_DB.sp,
+  name: '', age: '', medical: false,
+  mood: null, service: null, date: null, time: null,
+  extras: { upgrade: false, touch: false, aroma: false },
+  location: { type: 'home', zone: CITIES_DB.sp.locations[0], street: '', number: '', complement: '' },
+  payment: null, couponActive: false
+};
 
-  const toggleExtra = (id) => {
-    setCart(prev => {
-      const exists = prev.selectedExtras.includes(id);
-      return {
-        ...prev,
-        selectedExtras: exists 
-          ? prev.selectedExtras.filter(x => x !== id) 
-          : [...prev.selectedExtras, id]
-      };
-    });
-  };
+const useBookingPrice = (state) => {
+    return useMemo(() => {
+        if (!state.service) return { total: 0, xp: 0 };
+        
+        let base = state.service.price;
+        let xp = state.service.xp;
+        let extrasTotal = 0;
 
-  const sendWhatsapp = () => {
-    const { service, date, time, location, address, city, selectedExtras, payment } = cart;
-    const dateStr = date ? `${date.getDate()}/${date.getMonth()+1}` : '';
-    
-    // Lista de extras
-    const extrasNames = selectedExtras.map(id => {
-      const item = DATA.extras.find(e => e.id === id);
-      return `+ ${item.label}`;
-    }).join('\n');
+        if (state.extras.upgrade) { extrasTotal += base * CONFIG.PRICING.UPGRADE_PCT; xp += 25; }
+        if (state.extras.touch) { extrasTotal += CONFIG.PRICING.TOUCH; xp += 30; }
+        if (state.extras.aroma) { extrasTotal += CONFIG.PRICING.AROMA; xp += 15; }
 
-    let locationText = location.label;
-    if (location.id === 'home') locationText += `\n📍 Endereço: ${address}`;
-    if (location.id === 'other') locationText += `\n📍 Cidade: ${city}`;
+        const isNight = state.time && parseInt(state.time) >= 18;
+        const rushFee = isNight ? CONFIG.PRICING.RUSH_HOUR_FEE : 0;
+        
+        // Lógica de Deslocamento
+        const transport = state.location.type === 'motel' 
+            ? state.city.motelFee 
+            : (state.location.zone?.fee || 0) * 2;
 
-    const msg = `
-*NOVO AGENDAMENTO VIP*
-👤 *Cliente:* ${user.name}
+        const subtotal = base + extrasTotal + rushFee + transport;
+        const discount = state.couponActive ? CONFIG.COUPON_VAL : 0;
 
-🗓 *Data:* ${dateStr} às ${time}
-💆 *Serviço:* ${service.title}
-📍 *Local:* ${locationText}
+        return {
+            base, extrasTotal, rushFee, transport, subtotal, discount,
+            total: Math.max(0, subtotal - discount),
+            xpTotal: xp
+        };
+    }, [state]);
+};
 
-✨ *Extras:*
-${extrasNames || 'Nenhum extra'}
+// ==================================================================================
+// 3. COMPONENTES VISUAIS (Atomic Design)
+// ==================================================================================
 
-💰 *Total:* R$ ${total},00
-💳 *Pagamento:* ${payment.toUpperCase()}
-
-_Aguardo confirmação._
-    `.trim();
-
-    window.open(`https://wa.me/5517991360413?text=${encodeURIComponent(msg)}`, '_blank');
-    setStep('success');
-  };
-
-  // --- RENDER ---
-  return (
-    <div className="min-h-screen bg-black pb-10 font-sans text-white">
-      <style>{styles}</style>
-
-      <Header step={step} onBack={() => {
-        if(step === 'checkout') setStep('config');
-        if(step === 'config') setStep('service');
-        if(step === 'service') setStep('identity');
-        if(step === 'identity') setStep('home');
-      }}/>
-
-      <div className="max-w-md mx-auto w-full px-6 pt-4">
-
-        {/* ================= HOME ================= */}
-        {step === 'home' && (
-          <div className="animate-enter pt-4">
-            <div className="mb-8 text-center">
-              <span className="text-[#0A84FF] text-xs font-bold tracking-widest uppercase mb-2 block">Exclusivo para Homens</span>
-              <h1 className="text-4xl font-extrabold text-white leading-tight mb-4">Relaxe.<br/>Renove-se.<br/>Sinta.</h1>
-              <p className="text-gray-400 text-lg">Massoterapia profissional com foco no bem-estar masculino e sigilo absoluto.</p>
+const XPBar = ({ current, max = 100 }) => {
+    const pct = Math.min(100, (current / max) * 100);
+    return (
+        <div className="w-full mb-6">
+            <div className="flex justify-between text-[10px] font-bold uppercase text-gray-400 mb-1">
+                <span>Nível {current >= max ? 'VIP' : 'Iniciante'}</span>
+                <span>{current}/{max} XP</span>
             </div>
-
-            <div className="space-y-4 mb-8">
-              {DATA.reviews.map((r, i) => (
-                <div key={i} className="glass-panel p-4 rounded-2xl flex gap-3">
-                  <div className="text-yellow-500"><Star size={16} fill="currentColor"/></div>
-                  <div>
-                    <p className="text-sm text-gray-200 italic">"{r.t}"</p>
-                    <p className="text-xs text-gray-500 font-bold mt-1 uppercase">- {r.a}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button onClick={() => handleNext('identity')} className="btn-primary">
-              AGENDAR AGORA <ArrowRight size={20}/>
-            </button>
-            <p className="text-center text-xs text-gray-600 mt-4">Atendimento em Santa Fé do Sul e Região</p>
-          </div>
-        )}
-
-        {/* ================= IDENTITY ================= */}
-        {step === 'identity' && (
-          <div className="animate-enter">
-            <StepTitle title="Identificação" sub="Como prefere ser chamado?" />
-            
-            <div className="glass-panel p-6 rounded-2xl mb-6">
-              <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Seu Nome / Apelido</label>
-              <input 
-                className="custom-input text-xl font-semibold"
-                placeholder="Digite aqui..."
-                value={user.name}
-                onChange={e => setUser({name: e.target.value})}
-                autoFocus
-              />
-            </div>
-
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-blue-900/20 border border-blue-500/20 mb-8">
-              <ShieldCheck className="text-blue-500" size={32} />
-              <p className="text-xs text-blue-200 leading-relaxed">
-                <span className="font-bold">Sigilo Total:</span> Seus dados não são armazenados em banco de dados. Tudo é tratado diretamente no WhatsApp.
-              </p>
-            </div>
-
-            <button disabled={!user.name.trim()} onClick={() => handleNext('service')} className="btn-primary">
-              CONTINUAR
-            </button>
-          </div>
-        )}
-
-        {/* ================= SERVICE ================= */}
-        {step === 'service' && (
-          <div className="animate-enter">
-            <StepTitle title="Menu de Serviços" sub="Escolha sua experiência" />
-            
-            <div className="space-y-4 pb-24">
-              {DATA.services.map(s => (
+            <div className="h-2 bg-[#222] rounded-full overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/10 z-10 animate-pulse"></div>
                 <div 
-                  key={s.id}
-                  onClick={() => { setCart({...cart, service: s}); handleNext('config'); }}
-                  className={`glass-panel p-6 rounded-2xl relative selection-card cursor-pointer ${cart.service?.id === s.id ? 'selected' : ''}`}
+                    className="h-full bg-[var(--primary)] transition-all duration-1000 ease-out relative" 
+                    style={{ width: `${pct}%` }}
                 >
-                  {s.tag && (
-                    <span className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-xl">
-                      {s.tag}
-                    </span>
-                  )}
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-bold text-white">{s.title}</h3>
-                    <span className="text-[#0A84FF] text-xl font-bold">R$ {s.price}</span>
-                  </div>
-                  <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+                    {pct >= 100 && <div className="absolute right-0 top-0 bottom-0 w-2 bg-white box-shadow-[0_0_10px_white]"></div>}
                 </div>
-              ))}
             </div>
-          </div>
-        )}
+        </div>
+    );
+};
 
-        {/* ================= CONFIG (Date, Loc, Extras) ================= */}
-        {step === 'config' && (
-          <div className="animate-enter space-y-8 pb-32">
+const StepWizard = ({ stage, total, onBack }) => (
+    <div className="fixed top-0 left-0 w-full bg-[#050505]/90 backdrop-blur-md z-50 border-b border-white/5 pt-safe-top">
+        <div className="flex items-center justify-between px-4 h-14">
+            <button onClick={onBack} disabled={stage === 0} className={`p-2 rounded-full ${stage===0 ? 'opacity-0 pointer-events-none' : 'text-gray-400 hover:text-white'}`}>
+                <ChevronRight className="rotate-180" size={24}/>
+            </button>
+            <span className="font-black text-sm tracking-widest text-white/90">THALYSON</span>
+            <div className="w-8 h-8 rounded-full bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)] text-xs font-bold">
+                {stage + 1}
+            </div>
+        </div>
+        <div className="h-[2px] w-full bg-[#111]">
+            <div className="h-full bg-[var(--primary)] transition-all duration-500 ease-out" style={{ width: `${((stage+1)/total)*100}%` }}></div>
+        </div>
+    </div>
+);
+
+const RadioCard = ({ selected, onClick, icon: Icon, label, sub, color = "text-white" }) => (
+    <button 
+        onClick={onClick}
+        className={`relative w-full p-4 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] group
+        ${selected 
+            ? 'bg-[#1C1C1E] border-[var(--primary)] shadow-[0_0_20px_rgba(0,0,0,0.5)]' 
+            : 'bg-[#111] border-[#222] hover:border-[#333]'}`}
+    >
+        <div className="flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors 
+                ${selected ? 'bg-[var(--primary)] text-white' : 'bg-[#222] text-gray-500'}`}>
+                <Icon size={22} />
+            </div>
+            <div className="flex-1">
+                <h3 className={`font-bold text-sm ${selected ? 'text-white' : 'text-gray-300'}`}>{label}</h3>
+                {sub && <p className="text-xs text-gray-500 mt-0.5">{sub}</p>}
+            </div>
+            {selected && <div className="w-5 h-5 bg-[var(--primary)] rounded-full flex items-center justify-center">
+                <Check size={12} className="text-white"/>
+            </div>}
+        </div>
+    </button>
+);
+
+const WalletTicket = ({ data, pricing }) => (
+    <div className="relative w-full bg-[#1C1C1E] rounded-3xl overflow-hidden shadow-2xl animate-enter transition-transform hover:scale-[1.01]">
+        {/* CSS Mask Logic for Holes would go here in styled-components, simulating with divs for simplicity in single-file */}
+        <div className="absolute top-1/2 -left-3 w-6 h-6 rounded-full bg-[#050505] z-10"></div>
+        <div className="absolute top-1/2 -right-3 w-6 h-6 rounded-full bg-[#050505] z-10"></div>
+        
+        {/* Header */}
+        <div className="p-6 pb-8 bg-gradient-to-b from-[#222] to-[#1C1C1E] border-b border-dashed border-[#444] text-center">
+            <p className="text-[10px] text-gray-400 font-bold tracking-[0.2em] uppercase mb-2">Comprovante de Reserva</p>
+            <h2 className="text-2xl font-black text-white mb-1">{data.service?.name || "Serviço"}</h2>
+            <div className="inline-flex items-center gap-2 bg-[var(--primary)]/10 px-3 py-1 rounded-full border border-[var(--primary)]/20 mt-2">
+                <CalendarIcon size={12} className="text-[var(--primary)]"/>
+                <span className="text-xs font-bold text-[var(--primary)] uppercase">
+                    {data.date ? `${data.date.getDate()}/${data.date.getMonth()+1}` : '--/--'} • {data.time || '--:--'}
+                </span>
+            </div>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 pt-8 space-y-4">
+            <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-400">Serviço Base</span>
+                <span className="text-white font-bold">R$ {pricing.base.toFixed(2)}</span>
+            </div>
+            {data.extras.upgrade && <div className="flex justify-between text-xs text-[var(--primary)]"><span>+ 30 Minutos</span><span>R$ {(pricing.base * CONFIG.PRICING.UPGRADE_PCT).toFixed(2)}</span></div>}
             
-            {/* DATA */}
-            <section>
-              <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Data e Hora</h3>
-              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-                {[0,1,2,3,4,5].map(d => {
-                  const date = new Date();
-                  date.setDate(date.getDate() + d);
-                  const isSel = cart.date?.getDate() === date.getDate();
-                  return (
-                    <button key={d} onClick={() => setCart({...cart, date})} 
-                      className={`min-w-[70px] h-[80px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#1C1C1E] border-[#333] text-gray-500'}`}>
-                      <span className="text-[10px] font-bold uppercase">{date.toLocaleDateString('pt-BR', {weekday:'short'}).slice(0,3)}</span>
-                      <span className="text-xl font-bold">{date.getDate()}</span>
-                    </button>
-                  )
-                })}
-              </div>
-              {cart.date && (
-                <div className="grid grid-cols-4 gap-2 mt-4 animate-enter">
-                  {['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'].map(t => (
-                    <button key={t} onClick={() => setCart({...cart, time: t})} className={`py-2 rounded-lg text-sm font-bold border ${cart.time === t ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-gray-400 border-[#333]'}`}>{t}</button>
-                  ))}
+            {pricing.transport > 0 && (
+                <div className="flex justify-between items-center text-xs text-yellow-500 bg-yellow-500/5 p-2 rounded-lg border border-yellow-500/10">
+                    <span className="flex items-center gap-1"><Car size={12}/> Deslocamento ({data.city.short})</span>
+                    <span className="font-bold">R$ {pricing.transport.toFixed(2)}</span>
                 </div>
-              )}
-            </section>
+            )}
+            
+            {data.couponActive && (
+                <div className="flex justify-between items-center text-xs text-green-400">
+                    <span className="flex items-center gap-1"><Ticket size={12}/> Cupom VIP</span>
+                    <span>- R$ {pricing.discount.toFixed(2)}</span>
+                </div>
+            )}
 
-            {/* LOCAL */}
-            <section>
-              <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Local de Atendimento</h3>
-              <div className="space-y-3">
-                {DATA.locations.map(l => (
-                  <div key={l.id}>
-                    <button onClick={() => setCart({...cart, location: l})} className={`w-full p-4 rounded-xl border flex items-center justify-between text-left transition-all ${cart.location?.id === l.id ? 'bg-[#0A84FF]/20 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333]'}`}>
-                      <div className="flex items-center gap-3">
-                        <div className={`text-${cart.location?.id === l.id ? 'white' : 'gray-500'}`}>{l.icon}</div>
-                        <div>
-                          <p className="font-bold text-white text-sm">{l.label}</p>
-                          <p className="text-xs text-gray-500">{l.details}</p>
-                        </div>
-                      </div>
-                      {l.fee > 0 && <span className="text-xs font-bold text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded">+ R$ {l.fee}</span>}
-                    </button>
-                    {/* INPUTS CONDICIONAIS */}
-                    {cart.location?.id === l.id && l.id === 'home' && (
-                      <input placeholder="Endereço Completo" className="custom-input mt-2 animate-enter" onChange={e => setCart({...cart, address: e.target.value})} />
-                    )}
-                    {cart.location?.id === l.id && l.id === 'other' && (
-                      <input placeholder="Nome da Cidade" className="custom-input mt-2 animate-enter" onChange={e => setCart({...cart, city: e.target.value})} />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* EXTRAS */}
-            <section>
-              <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Personalize (Extras)</h3>
-              <div className="space-y-3">
-                {DATA.extras.map(e => {
-                  const isSelected = cart.selectedExtras.includes(e.id);
-                  return (
-                    <button key={e.id} onClick={() => toggleExtra(e.id)} 
-                      className={`w-full p-4 rounded-xl border flex items-center justify-between transition-all ${isSelected ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#1C1C1E] border-[#333]'}`}>
-                      <div className="flex items-center gap-3 text-left">
-                        {e.id === 'touch' ? <Hand size={20} className={isSelected ? 'text-[#FF375F]' : 'text-gray-500'} /> : 
-                         e.id === 'upgrade' ? <Clock size={20} className={isSelected ? 'text-[#0A84FF]' : 'text-gray-500'} /> :
-                         <Sparkles size={20} className={isSelected ? 'text-yellow-500' : 'text-gray-500'} />}
-                        
-                        <div>
-                          <p className={`font-bold text-sm ${e.id === 'touch' ? 'text-[#FF375F]' : 'text-white'}`}>{e.label}</p>
-                          <p className="text-xs text-gray-500">{e.sub}</p>
-                        </div>
-                      </div>
-                      <span className={`text-sm font-bold ${e.id === 'touch' ? 'text-[#FF375F]' : 'text-[#0A84FF]'}`}>+ R$ {e.price}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </section>
-
-            {/* Botão Flutuante Next */}
-            <div className="fixed bottom-0 left-0 right-0 p-5 bg-black border-t border-white/10 z-40">
-              <div className="max-w-md mx-auto flex items-center justify-between gap-4">
-                 <div className="flex flex-col">
-                   <span className="text-xs text-gray-500 uppercase font-bold">Total Estimado</span>
-                   <span className="text-2xl font-bold text-white">R$ {total}</span>
-                 </div>
-                 <button 
-                   disabled={!cart.date || !cart.time || !cart.location} 
-                   onClick={() => handleNext('checkout')} 
-                   className="btn-primary w-auto px-8"
-                 >
-                   Revisar <ArrowRight size={20}/>
-                 </button>
-              </div>
+            <div className="pt-4 mt-2 border-t border-[#333] flex justify-between items-end">
+                <div className="flex flex-col">
+                    <span className="text-[10px] text-gray-500 uppercase font-bold">Total a Pagar</span>
+                    <span className="text-3xl font-black text-white tracking-tighter">R$ {pricing.total.toFixed(2)}</span>
+                </div>
+                <QrCode size={40} className="text-white/20"/>
             </div>
+        </div>
+        
+        {/* Bottom Decorative */}
+        <div className="h-2 bg-[var(--primary)] w-full"></div>
+    </div>
+);
 
-          </div>
-        )}
+// ==================================================================================
+// 4. MAIN APP
+// ==================================================================================
 
-        {/* ================= CHECKOUT ================= */}
-        {step === 'checkout' && (
-          <div className="animate-enter pb-24">
-            <StepTitle title="Resumo do Pedido" sub="Confira antes de enviar" />
+export default function App() {
+  const vibrate = useHaptic();
+  const [loading, setLoading] = useState(true);
+  const [stage, setStage] = useState(0);
+  const [state, dispatch] = useReducer(bookingReducer, initialBookingState);
+  const pricing = useBookingPrice(state);
+  
+  // Efeito de Load Inicial "Fake"
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 800);
+    // Recuperar dados persistidos se existirem (simplificado)
+  }, []);
 
-            {/* Recibo Visual */}
-            <div className="bg-white text-black rounded-xl p-6 mb-8 shadow-2xl relative overflow-hidden">
-               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-blue-300"></div>
-               
-               <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-4">
-                 <h3 className="font-bold text-lg">THALYSON VIP</h3>
-                 <span className="text-xs bg-black text-white px-2 py-1 rounded">PENDENTE</span>
-               </div>
+  // Dynamic Theme Injection
+  useEffect(() => {
+    document.documentElement.style.setProperty('--primary', state.city.theme);
+  }, [state.city]);
 
-               <div className="space-y-3 text-sm mb-6">
-                 <div className="flex justify-between font-bold">
-                    <span>{cart.service.title}</span>
-                    <span>R$ {cart.service.price}</span>
-                 </div>
-                 {cart.location.fee > 0 && (
-                   <div className="flex justify-between text-gray-600">
-                      <span>Taxa: {cart.location.label}</span>
-                      <span>+ R$ {cart.location.fee}</span>
-                   </div>
-                 )}
-                 {cart.selectedExtras.map(id => {
-                   const item = DATA.extras.find(e => e.id === id);
-                   return (
-                     <div key={id} className="flex justify-between text-blue-600 font-medium">
-                        <span>+ {item.label}</span>
-                        <span>+ R$ {item.price}</span>
-                     </div>
-                   )
-                 })}
-               </div>
+  const handleNext = () => {
+    vibrate(15);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setStage(p => p + 1);
+  };
 
-               <div className="border-t border-gray-300 pt-4 flex justify-between items-end">
-                 <span className="font-bold text-xl">TOTAL FINAL</span>
-                 <span className="font-bold text-2xl">R$ {total}</span>
-               </div>
-            </div>
+  const handleBack = () => {
+    vibrate(5);
+    setStage(p => Math.max(0, p - 1));
+  };
 
-            <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Forma de Pagamento</h3>
-            <div className="grid grid-cols-2 gap-3 mb-8">
-               <button onClick={() => setCart({...cart, payment:'pix'})} className={`p-4 rounded-xl border flex flex-col items-center gap-2 ${cart.payment === 'pix' ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333] text-gray-400'}`}>
-                 <QrCode size={24}/> <span className="font-bold text-sm">Pix (Preferencial)</span>
-               </button>
-               <button onClick={() => setCart({...cart, payment:'dinheiro'})} className={`p-4 rounded-xl border flex flex-col items-center gap-2 ${cart.payment === 'dinheiro' ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#333] text-gray-400'}`}>
-                 <Banknote size={24}/> <span className="font-bold text-sm">Dinheiro</span>
-               </button>
-            </div>
+  const generateWhatsAppLink = () => {
+    const text = `*NOVA RESERVA - ${state.city.short}*\n----------------\n👤 ${state.name} (${state.age})\n📅 ${state.date?.toLocaleDateString()} às ${state.time}\n💆 ${state.service?.name}\n💰 Total: R$ ${pricing.total.toFixed(2)}`;
+    return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
+  };
 
-            <button onClick={sendWhatsapp} className="btn-primary" style={{backgroundColor: '#25D366'}}>
-              CONFIRMAR NO WHATSAPP <Send size={20}/>
-            </button>
-          </div>
-        )}
-
-        {/* ================= SUCCESS ================= */}
-        {step === 'success' && (
-          <div className="animate-enter flex flex-col items-center justify-center pt-20 text-center">
-            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-green-500/30">
-              <Check size={40} className="text-white" />
-            </div>
-            <h2 className="text-3xl font-bold text-white mb-2">Solicitação Gerada!</h2>
-            <p className="text-gray-400 mb-8 max-w-xs">
-              Você será redirecionado para o WhatsApp para confirmar os detalhes. Se não abrir, clique abaixo.
-            </p>
-            <button onClick={sendWhatsapp} className="px-6 py-3 rounded-xl bg-[#1C1C1E] text-[#0A84FF] font-bold border border-[#333]">
-              Abrir Conversa Novamente
-            </button>
-            <button onClick={() => window.location.reload()} className="mt-8 text-sm text-gray-500 underline">
-              Voltar ao Início
-            </button>
-          </div>
-        )}
-
+  if (loading) return (
+      <div className="h-screen bg-[#050505] flex flex-col items-center justify-center gap-4">
+          <div className="w-12 h-12 border-4 border-[#222] border-t-[var(--primary)] rounded-full animate-spin"></div>
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest animate-pulse">Carregando...</p>
       </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-[var(--primary)] selection:text-white pb-32">
+        <style>{`
+            :root { --bg-card: #141414; }
+            .ios-scroll { -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; }
+            .ios-scroll > * { scroll-snap-align: start; }
+            .animate-enter { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+            @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+            input:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+        `}</style>
+
+        {/* HEADER PROGRESSO */}
+        <StepWizard stage={stage} total={5} onBack={handleBack} />
+
+        <main className="max-w-md mx-auto px-5 pt-24">
+            
+            {/* STAGE 0: INTRO & USER DATA */}
+            {stage === 0 && (
+                <div className="space-y-6 animate-enter">
+                    <header>
+                        <span className="text-[var(--primary)] font-bold text-[10px] tracking-widest uppercase mb-2 block">Bem-vindo</span>
+                        <h1 className="text-3xl font-bold leading-tight mb-4">Seu momento de<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">relaxamento absoluto.</span></h1>
+                    </header>
+
+                    {/* CITY SELECTOR (New Visuals) */}
+                    <div className="flex gap-3 overflow-x-auto ios-scroll pb-2 no-scrollbar">
+                        {Object.values(CITIES_DB).map(city => (
+                            <button key={city.id} onClick={() => dispatch({type: 'SET_CITY', payload: city})}
+                                className={`min-w-[120px] p-3 rounded-xl border transition-all ${state.city.id === city.id ? `bg-[${city.theme}]/10 border-[${city.theme}] ring-1 ring-[${city.theme}]` : 'bg-[#111] border-[#222] opacity-60'}`}>
+                                <MapPin size={16} style={{ color: city.theme }} className="mb-2"/>
+                                <span className="text-xs font-bold block">{city.name}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="bg-[#141414] border border-[#222] p-5 rounded-3xl space-y-4 shadow-lg">
+                        <div>
+                            <label className="text-[11px] font-bold text-gray-500 uppercase ml-1 mb-1 block">Seu Nome</label>
+                            <input 
+                                value={state.name} 
+                                onChange={e => dispatch({type: 'UPDATE_FIELD', field: 'name', value: e.target.value})}
+                                placeholder="Como deseja ser chamado?" 
+                                className="w-full bg-[#0A0A0A] border border-[#333] rounded-xl p-3 text-sm focus:border-[var(--primary)] transition-colors"
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                             <div>
+                                <label className="text-[11px] font-bold text-gray-500 uppercase ml-1 mb-1 block">Idade</label>
+                                <input type="tel" maxLength={2} value={state.age} onChange={e => dispatch({type: 'UPDATE_FIELD', field: 'age', value: e.target.value.replace(/\D/g,'')})}
+                                className="w-full bg-[#0A0A0A] border border-[#333] rounded-xl p-3 text-sm text-center"/>
+                            </div>
+                            <button 
+                                onClick={() => dispatch({type: 'UPDATE_FIELD', field: 'medical', value: !state.medical})}
+                                className={`rounded-xl border flex flex-col items-center justify-center text-xs font-bold transition-all ${state.medical ? 'bg-[var(--primary)]/20 border-[var(--primary)] text-[var(--primary)]' : 'bg-[#0A0A0A] border-[#333] text-gray-500'}`}
+                            >
+                                <Check size={16} className="mb-1"/>
+                                <span>Saúde OK</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button 
+                        onClick={handleNext} 
+                        disabled={!state.name || !state.age || !state.medical}
+                        className="w-full py-4 bg-[var(--primary)] text-white font-bold rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                    >
+                        Começar Agendamento <ArrowRight size={18}/>
+                    </button>
+                    
+                    <p className="text-[10px] text-center text-gray-600 flex items-center justify-center gap-1">
+                        <Lock size={10}/> Seus dados estão seguros e não serão compartilhados.
+                    </p>
+                </div>
+            )}
+
+            {/* STAGE 1: SERVICES & ADDONS */}
+            {stage === 1 && (
+                <div className="animate-enter space-y-6">
+                    <XPBar current={pricing.xpTotal} max={CONFIG.XP_THRESHOLDS.VIP} />
+                    
+                    <h3 className="text-lg font-bold">Escolha a Experiência</h3>
+                    <div className="space-y-4">
+                        {SERVICES.map((srv, idx) => (
+                            <div key={srv.id} style={{ animationDelay: `${idx * 100}ms` }} className="animate-enter">
+                                <RadioCard 
+                                    selected={state.service?.id === srv.id} 
+                                    onClick={() => { dispatch({type: 'UPDATE_FIELD', field: 'service', value: srv}); vibrate(); }}
+                                    icon={SparkleIcon} // Placeholder icon
+                                    label={srv.name}
+                                    sub={`R$ ${srv.price} • ${srv.duration} min`}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    {state.service && (
+                        <div className="animate-enter">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase mt-8 mb-4">Adicionais Premium</h3>
+                            <div className="grid grid-cols-2 gap-3">
+                                <button onClick={() => dispatch({type: 'TOGGLE_EXTRA', extra: 'upgrade'})} className={`p-3 rounded-xl border text-xs font-bold flex flex-col items-center gap-2 transition-all ${state.extras.upgrade ? 'bg-[var(--primary)]/20 border-[var(--primary)] text-white' : 'bg-[#111] border-[#222] text-gray-500'}`}>
+                                    <Clock size={20}/> +30 Minutos
+                                </button>
+                                <button onClick={() => dispatch({type: 'TOGGLE_EXTRA', extra: 'touch'})} className={`p-3 rounded-xl border text-xs font-bold flex flex-col items-center gap-2 transition-all ${state.extras.touch ? 'bg-[var(--primary)]/20 border-[var(--primary)] text-white' : 'bg-[#111] border-[#222] text-gray-500'}`}>
+                                    <Flame size={20}/> Interação
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    
+                     <button onClick={handleNext} disabled={!state.service} className="fixed bottom-6 left-5 right-5 h-14 bg-[var(--primary)] text-white font-bold rounded-2xl shadow-xl z-20 flex items-center justify-center disabled:translate-y-24 transition-transform">
+                        Continuar (R$ {pricing.total})
+                    </button>
+                </div>
+            )}
+
+            {/* STAGE 2: DATE & TIME (Smart Grouping) */}
+            {stage === 2 && (
+                <div className="animate-enter space-y-6">
+                    <h3 className="text-lg font-bold">Data & Horário</h3>
+                    
+                    {/* Date Scroll */}
+                    <div className="flex gap-3 overflow-x-auto ios-scroll pb-4 -mx-5 px-5">
+                        {[...Array(14)].map((_, i) => {
+                            const d = new Date(); d.setDate(d.getDate() + i);
+                            const isSel = state.date?.toDateString() === d.toDateString();
+                            return (
+                                <button key={i} onClick={() => { dispatch({type: 'UPDATE_FIELD', field: 'date', value: d}); vibrate(); }}
+                                    className={`min-w-[72px] h-[84px] rounded-2xl border flex flex-col items-center justify-center transition-all ${isSel ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-lg scale-105' : 'bg-[#111] border-[#222] text-gray-500'}`}>
+                                    <span className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-70">{d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
+                                    <span className="text-2xl font-bold">{d.getDate()}</span>
+                                </button>
+                            )
+                        })}
+                    </div>
+
+                    {/* Time Slots Grouped */}
+                    {state.date && (
+                        <div className="space-y-6 animate-enter">
+                            {Object.entries(TIME_SLOTS).map(([period, slots]) => (
+                                <div key={period}>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase mb-3 flex items-center gap-2">
+                                        {period === 'morning' ? <Sun size={12}/> : period === 'afternoon' ? <Cloud size={12}/> : <Moon size={12}/>}
+                                        {period === 'morning' ? 'Manhã' : period === 'afternoon' ? 'Tarde' : 'Noite'}
+                                    </h4>
+                                    <div className="grid grid-cols-4 gap-3">
+                                        {slots.map(t => (
+                                            <button key={t} onClick={() => { dispatch({type: 'UPDATE_FIELD', field: 'time', value: t}); handleNext(); }}
+                                                className={`py-2 rounded-lg border text-sm font-medium transition-all hover:border-white/40 ${state.time === t ? 'bg-white text-black border-white' : 'bg-[#141414] border-[#222] text-gray-300'}`}>
+                                                {t}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* STAGE 3: LOCATION (With Mock Geo) */}
+            {stage === 3 && (
+                <div className="animate-enter space-y-6">
+                    <div className="flex justify-between items-center">
+                         <h3 className="text-lg font-bold">Onde será?</h3>
+                         <button className="text-[var(--primary)] text-xs font-bold flex items-center gap-1" onClick={() => { vibrate(); alert('Geolocalização simulada!'); }}>
+                            <Navigation size={12}/> Usar GPS
+                         </button>
+                    </div>
+
+                    <div className="flex bg-[#141414] p-1 rounded-xl border border-[#222]">
+                        {['home', 'hotel', 'motel'].map(type => (
+                            <button key={type} onClick={() => dispatch({type: 'UPDATE_NESTED', parent: 'location', field: 'type', value: type})}
+                                className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all ${state.location.type === type ? 'bg-[#333] text-white shadow' : 'text-gray-500'}`}>
+                                {type === 'home' ? 'Residência' : type}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="space-y-3">
+                         <input placeholder="Rua / Avenida" value={state.location.street} onChange={e => dispatch({type: 'UPDATE_NESTED', parent: 'location', field: 'street', value: e.target.value})} className="w-full bg-[#111] border border-[#333] p-4 rounded-xl text-sm focus:border-[var(--primary)]"/>
+                         <div className="flex gap-3">
+                             <input placeholder="Número" className="w-1/3 bg-[#111] border border-[#333] p-4 rounded-xl text-sm"/>
+                             <select className="w-2/3 bg-[#111] border border-[#333] p-4 rounded-xl text-sm appearance-none text-gray-300"
+                                onChange={(e) => {
+                                    const loc = state.city.locations.find(l => l.id === e.target.value);
+                                    dispatch({type: 'UPDATE_NESTED', parent: 'location', field: 'zone', value: loc})
+                                }}>
+                                 {state.city.locations.map(l => (
+                                     <option key={l.id} value={l.id}>{l.name} (+R${l.fee * 2})</option>
+                                 ))}
+                             </select>
+                         </div>
+                    </div>
+                    
+                    <button onClick={handleNext} className="w-full py-4 bg-[#222] border border-[#333] text-white font-bold rounded-2xl mt-4">Confirmar Endereço</button>
+                </div>
+            )}
+
+            {/* STAGE 4: REVIEW & PAY */}
+            {stage === 4 && (
+                <div className="animate-enter pb-10">
+                    <h3 className="text-lg font-bold mb-6">Revisão Final</h3>
+                    
+                    <WalletTicket data={state} pricing={pricing} />
+
+                    <div className="mt-8 space-y-4">
+                        <div className="flex items-center gap-3 p-4 bg-[#111] rounded-xl border border-[#222]">
+                             <Shield size={20} className="text-green-500"/>
+                             <div>
+                                 <p className="text-xs font-bold text-white">Pagamento Seguro</p>
+                                 <p className="text-[10px] text-gray-500">Pague somente no local (Dinheiro/Pix).</p>
+                             </div>
+                        </div>
+
+                        <label className="flex items-start gap-3 p-2">
+                             <input type="checkbox" className="mt-1 rounded border-gray-600 bg-transparent text-[var(--primary)]"/>
+                             <span className="text-xs text-gray-400">Declaro que li e concordo com os <u className="text-white">Termos de Serviço</u> e política de cancelamento.</span>
+                        </label>
+                    </div>
+
+                    <a href={generateWhatsAppLink()} target="_blank" rel="noreferrer"
+                        className="w-full py-4 bg-[#32D74B] text-black font-black text-lg rounded-2xl shadow-[0_4px_30px_rgba(50,215,75,0.3)] flex items-center justify-center gap-2 mt-6 animate-pulse">
+                        <MessageCircle fill="black" size={24}/> CONFIRMAR VIA WHATSAPP
+                    </a>
+                </div>
+            )}
+
+        </main>
     </div>
   );
 }
+
+// Icons placeholders for cleaner code block
+const Sun = (p) => <Flame {...p}/>; 
+const Moon = (p) => <Wind {...p}/>;
+const Cloud = (p) => <User {...p}/>; 
+const SparkleIcon = (p) => <Star {...p}/>;
