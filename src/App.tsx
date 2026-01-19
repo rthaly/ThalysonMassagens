@@ -93,7 +93,7 @@ const SERVICES = [
     short: 'Relaxamento + Finalização',
     desc: 'O ápice do relaxamento. Inicia soltando a musculatura e evolui para um contato corpo a corpo com cremes e óleos, respiração próxima e provocações sensoriais. Finalização manual intensa e explosiva.', 
     duration: 60, 
-    price: 205, 
+    price: 175, 
     badge: 'A MAIS PEDIDA ❤️',
     xp: 60,
     highlight: true 
@@ -104,7 +104,7 @@ const SERVICES = [
     short: 'Alívio de Dores',
     desc: 'Foco 100% terapêutico. Ideal para remover dores no corpo cansado. Toques suaves e firmes para tirar o stress acumulado. Atenção: Nesta modalidade não há toques nas partes íntimas.', 
     duration: 60, 
-    price: 155, 
+    price: 145, 
     badge: null,
     xp: 30,
     highlight: false
