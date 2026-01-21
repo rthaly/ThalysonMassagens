@@ -1,41 +1,36 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
   Shield, Zap, Menu, X, Share2, HelpCircle, Wallet, Gift, 
   CreditCard, Banknote, Building, RefreshCw, User, Copy, 
-  CheckCircle, Info, Navigation, BedDouble, Globe, Moon, Sun, 
-  Instagram, Heart, Sparkles
+  CheckCircle, Info, Navigation, BedDouble, Map, Lock,
+  Globe, Moon, Sun, Instagram, Award, Sparkles
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES
+// 1. CONFIGURAÇÕES & DADOS (FIXOS)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
-  INSTAGRAM: "https://instagram.com/seumassagista",
+  INSTAGRAM: "https://instagram.com/seumssagista", // Corrigido
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v18_final',
-  XP_TARGET: 300, // Pontos para ganhar o prêmio
-  REWARD_VAL: 30  // Valor do prêmio
+  STORAGE_KEY: 'thaly_app_v19_production', // Chave limpa
+  XP_TARGET: 300,
+  REWARD_VAL: 30
 };
 
-// ==================================================================================
-// 2. TEXTOS ACOLHEDORES & DETALHADOS (i18n)
-// ==================================================================================
-
+// TEXTOS (i18n) - Copy Acolhedora
 const TEXTS = {
   pt: {
-    // Intro
     welcome: "Oi, vamos relaxar?",
     subtitle: "Seu momento de paz e prazer, no conforto do seu espaço.",
     your_name: "Como posso te chamar?",
     name_placeholder: "Seu nome...",
     health_check: "Sou maior de 18 anos e estou saudável.",
-    start_btn: "Ver as Experiências",
+    start_btn: "Ver Experiências",
     
-    // Serviços (Copy Realista)
     choose_svc: "O que você busca hoje?",
     
     svc_comp_name: "🔥 Experiência Completa (1h)",
@@ -56,7 +51,6 @@ const TEXTS = {
     ],
     svc_relax_note: "Atenção: Nessa não tem toques íntimos.",
 
-    // Extras
     personalize: "Quer turbinar a sessão?",
     ext_time: "Quero mais tempo (+30min)",
     ext_time_sub: "Pra curtir sem pressa",
@@ -66,7 +60,6 @@ const TEXTS = {
     ext_aroma: "Aromaterapia",
     ext_aroma_sub: "Óleos e cheiros especiais",
 
-    // Fluxo
     date_title: "Quando fica bom pra você?",
     sold_out: "OCUPADO",
     continue: "Continuar",
@@ -90,7 +83,6 @@ const TEXTS = {
     
     uber_warn: "O Uber não está incluso, tá? Calculo certinho no WhatsApp.",
     
-    // Finalização
     review_title: "Tudo certo?",
     base_val: "Serviço",
     coupon_lbl: "Desconto",
@@ -104,10 +96,9 @@ const TEXTS = {
     
     confirm_btn: "Confirmar no WhatsApp",
     copy_pix: "COPIAR CHAVE PIX",
+    pix_copied: "PIX COPIADO!",
     
-    // Gamificação & Menu
     menu_fid: "Seu Cartão Fidelidade",
-    xp_desc: "A cada visita você junta pontos.",
     xp_missing: "Faltam",
     xp_goal: "pontos para ganhar R$ 30 OFF!",
     gift_title: "Presente pra você!",
@@ -121,11 +112,16 @@ const TEXTS = {
     
     success_title: "Tudo Pronto!",
     success_msg: "Já recebi seu pedido no WhatsApp. Vou calcular o Uber e te respondo rapidinho!",
-    new_book: "Voltar ao Início"
+    new_book: "Voltar ao Início",
+
+    zap_header: "OLÁ, QUERO AGENDAR",
+    zap_uber: "Uber (A Calcular)",
+    zap_pay: "Pagamento",
+    zap_obs: "Obs: +18 Confirmado"
   },
   en: {
     welcome: "Hi, let's relax?",
-    subtitle: "Your moment of peace and pleasure, at your place.",
+    subtitle: "Your moment of peace and pleasure.",
     your_name: "How should I call you?",
     name_placeholder: "Your name...",
     health_check: "I am 18+ and healthy.",
@@ -196,9 +192,9 @@ const TEXTS = {
     
     confirm_btn: "Confirm on WhatsApp",
     copy_pix: "COPY PIX KEY",
+    pix_copied: "PIX COPIED!",
     
     menu_fid: "Loyalty Card",
-    xp_desc: "Earn points every visit.",
     xp_missing: "Need",
     xp_goal: "points to get R$ 30 OFF!",
     gift_title: "A Gift for You!",
@@ -212,7 +208,12 @@ const TEXTS = {
     
     success_title: "All Set!",
     success_msg: "Received your request on WhatsApp. I'll calculate the Uber and reply asap!",
-    new_book: "Back to Start"
+    new_book: "Back to Start",
+
+    zap_header: "HELLO, I WANT TO BOOK",
+    zap_uber: "Uber (To Calc)",
+    zap_pay: "Payment",
+    zap_obs: "Note: +18 Confirmed"
   }
 };
 
@@ -261,7 +262,7 @@ const FAQS_DATA = {
 };
 
 // ==================================================================================
-// 3. COMPONENTES DE UI (DESIGN ATUALIZADO)
+// 3. COMPONENTES VISUAIS (DESIGN SYSTEM)
 // ==================================================================================
 
 const Utils = {
@@ -295,13 +296,15 @@ const BigInput = ({ label, value, onChange, placeholder, type="text", icon: Icon
   </div>
 );
 
-const PrimaryButton = ({ onClick, disabled, label, icon: Icon, pulse, isDark }) => (
+const PrimaryButton = ({ onClick, disabled, label, icon: Icon, pulse, variant="primary", isDark }) => (
     <button 
         onClick={onClick} disabled={disabled}
         className={`w-full h-14 rounded-xl font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg
-            ${disabled 
-                ? (isDark ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400') 
-                : (isDark ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-zinc-800')
+            ${variant === 'primary' 
+                ? (disabled 
+                    ? (isDark ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400') 
+                    : (isDark ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-zinc-800'))
+                : (isDark ? 'bg-[#1C1C1E] border border-[#333] text-white hover:bg-[#222]' : 'bg-white border border-gray-200 text-black shadow-sm')
             }
             ${pulse ? 'animate-pulse' : ''}
         `}
@@ -404,17 +407,17 @@ export default function App() {
       return { service: s, extras: e, disc: d, final: Math.max(0, s + e - d) };
   };
 
-  // Lógica de Validação Robusta
+  // VALIDAÇÃO DE ENDEREÇO
   const isAddressValid = () => {
       const { city, street, number, district, motelName, suite, hotelName, room } = booking.address;
       if (!city || city.length < 3) return false;
+      
       if (booking.locationType === 'motel') return motelName && suite;
       if (booking.locationType === 'hotel') return hotelName && room;
       return street && number && district;
   };
 
   const finalize = () => {
-      // 1. Queima Cupom / Adiciona XP
       const newCoupons = user.coupons.filter(c => c.id !== booking.appliedCoupon?.id);
       const newXP = user.xp + (booking.service?.xp || 0);
       if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
@@ -422,7 +425,6 @@ export default function App() {
       }
       setUser({ ...user, xp: newXP, coupons: newCoupons });
 
-      // 2. Monta Link
       let locStr = "";
       let mapLink = "";
       const addr = booking.address;
@@ -511,6 +513,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                  <button onClick={() => setMenuOpen(true)} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><Menu size={18}/></button>
              </div>
          </div>
+         {/* Barra de Progresso */}
          <div className={`h-[2px] w-full ${isDark ? 'bg-[#111]' : 'bg-gray-200'}`}><div className="h-full bg-green-500 transition-all duration-500 ease-out" style={{width: `${((step+1)/3)*100}%`}}></div></div>
       </header>
 
@@ -525,7 +528,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
 
       <main className="pt-24 px-5 max-w-md mx-auto animate-fade-in">
 
-        {/* --- PASSO 0 --- */}
+        {/* --- PASSO 0: INTRO & SERVIÇOS --- */}
         {step === 0 && (
             <>
                 {user.coupons.some(c=>c.id==='WELCOME') && (
@@ -540,7 +543,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                 
                 <div className="space-y-4 mb-10">
                     <BigInput label={T.your_name} placeholder={T.name_placeholder} value={user.name} onChange={e => setUser({...user, name: e.target.value})} icon={User} isDark={isDark} />
-                    <div onClick={() => setBooking({...booking, healthChecked: !booking.healthChecked})} className={`p-5 rounded-2xl border flex gap-4 cursor-pointer items-center transition-all ${booking.healthChecked ? 'border-green-500 bg-green-500/10' : (isDark ? 'bg-[#0A0A0A] border-[#222]' : 'bg-white border-gray-200')}`}>
+                    <div onClick={() => setBooking({...booking, healthChecked: !booking.healthChecked})} className={`p-5 rounded-2xl border flex gap-4 cursor-pointer items-center transition-all ${booking.healthChecked ? 'border-green-500' : (isDark ? 'bg-[#0A0A0A] border-[#222]' : 'bg-white border-gray-200')}`}>
                         <div className={`w-6 h-6 rounded flex items-center justify-center border ${booking.healthChecked ? 'bg-green-500 border-green-500 text-white' : 'border-zinc-400'}`}>{booking.healthChecked && <Check size={16} strokeWidth={3}/>}</div>
                         <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{T.health_check}</p>
                     </div>
@@ -554,7 +557,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                         const badge = s.id === 'completa' ? T.svc_comp_badge : T.svc_relax_badge;
                         const steps = s.id === 'completa' ? T.svc_comp_steps : T.svc_relax_steps;
                         const note = s.id === 'completa' ? T.svc_comp_note : T.svc_relax_note;
-                        
+
                         return (
                             <div key={s.id} onClick={() => setBooking({...booking, service: s})} className={`relative overflow-hidden w-full p-6 rounded-[2rem] border-2 transition-all cursor-pointer ${booking.service?.id === s.id ? (isDark ? 'bg-[#18181b] border-green-500' : 'bg-green-50 border-green-500') : (isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200')}`}>
                                 <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${booking.service?.id === s.id ? 'bg-green-500 text-white' : (isDark ? 'bg-[#222] text-zinc-500' : 'bg-gray-200 text-zinc-500')}`}>{badge}</div>
@@ -585,7 +588,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
             </>
         )}
 
-        {/* --- PASSO 1 --- */}
+        {/* --- PASSO 1: EXTRAS & DATA --- */}
         {step === 1 && (
             <>
                 <h2 className="text-2xl font-bold mb-8">{T.personalize}</h2>
@@ -626,7 +629,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
             </>
         )}
 
-        {/* --- PASSO 2 --- */}
+        {/* --- PASSO 2: LOCAL, RESUMO & PAGAMENTO --- */}
         {step === 2 && (
             <>
                 <h2 className="text-2xl font-bold mb-8">{T.loc_title}</h2>
@@ -643,12 +646,12 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                     <BigInput label={T.city_lbl} placeholder={T.city_ph} value={booking.address.city} onChange={e => setBooking({...booking, address: {...booking.address, city: e.target.value}})} icon={MapPin} isDark={isDark} />
                     {booking.locationType === 'motel' ? (
                         <div className="animate-fade-in space-y-4">
-                            <BigInput label={T.lbl_motel} value={booking.address.motelName} onChange={e => setBooking({...booking, address: {...booking.address, motelName: e.target.value}})} icon={Building} isDark={isDark} />
+                            <BigInput label={T.lbl_motel} value={booking.address.motelName} onChange={e => setBooking({...booking, address: {...booking.address, motelName: e.target.value}})} icon={Building} isDark={isDark} placeholder={T.ph_motel} />
                             <BigInput label={T.lbl_suite} type="tel" value={booking.address.suite} onChange={e => setBooking({...booking, address: {...booking.address, suite: e.target.value}})} icon={BedDouble} isDark={isDark} />
                         </div>
                     ) : booking.locationType === 'hotel' ? (
                         <div className="animate-fade-in space-y-4">
-                            <BigInput label={T.lbl_hotel} value={booking.address.hotelName} onChange={e => setBooking({...booking, address: {...booking.address, hotelName: e.target.value}})} icon={Building} isDark={isDark} />
+                            <BigInput label={T.lbl_hotel} value={booking.address.hotelName} onChange={e => setBooking({...booking, address: {...booking.address, hotelName: e.target.value}})} icon={Building} isDark={isDark} placeholder={T.ph_hotel} />
                             <BigInput label={T.lbl_room} type="tel" value={booking.address.room} onChange={e => setBooking({...booking, address: {...booking.address, room: e.target.value}})} icon={BedDouble} isDark={isDark} />
                         </div>
                     ) : (
@@ -663,6 +666,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                     )}
                 </div>
 
+                {/* TICKET */}
                 <div className={`border rounded-[2rem] p-6 mb-8 relative overflow-hidden ${isDark ? 'bg-[#1C1C1E] border-[#333]' : 'bg-white border-gray-200 shadow-xl'}`}>
                     <div className={`border-b pb-4 mb-4 text-center ${isDark ? 'border-[#333]' : 'border-gray-100'}`}>
                         <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{T.review_title}</p>
@@ -703,8 +707,11 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                 </div>
 
                 <div className={`fixed bottom-0 left-0 w-full p-6 border-t z-[60] ${isDark ? 'bg-black/95 border-white/10' : 'bg-white/95 border-gray-200'}`}>
-                    <div className="flex justify-between items-center mb-4 px-1"><span className="text-xs text-zinc-500"><AlertTriangle size={12} className="inline text-yellow-500 mb-0.5"/> {T.uber_warn}</span></div>
-                    <PrimaryButton disabled={!isAddressValid() || !booking.payment} onClick={finalize} label={T.confirm_btn} icon={MessageCircle} pulse isDark={isDark} />
+                    <div className="flex justify-between items-center mb-4 px-1"><span className="text-xs text-zinc-500"><AlertTriangle size={12} className="inline text-yellow-500 mb-0.5"/> {T.uber_warn}</span><button onClick={() => {Utils.copyPix(); showToast(T.pix_copied)}} className="text-[10px] font-bold text-green-500 flex items-center gap-1"><Copy size={10}/> {T.copy_pix}</button></div>
+                    <PrimaryButton 
+                        disabled={!isAddressValid() || !booking.payment} 
+                        onClick={finalize} label={T.confirm_btn} icon={MessageCircle} pulse isDark={isDark} 
+                    />
                 </div>
             </>
         )}
