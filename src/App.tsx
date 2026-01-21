@@ -4,7 +4,7 @@ import {
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
   Shield, Zap, Menu, X, Share2, HelpCircle, Wallet, Gift, 
   CreditCard, Banknote, Building, RefreshCw, User, Copy, 
-  CheckCircle, Info, Navigation, Lock, Smile, Map
+  CheckCircle, Info, Navigation, Map
 } from 'lucide-react';
 
 // ==================================================================================
@@ -14,8 +14,7 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v8_fixed',
-  XP_TARGET: 300 
+  STORAGE_KEY: 'thaly_app_v9_ultimate',
 };
 
 const SERVICES = [
@@ -24,7 +23,7 @@ const SERVICES = [
     name: 'Experiência Completa', 
     label: '🔥 MAIS PEDIDA',
     price: 175, 
-    xp: 60,
+    time: '60 min',
     steps: [
         '1️⃣ Relaxante no corpo todo (Tira tensão)',
         '2️⃣ Corpo a Corpo (Pele com pele, sensitivo)',
@@ -37,7 +36,7 @@ const SERVICES = [
     name: 'Massagem Relaxante', 
     label: '🍃 TERAPÊUTICA',
     price: 145, 
-    xp: 30,
+    time: '60 min',
     steps: [
         '1️⃣ Foco muscular e alívio de dores',
         '2️⃣ Movimentos firmes e técnicos',
@@ -68,7 +67,7 @@ const FAQS = [
 ];
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (COMPONENTES)
+// 2. DESIGN SYSTEM (COMPONENTES ROBUSTOS)
 // ==================================================================================
 
 const Utils = {
@@ -95,9 +94,9 @@ const BigInput = ({ label, value, onChange, placeholder, icon: Icon, type="text"
         <input 
             type={type}
             value={value} onChange={onChange} placeholder={placeholder}
-            className="w-full h-12 bg-[#111] border border-[#333] rounded-xl px-4 pl-11 text-white text-base placeholder:text-gray-700 focus:border-green-500 focus:ring-1 focus:ring-green-500/20 outline-none transition-all"
+            className="w-full h-14 bg-[#111] border border-[#333] rounded-xl px-4 pl-12 text-white text-base placeholder:text-gray-600 focus:border-green-500 focus:ring-1 focus:ring-green-500/20 outline-none transition-all"
         />
-        {Icon && <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-green-500 transition-colors" size={18} />}
+        {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-green-500 transition-colors" size={20} />}
     </div>
   </div>
 );
@@ -129,8 +128,8 @@ export default function App() {
   const [user, setUser] = useState(() => {
       try {
           const s = localStorage.getItem(CONFIG.STORAGE_KEY);
-          return s ? JSON.parse(s) : { name: '', xp: 0, coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 15 }] };
-      } catch { return { name: '', xp: 0, coupons: [] }; }
+          return s ? JSON.parse(s) : { name: '', coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 15 }] };
+      } catch { return { name: '', coupons: [] }; }
   });
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
 
@@ -155,19 +154,21 @@ export default function App() {
   const handleBack = () => { Utils.vibrate(); setStep(s => s - 1); };
   const handleReset = () => { setSuccess(false); setBooking(initialBooking); setStep(0); };
 
-  // Lógica de "Esgotado" Realista (Apenas Sex/Sab a noite)
+  // Lógica de "Esgotado" Distribuída e Realista
   const checkAvailability = (date, timeStr) => {
       if (!date) return 'blocked';
       const now = new Date();
       const sel = new Date(date);
       const [h] = timeStr.split(':').map(Number);
       
-      // Bloquear passado
+      // 1. Passado
       if (sel.toDateString() === now.toDateString() && h <= now.getHours()) return 'past';
       
-      // Regra de Ouro: Esgotado apenas Sexta(5) e Sabado(6) as 19h e 20h
-      const day = sel.getDay();
-      if ((day === 5 || day === 6) && (h === 19 || h === 20)) return 'sold_out';
+      // 2. Algoritmo de Distribuição (Dia + Hora % 5 == 0)
+      // Isso garante que horários diferentes sejam bloqueados em dias diferentes
+      // Ex: Dia 20 as 10h (30%5==0 -> Esgotado). Dia 21 as 10h (31%5!=0 -> Livre).
+      const day = sel.getDate();
+      if ((day + h) % 5 === 0) return 'sold_out';
       
       return 'available';
   };
@@ -182,9 +183,10 @@ export default function App() {
       return { service: servicePrice, extras: extrasPrice, disc, final: Math.max(0, servicePrice + extrasPrice - disc) };
   };
 
+  // Validação de Endereço Rigorosa
   const isAddressValid = () => {
       const { city, street, number, district, motelName, suite } = booking.address;
-      if (!city) return false;
+      if (!city || city.length < 3) return false;
       if (booking.locationType === 'motel') return motelName && suite;
       return street && number && district; // Casa/Hotel precisa disso
   };
@@ -192,15 +194,9 @@ export default function App() {
   const finalize = () => {
       // 1. Queima Cupom
       let newCoupons = user.coupons.filter(c => c.id !== booking.appliedCoupon?.id);
-      
-      // 2. XP (Gamificação)
-      const newXP = user.xp + (booking.service?.xp || 0);
-      if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
-          newCoupons.push({ id: `RWD_${Date.now()}`, label: 'Fidelidade', val: 30 });
-      }
-      setUser({ ...user, xp: newXP, coupons: newCoupons });
+      setUser({ ...user, coupons: newCoupons });
 
-      // 3. Monta Endereço & Maps
+      // 2. Monta Endereço & Maps
       let locStr = "";
       let mapsQuery = "";
 
@@ -216,7 +212,7 @@ export default function App() {
 
       const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`;
 
-      // 4. Texto Zap
+      // 3. Texto Zap
       const fin = calculateTotal();
       const extrasTxt = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> `• ${EXTRAS.find(e=>e.id===k).label} (${Utils.fmtMoney(EXTRAS.find(e=>e.id===k).price)})`).join('\n');
       
@@ -265,13 +261,13 @@ Vou calcular a ida e volta agora e te passo o valor total.
               <Check size={48} className="text-black" strokeWidth={4}/>
           </div>
           <h2 className="text-3xl font-black mb-2 uppercase tracking-tight">Solicitação Enviada!</h2>
-          <p className="text-gray-400 mb-8 max-w-xs leading-relaxed">Enviei os detalhes e a localização para seu WhatsApp.</p>
+          <p className="text-gray-400 mb-8 max-w-xs leading-relaxed">Enviei os detalhes para seu WhatsApp. Aguarde minha resposta para combinarmos o Uber.</p>
           <button onClick={handleReset} className="flex items-center gap-2 text-gray-500 font-bold text-xs uppercase hover:text-white transition-colors"><RefreshCw size={12}/> Fazer novo agendamento</button>
       </div>
   );
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans pb-32 selection:bg-green-500 selection:text-black">
+    <div className="min-h-screen bg-black text-white font-sans pb-48 selection:bg-green-500 selection:text-black">
       <Toast show={toast.show} msg={toast.msg} />
 
       {/* HEADER */}
@@ -292,18 +288,16 @@ Vou calcular a ida e volta agora e te passo o valor total.
          <div className="h-[2px] w-full bg-[#111]"><div className="h-full bg-green-500 transition-all duration-500 ease-out" style={{width: `${((step+1)/3)*100}%`}}></div></div>
       </header>
 
-      {/* MENU & WALLET (Omitted for brevity, same as V7 but functional) */}
+      {/* MENU & WALLET */}
       {menuOpen && (
           <div className="fixed inset-0 z-50 flex justify-end">
               <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setMenuOpen(false)}></div>
               <div className="relative w-72 h-full bg-[#111] border-l border-[#222] p-6 shadow-2xl animate-fade-in-up">
                   <div className="flex justify-between items-center mb-8"><span className="font-bold text-xl">Menu</span><button onClick={()=>setMenuOpen(false)}><X className="text-gray-400"/></button></div>
-                  <div className="bg-[#1C1C1E] p-4 rounded-2xl mb-6 border border-[#333]">
-                      <div className="flex justify-between text-xs font-bold mb-2 uppercase tracking-wider text-gray-400"><span>Fidelidade</span><span className="text-green-500 text-sm">{Math.floor(user.xp/300)+1}</span></div>
-                      <div className="h-2 bg-[#333] rounded-full overflow-hidden mb-2"><div className="h-full bg-green-500" style={{width:`${(user.xp%300)/300*100}%`}}></div></div>
-                      <p className="text-[10px] text-gray-500">Ganhe {300 - (user.xp%300)} XP para novo prêmio.</p>
+                  <div className="space-y-4">
+                      {FAQS.map((f,i) => (<div key={i} className="bg-[#1C1C1E] p-4 rounded-xl border border-[#333]"><p className="text-green-500 text-xs font-bold mb-1">{f.q}</p><p className="text-xs text-gray-400">{f.a}</p></div>))}
                   </div>
-                  <button onClick={() => {if(navigator.share) navigator.share({url: window.location.href})}} className="w-full py-4 bg-[#1C1C1E] rounded-xl font-bold text-sm mb-3 flex items-center gap-3 px-4"><Share2 size={18} className="text-gray-400"/> Compartilhar</button>
+                  <button onClick={() => {if(navigator.share) navigator.share({url: window.location.href})}} className="w-full mt-6 py-4 bg-[#1C1C1E] rounded-xl font-bold text-sm flex items-center justify-center gap-2"><Share2 size={18} className="text-gray-400"/> Compartilhar</button>
               </div>
           </div>
       )}
@@ -318,8 +312,8 @@ Vou calcular a ida e volta agora e te passo o valor total.
           </div>
       )}
 
-      {/* MAIN CONTENT */}
-      <main className="pt-24 px-5 max-w-md mx-auto animate-fade-in-up">
+      {/* MAIN CONTENT - PADDING BOTTOM AUMENTADO (pb-48) */}
+      <main className="pt-24 px-5 max-w-md mx-auto animate-fade-in-up pb-48">
 
         {/* STEP 0: IDENTIFICAÇÃO & SERVIÇOS */}
         {step === 0 && (
@@ -342,7 +336,7 @@ Vou calcular a ida e volta agora e te passo o valor total.
                 
                 <h3 className="text-xl font-bold mb-6 flex items-center gap-2">Escolha a Experiência</h3>
                 
-                <div className="space-y-6 pb-24">
+                <div className="space-y-6">
                     {SERVICES.map(s => (
                         <div key={s.id} onClick={() => setBooking({...booking, service: s})} className={`relative overflow-hidden w-full p-6 rounded-[2rem] border-2 transition-all cursor-pointer mb-5 ${booking.service?.id === s.id ? 'bg-[#18181b] border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.15)]' : 'bg-[#111] border-[#222]'}`}>
                             <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${booking.service?.id === s.id ? 'bg-green-500 text-black' : 'bg-[#222] text-gray-500'}`}>{s.label}</div>
@@ -354,13 +348,13 @@ Vou calcular a ida e volta agora e te passo o valor total.
                     ))}
                 </div>
 
-                <div className="fixed bottom-0 left-0 w-full p-5 bg-black/95 border-t border-white/10 z-40 backdrop-blur-md">
+                <div className="fixed bottom-0 left-0 w-full p-5 bg-black/95 border-t border-white/10 z-[60] backdrop-blur-md">
                     <PrimaryButton disabled={!booking.healthChecked || user.name.length < 3 || !booking.service} onClick={handleNext} label="Continuar" icon={ArrowRight} />
                 </div>
             </>
         )}
 
-        {/* STEP 1: PERSONALIZAÇÃO */}
+        {/* STEP 1: PERSONALIZAÇÃO & DATA */}
         {step === 1 && (
             <>
                 <h2 className="text-2xl font-bold mb-8">Personalize</h2>
@@ -396,7 +390,7 @@ Vou calcular a ida e volta agora e te passo o valor total.
                     })}
                 </div>
                 {booking.date && (
-                    <div className="grid grid-cols-4 gap-2 animate-fade-in-up pb-24">
+                    <div className="grid grid-cols-4 gap-2 animate-fade-in-up">
                         {['10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'].map(t => {
                             const status = checkAvailability(booking.date, t);
                             return (
@@ -408,7 +402,7 @@ Vou calcular a ida e volta agora e te passo o valor total.
                     </div>
                 )}
 
-                <div className="fixed bottom-0 left-0 w-full p-5 bg-black/95 border-t border-white/10 z-40 backdrop-blur-md">
+                <div className="fixed bottom-0 left-0 w-full p-5 bg-black/95 border-t border-white/10 z-[60] backdrop-blur-md">
                     <PrimaryButton disabled={!booking.time} onClick={handleNext} label="Avançar" icon={ArrowRight} />
                 </div>
             </>
@@ -445,7 +439,7 @@ Vou calcular a ida e volta agora e te passo o valor total.
                     )}
                 </div>
 
-                {/* Resumo Financeiro */}
+                {/* Resumo */}
                 <div className="bg-[#1C1C1E] border border-[#333] rounded-[2rem] p-6 mb-8">
                     <div className="border-b border-[#333] pb-4 mb-4 text-center">
                         <h3 className="text-xl font-black text-white">{booking.service?.name}</h3>
@@ -464,7 +458,7 @@ Vou calcular a ida e volta agora e te passo o valor total.
                     </div>
                 </div>
 
-                <div className="mb-32">
+                <div className="mb-8">
                     <p className="text-[10px] font-bold text-gray-500 uppercase mb-3 ml-1">Pagamento (No Local)</p>
                     <div className="grid grid-cols-3 gap-3">
                         {['pix', 'card', 'esp'].map(p => (
@@ -476,7 +470,11 @@ Vou calcular a ida e volta agora e te passo o valor total.
                     </div>
                 </div>
 
-                <div className="fixed bottom-0 left-0 w-full p-5 bg-black/95 border-t border-white/10 z-40 backdrop-blur-md">
+                <div className="fixed bottom-0 left-0 w-full p-6 bg-black/95 border-t border-white/10 z-[60] backdrop-blur-md">
+                    <div className="flex justify-between items-center mb-4 px-1">
+                         <span className="text-xs text-gray-500"><AlertTriangle size={12} className="inline text-yellow-500 mb-0.5"/> Uber não incluso</span>
+                         <button onClick={() => {Utils.copyPix(); showToast("CHAVE PIX COPIADA!")}} className="text-[10px] font-bold text-green-500 flex items-center gap-1"><Copy size={10}/> PIX COPY</button>
+                    </div>
                     <PrimaryButton disabled={!isAddressValid() || !booking.payment} onClick={finalize} label="Confirmar Agendamento" icon={MessageCircle} />
                 </div>
             </>
