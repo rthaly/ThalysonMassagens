@@ -15,14 +15,12 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v13_global', // Nova chave para limpar cache antigo
+  STORAGE_KEY: '@thaly_app_v14_final', // Chave atualizada
   XP_TARGET: 500, 
 };
 
-// --- ESTRUTURA DE IDIOMAS COMPLETA ---
 const TEXTS = {
   pt: {
-    // UI GERAL
     welcome: "Bem-vindo",
     subtitle: "Seu momento de paz e prazer começa agora.",
     reviews_btn: "Ler todas as 50+ avaliações",
@@ -56,31 +54,27 @@ const TEXTS = {
     comp_placeholder: "Complemento / Ponto de Referência (Obrigatório)",
     address_warn: "Preencha todo o endereço para eu chegar até você.",
     
-    // SERVIÇOS
     services: {
       relaxante: { title: "Massagem Relaxante", desc: "Movimentos leves, contínuos e envolventes. Foco total em tirar o peso das costas e acalmar a mente." },
       sensitiva: { title: "Massagem Sensitiva", desc: "Experiência de pele com pele. Toques sutis que despertam a sensibilidade de cada centímetro do corpo." },
       mista: { title: "Massagem Completa", desc: "A união perfeita: começa relaxando a tensão muscular e termina com a parte sensitiva intensa." }
     },
     
-    // EXTRAS
     extras: {
       more_time: { label: "+30 Minutos", desc: "Estender a sessão" },
       touch: { label: "Toque Interativo", desc: "Troca de toques permitida" },
       aroma: { label: "Aromaterapia", desc: "Óleos essenciais" }
     },
 
-    // TERMOS
     terms_body: [
       "1. Respeito Mútuo: O atendimento é profissional. Qualquer conduta agressiva ou desrespeitosa encerrará a sessão imediatamente.",
-      "2. Higiene e Segurança: Prezo pela máxima higiene. Todos os materiais são esterilizados e de uso individual.",
+      "2. Higiene e Segurança: Prezo pela máxima higiene e exijo o mesmo do cliente. Todos os materiais são rigorosamente esterilizados.",
       "3. Sigilo Absoluto: Sua privacidade é garantida. O que acontece na sessão, fica na sessão.",
       "4. Taxas Externas: Em caso de atendimento em Motel, a taxa de entrada/período é de responsabilidade do cliente.",
       "5. Pagamento: O pagamento deve ser realizado integralmente logo após a prestação do serviço."
     ],
     terms_btn: "Entendi e Concordo",
 
-    // WHATSAPP MENSAGEM
     zap: {
       greeting: ["Bom dia", "Boa tarde", "Boa noite"],
       intro: "Gostaria de confirmar:",
@@ -99,7 +93,6 @@ const TEXTS = {
     }
   },
   en: {
-    // UI GENERAL
     welcome: "Welcome",
     subtitle: "Your moment of peace and pleasure starts now.",
     reviews_btn: "Read all 50+ reviews",
@@ -133,31 +126,27 @@ const TEXTS = {
     comp_placeholder: "Complement / Reference (Required)",
     address_warn: "Please fill full address.",
 
-    // SERVICES
     services: {
       relaxante: { title: "Relaxing Massage", desc: "Light, continuous, and enveloping movements. Total focus on removing back weight and calming the mind." },
       sensitiva: { title: "Sensitive Massage", desc: "Skin-to-skin experience. Subtle touches that awaken the sensitivity of every inch of the body." },
       mista: { title: "Complete Massage", desc: "The perfect union: starts by relaxing muscle tension and ends with intense sensitive part." }
     },
 
-    // EXTRAS
     extras: {
       more_time: { label: "+30 Minutes", desc: "Extend the session" },
       touch: { label: "Interactive Touch", desc: "Touch exchange allowed" },
       aroma: { label: "Aromatherapy", desc: "Essential oils" }
     },
 
-    // TERMS
     terms_body: [
       "1. Mutual Respect: The service is professional. Any aggressive or disrespectful conduct will end the session immediately.",
-      "2. Hygiene and Safety: I value maximum hygiene. All materials are sterilized and for individual use.",
+      "2. Hygiene and Safety: I value maximum hygiene. All materials are sterilized.",
       "3. Absolute Secrecy: Your privacy is guaranteed. What happens in the session, stays in the session.",
       "4. External Fees: In case of Motel service, the entrance/period fee is the client's responsibility.",
       "5. Payment: Payment must be made in full immediately after the service is provided."
     ],
     terms_btn: "I Understand and Agree",
 
-    // WHATSAPP MESSAGE
     zap: {
       greeting: ["Good morning", "Good afternoon", "Good evening"],
       intro: "I would like to confirm:",
@@ -321,20 +310,19 @@ export default function App() {
   const [toast, setToast] = useState({ show: false, msg: '' });
 
   const scrollRef = useRef(null);
-  const T = TEXTS[lang]; // Dicionário Atual
+  const T = TEXTS[lang]; 
 
   // USER STATE
   const [user, setUser] = useState(() => {
     try {
        const s = localStorage.getItem(CONFIG.STORAGE_KEY);
-       // INICIA COM CUPOM DE 12 REAIS SE NÃO TIVER DADOS
        const initialCoupons = [{ id: 'welcome12', val: 12, title: 'Cupom Boas Vindas' }];
        if (!s) return { name: '', xp: 0, level: 1, coupons: initialCoupons };
        return JSON.parse(s);
     } catch { return { name: '', xp: 0, coupons: [] }; }
   });
 
-  // BOOKING STATE - SEM AUTO-APPLY DE CUPOM
+  // BOOKING STATE
   const [booking, setBooking] = useState({
     service: null, 
     extras: {}, 
@@ -343,7 +331,7 @@ export default function App() {
     locationType: 'home', 
     address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
     payment: '', 
-    appliedCoupon: null, // Começa Nulo
+    appliedCoupon: null, 
     termsAccepted: false
   });
 
@@ -385,7 +373,6 @@ export default function App() {
     const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
     const h = new Date().getHours();
     
-    // Saudação traduzida
     let greeting = "";
     if (h < 12) greeting = T.zap.greeting[0];
     else if (h < 18) greeting = T.zap.greeting[1];
@@ -394,7 +381,7 @@ export default function App() {
     let localMsg = "";
     let mapsLink = "";
     
-    // Nome do Serviço Traduzido
+    // Serviço Traduzido
     const serviceName = booking.service ? T.services[booking.service.id].title : "";
 
     if (booking.locationType === 'home') {
@@ -456,17 +443,34 @@ ${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
     const earnedXP = getFinancials.total;
     const newTotalXP = user.xp + earnedXP;
     
+    // REMOVE CUPOM USADO
     let updatedCoupons = [...user.coupons];
     if(booking.appliedCoupon) {
         updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     }
 
+    // GAMIFICACAO
     if (Math.floor(newTotalXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
         updatedCoupons.push({ id: Date.now(), title: 'Recompensa VIP', val: 20, isNew: true });
     }
 
     setUser({ ...user, xp: newTotalXP, coupons: updatedCoupons });
     setStep(4);
+  };
+
+  const handleReset = () => {
+      setStep(0);
+      setBooking({
+        service: null, 
+        extras: {}, 
+        date: null, 
+        time: null,
+        locationType: 'home', 
+        address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
+        payment: '', 
+        appliedCoupon: null, // GARANTE QUE VOLTA ZERADO
+        termsAccepted: false
+      });
   };
 
   if (loading) return (
@@ -774,7 +778,7 @@ ${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
                    </div>
                 </div>
                 
-                {/* SELECTOR DE CUPOM */}
+                {/* SELECTOR DE CUPOM CORRIGIDO */}
                 <div className="bg-black/5 p-6 flex items-center justify-between">
                    <div className="flex items-center gap-3 text-xs font-bold opacity-60"><Ticket size={18} /> <span>{T.coupon_label}:</span></div>
                    {user.coupons.length > 0 ? (
@@ -840,7 +844,7 @@ ${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
                     <MessageCircle size={28} fill="currentColor"/> {T.btn_zap}
                 </a>
                 
-                <button onClick={()=>{setStep(0); setBooking({...booking, date:null, time:null, termsAccepted:false});}} className="mt-12 text-xs font-bold opacity-40 hover:opacity-100 uppercase tracking-widest">
+                <button onClick={handleReset} className="mt-12 text-xs font-bold opacity-40 hover:opacity-100 uppercase tracking-widest">
                     Voltar ao início
                 </button>
             </div>
