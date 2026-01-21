@@ -1,46 +1,46 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
   Shield, Zap, Menu, X, Share2, HelpCircle, Wallet, Gift, 
-  Building, RefreshCw, User, Copy, CheckCircle, Info, Navigation, 
-  BedDouble, Trash2, Sparkles, Award, Instagram, Globe, Moon, Sun
+  CreditCard, Banknote, Building, RefreshCw, User, Copy, 
+  CheckCircle, Info, Navigation, BedDouble, Map, Lock,
+  Globe, Moon, Sun, Instagram, Award, Sparkles
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES GERAIS
+// 1. CONFIGURAÇÕES
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM: "https://instagram.com/seumssagista", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v21_coupon_fixed', // Nova chave para limpar dados antigos bugados
-  XP_TARGET: 300, // XP necessário para ganhar cupom
-  REWARD_VAL: 30  // Valor do cupom prêmio
+  STORAGE_KEY: 'thaly_app_v22_stable_final',
+  XP_TARGET: 300,
+  REWARD_VAL: 30
 };
 
 // ==================================================================================
-// 2. TEXTOS E COPYWRITING (AJUSTADOS)
+// 2. TEXTOS & CONTEÚDO (I18N)
 // ==================================================================================
 
 const TEXTS = {
   pt: {
-    welcome: "Olá, bem-vindo.",
-    subtitle: "Seu momento de paz e prazer absoluto.",
+    welcome: "Oi, vamos relaxar?",
+    subtitle: "Seu momento de paz e prazer, no conforto do seu espaço.",
     your_name: "Como posso te chamar?",
     name_placeholder: "Seu nome...",
     health_check: "Sou maior de 18 anos e estou saudável.",
     start_btn: "Ver Experiências",
     
-    choose_svc: "Escolha sua Sessão",
+    choose_svc: "O que você busca hoje?",
     
-    // Copy Ajustada conforme pedido
     svc_comp_name: "🔥 Experiência Completa (1h)",
     svc_comp_badge: "A MAIS PEDIDA ❤️",
     svc_comp_steps: [
-        '1️⃣ Relaxante no corpo todo (Tira a tensão).',
-        '2️⃣ Corpo a Corpo (Contato pele com pele, sensitivo).',
+        '1️⃣ Começo tirando toda tensão muscular.',
+        '2️⃣ O clima esquenta: contato pele com pele (sensitivo).',
         '3️⃣ Massagem na Lingam (Pênis) com estímulo sensorial e gozo permitido.'
     ],
     svc_comp_note: "Focado no seu prazer. Sem penetração/oral.",
@@ -54,85 +54,89 @@ const TEXTS = {
     ],
     svc_relax_note: "Atenção: Apenas terapêutica. Sem toques íntimos.",
 
-    personalize: "Turbinar Sessão?",
+    personalize: "Quer turbinar a sessão?",
     ext_time: "Mais Tempo (+30min)",
-    ext_time_sub: "Sessão de 1h30 total",
-    ext_touch: "Interatividade",
+    ext_time_sub: "Pra curtir sem pressa",
+    ext_touch: "Interatividade Total",
     ext_touch_sub: "Troca de energia permitida",
     ext_touch_warn: "Fico de cueca na interação",
     ext_aroma: "Aromaterapia",
-    ext_aroma_sub: "Óleos essenciais especiais",
+    ext_aroma_sub: "Óleos e cheiros especiais",
 
-    date_title: "Agendamento",
+    date_title: "Quando fica bom pra você?",
     sold_out: "OCUPADO",
     continue: "Continuar",
     
-    loc_title: "Localização",
+    loc_title: "Onde eu te encontro?",
     btn_home: "Minha Casa",
     btn_hotel: "Hotel",
     btn_motel: "Motel",
     
-    city_lbl: "Cidade",
-    city_ph: "Ex: Londrina...",
+    city_lbl: "Qual Cidade?",
+    city_ph: "Ex: Londrina, SP...",
     lbl_motel: "Nome do Motel",
     lbl_suite: "Nº Suíte",
     lbl_hotel: "Nome do Hotel",
     lbl_room: "Nº Quarto",
-    lbl_addr: "Endereço",
+    lbl_addr: "Endereço (Rua)",
     lbl_num: "Número",
     lbl_dist: "Bairro",
     lbl_comp: "Complemento",
     
-    uber_warn: "Uber não incluso. Calculo o valor exato no WhatsApp.",
+    uber_warn: "O Uber não está incluso, tá? Calculo certinho no WhatsApp.",
     
-    review_title: "Resumo",
+    review_title: "Tudo certo?",
     base_val: "Serviço",
     coupon_lbl: "Desconto",
     add_coupon: "Usar Cupom",
     remove_coupon: "Remover",
-    total_lbl: "Total Final",
+    total_lbl: "Total a Pagar",
     
-    pay_title: "Pagamento (No Local)",
+    pay_title: "Como prefere pagar?",
     money: "Dinheiro",
     card: "Cartão",
     pix: "Pix",
     
-    confirm_btn: "Confirmar Agendamento",
-    copy_pix: "COPIAR PIX",
+    confirm_btn: "Confirmar no WhatsApp",
+    copy_pix: "COPIAR CHAVE PIX",
     pix_copied: "PIX COPIADO!",
     
-    // Gamificação
-    menu_fid: "Fidelidade",
+    menu_fid: "Seu Cartão Fidelidade",
     xp_missing: "Faltam",
-    xp_goal: "pontos para ganhar R$ 30!",
-    gift_title: "Presente Disponível!",
-    gift_sub: "Use seu cupom de 1ª vez.",
+    xp_goal: "pontos para ganhar R$ 30 OFF!",
+    gift_title: "Presente pra você!",
+    gift_sub: "Toque para pegar seu desconto de 1ª vez.",
     
-    wallet_title: "Meus Cupons",
-    wallet_empty: "Sem cupons no momento.",
+    wallet_title: "Meus Prêmios",
+    wallet_empty: "Sua carteira está vazia por enquanto.",
     
-    menu_doubts: "Dúvidas",
-    menu_share: "Indicar",
+    menu_doubts: "Dúvidas Comuns",
+    menu_share: "Indicar Amigo",
     
-    success_title: "Recebido!",
-    success_msg: "Pedido gerado! Vou calcular o Uber e te chamo no WhatsApp.",
-    new_book: "Início"
+    success_title: "Tudo Pronto!",
+    success_msg: "Já recebi seu pedido no WhatsApp. Vou calcular o Uber e te respondo rapidinho!",
+    new_book: "Voltar ao Início",
+
+    zap_header: "OLÁ, QUERO AGENDAR",
+    zap_uber: "Uber (A Calcular)",
+    zap_pay: "Pagamento",
+    zap_obs: "Obs: +18 Confirmado"
   },
   en: {
-    welcome: "Hello, welcome.",
-    subtitle: "Your moment of peace and absolute pleasure.",
-    your_name: "Your Name",
-    name_placeholder: "Type here...",
+    welcome: "Hi, let's relax?",
+    subtitle: "Your moment of peace and pleasure.",
+    your_name: "How should I call you?",
+    name_placeholder: "Your name...",
     health_check: "I am 18+ and healthy.",
-    start_btn: "View Services",
+    start_btn: "See Experiences",
     
-    choose_svc: "Choose Session",
+    choose_svc: "What do you need today?",
     
     svc_comp_name: "🔥 Complete Experience (1h)",
-    svc_comp_badge: "BEST SELLER ❤️",
+    svc_comp_badge: "MOST LOVED ❤️",
     svc_comp_steps: [
-        '1️⃣ Full body relax (Remove tension).',
-        '2️⃣ Body-to-Body (Skin-to-skin, sensitive).',
+        '1️⃣ I start by removing all muscle tension.',
+        '2️⃣ It gets hotter: skin-to-skin contact (sensitive).',
         '3️⃣ Lingam Massage (Penis) with sensory stimulation & release allowed.'
     ],
     svc_comp_note: "Pleasure focused. No penetration/oral.",
@@ -146,20 +150,20 @@ const TEXTS = {
     ],
     svc_relax_note: "Note: Therapeutic only. No intimate touch.",
 
-    personalize: "Boost Session?",
+    personalize: "Want to boost it?",
     ext_time: "More Time (+30min)",
-    ext_time_sub: "1h30 total session",
-    ext_touch: "Interactivity",
+    ext_time_sub: "No rush",
+    ext_touch: "Full Interactivity",
     ext_touch_sub: "Energy exchange allowed",
     ext_touch_warn: "Underwear stays on",
     ext_aroma: "Aromatherapy",
-    ext_aroma_sub: "Special essential oils",
+    ext_aroma_sub: "Special oils and scents",
 
-    date_title: "Scheduling",
+    date_title: "When works for you?",
     sold_out: "BUSY",
     continue: "Next",
     
-    loc_title: "Location",
+    loc_title: "Where should I go?",
     btn_home: "Home",
     btn_hotel: "Hotel",
     btn_motel: "Motel",
@@ -177,37 +181,42 @@ const TEXTS = {
     
     uber_warn: "Uber fee not included. I'll calc on WhatsApp.",
     
-    review_title: "Summary",
+    review_title: "All good?",
     base_val: "Service",
     coupon_lbl: "Discount",
     add_coupon: "Use Coupon",
     remove_coupon: "Remove",
-    total_lbl: "Total",
+    total_lbl: "Total to Pay",
     
     pay_title: "Payment Method",
     money: "Cash",
     card: "Card",
     pix: "Pix",
     
-    confirm_btn: "Confirm Booking",
-    copy_pix: "COPY PIX",
-    pix_copied: "COPIED!",
+    confirm_btn: "Confirm on WhatsApp",
+    copy_pix: "COPY PIX KEY",
+    pix_copied: "PIX COPIED!",
     
-    menu_fid: "Loyalty",
+    menu_fid: "Loyalty Card",
     xp_missing: "Need",
-    xp_goal: "points to get R$ 30!",
-    gift_title: "Gift Available!",
-    gift_sub: "Use your 1st time coupon.",
+    xp_goal: "points to get R$ 30 OFF!",
+    gift_title: "A Gift for You!",
+    gift_sub: "Tap to redeem your 1st time discount.",
     
-    wallet_title: "My Coupons",
-    wallet_empty: "No coupons yet.",
+    wallet_title: "My Rewards",
+    wallet_empty: "Your wallet is empty yet.",
     
     menu_doubts: "FAQ",
     menu_share: "Share",
     
-    success_title: "Received!",
-    success_msg: "Order generated! I'll calc the Uber and reply on WhatsApp.",
-    new_book: "Home"
+    success_title: "All Set!",
+    success_msg: "Received your request on WhatsApp. I'll calculate the Uber and reply asap!",
+    new_book: "Back to Start",
+
+    zap_header: "HELLO, I WANT TO BOOK",
+    zap_uber: "Uber (To Calc)",
+    zap_pay: "Payment",
+    zap_obs: "Note: +18 Confirmed"
   }
 };
 
@@ -231,7 +240,7 @@ const REVIEWS_DATA = {
     { t: "Atendimento no hotel foi rápido e discreto.", a: "Viajante", s: 5 }
   ],
   en: [
-    { t: "Perfect progression. Starts relaxing, ends intense.", a: "Tiago", s: 5 },
+    { t: "The progression is perfect. Starts relaxing, ends intense.", a: "Tiago", s: 5 },
     { t: "Thalyson is great. Made me feel very comfortable.", a: "Robert", s: 5 },
     { t: "Went in stiff, left light. Worth every penny.", a: "Peter H.", s: 5 },
     { t: "Perfect pressure. The cream makes a difference.", a: "Curious", s: 5 },
@@ -239,21 +248,24 @@ const REVIEWS_DATA = {
   ]
 };
 
+// FAQS DETALHADAS E COMPLETAS (RESTAURADAS)
 const FAQS_DATA = {
   pt: [
-    { q: "É seguro e sigiloso?", a: "Totalmente. Sou profissional e respeito sua privacidade." },
-    { q: "Onde você atende?", a: "Vou até você (Casa, Hotel ou Motel)." },
-    { q: "Aceita Cartão?", a: "Sim, levo a maquininha." }
+    { q: "Como é a Experiência Completa?", a: "É um atendimento onde cuido de você por inteiro. Une relaxamento muscular com toques provocantes e sutis, criando uma conexão única e um final extremamente prazeroso." },
+    { q: "Onde é feito o atendimento?", a: "No seu conforto. Vou até sua residência, hotel ou motel. O atendimento é feito na sua cama ou sofá." },
+    { q: "O pagamento é seguro?", a: "Totalmente. O valor do serviço você paga apenas pessoalmente (Pix, Dinheiro ou Cartão)." },
+    { q: "Atende em Motel?", a: "Sim, com total sigilo. A suíte é por conta do cliente e a taxa de Uber é calculada à parte." }
   ],
   en: [
-    { q: "Is it safe and discreet?", a: "Totally. I am professional and respect privacy." },
-    { q: "Where do you serve?", a: "I come to you (Home, Hotel, Motel)." },
-    { q: "Do you accept cards?", a: "Yes, I bring the machine." }
+    { q: "How is the Complete Experience?", a: "It combines muscle relaxation with teasing touches and an extremely pleasurable finish." },
+    { q: "Where is the service?", a: "At your comfort. Home, Hotel or Motel." },
+    { q: "Is payment safe?", a: "Yes. You pay in person (Cash, Card, Pix)." },
+    { q: "Do you go to Motels?", a: "Yes. Suite cost is yours, Uber fee is separate." }
   ]
 };
 
 // ==================================================================================
-// 3. UTILS & COMPONENTS
+// 3. COMPONENTES VISUAIS
 // ==================================================================================
 
 const Utils = {
@@ -317,8 +329,7 @@ const SplashScreen = ({ onFinish, isDark }) => {
                 <div className="absolute inset-0 bg-green-500 blur-2xl opacity-20 animate-pulse"></div>
                 <Zap size={56} className="text-green-500 relative z-10 animate-bounce" fill="currentColor"/>
             </div>
-            <h1 className={`text-2xl font-black tracking-[0.2em] ${isDark ? 'text-white' : 'text-black'}`}>THALYSON</h1>
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.3em] mt-2">Massagens</p>
+            <h1 className={`text-2xl font-black tracking-[0.3em] ${isDark ? 'text-white' : 'text-black'}`}>THALY</h1>
         </div>
     );
 };
@@ -337,12 +348,12 @@ const ReviewCarousel = ({ reviews, isDark }) => (
                  </div>
              ))}
         </div>
-        <style>{`@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } .animate-scroll { animation: scroll 60s linear infinite; }`}</style>
+        <style>{`@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } .animate-scroll { animation: scroll 120s linear infinite; }`}</style>
     </div>
 );
 
 // ==================================================================================
-// 4. APP PRINCIPAL
+// 4. APP LÓGICA PRINCIPAL
 // ==================================================================================
 
 export default function App() {
@@ -393,7 +404,7 @@ export default function App() {
   };
   const [booking, setBooking] = useState(initialBooking);
 
-  // HELPERS
+  // ACTIONS
   const showToast = (msg) => { setToast({ show: true, msg }); setTimeout(() => setToast({ show: false, msg: '' }), 3000); };
   const handleNext = () => { Utils.vibrate(); window.scrollTo({ top: 0, behavior: 'smooth' }); setStep(s => s + 1); };
   const handleBack = () => { Utils.vibrate(); setStep(s => s - 1); };
@@ -417,6 +428,7 @@ export default function App() {
       return { service: s, extras: e, disc: d, final: Math.max(0, s + e - d) };
   };
 
+  // Validação de Endereço
   const isAddressValid = () => {
       const { city, street, number, district, motelName, suite, hotelName, room } = booking.address;
       if (!city || city.length < 3) return false;
@@ -426,21 +438,20 @@ export default function App() {
   };
 
   const finalize = () => {
-      // 1. Lógica Contábil do Cupom (Queima)
+      // 1. Queima Cupom
       let newCoupons = [...user.coupons];
       if (booking.appliedCoupon) {
           newCoupons = newCoupons.filter(c => c.id !== booking.appliedCoupon.id);
       }
 
-      // 2. Lógica de XP e Recompensa
+      // 2. XP
       const newXP = user.xp + (booking.service?.xp || 0);
       if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
           newCoupons.push({ id: `RWD_${Date.now()}`, label: 'Fidelidade', val: CONFIG.REWARD_VAL });
       }
-      
       setUser({ ...user, xp: newXP, coupons: newCoupons });
 
-      // 3. Gerar Mensagem
+      // 3. Texto do Zap
       let locStr = "";
       let mapLink = "";
       const addr = booking.address;
@@ -494,7 +505,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
       setSuccess(true);
   };
 
-  // GAMIFICATION VARS
+  const financials = calculateTotal();
   const level = Math.floor(user.xp / CONFIG.XP_TARGET) + 1;
   const nextXp = (level * CONFIG.XP_TARGET) - user.xp;
   const progress = ((user.xp % CONFIG.XP_TARGET) / CONFIG.XP_TARGET) * 100;
@@ -506,7 +517,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
       <div className={`min-h-screen flex flex-col items-center justify-center p-8 text-center animate-fade-in ${isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'}`}>
           <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-xl animate-bounce"><Check size={48} className="text-white" strokeWidth={4}/></div>
           <h2 className="text-3xl font-black mb-2 uppercase tracking-tight">{T.success_title}</h2>
-          <p className={`mb-8 max-w-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{T.success_msg}</p>
+          <p className={`${isDark ? 'text-zinc-400' : 'text-zinc-600'} mb-8 max-w-xs`}>{T.success_msg}</p>
           <PrimaryButton onClick={handleReset} label={T.new_book} icon={RefreshCw} variant="secondary" isDark={isDark}/>
       </div>
   );
@@ -515,12 +526,12 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
     <div className={`min-h-screen font-sans pb-40 transition-colors duration-300 ${isDark ? 'bg-black text-white selection:bg-green-500 selection:text-black' : 'bg-gray-50 text-zinc-900 selection:bg-black selection:text-white'}`}>
       <Toast show={toast.show} msg={toast.msg} isDark={isDark} />
 
-      {/* HEADER FIXO */}
+      {/* HEADER */}
       <header className={`fixed top-0 w-full z-40 backdrop-blur-xl border-b transition-colors duration-300 ${isDark ? 'bg-black/80 border-white/5' : 'bg-white/80 border-gray-200'}`}>
          <div className="px-5 py-4 flex justify-between items-center">
              <div className="flex items-center gap-3">
                  {step > 0 && <button onClick={handleBack} className={`p-2 -ml-2 active:scale-90 transition-transform ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}><ChevronLeft size={24}/></button>}
-                 <h1 className="text-sm font-black tracking-[0.2em] uppercase animate-pulse">Thalyson</h1>
+                 <h1 className="text-sm font-black tracking-[0.2em] uppercase">Thaly</h1>
              </div>
              <div className="flex gap-2">
                  <button onClick={() => window.open(CONFIG.INSTAGRAM, '_blank')} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><Instagram size={18}/></button>
@@ -529,7 +540,6 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                  <button onClick={() => setMenuOpen(true)} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><Menu size={18}/></button>
              </div>
          </div>
-         {/* Barra de Progresso */}
          <div className={`h-[2px] w-full ${isDark ? 'bg-[#111]' : 'bg-gray-200'}`}><div className="h-full bg-green-500 transition-all duration-500 ease-out" style={{width: `${((step+1)/3)*100}%`}}></div></div>
       </header>
 
@@ -539,7 +549,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
       {/* WALLET */}
       {walletOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm"><div className={`w-full max-w-sm border rounded-3xl p-6 animate-fade-in ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><div className="flex justify-between mb-6"><h3 className="font-bold text-xl flex gap-2"><Wallet className="text-green-500"/> {T.wallet_title}</h3><button onClick={()=>setWalletOpen(false)}><X/></button></div>{user.coupons.length===0?<p className="text-center opacity-50">{T.wallet_empty}</p>:user.coupons.map(c=>(<button key={c.id} onClick={()=>{setBooking({...booking, appliedCoupon:c});setWalletOpen(false);showToast(T.coupon_lbl);}} className={`w-full p-4 border border-green-900 rounded-xl flex justify-between mb-2 text-green-500 font-bold ${isDark ? 'bg-black' : 'bg-green-50'}`}><span>{c.label}</span><span>R$ {c.val}</span></button>))}</div></div>}
 
-      {/* HELP */}
+      {/* HELP (FAQ RESTAURADO) */}
       {helpOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm"><div className={`w-full max-w-sm border rounded-3xl p-6 ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><h3 className="font-bold text-xl mb-4">{T.menu_doubts}</h3><div className="space-y-3">{FAQS_DATA[lang].map((f,i)=>(<div key={i} className={`p-4 rounded-xl border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-gray-50 border-gray-200'}`}><p className="text-green-500 text-xs font-bold mb-1">{f.q}</p><p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{f.a}</p></div>))}</div><button onClick={()=>setHelpOpen(false)} className={`w-full mt-4 py-3 rounded-xl font-bold text-sm ${isDark ? 'bg-[#333]' : 'bg-gray-200'}`}>Close</button></div></div>}
 
       <main className="pt-24 px-5 max-w-md mx-auto animate-fade-in">
@@ -700,7 +710,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                                 <span>{T.coupon_lbl}</span>
                                 <div className="flex items-center gap-2">
                                     <span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span>
-                                    <button onClick={() => setBooking({...booking, appliedCoupon: null})} className="text-red-500 hover:text-red-400"><Trash2 size={12}/></button>
+                                    <button onClick={() => setBooking({...booking, appliedCoupon: null})} className="text-red-500 hover:text-red-400"><X size={12}/> {T.remove_coupon}</button>
                                 </div>
                             </div>
                         ) : (
