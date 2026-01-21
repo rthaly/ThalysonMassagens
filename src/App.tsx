@@ -1,47 +1,60 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
   Shield, Zap, Menu, X, Share2, HelpCircle, Wallet, Gift, 
   CreditCard, Banknote, Building, RefreshCw, User, Copy, 
-  CheckCircle, Info, Navigation, BedDouble, Map
+  CheckCircle, Info, Navigation, BedDouble, Map, Lock
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DADOS DE NEGÓCIO
+// 1. DATABASE & CONFIGURAÇÕES (TEXTOS E PREÇOS EXATOS)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v11_complete',
+  STORAGE_KEY: 'thaly_app_v12_master',
   XP_TARGET: 300 
 };
 
 const SERVICES = [
   { 
-    id: 'completa', name: '🔥 Completa (1h)', 
-    label: 'MAIS PEDIDA',
-    price: 175, xp: 60,
-    steps: ['1️⃣ Relaxante (Tira tensão)', '2️⃣ Corpo a Corpo (Sensitivo)', '3️⃣ Tântrica (Finalização inclusa)'],
-    note: 'Focado no prazer. Sem penetração/oral.'
+    id: 'completa', 
+    name: '🔥 Completa (1h)', 
+    label: 'A MAIS PEDIDA',
+    price: 175, 
+    xp: 100,
+    desc: 'Corpo a corpo + finalização.',
+    details: [
+        '1️⃣ Relaxante no corpo todo (Tira tensão)',
+        '2️⃣ Corpo a Corpo (Pele com pele, sensitivo)',
+        '3️⃣ Tântrica (Massagem íntima c/ finalização manual)'
+    ],
+    disclaimer: 'Focado no prazer e relaxamento. Não tem penetração nem oral.'
   },
   { 
-    id: 'relax', name: '🍃 Relaxante (1h)', 
+    id: 'relax', 
+    name: '🍃 Relaxante (1h)', 
     label: 'TERAPÊUTICA',
-    price: 145, xp: 30,
-    steps: ['1️⃣ Foco muscular', '2️⃣ Alívio de dores', '3️⃣ Apenas relaxamento físico'],
-    note: 'Sem toques íntimos.'
+    price: 145, 
+    xp: 50,
+    desc: 'Apenas muscular.',
+    details: [
+        '1️⃣ Foco 100% terapêutico',
+        '2️⃣ Remoção de dores e nós',
+        '3️⃣ Alívio de stress físico'
+    ],
+    disclaimer: 'Atenção: Nesta modalidade NÃO há toques íntimos.'
   }
 ];
 
 const EXTRAS = [
-  { id: 'more_time', label: 'Duração 1h30', sub: '+30 minutos', icon: Clock, price: 70 },
-  { id: 'touch', label: 'Interatividade', sub: 'Toque recíproco', icon: Flame, price: 63, warn: 'Fico de cueca' },
-  { id: 'aroma', label: 'Aromaterapia', sub: 'Óleos essenciais', icon: Wind, price: 10 }
+  { id: 'more_time', label: 'Duração 1h30', sub: '+30 minutos de sessão', icon: Clock, price: 70 },
+  { id: 'touch', label: 'Interatividade', sub: 'Toque recíproco permitido', icon: Flame, price: 63, warn: 'Fico de cueca na interação' },
+  { id: 'aroma', label: 'Aromaterapia', sub: 'Óleos essenciais premium', icon: Wind, price: 10 }
 ];
 
-// LISTA COMPLETA RESTAURADA (+50 REVIEWS)
 const REVIEWS_DB = [
   { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago", s: 5 },
   { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
@@ -64,7 +77,6 @@ const REVIEWS_DB = [
   { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
   { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
   { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
-  { t: "O lubrificante é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
   { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
   { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
   { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
@@ -73,34 +85,18 @@ const REVIEWS_DB = [
   { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
   { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Motorista", s: 5 },
   { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
-  { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
-  { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
-  { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
-  { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
-  { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
-  { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
-  { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
-  { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
-  { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
-  { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
-  { t: "Fiz no meu apto e foi Prático.", a: "Morador Centro", s: 5 },
-  { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
-  { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
-  { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
-  { t: "O final foi explosivo. Recomendo.", a: "Anônimo", s: 5 },
-  { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
-  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 },
-  { t: "Paz de espírito e corpo relaxado. Obrigado.", a: "Fernando", s: 5 }
+  { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 }
 ];
 
 const FAQS = [
-    { q: "Onde você atende?", a: "Vou até você: Sua Casa, Apartamento, Hotel ou Motel." },
-    { q: "O Uber é incluso?", a: "Não. Calculo a ida e volta na hora pelo WhatsApp." },
-    { q: "Aceita Cartão?", a: "Sim, levo a maquininha (Débito/Crédito)." }
+    { q: "Onde é o atendimento?", a: "Vou até você: Sua Casa, Apartamento, Hotel ou Motel." },
+    { q: "O deslocamento é incluso?", a: "Não. A taxa de Uber (Ida/Volta) é calculada e combinada no WhatsApp." },
+    { q: "Aceita Cartão?", a: "Sim. Pix, Dinheiro e Cartão de Crédito/Débito." },
+    { q: "É seguro e sigiloso?", a: "Totalmente. Profissionalismo e discrição são prioridade." }
 ];
 
 // ==================================================================================
-// 2. COMPONENTES VISUAIS
+// 2. DESIGN SYSTEM (UX/UI SENIOR)
 // ==================================================================================
 
 const Utils = {
@@ -110,8 +106,8 @@ const Utils = {
 };
 
 const Toast = ({ msg, show }) => (
-    <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
-        <div className="bg-[#111] border border-green-500/40 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 backdrop-blur-xl">
+    <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 transform ${show ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'}`}>
+        <div className="bg-[#1C1C1E]/90 border border-green-500/40 text-white px-6 py-3 rounded-full shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] flex items-center gap-3 backdrop-blur-xl">
             <CheckCircle size={18} className="text-green-500"/>
             <span className="text-xs font-bold uppercase tracking-wider">{msg}</span>
         </div>
@@ -119,23 +115,26 @@ const Toast = ({ msg, show }) => (
 );
 
 const BigInput = ({ label, value, onChange, placeholder, type="text", icon: Icon }) => (
-  <div className="mb-4 w-full">
-    <label className="text-[10px] font-bold text-gray-500 uppercase ml-1 mb-1.5 block tracking-wider">{label}</label>
-    <div className="relative group">
+  <div className="mb-5 w-full group">
+    <label className="text-[10px] font-bold text-gray-500 uppercase ml-1 mb-2 block tracking-wider group-focus-within:text-green-500 transition-colors">{label}</label>
+    <div className="relative">
         <input 
             type={type} value={value} onChange={onChange} placeholder={placeholder}
-            className="w-full h-14 bg-[#111] border border-[#333] rounded-xl px-4 pl-12 text-white text-base placeholder:text-gray-700 focus:border-green-500 focus:ring-1 focus:ring-green-500/30 outline-none transition-all"
+            className="w-full h-14 bg-[#111] border border-[#333] rounded-2xl px-4 pl-12 text-white text-base placeholder:text-gray-600 focus:border-green-500 focus:ring-1 focus:ring-green-500/30 outline-none transition-all duration-300"
         />
         {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-green-500 transition-colors" size={20} />}
     </div>
   </div>
 );
 
-const PrimaryButton = ({ onClick, disabled, label, icon: Icon, pulse }) => (
+const PrimaryButton = ({ onClick, disabled, label, icon: Icon, pulse, variant="primary" }) => (
     <button 
         onClick={onClick} disabled={disabled}
-        className={`w-full h-14 rounded-xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg
-            ${disabled ? 'bg-[#222] text-gray-600 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200 shadow-white/10'}
+        className={`w-full h-14 rounded-xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 active:scale-[0.98]
+            ${variant === 'primary' 
+                ? (disabled ? 'bg-[#222] text-gray-600 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200 shadow-[0_0_20px_rgba(255,255,255,0.1)]')
+                : 'bg-[#1C1C1E] border border-[#333] text-white hover:bg-[#222]'
+            }
             ${pulse ? 'animate-pulse' : ''}
         `}
     >
@@ -143,14 +142,32 @@ const PrimaryButton = ({ onClick, disabled, label, icon: Icon, pulse }) => (
     </button>
 );
 
+const SplashScreen = ({ onFinish }) => {
+    const [fade, setFade] = useState(false);
+    useEffect(() => { setTimeout(() => setFade(true), 2000); setTimeout(onFinish, 2500); }, []);
+    return (
+        <div className={`fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-opacity duration-700 ${fade ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+            <div className="relative mb-6">
+                <div className="absolute inset-0 bg-green-500 blur-3xl opacity-20 animate-pulse"></div>
+                <div className="relative animate-bounce text-green-500"><Zap size={64} fill="currentColor"/></div>
+            </div>
+            <h1 className="text-3xl font-black tracking-[0.4em] text-white">THALY</h1>
+            <p className="text-[10px] text-gray-600 mt-3 uppercase tracking-widest font-bold">Experiência VIP</p>
+        </div>
+    );
+};
+
 const ReviewCarousel = () => (
-    <div className="w-full overflow-hidden relative py-2">
+    <div className="w-full overflow-hidden relative py-4">
         <div className="flex gap-4 animate-scroll w-max">
              {[...REVIEWS_DB, ...REVIEWS_DB].map((r, i) => (
-                 <div key={i} className="w-[260px] bg-[#161616] p-5 rounded-2xl border border-[#2A2A2A] flex-shrink-0">
-                     <div className="flex text-yellow-500 mb-2 gap-0.5">{[...Array(5)].map((_,k)=><Star key={k} size={10} fill="currentColor"/>)}</div>
-                     <p className="text-gray-300 text-xs italic mb-3 line-clamp-3 leading-relaxed">"{r.t}"</p>
-                     <p className="text-[9px] font-black text-gray-500 uppercase flex items-center gap-1"><Shield size={10} className="text-green-500"/> {r.a}</p>
+                 <div key={i} className="w-[280px] bg-[#161616] p-6 rounded-3xl border border-[#2A2A2A] flex-shrink-0 relative overflow-hidden">
+                     <div className="flex text-yellow-500 mb-3 gap-1">{[...Array(5)].map((_,k)=><Star key={k} size={12} fill="currentColor"/>)}</div>
+                     <p className="text-gray-300 text-xs italic mb-4 leading-relaxed line-clamp-3">"{r.t}"</p>
+                     <div className="flex items-center gap-2 border-t border-[#333] pt-3">
+                        <Shield size={12} className="text-green-500"/>
+                        <p className="text-[9px] font-black text-gray-500 uppercase tracking-wider">{r.a}</p>
+                     </div>
                  </div>
              ))}
         </div>
@@ -158,20 +175,8 @@ const ReviewCarousel = () => (
     </div>
 );
 
-const SplashScreen = ({ onFinish }) => {
-    const [fade, setFade] = useState(false);
-    useEffect(() => { setTimeout(() => setFade(true), 2000); setTimeout(onFinish, 2500); }, []);
-    return (
-        <div className={`fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-opacity duration-500 ${fade ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-            <div className="animate-bounce mb-4 text-green-500"><Zap size={48} fill="currentColor"/></div>
-            <h1 className="text-2xl font-black tracking-[0.3em] text-white animate-pulse">THALYMASSAGENS</h1>
-            <p className="text-[10px] text-gray-500 mt-2 uppercase tracking-widest">Carregando App...</p>
-        </div>
-    );
-};
-
 // ==================================================================================
-// 3. APP PRINCIPAL
+// 3. APP LÓGICA
 // ==================================================================================
 
 export default function App() {
@@ -179,17 +184,20 @@ export default function App() {
   const [step, setStep] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [walletOpen, setWalletOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
 
+  // Persistence
   const [user, setUser] = useState(() => {
       try {
           const s = localStorage.getItem(CONFIG.STORAGE_KEY);
           return s ? JSON.parse(s) : { name: '', xp: 0, coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 15 }] };
-      } catch { return { name: '', coupons: [] }; }
+      } catch { return { name: '', xp: 0, coupons: [] }; }
   });
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
 
+  // Session
   const initialBooking = {
       healthChecked: false,
       service: null,
@@ -203,18 +211,20 @@ export default function App() {
   };
   const [booking, setBooking] = useState(initialBooking);
 
+  // Actions
   const showToast = (msg) => { setToast({ show: true, msg }); setTimeout(() => setToast({ show: false, msg: '' }), 3000); };
   const handleNext = () => { Utils.vibrate(); window.scrollTo({ top: 0, behavior: 'smooth' }); setStep(s => s + 1); };
   const handleBack = () => { Utils.vibrate(); setStep(s => s - 1); };
   const handleReset = () => { setSuccess(false); setBooking(initialBooking); setStep(0); };
 
+  // Lógica "Esgotado" Realista
   const isTimeBlocked = (date, timeStr) => {
       if (!date) return true;
       const now = new Date();
       const sel = new Date(date);
       const [h] = timeStr.split(':').map(Number);
       if (sel.toDateString() === now.toDateString() && h <= now.getHours()) return 'past';
-      if ((sel.getDate() + h) % 5 === 0) return 'sold_out'; 
+      if ((sel.getDate() + h) % 6 === 0) return 'sold_out'; 
       return 'available';
   };
 
@@ -243,10 +253,19 @@ export default function App() {
       setUser({ ...user, xp: newXP, coupons: newCoupons });
 
       let locStr = "";
+      let mapLink = "";
       const addr = booking.address;
-      if(booking.locationType === 'motel') locStr = `🏩 MOTEL: ${addr.motelName}\n🚪 SUÍTE: ${addr.suite}`;
-      else if(booking.locationType === 'hotel') locStr = `🏨 HOTEL: ${addr.hotelName}\n🚪 QUARTO: ${addr.room}`;
-      else locStr = `🏠 CASA: ${addr.street}, ${addr.number}\n🏘️ BAIRRO: ${addr.district} ${addr.comp ? `(${addr.comp})` : ''}`;
+      
+      if(booking.locationType === 'motel') {
+          locStr = `🏩 MOTEL: ${addr.motelName}\n🚪 SUÍTE: ${addr.suite}`;
+          mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr.motelName + ' ' + addr.city)}`;
+      } else if(booking.locationType === 'hotel') {
+          locStr = `🏨 HOTEL: ${addr.hotelName}\n🚪 QUARTO: ${addr.room}`;
+          mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr.hotelName + ' ' + addr.city)}`;
+      } else {
+          locStr = `🏠 CASA: ${addr.street}, ${addr.number}\n🏘️ BAIRRO: ${addr.district} ${addr.comp ? `(${addr.comp})` : ''}`;
+          mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr.street + ', ' + addr.number + ' - ' + addr.district + ', ' + addr.city)}`;
+      }
 
       const fin = calculateTotal();
       const extrasTxt = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> `• ${EXTRAS.find(x=>x.id===k).label} (+${Utils.fmtMoney(EXTRAS.find(x=>x.id===k).price)})`).join('\n');
@@ -255,7 +274,7 @@ export default function App() {
 *AGENDAMENTO VIP* 🌿
 ---------------------------
 👤 *Cliente:* ${user.name}
-✅ *Status:* +18 Confirmado
+✅ *Status:* Confirmado (+18)
 
 💆 *Serviço:* ${booking.service?.name}
 📅 *Data:* ${new Date(booking.date).toLocaleDateString('pt-BR')} às ${booking.time}
@@ -266,12 +285,13 @@ ${extrasTxt || 'Nenhum'}
 📍 *Localização:*
 ${locStr}
 🗺️ Cidade: ${addr.city}
+🔗 Maps: ${mapLink}
 
 💰 *RESUMO FINANCEIRO:*
 Serviço: ${Utils.fmtMoney(fin.service)}
 Extras: ${Utils.fmtMoney(fin.extras)}
 ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
-*TOTAL SERVIÇO: ${Utils.fmtMoney(fin.final)}*
+*TOTAL A PAGAR: ${Utils.fmtMoney(fin.final)}*
 
 🚗 *Uber (Ida/Volta):* A calcular no Zap.
 
@@ -282,18 +302,18 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
       setSuccess(true);
   };
 
+  const financials = calculateTotal();
+
   if (loading) return <SplashScreen onFinish={() => setLoading(false)} />;
 
   if (success) return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-center animate-fade-in text-white">
-          <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(34,197,94,0.4)]"><Check size={48} className="text-black" strokeWidth={4}/></div>
+          <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(34,197,94,0.4)]"><Check size={48} className="text-black" strokeWidth={4}/></div>
           <h2 className="text-3xl font-black mb-2 uppercase tracking-tight">Sucesso!</h2>
           <p className="text-gray-400 mb-8 max-w-xs">Pedido enviado. Aguarde a confirmação do Uber no WhatsApp.</p>
-          <button onClick={handleReset} className="flex items-center gap-2 text-gray-500 font-bold text-xs uppercase hover:text-white transition-colors"><RefreshCw size={12}/> Novo Agendamento</button>
+          <PrimaryButton onClick={handleReset} label="Novo Agendamento" icon={RefreshCw} variant="secondary"/>
       </div>
   );
-
-  const financials = calculateTotal();
 
   return (
     <div className="min-h-screen bg-black text-white font-sans pb-48 selection:bg-green-500 selection:text-black">
@@ -317,13 +337,14 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
          <div className="h-[2px] w-full bg-[#111]"><div className="h-full bg-green-500 transition-all duration-500 ease-out" style={{width: `${((step+1)/3)*100}%`}}></div></div>
       </header>
 
-      {/* MENU & WALLET */}
-      {menuOpen && <div className="fixed inset-0 z-50 flex justify-end"><div className="absolute inset-0 bg-black/80" onClick={()=>setMenuOpen(false)}></div><div className="relative w-72 h-full bg-[#111] border-l border-[#222] p-6 shadow-2xl animate-slide-in"><button onClick={()=>setMenuOpen(false)} className="mb-8"><X/></button><div className="bg-[#222] p-4 rounded-xl mb-4 text-center"><p className="text-xs text-gray-400 uppercase">Fidelidade</p><p className="text-green-500 font-bold text-xl">{user.xp} XP</p></div><button className="w-full py-4 bg-[#222] rounded-xl font-bold text-sm" onClick={()=>{if(navigator.share)navigator.share({url:window.location.href})}}>Compartilhar</button></div></div>}
-      {walletOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90"><div className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6"><div className="flex justify-between mb-6"><h3 className="font-bold text-white">Carteira</h3><button onClick={()=>setWalletOpen(false)}><X/></button></div>{user.coupons.length===0?<p className="text-center text-gray-500">Vazia.</p>:user.coupons.map(c=>(<button key={c.id} onClick={()=>{setBooking({...booking, appliedCoupon:c});setWalletOpen(false);showToast('CUPOM APLICADO!');}} className="w-full p-4 bg-black border border-green-900 rounded-xl flex justify-between mb-2 text-green-500 font-bold"><span>{c.label}</span><span>R$ {c.val}</span></button>))}</div></div>}
+      {/* MODALS */}
+      {menuOpen && <div className="fixed inset-0 z-50 flex justify-end"><div className="absolute inset-0 bg-black/80" onClick={()=>setMenuOpen(false)}></div><div className="relative w-72 h-full bg-[#111] border-l border-[#222] p-6 shadow-2xl animate-slide-in"><button onClick={()=>setMenuOpen(false)} className="mb-8"><X/></button><div className="bg-[#222] p-4 rounded-xl mb-4 text-center"><p className="text-xs text-gray-400 uppercase">Fidelidade</p><p className="text-green-500 font-bold text-xl">{user.xp} XP</p></div><button className="w-full py-4 bg-[#222] rounded-xl font-bold text-sm mb-2" onClick={() => { setHelpOpen(true); setMenuOpen(false); }}>Dúvidas</button><button className="w-full py-4 bg-[#222] rounded-xl font-bold text-sm" onClick={()=>{if(navigator.share)navigator.share({url:window.location.href})}}>Compartilhar</button></div></div>}
+      {helpOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90"><div className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6"><h3 className="font-bold text-xl mb-4">Dúvidas</h3><div className="space-y-3">{FAQS.map((f,i)=>(<div key={i} className="bg-[#111] p-4 rounded-xl border border-[#222]"><p className="text-green-500 text-xs font-bold mb-1">{f.q}</p><p className="text-xs text-gray-400">{f.a}</p></div>))}</div><button onClick={()=>setHelpOpen(false)} className="w-full mt-4 py-3 bg-[#333] rounded-xl font-bold text-sm">Fechar</button></div></div>}
+      {walletOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90"><div className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6"><div className="flex justify-between mb-6"><h3 className="font-bold text-white text-xl flex gap-2"><Wallet className="text-green-500"/> Carteira</h3><button onClick={()=>setWalletOpen(false)}><X/></button></div>{user.coupons.length===0?<p className="text-center text-gray-500">Vazia.</p>:user.coupons.map(c=>(<button key={c.id} onClick={()=>{setBooking({...booking, appliedCoupon:c});setWalletOpen(false);showToast('CUPOM APLICADO!');}} className="w-full p-4 bg-black border border-green-900 rounded-xl flex justify-between mb-2 text-green-500 font-bold"><span>{c.label}</span><span>R$ {c.val}</span></button>))}</div></div>}
 
       <main className="pt-24 px-5 max-w-md mx-auto animate-fade-in">
 
-        {/* STEP 0: HOME */}
+        {/* STEP 0: INTRO & SERVIÇOS */}
         {step === 0 && (
             <>
                 {user.coupons.some(c=>c.id==='WELCOME') && (
@@ -333,36 +354,44 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                     </div>
                 )}
                 <h2 className="text-3xl font-black mb-2 tracking-tight">Bem-vindo.</h2>
-                <div className="space-y-4 mb-8">
+                <div className="space-y-4 mb-10">
                     <BigInput label="Seu Nome" placeholder="Como prefere ser chamado?" value={user.name} onChange={e => setUser({...user, name: e.target.value})} icon={User} />
                     <div onClick={() => setBooking({...booking, healthChecked: !booking.healthChecked})} className={`p-5 rounded-2xl border flex gap-4 cursor-pointer items-center transition-all ${booking.healthChecked ? 'bg-[#1C1C1E] border-green-500' : 'bg-[#0A0A0A] border-[#222]'}`}>
                         <div className={`w-6 h-6 rounded flex items-center justify-center border ${booking.healthChecked ? 'bg-green-500 border-green-500 text-black' : 'border-[#444]'}`}>{booking.healthChecked && <Check size={16} strokeWidth={3}/>}</div>
                         <p className="text-xs text-gray-400">Tenho +18 anos e estou saudável.</p>
                     </div>
                 </div>
-                <h3 className="text-xl font-bold mb-6">Escolha a Experiência</h3>
-                <div className="space-y-6">
+                
+                <h3 className="text-xl font-bold mb-6 flex items-center gap-2">Escolha a Experiência</h3>
+                
+                <div className="space-y-6 pb-10">
                     {SERVICES.map(s => (
-                        <div key={s.id} onClick={() => setBooking({...booking, service: s})} className={`relative overflow-hidden w-full p-6 rounded-[2rem] border-2 transition-all cursor-pointer ${booking.service?.id === s.id ? 'bg-[#18181b] border-green-500' : 'bg-[#111] border-[#222]'}`}>
+                        <div key={s.id} onClick={() => setBooking({...booking, service: s})} className={`relative overflow-hidden w-full p-6 rounded-[2rem] border-2 transition-all cursor-pointer ${booking.service?.id === s.id ? 'bg-[#18181b] border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.15)]' : 'bg-[#111] border-[#222]'}`}>
                             <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${booking.service?.id === s.id ? 'bg-green-500 text-black' : 'bg-[#222] text-gray-500'}`}>{s.label}</div>
-                            <h3 className="text-xl font-black uppercase mb-1">{s.name}</h3>
+                            <h3 className={`text-xl font-black uppercase mb-1 ${booking.service?.id === s.id ? 'text-white' : 'text-gray-400'}`}>{s.name}</h3>
                             <div className="flex items-center gap-2 mb-4"><span className={`text-lg font-bold ${booking.service?.id === s.id ? 'text-green-400' : 'text-gray-500'}`}>{Utils.fmtMoney(s.price)}</span></div>
                             <div className={`space-y-2 mb-4 p-4 rounded-xl ${booking.service?.id === s.id ? 'bg-black/40 border border-white/5' : 'bg-black/20'}`}>{s.steps.map((step, i) => (<p key={i} className="text-xs text-gray-300 font-medium">{step}</p>))}</div>
-                            <p className="text-[10px] text-gray-500 flex items-center gap-1 italic"><Info size={10}/> {s.note}</p>
+                            <p className="text-[10px] text-gray-500 flex items-center gap-1 italic"><Info size={10}/> {s.disclaimer}</p>
                         </div>
                     ))}
                 </div>
+
+                <div className="mb-20">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-3 ml-1">Avaliações (+50)</p>
+                    <ReviewCarousel />
+                </div>
+
                 <div className="fixed bottom-0 left-0 w-full p-5 bg-black/95 border-t border-white/10 z-[60]">
                     <PrimaryButton disabled={!booking.healthChecked || user.name.length < 3 || !booking.service} onClick={handleNext} label="Continuar" icon={ArrowRight} />
                 </div>
             </>
         )}
 
-        {/* STEP 1: PERSONALIZAÇÃO */}
+        {/* STEP 1: EXTRAS & DATA */}
         {step === 1 && (
             <>
                 <h2 className="text-2xl font-bold mb-8">Personalize</h2>
-                <div className="mb-8">
+                <div className="mb-10">
                     {EXTRAS.map(ex => {
                         const active = booking.extras[ex.id];
                         return (
@@ -382,7 +411,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                     })}
                 </div>
                 {booking.date && (
-                    <div className="grid grid-cols-4 gap-2 animate-fade-in">
+                    <div className="grid grid-cols-4 gap-2 animate-fade-in pb-24">
                         {['10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'].map(t => {
                             const status = isTimeBlocked(booking.date, t);
                             return <button key={t} disabled={status !== 'available'} onClick={() => setBooking({...booking, time: t})} className={`py-3 rounded-xl text-xs font-bold border relative ${booking.time === t ? 'bg-white text-black border-white' : status === 'sold_out' ? 'opacity-50 bg-[#111] border-[#222]' : status === 'past' ? 'opacity-30 bg-[#111] border-[#222]' : 'bg-[#1C1C1E] border-[#333]'}`}>{t}{status === 'sold_out' && <div className="absolute inset-0 flex items-center justify-center bg-black/80 rounded-xl"><span className="text-[8px] text-red-500 font-black -rotate-12">ESGOTADO</span></div>}</button>
@@ -395,7 +424,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
             </>
         )}
 
-        {/* STEP 2: ENDEREÇO & FINALIZAR (TICKET COMPLETO) */}
+        {/* STEP 2: LOCAL, RESUMO & PAGAMENTO */}
         {step === 2 && (
             <>
                 <h2 className="text-2xl font-bold mb-8">Localização</h2>
@@ -434,53 +463,20 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                     )}
                 </div>
 
-                {/* TICKET DE RESUMO COMPLETO */}
+                {/* TICKET DE RESUMO */}
                 <div className="bg-[#1C1C1E] border border-[#333] rounded-[2rem] p-6 mb-8 relative overflow-hidden">
-                    {/* Header */}
                     <div className="border-b border-[#333] pb-4 mb-4 text-center">
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Resumo do Pedido</p>
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Resumo do Pedido</p>
                         <h3 className="text-xl font-black text-white">{booking.service?.name}</h3>
                         <p className="text-sm text-green-500 font-bold mt-1">{new Date(booking.date).toLocaleDateString('pt-BR')} às {booking.time}</p>
                     </div>
-                    
-                    {/* Body */}
                     <div className="space-y-3 mb-6">
-                        {/* 1. Serviço Base */}
                         <div className="flex justify-between text-sm text-gray-400"><span>Valor Base</span><span>{Utils.fmtMoney(booking.service?.price)}</span></div>
-                        
-                        {/* 2. Extras */}
                         {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> (
                             <div key={k} className="flex justify-between text-sm text-white"><span>+ {EXTRAS.find(e=>e.id===k).label}</span><span>{Utils.fmtMoney(EXTRAS.find(e=>e.id===k).price)}</span></div>
                         ))}
-                        
-                        {/* 3. Cupom */}
-                        {booking.appliedCoupon ? (
-                            <div className="flex justify-between text-sm text-green-400 font-bold py-2 border-t border-[#333]"><span>Cupom Aplicado</span><span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span></div>
-                        ) : (
-                            <button onClick={() => setShowWallet(true)} className="w-full py-2 border border-dashed border-[#444] rounded-lg text-xs text-gray-500 flex items-center justify-center gap-2 mt-2 hover:border-green-500 hover:text-green-500 transition-colors"><Ticket size={12}/> Tenho Cupom</button>
-                        )}
-
-                        {/* 4. Localização Resumida */}
-                        <div className="pt-2 border-t border-[#333]">
-                            <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Localização</p>
-                            <p className="text-xs text-white truncate">
-                                {booking.locationType === 'motel' ? `${booking.address.motelName} (Suíte ${booking.address.suite})` 
-                                : booking.locationType === 'hotel' ? `${booking.address.hotelName} (Quarto ${booking.address.room})` 
-                                : `${booking.address.street}, ${booking.address.number}`}
-                            </p>
-                            <p className="text-xs text-gray-500">{booking.address.city}</p>
-                        </div>
-
-                        {/* 5. Pagamento Resumido */}
-                        {booking.payment && (
-                            <div className="pt-2 border-t border-[#333]">
-                                <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Pagamento</p>
-                                <p className="text-xs text-white uppercase font-bold">{booking.payment}</p>
-                            </div>
-                        )}
+                        {booking.appliedCoupon ? <div className="flex justify-between text-sm text-green-400 font-bold py-2 border-t border-[#333]"><span>Cupom Aplicado</span><span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span></div> : <button onClick={() => setShowWallet(true)} className="w-full py-2 border border-dashed border-[#444] rounded-lg text-xs text-gray-500 mt-2 flex items-center justify-center gap-2 hover:text-green-500 hover:border-green-500 transition-colors"><Ticket size={14}/> Tenho Cupom</button>}
                     </div>
-
-                    {/* Footer */}
                     <div className="flex justify-between items-center pt-4 border-t border-[#333]">
                         <span className="text-xs font-bold text-gray-500 uppercase">Total Final</span>
                         <span className="text-3xl font-black text-white">{Utils.fmtMoney(financials.final)}</span>
@@ -506,7 +502,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
             </>
         )}
       </main>
-      <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .animate-fade-in { animation: fadeIn 0.5s ease-out; } @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } } .animate-slide-in { animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }`}</style>
+      <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .animate-fade-in { animation: fadeIn 0.5s ease-out; } @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } } .animate-slide-in { animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); } .animate-scroll { animation: scroll 120s linear infinite; } @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`}</style>
     </div>
   );
 }
