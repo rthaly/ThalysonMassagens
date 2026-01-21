@@ -15,7 +15,7 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v10_blue_final',
+  STORAGE_KEY: '@thaly_app_v11_platinum', // Chave nova para garantir funcionamento limpo
   XP_TARGET: 500, 
 };
 
@@ -50,7 +50,9 @@ const TEXTS = {
     coupon_none: "Nenhum cupom ativo",
     remove: "Remover",
     hotel_name: "Nome do Hotel",
-    room: "Quarto"
+    room: "Quarto",
+    comp_placeholder: "Complemento / Ponto de Referência (Obrigatório)",
+    address_warn: "Preencha todo o endereço para eu chegar até você."
   },
   en: {
     welcome: "Welcome",
@@ -81,7 +83,9 @@ const TEXTS = {
     coupon_none: "No active coupons",
     remove: "Remove",
     hotel_name: "Hotel Name",
-    room: "Room Number"
+    room: "Room Number",
+    comp_placeholder: "Complement / Reference (Required)",
+    address_warn: "Please fill full address."
   }
 };
 
@@ -123,7 +127,7 @@ const DB = {
     { id: 'touch', label: "Toque Interativo", desc: "Troca de toques permitida", price: 63, icon: Heart },
     { id: 'aroma', label: "Aromaterapia", desc: "Óleos essenciais", price: 5, icon: Smile }
   ],
-  // LISTA COMPLETA DE AVALIAÇÕES
+  // AVALIAÇÕES FILTRADAS (SEM "AMBIENTE LIMPO")
   reviews: [
     { name: "Lucas (Londrina)", text: "Mano, que sensação. Jorrei muito no final, foi insano. O cara sabe o que faz.", stars: 5 },
     { name: "Ricardo (SP)", text: "A sensitiva dele é outro patamar. Gozei horrores e relaxei demais.", stars: 5 },
@@ -138,9 +142,9 @@ const DB = {
     { name: "Pedro (Londrina)", text: "Experiência única. Vale cada centavo investido.", stars: 5 },
     { name: "Thiago (SP)", text: "Achei 1h pouco, devia ter pego 1h30 direto.", stars: 3 },
     { name: "Vitor (Jales)", text: "Energia surreal. O cara é brabo na técnica.", stars: 5 },
-    { name: "Leandro (Santa Fé)", text: "Gostei da playlist e da massagem. Ambiente limpo.", stars: 5 },
+    { name: "Leandro (Santa Fé)", text: "Gostei da playlist e da massagem. Tudo 100%.", stars: 5 },
     { name: "R. Gomes (Londrina)", text: "Profissional raro. Respeitador e safado na medida certa.", stars: 5 },
-    { name: "Eduardo (SP)", text: "Tudo limpo e cheiroso. Voltarei com certeza.", stars: 5 },
+    { name: "Eduardo (SP)", text: "Tudo higienizado e cheiroso. Voltarei com certeza.", stars: 5 },
     { name: "Sérgio (Jales)", text: "Mão de seda. Relaxamento real, quase dormi.", stars: 5 },
     { name: "Caio (Santa Fé)", text: "Me senti um rei. Atendimento VIP do começo ao fim.", stars: 5 },
     { name: "D. Santos (Londrina)", text: "Faz tudo no tempo certo, sem pressa. Gostei.", stars: 5 },
@@ -185,7 +189,7 @@ const DB = {
 
 const Toast = ({ msg, show }) => (
   <div className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 pointer-events-none ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-    <div className="bg-blue-600/95 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 font-medium text-sm border border-blue-400/30">
+    <div className="bg-blue-600/95 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 font-medium text-sm border border-blue-400/30 whitespace-nowrap">
       <CheckCircle2 size={18} />
       <span>{msg}</span>
     </div>
@@ -198,36 +202,36 @@ const TermsModal = ({ isOpen, onClose, isDark }) => {
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}></div>
-      <div className={`relative w-full max-w-md p-8 rounded-3xl max-h-[80vh] overflow-y-auto animate-scale-in ${isDark ? 'bg-zinc-900 text-zinc-100' : 'bg-white text-zinc-900'}`}>
+      <div className={`relative w-full max-w-md p-8 rounded-3xl max-h-[80vh] overflow-y-auto animate-scale-in flex flex-col ${isDark ? 'bg-zinc-900 text-zinc-100' : 'bg-white text-zinc-900'}`}>
          <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold flex items-center gap-2"><ShieldCheck className="text-blue-500"/> Termos de Serviço</h2>
             <button onClick={onClose}><X/></button>
          </div>
-         <div className="space-y-4 text-sm opacity-80 leading-relaxed text-justify font-light">
+         <div className="space-y-4 text-sm opacity-80 leading-relaxed text-justify font-light flex-1 overflow-y-auto pr-2">
             <p><strong>1. Respeito Mútuo:</strong> O atendimento é profissional. Qualquer conduta agressiva ou desrespeitosa encerrará a sessão imediatamente.</p>
-            <p><strong>2. Higiene e Segurança:</strong> Prezo pela máxima higiene e exijo o mesmo do cliente. Ambiente seguro e limpo.</p>
+            <p><strong>2. Higiene e Segurança:</strong> Prezo pela máxima higiene e exijo o mesmo do cliente. Todos os materiais que levo são esterilizados.</p>
             <p><strong>3. Sigilo Absoluto:</strong> Sua privacidade é garantida. O que acontece na sessão, fica na sessão.</p>
             <p><strong>4. Taxas Externas:</strong> Em caso de atendimento em Motel, a taxa de entrada/período é de responsabilidade do cliente.</p>
             <p><strong>5. Pagamento:</strong> O pagamento deve ser realizado integralmente logo após a prestação do serviço.</p>
          </div>
-         <button onClick={onClose} className="w-full mt-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors">Entendi e Concordo</button>
+         <button onClick={onClose} className="w-full mt-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors">Entendi e Concordo</button>
       </div>
     </div>
   );
 };
 
-// MODAL DE AVALIAÇÕES (NOVA TELA)
+// MODAL DE AVALIAÇÕES (SCROLLÁVEL)
 const ReviewsModal = ({ isOpen, onClose, isDark, reviews }) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose}></div>
-       <div className={`relative w-full h-full md:max-w-md md:h-[90%] md:rounded-3xl flex flex-col animate-slide-up ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-zinc-900'}`}>
-          <div className={`flex justify-between items-center p-6 border-b ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
-             <h2 className="text-xl font-bold flex items-center gap-2"><Star className="text-amber-400" fill="currentColor"/> Avaliações</h2>
+       <div className={`relative w-full h-full md:max-w-lg md:h-[85%] rounded-[2rem] flex flex-col animate-slide-up overflow-hidden ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-zinc-900'}`}>
+          <div className={`flex justify-between items-center p-6 border-b flex-shrink-0 ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
+             <h2 className="text-xl font-bold flex items-center gap-2"><Star className="text-amber-400" fill="currentColor"/> Avaliações (50+)</h2>
              <button onClick={onClose} className="p-2 bg-black/5 rounded-full"><X/></button>
           </div>
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
              {reviews.map((r, i) => (
                 <div key={i} className={`p-5 rounded-2xl border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-blue-100 shadow-sm'}`}>
                    <div className="flex justify-between items-start mb-2">
@@ -237,7 +241,7 @@ const ReviewsModal = ({ isOpen, onClose, isDark, reviews }) => {
                    <p className="text-sm opacity-70 leading-relaxed italic">"{r.text}"</p>
                 </div>
              ))}
-             <div className="text-center py-6 opacity-40 text-xs uppercase font-bold tracking-widest">Fim das avaliações</div>
+             <div className="text-center py-6 opacity-40 text-xs uppercase font-bold tracking-widest pb-20">Fim das avaliações</div>
           </div>
        </div>
     </div>
@@ -265,13 +269,14 @@ export default function App() {
   const [user, setUser] = useState(() => {
     try {
        const s = localStorage.getItem(CONFIG.STORAGE_KEY);
-       // INICIA COM CUPOM DE 12 REAIS
+       // INICIA COM CUPOM DE 12 REAIS SE NÃO TIVER DADOS
        const initialCoupons = [{ id: 'welcome12', val: 12, title: 'Cupom Boas Vindas' }];
-       return s ? JSON.parse(s) : { name: '', xp: 0, level: 1, coupons: initialCoupons };
+       if (!s) return { name: '', xp: 0, level: 1, coupons: initialCoupons };
+       return JSON.parse(s);
     } catch { return { name: '', xp: 0, coupons: [] }; }
   });
 
-  const T = TEXTS[lang]; // Dicionário Atual
+  const T = TEXTS[lang];
 
   // BOOKING STATE
   const [booking, setBooking] = useState({
@@ -324,7 +329,7 @@ export default function App() {
     let mapsLink = "";
     
     if (booking.locationType === 'home') {
-      localMsg = `🏠 *${T.location_title} (Casa)*\n${booking.address.street}, ${booking.address.number}\n${booking.address.district} - ${booking.address.city}\n_(Comp: ${booking.address.comp || '-'})_`;
+      localMsg = `🏠 *${T.location_title} (Casa)*\n${booking.address.street}, ${booking.address.number}\n${booking.address.district} - ${booking.address.city}\n_(Comp: ${booking.address.comp})_`;
       const query = `${booking.address.street}, ${booking.address.number}, ${booking.address.city}`;
       mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     } else if (booking.locationType === 'motel') {
@@ -366,9 +371,10 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
     if (step === 0) return !!booking.service;
     if (step === 1) return !!booking.date && !!booking.time;
     if (step === 2) {
-      const { city, street, placeName, number } = booking.address;
+      const { city, street, placeName, number, comp } = booking.address;
       if (!user.name) return false;
-      if (booking.locationType === 'home' && (!city || !street || !number)) return false;
+      // Validação Estrita para Home: PRECISA DO COMPLEMENTO
+      if (booking.locationType === 'home' && (!city || !street || !number || !comp)) return false;
       if (booking.locationType === 'hotel' && (!city || !placeName)) return false;
       return true;
     }
@@ -382,18 +388,22 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
     const earnedXP = getFinancials.total;
     const newTotalXP = user.xp + earnedXP;
     
-    // USOU O CUPOM? REMOVE.
+    // SISTEMA DE CUPOM: USOU, GASTOU.
+    // Se o usuário aplicou um cupom, removemos ele da lista PERMANENTEMENTE agora.
     let updatedCoupons = [...user.coupons];
     if(booking.appliedCoupon) {
         updatedCoupons = updatedCoupons.filter(c => c.id !== booking.appliedCoupon.id);
     }
 
-    // GAMIFICACAO SIMPLES: A CADA NIVEL (500XP) GANHA CUPOM DE 20
+    // GAMIFICACAO: NIVEL NOVO GERA CUPOM NOVO
     if (Math.floor(newTotalXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
         updatedCoupons.push({ id: Date.now(), title: 'Recompensa VIP', val: 20, isNew: true });
     }
 
+    // SALVA TUDO
     setUser({ ...user, xp: newTotalXP, coupons: updatedCoupons });
+    
+    // VAI PARA SUCESSO
     setStep(4);
   };
 
@@ -404,7 +414,7 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
   );
 
   return (
-    <div className={`min-h-screen font-sans transition-colors duration-500 pb-36 ${isDark ? 'bg-zinc-950 text-blue-50' : 'bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-screen font-sans transition-colors duration-500 pb-40 ${isDark ? 'bg-zinc-950 text-blue-50' : 'bg-slate-50 text-slate-900'}`}>
       <Toast show={toast.show} msg={toast.msg} />
       <TermsModal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} isDark={isDark} />
       <ReviewsModal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} isDark={isDark} reviews={DB.reviews} />
@@ -555,7 +565,7 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                     const isSelected = booking.date?.toDateString() === d.toDateString();
                     return (
                       <button key={offset} onClick={() => setBooking({ ...booking, date: d, time: null })}
-                        className={`min-w-[5.5rem] h-[7rem] rounded-[24px] flex flex-col items-center justify-center gap-2 transition-all border-2
+                        className={`min-w-[5.5rem] h-[7rem] rounded-[24px] flex flex-col items-center justify-center gap-2 transition-all border-2 flex-shrink-0
                           ${isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-500/30 scale-105' : isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500' : 'bg-white border-zinc-100 text-zinc-400'}`}
                       >
                         <span className="text-[10px] font-bold uppercase tracking-widest">{d.toLocaleDateString(lang, { weekday: 'short' }).slice(0,3)}</span>
@@ -620,6 +630,7 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
 
                 {booking.locationType === 'home' && (
                   <div className="space-y-4 animate-fade-in">
+                    <p className="text-xs font-bold text-amber-500 flex items-center gap-1 pl-2"><Info size={12}/> {T.address_warn}</p>
                     <div className="grid grid-cols-[1fr_80px] gap-4">
                        <input placeholder="Rua / Avenida" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.street} onChange={(e) => setBooking({...booking, address: {...booking.address, street: e.target.value}})} />
                        <input type="tel" placeholder="Nº" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.number} onChange={(e) => setBooking({...booking, address: {...booking.address, number: e.target.value}})} />
@@ -628,6 +639,13 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                        <input placeholder="Bairro" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.district} onChange={(e) => setBooking({...booking, address: {...booking.address, district: e.target.value}})} />
                        <input placeholder="Cidade" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.city} onChange={(e) => setBooking({...booking, address: {...booking.address, city: e.target.value}})} />
                     </div>
+                    {/* CAMPO OBRIGATÓRIO PARA HOME */}
+                    <input 
+                        placeholder={T.comp_placeholder} 
+                        className={`w-full p-6 rounded-[24px] border text-sm outline-none border-blue-500/30 focus:border-blue-500 ${isDark ? 'bg-zinc-900' : 'bg-white'}`} 
+                        value={booking.address.comp} 
+                        onChange={(e) => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} 
+                    />
                   </div>
                 )}
 
