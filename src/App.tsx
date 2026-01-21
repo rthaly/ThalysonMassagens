@@ -60,12 +60,12 @@ const TEXTS = {
     loc_title: "Localização",
     btn_home: "Casa / Apto",
     btn_hotel: "Hotel",
-    btn_motel: "Motel",
+    btn_motel: "Suíte",
     
     city_lbl: "Cidade",
     city_ph: "Ex: Londrina, SP...",
     
-    lbl_motel: "Nome do Motel",
+    lbl_motel: "Nome da Suíte",
     lbl_suite: "Suíte",
     lbl_hotel: "Nome do Hotel",
     lbl_room: "Quarto",
