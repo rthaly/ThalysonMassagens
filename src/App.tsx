@@ -2,50 +2,36 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, Home, MessageCircle, Ticket, Flame, Wind, 
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
-  Shield, Music, DollarSign, Zap, Menu, X, Share2, HelpCircle
+  Shield, Zap, Menu, X, Share2, HelpCircle, Wallet, Gift, Copy, Lock
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES (FIXO LONDRINA)
+// 1. CONFIGURAÇÕES
 // ==================================================================================
 
 const CONFIG = {
-  PHONE: "5517991360413", // Seu número
-  COUPON_VAL: 15.00,
-  THEME: '#22C55E' // Verde Londrina
+  PHONE: "5517991360413", 
+  THEME: '#22C55E', // Verde Londrina
+  STORAGE_KEY: 'thaly_londrina_data_v2', // Chave para salvar carteira/histórico
 };
 
 const SERVICES = [
-  { 
-    id: 'completa', name: 'Experiência Completa', 
-    desc: 'O carro-chefe. Relaxamento muscular profundo seguido de finalização manual intensa e explosiva.', 
-    time: 60, price: 180, level: 50, badge: 'MAIS PEDIDA 🏆' 
-  },
-  { 
-    id: 'relax', name: 'Massagem Relaxante', 
-    desc: 'Foco terapêutico para alívio de dores e tensão. Sem toques íntimos.', 
-    time: 60, price: 150, level: 30, badge: null 
-  },
-  { 
-    id: 'tantra', name: 'Tântrica Sensitive', 
-    desc: 'Toques sutis, respiração e conexão energética. Uma jornada sensorial.', 
-    time: 90, price: 250, level: 80, badge: 'VIP ✨' 
-  }
+  { id: 'completa', name: 'Experiência Completa', desc: 'Relaxamento profundo + Finalização manual intensa.', time: 60, price: 180, xp: 50 },
+  { id: 'relax', name: 'Massagem Relaxante', desc: 'Terapêutica focada em dores. Sem toques íntimos.', time: 60, price: 150, xp: 30 },
+  { id: 'tantra', name: 'Tântrica Sensitive', desc: 'Jornada sensorial com conexão energética.', time: 90, price: 250, xp: 80 }
 ];
 
 const EXTRAS = [
-  { id: 'upgrade', label: '+30 Minutos', desc: 'Estenda seu tempo', icon: Clock, price: 50, level: 20 },
-  { id: 'touch', label: 'Interação Recíproca', desc: 'Toque e troca de energia', icon: Flame, price: 60, level: 30 },
-  { id: 'aroma', label: 'Aromaterapia', desc: 'Óleos essenciais', icon: Wind, price: 20, level: 10 }
+  { id: 'upgrade', label: '+30 Minutos', desc: 'Mais tempo', icon: Clock, price: 50 },
+  { id: 'touch', label: 'Interação', desc: 'Troca de energia', icon: Flame, price: 60 },
+  { id: 'aroma', label: 'Aromaterapia', desc: 'Óleos essenciais', icon: Wind, price: 20 }
 ];
 
-const REVIEWS = [
-  { t: "A melhor de Londrina. O Thalyson é super educado e a massagem é surreal.", a: "Carlos (Gleba)", s: 5 },
-  { t: "Fui travado e saí leve. A finalização vale cada centavo.", a: "André", s: 5 },
-  { t: "Ambiente do hotel foi respeitado, muito discreto.", a: "M. Viajante", s: 5 },
-  { t: "O toque dele é diferente. Recomendo a completa com extra de tempo.", a: "Felipe", s: 5 },
-  { t: "Profissionalismo nota 10. Virei cliente fiel.", a: "Dr. Roberto", s: 5 },
-  { t: "Mão firme na medida certa. O cara é bom.", a: "Gustavo", s: 5 },
+// FAQS para o Menu Ajuda
+const FAQS = [
+    { q: "Onde é o atendimento?", a: "Vou até sua casa, hotel ou motel em Londrina." },
+    { q: "Aceita Cartão?", a: "Sim, Pix, Dinheiro e Cartão (Taxas podem aplicar)." },
+    { q: "É seguro?", a: "Totalmente. Sigilo absoluto e respeito." }
 ];
 
 // ==================================================================================
@@ -56,122 +42,88 @@ const Utils = {
   formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
   vibrate: () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10); },
   
-  // Lógica de horários esgotados/passados
   isTimeBlocked: (selectedDate, timeString) => {
     if (!selectedDate) return true;
-    
     const now = new Date();
     const sel = new Date(selectedDate);
     const [h] = timeString.split(':').map(Number);
+    
+    // Bloqueia passado
+    if (sel.toDateString() === now.toDateString() && h <= now.getHours()) return true; 
 
-    // 1. Bloqueia passado (se for hoje)
-    if (sel.toDateString() === now.toDateString()) {
-      if (h <= now.getHours()) return true; 
-    }
-
-    // 2. Simula "Esgotado" aleatoriamente (mas determinístico)
-    // Soma dia + hora. Se divisível por 7, está esgotado (cria buracos na agenda)
+    // Simula Esgotado (Lógica determinística baseada na data para não mudar ao recarregar)
     const seed = sel.getDate() + h; 
-    if (seed % 7 === 0) return 'sold_out'; // Flag especial
+    if (seed % 6 === 0) return 'sold_out'; 
 
     return false;
   }
 };
 
 // ==================================================================================
-// 3. COMPONENTES VISUAIS
-// ==================================================================================
-
-const ProgressBar = ({ currentLevel }) => {
-  // Lógica visual: Nível de Experiência
-  let label = "Básica";
-  let color = "bg-gray-500";
-  
-  if (currentLevel > 40) { label = "Premium"; color = "bg-green-500"; }
-  if (currentLevel > 90) { label = "VIP Gold"; color = "bg-yellow-400"; }
-
-  return (
-    <div className="mb-6 px-4">
-      <div className="flex justify-between items-end mb-1">
-        <span className="text-[10px] uppercase font-bold text-gray-400">Nível da Experiência</span>
-        <span className={`text-[10px] uppercase font-black px-2 py-0.5 rounded text-black ${color.replace('bg-', 'bg-')}`}>
-            {label}
-        </span>
-      </div>
-      <div className="h-1.5 w-full bg-[#222] rounded-full overflow-hidden">
-        <div 
-            className={`h-full ${color} transition-all duration-500 ease-out`} 
-            style={{ width: `${Math.min(currentLevel, 100)}%` }}
-        />
-      </div>
-    </div>
-  );
-};
-
-const ReviewCarousel = () => (
-  <div className="relative w-full overflow-hidden py-4 bg-[#111] border-y border-[#222]">
-    <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black to-transparent z-10"/>
-    <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent z-10"/>
-    
-    <div className="flex animate-scroll gap-4 w-max">
-       {/* Duplicado para loop infinito */}
-       {[...REVIEWS, ...REVIEWS].map((r, i) => (
-         <div key={i} className="w-[260px] p-4 rounded-xl bg-[#1A1A1A] border border-[#333] flex-shrink-0">
-            <div className="flex text-yellow-500 mb-2 gap-1">
-                {[...Array(5)].map((_,k)=><Star key={k} size={10} fill="currentColor"/>)}
-            </div>
-            <p className="text-gray-300 text-xs italic leading-relaxed mb-2">"{r.t}"</p>
-            <p className="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-1">
-                <Shield size={10} className="text-green-500"/> {r.a}
-            </p>
-         </div>
-       ))}
-    </div>
-    <style>{`
-      @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-      .animate-scroll { animation: scroll 40s linear infinite; }
-    `}</style>
-  </div>
-);
-
-// ==================================================================================
-// 4. APP PRINCIPAL
+// 3. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
+  // --- ESTADOS ---
   const [step, setStep] = useState(0);
   const [showMenu, setShowMenu] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [showWallet, setShowWallet] = useState(false);
   
-  // DADOS DO AGENDAMENTO
+  // Persistência (Carteira e Histórico)
+  const [userData, setUserData] = useState(() => {
+      try {
+          const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
+          return saved ? JSON.parse(saved) : { 
+              name: '', 
+              xp: 0, // Pontos de fidelidade
+              coupons: [{ id: 'WELCOME', label: '1ª Massagem', value: 15, desc: 'Desconto de boas-vindas' }] 
+          };
+      } catch {
+          return { name: '', xp: 0, coupons: [] };
+      }
+  });
+
+  // Salvar sempre que mudar userData
+  useEffect(() => {
+      localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(userData));
+  }, [userData]);
+
+  // Booking Session (Resetável)
   const [booking, setBooking] = useState({
-    name: '',
+    confirmedHealth: false, // Checkbox saúde
     service: null,
     extras: { upgrade: false, touch: false, aroma: false },
     date: null,
     time: null,
-    locationType: 'home', // home, hotel, motel
+    locationType: 'home',
     address: '',
-    payment: 'pix'
+    payment: 'pix',
+    appliedCoupon: null // Cupom aplicado nesta sessão
   });
 
-  // Cálculos em tempo real
-  const { total, level, timeStr } = useMemo(() => {
+  // --- CÁLCULOS ---
+  const { total, nextRewardProgress } = useMemo(() => {
     let t = 0;
-    let l = 0; // Level (Gamificação Visual)
+    if (booking.service) t += booking.service.price;
+    if (booking.extras.upgrade) t += 50;
+    if (booking.extras.touch) t += 60;
+    if (booking.extras.aroma) t += 20;
 
-    if (booking.service) {
-      t += booking.service.price;
-      l += booking.service.level;
-    }
-
-    if (booking.extras.upgrade) { t += 50; l += 20; }
-    if (booking.extras.touch) { t += 60; l += 30; }
-    if (booking.extras.aroma) { t += 20; l += 10; }
-
-    const d = booking.date ? new Date(booking.date).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) : '';
+    const discount = booking.appliedCoupon ? booking.appliedCoupon.value : 0;
     
-    return { total: t, level: l, timeStr: d };
-  }, [booking]);
+    // Gamificação: A cada 300 XP ganha um prêmio
+    const progress = (userData.xp % 300) / 300 * 100;
+
+    return { 
+        subtotal: t,
+        discount,
+        total: Math.max(0, t - discount),
+        nextRewardProgress: progress
+    };
+  }, [booking, userData.xp]);
+
+  // --- AÇÕES ---
 
   const handleNext = () => {
     Utils.vibrate();
@@ -184,362 +136,373 @@ export default function App() {
     setStep(s => s - 1);
   };
 
-  const toggleExtra = (id) => {
-    Utils.vibrate();
-    setBooking(prev => ({
-        ...prev, 
-        extras: { ...prev.extras, [id]: !prev.extras[id] }
-    }));
+  const applyCoupon = (coupon) => {
+      setBooking({ ...booking, appliedCoupon: coupon });
+      setShowWallet(false);
+      Utils.vibrate();
   };
 
-  const generateWhatsApp = () => {
-    const isMotel = booking.locationType === 'motel';
-    const locLabel = isMotel ? '🏩 Motel' : booking.locationType === 'hotel' ? '🏨 Hotel' : '🏠 Residência';
-    
-    // Link do Maps se tiver endereço
-    const mapsLink = booking.address.length > 5 
-        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.address + ' Londrina PR')}`
-        : '';
+  const handleShare = async () => {
+      const data = { title: 'Thalymassagens', text: 'Agende sua massagem em Londrina!', url: window.location.href };
+      try {
+          if (navigator.share) await navigator.share(data);
+          else {
+              navigator.clipboard.writeText(window.location.href);
+              alert('Link copiado!');
+          }
+      } catch (e) { console.log('Share dismissed'); }
+  };
 
-    let text = `*NOVO AGENDAMENTO - LONDRINA* 🌿\n`;
-    text += `------------------------------\n`;
-    text += `👤 *Cliente:* ${booking.name}\n`;
-    text += `📅 *Data:* ${new Date(booking.date).toLocaleDateString('pt-BR')} às ${booking.time}\n`;
-    text += `💆 *Serviço:* ${booking.service?.name}\n`;
-    
-    // Extras
-    const extrasAtivos = Object.entries(booking.extras).filter(([_,v])=>v).map(([k])=>EXTRAS.find(e=>e.id===k).label);
-    if(extrasAtivos.length > 0) {
-        text += `✨ *Adicionais:* \n${extrasAtivos.map(e => `   • ${e}`).join('\n')}\n`;
-    } else {
-        text += `✨ *Adicionais:* Nenhum\n`;
+  const finalizeBooking = () => {
+    // 1. Queimar Cupom (Se usou)
+    let newCoupons = [...userData.coupons];
+    if (booking.appliedCoupon) {
+        newCoupons = newCoupons.filter(c => c.id !== booking.appliedCoupon.id);
     }
 
-    text += `\n📍 *LOCALIZAÇÃO*\n`;
-    text += `Tipo: ${locLabel}\n`;
-    text += `Endereço: ${booking.address}\n`;
-    if(mapsLink) text += `Maps: ${mapsLink}\n`;
+    // 2. Adicionar XP (Fidelidade)
+    const newXp = userData.xp + (booking.service?.xp || 0);
     
-    text += `\n💰 *FINANCEIRO*\n`;
-    text += `Serviço Total: ${Utils.formatBRL(total)}\n`;
-    text += `🚗 *Deslocamento:* A COMBINAR (Não incluso)\n`;
-    text += `💳 *Pagamento:* ${booking.payment.toUpperCase()}\n`;
-    text += `------------------------------\n`;
-    text += `Olá Thalyson, aguardo sua confirmação!`;
+    // 3. Drop de Prêmio (Lógica Gamificação: Ganha cupom a cada 300xp)
+    if (Math.floor(newXp / 300) > Math.floor(userData.xp / 300)) {
+        newCoupons.push({ id: `REWARD_${Date.now()}`, label: 'Prêmio Fidelidade', value: 30, desc: 'Você desbloqueou pelo seu nível!' });
+    }
 
-    const url = `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    // 4. Salvar tudo
+    setUserData({ ...userData, xp: newXp, coupons: newCoupons });
+    
+    // 5. Gerar Zap
+    const text = `
+*AGENDAMENTO - THALYSON (Londrina)* 🌿
+------------------------------
+👤 *Cliente:* ${userData.name}
+✅ *Confirmou:* +18 e Saúde em dia.
+
+📅 *Data:* ${new Date(booking.date).toLocaleDateString('pt-BR')} às ${booking.time}
+💆 *Serviço:* ${booking.service?.name}
+
+✨ *Adicionais:*
+${Object.entries(booking.extras).filter(([_,v])=>v).map(([k]) => `• ${EXTRAS.find(e=>e.id===k).label}`).join('\n') || 'Nenhum'}
+
+📍 *Local:* ${booking.locationType === 'motel' ? 'Motel' : booking.locationType === 'hotel' ? 'Hotel' : 'Residência'}
+📝 *Endereço:* ${booking.address}
+
+💰 *FINANCEIRO:*
+Subtotal: ${Utils.formatBRL(total.subtotal)}
+${booking.appliedCoupon ? `🎟️ Cupom (${booking.appliedCoupon.label}): -${Utils.formatBRL(booking.appliedCoupon.value)}` : ''}
+*TOTAL SERVIÇO: ${Utils.formatBRL(total.total)}*
+(Taxa de Deslocamento a combinar)
+
+💳 Pagamento: ${booking.payment.toUpperCase()}
+------------------------------
+`.trim();
+
+    window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-green-500 selection:text-black pb-32">
       
-      {/* HEADER FIXO */}
-      <header className="fixed top-0 w-full z-50 bg-black/90 backdrop-blur-md border-b border-white/10">
+      {/* HEADER */}
+      <header className="fixed top-0 w-full z-40 bg-black/90 backdrop-blur-md border-b border-white/10">
         <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
-                {step > 0 && (
-                    <button onClick={handleBack} className="p-1 -ml-2 text-gray-400 active:scale-95 transition-transform">
-                        <ChevronLeft size={24} />
-                    </button>
-                )}
+                {step > 0 && <button onClick={handleBack} className="p-1 -ml-2 text-gray-400"><ChevronLeft size={24} /></button>}
                 <div>
                     <h1 className="text-sm font-black tracking-tighter text-white">THALY<span className="text-green-500">MASSAGENS</span></h1>
-                    <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                        <MapPin size={10} className="text-green-500"/>
-                        LONDRINA - PR
-                    </div>
+                    <div className="flex items-center gap-1 text-[10px] text-gray-400"><MapPin size={10} className="text-green-500"/> LONDRINA - PR</div>
                 </div>
             </div>
-            <button onClick={() => setShowMenu(true)} className="p-2 bg-[#222] rounded-full border border-[#333]">
-                <Menu size={16} />
-            </button>
+            <button onClick={() => setShowMenu(true)} className="p-2 bg-[#222] rounded-full border border-[#333]"><Menu size={16} /></button>
         </div>
-        {/* Barra de Progresso do Fluxo */}
-        <div className="h-0.5 w-full bg-[#111]">
-            <div className="h-full bg-green-500 transition-all duration-300" style={{width: `${(step/4)*100}%`}}></div>
-        </div>
+        {/* Progress Bar */}
+        <div className="h-0.5 w-full bg-[#111]"><div className="h-full bg-green-500 transition-all duration-300" style={{width: `${(step/4)*100}%`}}></div></div>
       </header>
 
-      {/* MENU MODAL */}
+      {/* MENU LATERAL */}
       {showMenu && (
         <div className="fixed inset-0 z-[60] flex justify-end">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setShowMenu(false)}></div>
-            <div className="relative w-64 bg-[#111] h-full border-l border-[#222] p-6 shadow-xl animate-enter-right">
-                <div className="flex justify-between mb-8">
+            <div className="relative w-72 bg-[#111] h-full border-l border-[#222] p-6 shadow-xl animate-enter-right flex flex-col">
+                <div className="flex justify-between mb-8 items-center">
                     <span className="font-bold text-lg">Menu</span>
                     <button onClick={()=>setShowMenu(false)}><X className="text-gray-400"/></button>
                 </div>
+                
+                {/* Carteira no Menu */}
+                <div className="bg-gradient-to-br from-green-900/40 to-[#111] p-4 rounded-xl border border-green-500/30 mb-6">
+                    <p className="text-xs text-green-400 font-bold uppercase mb-1">Programa Fidelidade</p>
+                    <div className="flex justify-between text-white font-bold text-sm mb-2">
+                        <span>Nível Atual</span>
+                        <span>{Math.floor(userData.xp / 300) + 1}</span>
+                    </div>
+                    <div className="w-full bg-black/50 h-2 rounded-full overflow-hidden mb-2">
+                        <div className="bg-green-500 h-full" style={{width: `${nextRewardProgress}%`}}></div>
+                    </div>
+                    <p className="text-[10px] text-gray-400">Junte pontos para ganhar cupons na sua carteira.</p>
+                </div>
+
                 <div className="space-y-3">
-                    <button className="w-full text-left p-3 rounded-lg bg-[#222] text-sm font-bold flex gap-2"><HelpCircle size={16}/> Dúvidas</button>
-                    <button className="w-full text-left p-3 rounded-lg bg-[#222] text-sm font-bold flex gap-2"><Share2 size={16}/> Compartilhar</button>
+                    <button onClick={() => { setShowHelp(true); setShowMenu(false); }} className="w-full text-left p-4 rounded-xl bg-[#222] text-sm font-bold flex gap-3 items-center"><HelpCircle size={18} className="text-gray-400"/> Dúvidas Frequentes</button>
+                    <button onClick={handleShare} className="w-full text-left p-4 rounded-xl bg-[#222] text-sm font-bold flex gap-3 items-center"><Share2 size={18} className="text-gray-400"/> Compartilhar App</button>
                 </div>
             </div>
         </div>
       )}
 
-      {/* CONTEÚDO PRINCIPAL */}
-      <main className="pt-20 max-w-md mx-auto animate-fade-in">
-        
-        {/* ETAPA 0: INTRODUÇÃO */}
-        {step === 0 && (
-            <div className="px-5 pt-4">
-                <p className="text-green-500 font-bold text-xs uppercase tracking-widest mb-2">Bem-vindo a Londrina</p>
-                <h2 className="text-3xl font-bold leading-tight mb-6">Seu momento de<br/>relaxamento começa aqui.</h2>
-                
-                <div className="mb-6">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Como posso te chamar?</label>
-                    <input 
-                        value={booking.name}
-                        onChange={e => setBooking({...booking, name: e.target.value})}
-                        placeholder="Seu nome"
-                        className="w-full bg-[#1A1A1A] border border-[#333] text-white p-4 rounded-xl focus:border-green-500 outline-none text-lg font-medium placeholder:text-gray-600"
-                        autoFocus
-                    />
-                </div>
+      {/* MODAL AJUDA */}
+      {showHelp && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-6">
+              <div className="absolute inset-0 bg-black/90" onClick={()=>setShowHelp(false)}></div>
+              <div className="relative bg-[#1A1A1A] w-full max-w-sm rounded-2xl border border-[#333] p-6">
+                  <h3 className="font-bold text-xl mb-4">Dúvidas</h3>
+                  <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+                      {FAQS.map((f,i) => (
+                          <div key={i} className="bg-[#111] p-3 rounded-xl">
+                              <p className="font-bold text-green-500 text-sm mb-1">{f.q}</p>
+                              <p className="text-xs text-gray-300">{f.a}</p>
+                          </div>
+                      ))}
+                  </div>
+                  <button onClick={()=>setShowHelp(false)} className="w-full mt-4 bg-[#333] py-3 rounded-xl font-bold">Fechar</button>
+              </div>
+          </div>
+      )}
 
-                <div className="bg-[#111] rounded-2xl border border-[#222] overflow-hidden mb-6">
-                    <div className="p-3 border-b border-[#222] flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span className="text-xs font-bold text-gray-300">Últimas Avaliações</span>
+      {/* MODAL CARTEIRA (WALLET) */}
+      {showWallet && (
+          <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center sm:p-6">
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setShowWallet(false)}></div>
+              <div className="relative bg-[#1C1C1E] w-full max-w-sm rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#333] p-6 animate-slide-up">
+                  <div className="w-12 h-1 bg-[#333] rounded-full mx-auto mb-6 sm:hidden"></div>
+                  <div className="flex justify-between items-center mb-6">
+                      <h3 className="font-bold text-xl flex items-center gap-2"><Wallet className="text-green-500"/> Sua Carteira</h3>
+                      <button onClick={()=>setShowWallet(false)}><X className="text-gray-400"/></button>
+                  </div>
+                  
+                  {userData.coupons.length === 0 ? (
+                      <div className="text-center py-10 text-gray-500">
+                          <Ticket size={40} className="mx-auto mb-3 opacity-20"/>
+                          <p className="text-sm">Carteira vazia.</p>
+                          <p className="text-xs">Faça agendamentos para ganhar recompensas.</p>
+                      </div>
+                  ) : (
+                      <div className="space-y-3">
+                          {userData.coupons.map(c => (
+                              <button key={c.id} onClick={() => applyCoupon(c)} 
+                                  className="w-full bg-[#111] border border-green-900/50 p-4 rounded-xl flex justify-between items-center group hover:border-green-500 transition-colors text-left">
+                                  <div>
+                                      <p className="font-black text-green-500">{c.label}</p>
+                                      <p className="text-xs text-gray-400">{c.desc}</p>
+                                  </div>
+                                  <div className="bg-green-500/10 px-3 py-1 rounded text-green-500 font-bold text-xs group-hover:bg-green-500 group-hover:text-black transition-colors">
+                                      Usar
+                                  </div>
+                              </button>
+                          ))}
+                      </div>
+                  )}
+                  <p className="text-[10px] text-gray-500 text-center mt-6">Ao usar um cupom, ele será removido da carteira.</p>
+              </div>
+          </div>
+      )}
+
+      {/* CONTEÚDO */}
+      <main className="pt-20 max-w-md mx-auto animate-fade-in px-5">
+        
+        {/* ETAPA 0: DADOS E SAÚDE */}
+        {step === 0 && (
+            <div>
+                {userData.coupons.some(c => c.id === 'WELCOME') && (
+                    <div className="bg-green-500/10 border border-green-500/20 p-3 rounded-xl flex items-center gap-3 mb-6 animate-pulse">
+                        <Gift size={20} className="text-green-500"/>
+                        <div>
+                            <p className="text-green-500 font-bold text-xs">Presente na Carteira!</p>
+                            <p className="text-[10px] text-green-200">Você tem um cupom de 1ª Vez esperando.</p>
+                        </div>
                     </div>
-                    <ReviewCarousel />
+                )}
+
+                <h2 className="text-3xl font-bold mb-6">Vamos agendar seu<br/>relaxamento.</h2>
+                
+                <div className="space-y-4 mb-6">
+                    <input 
+                        value={userData.name}
+                        onChange={e => setUserData({...userData, name: e.target.value})}
+                        placeholder="Seu Nome Completo"
+                        className="w-full bg-[#1A1A1A] border border-[#333] text-white p-4 rounded-xl focus:border-green-500 outline-none placeholder:text-gray-600"
+                    />
+                    
+                    {/* CHECKBOX DE SAÚDE OBRIGATÓRIO */}
+                    <div 
+                        onClick={() => setBooking({...booking, confirmedHealth: !booking.confirmedHealth})}
+                        className={`p-4 rounded-xl border flex gap-4 cursor-pointer transition-all ${booking.confirmedHealth ? 'bg-green-900/10 border-green-500' : 'bg-[#111] border-[#222]'}`}
+                    >
+                        <div className={`w-6 h-6 rounded border flex-shrink-0 flex items-center justify-center ${booking.confirmedHealth ? 'bg-green-500 border-green-500' : 'border-[#444]'}`}>
+                            {booking.confirmedHealth && <Check size={16} className="text-black"/>}
+                        </div>
+                        <p className="text-xs text-gray-300 leading-relaxed select-none">
+                            Declaro ser maior de 18 anos e estar em boas condições de saúde física e mental para receber a massagem.
+                        </p>
+                    </div>
                 </div>
 
                 <button 
-                    disabled={booking.name.length < 3}
+                    disabled={!booking.confirmedHealth || userData.name.length < 3}
                     onClick={handleNext}
-                    className="w-full py-4 bg-green-600 text-black font-black uppercase rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-500 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-white text-black font-black uppercase rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
                 >
-                    Começar Agendamento <ArrowRight size={18}/>
+                    Continuar <ArrowRight size={18}/>
                 </button>
             </div>
         )}
 
         {/* ETAPA 1: SERVIÇOS */}
         {step === 1 && (
-            <div className="px-5 pt-4">
-                <h2 className="text-xl font-bold mb-4">Escolha a Experiência</h2>
-                <div className="space-y-4">
-                    {SERVICES.map(s => (
-                        <div 
-                            key={s.id}
-                            onClick={() => { Utils.vibrate(); setBooking({...booking, service: s}); handleNext(); }}
-                            className={`relative p-5 rounded-2xl border cursor-pointer transition-all active:scale-[0.98] group
-                                ${booking.service?.id === s.id ? 'bg-[#1A1A1A] border-green-500' : 'bg-[#111] border-[#222] hover:border-gray-600'}
-                            `}
-                        >
-                            {/* Z-Index fix para garantir clique */}
-                            <div className="relative z-10 pointer-events-none">
-                                {s.badge && <span className="absolute -top-5 -right-5 bg-yellow-400 text-black text-[9px] font-black px-2 py-1 rounded-bl-lg">{s.badge}</span>}
-                                
-                                <div className="flex justify-between items-center mb-2">
-                                    <h3 className={`text-lg font-bold ${booking.service?.id === s.id ? 'text-green-500' : 'text-white'}`}>{s.name}</h3>
-                                    <span className="bg-[#222] px-2 py-1 rounded text-xs font-bold text-white">{Utils.formatBRL(s.price)}</span>
-                                </div>
-                                <p className="text-xs text-gray-400 leading-relaxed mb-3">{s.desc}</p>
-                                <div className="flex items-center gap-3 opacity-60">
-                                    <span className="text-[10px] font-bold uppercase flex items-center gap-1"><Clock size={10}/> {s.time} min</span>
-                                    <span className="text-[10px] font-bold uppercase flex items-center gap-1"><Zap size={10}/> Nível {s.level}</span>
-                                </div>
-                            </div>
+            <div className="space-y-4">
+                <h2 className="text-xl font-bold">Qual o serviço de hoje?</h2>
+                {SERVICES.map(s => (
+                    <div key={s.id} onClick={() => { setBooking({...booking, service: s}); handleNext(); }}
+                        className={`relative p-5 rounded-2xl border cursor-pointer active:scale-[0.98] transition-all
+                            ${booking.service?.id === s.id ? 'bg-[#1A1A1A] border-green-500' : 'bg-[#111] border-[#222]'}
+                        `}>
+                        <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-lg font-bold text-white">{s.name}</h3>
+                            <span className="bg-[#222] px-2 py-1 rounded text-xs font-bold">{Utils.formatBRL(s.price)}</span>
                         </div>
-                    ))}
-                </div>
+                        <p className="text-xs text-gray-400">{s.desc}</p>
+                        <span className="text-[10px] text-green-600 font-bold mt-2 block">+ {s.xp} Pontos Fidelidade</span>
+                    </div>
+                ))}
             </div>
         )}
 
-        {/* ETAPA 2: DATA E HORA */}
+        {/* ETAPA 2: DATA */}
         {step === 2 && (
-            <div className="px-5 pt-4">
-                <h2 className="text-xl font-bold mb-4">Data e Hora</h2>
-                
-                {/* Scroll de Datas */}
-                <div className="flex gap-3 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide">
-                    {[...Array(14)].map((_, i) => {
-                        const d = new Date();
-                        d.setDate(d.getDate() + i);
-                        const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
-                        
+            <div>
+                <h2 className="text-xl font-bold mb-4">Escolha o horário</h2>
+                <div className="flex gap-2 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide">
+                    {[...Array(10)].map((_, i) => {
+                        const d = new Date(); d.setDate(d.getDate() + i);
+                        const isSel = booking.date && booking.date.toDateString() === d.toDateString();
                         return (
-                            <button 
-                                key={i}
-                                onClick={() => { Utils.vibrate(); setBooking({...booking, date: d, time: null}); }}
-                                className={`min-w-[70px] h-[80px] rounded-xl flex flex-col items-center justify-center border transition-all flex-shrink-0
-                                    ${isSel ? 'bg-green-600 border-green-600 text-black' : 'bg-[#1A1A1A] border-[#333] text-gray-400'}
-                                `}
-                            >
-                                <span className="text-[10px] font-black uppercase mb-1">{d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
+                            <button key={i} onClick={() => setBooking({...booking, date: d, time: null})}
+                                className={`min-w-[70px] h-[80px] rounded-xl flex flex-col items-center justify-center border flex-shrink-0 ${isSel ? 'bg-green-600 border-green-600 text-black' : 'bg-[#1A1A1A] border-[#333] text-gray-400'}`}>
+                                <span className="text-[10px] uppercase font-bold">{d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
                                 <span className="text-2xl font-bold">{d.getDate()}</span>
                             </button>
-                        );
+                        )
                     })}
                 </div>
-
-                {/* Grid de Horas */}
-                <div className={`mt-4 transition-opacity ${!booking.date ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
-                    <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Horários Disponíveis</h3>
-                    <div className="grid grid-cols-4 gap-2">
-                        {['10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'].map(t => {
-                            const status = Utils.isTimeBlocked(booking.date, t); // true (passado), 'sold_out' (esgotado), false (livre)
-                            const isSoldOut = status === 'sold_out';
-                            const isPast = status === true;
-                            const isSelected = booking.time === t;
-
-                            return (
-                                <button 
-                                    key={t}
-                                    disabled={isPast || isSoldOut}
-                                    onClick={() => { Utils.vibrate(); setBooking({...booking, time: t}); }}
-                                    className={`relative py-2.5 rounded-lg border text-xs font-bold transition-all
-                                        ${isSelected ? 'bg-white text-black border-white' : 
-                                          isSoldOut ? 'bg-[#111] border-[#222] text-red-900 opacity-60 cursor-not-allowed' :
-                                          isPast ? 'bg-[#111] border-[#222] text-gray-700 opacity-40 cursor-not-allowed' :
-                                          'bg-[#1A1A1A] border-[#333] text-gray-300 hover:border-green-500'}
-                                    `}
-                                >
-                                    {t}
-                                    {isSoldOut && <div className="absolute inset-0 flex items-center justify-center"><span className="text-[8px] font-black text-red-600 -rotate-12 border border-red-900/50 px-1 bg-black/50 rounded">ESGOTADO</span></div>}
-                                </button>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                <div className="mt-8 flex justify-end">
-                     <button disabled={!booking.time} onClick={handleNext} className="px-8 py-3 bg-white text-black rounded-xl font-bold text-sm disabled:opacity-50">
-                        Confirmar Horário
-                     </button>
-                </div>
-            </div>
-        )}
-
-        {/* ETAPA 3: PERSONALIZAÇÃO (BOTOES FIX) */}
-        {step === 3 && (
-            <div className="px-5 pt-4">
-                <h2 className="text-xl font-bold mb-4">Turbine sua Sessão</h2>
                 
-                <ProgressBar currentLevel={level} />
-
-                <div className="space-y-3 mb-24">
-                    {EXTRAS.map(ex => {
-                        const active = booking.extras[ex.id];
+                <div className={`grid grid-cols-4 gap-2 mt-4 ${!booking.date ? 'opacity-30 pointer-events-none' : ''}`}>
+                    {['10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'].map(t => {
+                        const status = Utils.isTimeBlocked(booking.date, t);
                         return (
-                            <div 
-                                key={ex.id}
-                                onClick={() => toggleExtra(ex.id)}
-                                className={`relative p-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]
-                                    ${active ? 'bg-green-900/20 border-green-500' : 'bg-[#1A1A1A] border-[#333]'}
-                                `}
-                            >
-                                <div className="flex items-center gap-4 pointer-events-none">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${active ? 'bg-green-500 border-green-500 text-black' : 'bg-[#111] border-[#333] text-gray-500'}`}>
-                                        {active ? <Check size={18}/> : <ex.icon size={18}/>}
-                                    </div>
-                                    <div>
-                                        <p className={`font-bold text-sm ${active ? 'text-white' : 'text-gray-300'}`}>{ex.label}</p>
-                                        <p className="text-[10px] text-gray-500">{ex.desc}</p>
-                                    </div>
-                                </div>
-                                <span className={`font-bold text-xs pointer-events-none ${active ? 'text-green-400' : 'text-gray-500'}`}>
-                                    + {Utils.formatBRL(ex.price)}
-                                </span>
-                            </div>
-                        );
+                            <button key={t} disabled={!!status} onClick={() => setBooking({...booking, time: t})}
+                                className={`py-2 rounded-lg border text-xs font-bold relative ${booking.time === t ? 'bg-white text-black' : status ? 'opacity-30 bg-[#111]' : 'bg-[#1A1A1A] border-[#333]'}`}>
+                                {t}
+                                {status === 'sold_out' && <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg"><span className="text-[8px] text-red-500 font-black -rotate-12">ESGOTADO</span></div>}
+                            </button>
+                        )
                     })}
                 </div>
+                <button disabled={!booking.time} onClick={handleNext} className="w-full mt-8 py-3 bg-white text-black font-bold rounded-xl disabled:opacity-50">Confirmar Horário</button>
             </div>
         )}
 
-        {/* ETAPA 4: LOCALIZAÇÃO */}
+        {/* ETAPA 3: EXTRAS */}
+        {step === 3 && (
+            <div>
+                 <h2 className="text-xl font-bold mb-4">Turbine sua sessão</h2>
+                 <div className="space-y-3 mb-8">
+                     {EXTRAS.map(ex => {
+                         const active = booking.extras[ex.id];
+                         return (
+                             <div key={ex.id} onClick={() => setBooking({...booking, extras: {...booking.extras, [ex.id]: !active}})}
+                                className={`p-4 rounded-xl border flex justify-between items-center cursor-pointer ${active ? 'bg-green-900/20 border-green-500' : 'bg-[#1A1A1A] border-[#333]'}`}>
+                                <div className="flex gap-3 items-center">
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${active ? 'bg-green-500 border-green-500 text-black' : 'border-[#333] text-gray-500'}`}>{active ? <Check size={14}/> : <ex.icon size={14}/>}</div>
+                                    <div><p className="font-bold text-sm text-white">{ex.label}</p><p className="text-[10px] text-gray-500">{ex.desc}</p></div>
+                                </div>
+                                <span className="font-bold text-xs text-green-500">+ {Utils.formatBRL(ex.price)}</span>
+                             </div>
+                         )
+                     })}
+                 </div>
+                 <button onClick={handleNext} className="w-full py-3 bg-white text-black font-bold rounded-xl">Continuar</button>
+            </div>
+        )}
+
+        {/* ETAPA 4: LOCAL E FINALIZAÇÃO */}
         {step === 4 && (
-             <div className="px-5 pt-4">
-                <h2 className="text-xl font-bold mb-4">Onde será?</h2>
+            <div>
+                <h2 className="text-xl font-bold mb-4">Finalizando...</h2>
                 
-                {/* Selector Tipo */}
-                <div className="flex bg-[#1A1A1A] p-1 rounded-xl mb-6">
+                {/* Localização */}
+                <div className="flex bg-[#1A1A1A] p-1 rounded-xl mb-4">
                     {['home', 'motel', 'hotel'].map(t => (
-                        <button 
-                            key={t} 
-                            onClick={() => setBooking({...booking, locationType: t})}
-                            className={`flex-1 py-3 text-xs font-bold uppercase rounded-lg transition-all
-                                ${booking.locationType === t ? 'bg-[#333] text-white shadow-lg' : 'text-gray-500'}
-                            `}
-                        >
-                            {t === 'home' ? 'Casa' : t}
-                        </button>
+                        <button key={t} onClick={() => setBooking({...booking, locationType: t})} className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg ${booking.locationType === t ? 'bg-[#333] text-white' : 'text-gray-500'}`}>{t}</button>
                     ))}
                 </div>
+                <textarea 
+                    value={booking.address} onChange={e => setBooking({...booking, address: e.target.value})} 
+                    placeholder={booking.locationType === 'motel' ? "Qual Motel e Suíte?" : "Endereço completo..."}
+                    className="w-full bg-[#1A1A1A] border border-[#333] rounded-xl p-3 text-sm text-white h-20 resize-none focus:border-green-500 outline-none mb-4"
+                />
 
-                <div className="space-y-4">
-                    <div>
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">
-                            {booking.locationType === 'motel' ? 'Nome do Motel + Suíte' : 'Endereço Completo'}
-                        </label>
-                        <textarea 
-                            value={booking.address}
-                            onChange={e => setBooking({...booking, address: e.target.value})}
-                            placeholder={booking.locationType === 'home' ? "Rua, Número, Bairro, Complemento..." : "Digite aqui..."}
-                            className="w-full h-24 bg-[#1A1A1A] border border-[#333] rounded-xl p-4 text-white focus:border-green-500 outline-none resize-none mt-1"
-                        />
+                {/* Resumo Financeiro */}
+                <div className="bg-[#1C1C1E] border border-[#333] rounded-xl p-4 mb-4">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">Resumo do Pedido</p>
+                    <div className="space-y-2 text-sm text-gray-300">
+                        <div className="flex justify-between"><span>{booking.service?.name}</span><span>{Utils.formatBRL(booking.service?.price)}</span></div>
+                        {Object.entries(booking.extras).filter(([_,v])=>v).map(([k]) => {
+                             const ex = EXTRAS.find(e => e.id === k);
+                             return <div key={k} className="flex justify-between text-xs text-green-500"><span>+ {ex.label}</span><span>{Utils.formatBRL(ex.price)}</span></div>
+                        })}
+                        
+                        {/* Linha do Cupom */}
+                        {booking.appliedCoupon ? (
+                            <div className="flex justify-between text-green-400 font-bold py-2 border-t border-[#333] border-dashed mt-2">
+                                <span className="flex items-center gap-1"><Ticket size={12}/> Cupom ({booking.appliedCoupon.label})</span>
+                                <span>- {Utils.formatBRL(booking.appliedCoupon.value)}</span>
+                            </div>
+                        ) : (
+                            <button onClick={() => setShowWallet(true)} className="w-full py-2 border border-dashed border-green-500/50 rounded-lg text-green-500 text-xs font-bold mt-2 hover:bg-green-500/10 flex items-center justify-center gap-2">
+                                <Wallet size={12}/> Abrir Carteira de Cupons
+                            </button>
+                        )}
+                    </div>
+                    
+                    <div className="flex justify-between items-end mt-4 pt-4 border-t border-[#333]">
+                        <span className="text-gray-400 font-bold text-sm">Total Final</span>
+                        <span className="text-2xl font-black text-white">{Utils.formatBRL(total.total)}</span>
                     </div>
                 </div>
 
-                {/* Aviso Deslocamento */}
-                <div className="mt-4 bg-yellow-900/20 border border-yellow-700/50 p-4 rounded-xl flex gap-3">
-                    <AlertTriangle size={20} className="text-yellow-500 flex-shrink-0" />
-                    <p className="text-xs text-yellow-200/80 leading-relaxed">
-                        <strong className="text-yellow-500 block mb-1">Taxa de Deslocamento</strong>
-                        O valor do transporte (Uber Ida/Volta) <strong>não está incluso</strong> e será combinado diretamente no WhatsApp após o envio.
-                    </p>
+                <div className="bg-yellow-900/20 border border-yellow-500/30 p-3 rounded-xl flex gap-3 items-start mb-24">
+                    <AlertTriangle size={16} className="text-yellow-500 flex-shrink-0 mt-0.5"/>
+                    <p className="text-[10px] text-yellow-100">Taxa de deslocamento (Uber) <strong>não inclusa</strong>. Valor calculado e confirmado via WhatsApp.</p>
                 </div>
-             </div>
+            </div>
         )}
 
       </main>
 
-      {/* FOOTER FIXO (RESUMO E CTA) */}
-      {step > 0 && (
-          <div className="fixed bottom-0 left-0 w-full bg-[#0a0a0a]/90 backdrop-blur-lg border-t border-white/10 p-5 z-40 pb-safe">
-            <div className="max-w-md mx-auto flex items-center justify-between gap-4">
-                <div>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase">Total Estimado</p>
-                    <div className="flex items-baseline gap-1">
-                        <span className="text-xl font-black text-white">{Utils.formatBRL(total)}</span>
-                        <span className="text-[10px] text-gray-500">+ Taxa</span>
-                    </div>
-                </div>
-                
-                <div className="w-1/2">
-                    {step < 4 ? (
-                        <button 
-                            onClick={handleNext} 
-                            disabled={step === 2 && !booking.time}
-                            className="w-full py-3 bg-white text-black rounded-xl font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
-                            Avançar <ArrowRight size={16}/>
-                        </button>
-                    ) : (
-                        <button 
-                            onClick={generateWhatsApp}
-                            disabled={booking.address.length < 5}
-                            className="w-full py-3 bg-green-500 text-black rounded-xl font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 animate-pulse"
-                        >
-                            Finalizar <MessageCircle size={18}/>
-                        </button>
-                    )}
-                </div>
-            </div>
+      {/* FOOTER CTA */}
+      {step === 4 && (
+          <div className="fixed bottom-0 left-0 w-full bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-white/10 p-5 z-40 pb-safe">
+              <button 
+                disabled={booking.address.length < 5}
+                onClick={finalizeBooking}
+                className="w-full py-4 bg-green-500 text-black font-black uppercase rounded-xl disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(34,197,94,0.3)] animate-pulse"
+              >
+                  Agendar no WhatsApp <MessageCircle size={20}/>
+              </button>
           </div>
       )}
 
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
-      `}</style>
+      <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }`}</style>
     </div>
   );
 }
