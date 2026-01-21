@@ -1,173 +1,171 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
   Shield, Zap, Menu, X, Share2, HelpCircle, Wallet, Gift, 
-  CreditCard, Banknote, Building, RefreshCw, User, Copy, 
-  CheckCircle, Info, Navigation, BedDouble, Map, Lock,
-  Globe, Moon, Sun, Instagram, Award, Sparkles
+  Building, RefreshCw, User, Copy, CheckCircle, Info, Navigation, 
+  BedDouble, Trash2, Sparkles, Award, Instagram, Globe, Moon, Sun
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES & DADOS
+// 1. CONFIGURAÇÕES GERAIS
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM: "https://instagram.com/seumssagista", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v20_final_fixed',
-  XP_TARGET: 300,
-  REWARD_VAL: 30
+  STORAGE_KEY: 'thaly_app_v21_coupon_fixed', // Nova chave para limpar dados antigos bugados
+  XP_TARGET: 300, // XP necessário para ganhar cupom
+  REWARD_VAL: 30  // Valor do cupom prêmio
 };
 
-// TEXTOS (i18n) - Copy Ajustada
+// ==================================================================================
+// 2. TEXTOS E COPYWRITING (AJUSTADOS)
+// ==================================================================================
+
 const TEXTS = {
   pt: {
-    welcome: "Oi, vamos relaxar?",
-    subtitle: "Seu momento de paz e prazer, no conforto do seu espaço.",
+    welcome: "Olá, bem-vindo.",
+    subtitle: "Seu momento de paz e prazer absoluto.",
     your_name: "Como posso te chamar?",
     name_placeholder: "Seu nome...",
     health_check: "Sou maior de 18 anos e estou saudável.",
     start_btn: "Ver Experiências",
     
-    choose_svc: "O que você busca hoje?",
+    choose_svc: "Escolha sua Sessão",
     
+    // Copy Ajustada conforme pedido
     svc_comp_name: "🔥 Experiência Completa (1h)",
     svc_comp_badge: "A MAIS PEDIDA ❤️",
     svc_comp_steps: [
-        '1️⃣ Começo tirando toda tensão muscular.',
-        '2️⃣ O clima esquenta: contato pele com pele (sensitivo).',
-        '3️⃣ Finalizo com massagem íntima manual (Tântrica).'
+        '1️⃣ Relaxante no corpo todo (Tira a tensão).',
+        '2️⃣ Corpo a Corpo (Contato pele com pele, sensitivo).',
+        '3️⃣ Massagem na Lingam (Pênis) com estímulo sensorial e gozo permitido.'
     ],
     svc_comp_note: "Focado no seu prazer. Sem penetração/oral.",
     
     svc_relax_name: "🍃 Apenas Relaxar (1h)",
-    svc_relax_badge: "TIRE O STRESS",
+    svc_relax_badge: "ANTI-STRESS",
     svc_relax_steps: [
-        '1️⃣ Foco total em aliviar o estresse e relaxar.',
-        '2️⃣ Toques suaves para dores musculares.',
-        '3️⃣ Movimentos leves e revigorantes.'
+        '1️⃣ Foco total em aliviar o estresse mental.',
+        '2️⃣ Toques suaves e deslizantes.',
+        '3️⃣ Sem toques firmes, apenas descanso.'
     ],
-    svc_relax_note: "Atenção: Nessa não tem toques íntimos.",
+    svc_relax_note: "Atenção: Apenas terapêutica. Sem toques íntimos.",
 
-    personalize: "Quer turbinar a sessão?",
-    ext_time: "Quero mais tempo (+30min)",
-    ext_time_sub: "Pra curtir sem pressa",
-    ext_touch: "Interatividade Total",
-    ext_touch_sub: "Pode tocar e trocar energia",
+    personalize: "Turbinar Sessão?",
+    ext_time: "Mais Tempo (+30min)",
+    ext_time_sub: "Sessão de 1h30 total",
+    ext_touch: "Interatividade",
+    ext_touch_sub: "Troca de energia permitida",
     ext_touch_warn: "Fico de cueca na interação",
     ext_aroma: "Aromaterapia",
-    ext_aroma_sub: "Óleos e cheiros especiais",
+    ext_aroma_sub: "Óleos essenciais especiais",
 
-    date_title: "Quando fica bom pra você?",
+    date_title: "Agendamento",
     sold_out: "OCUPADO",
     continue: "Continuar",
     
-    loc_title: "Onde eu te encontro?",
+    loc_title: "Localização",
     btn_home: "Minha Casa",
     btn_hotel: "Hotel",
     btn_motel: "Motel",
     
-    city_lbl: "Qual Cidade?",
-    city_ph: "Ex: Londrina, SP...",
-    
+    city_lbl: "Cidade",
+    city_ph: "Ex: Londrina...",
     lbl_motel: "Nome do Motel",
-    lbl_suite: "Número da Suíte",
+    lbl_suite: "Nº Suíte",
     lbl_hotel: "Nome do Hotel",
-    lbl_room: "Número do Quarto",
-    lbl_addr: "Endereço (Rua)",
+    lbl_room: "Nº Quarto",
+    lbl_addr: "Endereço",
     lbl_num: "Número",
     lbl_dist: "Bairro",
     lbl_comp: "Complemento",
     
-    uber_warn: "O Uber não está incluso, tá? Calculo certinho no WhatsApp.",
+    uber_warn: "Uber não incluso. Calculo o valor exato no WhatsApp.",
     
-    review_title: "Tudo certo?",
+    review_title: "Resumo",
     base_val: "Serviço",
     coupon_lbl: "Desconto",
     add_coupon: "Usar Cupom",
-    total_lbl: "Total a Pagar",
+    remove_coupon: "Remover",
+    total_lbl: "Total Final",
     
-    pay_title: "Como prefere pagar?",
+    pay_title: "Pagamento (No Local)",
     money: "Dinheiro",
     card: "Cartão",
     pix: "Pix",
     
-    confirm_btn: "Confirmar no WhatsApp",
-    copy_pix: "COPIAR CHAVE PIX",
+    confirm_btn: "Confirmar Agendamento",
+    copy_pix: "COPIAR PIX",
     pix_copied: "PIX COPIADO!",
     
-    menu_fid: "Seu Cartão Fidelidade",
+    // Gamificação
+    menu_fid: "Fidelidade",
     xp_missing: "Faltam",
-    xp_goal: "pontos para ganhar R$ 30 OFF!",
-    gift_title: "Presente pra você!",
-    gift_sub: "Toque para pegar seu desconto de 1ª vez.",
+    xp_goal: "pontos para ganhar R$ 30!",
+    gift_title: "Presente Disponível!",
+    gift_sub: "Use seu cupom de 1ª vez.",
     
-    wallet_title: "Meus Prêmios",
-    wallet_empty: "Sua carteira está vazia por enquanto.",
+    wallet_title: "Meus Cupons",
+    wallet_empty: "Sem cupons no momento.",
     
-    menu_doubts: "Dúvidas Comuns",
-    menu_share: "Indicar Amigo",
+    menu_doubts: "Dúvidas",
+    menu_share: "Indicar",
     
-    success_title: "Tudo Pronto!",
-    success_msg: "Já recebi seu pedido no WhatsApp. Vou calcular o Uber e te respondo rapidinho!",
-    new_book: "Voltar ao Início",
-
-    zap_header: "OLÁ, QUERO AGENDAR",
-    zap_uber: "Uber (A Calcular)",
-    zap_pay: "Pagamento",
-    zap_obs: "Obs: +18 Confirmado"
+    success_title: "Recebido!",
+    success_msg: "Pedido gerado! Vou calcular o Uber e te chamo no WhatsApp.",
+    new_book: "Início"
   },
   en: {
-    welcome: "Hi, let's relax?",
-    subtitle: "Your moment of peace and pleasure.",
-    your_name: "How should I call you?",
-    name_placeholder: "Your name...",
+    welcome: "Hello, welcome.",
+    subtitle: "Your moment of peace and absolute pleasure.",
+    your_name: "Your Name",
+    name_placeholder: "Type here...",
     health_check: "I am 18+ and healthy.",
-    start_btn: "See Experiences",
+    start_btn: "View Services",
     
-    choose_svc: "What do you need today?",
+    choose_svc: "Choose Session",
     
     svc_comp_name: "🔥 Complete Experience (1h)",
-    svc_comp_badge: "MOST LOVED ❤️",
+    svc_comp_badge: "BEST SELLER ❤️",
     svc_comp_steps: [
-        '1️⃣ I start by removing all muscle tension.',
-        '2️⃣ It gets hotter: skin-to-skin contact (sensitive).',
-        '3️⃣ Finish with intimate manual massage (Tantra).'
+        '1️⃣ Full body relax (Remove tension).',
+        '2️⃣ Body-to-Body (Skin-to-skin, sensitive).',
+        '3️⃣ Lingam Massage (Penis) with sensory stimulation & release allowed.'
     ],
     svc_comp_note: "Pleasure focused. No penetration/oral.",
     
     svc_relax_name: "🍃 Just Relax (1h)",
     svc_relax_badge: "STRESS RELIEF",
     svc_relax_steps: [
-        '1️⃣ Focus on stress relief and relaxation.',
-        '2️⃣ Soft touches for muscle pain.',
-        '3️⃣ Gentle and invigorating movements.'
+        '1️⃣ Focus on mental stress relief.',
+        '2️⃣ Soft and gliding touches.',
+        '3️⃣ No firm pressure, just rest.'
     ],
-    svc_relax_note: "Note: No intimate touching here.",
+    svc_relax_note: "Note: Therapeutic only. No intimate touch.",
 
-    personalize: "Want to boost it?",
+    personalize: "Boost Session?",
     ext_time: "More Time (+30min)",
-    ext_time_sub: "No rush",
-    ext_touch: "Full Interactivity",
-    ext_touch_sub: "Touch & energy exchange",
+    ext_time_sub: "1h30 total session",
+    ext_touch: "Interactivity",
+    ext_touch_sub: "Energy exchange allowed",
     ext_touch_warn: "Underwear stays on",
     ext_aroma: "Aromatherapy",
-    ext_aroma_sub: "Special oils and scents",
+    ext_aroma_sub: "Special essential oils",
 
-    date_title: "When works for you?",
+    date_title: "Scheduling",
     sold_out: "BUSY",
     continue: "Next",
     
-    loc_title: "Where should I go?",
+    loc_title: "Location",
     btn_home: "Home",
     btn_hotel: "Hotel",
     btn_motel: "Motel",
     
     city_lbl: "City",
     city_ph: "Ex: Londrina...",
-    
     lbl_motel: "Motel Name",
     lbl_suite: "Suite #",
     lbl_hotel: "Hotel Name",
@@ -179,41 +177,37 @@ const TEXTS = {
     
     uber_warn: "Uber fee not included. I'll calc on WhatsApp.",
     
-    review_title: "All good?",
+    review_title: "Summary",
     base_val: "Service",
     coupon_lbl: "Discount",
     add_coupon: "Use Coupon",
-    total_lbl: "Total to Pay",
+    remove_coupon: "Remove",
+    total_lbl: "Total",
     
     pay_title: "Payment Method",
     money: "Cash",
     card: "Card",
     pix: "Pix",
     
-    confirm_btn: "Confirm on WhatsApp",
-    copy_pix: "COPY PIX KEY",
-    pix_copied: "PIX COPIED!",
+    confirm_btn: "Confirm Booking",
+    copy_pix: "COPY PIX",
+    pix_copied: "COPIED!",
     
-    menu_fid: "Loyalty Card",
+    menu_fid: "Loyalty",
     xp_missing: "Need",
-    xp_goal: "points to get R$ 30 OFF!",
-    gift_title: "A Gift for You!",
-    gift_sub: "Tap to redeem your 1st time discount.",
+    xp_goal: "points to get R$ 30!",
+    gift_title: "Gift Available!",
+    gift_sub: "Use your 1st time coupon.",
     
-    wallet_title: "My Rewards",
-    wallet_empty: "Your wallet is empty yet.",
+    wallet_title: "My Coupons",
+    wallet_empty: "No coupons yet.",
     
-    menu_doubts: "Common Questions",
-    menu_share: "Share with Friend",
+    menu_doubts: "FAQ",
+    menu_share: "Share",
     
-    success_title: "All Set!",
-    success_msg: "Received your request on WhatsApp. I'll calculate the Uber and reply asap!",
-    new_book: "Back to Start",
-
-    zap_header: "HELLO, I WANT TO BOOK",
-    zap_uber: "Uber (To Calc)",
-    zap_pay: "Payment",
-    zap_obs: "Note: +18 Confirmed"
+    success_title: "Received!",
+    success_msg: "Order generated! I'll calc the Uber and reply on WhatsApp.",
+    new_book: "Home"
   }
 };
 
@@ -228,25 +222,23 @@ const EXTRAS_DB = [
   { id: 'aroma', icon: Wind, price: 10 }
 ];
 
-// REVIEWS
 const REVIEWS_DATA = {
   pt: [
-    { t: "A progressão da massagem é perfeita. Começa relaxando e termina intenso.", a: "Tiago", s: 5 },
+    { t: "A progressão é perfeita. Começa relaxando e termina intenso.", a: "Tiago", s: 5 },
     { t: "Thalyson é muito gente boa. Me deixou super à vontade.", a: "Roberto", s: 5 },
     { t: "Fui travado e saí leve. A finalização vale cada centavo.", a: "Pedro H.", s: 5 },
-    { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso", s: 5 },
-    { t: "Atendimento no hotel foi rápido e discreto. Salvou minha viagem.", a: "Viajante", s: 5 }
+    { t: "Mão firme na medida certa. O creme faz toda a diferença.", a: "Curioso", s: 5 },
+    { t: "Atendimento no hotel foi rápido e discreto.", a: "Viajante", s: 5 }
   ],
   en: [
-    { t: "The progression is perfect. Starts relaxing, ends intense.", a: "Tiago", s: 5 },
-    { t: "Thalyson is a great guy. Made me feel very comfortable.", a: "Robert", s: 5 },
-    { t: "Went in stiff, left light. The finish is worth every penny.", a: "Peter H.", s: 5 },
-    { t: "Firm hand, strong grip. The cream makes a difference.", a: "Curious", s: 5 },
-    { t: "Hotel service was fast and discreet. Saved my trip.", a: "Traveler", s: 5 }
+    { t: "Perfect progression. Starts relaxing, ends intense.", a: "Tiago", s: 5 },
+    { t: "Thalyson is great. Made me feel very comfortable.", a: "Robert", s: 5 },
+    { t: "Went in stiff, left light. Worth every penny.", a: "Peter H.", s: 5 },
+    { t: "Perfect pressure. The cream makes a difference.", a: "Curious", s: 5 },
+    { t: "Hotel service was fast and discreet.", a: "Traveler", s: 5 }
   ]
 };
 
-// FAQ (SEM HIGIENE)
 const FAQS_DATA = {
   pt: [
     { q: "É seguro e sigiloso?", a: "Totalmente. Sou profissional e respeito sua privacidade." },
@@ -261,7 +253,7 @@ const FAQS_DATA = {
 };
 
 // ==================================================================================
-// 3. COMPONENTES VISUAIS (DESIGN SYSTEM)
+// 3. UTILS & COMPONENTS
 // ==================================================================================
 
 const Utils = {
@@ -272,9 +264,9 @@ const Utils = {
 
 const Toast = ({ msg, show, isDark }) => (
     <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[110] transition-all duration-300 transform ${show ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'}`}>
-        <div className={`${isDark ? 'bg-zinc-800 text-white border-zinc-700' : 'bg-white text-zinc-900 border-zinc-200'} border px-6 py-3 rounded-full shadow-2xl flex items-center gap-3`}>
+        <div className={`${isDark ? 'bg-zinc-800 text-white border-zinc-700' : 'bg-white text-zinc-900 border-zinc-200'} border px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 backdrop-blur-md`}>
             <CheckCircle size={18} className="text-green-500"/>
-            <span className="text-xs font-bold uppercase">{msg}</span>
+            <span className="text-xs font-bold uppercase tracking-wider">{msg}</span>
         </div>
     </div>
 );
@@ -325,13 +317,32 @@ const SplashScreen = ({ onFinish, isDark }) => {
                 <div className="absolute inset-0 bg-green-500 blur-2xl opacity-20 animate-pulse"></div>
                 <Zap size={56} className="text-green-500 relative z-10 animate-bounce" fill="currentColor"/>
             </div>
-            <h1 className={`text-2xl font-black tracking-[0.3em] ${isDark ? 'text-white' : 'text-black'}`}>THALY</h1>
+            <h1 className={`text-2xl font-black tracking-[0.2em] ${isDark ? 'text-white' : 'text-black'}`}>THALYSON</h1>
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.3em] mt-2">Massagens</p>
         </div>
     );
 };
 
+const ReviewCarousel = ({ reviews, isDark }) => (
+    <div className="w-full overflow-hidden relative py-4">
+        <div className="flex gap-4 animate-scroll w-max">
+             {[...reviews, ...reviews].map((r, i) => (
+                 <div key={i} className={`w-[280px] p-6 rounded-3xl border flex-shrink-0 relative overflow-hidden ${isDark ? 'bg-[#161616] border-[#2A2A2A]' : 'bg-white border-gray-200 shadow-sm'}`}>
+                     <div className="flex text-yellow-500 mb-3 gap-1">{[...Array(5)].map((_,k)=><Star key={k} size={12} fill="currentColor"/>)}</div>
+                     <p className={`text-xs italic mb-4 leading-relaxed line-clamp-3 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>"{r.t}"</p>
+                     <div className={`flex items-center gap-2 border-t pt-3 ${isDark ? 'border-[#333]' : 'border-gray-100'}`}>
+                        <Shield size={12} className="text-green-500"/>
+                        <p className={`text-[9px] font-black uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{r.a}</p>
+                     </div>
+                 </div>
+             ))}
+        </div>
+        <style>{`@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } .animate-scroll { animation: scroll 60s linear infinite; }`}</style>
+    </div>
+);
+
 // ==================================================================================
-// 4. APP LÓGICA PRINCIPAL
+// 4. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
@@ -348,7 +359,7 @@ export default function App() {
   const [lang, setLang] = useState('pt');
   const T = TEXTS[lang];
 
-  // PERSISTENCE
+  // PERSISTENCE (SAFE)
   const [user, setUser] = useState(() => {
       try {
           const s = localStorage.getItem(CONFIG.STORAGE_KEY);
@@ -382,7 +393,7 @@ export default function App() {
   };
   const [booking, setBooking] = useState(initialBooking);
 
-  // ACTIONS
+  // HELPERS
   const showToast = (msg) => { setToast({ show: true, msg }); setTimeout(() => setToast({ show: false, msg: '' }), 3000); };
   const handleNext = () => { Utils.vibrate(); window.scrollTo({ top: 0, behavior: 'smooth' }); setStep(s => s + 1); };
   const handleBack = () => { Utils.vibrate(); setStep(s => s - 1); };
@@ -406,37 +417,43 @@ export default function App() {
       return { service: s, extras: e, disc: d, final: Math.max(0, s + e - d) };
   };
 
-  // VALIDAÇÃO DE ENDEREÇO
   const isAddressValid = () => {
       const { city, street, number, district, motelName, suite, hotelName, room } = booking.address;
       if (!city || city.length < 3) return false;
-      
       if (booking.locationType === 'motel') return motelName && suite;
       if (booking.locationType === 'hotel') return hotelName && room;
       return street && number && district;
   };
 
   const finalize = () => {
-      const newCoupons = user.coupons.filter(c => c.id !== booking.appliedCoupon?.id);
+      // 1. Lógica Contábil do Cupom (Queima)
+      let newCoupons = [...user.coupons];
+      if (booking.appliedCoupon) {
+          newCoupons = newCoupons.filter(c => c.id !== booking.appliedCoupon.id);
+      }
+
+      // 2. Lógica de XP e Recompensa
       const newXP = user.xp + (booking.service?.xp || 0);
       if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
           newCoupons.push({ id: `RWD_${Date.now()}`, label: 'Fidelidade', val: CONFIG.REWARD_VAL });
       }
+      
       setUser({ ...user, xp: newXP, coupons: newCoupons });
 
+      // 3. Gerar Mensagem
       let locStr = "";
       let mapLink = "";
       const addr = booking.address;
       
       if(booking.locationType === 'motel') {
           locStr = `🏩 ${T.lbl_motel}: ${addr.motelName}\n🚪 ${T.lbl_suite}: ${addr.suite}`;
-          mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr.motelName + ' ' + addr.city)}`;
+          mapLink = `${addr.motelName}, ${addr.city}`;
       } else if(booking.locationType === 'hotel') {
           locStr = `🏨 ${T.lbl_hotel}: ${addr.hotelName}\n🚪 ${T.lbl_room}: ${addr.room}`;
-          mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr.hotelName + ' ' + addr.city)}`;
+          mapLink = `${addr.hotelName}, ${addr.city}`;
       } else {
           locStr = `🏠 ${T.lbl_addr}: ${addr.street}, ${addr.number}\n🏘️ ${T.lbl_dist}: ${addr.district}`;
-          mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr.street + ', ' + addr.number + ' - ' + addr.district + ', ' + addr.city)}`;
+          mapLink = `${addr.street}, ${addr.number}, ${addr.city}`;
       }
 
       const fin = calculateTotal();
@@ -460,7 +477,7 @@ export default function App() {
 
 📍 ${T.city_lbl}: ${addr.city}
 ${locStr}
-🔗 ${mapLink}
+🔗 ${encodeURIComponent(mapLink)}
 
 💰 *${T.review_title}:*
 ${T.base_val}: ${Utils.fmtMoney(fin.service)}
@@ -489,7 +506,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
       <div className={`min-h-screen flex flex-col items-center justify-center p-8 text-center animate-fade-in ${isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'}`}>
           <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-xl animate-bounce"><Check size={48} className="text-white" strokeWidth={4}/></div>
           <h2 className="text-3xl font-black mb-2 uppercase tracking-tight">{T.success_title}</h2>
-          <p className={`${isDark ? 'text-zinc-400' : 'text-zinc-600'} mb-8 max-w-xs`}>{T.success_msg}</p>
+          <p className={`mb-8 max-w-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{T.success_msg}</p>
           <PrimaryButton onClick={handleReset} label={T.new_book} icon={RefreshCw} variant="secondary" isDark={isDark}/>
       </div>
   );
@@ -503,7 +520,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
          <div className="px-5 py-4 flex justify-between items-center">
              <div className="flex items-center gap-3">
                  {step > 0 && <button onClick={handleBack} className={`p-2 -ml-2 active:scale-90 transition-transform ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}><ChevronLeft size={24}/></button>}
-                 <h1 className="text-sm font-black tracking-[0.2em] uppercase">Thaly</h1>
+                 <h1 className="text-sm font-black tracking-[0.2em] uppercase animate-pulse">Thalyson</h1>
              </div>
              <div className="flex gap-2">
                  <button onClick={() => window.open(CONFIG.INSTAGRAM, '_blank')} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><Instagram size={18}/></button>
@@ -679,7 +696,13 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                              return <div key={k} className={`flex justify-between text-sm ${isDark ? 'text-white' : 'text-zinc-800'}`}><span>+ {l}</span><span>{Utils.fmtMoney(EXTRAS_DB.find(e=>e.id===k).price)}</span></div>
                         })}
                         {booking.appliedCoupon ? (
-                            <div className="flex justify-between text-sm text-green-500 font-bold py-2 border-t border-dashed border-gray-700"><span>{T.coupon_lbl}</span><span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span></div>
+                            <div className="flex justify-between text-sm text-green-500 font-bold py-2 border-t border-dashed border-gray-700">
+                                <span>{T.coupon_lbl}</span>
+                                <div className="flex items-center gap-2">
+                                    <span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span>
+                                    <button onClick={() => setBooking({...booking, appliedCoupon: null})} className="text-red-500 hover:text-red-400"><Trash2 size={12}/></button>
+                                </div>
+                            </div>
                         ) : (
                             <button onClick={() => setShowWallet(true)} className={`w-full py-2 border border-dashed rounded-lg text-xs flex items-center justify-center gap-2 mt-2 ${isDark ? 'border-[#444] text-zinc-500' : 'border-gray-300 text-zinc-500'}`}><Ticket size={12}/> {T.add_coupon}</button>
                         )}
