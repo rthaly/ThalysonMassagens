@@ -1,55 +1,60 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+limport React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, Home, MessageCircle, Ticket, Flame, Wind, 
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
   Shield, Zap, Menu, X, Share2, HelpCircle, Wallet, Gift, 
-  Navigation, CreditCard, Banknote, Building, BedDouble
+  Navigation, CreditCard, Banknote, Building, BedDouble, RefreshCw
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DADOS & CONFIGURAÇÃO
+// 1. DADOS E CONFIGURAÇÃO (RESTAURADOS)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   CITY_NAME: "Londrina - PR",
-  STORAGE_KEY: 'thaly_app_pro_v4',
+  STORAGE_KEY: 'thaly_app_master_v5',
   XP_TARGET: 300 
 };
 
+// SERVIÇOS ORIGINAIS RESTAURADOS
 const SERVICES = [
   { 
     id: 'completa', name: 'Experiência Completa', 
-    desc: 'O serviço mais pedido. Relaxamento muscular profundo + finalização manual intensa.', 
-    time: 60, price: 180, xp: 50, popular: true 
+    short: 'Relaxamento + Finalização',
+    desc: 'O ápice do relaxamento. Inicia soltando a musculatura e evolui para um contato corpo a corpo com cremes e óleos. Finalização manual intensa.', 
+    time: 60, price: 175, xp: 60, popular: true 
   },
   { 
     id: 'relax', name: 'Massagem Relaxante', 
-    desc: 'Foco terapêutico para tirar dores e cansaço. Apenas relaxamento físico.', 
-    time: 60, price: 150, xp: 30, popular: false 
-  },
-  { 
-    id: 'tantra', name: 'Tântrica Sensitive', 
-    desc: 'Uma experiência sensorial. Toques sutis, conexão e bioeletricidade.', 
-    time: 90, price: 250, xp: 80, popular: false 
+    short: 'Alívio de Dores',
+    desc: 'Foco 100% terapêutico. Ideal para remover dores no corpo cansado. Toques suaves e firmes para tirar o stress. Sem toques íntimos.', 
+    time: 60, price: 145, xp: 30, popular: false 
   }
 ];
 
 const EXTRAS = [
-  { id: 'upgrade', label: '+30 Minutos', desc: 'Mais tempo de sessão', icon: Clock, price: 50 },
-  { id: 'touch', label: 'Interação', desc: 'Troca de energia', icon: Flame, price: 60 },
-  { id: 'aroma', label: 'Aromaterapia', desc: 'Óleos essenciais', icon: Wind, price: 20 }
+  { id: 'upgrade', label: '+30 Minutos', desc: 'Mais tempo de sessão', icon: Clock, price: 50 }, // Ajuste proporcional
+  { id: 'touch', label: 'Interação', desc: 'Troca de energia', icon: Flame, price: 63 }, // Preço original restaurado
+  { id: 'aroma', label: 'Aromaterapia', desc: 'Óleos essenciais', icon: Wind, price: 10 } // Preço original
 ];
 
-const REVIEWS = [
-  { t: "Profissionalismo raro. O Thalyson é pontual e muito educado.", a: "Roberto (Advogado)", s: 5 },
-  { t: "A massagem completa salvou minha semana. Recomendo.", a: "André L.", s: 5 },
-  { t: "Discreto e higiênico. Me senti seguro no hotel.", a: "M. Viajante", s: 5 },
-  { t: "Mão firme e técnica excelente.", a: "Carlos", s: 5 },
+// REVIEWS RESTAURADOS (Base de dados original)
+const REVIEWS_DB = [
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago", s: 5 },
+  { t: "O toque dele vicia. A finalização foi absurda.", a: "Anônimo", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba. A massagem é real mesmo.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso", s: 5 },
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
+  { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
+  { t: "Gostei muito! Um toque super bom! Foi uma experiência ótima.", a: "Marcelo", s: 5 },
+  { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista", s: 5 },
+  { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 }
 ];
 
 // ==================================================================================
-// 2. COMPONENTES DE UI (ATOMIC DESIGN)
+// 2. COMPONENTES DE UI (UX SENIOR)
 // ==================================================================================
 
 // Input Gigante (Fácil de tocar)
@@ -84,18 +89,19 @@ const PrimaryButton = ({ onClick, disabled, children, icon: Icon, pulse }) => (
     </button>
 );
 
-// Card de Seleção
-const SelectCard = ({ active, onClick, title, subtitle, price, badge }) => (
-    <div onClick={onClick} 
-        className={`relative p-5 rounded-2xl border cursor-pointer transition-all active:scale-[0.98] mb-3
-        ${active ? 'bg-[#1C1C1E] border-green-500 shadow-lg shadow-green-900/10' : 'bg-[#111] border-[#222]'}
-    `}>
-        {badge && <span className="absolute top-4 right-4 bg-yellow-400 text-black text-[10px] font-black px-2 py-0.5 rounded">{badge}</span>}
-        <div className="flex justify-between items-center mb-1">
-            <h3 className={`text-lg font-bold ${active ? 'text-white' : 'text-gray-300'}`}>{title}</h3>
-            {price && <span className="text-sm font-bold text-white bg-[#2A2A2A] px-2 py-1 rounded">{price}</span>}
+// Carrossel de Avaliações
+const ReviewCarousel = () => (
+    <div className="w-full overflow-hidden relative py-2">
+        <div className="flex gap-4 animate-scroll w-max">
+             {[...REVIEWS_DB, ...REVIEWS_DB].map((r, i) => (
+                 <div key={i} className="w-[260px] bg-[#1C1C1E] p-4 rounded-2xl border border-[#333] flex-shrink-0">
+                     <div className="flex text-yellow-500 mb-2 gap-0.5">{[...Array(5)].map((_,k)=><Star key={k} size={10} fill="currentColor"/>)}</div>
+                     <p className="text-gray-300 text-xs italic mb-2 line-clamp-2 leading-relaxed">"{r.t}"</p>
+                     <p className="text-[10px] font-bold text-gray-500 flex items-center gap-1 uppercase"><Shield size={10} className="text-green-500"/> {r.a}</p>
+                 </div>
+             ))}
         </div>
-        <p className="text-xs text-gray-500 leading-relaxed max-w-[90%]">{subtitle}</p>
+        <style>{`@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } .animate-scroll { animation: scroll 40s linear infinite; }`}</style>
     </div>
 );
 
@@ -108,29 +114,31 @@ export default function App() {
   const [step, setStep] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [walletOpen, setWalletOpen] = useState(false);
+  const [successMode, setSuccessMode] = useState(false);
 
   // User Data (Persistente)
   const [user, setUser] = useState(() => {
       try {
           const s = localStorage.getItem(CONFIG.STORAGE_KEY);
-          return s ? JSON.parse(s) : { name: '', xp: 0, coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 15 }] };
+          return s ? JSON.parse(s) : { name: '', xp: 0, coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 12 }] };
       } catch { return { name: '', xp: 0, coupons: [] }; }
   });
 
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
 
   // Booking Data (Sessão)
-  const [booking, setBooking] = useState({
+  const initialBookingState = {
       healthChecked: false,
       service: null,
       extras: { upgrade: false, touch: false, aroma: false },
       date: null,
       time: null,
-      locationType: 'home', // home, hotel, motel
+      locationType: 'home',
       address: { street: '', number: '', district: '', comp: '', motelName: '', suite: '' },
       payment: 'pix',
       appliedCoupon: null
-  });
+  };
+  const [booking, setBooking] = useState(initialBookingState);
 
   // --- ACTIONS ---
 
@@ -142,7 +150,14 @@ export default function App() {
   
   const handleBack = () => { setStep(s => s - 1); };
 
-  // Verifica disponibilidade de horário (Lógica simples para UX)
+  const handleReset = () => {
+      setSuccessMode(false);
+      setBooking(initialBookingState);
+      setStep(0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Verifica disponibilidade (Simulação Inteligente)
   const isTimeBlocked = (date, timeStr) => {
       if (!date) return true;
       const now = new Date();
@@ -152,15 +167,25 @@ export default function App() {
       // Bloqueia passado
       if (sel.toDateString() === now.toDateString() && h <= now.getHours()) return true;
       
-      // Simula aleatoriamente alguns "Esgotados" para prova social
-      if ((sel.getDate() + h) % 7 === 0) return 'sold_out';
+      // Simula Esgotado (Determinístico)
+      const seed = sel.getDate() + h;
+      if (seed % 6 === 0) return 'sold_out';
       
       return false;
   };
 
+  const calculateTotal = () => {
+      let sub = booking.service?.price || 0;
+      if (booking.extras.upgrade) sub += 50;
+      if (booking.extras.touch) sub += 63;
+      if (booking.extras.aroma) sub += 10;
+      const disc = booking.appliedCoupon?.val || 0;
+      return { sub, disc, final: Math.max(0, sub - disc) };
+  };
+
   // Finalização
   const finalize = () => {
-      // 1. Lógica Cupom e XP
+      // 1. Lógica Cupom e XP (Gamificação)
       let newCoupons = user.coupons.filter(c => c.id !== booking.appliedCoupon?.id);
       const newXP = user.xp + (booking.service?.xp || 0);
       
@@ -169,7 +194,8 @@ export default function App() {
       }
       setUser({ ...user, xp: newXP, coupons: newCoupons });
 
-      // 2. Montar Endereço
+      // 2. Montar Texto Zap
+      const total = calculateTotal();
       let addressStr = "";
       if (booking.locationType === 'motel') {
           addressStr = `🏩 MOTEL: ${booking.address.motelName}\n🚪 SUÍTE: ${booking.address.suite}`;
@@ -178,10 +204,7 @@ export default function App() {
           addressStr = `${type}\n📍 ${booking.address.street}, ${booking.address.number}\n🏘️ Bairro: ${booking.address.district}`;
           if (booking.address.comp) addressStr += `\n📝 Compl: ${booking.address.comp}`;
       }
-      addressStr += `\n🗺️ Cidade: ${CONFIG.CITY_NAME}`;
 
-      // 3. Montar Texto Zap
-      const total = calculateTotal();
       const text = `
 *AGENDAMENTO - THALYSON* 🌿
 -------------------------------
@@ -208,21 +231,35 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
 💳 *Pagamento:* ${booking.payment.toUpperCase()}
 `.trim();
 
+      // 3. Abrir Zap e Mostrar Tela de Sucesso
       window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`, '_blank');
-  };
-
-  const calculateTotal = () => {
-      let sub = booking.service?.price || 0;
-      if (booking.extras.upgrade) sub += 50;
-      if (booking.extras.touch) sub += 60;
-      if (booking.extras.aroma) sub += 20;
-      const disc = booking.appliedCoupon?.val || 0;
-      return { sub, disc, final: Math.max(0, sub - disc) };
+      setSuccessMode(true);
   };
 
   const totalData = calculateTotal();
 
   // --- RENDER ---
+
+  if (successMode) {
+      return (
+          <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 animate-fade-in text-center">
+              <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(34,197,94,0.4)]">
+                  <Check size={48} className="text-black" strokeWidth={4} />
+              </div>
+              <h2 className="text-3xl font-black text-white mb-2">AGENDADO!</h2>
+              <p className="text-gray-400 mb-8 max-w-xs">Seu pedido foi enviado para o WhatsApp. Aguarde minha confirmação para o deslocamento.</p>
+              
+              {/* Ticket Resumo Simplificado */}
+              <div className="w-full max-w-sm bg-[#1C1C1E] rounded-2xl border border-[#333] p-6 mb-8 transform rotate-1">
+                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Confirmação</p>
+                   <h3 className="text-xl font-bold text-white mb-1">{booking.service?.name}</h3>
+                   <p className="text-sm text-green-500">{new Date(booking.date).toLocaleDateString('pt-BR')} às {booking.time}</p>
+              </div>
+
+              <PrimaryButton onClick={handleReset} icon={RefreshCw}>Voltar ao Início</PrimaryButton>
+          </div>
+      )
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans pb-32">
@@ -233,13 +270,13 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
              <div className="flex items-center gap-3">
                  {step > 0 && <button onClick={handleBack} className="p-2 -ml-2 text-gray-400 active:scale-90 transition-transform"><ChevronLeft/></button>}
                  <div>
-                     <h1 className="text-sm font-black tracking-widest uppercase">Thalymassagens</h1>
+                     <h1 className="text-sm font-black tracking-widest uppercase text-white">Thalymassagens</h1>
                      <p className="text-[10px] text-green-500 font-bold flex items-center gap-1"><MapPin size={10}/> {CONFIG.CITY_NAME}</p>
                  </div>
              </div>
              <button onClick={() => setMenuOpen(true)} className="p-2 bg-[#222] rounded-full border border-[#333]"><Menu size={18}/></button>
          </div>
-         {/* Barra de Progresso Sutil */}
+         {/* Barra de Progresso */}
          <div className="h-[2px] w-full bg-[#111]"><div className="h-full bg-green-500 transition-all duration-500" style={{width: `${(step/5)*100}%`}}></div></div>
       </header>
 
@@ -257,7 +294,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
                       <div className="h-1.5 bg-[#333] rounded-full overflow-hidden"><div className="h-full bg-green-500" style={{width:`${(user.xp%300)/300*100}%`}}></div></div>
                   </div>
                   <button className="w-full py-4 bg-[#222] rounded-xl font-bold text-sm mb-3 flex items-center gap-3 px-4" onClick={() => {if(navigator.share) navigator.share({url: window.location.href})}}><Share2 size={18}/> Compartilhar</button>
-                  <div className="mt-auto text-center text-xs text-gray-600">Versão 4.0 Senior</div>
+                  <div className="mt-auto text-center text-xs text-gray-600">App v5.0 Master</div>
               </div>
           </div>
       )}
@@ -266,7 +303,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
       {walletOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
               <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setWalletOpen(false)}></div>
-              <div className="relative w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-2xl p-6">
+              <div className="relative w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-2xl p-6 animate-fade-in">
                   <div className="flex justify-between items-center mb-6"><h3 className="font-bold text-xl flex items-center gap-2"><Wallet className="text-green-500"/> Cupons</h3><button onClick={()=>setWalletOpen(false)}><X/></button></div>
                   {user.coupons.length === 0 ? <p className="text-center text-gray-500 py-4">Carteira vazia.</p> : (
                       <div className="space-y-3">
@@ -295,56 +332,62 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
                     </div>
                 )}
 
-                <h2 className="text-3xl font-black mb-2">Vamos começar.</h2>
-                <p className="text-gray-500 text-sm mb-8">Para sua segurança, precisamos de alguns dados.</p>
+                <h2 className="text-3xl font-black mb-2">Bem-vindo.</h2>
+                <p className="text-gray-500 text-sm mb-6">Massagem profissional em Londrina.</p>
 
                 <BigInput 
-                    label="Como prefere ser chamado?" 
-                    placeholder="Seu Nome" 
+                    label="Seu Nome" 
+                    placeholder="Digite aqui..." 
                     value={user.name} 
                     onChange={e => setUser({...user, name: e.target.value})} 
                 />
 
                 <div 
                     onClick={() => setBooking({...booking, healthChecked: !booking.healthChecked})}
-                    className={`p-5 rounded-2xl border flex gap-4 cursor-pointer transition-all items-center ${booking.healthChecked ? 'bg-green-500/10 border-green-500' : 'bg-[#1C1C1E] border-[#333]'}`}
+                    className={`p-5 rounded-2xl border flex gap-4 cursor-pointer transition-all items-center mb-6 ${booking.healthChecked ? 'bg-green-500/10 border-green-500' : 'bg-[#1C1C1E] border-[#333]'}`}
                 >
                     <div className={`w-6 h-6 rounded border flex-shrink-0 flex items-center justify-center ${booking.healthChecked ? 'bg-green-500 border-green-500 text-black' : 'border-[#555]'}`}>
                         {booking.healthChecked && <Check size={16}/>}
                     </div>
                     <div>
-                        <p className="font-bold text-sm text-white">Confirmação Obrigatória</p>
-                        <p className="text-xs text-gray-400 mt-1">Declaro ser maior de 18 anos e estar saudável.</p>
+                        <p className="font-bold text-sm text-white">Confirmação</p>
+                        <p className="text-xs text-gray-400 mt-1">Declaro ser maior de 18 anos e saudável.</p>
                     </div>
                 </div>
 
-                <div className="mt-8">
-                    <PrimaryButton 
-                        disabled={!booking.healthChecked || user.name.length < 3} 
-                        onClick={handleNext}
-                        icon={ArrowRight}
-                    >
-                        Continuar
-                    </PrimaryButton>
+                <div className="mb-8 bg-[#1C1C1E] rounded-2xl border border-[#333] p-4">
+                     <p className="text-[10px] font-bold text-gray-500 uppercase mb-2">Avaliações Reais</p>
+                     <ReviewCarousel />
                 </div>
+
+                <PrimaryButton 
+                    disabled={!booking.healthChecked || user.name.length < 3} 
+                    onClick={handleNext}
+                    icon={ArrowRight}
+                >
+                    Começar
+                </PrimaryButton>
             </div>
         )}
 
         {/* --- STEP 1: SERVIÇOS --- */}
         {step === 1 && (
             <div className="animate-fade-in">
-                <h2 className="text-xl font-bold mb-6">Escolha a Experiência</h2>
+                <h2 className="text-xl font-bold mb-6">Escolha o Serviço</h2>
                 <div className="space-y-4">
                     {SERVICES.map(s => (
-                        <SelectCard 
-                            key={s.id}
-                            active={booking.service?.id === s.id}
-                            onClick={() => { setBooking({...booking, service: s}); handleNext(); }}
-                            title={s.name}
-                            subtitle={s.desc}
-                            price={(s.price).toLocaleString('pt-BR', {style:'currency', currency: 'BRL'})}
-                            badge={s.popular ? 'MAIS PEDIDO' : null}
-                        />
+                        <div key={s.id} onClick={() => { setBooking({...booking, service: s}); handleNext(); }}
+                            className={`relative p-5 rounded-2xl border cursor-pointer transition-all active:scale-[0.98]
+                            ${booking.service?.id === s.id ? 'bg-[#1C1C1E] border-green-500 shadow-lg shadow-green-900/10' : 'bg-[#111] border-[#222]'}
+                        `}>
+                            {s.popular && <span className="absolute top-4 right-4 bg-yellow-400 text-black text-[10px] font-black px-2 py-0.5 rounded">POPULAR</span>}
+                            <div className="flex justify-between items-center mb-1">
+                                <h3 className={`text-lg font-bold ${booking.service?.id === s.id ? 'text-white' : 'text-gray-300'}`}>{s.name}</h3>
+                                <span className="text-sm font-bold text-white bg-[#2A2A2A] px-2 py-1 rounded">R$ {s.price}</span>
+                            </div>
+                            <p className="text-xs text-gray-500 leading-relaxed max-w-[90%] mb-3">{s.desc}</p>
+                            <span className="text-[10px] font-bold text-green-600 flex items-center gap-1"><Zap size={10}/> Ganhe {s.xp} XP</span>
+                        </div>
                     ))}
                 </div>
             </div>
@@ -353,7 +396,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
         {/* --- STEP 2: DATA E HORA --- */}
         {step === 2 && (
             <div className="animate-fade-in">
-                <h2 className="text-xl font-bold mb-6">Quando será?</h2>
+                <h2 className="text-xl font-bold mb-6">Data e Hora</h2>
                 
                 {/* Scroll Horizontal */}
                 <div className="flex gap-3 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide">
@@ -401,7 +444,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
         {/* --- STEP 3: EXTRAS --- */}
         {step === 3 && (
             <div className="animate-fade-in">
-                <h2 className="text-xl font-bold mb-6">Adicionais</h2>
+                <h2 className="text-xl font-bold mb-6">Turbine sua Sessão</h2>
                 {EXTRAS.map(ex => {
                     const active = booking.extras[ex.id];
                     return (
@@ -423,10 +466,10 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
             </div>
         )}
 
-        {/* --- STEP 4: ENDEREÇO (UX ATÔMICA) --- */}
+        {/* --- STEP 4: ENDEREÇO (UX SEPARADA) --- */}
         {step === 4 && (
             <div className="animate-fade-in">
-                <h2 className="text-xl font-bold mb-6">Onde será?</h2>
+                <h2 className="text-xl font-bold mb-6">Endereço</h2>
                 
                 {/* Seletor Tipo */}
                 <div className="flex bg-[#1C1C1E] p-1 rounded-xl mb-6 border border-[#333]">
@@ -438,7 +481,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
                     ))}
                 </div>
 
-                {/* Formulário Condicional */}
+                {/* Inputs Condicionais */}
                 <div className="space-y-4">
                     {booking.locationType === 'motel' ? (
                         <>
@@ -456,17 +499,16 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
                                     <BigInput label="Bairro" placeholder="Ex: Centro" value={booking.address.district} onChange={e => setBooking({...booking, address: {...booking.address, district: e.target.value}})} />
                                 </div>
                             </div>
-                            <BigInput label="Complemento (Opcional)" placeholder="Ex: Bloco A, Apto 12" value={booking.address.comp} onChange={e => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} />
+                            <BigInput label="Complemento (Opcional)" placeholder="Ex: Bloco A" value={booking.address.comp} onChange={e => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} />
                         </>
                     )}
                 </div>
 
-                {/* Aviso Uber */}
                 <div className="mt-4 p-4 bg-yellow-900/10 border border-yellow-600/20 rounded-xl flex gap-3">
                     <AlertTriangle size={20} className="text-yellow-500 flex-shrink-0 mt-1"/>
                     <p className="text-xs text-yellow-100/70 leading-relaxed">
                         <strong className="text-yellow-500 block">Taxa de Deslocamento (Uber)</strong>
-                        Este valor <strong>não está incluso</strong>. Calcularemos o valor exato da ida e volta pelo WhatsApp após você enviar o endereço.
+                        Este valor <strong>não está incluso</strong>. Combinaremos o valor exato no WhatsApp.
                     </p>
                 </div>
 
@@ -484,7 +526,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
         {/* --- STEP 5: RESUMO E PAGAMENTO --- */}
         {step === 5 && (
             <div className="animate-fade-in pb-8">
-                <h2 className="text-xl font-bold mb-6">Resumo</h2>
+                <h2 className="text-xl font-bold mb-6">Revisão</h2>
                 
                 {/* TICKET VISUAL */}
                 <div className="relative bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 mb-6">
@@ -497,13 +539,14 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
                     </div>
 
                     <div className="space-y-3 mb-6">
+                        <div className="flex justify-between text-sm text-gray-300"><span>Valor Base</span><span>R$ {booking.service?.price},00</span></div>
                         {Object.entries(booking.extras).filter(([_,v])=>v).map(([k]) => (
-                            <div key={k} className="flex justify-between text-xs text-green-500"><span>+ {EXTRAS.find(e=>e.id===k).label}</span><span>{EXTRAS.find(e=>e.id===k).price},00</span></div>
+                            <div key={k} className="flex justify-between text-xs text-green-500"><span>+ {EXTRAS.find(e=>e.id===k).label}</span><span>R$ {EXTRAS.find(e=>e.id===k).price},00</span></div>
                         ))}
                         {booking.appliedCoupon ? (
                             <div className="flex justify-between text-sm text-green-400 font-bold"><span>Cupom ({booking.appliedCoupon.label})</span><span>- R$ {booking.appliedCoupon.val},00</span></div>
                         ) : (
-                            <button onClick={() => setWalletOpen(true)} className="w-full py-2 border border-dashed border-[#444] rounded-lg text-xs text-gray-500 hover:text-green-500 hover:border-green-500 transition-colors flex items-center justify-center gap-2"><Ticket size={14}/> Adicionar Cupom</button>
+                            <button onClick={() => setWalletOpen(true)} className="w-full py-2 border border-dashed border-[#444] rounded-lg text-xs text-gray-500 hover:text-green-500 hover:border-green-500 transition-colors flex items-center justify-center gap-2"><Ticket size={14}/> Aplicar Cupom</button>
                         )}
                     </div>
 
@@ -514,7 +557,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
                 </div>
 
                 <div className="mb-8">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Forma de Pagamento</p>
+                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Pagamento no Local</p>
                     <div className="grid grid-cols-3 gap-2">
                         {['pix', 'dinheiro', 'cartao'].map(p => (
                             <button key={p} onClick={() => setBooking({...booking, payment: p})} className={`py-3 rounded-xl border text-[10px] font-bold uppercase transition-all ${booking.payment === p ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] border-[#333] text-gray-500'}`}>
@@ -525,7 +568,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${total.disc.toLocaleString('pt-BR',{
                 </div>
 
                 <div className="fixed bottom-0 left-0 w-full bg-[#050505]/95 backdrop-blur-xl border-t border-white/10 p-5 z-40">
-                    <PrimaryButton onClick={finalize} pulse icon={MessageCircle}>Agendar Agora</PrimaryButton>
+                    <PrimaryButton onClick={finalize} pulse icon={MessageCircle}>Confirmar Agendamento</PrimaryButton>
                 </div>
             </div>
         )}
