@@ -1,24 +1,23 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
   Shield, Zap, Menu, X, Share2, HelpCircle, Wallet, Gift, 
-  CreditCard, Banknote, Building, RefreshCw, User, Copy, CheckCircle, 
-  Info, Navigation, Lock, Smile
+  CreditCard, Banknote, Building, RefreshCw, User, Copy, 
+  CheckCircle, Info, Navigation, Lock, Smile, Map
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DADOS DE NEGÓCIO & PREÇOS EXATOS
+// 1. DADOS DE NEGÓCIO & CONFIGURAÇÃO
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_ultimate_v7',
+  STORAGE_KEY: 'thaly_app_v8_fixed',
   XP_TARGET: 300 
 };
 
-// SERVIÇOS CONFIGURADOS COM A DESCRIÇÃO EXATA PEDIDA
 const SERVICES = [
   { 
     id: 'completa', 
@@ -48,7 +47,6 @@ const SERVICES = [
   }
 ];
 
-// EXTRAS COM PREÇOS CORRIGIDOS
 const EXTRAS = [
   { id: 'more_time', label: 'Duração 1h30', sub: '+30 minutos de sessão', icon: Clock, price: 70 },
   { id: 'touch', label: 'Interatividade', sub: 'Toque recíproco permitido', icon: Flame, price: 63, warning: 'Massagista fica de cueca.' },
@@ -60,8 +58,7 @@ const REVIEWS_DB = [
   { t: "Profissionalismo raro. Explicou tudo antes, sem surpresas.", a: "Roberto", s: 5 },
   { t: "Fui travado e saí leve. A finalização vale cada centavo.", a: "Pedro H.", s: 5 },
   { t: "Discreto e higiênico. Me senti seguro no hotel.", a: "M. Viajante", s: 5 },
-  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso", s: 5 },
-  { t: "Respeitou meu tempo e meus limites. Recomendo.", a: "André", s: 5 }
+  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso", s: 5 }
 ];
 
 const FAQS = [
@@ -71,7 +68,7 @@ const FAQS = [
 ];
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (COMPONENTES PREMIUM)
+// 2. DESIGN SYSTEM (COMPONENTES)
 // ==================================================================================
 
 const Utils = {
@@ -90,74 +87,23 @@ const Toast = ({ msg, show }) => (
     </div>
 );
 
-// Card de Serviço Avançado
-const ServiceCard = ({ service, active, onClick }) => (
-    <div onClick={onClick} className={`relative overflow-hidden w-full p-6 rounded-[2rem] border-2 transition-all duration-300 cursor-pointer mb-5 group ${active ? 'bg-[#18181b] border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.15)] scale-[1.02]' : 'bg-[#111] border-[#222] hover:border-[#333]'}`}>
-        {/* Badge */}
-        <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${active ? 'bg-green-500 text-black' : 'bg-[#222] text-gray-500'}`}>
-            {service.label}
-        </div>
-
-        <div className="mb-4">
-            <h3 className={`text-xl font-black uppercase mb-1 ${active ? 'text-white' : 'text-gray-400'}`}>{service.name}</h3>
-            <div className="flex items-center gap-2">
-                 <span className={`text-lg font-bold ${active ? 'text-green-400' : 'text-gray-500'}`}>{Utils.fmtMoney(service.price)}</span>
-                 <span className="text-[10px] bg-[#222] text-gray-400 px-2 py-0.5 rounded flex items-center gap-1"><Clock size={10}/> {service.time}min</span>
-            </div>
-        </div>
-
-        {/* Progressão (O Pedido do Usuário) */}
-        <div className={`space-y-2 mb-4 p-4 rounded-xl ${active ? 'bg-black/40 border border-white/5' : 'bg-black/20'}`}>
-            {service.steps.map((step, i) => (
-                <p key={i} className="text-xs text-gray-300 leading-relaxed font-medium">{step}</p>
-            ))}
-        </div>
-
-        <p className="text-[10px] text-gray-500 flex items-center gap-1 italic"><Info size={10}/> {service.note}</p>
-        
-        {/* Selecionador Visual */}
-        <div className={`absolute bottom-6 right-6 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${active ? 'bg-green-500 border-green-500' : 'border-[#333]'}`}>
-            {active && <Check size={14} className="text-black" strokeWidth={4}/>}
-        </div>
-    </div>
-);
-
-// Toggle de Extra com Aviso
-const ExtraToggle = ({ active, onClick, extra }) => (
-    <div onClick={onClick} className={`relative p-5 rounded-2xl border transition-all cursor-pointer mb-3 flex items-center justify-between ${active ? 'bg-[#1C1C1E] border-green-500/50' : 'bg-[#111] border-[#222]'}`}>
-        <div className="flex items-center gap-4">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${active ? 'bg-green-500 text-black' : 'bg-[#222] text-gray-600'}`}>
-                <extra.icon size={20}/>
-            </div>
-            <div>
-                <p className={`font-bold text-sm ${active ? 'text-white' : 'text-gray-400'}`}>{extra.label}</p>
-                <p className="text-xs text-gray-500">{extra.sub}</p>
-                {/* Aviso Condicional */}
-                {active && extra.warning && (
-                    <p className="text-[10px] text-yellow-500 mt-1 flex items-center gap-1 animate-pulse"><AlertTriangle size={10}/> {extra.warning}</p>
-                )}
-            </div>
-        </div>
-        <span className={`font-bold text-sm ${active ? 'text-green-500' : 'text-gray-600'}`}>+ R$ {extra.price}</span>
-    </div>
-);
-
-// Input Grande e Moderno
-const BigInput = ({ label, value, onChange, placeholder, icon: Icon }) => (
-  <div className="mb-5 group">
-    <label className="text-[10px] font-bold text-gray-500 uppercase ml-1 mb-2 block tracking-wider group-focus-within:text-green-500 transition-colors">{label}</label>
-    <div className="relative">
+// Input Grande
+const BigInput = ({ label, value, onChange, placeholder, icon: Icon, type="text" }) => (
+  <div className="mb-4 w-full">
+    <label className="text-[10px] font-bold text-gray-500 uppercase ml-1 mb-1.5 block tracking-wider">{label}</label>
+    <div className="relative group">
         <input 
+            type={type}
             value={value} onChange={onChange} placeholder={placeholder}
-            className="w-full h-14 bg-[#111] border border-[#333] rounded-xl px-4 pl-12 text-white text-base placeholder:text-gray-700 focus:border-green-500 focus:ring-1 focus:ring-green-500/20 outline-none transition-all"
+            className="w-full h-12 bg-[#111] border border-[#333] rounded-xl px-4 pl-11 text-white text-base placeholder:text-gray-700 focus:border-green-500 focus:ring-1 focus:ring-green-500/20 outline-none transition-all"
         />
-        {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-green-500 transition-colors" size={20} />}
+        {Icon && <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-green-500 transition-colors" size={18} />}
     </div>
   </div>
 );
 
 // Botão Sticky Principal
-const PrimaryButton = ({ onClick, disabled, label, icon: Icon, loading }) => (
+const PrimaryButton = ({ onClick, disabled, label, icon: Icon }) => (
     <button 
         onClick={onClick} disabled={disabled}
         className={`w-full h-14 rounded-xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-[0.98]
@@ -173,32 +119,30 @@ const PrimaryButton = ({ onClick, disabled, label, icon: Icon, loading }) => (
 // ==================================================================================
 
 export default function App() {
-  // Estado Global
   const [step, setStep] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [walletOpen, setWalletOpen] = useState(false);
   const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
 
-  // Persistência de Usuário e Cupons
+  // Persistência
   const [user, setUser] = useState(() => {
       try {
           const s = localStorage.getItem(CONFIG.STORAGE_KEY);
-          // Começa com cupom de 15 reais (Boas vindas)
           return s ? JSON.parse(s) : { name: '', xp: 0, coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 15 }] };
       } catch { return { name: '', xp: 0, coupons: [] }; }
   });
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
 
-  // Estado do Agendamento (Sessão)
+  // Agendamento
   const initialBooking = {
       healthChecked: false,
       service: null,
-      extras: {}, // { touch: true, aroma: false }
+      extras: {}, 
       date: null,
       time: null,
       locationType: 'home',
-      address: { city: '', details: '', motelName: '', suite: '' },
+      address: { city: '', street: '', number: '', district: '', comp: '', motelName: '', suite: '' },
       payment: null,
       appliedCoupon: null
   };
@@ -207,28 +151,42 @@ export default function App() {
   // --- ACTIONS ---
 
   const showToast = (msg) => { setToast({ show: true, msg }); setTimeout(() => setToast({ show: false, msg: '' }), 3000); };
-  
   const handleNext = () => { Utils.vibrate(); window.scrollTo({ top: 0, behavior: 'smooth' }); setStep(s => s + 1); };
   const handleBack = () => { Utils.vibrate(); setStep(s => s - 1); };
   const handleReset = () => { setSuccess(false); setBooking(initialBooking); setStep(0); };
 
-  const isTimeBlocked = (d, t) => {
-      if(!d) return true;
+  // Lógica de "Esgotado" Realista (Apenas Sex/Sab a noite)
+  const checkAvailability = (date, timeStr) => {
+      if (!date) return 'blocked';
       const now = new Date();
-      const sel = new Date(d);
-      const [h] = t.split(':').map(Number);
-      if(sel.toDateString() === now.toDateString() && h <= now.getHours()) return true;
-      if((sel.getDate() + h) % 7 === 0) return 'sold_out';
-      return false;
+      const sel = new Date(date);
+      const [h] = timeStr.split(':').map(Number);
+      
+      // Bloquear passado
+      if (sel.toDateString() === now.toDateString() && h <= now.getHours()) return 'past';
+      
+      // Regra de Ouro: Esgotado apenas Sexta(5) e Sabado(6) as 19h e 20h
+      const day = sel.getDay();
+      if ((day === 5 || day === 6) && (h === 19 || h === 20)) return 'sold_out';
+      
+      return 'available';
   };
 
   const calculateTotal = () => {
-      let total = booking.service?.price || 0;
+      let servicePrice = booking.service?.price || 0;
+      let extrasPrice = 0;
       Object.keys(booking.extras).forEach(k => {
-          if(booking.extras[k]) total += EXTRAS.find(e => e.id === k).price;
+          if(booking.extras[k]) extrasPrice += EXTRAS.find(e => e.id === k).price;
       });
       const disc = booking.appliedCoupon?.val || 0;
-      return { total, disc, final: Math.max(0, total - disc) };
+      return { service: servicePrice, extras: extrasPrice, disc, final: Math.max(0, servicePrice + extrasPrice - disc) };
+  };
+
+  const isAddressValid = () => {
+      const { city, street, number, district, motelName, suite } = booking.address;
+      if (!city) return false;
+      if (booking.locationType === 'motel') return motelName && suite;
+      return street && number && district; // Casa/Hotel precisa disso
   };
 
   const finalize = () => {
@@ -242,19 +200,31 @@ export default function App() {
       }
       setUser({ ...user, xp: newXP, coupons: newCoupons });
 
-      // 3. Texto Zap
-      const calc = calculateTotal();
-      const extrasTxt = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> `• ${EXTRAS.find(e=>e.id===k).label}`).join('\n');
-      
+      // 3. Monta Endereço & Maps
       let locStr = "";
-      if(booking.locationType === 'motel') locStr = `🏩 MOTEL: ${booking.address.motelName} (Suíte ${booking.address.suite})`;
-      else locStr = `${booking.locationType === 'hotel' ? '🏨 HOTEL' : '🏠 RESIDÊNCIA'}: ${booking.address.details}`;
+      let mapsQuery = "";
 
+      if(booking.locationType === 'motel') {
+          locStr = `🏩 MOTEL: ${booking.address.motelName} (Suíte ${booking.address.suite})`;
+          mapsQuery = `${booking.address.motelName}, ${booking.address.city}`;
+      } else {
+          const t = booking.locationType === 'hotel' ? '🏨 HOTEL' : '🏠 RESIDÊNCIA';
+          locStr = `${t}: ${booking.address.street}, ${booking.address.number} - ${booking.address.district}`;
+          if(booking.address.comp) locStr += ` (${booking.address.comp})`;
+          mapsQuery = `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}`;
+      }
+
+      const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`;
+
+      // 4. Texto Zap
+      const fin = calculateTotal();
+      const extrasTxt = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> `• ${EXTRAS.find(e=>e.id===k).label} (${Utils.fmtMoney(EXTRAS.find(e=>e.id===k).price)})`).join('\n');
+      
       const text = `
 *AGENDAMENTO VIP* 🌿
 ---------------------------
 👤 *Cliente:* ${user.name}
-✅ *Status:* +18 Confirmado
+✅ *Status:* Confirmado (+18)
 
 💆 *Serviço:* ${booking.service?.name}
 📅 *Data:* ${new Date(booking.date).toLocaleDateString('pt-BR')} às ${booking.time}
@@ -262,15 +232,21 @@ export default function App() {
 ✨ *Adicionais:*
 ${extrasTxt || 'Nenhum'}
 
-📍 *Local:* ${booking.address.city}
+📍 *Localização:*
 ${locStr}
+Cidade: ${booking.address.city}
+🗺️ *Maps:* ${mapsLink}
 
-💰 *Financeiro:*
-Subtotal: ${Utils.fmtMoney(calc.total)}
-${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
-*TOTAL A PAGAR: ${Utils.fmtMoney(calc.final)}*
+💰 *RESUMO FINANCEIRO:*
+Serviço Base: ${Utils.fmtMoney(fin.service)}
+Extras: + ${Utils.fmtMoney(fin.extras)}
+${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
+---------------------------
+*TOTAL A PAGAR: ${Utils.fmtMoney(fin.final)}*
+---------------------------
 
-🚗 *Uber:* Não incluso. Calcular ida/volta.
+🚗 *Uber (Deslocamento):*
+Vou calcular a ida e volta agora e te passo o valor total.
 
 💳 *Pagamento:* ${booking.payment?.toUpperCase()}
 `.trim();
@@ -283,33 +259,22 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
 
   // --- RENDER ---
 
-  if (success) {
-      return (
-          <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-center animate-fade-in-up text-white">
-              <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(34,197,94,0.4)]">
-                  <Check size={48} className="text-black" strokeWidth={4}/>
-              </div>
-              <h2 className="text-3xl font-black mb-2 uppercase tracking-tight">Solicitação Enviada!</h2>
-              <p className="text-gray-400 mb-8 max-w-xs leading-relaxed">Enviei os detalhes para seu WhatsApp. Aguarde minha confirmação do Uber.</p>
-              
-              <div className="w-full bg-[#111] rounded-2xl border border-[#222] p-6 mb-8 relative overflow-hidden">
-                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-transparent"></div>
-                   <h3 className="text-lg font-bold text-white mb-1">{booking.service?.name}</h3>
-                   <div className="flex items-center justify-center gap-2 text-green-500 font-bold text-sm">
-                        <CalIcon size={14}/>
-                        {new Date(booking.date).toLocaleDateString('pt-BR')} às {booking.time}
-                   </div>
-              </div>
-              <button onClick={handleReset} className="flex items-center gap-2 text-gray-500 font-bold text-xs uppercase hover:text-white transition-colors"><RefreshCw size={12}/> Fazer novo agendamento</button>
+  if (success) return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-center animate-fade-in-up text-white">
+          <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(34,197,94,0.4)]">
+              <Check size={48} className="text-black" strokeWidth={4}/>
           </div>
-      )
-  }
+          <h2 className="text-3xl font-black mb-2 uppercase tracking-tight">Solicitação Enviada!</h2>
+          <p className="text-gray-400 mb-8 max-w-xs leading-relaxed">Enviei os detalhes e a localização para seu WhatsApp.</p>
+          <button onClick={handleReset} className="flex items-center gap-2 text-gray-500 font-bold text-xs uppercase hover:text-white transition-colors"><RefreshCw size={12}/> Fazer novo agendamento</button>
+      </div>
+  );
 
   return (
     <div className="min-h-screen bg-black text-white font-sans pb-32 selection:bg-green-500 selection:text-black">
       <Toast show={toast.show} msg={toast.msg} />
 
-      {/* HEADER STICKY */}
+      {/* HEADER */}
       <header className="fixed top-0 w-full z-40 bg-black/80 backdrop-blur-xl border-b border-white/5">
          <div className="px-5 py-4 flex justify-between items-center">
              <div className="flex items-center gap-3">
@@ -324,11 +289,10 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
                  <button onClick={() => setMenuOpen(true)} className="p-2 bg-[#111] rounded-full border border-[#222]"><Menu size={20}/></button>
              </div>
          </div>
-         {/* Barra de Progresso */}
          <div className="h-[2px] w-full bg-[#111]"><div className="h-full bg-green-500 transition-all duration-500 ease-out" style={{width: `${((step+1)/3)*100}%`}}></div></div>
       </header>
 
-      {/* MENU LATERAL */}
+      {/* MENU & WALLET (Omitted for brevity, same as V7 but functional) */}
       {menuOpen && (
           <div className="fixed inset-0 z-50 flex justify-end">
               <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setMenuOpen(false)}></div>
@@ -343,8 +307,6 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
               </div>
           </div>
       )}
-
-      {/* CARTEIRA */}
       {walletOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm">
               <div className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 animate-fade-in-up">
@@ -369,11 +331,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
                     </div>
                 )}
 
-                <div className="mb-8">
-                    <h2 className="text-3xl font-black mb-2 tracking-tight">Bem-vindo.</h2>
-                    <p className="text-gray-400 text-sm">Identifique-se para começar.</p>
-                </div>
-
+                <h2 className="text-3xl font-black mb-2 tracking-tight">Bem-vindo.</h2>
                 <div className="space-y-4 mb-10">
                     <BigInput label="Seu Nome" placeholder="Como prefere ser chamado?" value={user.name} onChange={e => setUser({...user, name: e.target.value})} icon={User} />
                     <div onClick={() => setBooking({...booking, healthChecked: !booking.healthChecked})} className={`p-5 rounded-2xl border flex gap-4 cursor-pointer items-center transition-all ${booking.healthChecked ? 'bg-[#1C1C1E] border-green-500' : 'bg-[#0A0A0A] border-[#222]'}`}>
@@ -382,20 +340,20 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
                     </div>
                 </div>
                 
-                <h3 className="text-xl font-bold mb-6 flex items-center gap-2"><SparklesIcon/> Escolha a Experiência</h3>
+                <h3 className="text-xl font-bold mb-6 flex items-center gap-2">Escolha a Experiência</h3>
                 
-                <div className="space-y-6 pb-20">
+                <div className="space-y-6 pb-24">
                     {SERVICES.map(s => (
-                        <ServiceCard 
-                            key={s.id} 
-                            service={s} 
-                            active={booking.service?.id === s.id} 
-                            onClick={() => { setBooking({...booking, service: s}); }}
-                        />
+                        <div key={s.id} onClick={() => setBooking({...booking, service: s})} className={`relative overflow-hidden w-full p-6 rounded-[2rem] border-2 transition-all cursor-pointer mb-5 ${booking.service?.id === s.id ? 'bg-[#18181b] border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.15)]' : 'bg-[#111] border-[#222]'}`}>
+                            <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${booking.service?.id === s.id ? 'bg-green-500 text-black' : 'bg-[#222] text-gray-500'}`}>{s.label}</div>
+                            <h3 className={`text-xl font-black uppercase mb-1 ${booking.service?.id === s.id ? 'text-white' : 'text-gray-400'}`}>{s.name}</h3>
+                            <div className="flex items-center gap-2 mb-4"><span className={`text-lg font-bold ${booking.service?.id === s.id ? 'text-green-400' : 'text-gray-500'}`}>{Utils.fmtMoney(s.price)}</span></div>
+                            <div className={`space-y-2 mb-4 p-4 rounded-xl ${booking.service?.id === s.id ? 'bg-black/40 border border-white/5' : 'bg-black/20'}`}>{s.steps.map((step, i) => (<p key={i} className="text-xs text-gray-300 font-medium">{step}</p>))}</div>
+                            <p className="text-[10px] text-gray-500 flex items-center gap-1 italic"><Info size={10}/> {s.note}</p>
+                        </div>
                     ))}
                 </div>
 
-                {/* Footer Fixo */}
                 <div className="fixed bottom-0 left-0 w-full p-5 bg-black/95 border-t border-white/10 z-40 backdrop-blur-md">
                     <PrimaryButton disabled={!booking.healthChecked || user.name.length < 3 || !booking.service} onClick={handleNext} label="Continuar" icon={ArrowRight} />
                 </div>
@@ -406,19 +364,25 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
         {step === 1 && (
             <>
                 <h2 className="text-2xl font-bold mb-8">Personalize</h2>
-
-                {/* Extras */}
-                <p className="text-[10px] font-bold text-gray-500 uppercase mb-3 ml-1">Adicionais (Opcional)</p>
                 <div className="mb-10">
-                    {EXTRAS.map(ex => (
-                        <ExtraToggle 
-                            key={ex.id} extra={ex} active={booking.extras[ex.id]} 
-                            onClick={() => setBooking({...booking, extras: {...booking.extras, [ex.id]: !booking.extras[ex.id]}})}
-                        />
-                    ))}
+                    {EXTRAS.map(ex => {
+                        const active = booking.extras[ex.id];
+                        return (
+                            <div key={ex.id} onClick={() => setBooking({...booking, extras: {...booking.extras, [ex.id]: !active}})} className={`relative p-5 rounded-2xl border transition-all cursor-pointer mb-3 flex items-center justify-between ${active ? 'bg-[#1C1C1E] border-green-500/50' : 'bg-[#111] border-[#222]'}`}>
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${active ? 'bg-green-500 text-black' : 'bg-[#222] text-gray-600'}`}><ex.icon size={20}/></div>
+                                    <div>
+                                        <p className={`font-bold text-sm ${active ? 'text-white' : 'text-gray-400'}`}>{ex.label}</p>
+                                        <p className="text-xs text-gray-500">{ex.sub}</p>
+                                        {active && ex.warning && <p className="text-[10px] text-yellow-500 mt-1 flex items-center gap-1"><AlertTriangle size={10}/> {ex.warning}</p>}
+                                    </div>
+                                </div>
+                                <span className={`font-bold text-sm ${active ? 'text-green-500' : 'text-gray-600'}`}>+ R$ {ex.price}</span>
+                            </div>
+                        )
+                    })}
                 </div>
 
-                {/* Data e Hora */}
                 <p className="text-[10px] font-bold text-gray-500 uppercase mb-3 ml-1">Data e Hora</p>
                 <div className="flex gap-3 overflow-x-auto pb-6 -mx-5 px-5 scrollbar-hide mb-4">
                     {[...Array(14)].map((_, i) => {
@@ -434,10 +398,10 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
                 {booking.date && (
                     <div className="grid grid-cols-4 gap-2 animate-fade-in-up pb-24">
                         {['10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'].map(t => {
-                            const blocked = isTimeBlocked(booking.date, t);
+                            const status = checkAvailability(booking.date, t);
                             return (
-                                <button key={t} disabled={blocked} onClick={() => setBooking({...booking, time: t})} className={`py-3 rounded-xl text-xs font-bold border relative ${booking.time === t ? 'bg-white text-black border-white shadow-lg' : blocked ? 'opacity-30 bg-[#111] border-[#222]' : 'bg-[#1C1C1E] border-[#333]'}`}>
-                                    {t}{blocked === 'sold_out' && <div className="absolute inset-0 flex items-center justify-center bg-black/80 rounded-xl"><span className="text-[8px] text-red-500 font-black -rotate-12">ESGOTADO</span></div>}
+                                <button key={t} disabled={status !== 'available'} onClick={() => setBooking({...booking, time: t})} className={`py-3 rounded-xl text-xs font-bold border relative ${booking.time === t ? 'bg-white text-black border-white shadow-lg' : status === 'sold_out' ? 'opacity-50 bg-[#111] border-[#222]' : status === 'past' ? 'opacity-30 bg-[#111] border-[#222]' : 'bg-[#1C1C1E] border-[#333]'}`}>
+                                    {t}{status === 'sold_out' && <div className="absolute inset-0 flex items-center justify-center bg-black/80 rounded-xl"><span className="text-[8px] text-red-500 font-black -rotate-12">ESGOTADO</span></div>}
                                 </button>
                             )
                         })}
@@ -450,47 +414,49 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
             </>
         )}
 
-        {/* STEP 2: CHECKOUT */}
+        {/* STEP 2: ENDEREÇO & FINALIZAR */}
         {step === 2 && (
             <>
-                <h2 className="text-2xl font-bold mb-8">Finalizar</h2>
+                <h2 className="text-2xl font-bold mb-8">Onde será?</h2>
 
                 <div className="flex bg-[#1C1C1E] p-1.5 rounded-2xl mb-6 border border-[#333]">
                     {['home', 'motel', 'hotel'].map(t => (
-                        <button key={t} onClick={() => setBooking({...booking, locationType: t, address: {city: booking.address.city, details: '', motelName: '', suite: ''}})} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all ${booking.locationType === t ? 'bg-[#333] text-white shadow-md' : 'text-gray-500'}`}>{t === 'home' ? 'Casa' : t.toUpperCase()}</button>
+                        <button key={t} onClick={() => setBooking({...booking, locationType: t, address: {...booking.address, motelName: '', suite: ''}})} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all ${booking.locationType === t ? 'bg-[#333] text-white shadow-md' : 'text-gray-500'}`}>{t === 'home' ? 'Casa/Apto' : t.toUpperCase()}</button>
                     ))}
                 </div>
 
                 <div className="space-y-4 mb-8">
-                    <BigInput label="Cidade Atual" placeholder="Ex: Londrina, SP..." value={booking.address.city} onChange={e => setBooking({...booking, address: {...booking.address, city: e.target.value}})} icon={MapPin} />
+                    <BigInput label="Cidade" placeholder="Ex: Londrina..." value={booking.address.city} onChange={e => setBooking({...booking, address: {...booking.address, city: e.target.value}})} icon={MapPin} />
+                    
                     {booking.locationType === 'motel' ? (
-                        <div className="animate-fade-in-up">
+                        <div className="animate-fade-in-up space-y-4">
                             <BigInput label="Nome do Motel" placeholder="Ex: Motel London" value={booking.address.motelName} onChange={e => setBooking({...booking, address: {...booking.address, motelName: e.target.value}})} icon={Building} />
                             <BigInput label="Número da Suíte" placeholder="Ex: 20" value={booking.address.suite} onChange={e => setBooking({...booking, address: {...booking.address, suite: e.target.value}})} icon={BedDouble} />
                         </div>
                     ) : (
-                        <BigInput label="Endereço Completo" placeholder="Rua, Número, Bairro..." value={booking.address.details} onChange={e => setBooking({...booking, address: {...booking.address, details: e.target.value}})} icon={Navigation} />
+                        <div className="animate-fade-in-up space-y-4">
+                            <BigInput label="Endereço (Rua)" placeholder="Ex: Rua Piauí" value={booking.address.street} onChange={e => setBooking({...booking, address: {...booking.address, street: e.target.value}})} icon={Navigation} />
+                            <div className="flex gap-3">
+                                <div className="w-1/3"><BigInput label="Número" placeholder="123" value={booking.address.number} onChange={e => setBooking({...booking, address: {...booking.address, number: e.target.value}})} /></div>
+                                <div className="w-2/3"><BigInput label="Bairro" placeholder="Centro" value={booking.address.district} onChange={e => setBooking({...booking, address: {...booking.address, district: e.target.value}})} /></div>
+                            </div>
+                            <BigInput label="Complemento (Opcional)" placeholder="Ex: Apto 101" value={booking.address.comp} onChange={e => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} />
+                        </div>
                     )}
                 </div>
 
-                <div className="bg-[#1C1C1E] border border-[#333] rounded-[2rem] p-6 mb-8 overflow-hidden relative">
-                    {/* Ticket Header */}
-                    <div className="border-b-2 border-dashed border-[#333] pb-6 mb-6 text-center">
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Resumo do Pedido</p>
+                {/* Resumo Financeiro */}
+                <div className="bg-[#1C1C1E] border border-[#333] rounded-[2rem] p-6 mb-8">
+                    <div className="border-b border-[#333] pb-4 mb-4 text-center">
                         <h3 className="text-xl font-black text-white">{booking.service?.name}</h3>
                         <p className="text-sm text-green-500 font-bold mt-1">{new Date(booking.date).toLocaleDateString('pt-BR')} às {booking.time}</p>
                     </div>
-                    {/* Financials */}
-                    <div className="space-y-3 mb-6">
+                    <div className="space-y-3 mb-4">
                         <div className="flex justify-between text-sm text-gray-400"><span>Valor Base</span><span>{Utils.fmtMoney(booking.service?.price)}</span></div>
                         {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> (
                             <div key={k} className="flex justify-between text-sm text-white"><span>+ {EXTRAS.find(e=>e.id===k).label}</span><span>{Utils.fmtMoney(EXTRAS.find(e=>e.id===k).price)}</span></div>
                         ))}
-                        {booking.appliedCoupon ? (
-                            <div className="flex justify-between text-sm text-green-400 font-bold py-2 border-t border-[#333]"><span>Cupom Aplicado</span><span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span></div>
-                        ) : (
-                            <button onClick={() => setShowWallet(true)} className="w-full py-3 border border-dashed border-[#444] rounded-xl text-xs text-gray-500 flex items-center justify-center gap-2 mt-2 hover:border-green-500 hover:text-green-500 transition-colors"><Ticket size={14}/> Aplicar Cupom</button>
-                        )}
+                        {booking.appliedCoupon && <div className="flex justify-between text-sm text-green-400 font-bold py-2 border-t border-[#333]"><span>Cupom Aplicado</span><span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span></div>}
                     </div>
                     <div className="flex justify-between items-center pt-4 border-t border-[#333]">
                         <span className="text-xs font-bold text-gray-500 uppercase">Total Final</span>
@@ -498,23 +464,20 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
                     </div>
                 </div>
 
-                {/* Pagamento */}
-                <p className="text-[10px] font-bold text-gray-500 uppercase mb-3 ml-1">Pagamento (No Local)</p>
-                <div className="grid grid-cols-3 gap-3 mb-32">
-                    {['pix', 'card', 'esp'].map(p => (
-                        <button key={p} onClick={() => setBooking({...booking, payment: p})} className={`py-4 rounded-xl border text-[10px] font-black uppercase flex flex-col items-center gap-2 transition-all ${booking.payment === p ? 'bg-white text-black scale-105 shadow-lg' : 'bg-[#1C1C1E] border-[#333] text-gray-500'}`}>
-                            {p === 'pix' && <Zap size={18}/>}{p === 'card' && <CreditCard size={18}/>}{p === 'esp' && <Banknote size={18}/>}
-                            {p === 'esp' ? 'Dinheiro' : p === 'card' ? 'Cartão' : 'Pix'}
-                        </button>
-                    ))}
+                <div className="mb-32">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-3 ml-1">Pagamento (No Local)</p>
+                    <div className="grid grid-cols-3 gap-3">
+                        {['pix', 'card', 'esp'].map(p => (
+                            <button key={p} onClick={() => setBooking({...booking, payment: p})} className={`py-4 rounded-xl border text-[10px] font-black uppercase flex flex-col items-center gap-2 transition-all ${booking.payment === p ? 'bg-white text-black scale-105 shadow-lg' : 'bg-[#1C1C1E] border-[#333] text-gray-500'}`}>
+                                {p === 'pix' && <Zap size={18}/>}{p === 'card' && <CreditCard size={18}/>}{p === 'esp' && <Banknote size={18}/>}
+                                {p === 'esp' ? 'Dinheiro' : p === 'card' ? 'Cartão' : 'Pix'}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                <div className="fixed bottom-0 left-0 w-full p-6 bg-black/95 border-t border-white/10 z-40 backdrop-blur-md">
-                    <div className="flex justify-between items-center mb-4 px-1">
-                         <span className="text-xs text-gray-500"><AlertTriangle size={12} className="inline text-yellow-500 mb-0.5"/> Uber não incluso</span>
-                         <button onClick={() => {Utils.copyPix(); showToast("CHAVE PIX COPIADA!")}} className="text-[10px] font-bold text-green-500 flex items-center gap-1"><Copy size={10}/> PIX COPY</button>
-                    </div>
-                    <PrimaryButton disabled={!booking.address.city || !booking.payment} onClick={finalize} label="Agendar no WhatsApp" icon={MessageCircle} />
+                <div className="fixed bottom-0 left-0 w-full p-5 bg-black/95 border-t border-white/10 z-40 backdrop-blur-md">
+                    <PrimaryButton disabled={!isAddressValid() || !booking.payment} onClick={finalize} label="Confirmar Agendamento" icon={MessageCircle} />
                 </div>
             </>
         )}
@@ -529,6 +492,3 @@ ${booking.appliedCoupon ? `🎟️ Cupom: -${Utils.fmtMoney(calc.disc)}` : ''}
     </div>
   );
 }
-
-// Icone extra
-const SparklesIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-500"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 5H1"/></svg>;
