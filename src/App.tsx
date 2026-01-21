@@ -9,19 +9,19 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES & DADOS (FIXOS)
+// 1. CONFIGURAÇÕES & DADOS
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
-  INSTAGRAM: "https://instagram.com/seumssagista", // Corrigido
+  INSTAGRAM: "https://instagram.com/seumssagista", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v19_production', // Chave limpa
+  STORAGE_KEY: 'thaly_app_v20_final_fixed',
   XP_TARGET: 300,
   REWARD_VAL: 30
 };
 
-// TEXTOS (i18n) - Copy Acolhedora
+// TEXTOS (i18n) - Copy Ajustada
 const TEXTS = {
   pt: {
     welcome: "Oi, vamos relaxar?",
@@ -45,9 +45,9 @@ const TEXTS = {
     svc_relax_name: "🍃 Apenas Relaxar (1h)",
     svc_relax_badge: "TIRE O STRESS",
     svc_relax_steps: [
-        '1️⃣ Foco total em tirar dores e nós.',
-        '2️⃣ Movimentos firmes nas costas e pernas.',
-        '3️⃣ Você sai leve e renovado.'
+        '1️⃣ Foco total em aliviar o estresse e relaxar.',
+        '2️⃣ Toques suaves para dores musculares.',
+        '3️⃣ Movimentos leves e revigorantes.'
     ],
     svc_relax_note: "Atenção: Nessa não tem toques íntimos.",
 
@@ -141,9 +141,9 @@ const TEXTS = {
     svc_relax_name: "🍃 Just Relax (1h)",
     svc_relax_badge: "STRESS RELIEF",
     svc_relax_steps: [
-        '1️⃣ Focus on knots and pain relief.',
-        '2️⃣ Firm movements on back and legs.',
-        '3️⃣ You leave feeling light and renewed.'
+        '1️⃣ Focus on stress relief and relaxation.',
+        '2️⃣ Soft touches for muscle pain.',
+        '3️⃣ Gentle and invigorating movements.'
     ],
     svc_relax_note: "Note: No intimate touching here.",
 
@@ -228,7 +228,7 @@ const EXTRAS_DB = [
   { id: 'aroma', icon: Wind, price: 10 }
 ];
 
-// REVIEWS TRADUZIDAS
+// REVIEWS
 const REVIEWS_DATA = {
   pt: [
     { t: "A progressão da massagem é perfeita. Começa relaxando e termina intenso.", a: "Tiago", s: 5 },
@@ -246,17 +246,16 @@ const REVIEWS_DATA = {
   ]
 };
 
+// FAQ (SEM HIGIENE)
 const FAQS_DATA = {
   pt: [
     { q: "É seguro e sigiloso?", a: "Totalmente. Sou profissional e respeito sua privacidade." },
     { q: "Onde você atende?", a: "Vou até você (Casa, Hotel ou Motel)." },
-    { q: "Como funciona a higiene?", a: "Levo tudo limpo e descartável. Higiene é prioridade." },
     { q: "Aceita Cartão?", a: "Sim, levo a maquininha." }
   ],
   en: [
     { q: "Is it safe and discreet?", a: "Totally. I am professional and respect privacy." },
     { q: "Where do you serve?", a: "I come to you (Home, Hotel, Motel)." },
-    { q: "How about hygiene?", a: "I bring everything clean/disposable." },
     { q: "Do you accept cards?", a: "Yes, I bring the machine." }
   ]
 };
@@ -431,13 +430,13 @@ export default function App() {
       
       if(booking.locationType === 'motel') {
           locStr = `🏩 ${T.lbl_motel}: ${addr.motelName}\n🚪 ${T.lbl_suite}: ${addr.suite}`;
-          mapLink = `${addr.motelName}, ${addr.city}`;
+          mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr.motelName + ' ' + addr.city)}`;
       } else if(booking.locationType === 'hotel') {
           locStr = `🏨 ${T.lbl_hotel}: ${addr.hotelName}\n🚪 ${T.lbl_room}: ${addr.room}`;
-          mapLink = `${addr.hotelName}, ${addr.city}`;
+          mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr.hotelName + ' ' + addr.city)}`;
       } else {
           locStr = `🏠 ${T.lbl_addr}: ${addr.street}, ${addr.number}\n🏘️ ${T.lbl_dist}: ${addr.district}`;
-          mapLink = `${addr.street}, ${addr.number}, ${addr.city}`;
+          mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr.street + ', ' + addr.number + ' - ' + addr.district + ', ' + addr.city)}`;
       }
 
       const fin = calculateTotal();
@@ -461,7 +460,7 @@ export default function App() {
 
 📍 ${T.city_lbl}: ${addr.city}
 ${locStr}
-🔗 ${encodeURIComponent(mapLink)}
+🔗 ${mapLink}
 
 💰 *${T.review_title}:*
 ${T.base_val}: ${Utils.fmtMoney(fin.service)}
@@ -543,7 +542,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                 
                 <div className="space-y-4 mb-10">
                     <BigInput label={T.your_name} placeholder={T.name_placeholder} value={user.name} onChange={e => setUser({...user, name: e.target.value})} icon={User} isDark={isDark} />
-                    <div onClick={() => setBooking({...booking, healthChecked: !booking.healthChecked})} className={`p-5 rounded-2xl border flex gap-4 cursor-pointer items-center transition-all ${booking.healthChecked ? 'border-green-500' : (isDark ? 'bg-[#0A0A0A] border-[#222]' : 'bg-white border-gray-200')}`}>
+                    <div onClick={() => setBooking({...booking, healthChecked: !booking.healthChecked})} className={`p-5 rounded-2xl border flex gap-4 cursor-pointer items-center transition-all ${booking.healthChecked ? 'border-green-500 bg-green-500/10' : (isDark ? 'bg-[#0A0A0A] border-[#222]' : 'bg-white border-gray-200')}`}>
                         <div className={`w-6 h-6 rounded flex items-center justify-center border ${booking.healthChecked ? 'bg-green-500 border-green-500 text-white' : 'border-zinc-400'}`}>{booking.healthChecked && <Check size={16} strokeWidth={3}/>}</div>
                         <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{T.health_check}</p>
                     </div>
