@@ -15,12 +15,14 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v12_ultra', // Nova chave para limpar cache antigo
+  STORAGE_KEY: '@thaly_app_v13_global', // Nova chave para limpar cache antigo
   XP_TARGET: 500, 
 };
 
+// --- ESTRUTURA DE IDIOMAS COMPLETA ---
 const TEXTS = {
   pt: {
+    // UI GERAL
     welcome: "Bem-vindo",
     subtitle: "Seu momento de paz e prazer começa agora.",
     reviews_btn: "Ler todas as 50+ avaliações",
@@ -46,14 +48,58 @@ const TEXTS = {
     btn_zap: "ENVIAR CONFIRMAÇÃO",
     motel_warn: "Combinamos o Motel pelo WhatsApp. (A entrada é por conta do cliente).",
     coupon_label: "Carteira de Cupons",
+    coupon_select: "Selecionar...",
     coupon_none: "Nenhum cupom ativo",
     remove: "Remover",
     hotel_name: "Nome do Hotel",
     room: "Quarto",
     comp_placeholder: "Complemento / Ponto de Referência (Obrigatório)",
-    address_warn: "Preencha todo o endereço para eu chegar até você."
+    address_warn: "Preencha todo o endereço para eu chegar até você.",
+    
+    // SERVIÇOS
+    services: {
+      relaxante: { title: "Massagem Relaxante", desc: "Movimentos leves, contínuos e envolventes. Foco total em tirar o peso das costas e acalmar a mente." },
+      sensitiva: { title: "Massagem Sensitiva", desc: "Experiência de pele com pele. Toques sutis que despertam a sensibilidade de cada centímetro do corpo." },
+      mista: { title: "Massagem Completa", desc: "A união perfeita: começa relaxando a tensão muscular e termina com a parte sensitiva intensa." }
+    },
+    
+    // EXTRAS
+    extras: {
+      more_time: { label: "+30 Minutos", desc: "Estender a sessão" },
+      touch: { label: "Toque Interativo", desc: "Troca de toques permitida" },
+      aroma: { label: "Aromaterapia", desc: "Óleos essenciais" }
+    },
+
+    // TERMOS
+    terms_body: [
+      "1. Respeito Mútuo: O atendimento é profissional. Qualquer conduta agressiva ou desrespeitosa encerrará a sessão imediatamente.",
+      "2. Higiene e Segurança: Prezo pela máxima higiene. Todos os materiais são esterilizados e de uso individual.",
+      "3. Sigilo Absoluto: Sua privacidade é garantida. O que acontece na sessão, fica na sessão.",
+      "4. Taxas Externas: Em caso de atendimento em Motel, a taxa de entrada/período é de responsabilidade do cliente.",
+      "5. Pagamento: O pagamento deve ser realizado integralmente logo após a prestação do serviço."
+    ],
+    terms_btn: "Entendi e Concordo",
+
+    // WHATSAPP MENSAGEM
+    zap: {
+      greeting: ["Bom dia", "Boa tarde", "Boa noite"],
+      intro: "Gostaria de confirmar:",
+      client: "Cliente",
+      service: "Serviço",
+      extras: "Extras",
+      location: "Local",
+      home_title: "Em Casa",
+      motel_title: "Motel",
+      motel_desc: "Vamos decidir juntos. (Entrada por minha conta)",
+      hotel_title: "Hotel",
+      room: "Quarto",
+      total: "Total",
+      payment: "Pag",
+      wait: "Aguardo retorno!"
+    }
   },
   en: {
+    // UI GENERAL
     welcome: "Welcome",
     subtitle: "Your moment of peace and pleasure starts now.",
     reviews_btn: "Read all 50+ reviews",
@@ -79,52 +125,68 @@ const TEXTS = {
     btn_zap: "SEND CONFIRMATION",
     motel_warn: "We decide the Motel on WhatsApp. (Entrance fee is on you).",
     coupon_label: "Coupon Wallet",
+    coupon_select: "Select...",
     coupon_none: "No active coupons",
     remove: "Remove",
     hotel_name: "Hotel Name",
     room: "Room Number",
     comp_placeholder: "Complement / Reference (Required)",
-    address_warn: "Please fill full address."
+    address_warn: "Please fill full address.",
+
+    // SERVICES
+    services: {
+      relaxante: { title: "Relaxing Massage", desc: "Light, continuous, and enveloping movements. Total focus on removing back weight and calming the mind." },
+      sensitiva: { title: "Sensitive Massage", desc: "Skin-to-skin experience. Subtle touches that awaken the sensitivity of every inch of the body." },
+      mista: { title: "Complete Massage", desc: "The perfect union: starts by relaxing muscle tension and ends with intense sensitive part." }
+    },
+
+    // EXTRAS
+    extras: {
+      more_time: { label: "+30 Minutes", desc: "Extend the session" },
+      touch: { label: "Interactive Touch", desc: "Touch exchange allowed" },
+      aroma: { label: "Aromatherapy", desc: "Essential oils" }
+    },
+
+    // TERMS
+    terms_body: [
+      "1. Mutual Respect: The service is professional. Any aggressive or disrespectful conduct will end the session immediately.",
+      "2. Hygiene and Safety: I value maximum hygiene. All materials are sterilized and for individual use.",
+      "3. Absolute Secrecy: Your privacy is guaranteed. What happens in the session, stays in the session.",
+      "4. External Fees: In case of Motel service, the entrance/period fee is the client's responsibility.",
+      "5. Payment: Payment must be made in full immediately after the service is provided."
+    ],
+    terms_btn: "I Understand and Agree",
+
+    // WHATSAPP MESSAGE
+    zap: {
+      greeting: ["Good morning", "Good afternoon", "Good evening"],
+      intro: "I would like to confirm:",
+      client: "Client",
+      service: "Service",
+      extras: "Extras",
+      location: "Location",
+      home_title: "Home Visit",
+      motel_title: "Motel",
+      motel_desc: "We decide together. (Fee on me)",
+      hotel_title: "Hotel",
+      room: "Room",
+      total: "Total",
+      payment: "Pay",
+      wait: "Waiting for reply!"
+    }
   }
 };
 
 const DB = {
   services: [
-    { 
-      id: 'relaxante', 
-      title: 'Massagem Relaxante',
-      time: '1h',
-      price: 145, 
-      xp: 145, 
-      icon: Wind, 
-      badge: null,
-      desc: "Movimentos leves, contínuos e envolventes. Foco total em tirar o peso das costas e acalmar a mente.",
-    },
-    { 
-      id: 'sensitiva', 
-      title: 'Massagem Sensitiva',
-      time: '1h',
-      badge: 'MAIS PEDIDA 🔥',
-      price: 175, 
-      xp: 175, 
-      icon: Flame, 
-      desc: "Experiência de pele com pele. Toques sutis que despertam a sensibilidade de cada centímetro do corpo.",
-    },
-    { 
-      id: 'mista', 
-      title: 'Massagem Completa',
-      time: '1h30',
-      badge: 'PREMIUM ✨',
-      price: 255, 
-      xp: 255, 
-      icon: Zap, 
-      desc: "A união perfeita: começa relaxando a tensão muscular e termina com a parte sensitiva intensa.",
-    }
+    { id: 'relaxante', time: '1h', price: 145, xp: 145, icon: Wind, badge: null },
+    { id: 'sensitiva', time: '1h', price: 175, xp: 175, icon: Flame, badge: '🔥' },
+    { id: 'mista', time: '1h30', price: 255, xp: 255, icon: Zap, badge: '✨' }
   ],
   extras: [
-    { id: 'more_time', label: "+30 Minutos", desc: "Estender a sessão", price: 77, icon: Clock },
-    { id: 'touch', label: "Toque Interativo", desc: "Troca de toques permitida", price: 63, icon: Heart },
-    { id: 'aroma', label: "Aromaterapia", desc: "Óleos essenciais", price: 5, icon: Smile }
+    { id: 'more_time', price: 77, icon: Clock },
+    { id: 'touch', price: 63, icon: Heart },
+    { id: 'aroma', price: 5, icon: Smile }
   ],
   reviews: [
     { name: "Lucas (Londrina)", text: "Mano, que sensação. Jorrei muito no final, foi insano. O cara sabe o que faz.", stars: 5 },
@@ -195,38 +257,34 @@ const Toast = ({ msg, show }) => (
 );
 
 // MODAL DE TERMOS
-const TermsModal = ({ isOpen, onClose, isDark }) => {
+const TermsModal = ({ isOpen, onClose, isDark, T }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}></div>
       <div className={`relative w-full max-w-md p-8 rounded-3xl max-h-[80vh] flex flex-col animate-scale-in ${isDark ? 'bg-zinc-900 text-zinc-100' : 'bg-white text-zinc-900'}`}>
          <div className="flex justify-between items-center mb-6 flex-shrink-0">
-            <h2 className="text-xl font-bold flex items-center gap-2"><ShieldCheck className="text-blue-500"/> Termos de Serviço</h2>
+            <h2 className="text-xl font-bold flex items-center gap-2"><ShieldCheck className="text-blue-500"/> {T.terms_link}</h2>
             <button onClick={onClose}><X/></button>
          </div>
          <div className="space-y-4 text-sm opacity-80 leading-relaxed text-justify font-light overflow-y-auto flex-1 pr-2">
-            <p><strong>1. Respeito Mútuo:</strong> O atendimento é profissional. Qualquer conduta agressiva ou desrespeitosa encerrará a sessão imediatamente.</p>
-            <p><strong>2. Higiene e Segurança:</strong> Prezo pela máxima higiene e exijo o mesmo do cliente. Todos os materiais que levo são esterilizados.</p>
-            <p><strong>3. Sigilo Absoluto:</strong> Sua privacidade é garantida. O que acontece na sessão, fica na sessão.</p>
-            <p><strong>4. Taxas Externas:</strong> Em caso de atendimento em Motel, a taxa de entrada/período é de responsabilidade do cliente.</p>
-            <p><strong>5. Pagamento:</strong> O pagamento deve ser realizado integralmente logo após a prestação do serviço.</p>
+            {T.terms_body.map((term, i) => <p key={i}>{term}</p>)}
          </div>
-         <button onClick={onClose} className="w-full mt-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors flex-shrink-0">Entendi e Concordo</button>
+         <button onClick={onClose} className="w-full mt-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors flex-shrink-0">{T.terms_btn}</button>
       </div>
     </div>
   );
 };
 
 // MODAL DE AVALIAÇÕES
-const ReviewsModal = ({ isOpen, onClose, isDark, reviews }) => {
+const ReviewsModal = ({ isOpen, onClose, isDark, reviews, T }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose}></div>
        <div className={`relative w-full h-[90%] md:max-w-lg rounded-[2rem] flex flex-col animate-slide-up overflow-hidden ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-zinc-900'}`}>
           <div className={`flex justify-between items-center p-6 border-b flex-shrink-0 ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
-             <h2 className="text-xl font-bold flex items-center gap-2"><Star className="text-amber-400" fill="currentColor"/> Avaliações (50+)</h2>
+             <h2 className="text-xl font-bold flex items-center gap-2"><Star className="text-amber-400" fill="currentColor"/> {T.reviews_title}</h2>
              <button onClick={onClose} className="p-2 bg-black/5 rounded-full"><X/></button>
           </div>
           <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
@@ -239,7 +297,7 @@ const ReviewsModal = ({ isOpen, onClose, isDark, reviews }) => {
                    <p className="text-sm opacity-70 leading-relaxed italic">"{r.text}"</p>
                 </div>
              ))}
-             <div className="text-center py-6 opacity-40 text-xs uppercase font-bold tracking-widest pb-20">Fim das avaliações</div>
+             <div className="text-center py-6 opacity-40 text-xs uppercase font-bold tracking-widest pb-20">---</div>
           </div>
        </div>
     </div>
@@ -262,10 +320,10 @@ export default function App() {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
 
-  // Referência para o Scroll
   const scrollRef = useRef(null);
+  const T = TEXTS[lang]; // Dicionário Atual
 
-  // USER & STORAGE
+  // USER STATE
   const [user, setUser] = useState(() => {
     try {
        const s = localStorage.getItem(CONFIG.STORAGE_KEY);
@@ -276,9 +334,7 @@ export default function App() {
     } catch { return { name: '', xp: 0, coupons: [] }; }
   });
 
-  const T = TEXTS[lang];
-
-  // BOOKING STATE
+  // BOOKING STATE - SEM AUTO-APPLY DE CUPOM
   const [booking, setBooking] = useState({
     service: null, 
     extras: {}, 
@@ -287,14 +343,14 @@ export default function App() {
     locationType: 'home', 
     address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
     payment: '', 
-    appliedCoupon: null,
+    appliedCoupon: null, // Começa Nulo
     termsAccepted: false
   });
 
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
   
-  // Scroll para o topo ao mudar de passo
+  // Reset Scroll
   useEffect(() => {
     if(scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [step]);
@@ -326,47 +382,55 @@ export default function App() {
 
   const generateZap = () => {
     const { total } = getFinancials;
-    const dateStr = booking.date ? booking.date.toLocaleDateString('pt-BR') : '';
+    const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
     const h = new Date().getHours();
-    const greeting = h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
+    
+    // Saudação traduzida
+    let greeting = "";
+    if (h < 12) greeting = T.zap.greeting[0];
+    else if (h < 18) greeting = T.zap.greeting[1];
+    else greeting = T.zap.greeting[2];
     
     let localMsg = "";
     let mapsLink = "";
     
+    // Nome do Serviço Traduzido
+    const serviceName = booking.service ? T.services[booking.service.id].title : "";
+
     if (booking.locationType === 'home') {
-      localMsg = `🏠 *${T.location_title} (Casa)*\n${booking.address.street}, ${booking.address.number}\n${booking.address.district} - ${booking.address.city}\n_(Comp: ${booking.address.comp})_`;
+      localMsg = `🏠 *${T.zap.home_title}*\n${booking.address.street}, ${booking.address.number}\n${booking.address.district} - ${booking.address.city}\n_(Ref: ${booking.address.comp})_`;
       const query = `${booking.address.street}, ${booking.address.number}, ${booking.address.city}`;
       mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     } else if (booking.locationType === 'motel') {
-      localMsg = `🏩 *Motel*\nVamos decidir juntos.\n⚠️ _(Taxa de entrada por minha conta)_`;
+      localMsg = `🏩 *${T.zap.motel_title}*\n${T.zap.motel_desc}`;
       mapsLink = "";
     } else {
-      localMsg = `🏨 *Hotel*\n${booking.address.placeName}\n${booking.address.city}\n_(Quarto: ${booking.address.comp || 'Vou informar na portaria'})_`;
+      localMsg = `🏨 *${T.zap.hotel_title}*\n${booking.address.placeName}\n${booking.address.city}\n_(${T.zap.room}: ${booking.address.comp || '?'})_`;
       const query = `${booking.address.placeName}, ${booking.address.city}`;
       mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     }
 
     const extrasTxt = Object.keys(booking.extras).filter(k => booking.extras[k])
-      .map(k => `+ ${DB.extras.find(e => e.id === k).label}`).join('\n');
+      .map(k => `+ ${T.extras[k].label}`).join('\n');
 
     const msg = `
-${greeting}, Thalyson! 💙
-Gostaria de confirmar:
+${greeting}, Thalyson!
+${T.zap.intro}
 
-👤 *${user.name}*
+👤 *${T.zap.client}:* ${user.name}
 
-💆‍♂️ *${booking.service?.title}*
-📅 ${dateStr} às ${booking.time}
+💆‍♂️ *${T.zap.service}:* ${serviceName}
+📅 ${dateStr} @ ${booking.time}
 
-${extrasTxt ? `✨ *Extras:*\n${extrasTxt}\n` : ''}
-📍 *LOCAL:*
+${extrasTxt ? `✨ *${T.zap.extras}:*\n${extrasTxt}\n` : ''}
+📍 *${T.zap.location}:*
 ${localMsg}
-${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
+${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
 
-💰 *TOTAL:* R$ ${total},00
-💳 *Pag:* ${booking.payment === 'pix' ? 'PIX' : booking.payment === 'card' ? 'Cartão' : 'Dinheiro'}
+💰 *${T.zap.total}:* R$ ${total},00
+💳 *${T.zap.payment}:* ${booking.payment === 'pix' ? 'PIX' : booking.payment === 'card' ? 'Cartão/Card' : 'Dinheiro/Cash'}
 
-*Aguardo retorno!*
+*${T.zap.wait}*
 `.trim();
     
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`;
@@ -378,7 +442,6 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
     if (step === 2) {
       const { city, street, placeName, number, comp } = booking.address;
       if (!user.name) return false;
-      // Validação rigorosa para Home: Precisa de Complemento
       if (booking.locationType === 'home' && (!city || !street || !number || !comp)) return false;
       if (booking.locationType === 'hotel' && (!city || !placeName)) return false;
       return true;
@@ -388,24 +451,20 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
 
   const handleFinish = () => {
     if (!booking.payment) return showToast(T.payment_title);
-    if (!booking.termsAccepted) return showToast("Por favor, aceite os termos.");
+    if (!booking.termsAccepted) return showToast("Terms / Termos");
 
     const earnedXP = getFinancials.total;
     const newTotalXP = user.xp + earnedXP;
     
-    // CORREÇÃO CRÍTICA: REMOVER CUPOM APENAS SE FOR FINALIZADO
     let updatedCoupons = [...user.coupons];
     if(booking.appliedCoupon) {
-        // Converte para String ambos os IDs para garantir igualdade na comparação
         updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     }
 
-    // GAMIFICACAO
     if (Math.floor(newTotalXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
         updatedCoupons.push({ id: Date.now(), title: 'Recompensa VIP', val: 20, isNew: true });
     }
 
-    // PERSISTÊNCIA
     setUser({ ...user, xp: newTotalXP, coupons: updatedCoupons });
     setStep(4);
   };
@@ -417,12 +476,11 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
   );
 
   return (
-    // ESTRUTURA "APP-SHELL" PARA ROLAGEM PERFEITA
     <div className={`h-[100dvh] w-full overflow-hidden flex flex-col font-sans transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-blue-50' : 'bg-slate-50 text-slate-900'}`}>
       
       <Toast show={toast.show} msg={toast.msg} />
-      <TermsModal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} isDark={isDark} />
-      <ReviewsModal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} isDark={isDark} reviews={DB.reviews} />
+      <TermsModal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} isDark={isDark} T={T} />
+      <ReviewsModal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} isDark={isDark} reviews={DB.reviews} T={T} />
       
       {/* MENU LATERAL */}
       {menuOpen && (
@@ -434,26 +492,24 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                    <button onClick={()=>setMenuOpen(false)} className="p-2 rounded-full hover:bg-white/10"><X size={24}/></button>
                 </div>
                 
-                {/* CARD DE XP */}
                 <div className="mb-8 p-6 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-xl relative overflow-hidden">
                     <Trophy className="absolute -right-4 -bottom-4 text-white/20" size={100} />
-                    <p className="text-xs font-bold uppercase opacity-80 mb-1">Seu Nível XP</p>
+                    <p className="text-xs font-bold uppercase opacity-80 mb-1">XP Level</p>
                     <h3 className="text-4xl font-black mb-4">{user.xp}</h3>
                     <div className="w-full h-2 bg-black/20 rounded-full mb-2 overflow-hidden">
                         <div className="h-full bg-white transition-all duration-1000" style={{ width: `${(user.xp % CONFIG.XP_TARGET) / CONFIG.XP_TARGET * 100}%` }}></div>
                     </div>
-                    <p className="text-[10px] opacity-70">Próximo cupom em {CONFIG.XP_TARGET - (user.xp % CONFIG.XP_TARGET)} XP</p>
                 </div>
 
                 <div className="flex-1 space-y-4 overflow-y-auto">
                    <button onClick={()=>setLang(lang==='pt'?'en':'pt')} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
-                      <Globe size={20}/> <span>{lang === 'pt' ? 'Mudar para Inglês' : 'Switch to Portuguese'}</span>
+                      <Globe size={20}/> <span>{lang === 'pt' ? 'English' : 'Português'}</span>
                    </button>
                    <button onClick={()=>setIsDark(!isDark)} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
-                      {isDark ? <Sun size={20}/> : <Moon size={20}/>} <span>{isDark ? 'Modo Claro' : 'Modo Escuro'}</span>
+                      {isDark ? <Sun size={20}/> : <Moon size={20}/>} <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
                    </button>
                    <button onClick={handleShare} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
-                      <Share2 size={20}/> <span>Compartilhar App</span>
+                      <Share2 size={20}/> <span>Share App</span>
                    </button>
                 </div>
 
@@ -485,7 +541,7 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
         </div>
       )}
 
-      {/* AREA DE CONTEÚDO COM SCROLL INDEPENDENTE */}
+      {/* CONTEÚDO COM SCROLL */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-6 pb-32 scroll-smooth">
         <div className="max-w-md mx-auto animate-fade-in">
         
@@ -497,7 +553,6 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
               <p className="text-base opacity-70 font-light max-w-[280px] leading-relaxed">{T.subtitle}</p>
             </div>
             
-            {/* CARDS DE SERVIÇO */}
             <div className="space-y-6">
               {DB.services.map((s) => (
                 <div key={s.id} onClick={() => setBooking({ ...booking, service: s })}
@@ -507,7 +562,6 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                       : `border-transparent ${isDark ? 'bg-zinc-900 hover:bg-zinc-800' : 'bg-white shadow-lg hover:shadow-xl'}`
                     }`}
                 >
-                   {/* BADGE */}
                    {s.badge && <span className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-bl-2xl uppercase tracking-wider shadow-lg">{s.badge}</span>}
                    
                    <div className="flex justify-between items-start mb-6 mt-2">
@@ -518,8 +572,8 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                       </div>
                    </div>
                    
-                   <h3 className="font-bold text-2xl mb-3">{s.title}</h3>
-                   <p className="text-sm opacity-70 leading-relaxed font-light">{s.desc}</p>
+                   <h3 className="font-bold text-2xl mb-3">{T.services[s.id].title}</h3>
+                   <p className="text-sm opacity-70 leading-relaxed font-light">{T.services[s.id].desc}</p>
                    
                    <div className="mt-6 pt-4 border-t border-dashed border-zinc-500/10 flex items-center gap-2 text-xs opacity-50 font-medium">
                       <Clock size={14}/> {s.time} {T.duration}
@@ -528,7 +582,6 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
               ))}
             </div>
             
-            {/* ÁREA DE AVALIAÇÕES (DESTAQUES + BOTÃO) */}
             <div className="pt-4">
                 <div className="flex items-center justify-between mb-4 px-2">
                     <h3 className="text-sm font-bold uppercase tracking-widest opacity-50">{T.reviews_title}</h3>
@@ -574,7 +627,7 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                         className={`min-w-[5.5rem] h-[7rem] rounded-[24px] flex flex-col items-center justify-center gap-2 transition-all border-2 flex-shrink-0
                           ${isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-500/30 scale-105' : isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500' : 'bg-white border-zinc-100 text-zinc-400'}`}
                       >
-                        <span className="text-[10px] font-bold uppercase tracking-widest">{d.toLocaleDateString(lang, { weekday: 'short' }).slice(0,3)}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">{d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'short' }).slice(0,3)}</span>
                         <span className="text-3xl font-black">{d.getDate()}</span>
                       </button>
                     );
@@ -645,7 +698,6 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                        <input placeholder="Bairro" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.district} onChange={(e) => setBooking({...booking, address: {...booking.address, district: e.target.value}})} />
                        <input placeholder="Cidade" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.city} onChange={(e) => setBooking({...booking, address: {...booking.address, city: e.target.value}})} />
                     </div>
-                    {/* CAMPO OBRIGATÓRIO PARA HOME */}
                     <input 
                         placeholder={T.comp_placeholder} 
                         className={`w-full p-6 rounded-[24px] border text-sm outline-none border-blue-500/30 focus:border-blue-500 ${isDark ? 'bg-zinc-900' : 'bg-white'}`} 
@@ -682,7 +734,7 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                    >
                      <div className="flex items-center gap-4">
                        <div className={`p-3 rounded-full ${booking.extras[extra.id] ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-500'}`}><extra.icon size={18}/></div>
-                       <div><p className="text-sm font-bold">{extra.label}</p><p className="text-[11px] opacity-60">{extra.desc}</p></div>
+                       <div><p className="text-sm font-bold">{T.extras[extra.id].label}</p><p className="text-[11px] opacity-60">{T.extras[extra.id].desc}</p></div>
                      </div>
                      <span className={`text-sm font-bold ${booking.extras[extra.id] ? 'text-blue-500' : 'opacity-30'}`}>+ R$ {extra.price}</span>
                    </div>
@@ -703,10 +755,10 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
 
              <div className={`rounded-[2rem] border overflow-hidden ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200 shadow-xl'}`}>
                 <div className="p-8 space-y-4">
-                   <div className="flex justify-between items-center text-lg font-bold"><span>{booking.service.title}</span><span>R$ {booking.service.price}</span></div>
+                   <div className="flex justify-between items-center text-lg font-bold"><span>{T.services[booking.service.id].title}</span><span>R$ {booking.service.price}</span></div>
                    
                    {Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => (
-                     <div key={k} className="flex justify-between items-center text-sm opacity-60"><span>+ {DB.extras.find(e => e.id === k).label}</span><span>R$ {DB.extras.find(e => e.id === k).price}</span></div>
+                     <div key={k} className="flex justify-between items-center text-sm opacity-60"><span>+ {T.extras[k].label}</span><span>R$ {DB.extras.find(e => e.id === k).price}</span></div>
                    ))}
                    
                    {booking.appliedCoupon && (
@@ -731,12 +783,12 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                       ) : (
                         <select 
                             onChange={(e) => {
-                                const c = user.coupons.find(coup => coup.id.toString() === e.target.value);
+                                const c = user.coupons.find(coup => String(coup.id) === e.target.value);
                                 setBooking({...booking, appliedCoupon: c});
                             }} 
                             className="bg-transparent text-sm font-bold text-blue-500 outline-none cursor-pointer uppercase tracking-wider text-right w-40"
                         >
-                           <option value="">Selecionar...</option>
+                           <option value="">{T.coupon_select}</option>
                            {user.coupons.map(c => <option key={c.id} value={c.id}>R$ {c.val} - {c.title}</option>)}
                         </select>
                       )
@@ -747,7 +799,7 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
              <div className="space-y-4">
                 <h3 className="text-xs font-bold uppercase opacity-40 ml-1">{T.payment_title}</h3>
                 <div className="grid grid-cols-3 gap-3">
-                   {[{ id: 'pix', label: 'PIX', icon: QrCode }, { id: 'card', label: 'Cartão', icon: CreditCard }, { id: 'money', label: 'Dinheiro', icon: Banknote }].map((p) => (
+                   {[{ id: 'pix', label: 'PIX', icon: QrCode }, { id: 'card', label: 'Cartão', icon: CreditCard }, { id: 'money', label: 'Cash', icon: Banknote }].map((p) => (
                      <button key={p.id} onClick={() => setBooking({ ...booking, payment: p.id })}
                        className={`flex flex-col items-center justify-center gap-2 py-6 rounded-[24px] border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-500/30 scale-105' : isDark ? 'bg-zinc-900 border-zinc-800 opacity-60 hover:opacity-100' : 'bg-white border-zinc-200 opacity-60 hover:opacity-100'}`}
                      >
@@ -796,7 +848,7 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
         </div>
       </main>
 
-      {/* FOOTER FIXO (FORA DA ÁREA DE SCROLL) */}
+      {/* FOOTER FIXO */}
       {step < 4 && (
           <div className={`h-24 flex-shrink-0 flex items-center justify-center px-6 border-t backdrop-blur-xl transition-all duration-500 ${isDark ? 'bg-zinc-950/90 border-white/5' : 'bg-white/90 border-zinc-200'}`}>
              <div className="w-full max-w-md flex items-center gap-6">
