@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, MapPin, ChevronLeft, Zap, Menu, X, Globe, 
   User, Building, BedDouble, Trash2, 
   Heart, Smile, Instagram, Moon, Sun, ShieldCheck, 
   CheckCircle2, Home, Share2, 
-  CreditCard, Banknote, QrCode, Trophy, Info, ThumbsUp
+  CreditCard, Banknote, QrCode, Trophy, Info
 } from 'lucide-react';
 
 // ==================================================================================
@@ -15,11 +15,10 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v11_platinum', // Chave nova para garantir funcionamento limpo
+  STORAGE_KEY: '@thaly_app_v12_ultra', // Nova chave para limpar cache antigo
   XP_TARGET: 500, 
 };
 
-// --- DICIONÁRIO DE IDIOMAS ---
 const TEXTS = {
   pt: {
     welcome: "Bem-vindo",
@@ -127,7 +126,6 @@ const DB = {
     { id: 'touch', label: "Toque Interativo", desc: "Troca de toques permitida", price: 63, icon: Heart },
     { id: 'aroma', label: "Aromaterapia", desc: "Óleos essenciais", price: 5, icon: Smile }
   ],
-  // AVALIAÇÕES FILTRADAS (SEM "AMBIENTE LIMPO")
   reviews: [
     { name: "Lucas (Londrina)", text: "Mano, que sensação. Jorrei muito no final, foi insano. O cara sabe o que faz.", stars: 5 },
     { name: "Ricardo (SP)", text: "A sensitiva dele é outro patamar. Gozei horrores e relaxei demais.", stars: 5 },
@@ -188,7 +186,7 @@ const DB = {
 // ==================================================================================
 
 const Toast = ({ msg, show }) => (
-  <div className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 pointer-events-none ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+  <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 pointer-events-none ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
     <div className="bg-blue-600/95 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 font-medium text-sm border border-blue-400/30 whitespace-nowrap">
       <CheckCircle2 size={18} />
       <span>{msg}</span>
@@ -202,31 +200,31 @@ const TermsModal = ({ isOpen, onClose, isDark }) => {
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}></div>
-      <div className={`relative w-full max-w-md p-8 rounded-3xl max-h-[80vh] overflow-y-auto animate-scale-in flex flex-col ${isDark ? 'bg-zinc-900 text-zinc-100' : 'bg-white text-zinc-900'}`}>
-         <div className="flex justify-between items-center mb-6">
+      <div className={`relative w-full max-w-md p-8 rounded-3xl max-h-[80vh] flex flex-col animate-scale-in ${isDark ? 'bg-zinc-900 text-zinc-100' : 'bg-white text-zinc-900'}`}>
+         <div className="flex justify-between items-center mb-6 flex-shrink-0">
             <h2 className="text-xl font-bold flex items-center gap-2"><ShieldCheck className="text-blue-500"/> Termos de Serviço</h2>
             <button onClick={onClose}><X/></button>
          </div>
-         <div className="space-y-4 text-sm opacity-80 leading-relaxed text-justify font-light flex-1 overflow-y-auto pr-2">
+         <div className="space-y-4 text-sm opacity-80 leading-relaxed text-justify font-light overflow-y-auto flex-1 pr-2">
             <p><strong>1. Respeito Mútuo:</strong> O atendimento é profissional. Qualquer conduta agressiva ou desrespeitosa encerrará a sessão imediatamente.</p>
             <p><strong>2. Higiene e Segurança:</strong> Prezo pela máxima higiene e exijo o mesmo do cliente. Todos os materiais que levo são esterilizados.</p>
             <p><strong>3. Sigilo Absoluto:</strong> Sua privacidade é garantida. O que acontece na sessão, fica na sessão.</p>
             <p><strong>4. Taxas Externas:</strong> Em caso de atendimento em Motel, a taxa de entrada/período é de responsabilidade do cliente.</p>
             <p><strong>5. Pagamento:</strong> O pagamento deve ser realizado integralmente logo após a prestação do serviço.</p>
          </div>
-         <button onClick={onClose} className="w-full mt-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors">Entendi e Concordo</button>
+         <button onClick={onClose} className="w-full mt-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors flex-shrink-0">Entendi e Concordo</button>
       </div>
     </div>
   );
 };
 
-// MODAL DE AVALIAÇÕES (SCROLLÁVEL)
+// MODAL DE AVALIAÇÕES
 const ReviewsModal = ({ isOpen, onClose, isDark, reviews }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose}></div>
-       <div className={`relative w-full h-full md:max-w-lg md:h-[85%] rounded-[2rem] flex flex-col animate-slide-up overflow-hidden ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-zinc-900'}`}>
+       <div className={`relative w-full h-[90%] md:max-w-lg rounded-[2rem] flex flex-col animate-slide-up overflow-hidden ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-zinc-900'}`}>
           <div className={`flex justify-between items-center p-6 border-b flex-shrink-0 ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
              <h2 className="text-xl font-bold flex items-center gap-2"><Star className="text-amber-400" fill="currentColor"/> Avaliações (50+)</h2>
              <button onClick={onClose} className="p-2 bg-black/5 rounded-full"><X/></button>
@@ -262,8 +260,10 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
-  
   const [toast, setToast] = useState({ show: false, msg: '' });
+
+  // Referência para o Scroll
+  const scrollRef = useRef(null);
 
   // USER & STORAGE
   const [user, setUser] = useState(() => {
@@ -293,6 +293,11 @@ export default function App() {
 
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
+  
+  // Scroll para o topo ao mudar de passo
+  useEffect(() => {
+    if(scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [step]);
 
   const showToast = (msg) => {
     setToast({ show: true, msg });
@@ -373,7 +378,7 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
     if (step === 2) {
       const { city, street, placeName, number, comp } = booking.address;
       if (!user.name) return false;
-      // Validação Estrita para Home: PRECISA DO COMPLEMENTO
+      // Validação rigorosa para Home: Precisa de Complemento
       if (booking.locationType === 'home' && (!city || !street || !number || !comp)) return false;
       if (booking.locationType === 'hotel' && (!city || !placeName)) return false;
       return true;
@@ -388,22 +393,20 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
     const earnedXP = getFinancials.total;
     const newTotalXP = user.xp + earnedXP;
     
-    // SISTEMA DE CUPOM: USOU, GASTOU.
-    // Se o usuário aplicou um cupom, removemos ele da lista PERMANENTEMENTE agora.
+    // CORREÇÃO CRÍTICA: REMOVER CUPOM APENAS SE FOR FINALIZADO
     let updatedCoupons = [...user.coupons];
     if(booking.appliedCoupon) {
-        updatedCoupons = updatedCoupons.filter(c => c.id !== booking.appliedCoupon.id);
+        // Converte para String ambos os IDs para garantir igualdade na comparação
+        updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     }
 
-    // GAMIFICACAO: NIVEL NOVO GERA CUPOM NOVO
+    // GAMIFICACAO
     if (Math.floor(newTotalXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
         updatedCoupons.push({ id: Date.now(), title: 'Recompensa VIP', val: 20, isNew: true });
     }
 
-    // SALVA TUDO
+    // PERSISTÊNCIA
     setUser({ ...user, xp: newTotalXP, coupons: updatedCoupons });
-    
-    // VAI PARA SUCESSO
     setStep(4);
   };
 
@@ -414,7 +417,9 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
   );
 
   return (
-    <div className={`min-h-screen font-sans transition-colors duration-500 pb-40 ${isDark ? 'bg-zinc-950 text-blue-50' : 'bg-slate-50 text-slate-900'}`}>
+    // ESTRUTURA "APP-SHELL" PARA ROLAGEM PERFEITA
+    <div className={`h-[100dvh] w-full overflow-hidden flex flex-col font-sans transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-blue-50' : 'bg-slate-50 text-slate-900'}`}>
+      
       <Toast show={toast.show} msg={toast.msg} />
       <TermsModal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} isDark={isDark} />
       <ReviewsModal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} isDark={isDark} reviews={DB.reviews} />
@@ -440,7 +445,7 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                     <p className="text-[10px] opacity-70">Próximo cupom em {CONFIG.XP_TARGET - (user.xp % CONFIG.XP_TARGET)} XP</p>
                 </div>
 
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 space-y-4 overflow-y-auto">
                    <button onClick={()=>setLang(lang==='pt'?'en':'pt')} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
                       <Globe size={20}/> <span>{lang === 'pt' ? 'Mudar para Inglês' : 'Switch to Portuguese'}</span>
                    </button>
@@ -461,8 +466,8 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
           </div>
       )}
 
-      {/* HEADER */}
-      <header className={`fixed top-0 w-full h-20 z-40 flex items-center justify-between px-6 border-b backdrop-blur-md transition-colors duration-500 ${isDark ? 'bg-zinc-950/80 border-white/5' : 'bg-white/80 border-blue-100'}`}>
+      {/* HEADER FIXO */}
+      <header className={`h-20 flex-shrink-0 flex items-center justify-between px-6 border-b backdrop-blur-md transition-colors duration-500 ${isDark ? 'bg-zinc-950/80 border-white/5' : 'bg-white/80 border-blue-100'}`}>
         <div className="flex items-center gap-4">
           <button onClick={()=>setMenuOpen(true)} className={`p-3 rounded-full transition-colors ${isDark ? 'hover:bg-zinc-800' : 'hover:bg-blue-50 text-blue-900'}`}><Menu size={24}/></button>
           <div className="flex flex-col">
@@ -475,12 +480,14 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
 
       {/* PROGRESS BAR */}
       {step < 4 && (
-        <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-900 fixed top-[80px] z-30 left-0">
+        <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-900 flex-shrink-0">
           <div className="h-full bg-blue-600 transition-all duration-700 ease-out shadow-[0_0_15px_rgba(37,99,235,0.4)]" style={{ width: `${((step+1)/4)*100}%` }} />
         </div>
       )}
 
-      <main className="pt-32 px-6 max-w-md mx-auto animate-fade-in">
+      {/* AREA DE CONTEÚDO COM SCROLL INDEPENDENTE */}
+      <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-6 pb-32 scroll-smooth">
+        <div className="max-w-md mx-auto animate-fade-in">
         
         {/* STEP 0: SERVIÇOS & AVALIAÇÕES */}
         {step === 0 && (
@@ -528,7 +535,6 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                     <div className="flex text-amber-400 gap-1"><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/></div>
                 </div>
 
-                {/* Apenas 3 destaques fixos */}
                 <div className="space-y-3 mb-6">
                     {DB.reviews.slice(0, 3).map((r, i) => (
                         <div key={i} className={`p-4 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-blue-50'}`}>
@@ -787,13 +793,13 @@ ${mapsLink ? `🔗 *Maps:* ${mapsLink}` : ''}
                 </button>
             </div>
         )}
-
+        </div>
       </main>
 
-      {/* FOOTER NAVEGAÇÃO */}
+      {/* FOOTER FIXO (FORA DA ÁREA DE SCROLL) */}
       {step < 4 && (
-          <div className={`fixed bottom-0 w-full p-6 border-t z-50 backdrop-blur-xl transition-all duration-500 ${isDark ? 'bg-zinc-950/90 border-white/5' : 'bg-white/90 border-zinc-200'}`}>
-             <div className="max-w-md mx-auto flex items-center gap-6">
+          <div className={`h-24 flex-shrink-0 flex items-center justify-center px-6 border-t backdrop-blur-xl transition-all duration-500 ${isDark ? 'bg-zinc-950/90 border-white/5' : 'bg-white/90 border-zinc-200'}`}>
+             <div className="w-full max-w-md flex items-center gap-6">
                 {step < 3 && booking.service && (
                    <div className="flex-1 animate-fade-in">
                       <span className="block text-[10px] font-bold uppercase opacity-40 tracking-wider mb-1">Total</span>
