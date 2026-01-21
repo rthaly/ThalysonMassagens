@@ -9,202 +9,231 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES & DICIONÁRIO DE TRADUÇÃO (I18N)
+// 1. CONFIGURAÇÕES GERAIS
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v14_global',
+  STORAGE_KEY: 'thaly_app_v15_stable',
   XP_TARGET: 300 
 };
 
-// Dicionário de Traduções
+// ==================================================================================
+// 2. BANCO DE DADOS DE TEXTOS (I18N)
+// ==================================================================================
+
 const TEXTS = {
   pt: {
-    welcome_title: "Bem-vindo.",
-    welcome_subtitle: "Massagem exclusiva e profissional.",
+    // Geral
+    welcome: "Bem-vindo.",
+    subtitle: "Massagem exclusiva e profissional.",
     your_name: "Seu Nome",
     name_placeholder: "Como prefere ser chamado?",
-    health_confirm: "Tenho +18 anos e estou saudável.",
-    reviews_title: "Avaliações Reais",
-    start_btn: "Começar",
-    choose_exp: "Escolha a Experiência",
-    more_ordered: "MAIS PEDIDA",
-    therapeutic: "TERAPÊUTICA",
-    earn_xp: "Ganhe",
-    personalize: "Personalize",
-    extras_title: "Adicionais (Opcional)",
-    date_time: "Data e Hora",
-    schedules: "Horários",
-    sold_out: "ESGOTADO",
-    continue_btn: "Continuar",
-    location_title: "Onde será?",
-    home_btn: "Casa/Apto",
-    city_label: "Cidade Atual",
-    city_placeholder: "Ex: Londrina, SP...",
-    motel_name: "Nome do Motel",
-    suite_num: "Número da Suíte",
-    hotel_name: "Nome do Hotel",
-    room_num: "Número do Quarto",
-    address_label: "Endereço (Rua)",
-    number_label: "Número",
-    district_label: "Bairro",
-    comp_label: "Complemento (Opcional)",
-    uber_warn: "Uber não incluso. Calculo no WhatsApp.",
-    review_order: "Revisar Pedido",
-    summary_title: "Resumo do Pedido",
-    base_value: "Valor Base",
-    coupon_applied: "Cupom Aplicado",
-    have_coupon: "Tenho Cupom",
-    location_summary: "Localização",
-    payment_summary: "Pagamento",
-    total_final: "Total Final",
-    pay_method_title: "Pagamento (No Local)",
-    confirm_whatsapp: "Agendar no WhatsApp",
-    success_title: "Solicitação Enviada!",
-    success_msg: "Pedido enviado. Aguarde a confirmação do Uber no WhatsApp.",
-    new_booking: "Novo Agendamento",
-    menu_fidelity: "Fidelidade",
-    menu_share: "Compartilhar",
-    menu_doubts: "Dúvidas",
-    wallet_title: "Carteira",
-    wallet_empty: "Vazia.",
-    use_btn: "USAR",
-    gift_title: "Cupom Disponível",
-    gift_sub: "Toque para usar seu desconto.",
-    copy_pix: "PIX COPY",
-    pix_copied: "CHAVE PIX COPIADA!",
-    money: "Dinheiro",
-    card: "Cartão",
+    health_check: "Tenho +18 anos e estou saudável.",
+    start_btn: "Ver Serviços",
     
     // Serviços
-    svc_complete_name: "🔥 Completa (1h)",
-    svc_complete_desc: "Corpo a corpo + finalização.",
-    svc_complete_note: "Sem penetração/oral.",
+    choose_svc: "Escolha a Experiência",
+    svc_comp_name: "🔥 Completa (1h)",
+    svc_comp_desc: "Corpo a corpo + finalização.",
+    svc_comp_note: "Sem penetração/oral.",
+    svc_comp_steps: ['1️⃣ Relaxante (Tira tensão)', '2️⃣ Corpo a Corpo (Sensitivo)', '3️⃣ Tântrica (Finalização inclusa)'],
+    svc_comp_tag: "MAIS PEDIDA",
+    
     svc_relax_name: "🍃 Relaxante (1h)",
     svc_relax_desc: "Apenas muscular.",
     svc_relax_note: "Sem toques íntimos.",
-    
+    svc_relax_steps: ['1️⃣ Foco muscular', '2️⃣ Alívio de dores', '3️⃣ Apenas relaxamento físico'],
+    svc_relax_tag: "TERAPÊUTICA",
+
     // Extras
+    personalize: "Personalize",
+    ext_title: "Adicionais (Opcional)",
     ext_time: "Duração 1h30",
     ext_time_sub: "+30 minutos",
     ext_touch: "Interatividade",
     ext_touch_sub: "Toque recíproco",
     ext_touch_warn: "Fico de cueca",
     ext_aroma: "Aromaterapia",
-    ext_aroma_sub: "Óleos essenciais"
+    ext_aroma_sub: "Óleos essenciais",
+
+    // Data/Hora
+    date_title: "Data e Hora",
+    schedules: "Horários",
+    sold_out: "ESGOTADO",
+    continue: "Continuar",
+
+    // Local
+    loc_title: "Onde será?",
+    btn_home: "Casa/Apto",
+    city_lbl: "Cidade Atual",
+    city_ph: "Ex: Londrina, SP...",
+    
+    lbl_motel: "Nome do Motel",
+    lbl_suite: "Número da Suíte",
+    ph_motel: "Ex: Motel London",
+    
+    lbl_hotel: "Nome do Hotel",
+    lbl_room: "Número do Quarto",
+    ph_hotel: "Ex: Hotel Bourbon",
+    
+    lbl_addr: "Endereço (Rua)",
+    lbl_num: "Número",
+    lbl_dist: "Bairro",
+    lbl_comp: "Complemento",
+    
+    uber_warn: "Uber não incluso. Calculo no WhatsApp.",
+    
+    // Resumo
+    review_title: "Resumo do Pedido",
+    base_val: "Valor Base",
+    coupon_lbl: "Cupom Aplicado",
+    add_coupon: "Tenho Cupom",
+    total_lbl: "Total Final",
+    loc_lbl: "Localização",
+    pay_lbl: "Pagamento",
+    pay_method_title: "Pagamento (No Local)",
+    confirm_btn: "Agendar no WhatsApp",
+    
+    // Diversos
+    wallet: "Carteira",
+    empty_wallet: "Vazia.",
+    use: "USAR",
+    gift_title: "Cupom Disponível",
+    gift_sub: "Toque para resgatar.",
+    copy_pix: "COPIAR CHAVE PIX",
+    pix_copied: "PIX COPIADO!",
+    
+    money: "Dinheiro",
+    card: "Cartão",
+    menu_fid: "Fidelidade",
+    menu_share: "Compartilhar",
+    menu_doubts: "Dúvidas",
+    success_title: "Solicitação Enviada!",
+    success_msg: "Aguarde a confirmação do Uber no WhatsApp.",
+    new_book: "Novo Agendamento"
   },
   en: {
-    welcome_title: "Welcome.",
-    welcome_subtitle: "Exclusive professional massage.",
+    welcome: "Welcome.",
+    subtitle: "Exclusive professional massage.",
     your_name: "Your Name",
     name_placeholder: "How should I call you?",
-    health_confirm: "I am 18+ and healthy.",
-    reviews_title: "Real Reviews",
-    start_btn: "Get Started",
-    choose_exp: "Choose Experience",
-    more_ordered: "BEST SELLER",
-    therapeutic: "THERAPEUTIC",
-    earn_xp: "Earn",
-    personalize: "Customize",
-    extras_title: "Add-ons (Optional)",
-    date_time: "Date & Time",
-    schedules: "Available Times",
-    sold_out: "SOLD OUT",
-    continue_btn: "Continue",
-    location_title: "Location",
-    home_btn: "Home/Apt",
-    city_label: "Current City",
-    city_placeholder: "Ex: Londrina, SP...",
-    motel_name: "Motel Name",
-    suite_num: "Suite Number",
-    hotel_name: "Hotel Name",
-    room_num: "Room Number",
-    address_label: "Street Address",
-    number_label: "Number",
-    district_label: "District",
-    comp_label: "Complement (Optional)",
-    uber_warn: "Uber fee not included. Calculated via WhatsApp.",
-    review_order: "Review Order",
-    summary_title: "Order Summary",
-    base_value: "Base Value",
-    coupon_applied: "Coupon Applied",
-    have_coupon: "I have a Coupon",
-    location_summary: "Location",
-    payment_summary: "Payment",
-    total_final: "Final Total",
-    pay_method_title: "Payment (On Site)",
-    confirm_whatsapp: "Book on WhatsApp",
-    success_title: "Request Sent!",
-    success_msg: "Order sent. Please wait for Uber confirmation on WhatsApp.",
-    new_booking: "New Booking",
-    menu_fidelity: "Loyalty",
-    menu_share: "Share App",
-    menu_doubts: "FAQ",
-    wallet_title: "Wallet",
-    wallet_empty: "Empty.",
-    use_btn: "USE",
-    gift_title: "Gift Available",
-    gift_sub: "Tap to use your discount.",
-    copy_pix: "COPY PIX",
-    pix_copied: "PIX KEY COPIED!",
-    money: "Cash",
-    card: "Card",
-
-    // Services
-    svc_complete_name: "🔥 Complete (1h)",
-    svc_complete_desc: "Body-to-body + finish.",
-    svc_complete_note: "No penetration/oral.",
+    health_check: "I am 18+ and healthy.",
+    start_btn: "See Services",
+    
+    choose_svc: "Choose Experience",
+    svc_comp_name: "🔥 Complete (1h)",
+    svc_comp_desc: "Body-to-body + finish.",
+    svc_comp_note: "No penetration/oral.",
+    svc_comp_steps: ['1️⃣ Relax (Tension relief)', '2️⃣ Body-to-Body (Sensitive)', '3️⃣ Tantra (Finish included)'],
+    svc_comp_tag: "BEST SELLER",
+    
     svc_relax_name: "🍃 Relaxing (1h)",
     svc_relax_desc: "Muscular only.",
     svc_relax_note: "No intimate touching.",
+    svc_relax_steps: ['1️⃣ Muscle Focus', '2️⃣ Pain Relief', '3️⃣ Physical Only'],
+    svc_relax_tag: "THERAPEUTIC",
 
-    // Extras
+    personalize: "Customize",
+    ext_title: "Add-ons (Optional)",
     ext_time: "Duration 1h30",
     ext_time_sub: "+30 minutes",
     ext_touch: "Interactivity",
     ext_touch_sub: "Reciprocal touch",
     ext_touch_warn: "Underwear on",
     ext_aroma: "Aromatherapy",
-    ext_aroma_sub: "Essential oils"
+    ext_aroma_sub: "Essential oils",
+
+    date_title: "Date & Time",
+    schedules: "Available Times",
+    sold_out: "SOLD OUT",
+    continue: "Continue",
+
+    loc_title: "Location",
+    btn_home: "Home/Apt",
+    city_lbl: "Current City",
+    city_ph: "Ex: Londrina, SP...",
+    
+    lbl_motel: "Motel Name",
+    lbl_suite: "Suite Number",
+    ph_motel: "Ex: Motel London",
+    
+    lbl_hotel: "Hotel Name",
+    lbl_room: "Room Number",
+    ph_hotel: "Ex: Bourbon Hotel",
+    
+    lbl_addr: "Street Address",
+    lbl_num: "Number",
+    lbl_dist: "District",
+    lbl_comp: "Complement",
+    
+    uber_warn: "Uber fee not included. Calculated via WhatsApp.",
+    
+    review_title: "Order Summary",
+    base_val: "Base Value",
+    coupon_lbl: "Coupon Applied",
+    add_coupon: "I have a Coupon",
+    total_lbl: "Final Total",
+    loc_lbl: "Location",
+    pay_lbl: "Payment",
+    pay_method_title: "Payment (On Site)",
+    confirm_btn: "Book on WhatsApp",
+    
+    wallet: "Wallet",
+    empty_wallet: "Empty.",
+    use: "USE",
+    gift_title: "Gift Available",
+    gift_sub: "Tap to redeem.",
+    copy_pix: "COPY PIX KEY",
+    pix_copied: "PIX COPIED!",
+    
+    money: "Cash",
+    card: "Card",
+    menu_fid: "Loyalty",
+    menu_share: "Share App",
+    menu_doubts: "FAQ",
+    success_title: "Request Sent!",
+    success_msg: "Wait for Uber confirmation on WhatsApp.",
+    new_book: "New Booking"
   }
 };
 
-const SERVICES_DATA = [
-  { 
-    id: 'completa', 
-    price: 175, xp: 100,
-    steps: ['1️⃣ Relax', '2️⃣ Body-to-Body', '3️⃣ Tantra Finish']
-  },
-  { 
-    id: 'relax', 
-    price: 145, xp: 50,
-    steps: ['1️⃣ Muscle Focus', '2️⃣ Pain Relief', '3️⃣ Physical Only']
-  }
+// Dados Estruturais (Preços Fixos)
+const SERVICES_DB = [
+  { id: 'completa', price: 175, xp: 100 },
+  { id: 'relax', price: 145, xp: 50 }
 ];
 
-const EXTRAS_DATA = [
+const EXTRAS_DB = [
   { id: 'more_time', icon: Clock, price: 70 },
   { id: 'touch', icon: Flame, price: 63 },
   { id: 'aroma', icon: Wind, price: 10 }
 ];
 
 const REVIEWS_DB = [
-  { t: "A progressão da massagem é perfeita. Começa relaxando e termina intenso.", a: "Tiago", s: 5 },
-  { t: "Profissionalismo raro. Explicou tudo antes, sem surpresas.", a: "Roberto", s: 5 },
-  { t: "Fui travado e saí leve. A finalização vale cada centavo.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso", s: 5 }
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", a: "Tiago", s: 5 },
+  { t: "O toque dele vicia. A finalização foi absurda.", a: "Anônimo", s: 5 },
+  { t: "Profissionalismo raro. Pontual e educado.", a: "Carlos", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba.", a: "Pedro", s: 5 },
+  { t: "Ambiente que ele cria é relaxante demais.", a: "Gustavo", s: 5 },
+  { t: "Gostei bastante, me senti bem relaxado depois.", a: "Alan", s: 5 },
+  { t: "O corpo a corpo é quente de verdade.", a: "J.P.", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto.", a: "Turista", s: 5 },
+  { t: "A técnica dele é diferente de tudo.", a: "Dr. Marcelo", s: 5 },
+  { t: "Sensação de liberdade total.", a: "Caio", s: 5 },
+  { t: "Extremamente educado e com papo bom.", a: "Renan", s: 5 },
+  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "Sigilo", s: 5 }
 ];
 
 const FAQS = [
-    { q: "Location?", a: "I go to you: Home, Hotel, or Motel." },
-    { q: "Uber included?", a: "No. Calculated separately." },
-    { q: "Cards?", a: "Yes, Debit and Credit accepted." }
+    { q: "Location / Local?", a: "Home, Hotel, Motel." },
+    { q: "Uber?", a: "Not included / Não incluso." },
+    { q: "Card / Cartão?", a: "Yes / Sim." }
 ];
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (THEMED)
+// 3. UTILS & COMPONENTS
 // ==================================================================================
 
 const Utils = {
@@ -244,7 +273,7 @@ const PrimaryButton = ({ onClick, disabled, label, icon: Icon, pulse, variant="p
         className={`w-full h-14 rounded-xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 active:scale-[0.98]
             ${variant === 'primary' 
                 ? (disabled 
-                    ? (isDark ? 'bg-[#222] text-gray-600' : 'bg-gray-200 text-gray-400') 
+                    ? (isDark ? 'bg-[#222] text-gray-600 cursor-not-allowed' : 'bg-gray-200 text-gray-400') 
                     : (isDark ? 'bg-white text-black hover:bg-gray-200 shadow-white/10' : 'bg-black text-white hover:bg-gray-800 shadow-xl'))
                 : (isDark ? 'bg-[#1C1C1E] border border-[#333] text-white' : 'bg-white border border-gray-200 text-black shadow-sm')
             }
@@ -262,7 +291,6 @@ const SplashScreen = ({ onFinish, isDark }) => {
         const t2 = setTimeout(onFinish, 2500); 
         return () => { clearTimeout(t1); clearTimeout(t2); };
     }, [onFinish]);
-    
     return (
         <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center transition-opacity duration-700 ${isDark ? 'bg-black' : 'bg-white'} ${fade ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <div className="relative mb-6">
@@ -274,8 +302,26 @@ const SplashScreen = ({ onFinish, isDark }) => {
     );
 };
 
+const ReviewCarousel = ({ isDark }) => (
+    <div className="w-full overflow-hidden relative py-4">
+        <div className="flex gap-4 animate-scroll w-max">
+             {[...REVIEWS_DB, ...REVIEWS_DB].map((r, i) => (
+                 <div key={i} className={`w-[280px] p-6 rounded-3xl border flex-shrink-0 relative overflow-hidden ${isDark ? 'bg-[#161616] border-[#2A2A2A]' : 'bg-white border-gray-200 shadow-sm'}`}>
+                     <div className="flex text-yellow-500 mb-3 gap-1">{[...Array(5)].map((_,k)=><Star key={k} size={12} fill="currentColor"/>)}</div>
+                     <p className={`text-xs italic mb-4 leading-relaxed line-clamp-3 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>"{r.t}"</p>
+                     <div className={`flex items-center gap-2 border-t pt-3 ${isDark ? 'border-[#333]' : 'border-gray-100'}`}>
+                        <Shield size={12} className="text-green-500"/>
+                        <p className={`text-[9px] font-black uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{r.a}</p>
+                     </div>
+                 </div>
+             ))}
+        </div>
+        <style>{`@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } .animate-scroll { animation: scroll 120s linear infinite; }`}</style>
+    </div>
+);
+
 // ==================================================================================
-// 3. APP LÓGICA PRINCIPAL
+// 3. APP LOGIC
 // ==================================================================================
 
 export default function App() {
@@ -287,24 +333,19 @@ export default function App() {
   const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
 
-  // --- THEME & LANGUAGE STATE ---
+  // THEME & LANG
   const [isDark, setIsDark] = useState(true);
-  const [lang, setLang] = useState('pt'); // 'pt' or 'en'
-  
-  const T = TEXTS[lang]; // Atalho para textos atuais
+  const [lang, setLang] = useState('pt');
+  const T = TEXTS[lang];
 
-  // Persistence
+  // DATA PERSISTENCE
   const [user, setUser] = useState(() => {
-      if (typeof window === 'undefined') return { name: '', xp: 0, coupons: [] };
       try {
           const s = localStorage.getItem(CONFIG.STORAGE_KEY);
           return s ? JSON.parse(s) : { name: '', xp: 0, coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 15 }] };
-      } catch (e) {
-          return { name: '', xp: 0, coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 15 }] };
-      }
+      } catch (e) { return { name: '', xp: 0, coupons: [] }; }
   });
 
-  // Load Theme/Lang pref
   useEffect(() => {
       const savedTheme = localStorage.getItem('thaly_theme');
       if (savedTheme) setIsDark(savedTheme === 'dark');
@@ -312,23 +353,12 @@ export default function App() {
       if (savedLang) setLang(savedLang);
   }, []);
 
-  useEffect(() => { 
-      try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); } catch (e) {} 
-  }, [user]);
+  useEffect(() => { try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); } catch (e) {} }, [user]);
 
-  const toggleTheme = () => {
-      const newTheme = !isDark;
-      setIsDark(newTheme);
-      localStorage.setItem('thaly_theme', newTheme ? 'dark' : 'light');
-  };
+  const toggleTheme = () => { setIsDark(!isDark); localStorage.setItem('thaly_theme', !isDark ? 'dark' : 'light'); };
+  const toggleLang = () => { const newLang = lang === 'pt' ? 'en' : 'pt'; setLang(newLang); localStorage.setItem('thaly_lang', newLang); };
 
-  const toggleLang = () => {
-      const newLang = lang === 'pt' ? 'en' : 'pt';
-      setLang(newLang);
-      localStorage.setItem('thaly_lang', newLang);
-  };
-
-  // Session
+  // SESSION STATE
   const initialBooking = {
       healthChecked: false,
       service: null,
@@ -342,7 +372,7 @@ export default function App() {
   };
   const [booking, setBooking] = useState(initialBooking);
 
-  // Actions
+  // HELPERS
   const showToast = (msg) => { setToast({ show: true, msg }); setTimeout(() => setToast({ show: false, msg: '' }), 3000); };
   const handleNext = () => { Utils.vibrate(); window.scrollTo({ top: 0, behavior: 'smooth' }); setStep(s => s + 1); };
   const handleBack = () => { Utils.vibrate(); setStep(s => s - 1); };
@@ -354,14 +384,14 @@ export default function App() {
       const sel = new Date(date);
       const [h] = timeStr.split(':').map(Number);
       if (sel.toDateString() === now.toDateString() && h <= now.getHours()) return 'past';
-      if ((sel.getDate() + h) % 6 === 0) return 'sold_out'; 
+      if ((sel.getDate() + h) % 5 === 0) return 'sold_out'; 
       return 'available';
   };
 
   const calculateTotal = () => {
       let s = booking.service?.price || 0;
       let e = 0;
-      Object.keys(booking.extras).forEach(k => { if(booking.extras[k]) e += EXTRAS_DATA.find(x => x.id === k).price; });
+      Object.keys(booking.extras).forEach(k => { if(booking.extras[k]) e += EXTRAS_DB.find(x => x.id === k).price; });
       const d = booking.appliedCoupon?.val || 0;
       return { service: s, extras: e, disc: d, final: Math.max(0, s + e - d) };
   };
@@ -398,13 +428,11 @@ export default function App() {
       }
 
       const fin = calculateTotal();
-      
-      // Tradução dos labels para o Zap (sempre PT se o prestador for BR, mas aqui segue a logica do cliente)
-      const serviceName = booking.service.id === 'completa' ? TEXTS[lang].svc_complete_name : TEXTS[lang].svc_relax_name;
+      const svcName = booking.service.id === 'completa' ? T.svc_comp_name : T.svc_relax_name;
       
       const extrasTxt = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> {
-          let label = k === 'more_time' ? TEXTS[lang].ext_time : k === 'touch' ? TEXTS[lang].ext_touch : TEXTS[lang].ext_aroma;
-          return `• ${label} (+${Utils.fmtMoney(EXTRAS_DATA.find(x=>x.id===k).price)})`;
+          let l = k === 'more_time' ? T.ext_time : k === 'touch' ? T.ext_touch : T.ext_aroma;
+          return `• ${l} (+${Utils.fmtMoney(EXTRAS_DB.find(x=>x.id===k).price)})`;
       }).join('\n');
 
       const text = `
@@ -413,7 +441,7 @@ export default function App() {
 👤 *${user.name}*
 ✅ (+18 OK)
 
-💆 ${serviceName}
+💆 ${svcName}
 📅 ${new Date(booking.date).toLocaleDateString('pt-BR')} @ ${booking.time}
 
 ✨ ${extrasTxt ? 'Extras:\n' + extrasTxt : 'No Extras'}
@@ -441,13 +469,12 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
 
   if (loading) return <SplashScreen onFinish={() => setLoading(false)} isDark={isDark} />;
 
-  // --- TELA DE SUCESSO ---
   if (success) return (
       <div className={`min-h-screen flex flex-col items-center justify-center p-8 text-center animate-fade-in ${isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'}`}>
           <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-xl"><Check size={48} className="text-white" strokeWidth={4}/></div>
           <h2 className="text-3xl font-black mb-2 uppercase tracking-tight">{T.success_title}</h2>
           <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} mb-8 max-w-xs`}>{T.success_msg}</p>
-          <PrimaryButton onClick={handleReset} label={T.new_booking} icon={RefreshCw} variant="secondary" isDark={isDark}/>
+          <PrimaryButton onClick={handleReset} label={T.new_book} icon={RefreshCw} variant="secondary" isDark={isDark}/>
       </div>
   );
 
@@ -463,26 +490,22 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                  <h1 className="text-sm font-black tracking-[0.2em] uppercase">Thaly</h1>
              </div>
              <div className="flex gap-2">
-                 <button onClick={toggleLang} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}>
-                    <span className="text-[10px] font-bold">{lang.toUpperCase()}</span>
-                 </button>
-                 <button onClick={toggleTheme} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}>
-                    {isDark ? <Sun size={20}/> : <Moon size={20}/>}
-                 </button>
+                 <button onClick={toggleLang} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><span className="text-[10px] font-bold">{lang.toUpperCase()}</span></button>
+                 <button onClick={toggleTheme} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}>{isDark ? <Sun size={20}/> : <Moon size={20}/>}</button>
                  <button onClick={() => setMenuOpen(true)} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><Menu size={20}/></button>
              </div>
          </div>
          <div className={`h-[2px] w-full ${isDark ? 'bg-[#111]' : 'bg-gray-200'}`}><div className="h-full bg-green-500 transition-all duration-500 ease-out" style={{width: `${((step+1)/3)*100}%`}}></div></div>
       </header>
 
-      {/* MENU & WALLET */}
-      {menuOpen && <div className="fixed inset-0 z-50 flex justify-end"><div className="absolute inset-0 bg-black/80" onClick={()=>setMenuOpen(false)}></div><div className={`relative w-72 h-full border-l p-6 shadow-2xl animate-slide-in ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><button onClick={()=>setMenuOpen(false)} className="mb-8"><X/></button><div className={`${isDark ? 'bg-[#222]' : 'bg-gray-100'} p-4 rounded-xl mb-4 text-center`}><p className="text-xs text-gray-500 uppercase">{T.menu_fidelity}</p><p className="text-green-500 font-bold text-xl">{user.xp} XP</p></div><button className={`w-full py-4 rounded-xl font-bold text-sm mb-2 ${isDark ? 'bg-[#222]' : 'bg-gray-100'}`} onClick={() => { setHelpOpen(true); setMenuOpen(false); }}>{T.menu_doubts}</button><button className={`w-full py-4 rounded-xl font-bold text-sm ${isDark ? 'bg-[#222]' : 'bg-gray-100'}`} onClick={()=>{if(navigator.share)navigator.share({url:window.location.href})}}>{T.menu_share}</button></div></div>}
+      {/* MODALS */}
+      {menuOpen && <div className="fixed inset-0 z-50 flex justify-end"><div className="absolute inset-0 bg-black/80" onClick={()=>setMenuOpen(false)}></div><div className={`relative w-72 h-full border-l p-6 shadow-2xl animate-slide-in ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><button onClick={()=>setMenuOpen(false)} className="mb-8"><X/></button><div className={`${isDark ? 'bg-[#222]' : 'bg-gray-100'} p-4 rounded-xl mb-4 text-center`}><p className="text-xs text-gray-500 uppercase">{T.menu_fid}</p><p className="text-green-500 font-bold text-xl">{user.xp} XP</p></div><button className={`w-full py-4 rounded-xl font-bold text-sm mb-2 ${isDark ? 'bg-[#222]' : 'bg-gray-100'}`} onClick={() => { setHelpOpen(true); setMenuOpen(false); }}>{T.menu_doubts}</button><button className={`w-full py-4 rounded-xl font-bold text-sm ${isDark ? 'bg-[#222]' : 'bg-gray-100'}`} onClick={()=>{if(navigator.share)navigator.share({url:window.location.href})}}>{T.menu_share}</button></div></div>}
       {helpOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90"><div className={`w-full max-w-sm border rounded-3xl p-6 ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><h3 className="font-bold text-xl mb-4">{T.menu_doubts}</h3><div className="space-y-3">{FAQS.map((f,i)=>(<div key={i} className={`p-4 rounded-xl border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-gray-50 border-gray-200'}`}><p className="text-green-500 text-xs font-bold mb-1">{f.q}</p><p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{f.a}</p></div>))}</div><button onClick={()=>setHelpOpen(false)} className={`w-full mt-4 py-3 rounded-xl font-bold text-sm ${isDark ? 'bg-[#333]' : 'bg-gray-200'}`}>Close</button></div></div>}
-      {walletOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90"><div className={`w-full max-w-sm border rounded-3xl p-6 ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><div className="flex justify-between mb-6"><h3 className="font-bold text-xl flex gap-2"><Wallet className="text-green-500"/> {T.wallet_title}</h3><button onClick={()=>setWalletOpen(false)}><X/></button></div>{user.coupons.length===0?<p className="text-center text-gray-500">{T.wallet_empty}</p>:user.coupons.map(c=>(<button key={c.id} onClick={()=>{setBooking({...booking, appliedCoupon:c});setWalletOpen(false);showToast(T.coupon_applied);}} className={`w-full p-4 border border-green-900 rounded-xl flex justify-between mb-2 text-green-500 font-bold ${isDark ? 'bg-black' : 'bg-green-50'}`}><span>{c.label}</span><span>R$ {c.val}</span></button>))}</div></div>}
+      {walletOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90"><div className={`w-full max-w-sm border rounded-3xl p-6 ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><div className="flex justify-between mb-6"><h3 className="font-bold text-xl flex gap-2"><Wallet className="text-green-500"/> {T.wallet}</h3><button onClick={()=>setWalletOpen(false)}><X/></button></div>{user.coupons.length===0?<p className="text-center text-gray-500">{T.wallet_empty}</p>:user.coupons.map(c=>(<button key={c.id} onClick={()=>{setBooking({...booking, appliedCoupon:c});setWalletOpen(false);showToast(T.coupon_lbl);}} className={`w-full p-4 border border-green-900 rounded-xl flex justify-between mb-2 text-green-500 font-bold ${isDark ? 'bg-black' : 'bg-green-50'}`}><span>{c.label}</span><span>R$ {c.val}</span></button>))}</div></div>}
 
       <main className="pt-24 px-5 max-w-md mx-auto animate-fade-in">
 
-        {/* STEP 0: INTRO & SERVIÇOS */}
+        {/* STEP 0: INTRO & SERVICES */}
         {step === 0 && (
             <>
                 {user.coupons.some(c=>c.id==='WELCOME') && (
@@ -491,39 +514,44 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                         <div><p className={`font-black text-sm uppercase ${isDark ? 'text-green-400' : 'text-green-700'}`}>{T.gift_title}</p><p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{T.gift_sub}</p></div>
                     </div>
                 )}
-                <h2 className="text-3xl font-black mb-2 tracking-tight">{T.welcome_title}</h2>
+                <h2 className="text-3xl font-black mb-2 tracking-tight">{T.welcome}</h2>
                 <div className="space-y-4 mb-10">
                     <BigInput label={T.your_name} placeholder={T.name_placeholder} value={user.name} onChange={e => setUser({...user, name: e.target.value})} icon={User} isDark={isDark} />
                     <div onClick={() => setBooking({...booking, healthChecked: !booking.healthChecked})} className={`p-5 rounded-2xl border flex gap-4 cursor-pointer items-center transition-all ${booking.healthChecked ? 'border-green-500' : (isDark ? 'bg-[#0A0A0A] border-[#222]' : 'bg-white border-gray-200')}`}>
                         <div className={`w-6 h-6 rounded flex items-center justify-center border ${booking.healthChecked ? 'bg-green-500 border-green-500 text-white' : 'border-gray-400'}`}>{booking.healthChecked && <Check size={16} strokeWidth={3}/>}</div>
-                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{T.health_confirm}</p>
+                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{T.health_check}</p>
                     </div>
                 </div>
                 
-                <h3 className="text-xl font-bold mb-6 flex items-center gap-2">{T.choose_exp}</h3>
+                <h3 className="text-xl font-bold mb-6 flex items-center gap-2">{T.choose_svc}</h3>
                 
                 <div className="space-y-6 pb-10">
-                    {SERVICES_DATA.map(s => {
-                        // Translation Lookup
-                        const name = s.id === 'completa' ? T.svc_complete_name : T.svc_relax_name;
-                        const desc = s.id === 'completa' ? T.svc_complete_desc : T.svc_relax_desc;
-                        const note = s.id === 'completa' ? T.svc_complete_note : T.svc_relax_note;
-                        const label = s.id === 'completa' ? T.more_ordered : T.therapeutic;
+                    {SERVICES_DB.map(s => {
+                        const name = s.id === 'completa' ? T.svc_comp_name : T.svc_relax_name;
+                        const desc = s.id === 'completa' ? T.svc_comp_desc : T.svc_relax_desc;
+                        const note = s.id === 'completa' ? T.svc_comp_note : T.svc_relax_note;
+                        const tag = s.id === 'completa' ? T.svc_comp_tag : T.svc_relax_tag;
+                        const steps = s.id === 'completa' ? T.svc_comp_steps : T.svc_relax_steps;
 
                         return (
                             <div key={s.id} onClick={() => setBooking({...booking, service: s})} className={`relative overflow-hidden w-full p-6 rounded-[2rem] border-2 transition-all cursor-pointer ${booking.service?.id === s.id ? (isDark ? 'bg-[#18181b] border-green-500' : 'bg-green-50 border-green-500') : (isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200')}`}>
-                                <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${booking.service?.id === s.id ? 'bg-green-500 text-white' : (isDark ? 'bg-[#222] text-gray-500' : 'bg-gray-200 text-gray-500')}`}>{label}</div>
+                                <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${booking.service?.id === s.id ? 'bg-green-500 text-white' : (isDark ? 'bg-[#222] text-gray-500' : 'bg-gray-200 text-gray-500')}`}>{tag}</div>
                                 <h3 className={`text-xl font-black uppercase mb-1 ${booking.service?.id === s.id ? (isDark ? 'text-white' : 'text-gray-900') : 'text-gray-400'}`}>{name}</h3>
                                 <div className="flex items-center gap-2 mb-4"><span className={`text-lg font-bold ${booking.service?.id === s.id ? 'text-green-500' : 'text-gray-500'}`}>{Utils.fmtMoney(s.price)}</span></div>
-                                <p className={`text-sm mb-2 ${isDark?'text-gray-300':'text-gray-700'}`}>{desc}</p>
+                                <div className={`space-y-2 mb-4 p-4 rounded-xl ${booking.service?.id === s.id ? (isDark ? 'bg-black/40' : 'bg-white/60') : (isDark ? 'bg-black/20' : 'bg-gray-50')}`}>{steps.map((st, i) => (<p key={i} className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{st}</p>))}</div>
                                 <p className="text-[10px] text-gray-500 flex items-center gap-1 italic"><Info size={10}/> {note}</p>
                             </div>
                         )
                     })}
                 </div>
 
+                <div className="mb-20">
+                    <p className={`text-[10px] font-bold uppercase mb-3 ml-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{T.review_title}</p>
+                    <ReviewCarousel isDark={isDark} />
+                </div>
+
                 <div className={`fixed bottom-0 left-0 w-full p-5 border-t z-[60] ${isDark ? 'bg-black/95 border-white/10' : 'bg-white/95 border-gray-200'}`}>
-                    <PrimaryButton disabled={!booking.healthChecked || user.name.length < 3 || !booking.service} onClick={handleNext} label={T.continue_btn} icon={ArrowRight} isDark={isDark} />
+                    <PrimaryButton disabled={!booking.healthChecked || user.name.length < 3 || !booking.service} onClick={handleNext} label={T.continue} icon={ArrowRight} isDark={isDark} />
                 </div>
             </>
         )}
@@ -533,7 +561,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
             <>
                 <h2 className="text-2xl font-bold mb-8">{T.personalize}</h2>
                 <div className="mb-10">
-                    {EXTRAS_DATA.map(ex => {
+                    {EXTRAS_DB.map(ex => {
                         const active = booking.extras[ex.id];
                         let label = ex.id === 'more_time' ? T.ext_time : ex.id === 'touch' ? T.ext_touch : T.ext_aroma;
                         let sub = ex.id === 'more_time' ? T.ext_time_sub : ex.id === 'touch' ? T.ext_touch_sub : T.ext_aroma_sub;
@@ -547,7 +575,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                         )
                     })}
                 </div>
-                <p className="text-[10px] font-bold text-gray-500 uppercase mb-3 ml-1">{T.date_time}</p>
+                <p className={`text-[10px] font-bold uppercase mb-3 ml-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{T.date_title}</p>
                 <div className="flex gap-3 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide mb-4">
                     {[...Array(14)].map((_, i) => {
                         const d = new Date(); d.setDate(d.getDate() + i);
@@ -564,7 +592,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                     </div>
                 )}
                 <div className={`fixed bottom-0 left-0 w-full p-5 border-t z-[60] ${isDark ? 'bg-black/95 border-white/10' : 'bg-white/95 border-gray-200'}`}>
-                    <PrimaryButton disabled={!booking.time} onClick={handleNext} label={T.continue_btn} icon={ArrowRight} isDark={isDark} />
+                    <PrimaryButton disabled={!booking.time} onClick={handleNext} label={T.continue} icon={ArrowRight} isDark={isDark} />
                 </div>
             </>
         )}
@@ -572,38 +600,38 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
         {/* STEP 2: LOCAL, RESUMO & PAGAMENTO */}
         {step === 2 && (
             <>
-                <h2 className="text-2xl font-bold mb-8">{T.location_title}</h2>
+                <h2 className="text-2xl font-bold mb-8">{T.loc_title}</h2>
                 
                 <div className={`flex p-1.5 rounded-2xl mb-6 border ${isDark ? 'bg-[#1C1C1E] border-[#333]' : 'bg-gray-100 border-gray-200'}`}>
                     {['home', 'motel', 'hotel'].map(t => (
                         <button key={t} onClick={() => setBooking({...booking, locationType: t, address: {...booking.address, motelName: '', suite: '', hotelName: '', room: '', street: '', number: '', district: ''}})} 
                             className={`flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all ${booking.locationType === t ? (isDark ? 'bg-[#333] text-white shadow-md' : 'bg-white text-black shadow-sm') : 'text-gray-500'}`}>
-                            {t === 'home' ? T.home_btn : t.toUpperCase()}
+                            {t === 'home' ? T.btn_home : t.toUpperCase()}
                         </button>
                     ))}
                 </div>
 
                 <div className="space-y-4 mb-8">
-                    <BigInput label={T.city_label} placeholder={T.city_placeholder} value={booking.address.city} onChange={e => setBooking({...booking, address: {...booking.address, city: e.target.value}})} icon={MapPin} isDark={isDark} />
+                    <BigInput label={T.city_lbl} placeholder={T.city_ph} value={booking.address.city} onChange={e => setBooking({...booking, address: {...booking.address, city: e.target.value}})} icon={MapPin} isDark={isDark} />
                     
                     {booking.locationType === 'motel' ? (
                         <div className="animate-fade-in space-y-4">
-                            <BigInput label={T.motel_name} value={booking.address.motelName} onChange={e => setBooking({...booking, address: {...booking.address, motelName: e.target.value}})} icon={Building} isDark={isDark} />
-                            <BigInput label={T.suite_num} type="tel" value={booking.address.suite} onChange={e => setBooking({...booking, address: {...booking.address, suite: e.target.value}})} icon={BedDouble} isDark={isDark} />
+                            <BigInput label={T.lbl_motel} value={booking.address.motelName} onChange={e => setBooking({...booking, address: {...booking.address, motelName: e.target.value}})} icon={Building} isDark={isDark} placeholder={T.ph_motel} />
+                            <BigInput label={T.lbl_suite} type="tel" value={booking.address.suite} onChange={e => setBooking({...booking, address: {...booking.address, suite: e.target.value}})} icon={BedDouble} isDark={isDark} />
                         </div>
                     ) : booking.locationType === 'hotel' ? (
                         <div className="animate-fade-in space-y-4">
-                            <BigInput label={T.hotel_name} value={booking.address.hotelName} onChange={e => setBooking({...booking, address: {...booking.address, hotelName: e.target.value}})} icon={Building} isDark={isDark} />
-                            <BigInput label={T.room_num} type="tel" value={booking.address.room} onChange={e => setBooking({...booking, address: {...booking.address, room: e.target.value}})} icon={BedDouble} isDark={isDark} />
+                            <BigInput label={T.lbl_hotel} value={booking.address.hotelName} onChange={e => setBooking({...booking, address: {...booking.address, hotelName: e.target.value}})} icon={Building} isDark={isDark} placeholder={T.ph_hotel} />
+                            <BigInput label={T.lbl_room} type="tel" value={booking.address.room} onChange={e => setBooking({...booking, address: {...booking.address, room: e.target.value}})} icon={BedDouble} isDark={isDark} />
                         </div>
                     ) : (
                         <div className="animate-fade-in space-y-4">
-                            <BigInput label={T.address_label} value={booking.address.street} onChange={e => setBooking({...booking, address: {...booking.address, street: e.target.value}})} icon={Navigation} isDark={isDark} />
+                            <BigInput label={T.lbl_addr} value={booking.address.street} onChange={e => setBooking({...booking, address: {...booking.address, street: e.target.value}})} icon={Navigation} isDark={isDark} />
                             <div className="flex gap-3">
-                                <div className="w-1/3"><BigInput label={T.number_label} type="tel" value={booking.address.number} onChange={e => setBooking({...booking, address: {...booking.address, number: e.target.value}})} isDark={isDark} /></div>
-                                <div className="w-2/3"><BigInput label={T.district_label} value={booking.address.district} onChange={e => setBooking({...booking, address: {...booking.address, district: e.target.value}})} isDark={isDark} /></div>
+                                <div className="w-1/3"><BigInput label={T.lbl_num} type="tel" value={booking.address.number} onChange={e => setBooking({...booking, address: {...booking.address, number: e.target.value}})} isDark={isDark} /></div>
+                                <div className="w-2/3"><BigInput label={T.lbl_dist} value={booking.address.district} onChange={e => setBooking({...booking, address: {...booking.address, district: e.target.value}})} isDark={isDark} /></div>
                             </div>
-                            <BigInput label={T.comp_label} value={booking.address.comp} onChange={e => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} isDark={isDark} />
+                            <BigInput label={T.lbl_comp} value={booking.address.comp} onChange={e => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} isDark={isDark} />
                         </div>
                     )}
                 </div>
@@ -611,30 +639,30 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                 {/* TICKET */}
                 <div className={`border rounded-[2rem] p-6 mb-8 relative overflow-hidden ${isDark ? 'bg-[#1C1C1E] border-[#333]' : 'bg-white border-gray-200 shadow-xl'}`}>
                     <div className={`border-b pb-4 mb-4 text-center ${isDark ? 'border-[#333]' : 'border-gray-100'}`}>
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">{T.summary_title}</p>
-                        <h3 className={`text-xl font-black ${isDark ? 'text-white' : 'text-black'}`}>{booking.service?.id==='completa' ? T.svc_complete_name : T.svc_relax_name}</h3>
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">{T.review_title}</p>
+                        <h3 className={`text-xl font-black ${isDark ? 'text-white' : 'text-black'}`}>{booking.service?.id==='completa' ? T.svc_comp_name : T.svc_relax_name}</h3>
                         <p className="text-sm text-green-500 font-bold mt-1">{new Date(booking.date).toLocaleDateString('pt-BR')} @ {booking.time}</p>
                     </div>
                     <div className="space-y-3 mb-6">
-                        <div className="flex justify-between text-sm text-gray-400"><span>{T.base_value}</span><span>{Utils.fmtMoney(booking.service?.price)}</span></div>
+                        <div className="flex justify-between text-sm text-gray-400"><span>{T.base_val}</span><span>{Utils.fmtMoney(booking.service?.price)}</span></div>
                         {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> {
                              let l = k === 'more_time' ? T.ext_time : k === 'touch' ? T.ext_touch : T.ext_aroma;
-                             return <div key={k} className={`flex justify-between text-sm ${isDark ? 'text-white' : 'text-gray-800'}`}><span>+ {l}</span><span>{Utils.fmtMoney(EXTRAS_DATA.find(e=>e.id===k).price)}</span></div>
+                             return <div key={k} className={`flex justify-between text-sm ${isDark ? 'text-white' : 'text-gray-800'}`}><span>+ {l}</span><span>{Utils.fmtMoney(EXTRAS_DB.find(e=>e.id===k).price)}</span></div>
                         })}
                         {booking.appliedCoupon ? (
-                            <div className="flex justify-between text-sm text-green-500 font-bold py-2 border-t border-dashed border-gray-700"><span>{T.coupon_applied}</span><span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span></div>
+                            <div className="flex justify-between text-sm text-green-500 font-bold py-2 border-t border-dashed border-gray-700"><span>{T.coupon_lbl}</span><span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span></div>
                         ) : (
-                            <button onClick={() => setShowWallet(true)} className={`w-full py-2 border border-dashed rounded-lg text-xs flex items-center justify-center gap-2 mt-2 ${isDark ? 'border-[#444] text-gray-500' : 'border-gray-300 text-gray-500'}`}><Ticket size={12}/> {T.have_coupon}</button>
+                            <button onClick={() => setShowWallet(true)} className={`w-full py-2 border border-dashed rounded-lg text-xs flex items-center justify-center gap-2 mt-2 ${isDark ? 'border-[#444] text-gray-500' : 'border-gray-300 text-gray-500'}`}><Ticket size={12}/> {T.add_coupon}</button>
                         )}
                     </div>
                     <div className={`flex justify-between items-center pt-4 border-t ${isDark ? 'border-[#333]' : 'border-gray-100'}`}>
-                        <span className="text-xs font-bold text-gray-500 uppercase">{T.total_final}</span>
+                        <span className="text-xs font-bold text-gray-500 uppercase">{T.total_lbl}</span>
                         <span className={`text-3xl font-black ${isDark ? 'text-white' : 'text-black'}`}>{Utils.fmtMoney(financials.final)}</span>
                     </div>
                 </div>
 
                 <div className="mb-32">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-3 ml-1">{T.pay_method_title}</p>
+                    <p className={`text-[10px] font-bold uppercase mb-3 ml-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{T.pay_method_title}</p>
                     <div className="grid grid-cols-3 gap-3">
                         {['pix', 'card', 'money'].map(p => (
                             <button key={p} onClick={() => setBooking({...booking, payment: p})} className={`py-4 rounded-xl border text-[10px] font-black uppercase flex flex-col items-center gap-2 transition-all ${booking.payment === p ? (isDark ? 'bg-white text-black shadow-lg' : 'bg-black text-white shadow-lg') : (isDark ? 'bg-[#1C1C1E] border-[#333] text-gray-500' : 'bg-white border-gray-200 text-gray-500')}`}>
@@ -647,9 +675,12 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
 
                 <div className={`fixed bottom-0 left-0 w-full p-6 border-t z-[60] ${isDark ? 'bg-black/95 border-white/10' : 'bg-white/95 border-gray-200'}`}>
                     <div className="flex justify-between items-center mb-4 px-1"><span className="text-xs text-gray-500"><AlertTriangle size={12} className="inline text-yellow-500 mb-0.5"/> {T.uber_warn}</span><button onClick={() => {Utils.copyPix(); showToast(T.pix_copied)}} className="text-[10px] font-bold text-green-500 flex items-center gap-1"><Copy size={10}/> {T.copy_pix}</button></div>
-                    <PrimaryButton disabled={!isAddressValid() || !booking.payment} onClick={finalize} label={T.confirm_whatsapp} icon={MessageCircle} pulse isDark={isDark} />
+                    <PrimaryButton disabled={!isAddressValid() || !booking.payment} onClick={finalize} label={T.confirm_btn} icon={MessageCircle} pulse isDark={isDark} />
                 </div>
             </>
         )}
       </main>
-      <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .animate-fade-in { animation: fadeIn 0.5s ease-out; } @keyframes slideIn { from { transform
+      <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .animate-fade-in { animation: fadeIn 0.5s ease-out; } @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } } .animate-slide-in { animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); } .animate-scroll { animation: scroll 120s linear infinite; } @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`}</style>
+    </div>
+  );
+}
