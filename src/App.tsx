@@ -1,754 +1,683 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
   Shield, Zap, Menu, X, Share2, HelpCircle, Wallet, Gift, 
   Building, RefreshCw, User, Copy, CheckCircle, Info, Navigation, 
-  BedDouble, Trash2, Award, Instagram, Globe, Moon, Sun
+  BedDouble, Trash2, Award, Instagram, Globe, Moon, Sun,
+  CreditCard, Banknote, Sparkles, Siren, Timer, ThumbsUp, Heart
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES GERAIS
+// 1. CONSTANTES E CONFIGURAÇÕES AVANÇADAS
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM: "https://instagram.com/seumssagista", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v23_gold_master', 
+  STORAGE_KEY: 'thaly_app_v25_ultra', 
   XP_TARGET: 300, 
-  REWARD_VAL: 30
+  REWARD_VAL: 30,
+  ANIMATION_SPEED: 300
 };
 
 // ==================================================================================
-// 2. TEXTOS & COPYWRITING (ACOLHEDOR & DIRETO)
+// 2. COPYWRITING PERSUASIVO & DADOS
 // ==================================================================================
 
 const TEXTS = {
   pt: {
-    welcome: "Oi, vamos relaxar?",
-    subtitle: "Seu momento de paz e prazer, no conforto do seu espaço.",
-    your_name: "Como posso te chamar?",
-    name_placeholder: "Seu nome...",
-    health_check: "Tenho +18 anos e estou saudável.",
-    start_btn: "Ver Experiências",
+    hero_badge: "✨ Experiência Premium",
+    welcome: "Seu momento de desconexão.",
+    subtitle: "Massagem terapêutica e sensorial para renovar suas energias.",
+    your_name: "Como prefere ser chamado?",
+    name_placeholder: "Digite seu nome...",
+    health_check: "Confirmo que tenho +18 anos.",
+    start_btn: "Ver Disponibilidade",
     
-    choose_svc: "O que você busca hoje?",
+    choose_svc: "Escolha sua Experiência",
+    svc_popular: "ESCOLHA DO MÊS",
     
-    // SERVIÇOS (DESCRIÇÃO DETALHADA)
-    svc_comp_name: "🔥 Experiência Completa (1h)",
-    svc_comp_badge: "A MAIS PEDIDA ❤️",
-    svc_comp_steps: [
-        '1️⃣ Começo tirando toda tensão muscular do corpo.',
-        '2️⃣ O clima envolve: contato pele com pele (sensitivo).',
-        '3️⃣ Finalizo com massagem na Lingam (Pênis), estímulo sensorial e gozo permitido.'
-    ],
-    svc_comp_note: "Focado no seu prazer. Sem penetração/oral.",
+    svc_comp_name: "Experiência Tantra (1h)",
+    svc_comp_desc: "A fusão perfeita entre relaxamento muscular e despertar sensorial.",
+    svc_comp_features: ["Massagem Corporal Completa", "Toque Sensitivo (Pele com Pele)", "Finalização Tântrica (Manual)"],
     
-    svc_relax_name: "🍃 Apenas Relaxar (1h)",
-    svc_relax_badge: "ANTI-STRESS",
-    svc_relax_steps: [
-        '1️⃣ Foco total em aliviar o estresse mental.',
-        '2️⃣ Toques suaves e deslizantes.',
-        '3️⃣ Sem toques firmes, apenas descanso.'
-    ],
-    svc_relax_note: "Atenção: Apenas terapêutica. Sem toques íntimos.",
+    svc_relax_name: "Deep Relax (1h)",
+    svc_relax_desc: "Protocolo focado 100% na eliminação de dores e estresse.",
+    svc_relax_features: ["Alívio de Tensões", "Óleos Essenciais", "Sem toque íntimo"],
 
-    personalize: "Quer turbinar a sessão?",
-    ext_time: "Mais Tempo (+30min)",
-    ext_time_sub: "Pra curtir sem pressa",
-    ext_touch: "Interatividade Total",
-    ext_touch_sub: "Troca de energia permitida",
-    ext_touch_warn: "Fico de cueca na interação",
-    ext_aroma: "Aromaterapia",
-    ext_aroma_sub: "Óleos e cheiros especiais",
-
-    date_title: "Quando fica bom pra você?",
-    sold_out: "OCUPADO",
-    continue: "Continuar",
+    upsell_title: "Personalize sua Sessão",
+    upsell_sub: "Clientes costumam adicionar estes itens:",
     
-    loc_title: "Onde eu te encontro?",
-    btn_home: "Minha Casa",
-    btn_hotel: "Hotel",
-    btn_motel: "Motel",
+    loc_title: "Local do Atendimento",
+    loc_sub: "Vou até onde você estiver.",
     
-    city_lbl: "Qual Cidade?",
-    city_ph: "Ex: Londrina, SP...",
-    lbl_motel: "Nome do Motel",
-    lbl_suite: "Nº Suíte",
-    lbl_hotel: "Nome do Hotel",
-    lbl_room: "Nº Quarto",
-    lbl_addr: "Endereço (Rua)",
-    lbl_num: "Número",
-    lbl_dist: "Bairro",
-    lbl_comp: "Complemento",
+    review_summary: "Resumo do Pedido",
+    scarcity_txt: "🔥 2 pessoas estão vendo este horário agora.",
     
-    uber_warn: "O Uber não está incluso, tá? Calculo certinho no WhatsApp.",
-    
-    review_title: "Confira seu Pedido",
-    base_val: "Serviço",
-    coupon_lbl: "Desconto",
-    add_coupon: "Usar Cupom",
-    remove_coupon: "Remover",
-    total_lbl: "Total a Pagar",
-    
-    pay_title: "Como prefere pagar?",
-    money: "Dinheiro",
-    card: "Cartão",
-    pix: "Pix",
-    
-    confirm_btn: "Confirmar no WhatsApp",
-    copy_pix: "COPIAR CHAVE PIX",
-    pix_copied: "PIX COPIADO!",
-    
-    menu_fid: "Seu Cartão Fidelidade",
-    xp_missing: "Faltam",
-    xp_goal: "pontos para ganhar R$ 30 OFF!",
-    gift_title: "Presente pra você!",
-    gift_sub: "Toque para pegar seu desconto de 1ª vez.",
-    
-    wallet_title: "Meus Prêmios",
-    wallet_empty: "Sua carteira está vazia por enquanto.",
-    
-    menu_doubts: "Dúvidas Comuns",
-    menu_share: "Indicar Amigo",
-    
-    success_title: "Tudo Pronto!",
-    success_msg: "Já recebi seu pedido no WhatsApp. Vou calcular o Uber e te respondo rapidinho!",
-    new_book: "Voltar ao Início",
-
-    zap_header: "OLÁ, QUERO AGENDAR",
-    zap_uber: "Uber (A Calcular)",
-    zap_pay: "Pagamento",
-    zap_obs: "Obs: +18 Confirmado"
+    success_head: "Solicitação Enviada!",
+    success_sub: "Redirecionando para o WhatsApp para combinar o transporte...",
   },
   en: {
-    welcome: "Hi, let's relax?",
-    subtitle: "Your moment of peace and pleasure.",
-    your_name: "How should I call you?",
-    name_placeholder: "Your name...",
-    health_check: "I am 18+ and healthy.",
-    start_btn: "See Experiences",
+    hero_badge: "✨ Premium Experience",
+    welcome: "Your disconnection moment.",
+    subtitle: "Therapeutic and sensory massage to renew your energy.",
+    your_name: "What's your name?",
+    name_placeholder: "Type your name...",
+    health_check: "I confirm I am 18+.",
+    start_btn: "Check Availability",
     
-    choose_svc: "What do you need today?",
+    choose_svc: "Choose Experience",
+    svc_popular: "MONTHLY PICK",
     
-    svc_comp_name: "🔥 Complete Experience (1h)",
-    svc_comp_badge: "MOST LOVED ❤️",
-    svc_comp_steps: [
-        '1️⃣ I start by removing all muscle tension.',
-        '2️⃣ It gets hotter: skin-to-skin contact (sensitive).',
-        '3️⃣ Lingam Massage (Penis) with sensory stimulation & release allowed.'
-    ],
-    svc_comp_note: "Pleasure focused. No penetration/oral.",
+    svc_comp_name: "Tantra Experience (1h)",
+    svc_comp_desc: "Perfect fusion of muscle relief and sensory awakening.",
+    svc_comp_features: ["Full Body Massage", "Sensitive Touch (Skin-to-Skin)", "Tantric Finish (Manual)"],
     
-    svc_relax_name: "🍃 Just Relax (1h)",
-    svc_relax_badge: "STRESS RELIEF",
-    svc_relax_steps: [
-        '1️⃣ Focus on mental stress relief.',
-        '2️⃣ Soft and gliding touches.',
-        '3️⃣ No firm pressure, just rest.'
-    ],
-    svc_relax_note: "Note: Therapeutic only. No intimate touch.",
+    svc_relax_name: "Deep Relax (1h)",
+    svc_relax_desc: "Protocol focused 100% on pain and stress relief.",
+    svc_relax_features: ["Tension Relief", "Essential Oils", "No intimate touch"],
 
-    personalize: "Want to boost it?",
-    ext_time: "More Time (+30min)",
-    ext_time_sub: "No rush",
-    ext_touch: "Full Interactivity",
-    ext_touch_sub: "Energy exchange allowed",
-    ext_touch_warn: "Underwear stays on",
-    ext_aroma: "Aromatherapy",
-    ext_aroma_sub: "Special oils and scents",
-
-    date_title: "When works for you?",
-    sold_out: "BUSY",
-    continue: "Next",
+    upsell_title: "Customize Session",
+    upsell_sub: "Clients usually add these:",
     
-    loc_title: "Where should I go?",
-    btn_home: "Home",
-    btn_hotel: "Hotel",
-    btn_motel: "Motel",
+    loc_title: "Service Location",
+    loc_sub: "I come to you.",
     
-    city_lbl: "City",
-    city_ph: "Ex: Londrina...",
-    lbl_motel: "Motel Name",
-    lbl_suite: "Suite #",
-    lbl_hotel: "Hotel Name",
-    lbl_room: "Room #",
-    lbl_addr: "Address",
-    lbl_num: "Number",
-    lbl_dist: "District",
-    lbl_comp: "Complement",
+    review_summary: "Order Summary",
+    scarcity_txt: "🔥 2 people are viewing this slot.",
     
-    uber_warn: "Uber fee not included. I'll calc on WhatsApp.",
-    
-    review_title: "Check Order",
-    base_val: "Service",
-    coupon_lbl: "Discount",
-    add_coupon: "Use Coupon",
-    remove_coupon: "Remove",
-    total_lbl: "Total to Pay",
-    
-    pay_title: "Payment Method",
-    money: "Cash",
-    card: "Card",
-    pix: "Pix",
-    
-    confirm_btn: "Confirm Booking",
-    copy_pix: "COPY PIX KEY",
-    pix_copied: "COPIED!",
-    
-    menu_fid: "Loyalty Card",
-    xp_missing: "Need",
-    xp_goal: "points to get R$ 30 OFF!",
-    gift_title: "A Gift for You!",
-    gift_sub: "Tap to redeem your 1st time discount.",
-    
-    wallet_title: "My Rewards",
-    wallet_empty: "Your wallet is empty yet.",
-    
-    menu_doubts: "FAQ",
-    menu_share: "Share",
-    
-    success_title: "All Set!",
-    success_msg: "Received your request on WhatsApp. I'll calculate the Uber and reply asap!",
-    new_book: "Back to Start",
-
-    zap_header: "HELLO, I WANT TO BOOK",
-    zap_uber: "Uber (To Calc)",
-    zap_pay: "Payment",
-    zap_obs: "Note: +18 Confirmed"
+    success_head: "Request Sent!",
+    success_sub: "Redirecting to WhatsApp to settle transport fees...",
   }
 };
 
-const SERVICES_DB = [
-  { id: 'completa', price: 175, xp: 100 },
-  { id: 'relax', price: 145, xp: 50 }
-];
-
-const EXTRAS_DB = [
-  { id: 'more_time', icon: Clock, price: 70 },
-  { id: 'touch', icon: Flame, price: 63 },
-  { id: 'aroma', icon: Wind, price: 10 }
-];
-
-const REVIEWS_DATA = {
-  pt: [
-    { t: "A progressão é perfeita. Começa relaxando e termina intenso.", a: "Tiago", s: 5 },
-    { t: "Thalyson é muito gente boa. Me deixou super à vontade.", a: "Roberto", s: 5 },
-    { t: "Fui travado e saí leve. A finalização vale cada centavo.", a: "Pedro H.", s: 5 },
-    { t: "Mão firme na medida certa. O creme faz toda a diferença.", a: "Curioso", s: 5 },
-    { t: "Atendimento no hotel foi rápido e discreto.", a: "Viajante", s: 5 },
-    { t: "O sigilo é garantido mesmo. Pode confiar.", a: "Sigilo", s: 5 },
-    { t: "Gostei da facilidade de agendar.", a: "Carlos", s: 5 }
+const DB = {
+  services: [
+    { id: 'completa', price: 175, xp: 120, icon: Flame, color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500' },
+    { id: 'relax', price: 145, xp: 60, icon: Wind, color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400' }
   ],
-  en: [
-    { t: "The progression is perfect. Starts relaxing, ends intense.", a: "Tiago", s: 5 },
-    { t: "Thalyson is great. Made me feel very comfortable.", a: "Robert", s: 5 },
-    { t: "Went in stiff, left light. Worth every penny.", a: "Peter H.", s: 5 },
-    { t: "Perfect pressure. The cream makes a difference.", a: "Curious", s: 5 },
-    { t: "Hotel service was fast and discreet.", a: "Traveler", s: 5 }
-  ]
-};
-
-// FAQS COMPLETAS (RESTAURADAS DO CÓDIGO 1, SEM HIGIENE)
-const FAQS_DATA = {
-  pt: [
-    { q: "Como é a Experiência Completa?", a: "É um atendimento onde cuido de você por inteiro. Une relaxamento muscular com toques provocantes e sutis, criando uma conexão única e um final extremamente prazeroso." },
-    { q: "Onde é feito o atendimento?", a: "No seu conforto. Vou até sua residência, hotel ou motel. O atendimento é feito na sua cama ou sofá." },
-    { q: "O pagamento é seguro?", a: "Totalmente. O valor do serviço você paga apenas pessoalmente (Pix, Dinheiro ou Cartão)." },
-    { q: "Atende em Motel?", a: "Sim, com total sigilo. A suíte é por conta do cliente e a taxa de Uber é calculada à parte." }
+  extras: [
+    { id: 'more_time', label_pt: "Mais Tempo (+30min)", label_en: "More Time (+30min)", icon: Clock, price: 70 },
+    { id: 'touch', label_pt: "Interatividade Total", label_en: "Full Interactivity", icon: Heart, price: 63, warning: true },
+    { id: 'aroma', label_pt: "Kit Aromaterapia", label_en: "Aromatherapy Kit", icon: Sparkles, price: 15 }
   ],
-  en: [
-    { q: "How is the Complete Experience?", a: "It combines muscle relaxation with teasing touches and an extremely pleasurable finish." },
-    { q: "Where is the service?", a: "At your comfort. Home, Hotel or Motel." },
-    { q: "Is payment safe?", a: "Yes. You pay in person (Cash, Card, Pix)." },
-    { q: "Do you go to Motels?", a: "Yes. Suite cost is yours, Uber fee is separate." }
+  reviews: [
+    { name: "Tiago M.", text: "A melhor massagem que já recebi em Londrina. Mãos de fada!", stars: 5 },
+    { name: "Bruno S.", text: "Super respeitoso e profissional. O tantra é surreal.", stars: 5 },
+    { name: "Anônimo", text: "Discreto e pontual. Recomendo para quem quer sigilo.", stars: 5 },
+    { name: "Lucas", text: "Sai de lá flutuando. Valeu cada centavo.", stars: 5 }
   ]
 };
 
 // ==================================================================================
-// 3. UTILS & COMPONENTES VISUAIS
+// 3. HOOKS E UTILITÁRIOS (ENGINE)
 // ==================================================================================
+
+const usePersistedState = (key, initial) => {
+  const [state, setState] = useState(() => {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : initial;
+    } catch (error) { return initial; }
+  });
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(state));
+  }, [key, state]);
+  return [state, setState];
+};
 
 const Utils = {
-    fmtMoney: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-    vibrate: () => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10); },
-    copyPix: () => { navigator.clipboard.writeText(CONFIG.PIX_KEY); return true; }
+  fmtMoney: (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val),
+  vibrate: (pattern = [10]) => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); },
+  wait: (ms) => new Promise(res => setTimeout(res, ms)),
+  generateConfetti: () => {
+    // Simulação visual simples de confetti via CSS/DOM manipulation seria complexa aqui, 
+    // então usaremos feedback visual nos componentes.
+  }
 };
 
-const Toast = ({ msg, show, isDark }) => (
-    <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[110] transition-all duration-300 transform ${show ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'}`}>
-        <div className={`${isDark ? 'bg-zinc-800 text-white border-zinc-700' : 'bg-white text-zinc-900 border-zinc-200'} border px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 backdrop-blur-md`}>
-            <CheckCircle size={18} className="text-green-500"/>
-            <span className="text-xs font-bold uppercase tracking-wider">{msg}</span>
+// ==================================================================================
+// 4. COMPONENTES DE UI (DESIGN SYSTEM)
+// ==================================================================================
+
+const AnimatedCard = ({ children, className = "", onClick, selected, isDark }) => (
+  <div 
+    onClick={onClick}
+    className={`
+      relative overflow-hidden transition-all duration-300 transform 
+      ${selected 
+        ? (isDark ? 'bg-zinc-900 ring-2 ring-green-500 scale-[1.02]' : 'bg-white ring-2 ring-green-500 scale-[1.02] shadow-xl') 
+        : (isDark ? 'bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-800' : 'bg-white border border-gray-100 hover:shadow-md')}
+      rounded-2xl cursor-pointer ${className}
+    `}
+  >
+    {children}
+    {selected && (
+      <div className="absolute top-2 right-2 animate-scale-in">
+        <div className="bg-green-500 text-white rounded-full p-1 shadow-lg shadow-green-500/50">
+          <Check size={12} strokeWidth={4} />
         </div>
-    </div>
+      </div>
+    )}
+  </div>
 );
 
-const BigInput = ({ label, value, onChange, placeholder, type="text", icon: Icon, isDark }) => (
-  <div className="mb-4 w-full">
-    <label className={`text-[10px] font-bold uppercase ml-1 mb-1.5 block tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{label}</label>
-    <div className="relative group">
-        <input 
-            type={type} value={value} onChange={onChange} placeholder={placeholder}
-            className={`w-full h-12 rounded-xl px-4 pl-11 text-base outline-none transition-all border 
-            ${isDark 
-                ? 'bg-zinc-900 border-zinc-800 text-white focus:border-green-500 placeholder:text-zinc-700' 
-                : 'bg-white border-zinc-200 text-zinc-900 focus:border-green-500 placeholder:text-zinc-300'}`}
-        />
-        {Icon && <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />}
+const Button = ({ label, icon: Icon, onClick, disabled, variant = 'primary', loading, isDark, pulse }) => {
+  const baseClass = "h-14 w-full rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
+  
+  const variants = {
+    primary: isDark 
+      ? 'bg-white text-black hover:bg-gray-200 shadow-[0_0_20px_rgba(255,255,255,0.1)]' 
+      : 'bg-black text-white hover:bg-zinc-800 shadow-xl shadow-black/20',
+    secondary: isDark 
+      ? 'bg-zinc-800 text-white border border-zinc-700' 
+      : 'bg-gray-100 text-zinc-900 border border-gray-200',
+    outline: 'border-2 border-current bg-transparent'
+  };
+
+  return (
+    <button onClick={onClick} disabled={disabled || loading} className={`${baseClass} ${variants[variant]} ${pulse ? 'animate-pulse' : ''}`}>
+      {loading ? <RefreshCw className="animate-spin" size={20}/> : <>{label} {Icon && <Icon size={18}/>}</>}
+    </button>
+  );
+};
+
+const InputField = ({ label, value, onChange, placeholder, type = "text", icon: Icon, isDark }) => (
+  <div className="group">
+    <label className={`text-[10px] font-bold uppercase tracking-widest mb-1.5 block ml-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{label}</label>
+    <div className={`
+      flex items-center h-12 px-4 rounded-xl border transition-all
+      ${isDark 
+        ? 'bg-zinc-900 border-zinc-800 text-white focus-within:border-green-500 focus-within:bg-zinc-800' 
+        : 'bg-gray-50 border-gray-200 text-zinc-900 focus-within:border-green-500 focus-within:bg-white focus-within:shadow-md'}
+    `}>
+      {Icon && <Icon size={18} className={`${isDark ? 'text-zinc-600' : 'text-zinc-400'} mr-3 group-focus-within:text-green-500 transition-colors`}/>}
+      <input 
+        type={type} 
+        value={value} 
+        onChange={onChange} 
+        placeholder={placeholder} 
+        className="bg-transparent w-full outline-none text-sm font-medium placeholder:opacity-50"
+      />
     </div>
   </div>
 );
 
-const PrimaryButton = ({ onClick, disabled, label, icon: Icon, pulse, variant="primary", isDark }) => (
-    <button 
-        onClick={onClick} disabled={disabled}
-        className={`w-full h-14 rounded-xl font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg
-            ${variant === 'primary' 
-                ? (disabled 
-                    ? (isDark ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400') 
-                    : (isDark ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-zinc-800'))
-                : (isDark ? 'bg-[#1C1C1E] border border-[#333] text-white hover:bg-[#222]' : 'bg-white border border-gray-200 text-black shadow-sm')
-            }
-            ${pulse ? 'animate-pulse' : ''}
-        `}
-    >
-        {label} {Icon && <Icon size={18}/>}
-    </button>
-);
-
-const SplashScreen = ({ onFinish, isDark }) => {
-    const [fade, setFade] = useState(false);
-    useEffect(() => { 
-        const t1 = setTimeout(() => setFade(true), 1500); 
-        const t2 = setTimeout(onFinish, 2000); 
-        return () => { clearTimeout(t1); clearTimeout(t2); };
-    }, [onFinish]);
-    return (
-        <div className={`fixed inset-0 z-[120] flex flex-col items-center justify-center transition-opacity duration-700 ${isDark ? 'bg-black' : 'bg-white'} ${fade ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-            <div className="relative mb-4">
-                <div className="absolute inset-0 bg-green-500 blur-2xl opacity-20 animate-pulse"></div>
-                <Zap size={56} className="text-green-500 relative z-10 animate-bounce" fill="currentColor"/>
-            </div>
-            <h1 className={`text-2xl font-black tracking-[0.3em] ${isDark ? 'text-white' : 'text-black'}`}>THALY</h1>
-        </div>
-    );
-};
-
-const ReviewCarousel = ({ reviews, isDark }) => (
-    <div className="w-full overflow-hidden relative py-4">
-        <div className="flex gap-4 animate-scroll w-max">
-             {[...reviews, ...reviews].map((r, i) => (
-                 <div key={i} className={`w-[280px] p-6 rounded-3xl border flex-shrink-0 relative overflow-hidden ${isDark ? 'bg-[#161616] border-[#2A2A2A]' : 'bg-white border-gray-200 shadow-sm'}`}>
-                     <div className="flex text-yellow-500 mb-3 gap-1">{[...Array(5)].map((_,k)=><Star key={k} size={12} fill="currentColor"/>)}</div>
-                     <p className={`text-xs italic mb-4 leading-relaxed line-clamp-3 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>"{r.t}"</p>
-                     <div className={`flex items-center gap-2 border-t pt-3 ${isDark ? 'border-[#333]' : 'border-gray-100'}`}>
-                        <Shield size={12} className="text-green-500"/>
-                        <p className={`text-[9px] font-black uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{r.a}</p>
-                     </div>
-                 </div>
-             ))}
-        </div>
-        <style>{`@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } .animate-scroll { animation: scroll 120s linear infinite; }`}</style>
-    </div>
-);
-
 // ==================================================================================
-// 4. APP LÓGICA PRINCIPAL
+// 5. APLICAÇÃO PRINCIPAL
 // ==================================================================================
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [walletOpen, setWalletOpen] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [toast, setToast] = useState({ show: false, msg: '' });
-
-  // THEME & LANG
-  const [isDark, setIsDark] = useState(true);
-  const [lang, setLang] = useState('pt');
-  const T = TEXTS[lang];
-
-  // PERSISTENCE (SAFE)
-  const [user, setUser] = useState(() => {
-      try {
-          const s = localStorage.getItem(CONFIG.STORAGE_KEY);
-          return s ? JSON.parse(s) : { name: '', xp: 0, coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 15 }] };
-      } catch (e) { return { name: '', xp: 0, coupons: [] }; }
+  const [isDark, setIsDark] = usePersistedState('thaly_theme', true);
+  const [lang, setLang] = usePersistedState('thaly_lang', 'pt');
+  const [user, setUser] = usePersistedState(CONFIG.STORAGE_KEY, { name: '', xp: 0, coupons: [] });
+  
+  // Estado do Agendamento
+  const [booking, setBooking] = useState({
+    service: null,
+    extras: {},
+    date: null,
+    time: null,
+    locationType: 'home', // home, hotel, motel
+    address: { city: '', street: '', number: '', district: '', comp: '', motelName: '', suite: '', hotelName: '', room: '' },
+    payment: null,
+    coupon: null
   });
 
+  const [uiState, setUiState] = useState({
+    menuOpen: false,
+    walletOpen: false,
+    toast: { show: false, msg: '', type: 'success' }
+  });
+
+  const T = TEXTS[lang];
+
+  // Efeito de Splash Screen
   useEffect(() => {
-      const t = localStorage.getItem('thaly_theme');
-      if (t) setIsDark(t === 'dark');
-      const l = localStorage.getItem('thaly_lang');
-      if (l) setLang(l);
+    setTimeout(() => setLoading(false), 2000);
   }, []);
 
-  useEffect(() => { try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); } catch (e) {} }, [user]);
-
-  const toggleTheme = () => { setIsDark(!isDark); localStorage.setItem('thaly_theme', !isDark ? 'dark' : 'light'); };
-  const toggleLang = () => { const n = lang === 'pt' ? 'en' : 'pt'; setLang(n); localStorage.setItem('thaly_lang', n); };
-
-  // BOOKING STATE
-  const initialBooking = {
-      healthChecked: false,
-      service: null,
-      extras: {}, 
-      date: null,
-      time: null,
-      locationType: 'home', 
-      address: { city: '', street: '', number: '', district: '', comp: '', motelName: '', suite: '', hotelName: '', room: '' },
-      payment: null,
-      appliedCoupon: null
+  // Helpers de Ação
+  const showToast = (msg, type = 'success') => {
+    setUiState(prev => ({ ...prev, toast: { show: true, msg, type } }));
+    Utils.vibrate();
+    setTimeout(() => setUiState(prev => ({ ...prev, toast: { show: false, msg: '', type: 'success' } })), 3000);
   };
-  const [booking, setBooking] = useState(initialBooking);
 
-  // ACTIONS
-  const showToast = (msg) => { setToast({ show: true, msg }); setTimeout(() => setToast({ show: false, msg: '' }), 3000); };
-  const handleNext = () => { Utils.vibrate(); window.scrollTo({ top: 0, behavior: 'smooth' }); setStep(s => s + 1); };
-  const handleBack = () => { Utils.vibrate(); setStep(s => s - 1); };
-  const handleReset = () => { setSuccess(false); setBooking(initialBooking); setStep(0); };
+  const toggleTheme = () => { setIsDark(!isDark); Utils.vibrate(); };
+  const toggleLang = () => { setLang(l => l === 'pt' ? 'en' : 'pt'); Utils.vibrate(); };
 
-  const isTimeBlocked = (date, timeStr) => {
-      if (!date) return true;
-      const now = new Date();
-      const sel = new Date(date);
-      const [h] = timeStr.split(':').map(Number);
-      if (sel.toDateString() === now.toDateString() && h <= now.getHours()) return 'past';
-      if ((sel.getDate() + h) % 5 === 0) return 'sold_out'; 
-      return 'available';
+  const handleNext = () => {
+    if (step === 0 && (!user.name || user.name.length < 3)) return showToast("Por favor, digite seu nome", "error");
+    if (step === 0 && !booking.service) return showToast("Selecione um serviço", "error");
+    
+    setStep(s => s + 1);
+    Utils.vibrate([10]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const handleBack = () => { setStep(s => s - 1); Utils.vibrate(); };
 
   const calculateTotal = () => {
-      let s = booking.service?.price || 0;
-      let e = 0;
-      Object.keys(booking.extras).forEach(k => { if(booking.extras[k]) e += EXTRAS_DB.find(x => x.id === k).price; });
-      const d = booking.appliedCoupon?.val || 0;
-      return { service: s, extras: e, disc: d, final: Math.max(0, s + e - d) };
+    let total = booking.service?.price || 0;
+    DB.extras.forEach(ex => { if (booking.extras[ex.id]) total += ex.price; });
+    if (booking.coupon) total -= booking.coupon.val;
+    return Math.max(0, total);
   };
 
-  const isAddressValid = () => {
-      const { city, street, number, district, motelName, suite, hotelName, room } = booking.address;
-      if (!city || city.length < 3) return false;
-      if (booking.locationType === 'motel') return motelName && suite;
-      if (booking.locationType === 'hotel') return hotelName && room;
-      return street && number && district;
-  };
+  const finalizeOrder = async () => {
+    Utils.vibrate([20, 50, 20]);
+    
+    // 1. Calcular Dados Finais
+    const total = calculateTotal();
+    const svcName = booking.service.id === 'completa' ? T.svc_comp_name : T.svc_relax_name;
+    const extrasList = DB.extras.filter(e => booking.extras[e.id]).map(e => `+ ${lang === 'pt' ? e.label_pt : e.label_en}`).join('\n');
+    
+    // 2. Formatar Endereço
+    let locStr = "";
+    if (booking.locationType === 'motel') locStr = `🏩 MOTEL: ${booking.address.motelName} | Suíte ${booking.address.suite}`;
+    else if (booking.locationType === 'hotel') locStr = `🏨 HOTEL: ${booking.address.hotelName} | Quarto ${booking.address.room}`;
+    else locStr = `🏠 CASA: ${booking.address.street}, ${booking.address.number} - ${booking.address.district}`;
 
-  const finalize = () => {
-      // 1. Queima Cupom
-      let newCoupons = [...user.coupons];
-      if (booking.appliedCoupon) {
-          newCoupons = newCoupons.filter(c => c.id !== booking.appliedCoupon.id);
-      }
+    // 3. XP System
+    const earnedXP = booking.service.xp;
+    const newXP = user.xp + earnedXP;
+    let newCoupons = [...user.coupons];
+    if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
+      newCoupons.push({ id: Date.now(), val: CONFIG.REWARD_VAL, label: 'Fidelidade' });
+    }
+    setUser({ ...user, xp: newXP, coupons: newCoupons });
 
-      // 2. XP Reward
-      const newXP = user.xp + (booking.service?.xp || 0);
-      if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
-          newCoupons.push({ id: `RWD_${Date.now()}`, label: 'Fidelidade', val: CONFIG.REWARD_VAL });
-      }
-      setUser({ ...user, xp: newXP, coupons: newCoupons });
+    // 4. Mensagem WhatsApp
+    const msg = `
+*NOVO AGENDAMENTO VIA APP* 🚀
+--------------------------------
+👤 *Cliente:* ${user.name}
+🆔 *ID:* #${Math.floor(Math.random()*1000)}
 
-      // 3. WhatsApp String
-      let locStr = "";
-      let mapLink = "";
-      const addr = booking.address;
-      
-      if(booking.locationType === 'motel') {
-          locStr = `🏩 ${T.lbl_motel}: ${addr.motelName}\n🚪 ${T.lbl_suite}: ${addr.suite}`;
-          mapLink = `${addr.motelName}, ${addr.city}`;
-      } else if(booking.locationType === 'hotel') {
-          locStr = `🏨 ${T.lbl_hotel}: ${addr.hotelName}\n🚪 ${T.lbl_room}: ${addr.room}`;
-          mapLink = `${addr.hotelName}, ${addr.city}`;
-      } else {
-          locStr = `🏠 ${T.lbl_addr}: ${addr.street}, ${addr.number}\n🏘️ ${T.lbl_dist}: ${addr.district}`;
-          mapLink = `${addr.street}, ${addr.number}, ${addr.city}`;
-      }
+💆 *${svcName}*
+📅 ${new Date(booking.date).toLocaleDateString()} às ${booking.time}
 
-      const fin = calculateTotal();
-      const svcName = booking.service.id === 'completa' ? T.svc_comp_name : T.svc_relax_name;
-      
-      const extrasTxt = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> {
-          let l = k === 'more_time' ? T.ext_time : k === 'touch' ? T.ext_touch : T.ext_aroma;
-          return `• ${l} (+${Utils.fmtMoney(EXTRAS_DB.find(x=>x.id===k).price)})`;
-      }).join('\n');
-
-      const text = `
-*${T.zap_header}* 🌿
----------------------------
-👤 *${user.name}*
-✅ (+18 OK)
-
-💆 ${svcName}
-📅 ${new Date(booking.date).toLocaleDateString('pt-BR')} @ ${booking.time}
-
-✨ ${extrasTxt ? 'Extras:\n'+extrasTxt : 'No Extras'}
-
-📍 ${T.city_lbl}: ${addr.city}
+${extrasList ? `✨ *Extras:*\n${extrasList}\n` : ''}
+📍 *Local:* ${booking.address.city}
 ${locStr}
-🔗 ${encodeURIComponent(mapLink)}
 
-💰 *${T.review_title}:*
-${T.base_val}: ${Utils.fmtMoney(fin.service)}
-Extras: ${Utils.fmtMoney(fin.extras)}
-${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
-*${T.total_lbl}: ${Utils.fmtMoney(fin.final)}*
+💰 *Valor Serviço:* ${Utils.fmtMoney(total)}
+🚗 *Uber:* (A Calcular pelo GPS)
+💳 *Pagamento:* ${booking.payment.toUpperCase()}
 
-🚗 ${T.zap_uber}
-
-💳 ${booking.payment?.toUpperCase()}
+⚠️ *Status:* Aguardando Confirmação
 `.trim();
 
-      window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`, '_blank');
-      setSuccess(true);
+    window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
+    
+    // Reset App
+    await Utils.wait(1000);
+    setStep(0);
+    setBooking({...booking, service: null, date: null, time: null, payment: null});
+    showToast(T.success_head);
   };
 
-  const level = Math.floor(user.xp / CONFIG.XP_TARGET) + 1;
-  const nextXp = (level * CONFIG.XP_TARGET) - user.xp;
-  const progress = ((user.xp % CONFIG.XP_TARGET) / CONFIG.XP_TARGET) * 100;
+  // --- RENDERS ---
 
-  if (loading) return <SplashScreen onFinish={() => setLoading(false)} isDark={isDark} />;
-
-  // --- TELA DE SUCESSO ---
-  if (success) return (
-      <div className={`min-h-screen flex flex-col items-center justify-center p-8 text-center animate-fade-in ${isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'}`}>
-          <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-xl animate-bounce"><Check size={48} className="text-white" strokeWidth={4}/></div>
-          <h2 className="text-3xl font-black mb-2 uppercase tracking-tight">{T.success_title}</h2>
-          <p className={`${isDark ? 'text-zinc-400' : 'text-zinc-600'} mb-8 max-w-xs`}>{T.success_msg}</p>
-          <PrimaryButton onClick={handleReset} label={T.new_book} icon={RefreshCw} variant="secondary" isDark={isDark}/>
+  if (loading) return (
+    <div className={`fixed inset-0 z-50 flex flex-col items-center justify-center ${isDark ? 'bg-black text-white' : 'bg-white text-black'}`}>
+      <div className="relative">
+        <div className="absolute inset-0 bg-green-500/30 blur-xl rounded-full animate-pulse"></div>
+        <Zap size={64} className="text-green-500 relative animate-bounce" fill="currentColor"/>
       </div>
+      <h1 className="mt-6 text-2xl font-black tracking-[0.3em] animate-pulse">THALY</h1>
+    </div>
   );
 
   return (
-    <div className={`min-h-screen font-sans pb-40 transition-colors duration-300 ${isDark ? 'bg-black text-white selection:bg-green-500 selection:text-black' : 'bg-gray-50 text-zinc-900 selection:bg-black selection:text-white'}`}>
-      <Toast show={toast.show} msg={toast.msg} isDark={isDark} />
+    <div className={`min-h-screen font-sans selection:bg-green-500 selection:text-white transition-colors duration-500 ${isDark ? 'bg-black text-zinc-100' : 'bg-gray-50 text-zinc-900'}`}>
+      
+      {/* Toast Notification */}
+      <div className={`fixed top-4 left-0 w-full flex justify-center z-[100] transition-all duration-300 ${uiState.toast.show ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0 pointer-events-none'}`}>
+        <div className={`${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-zinc-200'} border px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 backdrop-blur-md`}>
+          {uiState.toast.type === 'success' ? <CheckCircle size={18} className="text-green-500"/> : <AlertTriangle size={18} className="text-red-500"/>}
+          <span className="text-xs font-bold uppercase tracking-wider">{uiState.toast.msg}</span>
+        </div>
+      </div>
 
-      {/* HEADER FIXO */}
-      <header className={`fixed top-0 w-full z-40 backdrop-blur-xl border-b transition-colors duration-300 ${isDark ? 'bg-black/80 border-white/5' : 'bg-white/80 border-gray-200'}`}>
-         <div className="px-5 py-4 flex justify-between items-center">
-             <div className="flex items-center gap-3">
-                 {step > 0 && <button onClick={handleBack} className={`p-2 -ml-2 active:scale-90 transition-transform ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}><ChevronLeft size={24}/></button>}
-                 <h1 className="text-sm font-black tracking-[0.2em] uppercase">Thaly</h1>
-             </div>
-             <div className="flex gap-2">
-                 <button onClick={() => window.open(CONFIG.INSTAGRAM, '_blank')} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><Instagram size={18}/></button>
-                 <button onClick={toggleLang} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><span className="text-[10px] font-bold">{lang.toUpperCase()}</span></button>
-                 <button onClick={toggleTheme} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}>{isDark ? <Sun size={18}/> : <Moon size={18}/>}</button>
-                 <button onClick={() => setMenuOpen(true)} className={`p-2 rounded-full border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><Menu size={18}/></button>
-             </div>
-         </div>
-         <div className={`h-[2px] w-full ${isDark ? 'bg-[#111]' : 'bg-gray-200'}`}><div className="h-full bg-green-500 transition-all duration-500 ease-out" style={{width: `${((step+1)/3)*100}%`}}></div></div>
+      {/* Header */}
+      <header className={`fixed top-0 w-full z-40 backdrop-blur-xl border-b transition-colors ${isDark ? 'bg-black/80 border-white/5' : 'bg-white/80 border-gray-200'}`}>
+        <div className="px-5 h-16 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            {step > 0 && <button onClick={handleBack} className="p-2 -ml-2 rounded-full hover:bg-white/10"><ChevronLeft size={24}/></button>}
+            <div>
+              <h1 className="text-sm font-black tracking-[0.2em] uppercase">Thaly</h1>
+              {step === 0 && <p className="text-[9px] text-green-500 font-bold uppercase tracking-wider">{T.hero_badge}</p>}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={toggleTheme} className={`p-2 rounded-full border ${isDark ? 'border-white/10 bg-white/5' : 'border-black/5 bg-black/5'}`}>
+              {isDark ? <Sun size={18}/> : <Moon size={18}/>}
+            </button>
+            <button onClick={toggleLang} className={`w-9 h-9 flex items-center justify-center rounded-full border text-[10px] font-black ${isDark ? 'border-white/10 bg-white/5' : 'border-black/5 bg-black/5'}`}>
+              {lang.toUpperCase()}
+            </button>
+          </div>
+        </div>
+        {/* Progress Bar */}
+        <div className="h-[2px] w-full bg-gray-200/10">
+          <div className="h-full bg-green-500 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(34,197,94,0.5)]" style={{width: `${((step+1)/4)*100}%`}}></div>
+        </div>
       </header>
 
-      {/* MENU DRAWER */}
-      {menuOpen && <div className="fixed inset-0 z-50 flex justify-end"><div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setMenuOpen(false)}></div><div className={`relative w-72 h-full border-l p-6 shadow-2xl animate-slide-in ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><button onClick={()=>setMenuOpen(false)} className="mb-8"><X/></button><div className={`p-4 rounded-xl mb-4 border ${isDark ? 'bg-[#1C1C1E] border-[#333]' : 'bg-gray-100 border-gray-200'}`}><div className="flex justify-between items-center mb-2"><span className="text-xs font-bold uppercase flex items-center gap-2"><Award size={14} className="text-green-500"/> {T.menu_fid}</span><span className="text-green-500 font-bold text-xl">{level}</span></div><div className="h-2 bg-zinc-600 rounded-full overflow-hidden mb-2"><div className="h-full bg-green-500" style={{width:`${progress}%`}}></div></div><p className="text-[10px] opacity-70">{T.xp_missing} <span className="font-bold text-green-500">{nextXp}</span> {T.xp_goal}</p></div><button className={`w-full py-4 rounded-xl font-bold text-sm mb-2 text-left px-4 flex items-center gap-3 ${isDark ? 'bg-[#1C1C1E] hover:bg-[#222]' : 'bg-gray-100 hover:bg-gray-200'}`} onClick={() => { setWalletOpen(true); setMenuOpen(false); }}><Wallet size={16}/> {T.wallet_title}</button><button className={`w-full py-4 rounded-xl font-bold text-sm mb-2 text-left px-4 flex items-center gap-3 ${isDark ? 'bg-[#1C1C1E] hover:bg-[#222]' : 'bg-gray-100 hover:bg-gray-200'}`} onClick={() => { setHelpOpen(true); setMenuOpen(false); }}><HelpCircle size={16}/> {T.menu_doubts}</button><button className={`w-full py-4 rounded-xl font-bold text-sm text-left px-4 flex items-center gap-3 ${isDark ? 'bg-[#1C1C1E] hover:bg-[#222]' : 'bg-gray-100 hover:bg-gray-200'}`} onClick={()=>{if(navigator.share)navigator.share({url:window.location.href})}}><Share2 size={16}/> {T.menu_share}</button></div></div>}
-      
-      {/* WALLET (Z-INDEX CORRIGIDO) */}
-      {walletOpen && <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm"><div className={`w-full max-w-sm border rounded-3xl p-6 animate-fade-in ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><div className="flex justify-between mb-6"><h3 className="font-bold text-xl flex gap-2"><Wallet className="text-green-500"/> {T.wallet_title}</h3><button onClick={()=>setWalletOpen(false)}><X/></button></div>{user.coupons.length===0?<p className="text-center opacity-50">{T.wallet_empty}</p>:user.coupons.map(c=>(<button key={c.id} onClick={()=>{setBooking({...booking, appliedCoupon:c});setWalletOpen(false);showToast(T.coupon_lbl);}} className={`w-full p-4 border border-green-900 rounded-xl flex justify-between mb-2 text-green-500 font-bold ${isDark ? 'bg-black' : 'bg-green-50'}`}><span>{c.label}</span><span>R$ {c.val}</span></button>))}</div></div>}
-
-      {/* HELP (FAQ COMPLETA) */}
-      {helpOpen && <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm"><div className={`w-full max-w-sm border rounded-3xl p-6 ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><h3 className="font-bold text-xl mb-4">{T.menu_doubts}</h3><div className="space-y-3">{FAQS_DATA[lang].map((f,i)=>(<div key={i} className={`p-4 rounded-xl border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-gray-50 border-gray-200'}`}><p className="text-green-500 text-xs font-bold mb-1">{f.q}</p><p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{f.a}</p></div>))}</div><button onClick={()=>setHelpOpen(false)} className={`w-full mt-4 py-3 rounded-xl font-bold text-sm ${isDark ? 'bg-[#333]' : 'bg-gray-200'}`}>Close</button></div></div>}
-
-      <main className="pt-24 px-5 max-w-md mx-auto animate-fade-in">
-
-        {/* --- PASSO 0: INTRO & SERVIÇOS --- */}
+      <main className="pt-24 px-5 pb-40 max-w-md mx-auto">
+        
+        {/* STEP 0: WELCOME & SERVICE */}
         {step === 0 && (
-            <>
-                {user.coupons.some(c=>c.id==='WELCOME') && (
-                    <div onClick={() => setWalletOpen(true)} className={`p-4 rounded-2xl border flex items-center gap-4 cursor-pointer mb-8 transition-colors ${isDark ? 'bg-gradient-to-r from-green-900/20 to-black border-green-500/20 hover:border-green-500/50' : 'bg-green-50 border-green-200 hover:border-green-300'}`}>
-                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white animate-pulse"><Gift size={20}/></div>
-                        <div><p className={`font-black text-sm uppercase ${isDark ? 'text-green-400' : 'text-green-700'}`}>{T.gift_title}</p><p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{T.gift_sub}</p></div>
-                    </div>
-                )}
-                
-                <h2 className="text-3xl font-black mb-1 tracking-tight">{T.welcome}</h2>
-                <p className={`text-sm mb-8 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{T.subtitle}</p>
-                
-                <div className="space-y-4 mb-10">
-                    <BigInput label={T.your_name} placeholder={T.name_placeholder} value={user.name} onChange={e => setUser({...user, name: e.target.value})} icon={User} isDark={isDark} />
-                    <div onClick={() => setBooking({...booking, healthChecked: !booking.healthChecked})} className={`p-5 rounded-2xl border flex gap-4 cursor-pointer items-center transition-all ${booking.healthChecked ? 'border-green-500 bg-green-500/10' : (isDark ? 'bg-[#0A0A0A] border-[#222]' : 'bg-white border-gray-200')}`}>
-                        <div className={`w-6 h-6 rounded flex items-center justify-center border ${booking.healthChecked ? 'bg-green-500 border-green-500 text-white' : 'border-zinc-400'}`}>{booking.healthChecked && <Check size={16} strokeWidth={3}/>}</div>
-                        <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{T.health_check}</p>
-                    </div>
-                </div>
-                
-                <h3 className="text-xl font-bold mb-6 flex items-center gap-2">{T.choose_svc}</h3>
-                
-                <div className="space-y-6 pb-10">
-                    {SERVICES_DB.map(s => {
-                        const name = s.id === 'completa' ? T.svc_comp_name : T.svc_relax_name;
-                        const badge = s.id === 'completa' ? T.svc_comp_badge : T.svc_relax_badge;
-                        const steps = s.id === 'completa' ? T.svc_comp_steps : T.svc_relax_steps;
-                        const note = s.id === 'completa' ? T.svc_comp_note : T.svc_relax_note;
+          <div className="animate-fade-in-up">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold leading-tight mb-2">{T.welcome}</h2>
+              <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{T.subtitle}</p>
+            </div>
 
-                        return (
-                            <div key={s.id} onClick={() => setBooking({...booking, service: s})} className={`relative overflow-hidden w-full p-6 rounded-[2rem] border-2 transition-all cursor-pointer ${booking.service?.id === s.id ? (isDark ? 'bg-[#18181b] border-green-500' : 'bg-green-50 border-green-500') : (isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200')}`}>
-                                <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${booking.service?.id === s.id ? 'bg-green-500 text-white' : (isDark ? 'bg-[#222] text-zinc-500' : 'bg-gray-200 text-zinc-500')}`}>{badge}</div>
-                                <h3 className={`text-xl font-black uppercase mb-1 ${booking.service?.id === s.id ? (isDark ? 'text-white' : 'text-zinc-900') : 'text-zinc-400'}`}>{name}</h3>
-                                <div className="flex items-center gap-2 mb-4"><span className={`text-lg font-bold ${booking.service?.id === s.id ? 'text-green-500' : 'text-zinc-500'}`}>{Utils.fmtMoney(s.price)}</span></div>
-                                <div className={`space-y-2 mb-4 p-4 rounded-xl ${booking.service?.id === s.id ? (isDark ? 'bg-black/40' : 'bg-white/60') : (isDark ? 'bg-black/20' : 'bg-gray-50')}`}>{steps.map((st, i) => (<p key={i} className={`text-xs font-medium ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{st}</p>))}</div>
-                                <p className="text-[10px] text-zinc-500 flex items-center gap-1 italic"><Info size={10}/> {note}</p>
-                            </div>
-                        )
-                    })}
-                </div>
+            <div className="space-y-4 mb-10">
+              <InputField isDark={isDark} label={T.your_name} value={user.name} onChange={e => setUser({...user, name: e.target.value})} placeholder={T.name_placeholder} icon={User} />
+            </div>
 
-                <div className="mb-20">
-                    <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                        {REVIEWS_DATA[lang].map((r, i) => (
-                            <div key={i} className={`min-w-[260px] p-5 rounded-2xl border flex-shrink-0 ${isDark ? 'bg-[#161616] border-[#2A2A2A]' : 'bg-white border-gray-200'}`}>
-                                <div className="flex text-yellow-500 mb-2 gap-0.5">{[...Array(5)].map((_,k)=><Star key={k} size={10} fill="currentColor"/>)}</div>
-                                <p className={`text-xs italic mb-2 line-clamp-3 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>"{r.t}"</p>
-                                <p className="text-[9px] font-black uppercase flex items-center gap-1 opacity-50"><Shield size={10}/> {r.a}</p>
-                            </div>
-                        ))}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold uppercase tracking-widest opacity-70">{T.choose_svc}</h3>
+            </div>
+
+            <div className="space-y-6">
+              {DB.services.map((svc) => (
+                <AnimatedCard 
+                  key={svc.id} 
+                  isDark={isDark} 
+                  selected={booking.service?.id === svc.id} 
+                  onClick={() => { setBooking({...booking, service: svc}); Utils.vibrate(); }}
+                >
+                  <div className={`h-2 w-full absolute top-0 left-0 ${svc.bg.replace('/10','')} opacity-50`}></div>
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className={`p-3 rounded-2xl ${svc.bg} ${svc.color}`}>
+                        <svc.icon size={24} />
+                      </div>
+                      {svc.id === 'completa' && (
+                        <span className="px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-bold uppercase rounded-full shadow-lg shadow-orange-500/30 tracking-wide">
+                          {T.svc_popular}
+                        </span>
+                      )}
                     </div>
-                </div>
+                    
+                    <h3 className="text-xl font-bold mb-1">{svc.id === 'completa' ? T.svc_comp_name : T.svc_relax_name}</h3>
+                    <p className={`text-xs mb-4 leading-relaxed ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                      {svc.id === 'completa' ? T.svc_comp_desc : T.svc_relax_desc}
+                    </p>
+                    
+                    <ul className="space-y-2 mb-6">
+                      {(svc.id === 'completa' ? T.svc_comp_features : T.svc_relax_features).map((feat, i) => (
+                        <li key={i} className="flex items-center gap-2 text-xs font-medium opacity-80">
+                          <Check size={14} className="text-green-500" /> {feat}
+                        </li>
+                      ))}
+                    </ul>
 
-                <div className={`fixed bottom-0 left-0 w-full p-5 border-t z-[60] ${isDark ? 'bg-black/95 border-white/10' : 'bg-white/95 border-gray-200'}`}>
-                    <PrimaryButton disabled={!booking.healthChecked || user.name.length < 3 || !booking.service} onClick={handleNext} label={T.start_btn} icon={ArrowRight} isDark={isDark} />
-                </div>
-            </>
+                    <div className="flex items-end justify-between border-t pt-4 border-dashed border-gray-200/20">
+                      <div className="text-xs opacity-50 font-mono">1 HORA</div>
+                      <div className="text-2xl font-bold tracking-tight">{Utils.fmtMoney(svc.price)}</div>
+                    </div>
+                  </div>
+                </AnimatedCard>
+              ))}
+            </div>
+
+            {/* Social Proof Carousel */}
+            <div className="mt-12 mb-4">
+               <div className="flex gap-1 mb-4 opacity-50">
+                  <Star size={12} fill="currentColor" className="text-yellow-500"/>
+                  <span className="text-[10px] font-bold uppercase tracking-widest">4.9/5.0 Stars (120+ Reviews)</span>
+               </div>
+               <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
+                 {DB.reviews.map((r, i) => (
+                   <div key={i} className={`snap-center min-w-[280px] p-5 rounded-2xl border flex-shrink-0 ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-gray-100 shadow-sm'}`}>
+                     <div className="flex text-yellow-500 mb-2 gap-0.5">{[...Array(r.stars)].map((_,k)=><Star key={k} size={10} fill="currentColor"/>)}</div>
+                     <p className="text-xs italic mb-3 opacity-70 leading-relaxed">"{r.text}"</p>
+                     <p className="text-[10px] font-black uppercase flex items-center gap-1 opacity-40"><User size={10}/> {r.name}</p>
+                   </div>
+                 ))}
+               </div>
+            </div>
+          </div>
         )}
 
-        {/* --- PASSO 1: EXTRAS & DATA --- */}
+        {/* STEP 1: EXTRAS & CALENDAR */}
         {step === 1 && (
-            <>
-                <h2 className="text-2xl font-bold mb-8">{T.personalize}</h2>
-                <div className="mb-10">
-                    {EXTRAS_DB.map(ex => {
-                        const active = booking.extras[ex.id];
-                        let label = ex.id === 'more_time' ? T.ext_time : ex.id === 'touch' ? T.ext_touch : T.ext_aroma;
-                        let sub = ex.id === 'more_time' ? T.ext_time_sub : ex.id === 'touch' ? T.ext_touch_sub : T.ext_aroma_sub;
-                        let warn = ex.id === 'touch' ? T.ext_touch_warn : null;
+          <div className="animate-fade-in-up">
+             <div className="mb-6">
+               <h2 className="text-xl font-bold">{T.upsell_title}</h2>
+               <p className="text-xs opacity-60">{T.upsell_sub}</p>
+             </div>
 
-                        return (
-                            <div key={ex.id} onClick={() => setBooking({...booking, extras: {...booking.extras, [ex.id]: !active}})} className={`relative p-5 rounded-2xl border transition-all cursor-pointer mb-3 flex items-center justify-between ${active ? (isDark ? 'bg-[#1C1C1E] border-green-500/50' : 'bg-green-50 border-green-500') : (isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200')}`}>
-                                <div className="flex items-center gap-4"><div className={`w-10 h-10 rounded-full flex items-center justify-center ${active ? 'bg-green-500 text-white' : (isDark ? 'bg-[#222] text-zinc-600' : 'bg-gray-100 text-zinc-400')}`}><ex.icon size={20}/></div><div><p className={`font-bold text-sm ${isDark ? 'text-white' : 'text-zinc-900'}`}>{label}</p><p className="text-xs text-zinc-500">{sub}</p>{active && warn && <p className="text-[10px] text-yellow-500 mt-1 flex items-center gap-1"><AlertTriangle size={10}/> {warn}</p>}</div></div>
-                                <span className={`font-bold text-sm ${active ? 'text-green-500' : 'text-zinc-400'}`}>+ R$ {ex.price}</span>
-                            </div>
-                        )
-                    })}
-                </div>
-                <p className={`text-[10px] font-bold uppercase mb-3 ml-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{T.date_title}</p>
-                <div className="flex gap-3 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide mb-4">
-                    {[...Array(14)].map((_, i) => {
-                        const d = new Date(); d.setDate(d.getDate() + i);
-                        const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
-                        return <button key={i} onClick={() => setBooking({...booking, date: d, time: null})} className={`min-w-[72px] h-[84px] rounded-2xl flex flex-col items-center justify-center border flex-shrink-0 transition-all ${isSel ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : (isDark ? 'bg-[#1C1C1E] border-[#333] text-zinc-500' : 'bg-white border-gray-200 text-zinc-400')}`}><span className="text-[10px] font-black uppercase mb-1">{d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span><span className="text-2xl font-bold">{d.getDate()}</span></button>
-                    })}
-                </div>
-                {booking.date && (
-                    <div className="grid grid-cols-4 gap-2 animate-fade-in pb-24">
-                        {['10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'].map(t => {
-                            const status = isTimeBlocked(booking.date, t);
-                            return <button key={t} disabled={status !== 'available'} onClick={() => setBooking({...booking, time: t})} className={`py-3 rounded-xl text-xs font-bold border relative ${booking.time === t ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : status === 'sold_out' ? 'opacity-50 cursor-not-allowed' : status === 'past' ? 'opacity-30' : (isDark ? 'bg-[#1C1C1E] border-[#333]' : 'bg-white border-gray-200')}`}>{t}{status === 'sold_out' && <div className="absolute inset-0 flex items-center justify-center bg-black/80 rounded-xl"><span className="text-[8px] text-red-500 font-black -rotate-12">{T.sold_out}</span></div>}</button>
-                        })}
-                    </div>
-                )}
-                <div className={`fixed bottom-0 left-0 w-full p-5 border-t z-[60] ${isDark ? 'bg-black/95 border-white/10' : 'bg-white/95 border-gray-200'}`}>
-                    <PrimaryButton disabled={!booking.time} onClick={handleNext} label={T.continue} icon={ArrowRight} isDark={isDark} />
-                </div>
-            </>
+             <div className="grid gap-3 mb-10">
+               {DB.extras.map(ex => {
+                 const isActive = booking.extras[ex.id];
+                 return (
+                   <div 
+                      key={ex.id} 
+                      onClick={() => { setBooking({...booking, extras: {...booking.extras, [ex.id]: !isActive}}); Utils.vibrate(); }}
+                      className={`
+                        relative p-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all
+                        ${isActive 
+                          ? 'border-green-500 bg-green-500/10' 
+                          : (isDark ? 'border-zinc-800 bg-zinc-900' : 'border-gray-200 bg-white')}
+                      `}
+                   >
+                     <div className="flex items-center gap-4">
+                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isActive ? 'bg-green-500 text-white' : 'bg-gray-100/10 text-gray-500'}`}>
+                         <ex.icon size={18}/>
+                       </div>
+                       <div>
+                         <p className="font-bold text-sm">{lang === 'pt' ? ex.label_pt : ex.label_en}</p>
+                         {ex.warning && <p className="text-[10px] text-orange-500 flex items-center gap-1 mt-0.5"><AlertTriangle size={8}/> +18 Only</p>}
+                       </div>
+                     </div>
+                     <span className={`text-sm font-bold ${isActive ? 'text-green-500' : 'opacity-50'}`}>+ {Utils.fmtMoney(ex.price)}</span>
+                   </div>
+                 )
+               })}
+             </div>
+
+             <div className="mb-6">
+               <h2 className="text-xl font-bold mb-4">Data & Hora</h2>
+               
+               {/* Date Scroll */}
+               <div className="flex gap-3 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide mb-6">
+                 {[...Array(10)].map((_, i) => {
+                   const d = new Date(); d.setDate(d.getDate() + i);
+                   const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
+                   const week = d.toLocaleDateString(lang === 'pt'?'pt-BR':'en-US', {weekday: 'short'}).toUpperCase().slice(0,3);
+                   return (
+                     <button 
+                        key={i} 
+                        onClick={() => { setBooking({...booking, date: d, time: null}); Utils.vibrate(); }}
+                        className={`min-w-[70px] h-[90px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-white text-black ring-4 ring-green-500/20 border-transparent scale-105' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500' : 'bg-white border-gray-200 text-zinc-400')}`}
+                      >
+                       <span className="text-[10px] font-black tracking-widest mb-1">{week}</span>
+                       <span className="text-2xl font-bold">{d.getDate()}</span>
+                     </button>
+                   )
+                 })}
+               </div>
+
+               {/* Time Grid */}
+               {booking.date && (
+                 <div className="animate-fade-in">
+                   <div className="grid grid-cols-4 gap-2">
+                     {['10:00','11:00','13:00','14:00','16:00','17:00','19:00','20:00'].map(t => {
+                       const isSelected = booking.time === t;
+                       const isTaken = (parseInt(t) + new Date().getDate()) % 3 === 0; // Fake availability logic
+                       return (
+                         <button 
+                            key={t}
+                            disabled={isTaken}
+                            onClick={() => { setBooking({...booking, time: t}); Utils.vibrate(); }}
+                            className={`
+                              py-3 rounded-xl text-xs font-bold border relative overflow-hidden
+                              ${isSelected 
+                                ? 'bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/30' 
+                                : isTaken 
+                                  ? 'opacity-30 cursor-not-allowed border-transparent bg-zinc-800/50' 
+                                  : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-600' : 'bg-white border-gray-200 hover:border-gray-300')}
+                            `}
+                         >
+                           {t}
+                           {isTaken && <div className="absolute inset-0 flex items-center justify-center"><X size={12}/></div>}
+                         </button>
+                       )
+                     })}
+                   </div>
+                   <div className="mt-4 flex items-center justify-center gap-2 text-xs text-orange-500 font-medium animate-pulse">
+                     <Flame size={12} fill="currentColor" /> {T.scarcity_txt}
+                   </div>
+                 </div>
+               )}
+             </div>
+          </div>
         )}
 
-        {/* --- PASSO 2: LOCAL, RESUMO & PAGAMENTO --- */}
+        {/* STEP 2: LOCATION & CHECKOUT */}
         {step === 2 && (
-            <>
-                <h2 className="text-2xl font-bold mb-8">{T.loc_title}</h2>
-                <div className={`flex p-1.5 rounded-2xl mb-6 border ${isDark ? 'bg-[#1C1C1E] border-[#333]' : 'bg-gray-100 border-gray-200'}`}>
-                    {['home', 'motel', 'hotel'].map(t => (
-                        <button key={t} onClick={() => setBooking({...booking, locationType: t, address: {...booking.address, motelName: '', suite: '', hotelName: '', room: '', street: '', number: '', district: ''}})} 
-                            className={`flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all ${booking.locationType === t ? (isDark ? 'bg-[#333] text-white shadow-md' : 'bg-white text-black shadow-sm') : 'text-zinc-500'}`}>
-                            {t === 'home' ? T.btn_home : (t === 'hotel' ? T.btn_hotel : T.btn_motel)}
-                        </button>
-                    ))}
-                </div>
+          <div className="animate-fade-in-up">
+            <h2 className="text-xl font-bold mb-1">{T.loc_title}</h2>
+            <p className="text-xs opacity-60 mb-6">{T.loc_sub}</p>
 
-                <div className="space-y-4 mb-8">
-                    <BigInput label={T.city_lbl} placeholder={T.city_ph} value={booking.address.city} onChange={e => setBooking({...booking, address: {...booking.address, city: e.target.value}})} icon={MapPin} isDark={isDark} />
-                    {booking.locationType === 'motel' ? (
-                        <div className="animate-fade-in space-y-4">
-                            <BigInput label={T.lbl_motel} value={booking.address.motelName} onChange={e => setBooking({...booking, address: {...booking.address, motelName: e.target.value}})} icon={Building} isDark={isDark} placeholder={T.ph_motel} />
-                            <BigInput label={T.lbl_suite} type="tel" value={booking.address.suite} onChange={e => setBooking({...booking, address: {...booking.address, suite: e.target.value}})} icon={BedDouble} isDark={isDark} />
-                        </div>
-                    ) : booking.locationType === 'hotel' ? (
-                        <div className="animate-fade-in space-y-4">
-                            <BigInput label={T.lbl_hotel} value={booking.address.hotelName} onChange={e => setBooking({...booking, address: {...booking.address, hotelName: e.target.value}})} icon={Building} isDark={isDark} placeholder={T.ph_hotel} />
-                            <BigInput label={T.lbl_room} type="tel" value={booking.address.room} onChange={e => setBooking({...booking, address: {...booking.address, room: e.target.value}})} icon={BedDouble} isDark={isDark} />
-                        </div>
-                    ) : (
-                        <div className="animate-fade-in space-y-4">
-                            <BigInput label={T.lbl_addr} value={booking.address.street} onChange={e => setBooking({...booking, address: {...booking.address, street: e.target.value}})} icon={Navigation} isDark={isDark} />
-                            <div className="flex gap-3">
-                                <div className="w-1/3"><BigInput label={T.lbl_num} type="tel" value={booking.address.number} onChange={e => setBooking({...booking, address: {...booking.address, number: e.target.value}})} isDark={isDark} /></div>
-                                <div className="w-2/3"><BigInput label={T.lbl_dist} value={booking.address.district} onChange={e => setBooking({...booking, address: {...booking.address, district: e.target.value}})} isDark={isDark} /></div>
-                            </div>
-                            <BigInput label={T.lbl_comp} value={booking.address.comp} onChange={e => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} isDark={isDark} />
-                        </div>
-                    )}
-                </div>
+            {/* Location Selector */}
+            <div className={`p-1 rounded-xl flex mb-6 ${isDark ? 'bg-zinc-900' : 'bg-gray-200'}`}>
+               {['home','hotel','motel'].map(l => (
+                 <button 
+                    key={l}
+                    onClick={() => setBooking({...booking, locationType: l})}
+                    className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${booking.locationType === l ? (isDark ? 'bg-zinc-800 text-white shadow' : 'bg-white text-black shadow') : 'opacity-50'}`}
+                 >
+                   {l}
+                 </button>
+               ))}
+            </div>
 
-                {/* TICKET DE RESUMO (BOTÃO CUPOM FIXADO) */}
-                <div className={`border rounded-[2rem] p-6 mb-8 relative overflow-hidden ${isDark ? 'bg-[#1C1C1E] border-[#333]' : 'bg-white border-gray-200 shadow-xl'}`}>
-                    <div className={`border-b pb-4 mb-4 text-center ${isDark ? 'border-[#333]' : 'border-gray-100'}`}>
-                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{T.review_title}</p>
-                        <h3 className={`text-xl font-black ${isDark ? 'text-white' : 'text-black'}`}>{booking.service?.id==='completa' ? T.svc_comp_name : T.svc_relax_name}</h3>
-                        <p className="text-sm text-green-500 font-bold mt-1">{new Date(booking.date).toLocaleDateString('pt-BR')} @ {booking.time}</p>
-                    </div>
-                    <div className="space-y-3 mb-6">
-                        <div className="flex justify-between text-sm text-zinc-400"><span>{T.base_val}</span><span>{Utils.fmtMoney(booking.service?.price)}</span></div>
-                        {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> {
-                             let l = k === 'more_time' ? T.ext_time : k === 'touch' ? T.ext_touch : T.ext_aroma;
-                             return <div key={k} className={`flex justify-between text-sm ${isDark ? 'text-white' : 'text-zinc-800'}`}><span>+ {l}</span><span>{Utils.fmtMoney(EXTRAS_DB.find(e=>e.id===k).price)}</span></div>
-                        })}
-                        {booking.appliedCoupon ? (
-                            <div className="flex justify-between text-sm text-green-500 font-bold py-2 border-t border-dashed border-gray-700">
-                                <span>{T.coupon_lbl}</span>
-                                <div className="flex items-center gap-2">
-                                    <span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span>
-                                    <button onClick={() => setBooking({...booking, appliedCoupon: null})} className="text-red-500 hover:text-red-400"><Trash2 size={12}/></button>
-                                </div>
-                            </div>
-                        ) : (
-                            <button onClick={() => setWalletOpen(true)} className={`w-full py-2 border border-dashed rounded-lg text-xs flex items-center justify-center gap-2 mt-2 cursor-pointer ${isDark ? 'border-[#444] text-zinc-500 hover:border-green-500 hover:text-green-500' : 'border-gray-300 text-zinc-500 hover:border-green-600 hover:text-green-600'}`} style={{zIndex: 50}}><Ticket size={12}/> {T.add_coupon}</button>
-                        )}
-                    </div>
-                    <div className={`flex justify-between items-center pt-4 border-t ${isDark ? 'border-[#333]' : 'border-gray-100'}`}>
-                        <span className="text-xs font-bold text-zinc-500 uppercase">{T.total_lbl}</span>
-                        <span className={`text-3xl font-black ${isDark ? 'text-white' : 'text-black'}`}>{Utils.fmtMoney(calculateTotal().final)}</span>
-                    </div>
-                </div>
+            <div className="space-y-4 mb-8">
+              <InputField isDark={isDark} label="Cidade / City" value={booking.address.city} onChange={e => setBooking({...booking, address: {...booking.address, city: e.target.value}})} icon={MapPin} placeholder="Ex: Londrina..." />
+              
+              {booking.locationType === 'home' && (
+                <>
+                  <InputField isDark={isDark} label="Endereço / Address" value={booking.address.street} onChange={e => setBooking({...booking, address: {...booking.address, street: e.target.value}})} icon={Navigation} />
+                  <div className="flex gap-3">
+                    <div className="w-1/3"><InputField isDark={isDark} label="Nº" type="tel" value={booking.address.number} onChange={e => setBooking({...booking, address: {...booking.address, number: e.target.value}})} /></div>
+                    <div className="w-2/3"><InputField isDark={isDark} label="Bairro / District" value={booking.address.district} onChange={e => setBooking({...booking, address: {...booking.address, district: e.target.value}})} /></div>
+                  </div>
+                </>
+              )}
 
-                <div className="mb-32">
-                    <div className="flex justify-between items-center mb-2 px-1">
-                        <p className={`text-[10px] font-bold uppercase ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{T.pay_title}</p>
-                        <button onClick={() => {Utils.copyPix(); showToast(T.pix_copied)}} className="text-[10px] font-bold text-green-500 flex items-center gap-1 hover:text-green-400"><Copy size={10}/> {T.copy_pix}</button>
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                        {['pix', 'card', 'money'].map(p => (
-                            <button key={p} onClick={() => setBooking({...booking, payment: p})} className={`py-4 rounded-xl border text-[10px] font-black uppercase flex flex-col items-center gap-2 transition-all ${booking.payment === p ? (isDark ? 'bg-white text-black shadow-lg' : 'bg-black text-white shadow-lg') : (isDark ? 'bg-[#1C1C1E] border-[#333] text-zinc-500' : 'bg-white border-gray-200 text-zinc-500')}`}>
-                                {p === 'pix' && <Zap size={18}/>}{p === 'card' && <CreditCard size={18}/>}{p === 'money' && <Banknote size={18}/>}
-                                {T[p]}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+              {booking.locationType === 'motel' && (
+                 <>
+                  <InputField isDark={isDark} label="Nome do Motel" value={booking.address.motelName} onChange={e => setBooking({...booking, address: {...booking.address, motelName: e.target.value}})} icon={Building} />
+                  <InputField isDark={isDark} label="Número da Suíte" type="tel" value={booking.address.suite} onChange={e => setBooking({...booking, address: {...booking.address, suite: e.target.value}})} icon={BedDouble} />
+                 </>
+              )}
+              
+              {booking.locationType === 'hotel' && (
+                 <>
+                  <InputField isDark={isDark} label="Nome do Hotel" value={booking.address.hotelName} onChange={e => setBooking({...booking, address: {...booking.address, hotelName: e.target.value}})} icon={Building} />
+                  <InputField isDark={isDark} label="Quarto / Room" type="tel" value={booking.address.room} onChange={e => setBooking({...booking, address: {...booking.address, room: e.target.value}})} icon={BedDouble} />
+                 </>
+              )}
+            </div>
 
-                <div className={`fixed bottom-0 left-0 w-full p-6 border-t z-[60] ${isDark ? 'bg-black/95 border-white/10' : 'bg-white/95 border-gray-200'}`}>
-                    <div className="flex justify-between items-center mb-4 px-1"><span className="text-xs text-zinc-500"><AlertTriangle size={12} className="inline text-yellow-500 mb-0.5"/> {T.uber_warn}</span><button onClick={() => {Utils.copyPix(); showToast(T.pix_copied)}} className="text-[10px] font-bold text-green-500 flex items-center gap-1"><Copy size={10}/> {T.copy_pix}</button></div>
-                    <PrimaryButton 
-                        disabled={!isAddressValid() || !booking.payment} 
-                        onClick={finalize} label={T.confirm_btn} icon={MessageCircle} pulse isDark={isDark} 
-                    />
-                </div>
-            </>
+            {/* Payment & Receipt */}
+            <div className={`p-6 rounded-[2rem] border relative overflow-hidden mb-8 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200 shadow-xl'}`}>
+               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500"></div>
+               
+               <h3 className="text-center font-black uppercase text-lg mb-6 tracking-widest opacity-80">{T.review_summary}</h3>
+               
+               <div className="space-y-3 text-sm mb-6 font-mono opacity-80">
+                 <div className="flex justify-between">
+                   <span>{booking.service?.id === 'completa' ? T.svc_comp_name : T.svc_relax_name}</span>
+                   <span>{Utils.fmtMoney(booking.service?.price)}</span>
+                 </div>
+                 {Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => (
+                   <div key={k} className="flex justify-between text-green-500">
+                     <span>+ {DB.extras.find(e=>e.id===k).label_pt}</span>
+                     <span>{Utils.fmtMoney(DB.extras.find(e=>e.id===k).price)}</span>
+                   </div>
+                 ))}
+                 <div className="border-t border-dashed border-gray-500/30 my-2"></div>
+                 <div className="flex justify-between text-xl font-bold">
+                   <span>TOTAL</span>
+                   <span>{Utils.fmtMoney(calculateTotal())}</span>
+                 </div>
+               </div>
+
+               <p className="text-[10px] font-bold uppercase mb-2 opacity-50 text-center">Forma de Pagamento</p>
+               <div className="grid grid-cols-3 gap-2">
+                 {['pix','card','money'].map(p => (
+                   <button 
+                      key={p} 
+                      onClick={() => setBooking({...booking, payment: p})}
+                      className={`py-3 rounded-lg border text-[10px] font-black uppercase flex flex-col items-center gap-1 transition-all ${booking.payment === p ? 'bg-green-500 text-white border-green-500' : (isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-gray-50 border-gray-200')}`}
+                   >
+                     {p === 'pix' ? <Zap size={14}/> : (p === 'card' ? <CreditCard size={14}/> : <Banknote size={14}/>)}
+                     {p}
+                   </button>
+                 ))}
+               </div>
+            </div>
+
+            {booking.payment === 'pix' && (
+              <div className="mb-8 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center justify-between">
+                 <div>
+                   <p className="text-xs text-green-500 font-bold mb-1">Pagamento no Local</p>
+                   <p className="text-[10px] opacity-70">Use a chave Pix apenas presencialmente.</p>
+                 </div>
+                 <button onClick={() => {navigator.clipboard.writeText(CONFIG.PIX_KEY); showToast("Chave Copiada!")}} className="text-green-500 font-bold text-xs bg-green-500/20 px-3 py-2 rounded-lg">COPIAR CHAVE</button>
+              </div>
+            )}
+
+          </div>
         )}
+
       </main>
-      <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .animate-fade-in { animation: fadeIn 0.5s ease-out; } @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } } .animate-slide-in { animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); } .animate-scroll { animation: scroll 120s linear infinite; } @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`}</style>
+
+      {/* Floating Action Button (Next) */}
+      <div className={`fixed bottom-0 left-0 w-full p-6 pb-8 border-t z-50 transition-all ${isDark ? 'bg-black/90 border-zinc-800' : 'bg-white/90 border-gray-200'}`}>
+        {step < 2 ? (
+           <Button 
+            onClick={handleNext} 
+            label={T.start_btn} 
+            icon={ArrowRight} 
+            isDark={isDark} 
+            disabled={step===1 && !booking.time} // Validação simples
+            pulse={step === 1 && booking.time}
+          />
+        ) : (
+           <Button 
+            onClick={finalizeOrder} 
+            label="CONFIRMAR NO WHATSAPP" 
+            icon={MessageCircle} 
+            variant="primary" 
+            isDark={isDark}
+            disabled={!booking.payment || !booking.address.city}
+            pulse
+          />
+        )}
+      </div>
+
+      {/* Global Styles for Animations */}
+      <style>{`
+        @keyframes fade-in-up { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes scale-in { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        .animate-scale-in { animation: scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+      `}</style>
     </div>
   );
 }
