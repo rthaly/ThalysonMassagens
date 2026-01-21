@@ -14,7 +14,7 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v10_platinum',
+  STORAGE_KEY: 'thaly_app_v11_complete',
   XP_TARGET: 300 
 };
 
@@ -41,15 +41,56 @@ const EXTRAS = [
   { id: 'aroma', label: 'Aromaterapia', sub: 'Óleos essenciais', icon: Wind, price: 10 }
 ];
 
+// LISTA COMPLETA RESTAURADA (+50 REVIEWS)
 const REVIEWS_DB = [
-  { t: "Melhor massagem da vida. A progressão é incrível.", a: "Tiago", s: 5 },
-  { t: "Profissionalismo raro. O lugar é discreto e ele é educado.", a: "Roberto", s: 5 },
-  { t: "Fui travado e saí leve. Vale cada centavo.", a: "Pedro H.", s: 5 },
-  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso", s: 5 },
-  { t: "Atendimento no hotel foi rápido e seguro.", a: "Viajante SP", s: 5 },
-  { t: "A finalização manual é intensa mesmo. Recomendo.", a: "Anônimo", s: 5 },
-  { t: "Gostei da facilidade de agendar. Sem enrolação.", a: "Carlos", s: 5 },
-  { t: "O toque dele vicia. Já virei cliente fiel.", a: "Lucas", s: 5 }
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", a: "Tiago", s: 5 },
+  { t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", a: "Anônimo", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", a: "M. (Jardins)", s: 5 },
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", a: "Empresário", s: 5 },
+  { t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", a: "M. (Casado)", s: 5 },
+  { t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", a: "Roberto", s: 5 },
+  { t: "Gostei muito! Um toque super bom! Foi uma experiência ótima.", a: "Marcelo", s: 5 },
+  { t: "Profissionalismo raro hoje em dia. Pontual e educado.", a: "Carlos A.", s: 5 },
+  { t: "A mistura de força e suavidade é incrível. Recomendo.", a: "Lucas", s: 5 },
+  { t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", a: "Novato", s: 5 },
+  { t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", a: "Gustavo", s: 5 },
+  { t: "O corpo a corpo é quente de verdade. Uma experiência única.", a: "J.P.", s: 5 },
+  { t: "Gostei que ele respeita os limites, mas entrega muito prazer.", a: "André", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", a: "Turista RJ", s: 5 },
+  { t: "Foi excelente! Faria semanal kkk Obrigado por ter vindo!",a:"Everton", s: 5 },
+  { t: "A técnica dele é diferente de tudo. Vale cada real.", a: "Dr. Marcelo", s: 5 },
+  { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
+  { t: "Me senti renovado. Energia lá em cima depois da sessão.", a: "Vitor", s: 5 },
+  { t: "Extremamente educado e com papo bom, além da massagem top.", a: "Renan", s: 5 },
+  { t: "O lubrificante é um detalhe que faz toda diferença.", a: "Paulo", s: 5 },
+  { t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", a: "Cliente Antigo", s: 5 },
+  { t: "Não economizem, peçam a completa com aromaterapia.", a: "Dica do Beto", s: 5 },
+  { t: "Pontualidade britânica. Chegou na hora marcada.", a: "Advogado SP", s: 5 },
+  { t: "Fiquei impressionado com a força das mãos dele.", a: "Gym Rat", s: 5 },
+  { t: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", a: "Anônimo", s: 5 },
+  { t: "Excelente profissional. Me deixou super confortável.", a: "Hétero Curioso", s: 5 },
+  { t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", a: "Motorista", s: 5 },
+  { t: "O sigilo é garantido mesmo. Pode confiar.", a: "M. (Sigilo)", s: 5 },
+  { t: "Agradeço pela paciência e pelo serviço impecável.", a: "Sr. João", s: 5 },
+  { t: "Experiência sensorial incrível. O cheiro, o toque, a música.", a: "Designer", s: 5 },
+  { t: "Saí flutuando. Recomendo para quem tem rotina estressante.", a: "Executivo", s: 5 },
+  { t: "O Thalyson é muito gente fina. O tempo passou voando.", a: "Matheus", s: 5 },
+  { t: "Melhor investimento da semana. Relaxamento total.", a: "Bruno", s: 5 },
+  { t: "Toque firme, mas sensível. Sabe onde tocar.", a: "Rafa", s: 5 },
+  { t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", a: "Tech Guy", s: 5 },
+  { t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", a: "Corredor", s: 5 },
+  { t: "Simpático e bonito. O serviço é completo mesmo.", a: "Fã #2", s: 5 },
+  { t: "Me ajudou muito com a ansiedade. Gratidão.", a: "Pedro", s: 5 },
+  { t: "Fiz no meu apto e foi Prático.", a: "Morador Centro", s: 5 },
+  { t: "A massagem tântrica dele desbloqueou sensações novas.", a: "Curioso", s: 5 },
+  { t: "Valeu a pena esperar a agenda liberar.", a: "Ricardo", s: 5 },
+  { t: "Nota 10. Nada a reclamar.", a: "Sérgio", s: 5 },
+  { t: "O final foi explosivo. Recomendo.", a: "Anônimo", s: 5 },
+  { t: "Muito higiênico e cuidadoso.", a: "Médico", s: 5 },
+  { t: "Voltarei com certeza na próxima semana.", a: "Cliente Fiel", s: 5 },
+  { t: "Paz de espírito e corpo relaxado. Obrigado.", a: "Fernando", s: 5 }
 ];
 
 const FAQS = [
@@ -59,7 +100,7 @@ const FAQS = [
 ];
 
 // ==================================================================================
-// 2. COMPONENTES VISUAIS (DESIGN SYSTEM)
+// 2. COMPONENTES VISUAIS
 // ==================================================================================
 
 const Utils = {
@@ -108,12 +149,12 @@ const ReviewCarousel = () => (
              {[...REVIEWS_DB, ...REVIEWS_DB].map((r, i) => (
                  <div key={i} className="w-[260px] bg-[#161616] p-5 rounded-2xl border border-[#2A2A2A] flex-shrink-0">
                      <div className="flex text-yellow-500 mb-2 gap-0.5">{[...Array(5)].map((_,k)=><Star key={k} size={10} fill="currentColor"/>)}</div>
-                     <p className="text-gray-300 text-xs italic mb-3 line-clamp-3">"{r.t}"</p>
+                     <p className="text-gray-300 text-xs italic mb-3 line-clamp-3 leading-relaxed">"{r.t}"</p>
                      <p className="text-[9px] font-black text-gray-500 uppercase flex items-center gap-1"><Shield size={10} className="text-green-500"/> {r.a}</p>
                  </div>
              ))}
         </div>
-        <style>{`@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } .animate-scroll { animation: scroll 60s linear infinite; }`}</style>
+        <style>{`@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } .animate-scroll { animation: scroll 120s linear infinite; }`}</style>
     </div>
 );
 
@@ -141,7 +182,6 @@ export default function App() {
   const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
 
-  // Persistence
   const [user, setUser] = useState(() => {
       try {
           const s = localStorage.getItem(CONFIG.STORAGE_KEY);
@@ -150,21 +190,19 @@ export default function App() {
   });
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
 
-  // Booking State
   const initialBooking = {
       healthChecked: false,
       service: null,
       extras: {}, 
       date: null,
       time: null,
-      locationType: 'home', // home, hotel, motel
+      locationType: 'home', 
       address: { city: '', street: '', number: '', district: '', comp: '', motelName: '', suite: '', hotelName: '', room: '' },
       payment: null,
       appliedCoupon: null
   };
   const [booking, setBooking] = useState(initialBooking);
 
-  // Actions
   const showToast = (msg) => { setToast({ show: true, msg }); setTimeout(() => setToast({ show: false, msg: '' }), 3000); };
   const handleNext = () => { Utils.vibrate(); window.scrollTo({ top: 0, behavior: 'smooth' }); setStep(s => s + 1); };
   const handleBack = () => { Utils.vibrate(); setStep(s => s - 1); };
@@ -176,7 +214,7 @@ export default function App() {
       const sel = new Date(date);
       const [h] = timeStr.split(':').map(Number);
       if (sel.toDateString() === now.toDateString() && h <= now.getHours()) return 'past';
-      if ((sel.getDate() + h) % 5 === 0) return 'sold_out'; // Escassez distribuida
+      if ((sel.getDate() + h) % 5 === 0) return 'sold_out'; 
       return 'available';
   };
 
@@ -188,14 +226,12 @@ export default function App() {
       return { service: s, extras: e, disc: d, final: Math.max(0, s + e - d) };
   };
 
-  // VALIDAÇÃO DE ENDEREÇO CORRIGIDA
   const isAddressValid = () => {
       const { city, street, number, district, motelName, suite, hotelName, room } = booking.address;
       if (!city || city.length < 3) return false;
-      
       if (booking.locationType === 'motel') return motelName && suite;
       if (booking.locationType === 'hotel') return hotelName && room;
-      return street && number && district; // Casa
+      return street && number && district;
   };
 
   const finalize = () => {
@@ -206,7 +242,6 @@ export default function App() {
       }
       setUser({ ...user, xp: newXP, coupons: newCoupons });
 
-      // Generate Address String
       let locStr = "";
       const addr = booking.address;
       if(booking.locationType === 'motel') locStr = `🏩 MOTEL: ${addr.motelName}\n🚪 SUÍTE: ${addr.suite}`;
@@ -258,6 +293,8 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
       </div>
   );
 
+  const financials = calculateTotal();
+
   return (
     <div className="min-h-screen bg-black text-white font-sans pb-48 selection:bg-green-500 selection:text-black">
       <Toast show={toast.show} msg={toast.msg} />
@@ -280,7 +317,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
          <div className="h-[2px] w-full bg-[#111]"><div className="h-full bg-green-500 transition-all duration-500 ease-out" style={{width: `${((step+1)/3)*100}%`}}></div></div>
       </header>
 
-      {/* MENU & WALLET (Modais Ocultos para brevidade - Mesma lógica V9) */}
+      {/* MENU & WALLET */}
       {menuOpen && <div className="fixed inset-0 z-50 flex justify-end"><div className="absolute inset-0 bg-black/80" onClick={()=>setMenuOpen(false)}></div><div className="relative w-72 h-full bg-[#111] border-l border-[#222] p-6 shadow-2xl animate-slide-in"><button onClick={()=>setMenuOpen(false)} className="mb-8"><X/></button><div className="bg-[#222] p-4 rounded-xl mb-4 text-center"><p className="text-xs text-gray-400 uppercase">Fidelidade</p><p className="text-green-500 font-bold text-xl">{user.xp} XP</p></div><button className="w-full py-4 bg-[#222] rounded-xl font-bold text-sm" onClick={()=>{if(navigator.share)navigator.share({url:window.location.href})}}>Compartilhar</button></div></div>}
       {walletOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90"><div className="w-full max-w-sm bg-[#1C1C1E] border border-[#333] rounded-3xl p-6"><div className="flex justify-between mb-6"><h3 className="font-bold text-white">Carteira</h3><button onClick={()=>setWalletOpen(false)}><X/></button></div>{user.coupons.length===0?<p className="text-center text-gray-500">Vazia.</p>:user.coupons.map(c=>(<button key={c.id} onClick={()=>{setBooking({...booking, appliedCoupon:c});setWalletOpen(false);showToast('CUPOM APLICADO!');}} className="w-full p-4 bg-black border border-green-900 rounded-xl flex justify-between mb-2 text-green-500 font-bold"><span>{c.label}</span><span>R$ {c.val}</span></button>))}</div></div>}
 
@@ -310,8 +347,8 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                             <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${booking.service?.id === s.id ? 'bg-green-500 text-black' : 'bg-[#222] text-gray-500'}`}>{s.label}</div>
                             <h3 className="text-xl font-black uppercase mb-1">{s.name}</h3>
                             <div className="flex items-center gap-2 mb-4"><span className={`text-lg font-bold ${booking.service?.id === s.id ? 'text-green-400' : 'text-gray-500'}`}>{Utils.fmtMoney(s.price)}</span></div>
-                            <div className="space-y-2 mb-4 p-4 rounded-xl bg-black/20">{s.steps.map((step, i) => (<p key={i} className="text-xs text-gray-300 font-medium">{step}</p>))}</div>
-                            <p className="text-[10px] text-gray-500 italic"><Info size={10} className="inline mr-1"/> {s.note}</p>
+                            <div className={`space-y-2 mb-4 p-4 rounded-xl ${booking.service?.id === s.id ? 'bg-black/40 border border-white/5' : 'bg-black/20'}`}>{s.steps.map((step, i) => (<p key={i} className="text-xs text-gray-300 font-medium">{step}</p>))}</div>
+                            <p className="text-[10px] text-gray-500 flex items-center gap-1 italic"><Info size={10}/> {s.note}</p>
                         </div>
                     ))}
                 </div>
@@ -358,12 +395,11 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
             </>
         )}
 
-        {/* STEP 2: ENDEREÇO & FINALIZAR (CORREÇÃO DE CAMPOS) */}
+        {/* STEP 2: ENDEREÇO & FINALIZAR (TICKET COMPLETO) */}
         {step === 2 && (
             <>
                 <h2 className="text-2xl font-bold mb-8">Localização</h2>
                 
-                {/* Seletor Tipo */}
                 <div className="flex bg-[#1C1C1E] p-1.5 rounded-2xl mb-6 border border-[#333]">
                     {['home', 'motel', 'hotel'].map(t => (
                         <button key={t} onClick={() => setBooking({...booking, locationType: t, address: {...booking.address, motelName: '', suite: '', hotelName: '', room: '', street: '', number: '', district: ''}})} 
@@ -396,6 +432,59 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                             <BigInput label="Complemento (Opcional)" placeholder="Ex: Apto 101" value={booking.address.comp} onChange={e => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} />
                         </div>
                     )}
+                </div>
+
+                {/* TICKET DE RESUMO COMPLETO */}
+                <div className="bg-[#1C1C1E] border border-[#333] rounded-[2rem] p-6 mb-8 relative overflow-hidden">
+                    {/* Header */}
+                    <div className="border-b border-[#333] pb-4 mb-4 text-center">
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Resumo do Pedido</p>
+                        <h3 className="text-xl font-black text-white">{booking.service?.name}</h3>
+                        <p className="text-sm text-green-500 font-bold mt-1">{new Date(booking.date).toLocaleDateString('pt-BR')} às {booking.time}</p>
+                    </div>
+                    
+                    {/* Body */}
+                    <div className="space-y-3 mb-6">
+                        {/* 1. Serviço Base */}
+                        <div className="flex justify-between text-sm text-gray-400"><span>Valor Base</span><span>{Utils.fmtMoney(booking.service?.price)}</span></div>
+                        
+                        {/* 2. Extras */}
+                        {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> (
+                            <div key={k} className="flex justify-between text-sm text-white"><span>+ {EXTRAS.find(e=>e.id===k).label}</span><span>{Utils.fmtMoney(EXTRAS.find(e=>e.id===k).price)}</span></div>
+                        ))}
+                        
+                        {/* 3. Cupom */}
+                        {booking.appliedCoupon ? (
+                            <div className="flex justify-between text-sm text-green-400 font-bold py-2 border-t border-[#333]"><span>Cupom Aplicado</span><span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span></div>
+                        ) : (
+                            <button onClick={() => setShowWallet(true)} className="w-full py-2 border border-dashed border-[#444] rounded-lg text-xs text-gray-500 flex items-center justify-center gap-2 mt-2 hover:border-green-500 hover:text-green-500 transition-colors"><Ticket size={12}/> Tenho Cupom</button>
+                        )}
+
+                        {/* 4. Localização Resumida */}
+                        <div className="pt-2 border-t border-[#333]">
+                            <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Localização</p>
+                            <p className="text-xs text-white truncate">
+                                {booking.locationType === 'motel' ? `${booking.address.motelName} (Suíte ${booking.address.suite})` 
+                                : booking.locationType === 'hotel' ? `${booking.address.hotelName} (Quarto ${booking.address.room})` 
+                                : `${booking.address.street}, ${booking.address.number}`}
+                            </p>
+                            <p className="text-xs text-gray-500">{booking.address.city}</p>
+                        </div>
+
+                        {/* 5. Pagamento Resumido */}
+                        {booking.payment && (
+                            <div className="pt-2 border-t border-[#333]">
+                                <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Pagamento</p>
+                                <p className="text-xs text-white uppercase font-bold">{booking.payment}</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex justify-between items-center pt-4 border-t border-[#333]">
+                        <span className="text-xs font-bold text-gray-500 uppercase">Total Final</span>
+                        <span className="text-3xl font-black text-white">{Utils.fmtMoney(financials.final)}</span>
+                    </div>
                 </div>
 
                 <div className="mb-32">
