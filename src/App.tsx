@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
@@ -8,13 +8,13 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DATABASE & CONFIGURAÇÕES (TEXTOS E PREÇOS EXATOS)
+// 1. DADOS & CONFIGURAÇÃO (COPYWRITING EXATO)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v12_master',
+  STORAGE_KEY: 'thaly_app_v13_stable', // Mudei a chave para forçar limpeza de cache
   XP_TARGET: 300 
 };
 
@@ -96,7 +96,7 @@ const FAQS = [
 ];
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (UX/UI SENIOR)
+// 2. DESIGN SYSTEM (SAFE & RESPONSIVE)
 // ==================================================================================
 
 const Utils = {
@@ -144,7 +144,13 @@ const PrimaryButton = ({ onClick, disabled, label, icon: Icon, pulse, variant="p
 
 const SplashScreen = ({ onFinish }) => {
     const [fade, setFade] = useState(false);
-    useEffect(() => { setTimeout(() => setFade(true), 2000); setTimeout(onFinish, 2500); }, []);
+    useEffect(() => { 
+        // Timer de segurança: Se travar, libera em 3s
+        const t1 = setTimeout(() => setFade(true), 2000); 
+        const t2 = setTimeout(onFinish, 2500); 
+        return () => { clearTimeout(t1); clearTimeout(t2); };
+    }, [onFinish]);
+    
     return (
         <div className={`fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-opacity duration-700 ${fade ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <div className="relative mb-6">
@@ -152,7 +158,7 @@ const SplashScreen = ({ onFinish }) => {
                 <div className="relative animate-bounce text-green-500"><Zap size={64} fill="currentColor"/></div>
             </div>
             <h1 className="text-3xl font-black tracking-[0.4em] text-white">THALY</h1>
-            <p className="text-[10px] text-gray-600 mt-3 uppercase tracking-widest font-bold">Experiência VIP</p>
+            <p className="text-[10px] text-gray-600 mt-3 uppercase tracking-widest font-bold">Carregando...</p>
         </div>
     );
 };
@@ -176,7 +182,7 @@ const ReviewCarousel = () => (
 );
 
 // ==================================================================================
-// 3. APP LÓGICA
+// 3. APP LÓGICA PRINCIPAL (BUG FIX: SAFE STORAGE)
 // ==================================================================================
 
 export default function App() {
@@ -188,14 +194,20 @@ export default function App() {
   const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
 
-  // Persistence
+  // Persistence Seguro (Previne Tela Branca)
   const [user, setUser] = useState(() => {
+      if (typeof window === 'undefined') return { name: '', xp: 0, coupons: [] };
       try {
           const s = localStorage.getItem(CONFIG.STORAGE_KEY);
           return s ? JSON.parse(s) : { name: '', xp: 0, coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 15 }] };
-      } catch { return { name: '', xp: 0, coupons: [] }; }
+      } catch (e) {
+          return { name: '', xp: 0, coupons: [{ id: 'WELCOME', label: '1ª Vez', val: 15 }] };
+      }
   });
-  useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
+
+  useEffect(() => { 
+      try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); } catch (e) {} 
+  }, [user]);
 
   // Session
   const initialBooking = {
@@ -217,7 +229,6 @@ export default function App() {
   const handleBack = () => { Utils.vibrate(); setStep(s => s - 1); };
   const handleReset = () => { setSuccess(false); setBooking(initialBooking); setStep(0); };
 
-  // Lógica "Esgotado" Realista
   const isTimeBlocked = (date, timeStr) => {
       if (!date) return true;
       const now = new Date();
@@ -370,7 +381,7 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
                             <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${booking.service?.id === s.id ? 'bg-green-500 text-black' : 'bg-[#222] text-gray-500'}`}>{s.label}</div>
                             <h3 className={`text-xl font-black uppercase mb-1 ${booking.service?.id === s.id ? 'text-white' : 'text-gray-400'}`}>{s.name}</h3>
                             <div className="flex items-center gap-2 mb-4"><span className={`text-lg font-bold ${booking.service?.id === s.id ? 'text-green-400' : 'text-gray-500'}`}>{Utils.fmtMoney(s.price)}</span></div>
-                            <div className={`space-y-2 mb-4 p-4 rounded-xl ${booking.service?.id === s.id ? 'bg-black/40 border border-white/5' : 'bg-black/20'}`}>{s.steps.map((step, i) => (<p key={i} className="text-xs text-gray-300 font-medium">{step}</p>))}</div>
+                            <div className={`space-y-2 mb-4 p-4 rounded-xl ${booking.service?.id === s.id ? 'bg-black/40 border border-white/5' : 'bg-black/20'}`}>{s.details.map((step, i) => (<p key={i} className="text-xs text-gray-300 font-medium">{step}</p>))}</div>
                             <p className="text-[10px] text-gray-500 flex items-center gap-1 italic"><Info size={10}/> {s.disclaimer}</p>
                         </div>
                     ))}
@@ -465,18 +476,51 @@ ${booking.appliedCoupon ? `🎟️ Cupom: - ${Utils.fmtMoney(fin.disc)}` : ''}
 
                 {/* TICKET DE RESUMO */}
                 <div className="bg-[#1C1C1E] border border-[#333] rounded-[2rem] p-6 mb-8 relative overflow-hidden">
+                    {/* Header */}
                     <div className="border-b border-[#333] pb-4 mb-4 text-center">
                         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Resumo do Pedido</p>
                         <h3 className="text-xl font-black text-white">{booking.service?.name}</h3>
                         <p className="text-sm text-green-500 font-bold mt-1">{new Date(booking.date).toLocaleDateString('pt-BR')} às {booking.time}</p>
                     </div>
+                    
+                    {/* Body */}
                     <div className="space-y-3 mb-6">
+                        {/* 1. Serviço Base */}
                         <div className="flex justify-between text-sm text-gray-400"><span>Valor Base</span><span>{Utils.fmtMoney(booking.service?.price)}</span></div>
+                        
+                        {/* 2. Extras */}
                         {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=> (
                             <div key={k} className="flex justify-between text-sm text-white"><span>+ {EXTRAS.find(e=>e.id===k).label}</span><span>{Utils.fmtMoney(EXTRAS.find(e=>e.id===k).price)}</span></div>
                         ))}
-                        {booking.appliedCoupon ? <div className="flex justify-between text-sm text-green-400 font-bold py-2 border-t border-[#333]"><span>Cupom Aplicado</span><span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span></div> : <button onClick={() => setShowWallet(true)} className="w-full py-2 border border-dashed border-[#444] rounded-lg text-xs text-gray-500 mt-2 flex items-center justify-center gap-2 hover:text-green-500 hover:border-green-500 transition-colors"><Ticket size={14}/> Tenho Cupom</button>}
+                        
+                        {/* 3. Cupom */}
+                        {booking.appliedCoupon ? (
+                            <div className="flex justify-between text-sm text-green-400 font-bold py-2 border-t border-[#333]"><span>Cupom Aplicado</span><span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span></div>
+                        ) : (
+                            <button onClick={() => setShowWallet(true)} className="w-full py-2 border border-dashed border-[#444] rounded-lg text-xs text-gray-500 flex items-center justify-center gap-2 mt-2 hover:border-green-500 hover:text-green-500 transition-colors"><Ticket size={12}/> Tenho Cupom</button>
+                        )}
+
+                        {/* 4. Localização Resumida */}
+                        <div className="pt-2 border-t border-[#333]">
+                            <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Localização</p>
+                            <p className="text-xs text-white truncate">
+                                {booking.locationType === 'motel' ? `${booking.address.motelName} (Suíte ${booking.address.suite})` 
+                                : booking.locationType === 'hotel' ? `${booking.address.hotelName} (Quarto ${booking.address.room})` 
+                                : `${booking.address.street}, ${booking.address.number}`}
+                            </p>
+                            <p className="text-xs text-gray-500">{booking.address.city}</p>
+                        </div>
+
+                        {/* 5. Pagamento Resumido */}
+                        {booking.payment && (
+                            <div className="pt-2 border-t border-[#333]">
+                                <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Pagamento</p>
+                                <p className="text-xs text-white uppercase font-bold">{booking.payment}</p>
+                            </div>
+                        )}
                     </div>
+
+                    {/* Footer */}
                     <div className="flex justify-between items-center pt-4 border-t border-[#333]">
                         <span className="text-xs font-bold text-gray-500 uppercase">Total Final</span>
                         <span className="text-3xl font-black text-white">{Utils.fmtMoney(financials.final)}</span>
