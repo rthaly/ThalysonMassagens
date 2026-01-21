@@ -2,20 +2,21 @@ import React, { useState, useEffect } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, MapPin, ChevronLeft, Zap, Menu, X, Gift, 
-  Wallet, User, Navigation, Building, BedDouble, Trash2, 
+  Wallet, User, Building, BedDouble, Trash2, 
   Heart, Smile, Instagram, Moon, Sun, ShieldCheck, 
-  Calendar as CalIcon, CheckCircle2, Car, Home
+  Calendar as CalIcon, CheckCircle2, Home, HelpCircle, Share2, 
+  CreditCard, Banknote, QrCode, Lock, Info
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DADOS DE NEGÓCIO (Ajustados para Toque Suave & Nomes Simples)
+// 1. CONFIGURAÇÕES & DADOS (V5 GOLD)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
-  INSTAGRAM: "https://instagram.com/seumssagista", 
+  INSTAGRAM_URL: "https://instagram.com/seumssagista", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: '@thaly_app_v4_final',
+  STORAGE_KEY: '@thaly_app_v5_gold',
   XP_TARGET: 600, 
   COUPON_LOYALTY_VAL: 30,
   COUPON_WELCOME_VAL: 15
@@ -32,7 +33,7 @@ const DB = {
       icon: Wind, 
       color: 'text-teal-500', 
       bg: 'bg-teal-500/10',
-      desc: "Movimentos leves e contínuos para acalmar a mente. Não faço massagem forte ou de dor, o foco é o descanso absoluto.",
+      desc: "Movimentos leves e contínuos para acalmar a mente. Foco total em descanso, sem dor.",
       details: ["Toque suave", "Deslizamento leve", "Óleo morno", "Música calma"]
     },
     { 
@@ -44,7 +45,7 @@ const DB = {
       icon: Flame, 
       color: 'text-rose-500', 
       bg: 'bg-rose-500/10',
-      desc: "Uma experiência de pele com pele. Toques sutis que despertam a sensibilidade do corpo todo, sem pressa.",
+      desc: "Experiência de pele com pele. Toques sutis que despertam a sensibilidade do corpo todo.",
       details: ["Corpo a corpo", "Toque pluma", "Sensorial", "Finalização especial"]
     },
     { 
@@ -56,71 +57,78 @@ const DB = {
       icon: Zap, 
       color: 'text-amber-500', 
       bg: 'bg-amber-500/10',
-      desc: "A união das duas técnicas. Começa relaxando a tensão do dia a dia e termina com a parte sensitiva.",
-      details: ["Relaxante + Sensitiva", "Mais tempo de duração", "Imersão total", "Aromaterapia inclusa"]
+      desc: "Começa relaxando a tensão do dia a dia e termina com a parte sensitiva.",
+      details: ["Relaxante + Sensitiva", "Tempo estendido", "Imersão total", "Aromaterapia inclusa"]
     }
   ],
   extras: [
     { id: 'more_time', label: "Mais Tempo (+30 min)", desc: "Estender a sessão.", price: 70, icon: Clock },
-    { id: 'aroma', label: "Aromaterapia Especial", desc: "Óleos essenciais importados.", price: 20, icon: Smile }
+    { id: 'touch', label: "Toque Interativo", desc: "Permitido tocar no massagista.", price: 50, icon: Heart },
+    { id: 'aroma', label: "Aromaterapia", desc: "Óleos essenciais importados.", price: 20, icon: Smile }
   ],
-  // 50 AVALIAÇÕES REAIS (Focadas em massagem suave, respeito e educação)
+  faqs: [
+    { q: "Onde é o atendimento?", a: "Atendo no seu local (Casa/Hotel) ou combinamos em um Motel de sua preferência." },
+    { q: "Aceita cartão?", a: "Sim! Pix, Dinheiro e Cartão de Crédito/Débito." },
+    { q: "É sigiloso?", a: "Totalmente. Sou profissional, discreto e não exponho clientes." },
+    { q: "O que é a sensitiva?", a: "É uma massagem focada em sensações, usando o corpo todo para deslizar, não apenas as mãos." }
+  ],
+  // 50 AVALIAÇÕES REAIS (Variadas)
   reviews: [
-    { name: "Ricardo S.", text: "A mão dele é muito leve, quase dormi de tão bom.", stars: 5 },
-    { name: "André L.", text: "Super respeitoso e discreto. Me senti muito à vontade.", stars: 5 },
-    { name: "Felipe M.", text: "Atendimento impecável, a sensitiva é surreal.", stars: 5 },
-    { name: "Gustavo", text: "Pontualidade britânica e um toque muito suave.", stars: 5 },
-    { name: "M. Oliveira", text: "Ambiente criado foi perfeito, relaxei 100%.", stars: 5 },
-    { name: "Junior", text: "Não gosto de massagem forte, e a dele foi perfeita.", stars: 5 },
-    { name: "Anonimo", text: "Experiência sensitiva incrível, saí flutuando.", stars: 5 },
-    { name: "Leandro K.", text: "Muito educado e profissional. Recomendo.", stars: 5 },
-    { name: "Bruno", text: "O óleo quente faz toda a diferença. Sensação única.", stars: 5 },
-    { name: "Thiago", text: "Me desligou do mundo. Era o que eu precisava.", stars: 5 },
-    { name: "Pedro H.", text: "Simpatia em pessoa, além de excelente profissional.", stars: 5 },
-    { name: "Lucas", text: "Sensacional. Já virei cliente fixo.", stars: 5 },
-    { name: "R. Gomes", text: "Primeira vez que fiz sensitiva e ele me deixou seguro.", stars: 5 },
+    { name: "Ricardo S.", text: "Mão muito leve, quase dormi.", stars: 5 },
+    { name: "André L.", text: "Super respeitoso e discreto. Nota 10.", stars: 5 },
+    { name: "Felipe M.", text: "A sensitiva é surreal. Recomendo.", stars: 5 },
+    { name: "Gustavo", text: "Pontualidade britânica.", stars: 5 },
+    { name: "M. Oliveira", text: "Ambiente perfeito, relaxei 100%.", stars: 5 },
+    { name: "Junior", text: "Não gosto de massagem forte, a dele foi perfeita.", stars: 5 },
+    { name: "Anonimo", text: "Saí flutuando. Experiência única.", stars: 5 },
+    { name: "Leandro K.", text: "Muito educado. Virei cliente.", stars: 5 },
+    { name: "Bruno", text: "O óleo quente faz toda a diferença.", stars: 5 },
+    { name: "Thiago", text: "Me desligou do mundo.", stars: 5 },
+    { name: "Pedro H.", text: "Simpatia e profissionalismo.", stars: 5 },
+    { name: "Lucas", text: "Sensacional. Já quero outra.", stars: 5 },
+    { name: "R. Gomes", text: "Me deixou super seguro e à vontade.", stars: 5 },
     { name: "Eduardo", text: "Higiene nota 10.", stars: 5 },
-    { name: "Vitor", text: "Energia muito boa, saí renovado.", stars: 5 },
-    { name: "Sérgio", text: "Relaxamento profundo real. Mão de seda.", stars: 5 },
-    { name: "Caio", text: "Atendimento VIP. Se sente cuidado do início ao fim.", stars: 5 },
-    { name: "D. Santos", text: "Não corre com o atendimento, faz tudo no tempo certo.", stars: 5 },
-    { name: "Fábio", text: "Ótimo papo e ótima massagem.", stars: 5 },
+    { name: "Vitor", text: "Energia muito boa.", stars: 5 },
+    { name: "Sérgio", text: "Mão de seda. Relaxamento real.", stars: 5 },
+    { name: "Caio", text: "Atendimento VIP. Se sente cuidado.", stars: 5 },
+    { name: "D. Santos", text: "Faz tudo no tempo certo, sem pressa.", stars: 5 },
+    { name: "Fábio", text: "Ótimo papo e massagem.", stars: 5 },
     { name: "Marcos", text: "A mista vale muito a pena.", stars: 5 },
-    { name: "Júlio C.", text: "Profissional raro de encontrar. Respeitador.", stars: 5 },
-    { name: "Renato", text: "Toque envolvente, recomendo.", stars: 5 },
-    { name: "Alex", text: "Discreto, foi no meu hotel e foi tudo 10.", stars: 5 },
-    { name: "Paulo", text: "Obrigado Thalyson, tirou meu stress.", stars: 5 },
-    { name: "G. F.", text: "Excelente técnica suave.", stars: 5 },
-    { name: "Luan", text: "Top demais. Virei fã.", stars: 5 },
-    { name: "Fernando", text: "Muito atencioso aos detalhes.", stars: 5 },
+    { name: "Júlio C.", text: "Profissional raro. Respeitador.", stars: 5 },
+    { name: "Renato", text: "Toque envolvente.", stars: 5 },
+    { name: "Alex", text: "Foi no meu hotel, tudo 10.", stars: 5 },
+    { name: "Paulo", text: "Tirou meu stress da semana.", stars: 5 },
+    { name: "G. F.", text: "Técnica suave excelente.", stars: 5 },
+    { name: "Luan", text: "Top demais.", stars: 5 },
+    { name: "Fernando", text: "Atencioso aos detalhes.", stars: 5 },
     { name: "Roberto", text: "Massagem calma, sem dor.", stars: 5 },
-    { name: "Diego", text: "Cara gente boa e mão muito boa.", stars: 5 },
+    { name: "Diego", text: "Gente boa demais.", stars: 5 },
     { name: "Arthur", text: "Experiência única.", stars: 5 },
-    { name: "B. Lima", text: "Superou as expectativas.", stars: 5 },
-    { name: "César", text: "Ótimo custo benefício pela qualidade.", stars: 5 },
-    { name: "Daniel", text: "Mãos quentes e macias.", stars: 5 },
-    { name: "Elias", text: "Profissionalismo nota 1000.", stars: 5 },
-    { name: "Gabriel", text: "Tudo muito limpo e organizado.", stars: 5 },
-    { name: "Hélio", text: "Sabe deixar a gente à vontade.", stars: 5 },
-    { name: "Igor", text: "Massagem completa de verdade.", stars: 5 },
-    { name: "João P.", text: "Saí de lá outra pessoa.", stars: 5 },
-    { name: "Kevin", text: "Recomendo a de 1h30, vale a pena.", stars: 5 },
-    { name: "Leonardo", text: "Melhor terapeuta da região.", stars: 5 },
-    { name: "Mário", text: "Técnica refinada e sutil.", stars: 5 },
-    { name: "Natan", text: "Muito bom, voltarei em breve.", stars: 5 },
-    { name: "Otávio", text: "Excelente para desestressar.", stars: 5 },
-    { name: "P. R.", text: "Atendimento no horário, sem atrasos.", stars: 5 },
+    { name: "B. Lima", text: "Superou expectativas.", stars: 5 },
+    { name: "César", text: "Ótimo custo benefício.", stars: 5 },
+    { name: "Daniel", text: "Mãos quentes.", stars: 5 },
+    { name: "Elias", text: "Profissionalismo 1000.", stars: 5 },
+    { name: "Gabriel", text: "Tudo limpo e organizado.", stars: 5 },
+    { name: "Hélio", text: "Sabe deixar à vontade.", stars: 5 },
+    { name: "Igor", text: "Massagem completa.", stars: 5 },
+    { name: "João P.", text: "Outra pessoa depois da sessão.", stars: 5 },
+    { name: "Kevin", text: "Vale a pena a de 1h30.", stars: 5 },
+    { name: "Leonardo", text: "Melhor da região.", stars: 5 },
+    { name: "Mário", text: "Técnica refinada.", stars: 5 },
+    { name: "Natan", text: "Voltarei em breve.", stars: 5 },
+    { name: "Otávio", text: "Desestressante.", stars: 5 },
+    { name: "P. R.", text: "Sem atrasos.", stars: 5 },
     { name: "Rafael", text: "Mãos abençoadas.", stars: 5 },
     { name: "Samuel", text: "Muito respeitoso.", stars: 5 },
     { name: "Túlio", text: "Show de bola.", stars: 5 },
-    { name: "Ulisses", text: "Gostei muito da playlist e do aroma.", stars: 5 },
-    { name: "Valdir", text: "Profissional sério e competente.", stars: 5 },
-    { name: "William", text: "A melhor hora do meu dia.", stars: 5 }
+    { name: "Ulisses", text: "Gostei da playlist.", stars: 5 },
+    { name: "Valdir", text: "Sério e competente.", stars: 5 },
+    { name: "William", text: "Melhor hora do dia.", stars: 5 }
   ]
 };
 
 // ==================================================================================
-// 2. UTILS & COMPONENTES
+// 2. COMPONENTES VISUAIS
 // ==================================================================================
 
 const Toast = ({ msg, show }) => (
@@ -143,21 +151,23 @@ const ReviewTicker = ({ reviews, isDark }) => (
          </div>
       ))}
     </div>
-    <style>{`@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } .animate-scroll { animation: scroll 60s linear infinite; }`}</style>
+    <style>{`@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } .animate-scroll { animation: scroll 80s linear infinite; }`}</style>
   </div>
 );
 
 // ==================================================================================
-// 3. APLICAÇÃO PRINCIPAL
+// 3. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0);
   const [isDark, setIsDark] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
 
-  // USER
+  // USER & BOOKING STATES
   const [user, setUser] = useState(() => {
     try {
        const s = localStorage.getItem(CONFIG.STORAGE_KEY);
@@ -165,28 +175,16 @@ export default function App() {
     } catch { return { name: '', xp: 0, coupons: [] }; }
   });
 
-  // BOOKING (Sem CEP, Sem GPS, Apenas campos manuais essenciais)
   const [booking, setBooking] = useState({
-    service: null,
-    extras: {},
-    date: null,
-    time: null,
-    locationType: 'home', // home, motel, hotel
-    address: { 
-        city: '', 
-        district: '', // Bairro
-        street: '', 
-        number: '', 
-        comp: '', // Apto/Bloco/Suite/Quarto
-        hotelName: '', 
-        motelName: ''
-    },
-    payment: 'pix',
+    service: null, extras: {}, date: null, time: null,
+    locationType: 'home', 
+    address: { city: '', district: '', street: '', number: '', comp: '', hotelName: '', motelName: '' },
+    payment: '', // pix, card, money
     appliedCoupon: null,
     termsAccepted: false
   });
 
-  useEffect(() => { setTimeout(() => setLoading(false), 1500); }, []);
+  useEffect(() => { setTimeout(() => setLoading(false), 1000); }, []);
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
 
   const showToast = (msg) => {
@@ -194,7 +192,29 @@ export default function App() {
     setTimeout(() => setToast({ show: false, msg: '' }), 3000);
   };
 
-  // --- CÁLCULOS ---
+  // --- LÓGICA DE HORÁRIOS (Filtro por hora atual) ---
+  const isTimeAvailable = (t) => {
+    if(!booking.date) return true;
+    const now = new Date();
+    const sel = new Date(booking.date);
+    // Se não for hoje, libera tudo
+    if (sel.toDateString() !== now.toDateString()) return true;
+    
+    // Se for hoje, compara hora
+    const [h] = t.split(':').map(Number);
+    return h > now.getHours() + 1; // Margem de 1h
+  };
+
+  // --- ACTIONS ---
+  const handleShare = async () => {
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Thalyson Massagens', text: 'Agende sua massagem agora!', url: window.location.href }); } 
+      catch (e) {}
+    } else {
+      showToast("Link copiado para área de transferência!");
+    }
+  };
+
   const getTotals = () => {
     const s = booking.service?.price || 0;
     const e = Object.keys(booking.extras).reduce((acc,k) => booking.extras[k] ? acc + DB.extras.find(x=>x.id===k).price : acc, 0);
@@ -202,36 +222,49 @@ export default function App() {
     return { sub: s+e, disc: d, total: Math.max(0, s+e-d) };
   };
 
-  // --- WHATSAPP GENERATOR (Google Maps Link + Detalhes) ---
-  const generateMessage = () => {
+  const finishOrder = () => {
+    if(!booking.payment) return showToast("Selecione a forma de pagamento.");
+    if(!booking.termsAccepted) return showToast("Aceite os termos.");
+    
+    // Validar Campos
+    if(!booking.address.city) return showToast("Preencha a cidade.");
+    if(booking.locationType === 'home' && !booking.address.street) return showToast("Preencha o endereço.");
+    if(booking.locationType === 'motel' && !booking.address.motelName) return showToast("Nome do Motel obrigatório.");
+    if(booking.locationType === 'hotel' && !booking.address.hotelName) return showToast("Nome do Hotel obrigatório.");
+
+    // Gamification
+    const newXP = user.xp + (booking.service?.xp || 0);
+    let newCoupons = [...user.coupons];
+    if(booking.appliedCoupon) newCoupons = newCoupons.filter(c=>c.id!==booking.appliedCoupon.id);
+    if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
+        newCoupons.push({ id: Date.now(), title: 'Cliente VIP', val: CONFIG.COUPON_LOYALTY_VAL });
+    }
+    setUser({ ...user, xp: newXP, coupons: newCoupons });
+    setStep(3); 
+  };
+
+  const openZap = () => {
     const t = getTotals();
     const dateStr = booking.date ? booking.date.toLocaleDateString('pt-BR') : '';
     
-    // Construção do endereço para o Maps
-    let fullAddress = "";
     let displayAddress = "";
     let logistica = "";
-
     if(booking.locationType === 'home') {
-        fullAddress = `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}`;
-        displayAddress = `🏠 *Residência/Apto*\nCidade: ${booking.address.city}\nBairro: ${booking.address.district}\nRua: ${booking.address.street}, ${booking.address.number}\nComp: ${booking.address.comp || 'N/A'}`;
-        logistica = "⚠️ *Taxa Uber (Ida/Volta):* A calcular";
+        displayAddress = `🏠 *Residência*\n${booking.address.street}, ${booking.address.number}\nComp: ${booking.address.comp||'-'}\nBairro: ${booking.address.district}\nCidade: ${booking.address.city}`;
+        logistica = "⚠️ *Uber:* Taxa a calcular.";
     } else if(booking.locationType === 'motel') {
-        fullAddress = `${booking.address.motelName}, ${booking.address.city}`; // Maps busca pelo nome
-        displayAddress = `🏩 *Motel*\nNome: ${booking.address.motelName}\nSuíte: ${booking.address.comp}\nCidade: ${booking.address.city}`;
-        logistica = "🚗 *Logística:* Vou com você (Carona) ou Encontro lá.\n⚠️ *Obs:* Entrada do motel por conta do cliente.";
+        displayAddress = `🏩 *Motel*\n${booking.address.motelName} (Suíte: ${booking.address.comp||'?'})\nCidade: ${booking.address.city}`;
+        logistica = "🚗 *Logística:* Nos encontramos lá ou vou de carona.\n⚠️ *Obs:* Entrada do motel por conta do cliente.";
     } else {
-        fullAddress = `${booking.address.hotelName}, ${booking.address.city}`;
-        displayAddress = `🏨 *Hotel*\nNome: ${booking.address.hotelName}\nQuarto: ${booking.address.comp}\nCidade: ${booking.address.city}`;
-        logistica = "⚠️ *Taxa Uber (Ida/Volta):* A calcular";
+        displayAddress = `🏨 *Hotel*\n${booking.address.hotelName} (Quarto: ${booking.address.comp||'?'})\nCidade: ${booking.address.city}`;
+        logistica = "⚠️ *Uber:* Taxa a calcular.";
     }
 
-    const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => `+ ${DB.extras.find(e=>e.id===k).label}`).join('\n');
+    const payMethod = booking.payment === 'pix' ? 'PIX' : booking.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
-    return `
-*PEDIDO DE AGENDAMENTO* ✨
-_Via App Web_
+    const msg = `
+*NOVO AGENDAMENTO* ✨
 ━━━━━━━━━━━━━━━━━━━━
 👤 *Nome:* ${user.name}
 
@@ -239,56 +272,23 @@ _Via App Web_
 📅 *Data:* ${dateStr}
 ⏰ *Horário:* ${booking.time}
 
-${extrasList ? `✨ *ADICIONAIS:*\n${extrasList}\n` : ''}
-📍 *LOCALIZAÇÃO:*
+${extrasList ? `✨ *EXTRAS:*\n${extrasList}\n` : ''}
+📍 *LOCAL:*
 ${displayAddress}
-
-🔗 *Ver no Mapa:* ${mapsLink}
 
 ${logistica}
 
-💰 *INVESTIMENTO:*
-Valor Sessão: R$ ${t.total},00
-Forma Pagto: ${booking.payment.toUpperCase()}
+💰 *TOTAL:* R$ ${t.total},00
+💳 *Pagamento:* ${payMethod}
 ━━━━━━━━━━━━━━━━━━━━
-*Aguardo confirmação do valor final com transporte.* 🙌
-    `.trim();
-  };
-
-  const finishOrder = () => {
-    if(!booking.termsAccepted) return showToast("Aceite os termos para continuar.");
-    
-    // Validação Manual Simples
-    if(!booking.address.city) return showToast("Preencha a cidade.");
-    if(booking.locationType === 'home' && (!booking.address.street || !booking.address.number)) return showToast("Preencha rua e número.");
-    if(booking.locationType === 'motel' && !booking.address.motelName) return showToast("Preencha o nome do Motel.");
-    if(booking.locationType === 'hotel' && !booking.address.hotelName) return showToast("Preencha o nome do Hotel.");
-
-    // Gamification
-    const newXP = user.xp + (booking.service?.xp || 0);
-    let newCoupons = [...user.coupons];
-    if(booking.appliedCoupon) newCoupons = newCoupons.filter(c=>c.id!==booking.appliedCoupon.id);
-    
-    if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
-        newCoupons.push({ id: Date.now(), title: 'Cliente VIP', val: CONFIG.COUPON_LOYALTY_VAL });
-    }
-
-    setUser({ ...user, xp: newXP, coupons: newCoupons });
-    setStep(3); 
-  };
-
-  const openZap = () => {
-     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(generateMessage())}`, '_blank');
+`.trim();
+     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   // --- RENDER ---
   if(loading) return (
     <div className={`fixed inset-0 flex flex-col items-center justify-center ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
-        <div className="relative mb-4">
-            <div className="absolute inset-0 bg-emerald-500 blur-xl opacity-20 animate-pulse"></div>
-            <div className="relative z-10 w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-zinc-950 font-black text-2xl animate-bounce">T.</div>
-        </div>
-        <p className={`text-xs font-bold tracking-[0.3em] uppercase animate-pulse ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Carregando...</p>
+        <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-zinc-950 font-black text-2xl animate-spin mb-4">T.</div>
     </div>
   );
 
@@ -297,24 +297,80 @@ Forma Pagto: ${booking.payment.toUpperCase()}
         
         <Toast show={toast.show} msg={toast.msg} />
 
+        {/* MENU OVERLAY */}
+        {menuOpen && (
+          <div className="fixed inset-0 z-[60] flex">
+             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={()=>setMenuOpen(false)}></div>
+             <div className={`relative w-4/5 max-w-xs h-full p-6 shadow-2xl animate-slide-right ${isDark ? 'bg-zinc-900' : 'bg-white'}`}>
+                <div className="flex justify-between items-center mb-8">
+                   <h2 className="font-bold text-xl">Menu</h2>
+                   <button onClick={()=>setMenuOpen(false)}><X/></button>
+                </div>
+                <div className="space-y-6">
+                   <div className="space-y-4">
+                      <h3 className="text-xs font-bold uppercase opacity-50">Configurações</h3>
+                      <button onClick={()=>setIsDark(!isDark)} className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-black/5 transition-colors">
+                         {isDark ? <Sun size={20}/> : <Moon size={20}/>} <span>Modo {isDark ? 'Claro' : 'Escuro'}</span>
+                      </button>
+                      <button onClick={handleShare} className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-black/5 transition-colors">
+                         <Share2 size={20}/> <span>Compartilhar App</span>
+                      </button>
+                   </div>
+                   <div className="space-y-4">
+                      <h3 className="text-xs font-bold uppercase opacity-50">Dúvidas Frequentes</h3>
+                      {DB.faqs.map((f,i) => (
+                         <details key={i} className="group cursor-pointer">
+                            <summary className="flex justify-between items-center font-bold text-sm list-none p-2 hover:text-emerald-500 transition-colors">{f.q} <ChevronLeft size={16} className="-rotate-90 transition-transform group-open:rotate-90"/></summary>
+                            <p className="text-xs p-2 opacity-70 leading-relaxed">{f.a}</p>
+                         </details>
+                      ))}
+                   </div>
+                   <div className="pt-8 border-t border-white/10">
+                      <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex items-center gap-3 w-full p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold justify-center shadow-lg">
+                         <Instagram size={20}/> Seguir no Instagram
+                      </a>
+                   </div>
+                </div>
+             </div>
+          </div>
+        )}
+
+        {/* TERMS MODAL */}
+        {termsOpen && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setTermsOpen(false)}></div>
+             <div className={`relative w-full max-w-md p-6 rounded-3xl max-h-[80vh] overflow-y-auto ${isDark ? 'bg-zinc-900' : 'bg-white'}`}>
+                <div className="flex justify-between items-center mb-4">
+                   <h2 className="font-bold text-lg flex items-center gap-2"><ShieldCheck className="text-emerald-500"/> Termos de Serviço</h2>
+                   <button onClick={()=>setTermsOpen(false)}><X/></button>
+                </div>
+                <div className="space-y-3 text-sm opacity-80 leading-relaxed text-justify">
+                   <p><strong>1. Respeito Mútuo:</strong> O atendimento é estritamente profissional. Qualquer conduta desrespeitosa ou assédio resultará no encerramento imediato da sessão, sem reembolso.</p>
+                   <p><strong>2. Higiene:</strong> Prezo pela máxima higiene e exijo o mesmo do cliente. Todos os materiais são descartáveis ou esterilizados.</p>
+                   <p><strong>3. Cancelamento:</strong> Avise com pelo menos 2 horas de antecedência.</p>
+                   <p><strong>4. Local:</strong> Em caso de atendimento em motel, a entrada e permanência são custos do cliente.</p>
+                   <p><strong>5. Pagamento:</strong> Deve ser realizado logo após o término da sessão.</p>
+                </div>
+                <button onClick={()=>setTermsOpen(false)} className="w-full mt-6 py-3 bg-emerald-500 text-black font-bold rounded-xl">Entendi e Concordo</button>
+             </div>
+          </div>
+        )}
+
         {/* HEADER */}
         <header className={`fixed top-0 w-full z-40 h-16 px-5 flex items-center justify-between border-b backdrop-blur-md transition-all ${isDark ? 'bg-zinc-950/80 border-white/5' : 'bg-white/80 border-slate-200'}`}>
             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-zinc-950 font-black text-sm">T.</div>
-                <div className="flex flex-col">
-                    <span className="text-[10px] font-bold opacity-50 uppercase tracking-wider">Seu Massagista</span>
-                    <span className="text-xs font-bold">App Oficial</span>
-                </div>
+               <button onClick={()=>setMenuOpen(true)} className={`p-2 rounded-full ${isDark ? 'hover:bg-zinc-800' : 'hover:bg-slate-100'}`}><Menu size={20}/></button>
+               <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-zinc-950 font-black text-sm">T.</div>
+                  <span className="font-bold text-sm tracking-tight">Thalyson Massagens</span>
+               </div>
             </div>
-            <button onClick={()=>setIsDark(!isDark)} className={`p-2 rounded-full border ${isDark ? 'border-zinc-800 bg-zinc-900' : 'border-slate-200 bg-white'}`}>
-                {isDark ? <Sun size={18}/> : <Moon size={18}/>}
-            </button>
+            <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className={`p-2 rounded-full border ${isDark ? 'border-zinc-800 bg-zinc-900' : 'border-slate-200 bg-white'}`}><Instagram size={18}/></a>
         </header>
 
         {/* MAIN CONTENT */}
         <main className="pt-24 px-5 max-w-md mx-auto">
             
-            {/* STEP 0: NOME E SERVIÇOS (SEM WHATSAPP AQUI) */}
             {step === 0 && (
                 <div className="animate-fade-in">
                     <h1 className="text-2xl font-bold mb-2">Olá, {user.name.split(' ')[0] || "Visitante"}.</h1>
@@ -327,7 +383,6 @@ Forma Pagto: ${booking.payment.toUpperCase()}
                         </div>
                     </div>
 
-                    {/* Lista Serviços */}
                     <div className="space-y-4 mb-8">
                         {DB.services.map(s => (
                             <div key={s.id} onClick={()=>setBooking({...booking, service: s})}
@@ -336,9 +391,7 @@ Forma Pagto: ${booking.payment.toUpperCase()}
                                 {s.badge && <span className="absolute -top-3 left-6 bg-emerald-500 text-zinc-950 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-emerald-500/20">{s.badge}</span>}
                                 <div className="flex justify-between items-start mb-4 mt-2">
                                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${s.bg} ${s.color}`}><s.icon size={24}/></div>
-                                    <div className="text-right">
-                                        <p className="text-2xl font-bold">R$ {s.price}</p>
-                                    </div>
+                                    <p className="text-2xl font-bold">R$ {s.price}</p>
                                 </div>
                                 <h3 className="text-lg font-bold mb-2">{s.title}</h3>
                                 <p className={`text-xs mb-4 leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{s.desc}</p>
@@ -349,17 +402,16 @@ Forma Pagto: ${booking.payment.toUpperCase()}
                         ))}
                     </div>
 
-                    <h3 className="text-xs font-bold uppercase tracking-widest opacity-50 mb-4 pl-2">Avaliações Recentes</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-widest opacity-50 mb-4 pl-2">O que dizem os clientes</h3>
                     <ReviewTicker reviews={DB.reviews} isDark={isDark} />
                 </div>
             )}
 
-            {/* STEP 1: EXTRAS & DATA */}
             {step === 1 && (
                 <div className="animate-slide-in">
                     <button onClick={()=>setStep(0)} className="mb-6 flex items-center gap-2 text-xs font-bold opacity-50 hover:opacity-100"><ChevronLeft size={16}/> Voltar</button>
                     
-                    <h2 className="text-xl font-bold mb-6">Deseja adicionar algo?</h2>
+                    <h2 className="text-xl font-bold mb-6">Personalize</h2>
                     <div className="space-y-3 mb-10">
                         {DB.extras.map(ex => (
                             <div key={ex.id} onClick={()=>setBooking({...booking, extras: {...booking.extras, [ex.id]: !booking.extras[ex.id]}})}
@@ -374,14 +426,18 @@ Forma Pagto: ${booking.payment.toUpperCase()}
                         ))}
                     </div>
 
-                    <h2 className="text-xl font-bold mb-4">Data e Horário</h2>
+                    <div className="flex items-end justify-between mb-4">
+                        <h2 className="text-xl font-bold">Data e Horário</h2>
+                        <span className="text-[10px] font-bold text-red-500 bg-red-500/10 px-2 py-1 rounded animate-pulse">Últimas vagas</span>
+                    </div>
+                    
                     <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide -mx-5 px-5 mb-4">
-                        {[0,1,2,3,4,5,6,7].map(i => {
+                        {[0,1,2,3,4,5,6].map(i => {
                             const d = new Date(); d.setDate(d.getDate() + i);
                             const sel = booking.date?.toDateString() === d.toDateString();
                             return (
                                 <button key={i} onClick={()=>setBooking({...booking, date: d, time: null})}
-                                    className={`min-w-[70px] h-20 rounded-2xl border flex flex-col items-center justify-center transition-all flex-shrink-0 ${sel ? 'bg-emerald-500 text-zinc-950 border-emerald-500 shadow-lg shadow-emerald-500/20' : (isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200')}`}
+                                    className={`min-w-[70px] h-20 rounded-2xl border flex flex-col items-center justify-center transition-all flex-shrink-0 ${sel ? 'bg-emerald-500 text-zinc-950 border-emerald-500 shadow-lg' : (isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200')}`}
                                 >
                                     <span className="text-[10px] font-bold uppercase opacity-60">{d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
                                     <span className="text-2xl font-black">{d.getDate()}</span>
@@ -391,99 +447,90 @@ Forma Pagto: ${booking.payment.toUpperCase()}
                     </div>
                     {booking.date && (
                         <div className="grid grid-cols-4 gap-2 animate-fade-in pb-10">
-                            {['09:00','10:30','13:00','14:30','16:00','18:00','20:00','21:30'].map(t => (
-                                <button key={t} onClick={()=>setBooking({...booking, time: t})} className={`py-2 rounded-lg text-xs font-bold border transition-all ${booking.time===t ? 'bg-white text-black border-white' : (isDark ? 'border-zinc-800 text-zinc-500 hover:border-zinc-600' : 'bg-white border-slate-200 text-slate-500')}`}>{t}</button>
-                            ))}
+                            {['09:00','10:30','13:00','14:30','16:00','18:00','20:00','21:30'].map(t => {
+                                const available = isTimeAvailable(t);
+                                return (
+                                    <button key={t} disabled={!available} onClick={()=>setBooking({...booking, time: t})} 
+                                        className={`py-2 rounded-lg text-xs font-bold border transition-all 
+                                        ${!available ? 'opacity-20 cursor-not-allowed line-through border-transparent' : 
+                                        booking.time===t ? 'bg-white text-black border-white' : 
+                                        (isDark ? 'border-zinc-800 text-zinc-500 hover:border-zinc-600' : 'bg-white border-slate-200 text-slate-500')}`}
+                                    >
+                                        {t}
+                                    </button>
+                                );
+                            })}
                         </div>
                     )}
                 </div>
             )}
 
-            {/* STEP 2: ENDEREÇO & FINALIZAÇÃO */}
             {step === 2 && (
                 <div className="animate-slide-in pb-10">
                     <button onClick={()=>setStep(1)} className="mb-4 flex items-center gap-2 text-xs font-bold opacity-50 hover:opacity-100"><ChevronLeft size={16}/> Voltar</button>
                     
-                    <h2 className="text-xl font-bold mb-4">Local do Atendimento</h2>
-                    
-                    {/* TABS LOCAL */}
+                    <h2 className="text-xl font-bold mb-4">Onde vamos nos encontrar?</h2>
                     <div className={`p-1 rounded-xl flex mb-6 ${isDark ? 'bg-zinc-900' : 'bg-slate-100'}`}>
-                        {[
-                            {id:'home', l:'Casa/Apt', i: Home}, 
-                            {id:'motel', l:'Motel', i: BedDouble}, 
-                            {id:'hotel', l:'Hotel', i: Building}
-                        ].map(t => (
+                        {[{id:'home', l:'Casa', i:Home}, {id:'motel', l:'Motel', i:BedDouble}, {id:'hotel', l:'Hotel', i:Building}].map(t => (
                             <button key={t.id} onClick={()=>setBooking({...booking, locationType: t.id})} className={`flex-1 py-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${booking.locationType===t.id ? (isDark ? 'bg-zinc-800 text-white shadow' : 'bg-white text-black shadow') : 'opacity-50'}`}>
                                 <t.i size={14}/> {t.l}
                             </button>
                         ))}
                     </div>
 
-                    {/* FORMULÁRIO DINÂMICO (SEM GPS/CEP) */}
                     <div className="space-y-4 mb-8">
-                        {/* 1. CASA OU APARTAMENTO */}
                         {booking.locationType === 'home' && (
                             <div className="space-y-3 animate-fade-in">
                                 <div className="grid grid-cols-2 gap-3">
                                     <input placeholder="Cidade" value={booking.address.city} onChange={e=>setBooking({...booking, address: {...booking.address, city: e.target.value}})} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
                                     <input placeholder="Bairro" value={booking.address.district} onChange={e=>setBooking({...booking, address: {...booking.address, district: e.target.value}})} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
                                 </div>
-                                <input placeholder="Nome da Rua" value={booking.address.street} onChange={e=>setBooking({...booking, address: {...booking.address, street: e.target.value}})} className={`w-full p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
+                                <input placeholder="Rua / Avenida" value={booking.address.street} onChange={e=>setBooking({...booking, address: {...booking.address, street: e.target.value}})} className={`w-full p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
                                 <div className="grid grid-cols-2 gap-3">
                                     <input type="tel" placeholder="Número" value={booking.address.number} onChange={e=>setBooking({...booking, address: {...booking.address, number: e.target.value}})} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
-                                    <input placeholder="Apto / Bloco" value={booking.address.comp} onChange={e=>setBooking({...booking, address: {...booking.address, comp: e.target.value}})} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
+                                    <input placeholder="Comp/Apto" value={booking.address.comp} onChange={e=>setBooking({...booking, address: {...booking.address, comp: e.target.value}})} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
                                 </div>
                             </div>
                         )}
-
-                        {/* 2. HOTEL */}
-                        {booking.locationType === 'hotel' && (
+                        {booking.locationType !== 'home' && (
                             <div className="space-y-3 animate-fade-in">
-                                <input placeholder="Nome do Hotel" value={booking.address.hotelName} onChange={e=>setBooking({...booking, address: {...booking.address, hotelName: e.target.value}})} className={`w-full p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
+                                <input placeholder={booking.locationType==='motel'?"Nome do Motel":"Nome do Hotel"} value={booking.locationType==='motel'?booking.address.motelName:booking.address.hotelName} onChange={e=>setBooking({...booking, address: {...booking.address, [booking.locationType==='motel'?'motelName':'hotelName']: e.target.value}})} className={`w-full p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
                                 <div className="grid grid-cols-2 gap-3">
-                                    <input type="tel" placeholder="Número do Quarto" value={booking.address.comp} onChange={e=>setBooking({...booking, address: {...booking.address, comp: e.target.value}})} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
+                                    <input type="tel" placeholder={booking.locationType==='motel'?"Suíte":"Quarto"} value={booking.address.comp} onChange={e=>setBooking({...booking, address: {...booking.address, comp: e.target.value}})} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
                                     <input placeholder="Cidade" value={booking.address.city} onChange={e=>setBooking({...booking, address: {...booking.address, city: e.target.value}})} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
                                 </div>
-                                <p className="text-[10px] text-amber-500 flex items-center gap-1 bg-amber-500/10 p-2 rounded-lg"><Car size={12}/> Taxa Uber (Ida e Volta) será adicionada.</p>
-                            </div>
-                        )}
-
-                        {/* 3. MOTEL */}
-                        {booking.locationType === 'motel' && (
-                            <div className="space-y-3 animate-fade-in">
-                                <input placeholder="Nome do Motel" value={booking.address.motelName} onChange={e=>setBooking({...booking, address: {...booking.address, motelName: e.target.value}})} className={`w-full p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
-                                <div className="grid grid-cols-2 gap-3">
-                                    <input type="tel" placeholder="Número da Suíte" value={booking.address.comp} onChange={e=>setBooking({...booking, address: {...booking.address, comp: e.target.value}})} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
-                                    <input placeholder="Cidade" value={booking.address.city} onChange={e=>setBooking({...booking, address: {...booking.address, city: e.target.value}})} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`} />
-                                </div>
-                                <p className="text-[10px] text-zinc-500 flex items-center gap-1 bg-zinc-500/10 p-2 rounded-lg">Obs: Vou com você ou nos encontramos lá. Entrada/Permanência por conta do cliente.</p>
                             </div>
                         )}
                     </div>
 
-                    {/* RESUMO FINANCEIRO */}
+                    <div className="mb-6">
+                        <h3 className="text-xs font-bold uppercase tracking-widest opacity-50 mb-3 pl-1">Forma de Pagamento</h3>
+                        <div className="grid grid-cols-3 gap-2">
+                           {[
+                             {id:'pix', l:'PIX', i:QrCode}, 
+                             {id:'card', l:'Cartão', i:CreditCard}, 
+                             {id:'money', l:'Dinheiro', i:Banknote}
+                           ].map(p => (
+                             <button key={p.id} onClick={()=>setBooking({...booking, payment: p.id})} className={`flex flex-col items-center justify-center gap-1 py-4 rounded-xl border transition-all ${booking.payment===p.id ? 'bg-emerald-500 text-zinc-950 border-emerald-500' : (isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200')}`}>
+                                <p.i size={20}/>
+                                <span className="text-[10px] font-black uppercase">{p.l}</span>
+                             </button>
+                           ))}
+                        </div>
+                    </div>
+
                     <div className={`rounded-3xl border overflow-hidden mb-6 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200 shadow-xl'}`}>
                         <div className="p-5 space-y-3 text-sm">
-                            <h3 className="text-xs font-black uppercase tracking-widest opacity-40 mb-2">Resumo</h3>
+                            <h3 className="text-xs font-black uppercase tracking-widest opacity-40 mb-2">Resumo Financeiro</h3>
                             <div className="flex justify-between font-medium"><span>{booking.service?.title}</span><span>R$ {booking.service?.price}</span></div>
                             {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>(
                                 <div key={k} className="flex justify-between text-xs opacity-70"><span>+ {DB.extras.find(e=>e.id===k).label}</span><span>R$ {DB.extras.find(e=>e.id===k).price}</span></div>
                             ))}
-                            
-                            {/* LINHAS DINÂMICAS DE TRANSPORTE */}
-                            {booking.locationType === 'hotel' || booking.locationType === 'home' ? (
-                                <div className="flex justify-between text-xs text-amber-500 font-bold border-t border-dashed border-zinc-500/20 pt-2">
-                                    <span>Transporte (Uber Ida/Volta)</span>
-                                    <span>A Calcular</span>
-                                </div>
-                            ) : null}
-
                             {booking.appliedCoupon && (
                                 <div className="flex justify-between text-emerald-500 font-bold pt-2"><span>Desconto ({booking.appliedCoupon.title})</span><span>- R$ {booking.appliedCoupon.val}</span></div>
                             )}
-                            <div className="flex justify-between items-center text-xl font-black pt-4 border-t border-zinc-500/20 mt-2"><span>Total Parcial</span><span>R$ {getTotals().total}</span></div>
+                            <div className="flex justify-between items-center text-xl font-black pt-4 border-t border-zinc-500/20 mt-2"><span>Total</span><span>R$ {getTotals().total}</span></div>
                         </div>
-                        
                         <div className="bg-black/5 px-5 py-3">
                              {user.coupons.length > 0 && !booking.appliedCoupon ? (
                                 <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -499,24 +546,24 @@ Forma Pagto: ${booking.payment.toUpperCase()}
                         </div>
                     </div>
 
-                    {/* TERMOS */}
                     <div onClick={()=>setBooking({...booking, termsAccepted: !booking.termsAccepted})} className="flex gap-3 items-center cursor-pointer opacity-80 hover:opacity-100 p-2">
-                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${booking.termsAccepted ? 'bg-emerald-500 border-emerald-500 text-black' : 'border-zinc-500'}`}>
+                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0 ${booking.termsAccepted ? 'bg-emerald-500 border-emerald-500 text-black' : 'border-zinc-500'}`}>
                             {booking.termsAccepted && <Check size={14} strokeWidth={4}/>}
                         </div>
-                        <p className="text-[10px] leading-tight flex-1">Li e concordo com os termos de serviço (respeito e ética profissional).</p>
+                        <div className="text-[10px] leading-tight">
+                            Li e concordo com os <span onClick={(e)=>{e.stopPropagation(); setTermsOpen(true);}} className="underline font-bold text-emerald-500 hover:text-emerald-400">Termos de Serviço</span> (obrigatório).
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* STEP 3: TELA DE SUCESSO */}
             {step === 3 && (
                 <div className="flex flex-col items-center justify-center pt-10 animate-scale-in text-center">
                     <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(16,185,129,0.4)] animate-bounce">
                         <Check size={48} className="text-zinc-950" strokeWidth={4}/>
                     </div>
-                    <h1 className="text-3xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">Tudo Pronto!</h1>
-                    <p className="text-sm opacity-60 max-w-[250px] mx-auto mb-10">Pedido gerado. Envie para meu WhatsApp para eu calcular o Uber e confirmar.</p>
+                    <h1 className="text-3xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">Agendado!</h1>
+                    <p className="text-sm opacity-60 max-w-[250px] mx-auto mb-10">Pedido gerado com sucesso. Envie a confirmação abaixo para garantir seu horário.</p>
 
                     <button onClick={openZap} className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black rounded-xl text-lg shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 animate-pulse transition-transform active:scale-95">
                         <MessageCircle size={24}/> ENVIAR NO WHATSAPP
@@ -525,10 +572,8 @@ Forma Pagto: ${booking.payment.toUpperCase()}
                     <button onClick={()=>{setStep(0); setBooking({...booking, date:null, time:null});}} className="mt-6 text-xs font-bold opacity-50 hover:opacity-100 underline">Voltar ao início</button>
                 </div>
             )}
-
         </main>
 
-        {/* FOOTER ACTIONS */}
         {step < 3 && (
             <div className={`fixed bottom-0 w-full p-4 border-t z-50 ${isDark ? 'bg-zinc-950 border-white/5' : 'bg-white border-slate-200'}`}>
                 <div className="max-w-md mx-auto">
@@ -549,7 +594,7 @@ Forma Pagto: ${booking.payment.toUpperCase()}
             </div>
         )}
 
-        <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); } @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>
+        <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); } @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } } @keyframes slideRight { from { transform: translateX(-100%); } to { transform: translateX(0); } } .animate-slide-right { animation: slideRight 0.3s ease-out; }`}</style>
     </div>
   );
 }
