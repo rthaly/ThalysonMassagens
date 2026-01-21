@@ -1,28 +1,27 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Calendar as CalIcon, MapPin, ChevronLeft, AlertTriangle, 
   Shield, Zap, Menu, X, Share2, HelpCircle, Wallet, Gift, 
-  CreditCard, Banknote, Building, RefreshCw, User, Copy, 
-  CheckCircle, Info, Navigation, BedDouble, Map, Lock,
-  Globe, Moon, Sun, Instagram, Award, Sparkles
+  Building, RefreshCw, User, Copy, CheckCircle, Info, Navigation, 
+  BedDouble, Trash2, Award, Instagram, Globe, Moon, Sun
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES
+// 1. CONFIGURAÇÕES GERAIS
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM: "https://instagram.com/seumssagista", 
   PIX_KEY: "62922530000144",
-  STORAGE_KEY: 'thaly_app_v22_stable_final',
-  XP_TARGET: 300,
+  STORAGE_KEY: 'thaly_app_v23_gold_master', 
+  XP_TARGET: 300, 
   REWARD_VAL: 30
 };
 
 // ==================================================================================
-// 2. TEXTOS & CONTEÚDO (I18N)
+// 2. TEXTOS & COPYWRITING (ACOLHEDOR & DIRETO)
 // ==================================================================================
 
 const TEXTS = {
@@ -31,17 +30,18 @@ const TEXTS = {
     subtitle: "Seu momento de paz e prazer, no conforto do seu espaço.",
     your_name: "Como posso te chamar?",
     name_placeholder: "Seu nome...",
-    health_check: "Sou maior de 18 anos e estou saudável.",
+    health_check: "Tenho +18 anos e estou saudável.",
     start_btn: "Ver Experiências",
     
     choose_svc: "O que você busca hoje?",
     
+    // SERVIÇOS (DESCRIÇÃO DETALHADA)
     svc_comp_name: "🔥 Experiência Completa (1h)",
     svc_comp_badge: "A MAIS PEDIDA ❤️",
     svc_comp_steps: [
-        '1️⃣ Começo tirando toda tensão muscular.',
-        '2️⃣ O clima esquenta: contato pele com pele (sensitivo).',
-        '3️⃣ Massagem na Lingam (Pênis) com estímulo sensorial e gozo permitido.'
+        '1️⃣ Começo tirando toda tensão muscular do corpo.',
+        '2️⃣ O clima envolve: contato pele com pele (sensitivo).',
+        '3️⃣ Finalizo com massagem na Lingam (Pênis), estímulo sensorial e gozo permitido.'
     ],
     svc_comp_note: "Focado no seu prazer. Sem penetração/oral.",
     
@@ -85,7 +85,7 @@ const TEXTS = {
     
     uber_warn: "O Uber não está incluso, tá? Calculo certinho no WhatsApp.",
     
-    review_title: "Tudo certo?",
+    review_title: "Confira seu Pedido",
     base_val: "Serviço",
     coupon_lbl: "Desconto",
     add_coupon: "Usar Cupom",
@@ -181,7 +181,7 @@ const TEXTS = {
     
     uber_warn: "Uber fee not included. I'll calc on WhatsApp.",
     
-    review_title: "All good?",
+    review_title: "Check Order",
     base_val: "Service",
     coupon_lbl: "Discount",
     add_coupon: "Use Coupon",
@@ -193,9 +193,9 @@ const TEXTS = {
     card: "Card",
     pix: "Pix",
     
-    confirm_btn: "Confirm on WhatsApp",
+    confirm_btn: "Confirm Booking",
     copy_pix: "COPY PIX KEY",
-    pix_copied: "PIX COPIED!",
+    pix_copied: "COPIED!",
     
     menu_fid: "Loyalty Card",
     xp_missing: "Need",
@@ -237,7 +237,9 @@ const REVIEWS_DATA = {
     { t: "Thalyson é muito gente boa. Me deixou super à vontade.", a: "Roberto", s: 5 },
     { t: "Fui travado e saí leve. A finalização vale cada centavo.", a: "Pedro H.", s: 5 },
     { t: "Mão firme na medida certa. O creme faz toda a diferença.", a: "Curioso", s: 5 },
-    { t: "Atendimento no hotel foi rápido e discreto.", a: "Viajante", s: 5 }
+    { t: "Atendimento no hotel foi rápido e discreto.", a: "Viajante", s: 5 },
+    { t: "O sigilo é garantido mesmo. Pode confiar.", a: "Sigilo", s: 5 },
+    { t: "Gostei da facilidade de agendar.", a: "Carlos", s: 5 }
   ],
   en: [
     { t: "The progression is perfect. Starts relaxing, ends intense.", a: "Tiago", s: 5 },
@@ -248,7 +250,7 @@ const REVIEWS_DATA = {
   ]
 };
 
-// FAQS DETALHADAS E COMPLETAS (RESTAURADAS)
+// FAQS COMPLETAS (RESTAURADAS DO CÓDIGO 1, SEM HIGIENE)
 const FAQS_DATA = {
   pt: [
     { q: "Como é a Experiência Completa?", a: "É um atendimento onde cuido de você por inteiro. Une relaxamento muscular com toques provocantes e sutis, criando uma conexão única e um final extremamente prazeroso." },
@@ -265,7 +267,7 @@ const FAQS_DATA = {
 };
 
 // ==================================================================================
-// 3. COMPONENTES VISUAIS
+// 3. UTILS & COMPONENTES VISUAIS
 // ==================================================================================
 
 const Utils = {
@@ -428,7 +430,6 @@ export default function App() {
       return { service: s, extras: e, disc: d, final: Math.max(0, s + e - d) };
   };
 
-  // Validação de Endereço
   const isAddressValid = () => {
       const { city, street, number, district, motelName, suite, hotelName, room } = booking.address;
       if (!city || city.length < 3) return false;
@@ -444,14 +445,14 @@ export default function App() {
           newCoupons = newCoupons.filter(c => c.id !== booking.appliedCoupon.id);
       }
 
-      // 2. XP
+      // 2. XP Reward
       const newXP = user.xp + (booking.service?.xp || 0);
       if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
           newCoupons.push({ id: `RWD_${Date.now()}`, label: 'Fidelidade', val: CONFIG.REWARD_VAL });
       }
       setUser({ ...user, xp: newXP, coupons: newCoupons });
 
-      // 3. Texto do Zap
+      // 3. WhatsApp String
       let locStr = "";
       let mapLink = "";
       const addr = booking.address;
@@ -505,7 +506,6 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
       setSuccess(true);
   };
 
-  const financials = calculateTotal();
   const level = Math.floor(user.xp / CONFIG.XP_TARGET) + 1;
   const nextXp = (level * CONFIG.XP_TARGET) - user.xp;
   const progress = ((user.xp % CONFIG.XP_TARGET) / CONFIG.XP_TARGET) * 100;
@@ -526,7 +526,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
     <div className={`min-h-screen font-sans pb-40 transition-colors duration-300 ${isDark ? 'bg-black text-white selection:bg-green-500 selection:text-black' : 'bg-gray-50 text-zinc-900 selection:bg-black selection:text-white'}`}>
       <Toast show={toast.show} msg={toast.msg} isDark={isDark} />
 
-      {/* HEADER */}
+      {/* HEADER FIXO */}
       <header className={`fixed top-0 w-full z-40 backdrop-blur-xl border-b transition-colors duration-300 ${isDark ? 'bg-black/80 border-white/5' : 'bg-white/80 border-gray-200'}`}>
          <div className="px-5 py-4 flex justify-between items-center">
              <div className="flex items-center gap-3">
@@ -546,11 +546,11 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
       {/* MENU DRAWER */}
       {menuOpen && <div className="fixed inset-0 z-50 flex justify-end"><div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setMenuOpen(false)}></div><div className={`relative w-72 h-full border-l p-6 shadow-2xl animate-slide-in ${isDark ? 'bg-[#111] border-[#222]' : 'bg-white border-gray-200'}`}><button onClick={()=>setMenuOpen(false)} className="mb-8"><X/></button><div className={`p-4 rounded-xl mb-4 border ${isDark ? 'bg-[#1C1C1E] border-[#333]' : 'bg-gray-100 border-gray-200'}`}><div className="flex justify-between items-center mb-2"><span className="text-xs font-bold uppercase flex items-center gap-2"><Award size={14} className="text-green-500"/> {T.menu_fid}</span><span className="text-green-500 font-bold text-xl">{level}</span></div><div className="h-2 bg-zinc-600 rounded-full overflow-hidden mb-2"><div className="h-full bg-green-500" style={{width:`${progress}%`}}></div></div><p className="text-[10px] opacity-70">{T.xp_missing} <span className="font-bold text-green-500">{nextXp}</span> {T.xp_goal}</p></div><button className={`w-full py-4 rounded-xl font-bold text-sm mb-2 text-left px-4 flex items-center gap-3 ${isDark ? 'bg-[#1C1C1E] hover:bg-[#222]' : 'bg-gray-100 hover:bg-gray-200'}`} onClick={() => { setWalletOpen(true); setMenuOpen(false); }}><Wallet size={16}/> {T.wallet_title}</button><button className={`w-full py-4 rounded-xl font-bold text-sm mb-2 text-left px-4 flex items-center gap-3 ${isDark ? 'bg-[#1C1C1E] hover:bg-[#222]' : 'bg-gray-100 hover:bg-gray-200'}`} onClick={() => { setHelpOpen(true); setMenuOpen(false); }}><HelpCircle size={16}/> {T.menu_doubts}</button><button className={`w-full py-4 rounded-xl font-bold text-sm text-left px-4 flex items-center gap-3 ${isDark ? 'bg-[#1C1C1E] hover:bg-[#222]' : 'bg-gray-100 hover:bg-gray-200'}`} onClick={()=>{if(navigator.share)navigator.share({url:window.location.href})}}><Share2 size={16}/> {T.menu_share}</button></div></div>}
       
-      {/* WALLET */}
-      {walletOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm"><div className={`w-full max-w-sm border rounded-3xl p-6 animate-fade-in ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><div className="flex justify-between mb-6"><h3 className="font-bold text-xl flex gap-2"><Wallet className="text-green-500"/> {T.wallet_title}</h3><button onClick={()=>setWalletOpen(false)}><X/></button></div>{user.coupons.length===0?<p className="text-center opacity-50">{T.wallet_empty}</p>:user.coupons.map(c=>(<button key={c.id} onClick={()=>{setBooking({...booking, appliedCoupon:c});setWalletOpen(false);showToast(T.coupon_lbl);}} className={`w-full p-4 border border-green-900 rounded-xl flex justify-between mb-2 text-green-500 font-bold ${isDark ? 'bg-black' : 'bg-green-50'}`}><span>{c.label}</span><span>R$ {c.val}</span></button>))}</div></div>}
+      {/* WALLET (Z-INDEX CORRIGIDO) */}
+      {walletOpen && <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm"><div className={`w-full max-w-sm border rounded-3xl p-6 animate-fade-in ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><div className="flex justify-between mb-6"><h3 className="font-bold text-xl flex gap-2"><Wallet className="text-green-500"/> {T.wallet_title}</h3><button onClick={()=>setWalletOpen(false)}><X/></button></div>{user.coupons.length===0?<p className="text-center opacity-50">{T.wallet_empty}</p>:user.coupons.map(c=>(<button key={c.id} onClick={()=>{setBooking({...booking, appliedCoupon:c});setWalletOpen(false);showToast(T.coupon_lbl);}} className={`w-full p-4 border border-green-900 rounded-xl flex justify-between mb-2 text-green-500 font-bold ${isDark ? 'bg-black' : 'bg-green-50'}`}><span>{c.label}</span><span>R$ {c.val}</span></button>))}</div></div>}
 
-      {/* HELP (FAQ RESTAURADO) */}
-      {helpOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm"><div className={`w-full max-w-sm border rounded-3xl p-6 ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><h3 className="font-bold text-xl mb-4">{T.menu_doubts}</h3><div className="space-y-3">{FAQS_DATA[lang].map((f,i)=>(<div key={i} className={`p-4 rounded-xl border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-gray-50 border-gray-200'}`}><p className="text-green-500 text-xs font-bold mb-1">{f.q}</p><p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{f.a}</p></div>))}</div><button onClick={()=>setHelpOpen(false)} className={`w-full mt-4 py-3 rounded-xl font-bold text-sm ${isDark ? 'bg-[#333]' : 'bg-gray-200'}`}>Close</button></div></div>}
+      {/* HELP (FAQ COMPLETA) */}
+      {helpOpen && <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm"><div className={`w-full max-w-sm border rounded-3xl p-6 ${isDark ? 'bg-[#1C1C1E] border-[#333] text-white' : 'bg-white border-gray-200 text-black'}`}><h3 className="font-bold text-xl mb-4">{T.menu_doubts}</h3><div className="space-y-3">{FAQS_DATA[lang].map((f,i)=>(<div key={i} className={`p-4 rounded-xl border ${isDark ? 'bg-[#111] border-[#222]' : 'bg-gray-50 border-gray-200'}`}><p className="text-green-500 text-xs font-bold mb-1">{f.q}</p><p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{f.a}</p></div>))}</div><button onClick={()=>setHelpOpen(false)} className={`w-full mt-4 py-3 rounded-xl font-bold text-sm ${isDark ? 'bg-[#333]' : 'bg-gray-200'}`}>Close</button></div></div>}
 
       <main className="pt-24 px-5 max-w-md mx-auto animate-fade-in">
 
@@ -692,7 +692,7 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                     )}
                 </div>
 
-                {/* TICKET */}
+                {/* TICKET DE RESUMO (BOTÃO CUPOM FIXADO) */}
                 <div className={`border rounded-[2rem] p-6 mb-8 relative overflow-hidden ${isDark ? 'bg-[#1C1C1E] border-[#333]' : 'bg-white border-gray-200 shadow-xl'}`}>
                     <div className={`border-b pb-4 mb-4 text-center ${isDark ? 'border-[#333]' : 'border-gray-100'}`}>
                         <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{T.review_title}</p>
@@ -710,11 +710,11 @@ ${booking.appliedCoupon ? `${T.coupon_lbl}: - ${Utils.fmtMoney(fin.disc)}` : ''}
                                 <span>{T.coupon_lbl}</span>
                                 <div className="flex items-center gap-2">
                                     <span>- {Utils.fmtMoney(booking.appliedCoupon.val)}</span>
-                                    <button onClick={() => setBooking({...booking, appliedCoupon: null})} className="text-red-500 hover:text-red-400"><X size={12}/> {T.remove_coupon}</button>
+                                    <button onClick={() => setBooking({...booking, appliedCoupon: null})} className="text-red-500 hover:text-red-400"><Trash2 size={12}/></button>
                                 </div>
                             </div>
                         ) : (
-                            <button onClick={() => setShowWallet(true)} className={`w-full py-2 border border-dashed rounded-lg text-xs flex items-center justify-center gap-2 mt-2 ${isDark ? 'border-[#444] text-zinc-500' : 'border-gray-300 text-zinc-500'}`}><Ticket size={12}/> {T.add_coupon}</button>
+                            <button onClick={() => setWalletOpen(true)} className={`w-full py-2 border border-dashed rounded-lg text-xs flex items-center justify-center gap-2 mt-2 cursor-pointer ${isDark ? 'border-[#444] text-zinc-500 hover:border-green-500 hover:text-green-500' : 'border-gray-300 text-zinc-500 hover:border-green-600 hover:text-green-600'}`} style={{zIndex: 50}}><Ticket size={12}/> {T.add_coupon}</button>
                         )}
                     </div>
                     <div className={`flex justify-between items-center pt-4 border-t ${isDark ? 'border-[#333]' : 'border-gray-100'}`}>
