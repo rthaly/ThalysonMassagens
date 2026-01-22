@@ -68,7 +68,7 @@ const TEXTS = {
 
     terms_body: [
       "1. Respeito Mútuo: O atendimento é profissional. Qualquer conduta agressiva ou desrespeitosa encerrará a sessão imediatamente.",
-      "2. Higiene e Segurança: Prezo pela máxima higiene e exijo o mesmo do cliente. Todos os materiais são rigorosamente esterilizados.",
+      "2. Higiene : Prezo pela higiene",
       "3. Sigilo Absoluto: Sua privacidade é garantida. O que acontece na sessão, fica na sessão.",
       "4. Taxas Externas: Em caso de atendimento em Motel, a taxa de entrada/período é de responsabilidade do cliente.",
       "5. Pagamento: O pagamento deve ser realizado integralmente logo após a prestação do serviço."
@@ -140,7 +140,7 @@ const TEXTS = {
 
     terms_body: [
       "1. Mutual Respect: The service is professional. Any aggressive or disrespectful conduct will end the session immediately.",
-      "2. Hygiene and Safety: I value maximum hygiene. All materials are sterilized.",
+      "2. Hygiene: I value maximum hygiene.",
       "3. Absolute Secrecy: Your privacy is guaranteed. What happens in the session, stays in the session.",
       "4. External Fees: In case of Motel service, the entrance/period fee is the client's responsibility.",
       "5. Payment: Payment must be made in full immediately after the service is provided."
@@ -170,7 +170,7 @@ const DB = {
   services: [
     { id: 'relaxante', time: '1h', price: 145, xp: 145, icon: Wind, badge: null },
     { id: 'sensitiva', time: '1h', price: 175, xp: 175, icon: Flame, badge: '🔥' },
-    { id: 'mista', time: '1h30', price: 255, xp: 255, icon: Zap, badge: '✨' }
+    { id: 'mista', time: '1h', price: 210, xp: 210, icon: Zap, badge: '✨' }
   ],
   extras: [
     { id: 'more_time', price: 77, icon: Clock },
