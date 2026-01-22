@@ -9,17 +9,17 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DADOS E CONFIGURAÇÕES GLOBAIS
+// 1. DADOS E CONFIGURAÇÕES (GLOBAL)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v23_final_production', // Chave única para evitar conflitos
+  STORAGE_KEY: '@thaly_app_v24_deploy_ready', 
   XP_TARGET: 500, 
 };
 
-// --- LISTA DE AVALIAÇÕES (Carregada antes do App) ---
+// --- DADOS DE AVALIAÇÕES ---
 const REVIEWS_DATA = [
   { n: "Tiago", t: "Energia surreal. A massagem foi perfeita.", s: 5 },
   { n: "Pedro H.", t: "Fui pra relaxar e saí renovado. Recomendo.", s: 5 },
@@ -43,6 +43,7 @@ const REVIEWS_DATA = [
   { n: "Fernando", t: "Paz de espírito e corpo relaxado.", s: 5 }
 ];
 
+// --- TEXTOS ---
 const TEXTS = {
   pt: {
     welcome: "Olá,",
@@ -66,7 +67,7 @@ const TEXTS = {
     input_hotel: "Nome do Hotel",
     input_room: "Número do Quarto",
     motel_note: "Para Motéis: Combinamos o local exato pelo WhatsApp.",
-    pay_title: "4. Forma de Pagamento",
+    pay_title: "4. Como prefere pagar?",
     pay_pix: "PIX",
     pay_card: "Cartão",
     pay_cash: "Dinheiro",
@@ -83,7 +84,7 @@ const TEXTS = {
     success_sub: "Seu pedido foi gerado. Envie a mensagem no WhatsApp para eu confirmar.",
     whatsapp_btn: "ENVIAR CONFIRMAÇÃO",
     back_home: "Voltar para o início",
-    address_warn: "Preencha todos os dados para eu chegar até você.",
+    address_warn: "Preciso do endereço completo para chegar até você.",
     today: "Hoje",
     tomorrow: "Amanhã",
     popup_welcome_title: "Presente de Boas-Vindas!",
@@ -96,7 +97,7 @@ const TEXTS = {
     services: {
       relaxante: { title: "Relaxante", subtitle: "Leve e Tranquila", desc: "Movimentos suaves para tirar o peso das costas e acalmar a mente." },
       sensitiva: { title: "Sensitiva", subtitle: "Toque Pele com Pele", desc: "Uma massagem focada em sensações sutis e despertar o corpo." },
-      mista: { title: "Completa", subtitle: "A Mais Pedida", desc: "Relaxante + Sensitiva + Finalização. A experiência total." }
+      mista: { title: "Completa", subtitle: "A Mais Pedida", desc: "Começa tirando a tensão muscular e termina com a parte sensitiva. Inclui finalização." }
     },
     
     extras_list: {
@@ -133,6 +134,96 @@ const TEXTS = {
       payment: "Pagamento:",
       wait: "Aguardo sua confirmação!"
     }
+  },
+  en: {
+    welcome: "Hello,",
+    subtitle: "Let's book your moment of peace?",
+    reviews_count: "See reviews",
+    reviews_title: "Client Testimonials",
+    choose_service: "1. Choose Session",
+    duration: "min",
+    currency: "R$",
+    select_time_title: "2. Date & Time",
+    date_sub: "Tap on the desired day:",
+    time_title: "Available Hours",
+    location_title: "3. Location",
+    input_name: "Your Name",
+    input_name_placeholder: "Type your name",
+    input_addr: "Address (Street)",
+    input_num: "Number",
+    input_bairro: "District",
+    input_city: "City",
+    input_comp: "Unit/Apt",
+    input_hotel: "Hotel Name",
+    input_room: "Room Number",
+    motel_note: "For Motels: We decide the place on WhatsApp.",
+    pay_title: "4. Payment Method",
+    pay_pix: "PIX",
+    pay_card: "Card",
+    pay_cash: "Cash",
+    extras_title: "Include extras?",
+    coupon_title: "Your Coupons",
+    coupon_select: "Tap to select",
+    coupon_none: "No coupons available",
+    remove: "Remove",
+    total_label: "Total Value",
+    book_btn: "SEND REQUEST",
+    next_btn: "NEXT STEP",
+    uber_note: "+ Uber Fee (Round trip)",
+    success_title: "All set!",
+    success_sub: "Now just send the confirmation on WhatsApp.",
+    whatsapp_btn: "SEND ON WHATSAPP",
+    back_home: "Back to home",
+    address_warn: "Please fill in the full address.",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    popup_welcome_title: "Welcome Gift!",
+    popup_welcome_msg: "You got R$ 12.00 off your first session.",
+    popup_level_title: "Congratulations!",
+    popup_level_msg: "You reached a new level and earned a R$ 20.00 Coupon!",
+    sold_out: "Sold Out",
+    viewing_now: "viewing now",
+
+    services: {
+      relaxante: { title: "Relaxing", subtitle: "Light & Peaceful", desc: "Gentle movements to remove back weight and calm the mind." },
+      sensitiva: { title: "Sensitive", subtitle: "Skin-to-Skin", desc: "A massage focused on subtle sensations and body awakening." },
+      mista: { title: "Complete", subtitle: "Best Seller", desc: "Starts with muscle relaxation and ends with the sensitive part. Finishing included." }
+    },
+
+    extras_list: {
+      more_time: { label: "+30 Minutes", sub: "More massage time" },
+      touch: { label: "Interactive Touch", sub: "You can touch too" },
+      aroma: { label: "Aromaterapia", sub: "Relaxing essential oils" }
+    },
+
+    terms_body: [
+      "1. Respect: Professional service.",
+      "2. Hygiene: I value hygiene.",
+      "3. Privacy: Guaranteed secrecy.",
+      "4. Motel: Entrance fee is on the client.",
+      "5. Payment: Done immediately after service."
+    ],
+    terms_title: "Good to Know",
+    terms_agree: "I agree to the rules",
+    terms_link: "Read Rules",
+    terms_btn: "I Understand",
+
+    zap: {
+      greeting: ["Good morning", "Good afternoon", "Good evening"],
+      intro: "Hi Thalyson! I'd like to book:",
+      section_serv: "💆‍♂️ SESSION",
+      section_loc: "📍 LOCATION",
+      section_fin: "💰 VALUES",
+      item_serv: "Service:",
+      item_extra: "Extras:",
+      subtotal: "Subtotal:",
+      discount: "Discount:",
+      uber_label: "🚗 Uber (Round Trip):",
+      uber_val: "To calculate",
+      total_pay: "Total to Pay:",
+      payment: "Payment:",
+      wait: "Waiting for confirmation!"
+    }
   }
 };
 
@@ -150,7 +241,7 @@ const DB = {
 };
 
 // ==================================================================================
-// 2. COMPONENTES DE INTERFACE (Acessíveis)
+// 2. COMPONENTES DE UI (MODAIS E CARDS)
 // ==================================================================================
 
 const Toast = ({ msg, show }) => (
@@ -197,7 +288,6 @@ const RewardPopup = ({ isOpen, onClose, title, msg }) => {
     );
 };
 
-// Card Grande e Fácil de Ler
 const ServiceCard = ({ s, selected, onClick, T }) => (
   <div onClick={onClick} className={`relative p-6 rounded-[24px] border-2 transition-all duration-200 cursor-pointer ${selected ? 'bg-blue-900/20 border-blue-500 shadow-xl' : 'bg-zinc-900 border-zinc-800 hover:border-zinc-600'}`}>
     <div className="flex justify-between items-start mb-4">
@@ -219,24 +309,24 @@ const ServiceCard = ({ s, selected, onClick, T }) => (
 );
 
 // ==================================================================================
-// 3. LÓGICA PRINCIPAL DO APP
+// 3. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
   const [step, setStep] = useState(0); 
+  const [lang, setLang] = useState('pt');
   
-  // Estados de Interface
+  // Modais
   const [termsOpen, setTermsOpen] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
-  const [viewingCount, setViewingCount] = useState(0);
   
   const scrollRef = useRef(null);
-  const T = TEXTS.pt; // Apenas PT para simplificar e focar
+  const T = TEXTS[lang]; // Atalho para Textos
 
-  // USUÁRIO & PERSISTÊNCIA (AUTO-SAVE)
+  // --- 1. USUÁRIO (Load/Save) ---
   const [user, setUser] = useState(() => {
     try {
        const s = localStorage.getItem(CONFIG.STORAGE_KEY);
@@ -251,7 +341,7 @@ export default function App() {
     } catch { return { name: '', xp: 0, coupons: [] }; }
   });
 
-  // BOOKING STATE (Inicia com endereço salvo se houver)
+  // --- 2. AGENDAMENTO ---
   const [booking, setBooking] = useState({
     service: null, 
     extras: {}, 
@@ -264,30 +354,28 @@ export default function App() {
     termsAccepted: false
   });
 
-  // Salvar no LocalStorage sempre que o user mudar
+  // Efeitos
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
   
-  // Popup de Boas Vindas (Apenas 1 vez na vida do usuário)
   useEffect(() => {
+      // Abre popup de boas vindas se for novo
       if (!user.hasSeenWelcome && user.coupons.find(c => c.id === 'welcome')) {
-          setTimeout(() => setWelcomePopup(true), 1000);
+          setTimeout(() => setWelcomePopup(true), 1500);
       }
   }, []);
+
+  useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
+
+  // --- HELPER FUNCTIONS ---
 
   const closeWelcome = () => {
       setWelcomePopup(false);
       setUser(u => ({...u, hasSeenWelcome: true}));
   };
 
-  useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
-
   const showToast = (msg) => {
     setToast({ show: true, msg });
     setTimeout(() => setToast({ show: false, msg: '' }), 3000);
-  };
-
-  const generateViewingCount = () => {
-      setViewingCount(Math.floor(Math.random() * (6 - 2 + 1)) + 2);
   };
 
   const getFinancials = useMemo(() => {
@@ -296,9 +384,12 @@ export default function App() {
     let extrasTotal = 0;
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
-            const price = DB.extras.find(e=>e.id===k).price;
-            sub += price;
-            extrasTotal += price;
+            // Safe find
+            const extraItem = DB.extras.find(e=>e.id===k);
+            if(extraItem) {
+                sub += extraItem.price;
+                extrasTotal += extraItem.price;
+            }
         }
     });
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
@@ -325,21 +416,19 @@ export default function App() {
   };
 
   const nextStep = () => {
-      // SALVA O ENDEREÇO AUTOMATICAMENTE AO PASSAR DA TELA 2
       if (step === 2 && booking.locationType === 'home') {
+          // Auto-Save Address
           setUser(u => ({ ...u, name: user.name, savedAddress: booking.address }));
       }
       setStep(step + 1);
   };
 
   const finishBooking = () => {
-    // 1. Remove cupom usado (Comparação segura)
     let updatedCoupons = [...user.coupons];
     if (booking.appliedCoupon) {
       updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     }
     
-    // 2. Gamificação
     const newXP = user.xp + getFinancials.total;
     let leveledUp = false;
     
@@ -349,14 +438,12 @@ export default function App() {
     }
     
     setUser({ ...user, xp: newXP, coupons: updatedCoupons });
-    
     if(leveledUp) setLevelUpPopup(true);
     setStep(4);
   };
 
   const reset = () => {
     setStep(0);
-    // Mantém o endereço salvo, mas limpa o agendamento atual
     setBooking({ 
         service: null, extras: {}, date: null, time: null, locationType: 'home', 
         address: user.savedAddress || { city: '', district: '', street: '', number: '', comp: '', placeName: '' }, 
@@ -366,7 +453,7 @@ export default function App() {
 
   const openZap = () => {
     const f = getFinancials;
-    const dateStr = booking.date.toLocaleDateString('pt-BR');
+    const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
     
     let locTxt = "";
     if(booking.locationType === 'home') locTxt = `🏠 *${T.zap.section_loc} (Casa)*\nEnd: ${booking.address.street}, ${booking.address.number}\nRef: ${booking.address.comp}\nBairro: ${booking.address.district} - ${booking.address.city}`;
@@ -374,7 +461,10 @@ export default function App() {
     else locTxt = `🏨 *${T.zap.section_loc} (Hotel)*\nHotel: ${booking.address.placeName}\nQuarto: ${booking.address.comp}\nCidade: ${booking.address.city}`;
 
     const extrasTxt = Object.keys(booking.extras).filter(k => booking.extras[k])
-      .map(k => `+ ${T.extras_list[k].label} (R$ ${DB.extras.find(e => e.id === k).price})`).join('\n');
+      .map(k => {
+          const item = DB.extras.find(e => e.id === k);
+          return item ? `+ ${T.extras_list[k].label} (R$ ${item.price})` : '';
+      }).join('\n');
 
     const msg = `
 ${T.zap.greeting[1]}, Thalyson!
@@ -402,12 +492,16 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
   };
 
+  // ==================================================================================
+  // RENDER
+  // ==================================================================================
+
   return (
     <div className="h-[100dvh] w-full bg-zinc-950 text-zinc-100 font-sans flex flex-col overflow-hidden selection:bg-blue-500/30">
       
       <Toast show={toast.show} msg={toast.msg} />
       
-      {/* MODALS */}
+      {/* Modais Globais */}
       <Modal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} title={T.terms_title}>
          <div className="space-y-6 text-lg text-zinc-300 leading-relaxed font-light">
             {T.terms_body.map((t,i)=><p key={i} className="p-4 bg-zinc-900 rounded-xl border border-zinc-800">{t}</p>)}
@@ -432,7 +526,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
       <RewardPopup isOpen={welcomePopup} onClose={closeWelcome} title={T.popup_welcome_title} msg={T.popup_welcome_msg} />
       <RewardPopup isOpen={levelUpPopup} onClose={()=>setLevelUpPopup(false)} title={T.popup_level_title} msg={T.popup_level_msg} />
 
-      {/* --- HEADER --- */}
+      {/* HEADER */}
       <header className="h-24 px-8 flex items-center justify-between border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-md z-20 shrink-0">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-blue-600/30">T.</div>
@@ -441,27 +535,23 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
             <span className="text-xs opacity-60 text-zinc-400 font-medium">Massoterapeuta</span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-            <div className="flex flex-col items-end mr-2">
-                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Seu Nível</span>
-                <span className="text-xl font-black text-white">{user.xp} XP</span>
-            </div>
-            <Trophy size={28} className="text-yellow-500"/>
-        </div>
+        <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+            <Globe size={24} className="text-zinc-400"/>
+        </button>
       </header>
 
-      {/* --- PROGRESSO --- */}
+      {/* PROGRESSO */}
       {step < 4 && (
         <div className="w-full h-1.5 bg-zinc-900 flex-shrink-0">
           <div className="h-full bg-blue-600 transition-all duration-700 ease-out" style={{ width: `${((step+1)/4)*100}%` }} />
         </div>
       )}
 
-      {/* --- CONTEÚDO --- */}
+      {/* AREA DE ROLAGEM */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-8 pb-40 scroll-smooth">
         <div className="max-w-md mx-auto space-y-12 animate-fade-in">
 
-          {/* 0. SERVIÇOS */}
+          {/* PASSO 0: SERVIÇOS */}
           {step === 0 && (
             <>
               <div className="space-y-4">
@@ -485,7 +575,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
             </>
           )}
 
-          {/* 1. DATA E HORA */}
+          {/* PASSO 1: DATA E HORA */}
           {step === 1 && (
             <>
               <div className="text-center">
@@ -498,7 +588,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   {[...Array(7)].map((_, i) => {
                     const d = new Date(); d.setDate(d.getDate() + i);
                     const isSel = booking.date?.toDateString() === d.toDateString();
-                    let lbl = d.toLocaleDateString('pt-BR', { weekday: 'short' }).slice(0,3);
+                    let lbl = d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'short' }).slice(0,3);
                     if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
 
                     return (
@@ -521,16 +611,11 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                        if (booking.date) {
                           const now = new Date();
                           const [h] = time.split(':');
-                          // Bloqueia horários passados de hoje
+                          // Bloqueia se já passou da hora hoje
                           if (booking.date.toDateString() === now.toDateString() && parseInt(h) <= now.getHours()) disabled = true;
                        }
-                       const isSel = booking.time === time;
                        return (
-                          <button key={time} disabled={disabled} 
-                            onClick={() => {
-                                setBooking({ ...booking, time });
-                                generateViewingCount();
-                            }}
+                          <button key={time} disabled={disabled} onClick={() => setBooking({ ...booking, time })}
                             className={`py-5 rounded-2xl text-base font-bold border-2 transition-all
                               ${booking.time === time 
                                   ? 'bg-white text-blue-900 border-white shadow-xl scale-105 z-10' 
@@ -541,20 +626,12 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                        );
                     })}
                   </div>
-                  {/* Escassez */}
-                  {booking.time && (
-                    <div className="mt-8 flex justify-center animate-fade-in">
-                        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500 px-5 py-2 rounded-full text-sm font-bold flex items-center gap-3 shadow-lg shadow-amber-500/5">
-                            <Eye size={18} className="animate-pulse"/> {viewingCount} {T.viewing_now}
-                        </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </>
           )}
 
-          {/* 2. LOCAL */}
+          {/* PASSO 2: LOCAL */}
           {step === 2 && (
             <>
               <div className="text-center mb-8">
@@ -658,7 +735,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
           </div>
         )}
 
-        {/* 3. RESUMO */}
+        {/* PASSO 3: RESUMO */}
         {step === 3 && (
           <div className="space-y-12 animate-slide-in pb-10">
              <button onClick={()=>setStep(2)} className="flex items-center gap-2 text-base font-bold text-zinc-500 hover:text-white transition-colors"><ChevronLeft size={24}/> Voltar</button>
@@ -673,7 +750,8 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   {Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => (
                     <div key={k} className="flex justify-between text-lg text-zinc-400">
                       <span>+ {T.extras_list[k].label}</span>
-                      <span>{T.currency} {DB.extras.find(e => e.id === k).price}</span>
+                      {/* Safety Check para evitar crash se o extra não existir no DB */}
+                      <span>{T.currency} {DB.extras.find(e => e.id === k)?.price || 0}</span>
                     </div>
                   ))}
 
@@ -744,7 +822,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
           </div>
         )}
 
-        {/* 4. SUCESSO */}
+        {/* PASSO 4: SUCESSO */}
         {step === 4 && (
             <div className="flex flex-col items-center justify-center pt-24 animate-scale-in text-center h-full">
                 <div className="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(34,197,94,0.4)] mb-10 animate-bounce-slow">
@@ -766,7 +844,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
         </div>
       </main>
 
-      {/* --- FOOTER FIXO --- */}
+      {/* FOOTER FIXO (AÇÃO) */}
       {step < 4 && (
           <div className="h-32 flex-shrink-0 flex items-center justify-center px-8 border-t border-zinc-800 bg-zinc-950/90 backdrop-blur-xl pb-6">
              <div className="w-full max-w-md flex items-center gap-6">
