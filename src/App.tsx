@@ -1,5 +1,3 @@
-l'use client';
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
@@ -17,9 +15,9 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v34_final_master', 
+  STORAGE_KEY: '@thaly_app_v35_final_vite', 
   XP_TARGET: 500,
-  // Link de áudio direto. Se der erro, troque por um link hospedado no seu servidor/Vercel
+  // Link de áudio direto
   AUDIO_URL: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=forest-lullaby-110624.mp3"
 };
 
@@ -330,7 +328,7 @@ export default function App() {
         } catch (err) {
           // Se falhar, adiciona um listener para tocar no PRIMEIRO clique em qualquer lugar
           const unlockAudio = () => {
-            audioRef.current.play();
+            if(audioRef.current) audioRef.current.play().catch(()=>{});
             // Remove os listeners para não tentar de novo
             document.removeEventListener('click', unlockAudio);
             document.removeEventListener('touchstart', unlockAudio);
