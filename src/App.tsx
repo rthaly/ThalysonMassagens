@@ -4,19 +4,22 @@ import {
   Clock, Zap, X, Globe, Building, BedDouble, 
   Heart, Instagram, Moon, Sun, Home, 
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
-  Volume2, VolumeX, ChevronLeft, MapPin
+  ChevronLeft, MapPin, Loader2, Users
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES E DADOS (CONSTANTES)
+// 1. CONFIGURAÇÕES E DADOS
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_vFinal_Gold',
-  AUDIO_URL: "https://cdn.pixabay.com/download/audio/2022/02/07/audio_142b93e62d.mp3?filename=forest-lullaby-110624.mp3"
+  STORAGE_KEY: '@thaly_app_vFinal_Platinum', // Mudei a key para resetar caches antigos
 };
+
+const TIME_SLOTS = [
+  '09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00', '21:00'
+];
 
 const LEVEL_SYSTEM = [
   { level: 1, xpNeeded: 0, reward: 12, title: "Iniciante" },
@@ -39,7 +42,6 @@ const DB = {
       min: 60, 
       price: 125, 
       icon: Wind, 
-      color: 'text-teal-400',
       title: "Relaxante Terapêutica",
       desc: "Alívio de dores, ansiedade e stress.",
       details: "Massagem técnica focada 100% no bem-estar físico e mental. Remove nódulos de tensão. **Obs: Nesta modalidade não há toques íntimos.**"
@@ -49,7 +51,6 @@ const DB = {
       min: 60, 
       price: 155, 
       icon: Flame, 
-      color: 'text-rose-400',
       title: "Sensitiva Tântrica",
       desc: "Conexão, desejo e bioeletricidade.",
       details: "Focada em despertar a energia corporal e sensações intensas. **O massagista atende de cueca.** Uma experiência sensorial completa."
@@ -59,7 +60,6 @@ const DB = {
       min: 90, 
       price: 205, 
       icon: Zap, 
-      color: 'text-amber-400',
       title: "Experiência Mista",
       desc: "O equilíbrio perfeito (Relax + Sensitiva).",
       details: "Começa com a massagem relaxante para soltar a musculatura e termina com a intensidade da sensitiva. **Massagista de cueca.** A mais pedida."
@@ -128,6 +128,7 @@ const TEXTS = {
     today: "Hoje",
     tomorrow: "Amanhã",
     currency: "R$",
+    scarcity_msg: "2 pessoas vendo agora",
     
     popup_welcome_title: "Bem-vindo!",
     popup_welcome_msg: "Você ganhou R$ 12,00 OFF na primeira vez.",
@@ -156,13 +157,31 @@ const TEXTS = {
     }
   },
   en: {
-    welcome: "Hello,", subtitle: "Relax time.", reviews_count: "Reviews", reviews_title: "Reviews", select_time_title: "Date & Time", date_sub: "Availability:", location_title: "Location", input_name: "Name", input_addr: "Address", input_num: "Number", input_bairro: "District", input_city: "City", input_comp: "Unit", input_hotel: "Hotel", input_room: "Room", motel_note: "Motel: Discuss on Zap.", pay_title: "Payment", pay_pix: "Pix", pay_card: "Card", pay_cash: "Cash", extras_title: "Add-ons", coupon_title: "Coupons", coupon_select: "Select", coupon_none: "None", remove: "Remove", total_label: "Total", book_btn: "Finish", next_btn: "Next", uber_note: "+ Uber Fee", success_title: "Ready!", success_sub: "Send on WhatsApp.", whatsapp_btn: "Send Now", back_home: "Home", today: "Today", tomorrow: "Tomorrow", currency: "$", popup_welcome_title: "Welcome!", popup_welcome_msg: "R$ 12.00 OFF.", popup_level_title: "Level Up!", popup_level_msg: "New Discount!", terms_body: ["Professional service only."], terms_title: "Rules", terms_link: "Rules", terms_btn: "Ok", btn_close: "Close", zap: { intro: "Hi! Booking:", section_serv: "SERVICE", section_det: "DETAILS", section_loc: "LOCATION", section_fin: "TOTAL", map_link: "Map:", wait: "Waiting!" }
+    welcome: "Hello,", subtitle: "Relax time.", reviews_count: "Reviews", reviews_title: "Reviews", select_time_title: "Date & Time", date_sub: "Availability:", location_title: "Location", input_name: "Name", input_addr: "Address", input_num: "Number", input_bairro: "District", input_city: "City", input_comp: "Unit", input_hotel: "Hotel", input_room: "Room", motel_note: "Motel: Discuss on Zap.", pay_title: "Payment", pay_pix: "Pix", pay_card: "Card", pay_cash: "Cash", extras_title: "Add-ons", coupon_title: "Coupons", coupon_select: "Select", coupon_none: "None", remove: "Remove", total_label: "Total", book_btn: "Finish", next_btn: "Next", uber_note: "+ Uber Fee", success_title: "Ready!", success_sub: "Send on WhatsApp.", whatsapp_btn: "Send Now", back_home: "Home", today: "Today", tomorrow: "Tomorrow", currency: "$", scarcity_msg: "2 people watching now", popup_welcome_title: "Welcome!", popup_welcome_msg: "R$ 12.00 OFF.", popup_level_title: "Level Up!", popup_level_msg: "New Discount!", terms_body: ["Professional service only."], terms_title: "Rules", terms_link: "Rules", terms_btn: "Ok", btn_close: "Close", zap: { intro: "Hi! Booking:", section_serv: "SERVICE", section_det: "DETAILS", section_loc: "LOCATION", section_fin: "TOTAL", map_link: "Map:", wait: "Waiting!" }
   }
 };
 
 // ==================================================================================
 // 2. COMPONENTES AUXILIARES
 // ==================================================================================
+
+const LoadingScreen = ({ isDark }) => (
+    <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
+        <div className="relative">
+            <div className="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center animate-pulse shadow-2xl shadow-blue-500/50">
+                <span className="text-2xl font-black text-white">TM</span>
+            </div>
+            <div className="absolute -bottom-2 -right-2 bg-emerald-500 rounded-full p-1.5 animate-bounce">
+                <Check size={16} className="text-white" strokeWidth={3}/>
+            </div>
+        </div>
+        <h1 className="mt-8 text-xl font-bold tracking-tight animate-pulse">Thalyson Massagens</h1>
+        <div className="mt-4 flex items-center gap-2 text-xs opacity-50 font-mono">
+            <Loader2 size={14} className="animate-spin"/>
+            CARREGANDO APP...
+        </div>
+    </div>
+);
 
 const Modal = ({ isOpen, onClose, children, title, isDark }) => {
   if (!isOpen) return null;
@@ -178,25 +197,6 @@ const Modal = ({ isOpen, onClose, children, title, isDark }) => {
       </div>
     </div>
   );
-};
-
-const RewardPopup = ({ isOpen, onClose, title, msg, onAllowNotif, btnText, isDark }) => {
-    if (!isOpen) return null;
-    return (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in" onClick={onClose}></div>
-            <div className={`relative p-8 rounded-[2rem] text-center max-w-sm w-full animate-scale-in shadow-2xl ${isDark ? 'bg-zinc-900 border border-zinc-800 text-white' : 'bg-white text-zinc-900'}`}>
-                <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
-                    <Gift size={40} className="text-white" />
-                </div>
-                <h2 className="text-2xl font-black mb-2">{title}</h2>
-                <p className="opacity-70 text-base leading-relaxed mb-8">{msg}</p>
-                <button onClick={onAllowNotif || onClose} className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl text-base hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
-                    <Bell size={18}/> {btnText}
-                </button>
-            </div>
-        </div>
-    );
 };
 
 const XPBar = ({ xp, isDark }) => {
@@ -252,15 +252,12 @@ const XPBar = ({ xp, isDark }) => {
 // ==================================================================================
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0); 
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
   
-  // Audio
-  const [isMuted, setIsMuted] = useState(false);
-  const audioRef = useRef(null);
-
-  // Modais
+  // Modais e Popups
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
@@ -270,7 +267,7 @@ export default function App() {
   const T = TEXTS[lang]; 
   const [isClient, setIsClient] = useState(false);
   
-  // User & Booking State
+  // Dados do Usuário
   const [user, setUser] = useState({ 
       name: '', xp: 0, coupons: [], 
       savedAddress: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, 
@@ -286,6 +283,9 @@ export default function App() {
   // --- INICIALIZAÇÃO ---
   useEffect(() => {
     setIsClient(true);
+    // Simula loading inicial
+    setTimeout(() => setLoading(false), 2500);
+
     try {
         const s = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (s) {
@@ -294,70 +294,56 @@ export default function App() {
             setUser(p => ({...p, coupons: [{ id: 'lvl1', val: 12, title: '🎁 Boas Vindas' }]}));
         }
     } catch (e) {
-        console.warn("Storage disabled", e);
+        console.warn("Storage disabled");
     }
   }, []);
 
-  // --- AUDIO INTELIGENTE ---
+  // Popup de boas vindas
   useEffect(() => {
-    if (!isClient) return;
-
-    const unlockAudio = () => {
-        if(audioRef.current) {
-            audioRef.current.volume = 0.3;
-            const playPromise = audioRef.current.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    setIsMuted(false);
-                }).catch(error => {
-                    console.log("Audio autoplay prevented");
-                    setIsMuted(true);
-                });
-            }
-        }
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('touchstart', unlockAudio);
-    };
-
-    document.addEventListener('click', unlockAudio);
-    document.addEventListener('touchstart', unlockAudio);
-
-    return () => {
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('touchstart', unlockAudio);
-    };
-  }, [isClient]);
-
-  // Controle do botão de Mute
-  useEffect(() => {
-      if(isClient && audioRef.current) {
-          if(isMuted) audioRef.current.pause();
-          else audioRef.current.play().catch(()=>{});
-      }
-  }, [isMuted, isClient]);
-
-  // Popup de Boas Vindas
-  useEffect(() => {
-     if(isClient && !user.hasSeenWelcome) {
+     if(!loading && isClient && !user.hasSeenWelcome) {
          const timer = setTimeout(() => setWelcomePopup(true), 1500);
          return () => clearTimeout(timer);
      }
-  }, [isClient, user.hasSeenWelcome]);
+  }, [loading, isClient, user.hasSeenWelcome]);
 
   // Persistência
   useEffect(() => { 
-      if(isClient) {
+      if(isClient && !loading) {
           try {
               localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); 
           } catch(e) {}
       }
-  }, [user, isClient]);
+  }, [user, isClient, loading]);
 
-  // Scroll to Top on Step Change
+  // Scroll to Top
   useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
+
 
   // --- LÓGICA DE NEGÓCIO ---
   
+  // Filtro inteligente de horários
+  const availableTimes = useMemo(() => {
+      if (!booking.date) return [];
+      
+      const now = new Date();
+      const selectedDate = new Date(booking.date);
+      
+      const isToday = selectedDate.getDate() === now.getDate() && 
+                      selectedDate.getMonth() === now.getMonth() &&
+                      selectedDate.getFullYear() === now.getFullYear();
+
+      if (isToday) {
+          const currentHour = now.getHours();
+          // Retorna apenas horários futuros (hora atual + 1 hora de antecedência mínima)
+          return TIME_SLOTS.filter(time => {
+              const [hour] = time.split(':').map(Number);
+              return hour > currentHour + 1; // Ex: Se são 14:00, libera a partir das 16:00
+          });
+      }
+      
+      return TIME_SLOTS;
+  }, [booking.date]);
+
   const getFinancials = useMemo(() => {
     if (!booking.service) return { total: 0, sub: 0, disc: 0 };
     let sub = booking.service.price;
@@ -380,14 +366,11 @@ export default function App() {
 
   const finishBooking = () => {
     let updatedCoupons = [...user.coupons];
-    // Remove used coupon if applied
     if (booking.appliedCoupon) {
         updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     }
-    
     const oldXP = user.xp;
     const newXP = oldXP + getFinancials.total;
-
     let leveledUp = false;
     LEVEL_SYSTEM.forEach(lvl => {
         if (newXP >= lvl.xpNeeded && oldXP < lvl.xpNeeded && lvl.level > 1) {
@@ -404,8 +387,6 @@ export default function App() {
   const openZap = () => {
     const f = getFinancials;
     const dateStr = booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US');
-    
-    // Gerar Link do Mapa
     let locTxt = "";
     let mapQuery = "";
     
@@ -457,26 +438,21 @@ ${T.zap.wait}
     window.open(zapUrl, '_blank');
   };
 
-  if (!isClient) return <div className="bg-zinc-950 h-screen w-full flex items-center justify-center text-zinc-500">Carregando App...</div>;
+  // --- RENDERIZAÇÃO ---
+
+  if (loading) return <LoadingScreen isDark={isDark} />;
+  if (!isClient) return <div className="bg-zinc-950 h-screen w-full" />;
 
   return (
     <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
       
-      {/* Elemento de Áudio */}
-      <audio ref={audioRef} loop preload="auto">
-          <source src={CONFIG.AUDIO_URL} type="audio/mp3" />
-      </audio>
-
       {/* NAVBAR */}
       <header className={`h-16 px-6 flex items-center justify-between z-20 shrink-0 ${isDark ? 'bg-zinc-950 border-b border-zinc-800' : 'bg-white border-b border-slate-200'}`}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-xs shadow-lg shadow-blue-500/30">T.</div>
-          <span className="font-bold text-sm tracking-tight">Thalyson</span>
+          <span className="font-bold text-sm tracking-tight">Thalyson Massagens</span>
         </div>
         <div className="flex gap-2">
-            <button onClick={() => setIsMuted(!isMuted)} className={`p-2 rounded-full transition-all ${isMuted ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-500'}`}>
-                {isMuted ? <VolumeX size={18}/> : <Volume2 size={18}/>}
-            </button>
             <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`p-2 rounded-full ${isDark ? 'bg-zinc-900 text-zinc-400' : 'bg-slate-100 text-slate-600'}`}><Globe size={18}/></button>
             <button onClick={() => setIsDark(!isDark)} className={`p-2 rounded-full ${isDark ? 'bg-zinc-900 text-amber-400' : 'bg-slate-100 text-blue-600'}`}>{isDark ? <Sun size={18}/> : <Moon size={18}/>}</button>
             <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className={`p-2 rounded-full ${isDark ? 'bg-zinc-900 text-pink-500' : 'bg-slate-100 text-pink-600'}`}><Instagram size={18}/></a>
@@ -516,7 +492,6 @@ ${T.zap.wait}
                      <h3 className="font-bold text-lg mb-1">{s.title}</h3>
                      <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{s.desc}</p>
                      
-                     {/* DESCRIÇÃO EXPANDIDA (COPYWRITING) */}
                      {booking.service?.id === s.id && (
                          <div className={`mt-3 p-3 rounded-xl text-xs leading-relaxed animate-fade-in ${isDark ? 'bg-black/20 text-zinc-300' : 'bg-slate-100 text-slate-700'}`}>
                              <div className="flex items-center gap-2 font-bold mb-1 text-blue-500"><Info size={12}/> Detalhes Importantes:</div>
@@ -538,7 +513,7 @@ ${T.zap.wait}
               </div>
 
               <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 mb-6">
-                {[...Array(14)].map((_, i) => { // Aumentei para 14 dias
+                {[...Array(14)].map((_, i) => { 
                   const d = new Date(); 
                   d.setDate(d.getDate() + i);
                   const isSel = booking.date?.toDateString() === d.toDateString();
@@ -557,14 +532,37 @@ ${T.zap.wait}
                   )
                 })}
               </div>
+              
+              {!booking.date && (
+                   <div className="text-center py-10 opacity-30">
+                       <p className="text-sm font-bold">Selecione um dia acima</p>
+                   </div>
+              )}
+
+              {booking.date && availableTimes.length === 0 && (
+                   <div className="text-center py-10 opacity-50 border-2 border-dashed rounded-xl border-zinc-700">
+                       <p className="text-sm font-bold">Agenda lotada ou encerrada para hoje.</p>
+                       <p className="text-xs mt-1">Tente selecionar amanhã.</p>
+                   </div>
+              )}
 
               <div className={`grid grid-cols-4 gap-3 ${!booking.date ? 'opacity-30 pointer-events-none' : ''}`}>
-                 {['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'].map(t => (
-                     <button key={t} onClick={() => setBooking(b => ({...b, time: t}))}
-                        className={`py-3 rounded-xl text-xs font-bold border transition-all active:scale-95 ${booking.time === t ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`}
-                     >
-                        {t}
-                     </button>
+                 {availableTimes.map(t => (
+                     <div key={t} className="relative group">
+                        <button onClick={() => setBooking(b => ({...b, time: t}))}
+                            className={`w-full py-3 rounded-xl text-xs font-bold border transition-all active:scale-95 ${booking.time === t ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`}
+                        >
+                            {t}
+                        </button>
+                        {/* SCARCITY POPUP */}
+                        {booking.time === t && (
+                            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[180%] z-20 animate-fade-in pointer-events-none">
+                                <div className="bg-rose-500 text-white text-[9px] font-bold py-1 px-2 rounded-full shadow-lg flex items-center justify-center gap-1 whitespace-nowrap animate-pulse">
+                                    <Users size={10} fill="white"/> {T.scarcity_msg}
+                                </div>
+                            </div>
+                        )}
+                     </div>
                  ))}
               </div>
             </div>
@@ -720,7 +718,7 @@ ${T.zap.wait}
         </div>
       </main>
 
-      {/* FLOATING BAR (NAVIGATION) */}
+      {/* FLOATING BAR */}
       {step < 4 && (
          <div className="fixed bottom-6 left-6 right-6 z-50">
             <div className={`p-2 rounded-[2rem] shadow-2xl flex items-center gap-4 pr-3 backdrop-blur-xl border ${isDark ? 'bg-zinc-900/90 border-zinc-700' : 'bg-white/90 border-zinc-200'}`}>
@@ -744,7 +742,7 @@ ${T.zap.wait}
          </div>
       )}
 
-      {/* MODALS & POPUPS */}
+      {/* MODALS */}
       <Modal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} title={T.reviews_title} isDark={isDark}>
          <div className="space-y-3">
             {REVIEWS_DATA.map((r,i)=>(
@@ -763,17 +761,42 @@ ${T.zap.wait}
          </div>
       </Modal>
 
-      <RewardPopup isOpen={welcomePopup} onClose={()=>{setWelcomePopup(false); setUser(u=>({...u, hasSeenWelcome: true}));}} 
-        title={T.popup_welcome_title} msg={T.popup_welcome_msg} btnText={T.terms_btn} isDark={isDark} 
-      />
-      
-      <RewardPopup isOpen={levelUpPopup} onClose={()=>setLevelUpPopup(false)} title={T.popup_level_title} msg={T.popup_level_msg} btnText={T.terms_btn} isDark={isDark} />
-      
-      {/* VIGNETTE GRADIENTS */}
       <div className={`fixed top-0 left-0 w-full h-8 z-10 pointer-events-none bg-gradient-to-b ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}/>
       <div className={`fixed bottom-0 left-0 w-full h-24 z-10 pointer-events-none bg-gradient-to-t ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}/>
 
-      {/* CSS IN JS (Simples para manter single file) */}
+      {/* Popups de Recompensa */}
+      {welcomePopup && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in" onClick={()=>setWelcomePopup(false)}></div>
+            <div className={`relative p-8 rounded-[2rem] text-center max-w-sm w-full animate-scale-in shadow-2xl ${isDark ? 'bg-zinc-900 border border-zinc-800 text-white' : 'bg-white text-zinc-900'}`}>
+                <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
+                    <Gift size={40} className="text-white" />
+                </div>
+                <h2 className="text-2xl font-black mb-2">{T.popup_welcome_title}</h2>
+                <p className="opacity-70 text-base leading-relaxed mb-8">{T.popup_welcome_msg}</p>
+                <button onClick={()=>{setWelcomePopup(false); setUser(u=>({...u, hasSeenWelcome: true}));}} className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl text-base hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
+                    <Bell size={18}/> {T.terms_btn}
+                </button>
+            </div>
+        </div>
+      )}
+
+      {levelUpPopup && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in" onClick={()=>setLevelUpPopup(false)}></div>
+            <div className={`relative p-8 rounded-[2rem] text-center max-w-sm w-full animate-scale-in shadow-2xl ${isDark ? 'bg-zinc-900 border border-zinc-800 text-white' : 'bg-white text-zinc-900'}`}>
+                <div className="w-20 h-20 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-amber-500/30">
+                    <Trophy size={40} className="text-white" />
+                </div>
+                <h2 className="text-2xl font-black mb-2">{T.popup_level_title}</h2>
+                <p className="opacity-70 text-base leading-relaxed mb-8">{T.popup_level_msg}</p>
+                <button onClick={()=>setLevelUpPopup(false)} className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl text-base hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
+                    <Bell size={18}/> {T.terms_btn}
+                </button>
+            </div>
+        </div>
+      )}
+
       <style>{`
         .scrollbar-hide::-webkit-scrollbar { display: none; } 
         .animate-fade-in { animation: fadeIn 0.6s ease-out; } 
