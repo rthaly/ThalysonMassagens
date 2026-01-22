@@ -57,7 +57,7 @@ const TEXTS = {
     services: {
       relaxante: { title: "Massagem Relaxante", desc: "Movimentos leves, contínuos e envolventes. Foco total em tirar o peso das costas e acalmar a mente." },
       sensitiva: { title: "Massagem Sensitiva", desc: "Experiência de pele com pele. Toques sutis que despertam a sensibilidade de cada centímetro do corpo." },
-      mista: { title: "Massagem Completa", desc: "A união perfeita: começa relaxando a tensão muscular e termina com a parte sensitiva intensa." }
+      mista: { title: "Massagem Completa", desc: "A união perfeita: começa relaxando a tensão muscular e termina com a parte sensitiva intensa e finalização profunda." }
     },
     
     extras: {
