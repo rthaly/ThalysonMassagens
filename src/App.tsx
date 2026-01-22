@@ -53,7 +53,7 @@ const getData = (lang) => {
             },
             { 
               id: 'mista', 
-              min: 90, 
+              min: 60, 
               price: 205, 
               icon: Zap, 
               title: isPT ? "Experiência Mista" : "Mixed Experience",
