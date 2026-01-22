@@ -180,7 +180,7 @@ const DB = {
   services: [
     { id: 'relaxante', time: '1h', price: 145, xp: 145, icon: Wind, badge: null },
     { id: 'sensitiva', time: '1h', price: 175, xp: 175, icon: Flame, badge: '🔥' },
-    { id: 'mista', time: '1h', price: 255, xp: 205, icon: Zap, badge: '✨' }
+    { id: 'mista', time: '1h', price: 205, xp: 205, icon: Zap, badge: '✨' }
   ],
   extras: [
     { id: 'more_time', price: 77, icon: Clock },
