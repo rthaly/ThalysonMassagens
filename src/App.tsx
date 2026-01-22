@@ -9,17 +9,17 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DADOS E CONFIGURAÇÕES
+// 1. CONFIGURAÇÕES & BANCO DE DADOS
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v21_senior', 
+  STORAGE_KEY: '@thaly_app_v22_stable', 
   XP_TARGET: 500, 
 };
 
-// TEXTOS OTIMIZADOS PARA CLAREZA E ACOLHIMENTO
+// TEXTOS (COPY ACOLHEDORA)
 const TEXTS = {
   pt: {
     welcome: "Olá,",
@@ -31,7 +31,7 @@ const TEXTS = {
     currency: "R$",
     select_time_title: "2. Escolha o dia e horário",
     date_sub: "Toque no dia desejado abaixo:",
-    time_title: "Horários Livres",
+    time_title: "Horários Disponíveis (09h às 20h)",
     location_title: "3. Onde devo ir?",
     input_name: "Seu Nome",
     input_name_placeholder: "Digite seu nome aqui",
@@ -53,7 +53,7 @@ const TEXTS = {
     coupon_none: "Sem descontos no momento",
     remove: "Remover",
     total_label: "Valor Total",
-    book_btn: "ENVIAR PEDIDO NO WHATSAPP",
+    book_btn: "ENVIAR PEDIDO NO ZAP",
     next_btn: "PRÓXIMO PASSO",
     uber_note: "+ Taxa de deslocamento (Uber)",
     success_title: "Tudo pronto!",
@@ -67,7 +67,6 @@ const TEXTS = {
     popup_welcome_msg: "Você ganhou R$ 12,00 de desconto na sua primeira sessão.",
     popup_level_title: "Parabéns!",
     popup_level_msg: "Você atingiu um novo nível e ganhou um Cupom de R$ 20,00!",
-    close: "Fechar",
     
     services: {
       relaxante: { title: "Relaxante", subtitle: "Leve e Tranquila", desc: "Movimentos suaves para tirar o peso das costas e acalmar a mente." },
@@ -156,7 +155,6 @@ const TEXTS = {
     popup_welcome_msg: "You got R$ 12.00 off your first session.",
     popup_level_title: "Congratulations!",
     popup_level_msg: "You reached a new level and earned a R$ 20.00 Coupon!",
-    close: "Close",
 
     services: {
       relaxante: { title: "Relaxing", subtitle: "Light & Peaceful", desc: "Gentle movements to remove back weight and calm the mind." },
@@ -167,7 +165,7 @@ const TEXTS = {
     extras_list: {
       more_time: { label: "+30 Minutes", sub: "More massage time" },
       touch: { label: "Interactive Touch", sub: "You can touch too" },
-      aroma: { label: "Aromaterapia", sub: "Relaxing essential oils" }
+      aroma: { label: "Aromatherapy", sub: "Relaxing essential oils" }
     },
 
     terms_body: [
@@ -212,8 +210,9 @@ const DB = {
     { id: 'touch', price: 63, icon: Heart },
     { id: 'aroma', price: 5, icon: Smile }
   ],
+  // LISTA DE AVALIAÇÕES RESTAURADA (ESSENCIAL PARA NÃO QUEBRAR)
   reviews: [
-    { name: "Tiago (Bela Vista)", text: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", stars: 5 },
+    { name: "Tiago", text: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", stars: 5 },
     { name: "Anônimo", text: "O toque dele vicia. A finalização foi absurda, adorei.", stars: 5 },
     { name: "Pedro H.", text: "Fui pra relaxar e saí renovado. A massagem é real mesmo.", stars: 5 },
     { name: "Curioso SP", text: "Mão firme, pegada excelente. O óleo quente faz diferença.", stars: 5 },
@@ -228,26 +227,26 @@ const DB = {
     { name: "J.P.", text: "O corpo a corpo é quente de verdade. Uma experiência única.", stars: 5 },
     { name: "André", text: "Gostei que ele respeita os limites, mas entrega muito prazer.", stars: 5 },
     { name: "Turista RJ", text: "Atendimento no hotel foi super rápido e discreto.", stars: 5 },
-    { name: "Breno", t: "Fiz a relaxante e dormi na maca de tão bom.", s: 5 },
-    { name: "Dr. Marcelo", t: "A técnica dele é diferente de tudo. Vale cada real.", s: 5 },
-    { name: "Caio", t: "Sensação de liberdade total. O toque extra é obrigatório.", s: 5 },
-    { name: "Vitor", t: "Me senti renovado. Energia lá em cima depois da sessão.", s: 5 },
-    { name: "Renan", t: "Extremamente educado e com papo bom.", s: 5 },
-    { name: "Paulo", t: "O óleo morno é um detalhe que faz toda diferença.", s: 5 },
-    { name: "Cliente Antigo", t: "Já fiz com vários, o Thalyson é o melhor da região.", s: 5 },
-    { name: "Advogado SP", t: "Pontualidade britânica. Chegou na hora marcada.", s: 5 },
-    { name: "Anônimo", t: "A finalização é intensa mesmo, cumpriu o que prometeu.", s: 5 },
-    { name: "Motorista", t: "Massagem terapêutica de verdade, tirou todos os nós.", s: 5 },
-    { name: "Designer", t: "Experiência sensorial incrível. O cheiro, o toque, a música.", s: 5 },
-    { name: "Matheus", t: "Muito gente fina. O tempo passou voando.", s: 5 },
-    { name: "Bruno", t: "Melhor investimento da semana. Relaxamento total.", s: 5 },
-    { name: "Rafa", t: "Toque firme, mas sensível. Sabe onde tocar.", s: 5 },
-    { name: "Tech Guy", t: "Gostei da facilidade de agendar pelo app.", s: 5 },
-    { name: "Pedro", t: "Me ajudou muito com a ansiedade. Gratidão.", s: 5 },
-    { name: "Ricardo", t: "Valeu a pena esperar a agenda liberar.", s: 5 },
-    { name: "Sérgio", t: "Nota 10. Nada a reclamar.", s: 5 },
-    { name: "Médico", t: "Muito higiênico e cuidadoso.", s: 5 },
-    { name: "Fernando", t: "Paz de espírito e corpo relaxado. Obrigado.", s: 5 }
+    { name: "Breno", text: "Fiz a relaxante e dormi na maca de tão bom.", stars: 5 },
+    { name: "Dr. Marcelo", text: "A técnica dele é diferente de tudo. Vale cada real.", stars: 5 },
+    { name: "Caio", text: "Sensação de liberdade total. O toque extra é obrigatório.", stars: 5 },
+    { name: "Vitor", text: "Me senti renovado. Energia lá em cima depois da sessão.", stars: 5 },
+    { name: "Renan", text: "Extremamente educado e com papo bom.", stars: 5 },
+    { name: "Paulo", text: "O óleo morno é um detalhe que faz toda diferença.", stars: 5 },
+    { name: "Cliente Antigo", text: "Já fiz com vários, o Thalyson é o melhor da região.", stars: 5 },
+    { name: "Advogado SP", text: "Pontualidade britânica. Chegou na hora marcada.", stars: 5 },
+    { name: "Anônimo", text: "A finalização é intensa mesmo, cumpriu o que prometeu.", stars: 5 },
+    { name: "Motorista", text: "Massagem terapêutica de verdade, tirou todos os nós.", stars: 5 },
+    { name: "Designer", text: "Experiência sensorial incrível. O cheiro, o toque, a música.", stars: 5 },
+    { name: "Matheus", text: "Muito gente fina. O tempo passou voando.", stars: 5 },
+    { name: "Bruno", text: "Melhor investimento da semana. Relaxamento total.", stars: 5 },
+    { name: "Rafa", text: "Toque firme, mas sensível. Sabe onde tocar.", stars: 5 },
+    { name: "Tech Guy", text: "Gostei da facilidade de agendar pelo app.", stars: 5 },
+    { name: "Pedro", text: "Me ajudou muito com a ansiedade. Gratidão.", stars: 5 },
+    { name: "Ricardo", text: "Valeu a pena esperar a agenda liberar.", stars: 5 },
+    { name: "Sérgio", text: "Nota 10. Nada a reclamar.", stars: 5 },
+    { name: "Médico", text: "Muito higiênico e cuidadoso.", stars: 5 },
+    { name: "Fernando", text: "Paz de espírito e corpo relaxado. Obrigado.", stars: 5 }
   ]
 };
 
@@ -264,7 +263,7 @@ const Toast = ({ msg, show }) => (
   </div>
 );
 
-// MODAL GENÉRICO (FUNDO ESCURO + CONTEÚDO)
+// MODAL GENÉRICO ACOLHEDOR
 const Modal = ({ isOpen, onClose, children, title }) => {
   if (!isOpen) return null;
   return (
@@ -278,13 +277,13 @@ const Modal = ({ isOpen, onClose, children, title }) => {
                 <button onClick={onClose} className="p-3 bg-zinc-800 rounded-full text-zinc-400 hover:text-white"><X size={24}/></button>
             </div>
         )}
-        <div className="overflow-y-auto flex-1 scrollbar-hide">{children}</div>
+        <div className="overflow-y-auto flex-1 scrollbar-hide px-1">{children}</div>
       </div>
     </div>
   );
 };
 
-// POPUP DE RECOMPENSA
+// POPUP DE RECOMPENSA (GAMIFICATION)
 const RewardPopup = ({ isOpen, onClose, title, msg }) => {
     if (!isOpen) return null;
     return (
@@ -304,7 +303,7 @@ const RewardPopup = ({ isOpen, onClose, title, msg }) => {
     );
 };
 
-// CARD DE SERVIÇO
+// CARD DE SERVIÇO (DESIGN CLARO E GRANDE)
 const ServiceCard = ({ s, selected, onClick, T }) => (
   <div onClick={onClick} className={`relative p-6 rounded-[24px] border-2 transition-all duration-200 cursor-pointer ${selected ? 'bg-blue-900/20 border-blue-500 shadow-xl' : 'bg-zinc-900 border-zinc-800 hover:border-zinc-600'}`}>
     <div className="flex justify-between items-start mb-4">
@@ -343,7 +342,7 @@ export default function App() {
   const scrollRef = useRef(null);
   const T = TEXTS[lang];
 
-  // USUÁRIO & PERSISTÊNCIA
+  // USUÁRIO & PERSISTÊNCIA (AUTO-SAVE)
   const [user, setUser] = useState(() => {
     try {
        const s = localStorage.getItem(CONFIG.STORAGE_KEY);
@@ -352,8 +351,8 @@ export default function App() {
            name: '', 
            xp: 0, 
            coupons: [{ id: 'welcome', val: 12, title: 'Cupom Boas Vindas' }],
-           savedAddress: { street: '', number: '', district: '', city: '', comp: '' }, // Dados salvos
-           hasSeenWelcome: false // Flag para popup
+           savedAddress: { street: '', number: '', district: '', city: '', comp: '' }, 
+           hasSeenWelcome: false 
        };
        return s ? { ...defaultState, ...JSON.parse(s) } : defaultState;
     } catch { return { name: '', xp: 0, coupons: [] }; }
@@ -378,7 +377,7 @@ export default function App() {
   // Popup de Boas Vindas (Apenas 1 vez)
   useEffect(() => {
       if (!user.hasSeenWelcome && user.coupons.find(c => c.id === 'welcome')) {
-          setTimeout(() => setWelcomePopup(true), 1000);
+          setTimeout(() => setWelcomePopup(true), 1500);
       }
   }, []);
 
@@ -423,7 +422,6 @@ export default function App() {
     if (step === 2) {
       const { street, number, comp, placeName, city } = booking.address;
       if (!user.name) return false;
-      // Validação: ENDEREÇO SALVO
       if (booking.locationType === 'home') return street && number && comp && city;
       if (booking.locationType === 'hotel') return placeName && city;
       return true; 
@@ -518,8 +516,28 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
     <div className="h-[100dvh] w-full bg-zinc-950 text-zinc-100 font-sans flex flex-col overflow-hidden selection:bg-blue-500/30">
       
       <Toast show={toast.show} msg={toast.msg} />
-      <TermsModal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} isDark={isDark} T={T} />
-      <ReviewsModal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} isDark={isDark} reviews={DB.reviews} T={T} />
+      
+      {/* MODALS */}
+      <Modal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} title={T.terms_title}>
+         <div className="space-y-6 text-base text-zinc-300 leading-relaxed font-light">
+            {T.terms_body.map((t,i)=><p key={i} className="p-4 bg-zinc-900 rounded-xl border border-white/5">{t}</p>)}
+         </div>
+         <button onClick={()=>setTermsOpen(false)} className="w-full mt-8 py-5 bg-blue-600 text-white font-bold rounded-2xl text-lg">{T.terms_btn}</button>
+      </Modal>
+
+      <Modal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} title={T.reviews_title}>
+         <div className="space-y-4">
+            {DB.reviews.map((r, i) => (
+               <div key={i} className="p-5 rounded-2xl bg-white/5 border border-white/5">
+                  <div className="flex justify-between mb-3">
+                     <span className="font-bold text-blue-400 text-sm">{r.name}</span>
+                     <div className="flex text-amber-400 gap-0.5">{[...Array(r.stars)].map((_,k)=><Star key={k} size={14} fill="currentColor"/>)}</div>
+                  </div>
+                  <p className="text-base text-zinc-300 italic leading-relaxed">"{r.text}"</p>
+               </div>
+            ))}
+         </div>
+      </Modal>
       
       <RewardPopup isOpen={welcomePopup} onClose={closeWelcome} title={T.popup_welcome_title} msg={T.popup_welcome_msg} />
       <RewardPopup isOpen={levelUpPopup} onClose={()=>setLevelUpPopup(false)} title={T.popup_level_title} msg={T.popup_level_msg} />
