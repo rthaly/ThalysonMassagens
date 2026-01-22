@@ -642,7 +642,7 @@ ${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
              <div className={`transition-all duration-500 ${booking.date ? 'opacity-100 translate-y-0' : 'opacity-30 translate-y-4 pointer-events-none'}`}>
                 <h3 className="text-xs font-bold uppercase opacity-40 mb-6 text-center">{T.time_title}</h3>
                 <div className="grid grid-cols-4 gap-3">
-                  {['09:00', '10:30', '13:00', '14:30', '16:00', '18:00', '20:00', '21:30'].map((time) => {
+                  {['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:30'].map((time) => {
                      let disabled = false;
                      if (booking.date) {
                         const now = new Date();
