@@ -1,878 +1,976 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  Check, Star, ArrowRight, Home, MessageCircle, 
-  Ticket, Flame, Wind, Crown, Shield, MapPin, Building,
-  CreditCard, Banknote, QrCode, X, HelpCircle, Instagram, 
-  Calendar as CalendarIcon, Clock, User, AlertTriangle, 
-  Car, Copy, Info, Zap, ChevronDown, Share2, Music, Coffee,
-  Lock, RefreshCw, Eye, ThumbsUp, Bed, Calendar, Heart, Smile, Map
+  Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
+  Clock, MapPin, ChevronLeft, Zap, Menu, X, Globe, 
+  User, Building, BedDouble, Trash2, 
+  Heart, Smile, Instagram, Moon, Sun, ShieldCheck, 
+  CheckCircle2, Home, Share2, 
+  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÃO DE NEGÓCIO
+// 1. CONFIGURAÇÕES & DADOS
 // ==================================================================================
 
 const CONFIG = {
-  APP_KEY: 'thaly_v18_ticket_nav', 
   PHONE: "5517991360413", 
-  INSTAGRAM: "thalymassagens",
-  PIX_KEY: "62922530000144", 
-  COUPON_VAL: 12.00, 
-  PRICES: {
-    UPGRADE_PCT: 0.5, 
-    TOUCH: 73, 
-    AROMA: 5,
-    RUSH_HOUR_FEE: 15,
-    MOTEL_FEE: 75, 
-  },
-  XP_THRESHOLDS: { VIP: 100 },
-  URLS: { WHATSAPP_API: "https://api.whatsapp.com/send" }
+  INSTAGRAM_URL: "https://instagram.com/seumssagista", 
+  STORAGE_KEY: '@thaly_app_v15_platinum', 
+  XP_TARGET: 500, 
 };
 
-// Taxas base (SERÃO MULTIPLICADAS POR 2 NO CÓDIGO PARA IDA E VOLTA)
-// Bela Vista configurada com taxa 0 (Grátis)
-const LOCATIONS_DB = [
-    { id: 'bela_vista', name: 'Bela Vista / Augusta', fee: 0, zone: 'Base' }, // Grátis
-    { id: 'consola', name: 'Consolação / Centro', fee: 16, zone: 'Zona 1' }, 
-    { id: 'jardins', name: 'Jardins / Paulista', fee: 23, zone: 'Zona 1' }, 
-    { id: 'higien', name: 'Higienópolis / Sta Cecília', fee: 24, zone: 'Zona 1' },
-    { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 30, zone: 'Zona 2' },
-    { id: 'itaim', name: 'Itaim Bibi / V. Olímpia', fee: 36, zone: 'Zona 2' },
-    { id: 'moema', name: 'Moema / V. Mariana', fee: 44, zone: 'Zona 2' },
-    { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 45, zone: 'Zona 2' },
-    { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 55, zone: 'Zona 3' },
-    { id: 'saude', name: 'Saúde / Jabaquara', fee: 63, zone: 'Zona 3' },
-    { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 73, zone: 'Zona 3' },
-    { id: 'morumbi', name: 'Morumbi / Panamby', fee: 80, zone: 'Zona 4' },
-    { id: 'santana', name: 'Santana / ZN', fee: 84, zone: 'Zona 4' },
-    { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: 'Consultar' },
-];
-
-const SERVICES = [
-  { 
-    id: 'completa', 
-    name: 'Experiência Completa', 
-    short: 'Relaxamento + Finalização',
-    desc: 'O ápice do atendimento. Inicia soltando a musculatura e evolui para um contato corpo a corpo com óleos aquecidos, respiração próxima e provocações sensoriais. Finalização manual intensa e explosiva.', 
-    duration: 60, 
-    price: 155, 
-    badge: 'A MAIS PEDIDA ❤️',
-    xp: 60,
-    highlight: true 
-  },
-  { 
-    id: 'relax', 
-    name: 'Massagem Relaxante', 
-    short: 'Alívio de Dores',
-    desc: 'Foco 100% terapêutico. Ideal para remover dores lombares e pernas cansadas. Toques suaves e firmes para tirar o stress acumulado. Atenção: Nesta modalidade não há toques nas partes íntimas.', 
-    duration: 60, 
-    price: 125, 
-    badge: null,
-    xp: 30,
-    highlight: false
-  },
-];
-
-const MOODS = [
-  { id: 'relax', label: 'Paz', icon: Wind, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-  { id: 'energy', label: 'Renovar', icon: Zap, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
-  { id: 'intense', label: 'Prazer', icon: Heart, color: 'text-red-400', bg: 'bg-red-500/10' },
-];
-
-const PREFERENCES = {
-  music: ['Zen / Spa', 'Sons da Natureza', 'Silêncio Total', 'Minha Playlist']
-};
-
-const LOCATION_TYPES = [
-  { id: 'home', label: 'Casa', icon: Home },
-  { id: 'apto', label: 'Apto', icon: Building },
-  { id: 'hotel', label: 'Hotel', icon: Bed },
-  { id: 'motel', label: 'Motel', icon: Flame },
-];
-
-const TIME_SLOTS = [
-    '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', 
-    '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
-];
-
-const RUSH_HOURS = ['18:00', '19:00', '20:00', '21:00'];
-
-const FAQS = [
-  { q: "Como é a Experiência Completa?", a: "É um atendimento onde cuido de você por inteiro. Une relaxamento muscular com toques provocantes e sutis, criando uma conexão única e um final extremamente prazeroso." },
-  { q: "Onde é feito o atendimento?", a: "No seu conforto. Vou até sua residência, hotel ou motel. O atendimento é feito na sua cama ou sofá, onde você se sentir mais à vontade." },
-  { q: "O pagamento é seguro?", a: "Totalmente. O valor do transporte (Uber Ida/Volta) garante sua reserva. O valor do serviço você paga apenas pessoalmente." },
-  { q: "Atende em Motel?", a: "Sim, com total sigilo. Para motéis, existe apenas uma taxa fixa de deslocamento de R$ 75,00." }
-];
-
-const REVIEWS_DB = [
-  { t: "Estava carente e precisando disso. O Thalyson me deu uma atenção surreal. Gozei muito no final, foi intenso.", a: "Ricardo", s: 5 },
-  { t: "Sou casado, o sigilo foi total. O toque dele arrepia, sai de perna bamba. Recomendo.", a: "Anônimo", s: 5 },
-  { t: "Gostei da massagem, mão firme. Só dou 4 estrelas porque atrasou 10 min por causa da chuva.", a: "Paulo", s: 4 },
-  { t: "Pegada de macho mesmo. Sou passivo e ele soube exatamente como me tocar. Virei cliente fixo.", a: "Felipe", s: 5 },
-  { t: "O atendimento é ótimo, o menino é educado. Mas achei o óleo um pouco frio no começo.", a: "Carlos", s: 4 },
-  { t: "Melhor finalização que já tive. Saiu muito leite, me senti leve. Recomendo pra quem quer carinho de verdade.", a: "André", s: 5 },
-  { t: "Muito bom, mas passou tão rápido... queria ter ficado a tarde toda.", a: "Bruno", s: 4 },
-  { t: "Tirou todo meu stress. O final foi explosivo, lavou a alma. O cara entende do assunto.", a: "Marcos", s: 5 },
-];
-
-// ==================================================================================
-// UTILS
-// ==================================================================================
-
-const Utils = {
-  formatBRL: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-  vibrate: (pattern = 10) => { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); },
-  shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
-   
-  isTimeBlocked: (selectedDate, timeString) => {
-    if (!selectedDate) return true;
-    const now = new Date();
-    const today = new Date(); today.setHours(0,0,0,0);
-    const sel = new Date(selectedDate); sel.setHours(0,0,0,0);
+const TEXTS = {
+  pt: {
+    welcome: "Bem-vindo",
+    subtitle: "Seu momento de paz e prazer começa agora.",
+    reviews_btn: "Ler todas as avaliações",
+    reviews_title: "O que dizem sobre mim",
+    choose_service: "Escolha sua Experiência",
+    duration: "de sessão",
+    investment: "Valor",
+    date_title: "Agendamento",
+    date_sub: "Qual o melhor dia para você?",
+    time_title: "Horários",
+    location_title: "Local de Atendimento",
+    location_sub: "Onde você se sente mais à vontade?",
+    name_placeholder: "Como prefere ser chamado?",
+    extras_title: "Turbine sua sessão",
+    resume_title: "Resumo do Pedido",
+    payment_title: "Como prefere pagar?",
+    terms_agree: "Li e concordo com os",
+    terms_link: "Termos de Serviço",
+    btn_continue: "CONTINUAR",
+    btn_finish: "FINALIZAR AGENDAMENTO",
+    success_title: "Agendado!",
+    success_msg: "Seu horário está pré-reservado. Envie a mensagem abaixo no WhatsApp para confirmar.",
+    btn_zap: "ENVIAR CONFIRMAÇÃO",
+    motel_warn: "Combinamos o Motel pelo WhatsApp. (A entrada é por conta do cliente).",
+    coupon_label: "Carteira de Cupons",
+    coupon_select: "Selecionar...",
+    coupon_none: "Nenhum cupom ativo",
+    remove: "Remover",
+    hotel_name: "Nome do Hotel",
+    room: "Quarto",
+    comp_placeholder: "Complemento / Ponto de Referência (Obrigatório)",
+    address_warn: "Preencha todo o endereço para eu chegar até você.",
+    uber_warn: "Taxa de deslocamento (Uber ida/volta) calculada no WhatsApp.",
+    viewing_now: "pessoas vendo este horário",
     
-    if (sel < today) return true; 
-    if (sel > today) return false; 
+    services: {
+      relaxante: { title: "Massagem Relaxante", desc: "Movimentos leves, contínuos e envolventes. Foco total em tirar o peso das costas e acalmar a mente." },
+      sensitiva: { title: "Massagem Sensitiva", desc: "Experiência de pele com pele. Toques sutis que despertam a sensibilidade de cada centímetro do corpo." },
+      mista: { title: "Massagem Completa", desc: "Massagem no corpo inteiro para relaxar, depois corpo a corpo sensitiva com lingam no final (opcional)." }
+    },
+    
+    extras: {
+      more_time: { label: "+30 Minutos", desc: "Estender a sessão" },
+      touch: { label: "Toque Interativo", desc: "Troca de toques permitida" },
+      aroma: { label: "Aromaterapia", desc: "Óleos essenciais" }
+    },
 
-    const [slotH, slotM] = timeString.split(':').map(Number);
-    const slotTime = new Date();
-    slotTime.setHours(slotH, slotM || 0, 0, 0);
-    const minTime = new Date(now.getTime() + 20 * 60000); 
-    return slotTime < minTime;
+    terms_body: [
+      "1. Respeito Mútuo: O atendimento é profissional. Qualquer conduta agressiva ou desrespeitosa encerrará a sessão imediatamente.",
+      "2. Higiene: Prezo pela máxima higiene e exijo o mesmo.",
+      "3. Sigilo Absoluto: Sua privacidade é garantida. O que acontece na sessão, fica na sessão.",
+      "4. Taxas Externas: Em caso de atendimento em Motel, a taxa de entrada/período é de responsabilidade do cliente.",
+      "5. Pagamento: O pagamento deve ser realizado integralmente logo após a prestação do serviço."
+    ],
+    terms_btn: "Entendi e Concordo",
+
+    zap: {
+      greeting: ["Bom dia", "Boa tarde", "Boa noite"],
+      intro: "Gostaria de confirmar:",
+      client: "Cliente",
+      service: "Serviço",
+      extras: "Extras",
+      location: "Local",
+      home_title: "Em Casa",
+      motel_title: "Motel",
+      motel_desc: "Vamos decidir juntos. (Entrada por conta do cliente)",
+      hotel_title: "Hotel",
+      room: "Quarto",
+      subtotal: "Subtotal",
+      uber: "Uber (Ida/Volta)",
+      uber_calc: "A calcular",
+      total_msg: "Total a Pagar",
+      payment: "Pag",
+      wait: "Aguardo retorno!"
+    }
   },
+  en: {
+    welcome: "Welcome",
+    subtitle: "Your moment of peace and pleasure starts now.",
+    reviews_btn: "Read all reviews",
+    reviews_title: "Testimonials",
+    choose_service: "Choose your Experience",
+    duration: "session",
+    investment: "Value",
+    date_title: "Scheduling",
+    date_sub: "Best day for you?",
+    time_title: "Available Slots",
+    location_title: "Location",
+    location_sub: "Where do you feel most comfortable?",
+    name_placeholder: "Your Name",
+    extras_title: "Boost your session",
+    resume_title: "Order Summary",
+    payment_title: "Payment Method",
+    terms_agree: "I agree to the",
+    terms_link: "Terms of Service",
+    btn_continue: "CONTINUE",
+    btn_finish: "FINISH BOOKING",
+    success_title: "Booked!",
+    success_msg: "Slot pre-reserved. Send the message below on WhatsApp to confirm.",
+    btn_zap: "SEND CONFIRMATION",
+    motel_warn: "We decide the Motel on WhatsApp. (Entrance fee is on you).",
+    coupon_label: "Coupon Wallet",
+    coupon_select: "Select...",
+    coupon_none: "No active coupons",
+    remove: "Remove",
+    hotel_name: "Hotel Name",
+    room: "Room Number",
+    comp_placeholder: "Complement / Reference (Required)",
+    address_warn: "Please fill full address.",
+    uber_warn: "Transport fee (Uber round trip) calculated on WhatsApp.",
+    viewing_now: "people viewing this slot",
 
-  getGreeting: () => {
-    const h = new Date().getHours();
-    if (h < 12) return 'Bom dia';
-    if (h < 18) return 'Boa tarde';
-    return 'Boa noite';
+    services: {
+      relaxante: { title: "Relaxing Massage", desc: "Light, continuous, and enveloping movements. Total focus on removing back weight and calming the mind." },
+      sensitiva: { title: "Sensitive Massage", desc: "Skin-to-skin experience. Subtle touches that awaken the sensitivity of every inch of the body." },
+      mista: { title: "Complete Massage", desc: "Full body relaxation massage, followed by sensitive body-to-body with lingam finishing (optional)." }
+    },
+
+    extras: {
+      more_time: { label: "+30 Minutes", desc: "Extend the session" },
+      touch: { label: "Interactive Touch", desc: "Touch exchange allowed" },
+      aroma: { label: "Aromaterapia", desc: "Essential oils" }
+    },
+
+    terms_body: [
+      "1. Mutual Respect: The service is professional. Any aggressive or disrespectful conduct will end the session immediately.",
+      "2. Hygiene: I value maximum hygiene.",
+      "3. Absolute Secrecy: Your privacy is guaranteed. What happens in the session, stays in the session.",
+      "4. External Fees: In case of Motel service, the entrance/period fee is the client's responsibility.",
+      "5. Payment: Payment must be made in full immediately after the service is provided."
+    ],
+    terms_btn: "I Understand and Agree",
+
+    zap: {
+      greeting: ["Good morning", "Good afternoon", "Good evening"],
+      intro: "I would like to confirm:",
+      client: "Client",
+      service: "Service",
+      extras: "Extras",
+      location: "Location",
+      home_title: "Home Visit",
+      motel_title: "Motel",
+      motel_desc: "We decide together. (Fee on you)",
+      hotel_title: "Hotel",
+      room: "Room",
+      subtotal: "Subtotal",
+      uber: "Uber (Round Trip)",
+      uber_calc: "To calculate",
+      total_msg: "Total to Pay",
+      payment: "Pay",
+      wait: "Waiting for reply!"
+    }
   }
 };
 
-const globalStyles = `
-:root { --primary: #0A84FF; --bg-app: #050505; --card-bg: #141414; --border: #222; }
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif; }
-body { background: var(--bg-app); color: #fff; padding-bottom: env(safe-area-inset-bottom); overflow-x: hidden; scroll-behavior: smooth; }
-input, select, button { outline: none; }
-
-/* SCROLL NATIVO CORRIGIDO */
-.ios-scroll { 
-    display: flex;
-    overflow-x: auto;
-    gap: 12px;
-    padding: 0 4px 16px 4px;
-    -webkit-overflow-scrolling: touch;
-}
-.ios-scroll::-webkit-scrollbar { display: none; }
-.ios-scroll > * { flex-shrink: 0; }
-
-.glass-header { background: rgba(5, 5, 5, 0.95); border-bottom: 1px solid #222; }
-.card-base { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; position: relative; overflow: hidden; }
-.card-selected { border-color: var(--primary); background: #0A1E33; }
-.input-field { background: #1C1C1E; border: 1px solid #333; color: white; border-radius: 12px; width: 100%; font-size: 16px; padding: 14px; }
-.input-field:focus { border-color: var(--primary); background: #262626; }
-.primary-btn { background: var(--primary); color: white; border-radius: 16px; font-weight: 800; border: none; }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.animate-enter { animation: fadeIn 0.8s ease-out forwards; }
-.btn-pulse { animation: pulse 2s infinite; }
-@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
-
-/* ANIMAÇÃO LOGO */
-@keyframes slideUpFade {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-.title-anim { animation: slideUpFade 1s ease-out forwards; }
-`;
-
-// ==================================================================================
-// COMPONENTES
-// ==================================================================================
-
-const Toast = ({ msg, onClose }) => {
-    useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, [onClose]);
-    return (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-max max-w-[90%]">
-            <div className="bg-[#222] border border-white/10 px-4 py-3 rounded-full flex items-center gap-3 shadow-xl animate-enter">
-                <Check size={16} className="text-[#32D74B]"/>
-                <p className="text-sm font-bold text-white">{msg}</p>
-            </div>
-        </div>
-    );
+const DB = {
+  services: [
+    { id: 'relaxante', time: '1h', price: 145, xp: 145, icon: Wind, badge: null },
+    { id: 'sensitiva', time: '1h', price: 175, xp: 175, icon: Flame, badge: '🔥' },
+    { id: 'mista', time: '1h30', price: 255, xp: 255, icon: Zap, badge: '✨' }
+  ],
+  extras: [
+    { id: 'more_time', price: 77, icon: Clock },
+    { id: 'touch', price: 63, icon: Heart },
+    { id: 'aroma', price: 5, icon: Smile }
+  ],
+  // LISTA DE AVALIAÇÕES ATUALIZADA
+  reviews: [
+    { name: "Tiago (Bela Vista)", text: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", stars: 5 },
+    { name: "Anônimo", text: "O toque dele vicia. A finalização foi absurda, jorrei longe.", stars: 5 },
+    { name: "Pedro H.", text: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", stars: 5 },
+    { name: "Curioso SP", text: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", stars: 5 },
+    { name: "M. (Jardins)", text: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", stars: 5 },
+    { name: "Empresário", text: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", stars: 5 },
+    { name: "M. (Casado)", text: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", stars: 5 },
+    { name: "Roberto", text: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", stars: 5 },
+    { name: "Fã", text: "Ele de cueca branca... sem comentários. Visual nota 1000.", stars: 5 },
+    { name: "Carlos A.", text: "Profissionalismo raro hoje em dia. Pontual e educado.", stars: 5 },
+    { name: "Lucas", text: "A mistura de força e suavidade é incrível. Recomendo.", stars: 5 },
+    { name: "Novato", text: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", stars: 5 },
+    { name: "Gustavo", text: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", stars: 5 },
+    { name: "Felipe Personal", text: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", stars: 5 },
+    { name: "J.P.", text: "O corpo a corpo é quente de verdade. Uma experiência única.", stars: 5 },
+    { name: "André", text: "Gostei que ele respeita os limites, mas entrega muito prazer.", stars: 5 },
+    { name: "Turista RJ", text: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", stars: 5 },
+    { name: "Anônimo", text: "Cara bonito, limpo e com pegada. O pacote completo.", stars: 5 },
+    { name: "Breno", text: "Fiz a relaxante e dormi na maca de tão bom. Recomendo.", stars: 5 },
+    { name: "Dr. Marcelo", text: "A técnica dele é diferente de tudo. Vale cada real.", stars: 5 },
+    { name: "Caio", text: "Sensação de liberdade total. O toque extra é obrigatório.", stars: 5 },
+    { name: "Vitor", text: "Me senti renovado. Energia lá em cima depois da sessão.", stars: 5 },
+    { name: "Renan", text: "Extremamente educado e com papo bom, além da massagem top.", stars: 5 },
+    { name: "Paulo", text: "O óleo de coco morno é um detalhe que faz toda diferença.", stars: 5 },
+    { name: "Cliente Antigo", text: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", stars: 5 },
+    { name: "Dica do Beto", text: "Não economizem, peçam a completa com aromaterapia.", stars: 5 },
+    { name: "Advogado SP", text: "Pontualidade britânica. Chegou na hora marcada.", stars: 5 },
+    { name: "Gym Rat", text: "Fiquei impressionado com a força das mãos dele.", stars: 5 },
+    { name: "Anônimo", text: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", stars: 5 },
+    { name: "Hétero Curioso", text: "Excelente profissional. Me deixou super confortável.", stars: 5 },
+    { name: "Motorista", text: "Massagem terapêutica de verdade, tirou todos os nós das costas.", stars: 5 },
+    { name: "M. (Sigilo)", text: "O sigilo é garantido mesmo. Pode confiar.", stars: 5 },
+    { name: "Sr. João", text: "Agradeço pela paciência e pelo serviço impecável.", stars: 5 },
+    { name: "Designer", text: "Experiência sensorial incrível. O cheiro, o toque, a música.", stars: 5 },
+    { name: "Executivo", text: "Saí flutuando. Recomendo para quem tem rotina estressante.", stars: 5 },
+    { name: "Matheus", text: "O Thalyson é muito gente fina. O tempo passou voando.", stars: 5 },
+    { name: "Bruno", text: "Melhor investimento da semana. Relaxamento total.", stars: 5 },
+    { name: "Rafa", text: "Toque firme, mas sensível. Sabe onde tocar.", stars: 5 },
+    { name: "Tech Guy", text: "Gostei da facilidade de agendar pelo app. Sem enrolação.", stars: 5 },
+    { name: "Corredor", text: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", stars: 5 },
+    { name: "Fã #2", text: "Simpático e bonito. O serviço é completo mesmo.", stars: 5 },
+    { name: "Pedro", text: "Me ajudou muito com a ansiedade. Gratidão.", stars: 5 },
+    { name: "Morador Centro", text: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", stars: 5 },
+    { name: "Curioso", text: "A massagem tântrica dele desbloqueou sensações novas.", stars: 5 },
+    { name: "Ricardo", text: "Valeu a pena esperar a agenda liberar.", stars: 5 },
+    { name: "Sérgio", text: "Nota 10. Nada a reclamar.", stars: 5 },
+    { name: "Anônimo", text: "O final foi explosivo. Recomendo.", stars: 5 },
+    { name: "Médico", text: "Muito higiênico e cuidadoso.", stars: 5 },
+    { name: "Cliente Fiel", text: "Voltarei com certeza na próxima semana.", stars: 5 },
+    { name: "Fernando", text: "Paz de espírito e corpo relaxado. Obrigado.", stars: 5 }
+  ]
 };
 
-const StatusBar = () => {
+// ==================================================================================
+// 2. COMPONENTES VISUAIS
+// ==================================================================================
+
+const Toast = ({ msg, show }) => (
+  <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 pointer-events-none ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+    <div className="bg-blue-600/95 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 font-medium text-sm border border-blue-400/30 whitespace-nowrap">
+      <CheckCircle2 size={18} />
+      <span>{msg}</span>
+    </div>
+  </div>
+);
+
+// MODAL DE TERMOS
+const TermsModal = ({ isOpen, onClose, isDark, T }) => {
+  if (!isOpen) return null;
   return (
-    <div className="w-full bg-[#111] border-b border-[#222] py-2 px-5 flex justify-between items-center text-[10px] uppercase font-bold text-gray-400">
-       <div className="flex items-center gap-2 text-green-500">
-         <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-         Disponível Agora
-       </div>
-       <div className="flex items-center gap-1">
-         <Eye size={12} /> Agenda Aberta
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}></div>
+      <div className={`relative w-full max-w-md p-8 rounded-3xl max-h-[80vh] flex flex-col animate-scale-in ${isDark ? 'bg-zinc-900 text-zinc-100' : 'bg-white text-zinc-900'}`}>
+         <div className="flex justify-between items-center mb-6 flex-shrink-0">
+            <h2 className="text-xl font-bold flex items-center gap-2"><ShieldCheck className="text-blue-500"/> {T.terms_link}</h2>
+            <button onClick={onClose}><X/></button>
+         </div>
+         <div className="space-y-4 text-sm opacity-80 leading-relaxed text-justify font-light overflow-y-auto flex-1 pr-2">
+            {T.terms_body.map((term, i) => <p key={i}>{term}</p>)}
+         </div>
+         <button onClick={onClose} className="w-full mt-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors flex-shrink-0">{T.terms_btn}</button>
+      </div>
+    </div>
+  );
+};
+
+// MODAL DE AVALIAÇÕES
+const ReviewsModal = ({ isOpen, onClose, isDark, reviews, T }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose}></div>
+       <div className={`relative w-full h-[90%] md:max-w-lg rounded-[2rem] flex flex-col animate-slide-up overflow-hidden ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-zinc-900'}`}>
+          <div className={`flex justify-between items-center p-6 border-b flex-shrink-0 ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
+             <h2 className="text-xl font-bold flex items-center gap-2"><Star className="text-amber-400" fill="currentColor"/> {T.reviews_title}</h2>
+             <button onClick={onClose} className="p-2 bg-black/5 rounded-full"><X/></button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
+             {reviews.map((r, i) => (
+                <div key={i} className={`p-5 rounded-2xl border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-blue-100 shadow-sm'}`}>
+                   <div className="flex justify-between items-start mb-2">
+                      <span className="font-bold text-sm text-blue-500">{r.name}</span>
+                      <div className="flex text-amber-400 gap-0.5">{[...Array(r.stars)].map((_,k)=><Star key={k} size={12} fill="currentColor"/>)}</div>
+                   </div>
+                   <p className="text-sm opacity-70 leading-relaxed italic">"{r.text}"</p>
+                </div>
+             ))}
+             <div className="text-center py-6 opacity-40 text-xs uppercase font-bold tracking-widest pb-20">---</div>
+          </div>
        </div>
     </div>
   );
 };
 
-// COMPONENTE DE TICKET (RESUMO)
-const TicketSummary = ({ data, financials, hasCoupon, onToggleCoupon, xp, isInteractive = false }) => {
-    return (
-        <div className="bg-[#1C1C1E] border border-[#333] rounded-3xl p-6 relative overflow-hidden shadow-2xl animate-enter mb-6">
-            {/* EFEITO DE RASGO (CÍRCULOS LATERAIS) */}
-            <div className="absolute top-1/2 -left-3 w-6 h-6 bg-[#050505] rounded-full"></div>
-            <div className="absolute top-1/2 -right-3 w-6 h-6 bg-[#050505] rounded-full"></div>
-            
-            {/* CABEÇALHO DO TICKET */}
-            <div className="text-center border-b border-dashed border-[#444] pb-6 mb-6">
-                <h3 className="text-xl font-black text-white tracking-widest uppercase mb-1">RESUMO DO PEDIDO</h3>
-                <p className="text-xs text-gray-500 uppercase">{data.date?.toLocaleDateString('pt-BR')} • {data.time}</p>
-            </div>
-
-            {/* ITENS */}
-            <div className="space-y-3 mb-6">
-                <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-300 font-medium">{data.service?.name}</span>
-                    <span className="text-white font-bold">{Utils.formatBRL(financials.base)}</span>
-                </div>
-                
-                {/* EXTRAS */}
-                {data.extras.upgrade && (
-                    <div className="flex justify-between items-center text-xs text-[#0A84FF]">
-                        <span>+ 30 Minutos</span>
-                        <span>{Utils.formatBRL(financials.upg)}</span>
-                    </div>
-                )}
-                {data.extras.touch && (
-                    <div className="flex justify-between items-center text-xs text-[#0A84FF]">
-                        <span>+ Interação</span>
-                        <span>{Utils.formatBRL(financials.touch)}</span>
-                    </div>
-                )}
-                {data.extras.aroma && (
-                    <div className="flex justify-between items-center text-xs text-[#0A84FF]">
-                        <span>+ Aromaterapia</span>
-                        <span>{Utils.formatBRL(financials.aroma)}</span>
-                    </div>
-                )}
-
-                {/* TAXA */}
-                {financials.transportTotal > 0 ? (
-                    <div className="flex justify-between items-center text-xs text-yellow-500">
-                        <span>Taxa (Ida e Volta)</span>
-                        <span>{Utils.formatBRL(financials.transportTotal)}</span>
-                    </div>
-                ) : (
-                     <div className="flex justify-between items-center text-xs text-green-500">
-                        <span>Taxa de Deslocamento</span>
-                        <span>GRÁTIS</span>
-                    </div>
-                )}
-                
-                {/* CUPOM */}
-                {hasCoupon && (
-                     <div className="flex justify-between items-center text-xs text-[#32D74B]">
-                        <span>Desconto VIP</span>
-                        <span>- {Utils.formatBRL(financials.desc)}</span>
-                    </div>
-                )}
-            </div>
-
-            {/* TOTAL */}
-            <div className="border-t border-dashed border-[#444] pt-4 mb-6">
-                 <div className="flex justify-between items-end">
-                    <span className="text-sm font-bold text-gray-400">Total Final</span>
-                    <span className="text-3xl font-black text-white">{Utils.formatBRL(financials.total)}</span>
-                 </div>
-            </div>
-
-            {/* BOTÃO CUPOM (SÓ APARECE SE INTERATIVO E ELEGIVEL) */}
-            {isInteractive && !hasCoupon && xp >= CONFIG.XP_THRESHOLDS.VIP && !data.couponRescued && (
-                <button onClick={onToggleCoupon} className="w-full py-3 bg-[#FFD60A]/10 border border-[#FFD60A] rounded-xl text-[#FFD60A] font-bold text-xs flex items-center justify-center gap-2 mb-2 animate-pulse">
-                    <Ticket size={16}/> ATIVAR CUPOM DE DESCONTO
-                </button>
-            )}
-             {isInteractive && hasCoupon && (
-                 <div className="w-full py-2 bg-[#32D74B]/10 border border-[#32D74B] rounded-xl text-[#32D74B] font-bold text-[10px] flex items-center justify-center gap-2 mb-2">
-                    <Check size={12}/> CUPOM APLICADO
-                </div>
-            )}
-        </div>
-    );
-};
-
-const ReviewsList = () => {
-    const scrollRef = useRef(null);
-
-    useEffect(() => {
-        const el = scrollRef.current;
-        if(!el) return;
-        
-        let scrollAmount = 0;
-        const step = 0.5; 
-        const interval = setInterval(() => {
-            if(el) {
-                el.scrollLeft += step;
-            }
-        }, 20);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    return (
-        <div className="mb-8 mt-4">
-            <h4 className="text-[10px] font-bold text-gray-500 uppercase mb-3 px-1 flex items-center gap-1 opacity-70">
-                <Heart size={10} className="text-red-500"/> Experiências Reais
-            </h4>
-            <div className="ios-scroll" ref={scrollRef}>
-                {REVIEWS_DB.map((r, i) => (
-                    <div key={i} className="min-w-[260px] max-w-[260px] bg-[#161616] border border-[#222] p-4 rounded-2xl flex flex-col justify-between relative overflow-hidden">
-                        <div className="flex text-[#FFD60A] mb-2 gap-0.5">
-                           {[...Array(5)].map((_,starI) => (
-                               <Star key={starI} size={10} fill={starI < r.s ? "currentColor" : "none"} className={starI >= r.s ? "text-gray-700" : ""}/>
-                           ))}
-                        </div>
-                        <p className="text-xs text-gray-300 leading-relaxed mb-3 italic">"{r.t}"</p>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase flex items-center gap-1"><Shield size={10} className="text-green-500"/> {r.a}</p>
-                    </div>
-                ))}
-                <div className="min-w-[20px]"></div>
-            </div>
-        </div>
-    )
-}
-
-const FAQSection = () => {
-    const [open, setOpen] = useState(null);
-    return (
-        <div className="mt-8 mb-4">
-            <h4 className="text-xs font-bold text-gray-500 mb-3 px-1 uppercase flex items-center gap-2"><HelpCircle size={12}/> Dúvidas & Detalhes</h4>
-            <div className="card-base divide-y divide-[#222]">
-                {FAQS.map((f, i) => (
-                    <div key={i} className="p-4 cursor-pointer hover:bg-[#1a1a1a]" onClick={() => setOpen(open === i ? null : i)}>
-                        <div className="flex justify-between items-center">
-                            <h5 className="text-sm font-medium text-white">{f.q}</h5>
-                            <ChevronDown size={16} className={`text-gray-500 transition-transform ${open === i ? 'rotate-180' : ''}`}/>
-                        </div>
-                        {open === i && <p className="text-xs text-gray-400 mt-3 leading-relaxed border-t border-[#333] pt-3">{f.a}</p>}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
 // ==================================================================================
-// APP PRINCIPAL
+// 3. APLICAÇÃO PRINCIPAL
 // ==================================================================================
 
-export default function BookingApp() {
-  const [data, setData] = useState({ 
-     name: '', age: '', medical: false, 
-     mood: null, service: null, date: null, time: null, 
-     extras: { upgrade: false, touch: false, aroma: false }, 
-     prefs: { music: 'Zen / Spa' },
-     payment: null,
-     couponRescued: false,
-     location: { city: LOCATIONS_DB[0], type: 'home', street: '', number: '', district: '', reference: '', building: '', block: '', aptNumber: '', intercom: '', hotelName: '', roomNumber: '', motelName: '', suiteType: '' }
+export default function App() {
+  const [loading, setLoading] = useState(true);
+  const [step, setStep] = useState(0); 
+  const [isDark, setIsDark] = useState(true);
+  const [lang, setLang] = useState('pt');
+  
+  // Modais
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [reviewsOpen, setReviewsOpen] = useState(false);
+  const [toast, setToast] = useState({ show: false, msg: '' });
+  
+  // Escassez
+  const [viewingCount, setViewingCount] = useState(0);
+
+  const scrollRef = useRef(null);
+  const T = TEXTS[lang]; 
+
+  // USER STATE
+  const [user, setUser] = useState(() => {
+    try {
+       const s = localStorage.getItem(CONFIG.STORAGE_KEY);
+       const initialCoupons = [{ id: 'welcome12', val: 12, title: 'Cupom Boas Vindas' }];
+       if (!s) return { name: '', xp: 0, level: 1, coupons: initialCoupons };
+       return JSON.parse(s);
+    } catch { return { name: '', xp: 0, coupons: [] }; }
   });
 
-  const [stage, setStage] = useState(0); 
-  const [hasCoupon, setHasCoupon] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
-  const [toast, setToast] = useState(null);
+  // BOOKING STATE
+  const [booking, setBooking] = useState({
+    service: null, 
+    extras: {}, 
+    date: null, 
+    time: null,
+    locationType: 'home', 
+    address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
+    payment: '', 
+    appliedCoupon: null, 
+    termsAccepted: false
+  });
 
+  useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
+  useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
+  
   useEffect(() => {
-      try {
-          const s = localStorage.getItem(CONFIG.APP_KEY);
-          if (s) {
-              const p = JSON.parse(s);
-              if (p.date) p.date = new Date(p.date);
-              setData(p);
-              if(p.couponRescued) setHasCoupon(true);
-          }
-      } catch (e) {
-          console.log("Erro ao carregar dados, iniciando limpo.");
+    if(scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [step]);
+
+  const showToast = (msg) => {
+    setToast({ show: true, msg });
+    setTimeout(() => setToast({ show: false, msg: '' }), 3000);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Thalyson Massagens', text: 'Agende seu momento.', url: window.location.href }); } catch (e) {}
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      showToast("Link copiado!");
+    }
+  };
+
+  // Gerar Escassez Aleatória
+  const generateViewingCount = () => {
+      setViewingCount(Math.floor(Math.random() * (5 - 2 + 1)) + 2);
+  };
+
+  // Lógica Determinística para "Esgotado"
+  // Apenas nos próximos 4 dias, em 3 dias aleatórios, alguns horários são bloqueados
+  const isTimeSoldOut = (dateStr, time) => {
+      if(!dateStr) return false;
+      const today = new Date();
+      const checkDate = new Date(dateStr);
+      const diffTime = Math.abs(checkDate - today);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+      // Se for mais de 5 dias pra frente, tudo livre (para não parecer fake)
+      if (diffDays > 5) return false;
+
+      // Hash simples baseado na data para ser consistente
+      const dayHash = checkDate.getDate() + checkDate.getMonth(); 
+      // Se dia for par (exemplo de "aleatoriedade" fixa)
+      if (dayHash % 2 === 0) {
+          // Bloqueia horários específicos baseado na soma da hora
+          const hour = parseInt(time.split(':')[0]);
+          if ((hour + dayHash) % 5 === 0) return true; 
       }
-  }, []);
-
-  useEffect(() => {
-      localStorage.setItem(CONFIG.APP_KEY, JSON.stringify(data));
-  }, [data]);
-
-  const refs = {
-    intro: useRef(null), mood: useRef(null), services: useRef(null), datetime: useRef(null), 
-    extras: useRef(null), location: useRef(null), payment: useRef(null)
-  };
-
-  const { financials, xp } = useMemo(() => {
-    let xpPoints = 0;
-    const base = data.service ? data.service.price : 0;
-    if (data.service) xpPoints += data.service.xp;
-
-    const upg = data.extras.upgrade ? (base * CONFIG.PRICES.UPGRADE_PCT) : 0;
-    if (data.extras.upgrade) xpPoints += 25;
-
-    const touch = data.extras.touch ? CONFIG.PRICES.TOUCH : 0;
-    if (data.extras.touch) xpPoints += 30; 
-
-    const aroma = data.extras.aroma ? CONFIG.PRICES.AROMA : 0;
-    if (data.extras.aroma) xpPoints += 15;
-
-    const isRush = data.time && RUSH_HOURS.includes(data.time);
-    const rushFee = isRush ? CONFIG.PRICES.RUSH_HOUR_FEE : 0;
-    
-    // CÁLCULO IDA E VOLTA (TAXA DO BANCO * 2)
-    let travelFee = 0;
-    if (data.location.type === 'motel') {
-        travelFee = CONFIG.PRICES.MOTEL_FEE;
-    } else {
-        travelFee = data.location.city ? (data.location.city.fee * 2) : 0;
-    }
-    
-    const serviceTotal = base + upg + touch + aroma + rushFee; 
-    const transportTotal = travelFee; 
-    
-    const sub = serviceTotal + transportTotal;
-    const desc = hasCoupon ? CONFIG.COUPON_VAL : 0;
-    const total = Math.max(0, sub - desc);
-    
-    return { 
-        financials: { base, upg, touch, aroma, travelFee, rushFee, sub, desc, total, serviceTotal, transportTotal },
-        xp: xpPoints
-    };
-  }, [data.service, data.extras, hasCoupon, data.location.city, data.time, data.location.type]);
-
-  const isVip = xp >= CONFIG.XP_THRESHOLDS.VIP;
-
-  const scrollToSection = (sectionRef) => {
-    if (sectionRef && sectionRef.current) {
-        setTimeout(() => {
-            const yOffset = -120; 
-            const y = sectionRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: 'smooth' });
-        }, 150);
-    }
-  };
-
-  const advanceStage = (next, ref) => {
-    Utils.vibrate();
-    if(next > stage) setStage(next);
-    scrollToSection(ref);
-  };
-
-  const showToast = (msg) => setToast({msg});
-
-  const addToCalendar = () => {
-    if (!data.date || !data.time) return;
-    const start = new Date(data.date);
-    const [hours, minutes] = data.time.split(':').map(Number);
-    start.setHours(hours, minutes, 0);
-    const end = new Date(start);
-    end.setHours(end.getHours() + 1); 
-    const formatDateTime = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
-    const title = `Massagem c/ Thalyson`;
-    const details = `Serviço: ${data.service?.name}\nLocal: ${data.location.city.name}`;
-    const location = data.location.city.name;
-    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatDateTime(start)}/${formatDateTime(end)}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
-    window.open(url, '_blank');
-  };
-
-  const generateMessage = () => {
-    const d = data.date;
-    const loc = data.location;
-    const dateStr = d ? `${d.getDate()}/${d.getMonth()+1}` : '';
-    
-    let addressQuery = '';
-    if (loc.type === 'motel') addressQuery = loc.motelName + ' ' + loc.city.name;
-    else if (loc.type === 'hotel') addressQuery = loc.hotelName + ' ' + loc.city.name;
-    else addressQuery = `${loc.street}, ${loc.number} - ${loc.district}, ${loc.city.name}`;
-    const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressQuery)}`;
-    
-    let t = `🌿 *AGENDAMENTO CONFIRMADO*\n`;
-    t += `------------------------------\n`;
-    t += `👤 *${data.name.toUpperCase()}* (${data.age})\n`;
-    t += `📅 *${dateStr} às ${data.time}*\n`;
-    t += `💆 *${data.service?.name.toUpperCase()}*\n`;
-    
-    if(Object.values(data.extras).some(Boolean)) {
-        t += `✨ *EXTRAS:* \n`;
-        if(data.extras.upgrade) t += `   • +30min (+${Utils.formatBRL(financials.upg)})\n`;
-        if(data.extras.touch) t += `   • Interação (+${Utils.formatBRL(financials.touch)})\n`;
-        if(data.extras.aroma) t += `   • Aroma (+${Utils.formatBRL(financials.aroma)})\n`;
-    }
-    
-    t += `🎧 Vibe: ${data.mood?.label} | 🎵 Som: ${data.prefs.music}\n`;
-    
-    t += `\n📍 *LOCAL: ${loc.city.name}*\n`;
-    if(loc.type === 'home') {
-        t += `🏠 End: ${loc.street}, ${loc.number} - ${loc.district}\n`;
-    } else if (loc.type === 'apto') {
-        t += `🏢 End: ${loc.street}, ${loc.number}\n`;
-        t += `🚪 Apto/Bloco: ${loc.aptNumber}\n`;
-        t += `🏙️ Bairro: ${loc.district}\n`;
-    } else if (loc.type === 'motel') {
-        t += `🏩 Motel: ${loc.motelName} (Taxa Fixa)\n`;
-    } else {
-        t += `🏨 Hotel: ${loc.hotelName} (Quarto ${loc.roomNumber})\n`;
-    }
-    t += `🗺️ *Maps:* ${mapsLink}\n`;
-
-    t += `\n💰 *RESUMO FINANCEIRO:*\n`;
-    t += `------------------------------\n`;
-    t += `🔹 *Serviço + Extras:* ${Utils.formatBRL(financials.serviceTotal)} (Pagar ao final)\n`;
-    
-    if(financials.transportTotal > 0) {
-         t += `🚗 *Taxa (Ida/Volta):* ${Utils.formatBRL(financials.transportTotal)} (Confirmar)\n`;
-    }
-    
-    if(hasCoupon) t += `🎟️ *Desconto VIP:* -${Utils.formatBRL(financials.desc)}\n`;
-    
-    t += `\n✅ *TOTAL ESTIMADO: ${Utils.formatBRL(financials.total)}*\n`;
-    t += `💳 Forma de Pagto: ${data.payment?.toUpperCase()}\n`;
-    
-    return `${CONFIG.URLS.WHATSAPP_API}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
-  };
-
-  const isAddressValid = () => {
-      const l = data.location;
-      if (!l.city) return false;
-      const basics = l.street && l.number && l.district;
-      
-      if (l.type === 'home') return basics;
-      if (l.type === 'apto') return l.street && l.number && l.aptNumber && l.district;
-      if (l.type === 'hotel') return l.hotelName && l.roomNumber;
-      if (l.type === 'motel') return l.motelName; 
       return false;
   };
 
-  return (
-    <div className="min-h-screen pb-48 relative bg-[#050505]">
-      <style>{globalStyles}</style>
-      {toast && <Toast msg={toast.msg} onClose={() => setToast(null)} />}
-      
-      {/* HEADER PERSISTENTE */}
-      <header className="fixed top-0 w-full z-40 glass-header">
-        <div className="px-5 py-4 flex justify-between items-center">
-            {/* LOGO ANIMADO NO TOP */}
-            <div className="title-anim">
-                <span className="font-black text-xl text-white tracking-tight">Agende seu Momento</span>
-            </div>
-            
-            <div className="flex items-center gap-3">
-                <button onClick={() => {if(navigator.share) navigator.share({url: window.location.href});}} className="text-gray-400 hover:text-white"><Share2 size={20}/></button>
-                <button onClick={()=>setHelpOpen(true)} className="text-gray-400 hover:text-white"><HelpCircle size={20}/></button>
-            </div>
-        </div>
-        <StatusBar />
-        {/* BARRA DE PROGRESSO: AGORA VAI ATÉ 7 POR CAUSA DA TELA DE REVIEW */}
-        <div className="w-full h-[2px] bg-[#111]">
-            <div className="h-full bg-[#0A84FF] transition-all duration-300" style={{width: `${(stage / 7) * 100}%`}}></div>
-        </div>
-      </header>
+  const getFinancials = useMemo(() => {
+    if (!booking.service) return { sub: 0, total: 0 };
+    const sPrice = booking.service.price;
+    const ePrice = Object.keys(booking.extras).reduce((acc, key) => 
+      booking.extras[key] ? acc + DB.extras.find(e => e.id === key).price : acc, 0
+    );
+    const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
+    const total = Math.max(0, sPrice + ePrice - disc);
+    return { service: sPrice, extras: ePrice, sub: sPrice + ePrice, disc, total };
+  }, [booking.service, booking.extras, booking.appliedCoupon]);
 
-      {/* MODAL AJUDA */}
-      {helpOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-enter">
-              <div className="absolute inset-0 bg-black/90" onClick={()=>setHelpOpen(false)}></div>
-              <div className="relative bg-[#1C1C1E] w-full max-w-sm rounded-3xl border border-[#333] p-6 shadow-2xl overflow-y-auto max-h-[80vh]">
-                  <div className="flex justify-between items-center mb-6">
-                      <h3 className="font-bold text-xl text-white">Ajuda & Dúvidas</h3>
-                      <button onClick={()=>setHelpOpen(false)}><X size={20} className="text-white"/></button>
-                  </div>
-                  <div className="space-y-4">
-                      {FAQS.map((f, i) => (
-                          <div key={i} className="bg-[#111] p-4 rounded-xl border border-[#222]">
-                              <h4 className="font-bold text-white text-sm mb-2 flex items-center gap-2"><Info size={14} className="text-[#0A84FF]"/> {f.q}</h4>
-                              <p className="text-xs text-gray-400 leading-relaxed">{f.a}</p>
-                          </div>
-                      ))}
-                  </div>
-                  <button onClick={()=>setHelpOpen(false)} className="w-full mt-6 bg-[#0A84FF] text-white py-3 rounded-xl font-bold">Fechar</button>
-              </div>
+  const generateZap = () => {
+    const f = getFinancials;
+    const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
+    const h = new Date().getHours();
+    
+    let greeting = "";
+    if (h < 12) greeting = T.zap.greeting[0];
+    else if (h < 18) greeting = T.zap.greeting[1];
+    else greeting = T.zap.greeting[2];
+    
+    let localMsg = "";
+    let mapsLink = "";
+    
+    const serviceName = booking.service ? T.services[booking.service.id].title : "";
+
+    if (booking.locationType === 'home') {
+      localMsg = `🏠 *${T.zap.home_title}*\n${booking.address.street}, ${booking.address.number}\n${booking.address.district} - ${booking.address.city}\n_(Ref: ${booking.address.comp})_`;
+      const query = `${booking.address.street}, ${booking.address.number}, ${booking.address.city}`;
+      mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    } else if (booking.locationType === 'motel') {
+      localMsg = `🏩 *${T.zap.motel_title}*\n${T.zap.motel_desc}`;
+      mapsLink = "";
+    } else {
+      localMsg = `🏨 *${T.zap.hotel_title}*\n${booking.address.placeName}\n${booking.address.city}\n_(${T.zap.room}: ${booking.address.comp || '?'})_`;
+      const query = `${booking.address.placeName}, ${booking.address.city}`;
+      mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    }
+
+    const extrasTxt = Object.keys(booking.extras).filter(k => booking.extras[k])
+      .map(k => `+ ${T.extras[k].label} (R$ ${DB.extras.find(e => e.id === k).price})`).join('\n');
+
+    // DETALHAMENTO FINANCEIRO NO ZAP
+    const msg = `
+${greeting}, Thalyson!
+${T.zap.intro}
+
+👤 *${T.zap.client}:* ${user.name}
+
+💆‍♂️ *${T.zap.service}:* ${serviceName} (R$ ${f.service})
+📅 ${dateStr} @ ${booking.time}
+
+${extrasTxt ? `✨ *${T.zap.extras}:*\n${extrasTxt}\n` : ''}
+📍 *${T.zap.location}:*
+${localMsg}
+${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
+
+💰 *${T.zap.subtotal}:* R$ ${f.sub}
+🎟️ Desc: - R$ ${f.disc}
+🚗 *${T.zap.uber}:* ${T.zap.uber_calc}
+
+✅ *${T.zap.total_msg}:* R$ ${f.total} + Uber
+💳 *${T.zap.payment}:* ${booking.payment === 'pix' ? 'PIX' : booking.payment === 'card' ? 'Cartão/Card' : 'Dinheiro/Cash'}
+
+*${T.zap.wait}*
+`.trim();
+    
+    return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`;
+  };
+
+  const isStepValid = () => {
+    if (step === 0) return !!booking.service;
+    if (step === 1) return !!booking.date && !!booking.time;
+    if (step === 2) {
+      const { city, street, placeName, number, comp } = booking.address;
+      if (!user.name) return false;
+      if (booking.locationType === 'home' && (!city || !street || !number || !comp)) return false;
+      if (booking.locationType === 'hotel' && (!city || !placeName)) return false;
+      return true;
+    }
+    return true; 
+  };
+
+  const handleFinish = () => {
+    if (!booking.payment) return showToast(T.payment_title);
+    if (!booking.termsAccepted) return showToast("Terms / Termos");
+
+    const earnedXP = getFinancials.total;
+    const newTotalXP = user.xp + earnedXP;
+    
+    let updatedCoupons = [...user.coupons];
+    if(booking.appliedCoupon) {
+        updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
+    }
+
+    if (Math.floor(newTotalXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
+        updatedCoupons.push({ id: Date.now(), title: 'Recompensa VIP', val: 20, isNew: true });
+    }
+
+    setUser({ ...user, xp: newTotalXP, coupons: updatedCoupons });
+    setStep(4);
+  };
+
+  const handleReset = () => {
+      setStep(0);
+      setBooking({
+        service: null, 
+        extras: {}, 
+        date: null, 
+        time: null,
+        locationType: 'home', 
+        address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
+        payment: '', 
+        appliedCoupon: null, 
+        termsAccepted: false
+      });
+  };
+
+  if (loading) return (
+    <div className={`fixed inset-0 flex flex-col items-center justify-center ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
+       <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center text-white font-black text-4xl animate-pulse shadow-[0_0_50px_rgba(37,99,235,0.6)]">T.</div>
+    </div>
+  );
+
+  return (
+    <div className={`h-[100dvh] w-full overflow-hidden flex flex-col font-sans transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-blue-50' : 'bg-slate-50 text-slate-900'}`}>
+      
+      <Toast show={toast.show} msg={toast.msg} />
+      <TermsModal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} isDark={isDark} T={T} />
+      <ReviewsModal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} isDark={isDark} reviews={DB.reviews} T={T} />
+      
+      {/* MENU LATERAL */}
+      {menuOpen && (
+          <div className="fixed inset-0 z-[60] flex justify-start">
+             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={()=>setMenuOpen(false)}></div>
+             <div className={`relative w-4/5 max-w-xs h-full p-8 shadow-2xl animate-slide-right flex flex-col ${isDark ? 'bg-zinc-900' : 'bg-white'}`}>
+                <div className="flex justify-between items-center mb-10">
+                   <h2 className="font-bold text-2xl text-blue-500">Menu</h2>
+                   <button onClick={()=>setMenuOpen(false)} className="p-2 rounded-full hover:bg-white/10"><X size={24}/></button>
+                </div>
+                
+                <div className="mb-8 p-6 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-xl relative overflow-hidden">
+                    <Trophy className="absolute -right-4 -bottom-4 text-white/20" size={100} />
+                    <p className="text-xs font-bold uppercase opacity-80 mb-1">XP Level</p>
+                    <h3 className="text-4xl font-black mb-4">{user.xp}</h3>
+                    <div className="w-full h-2 bg-black/20 rounded-full mb-2 overflow-hidden">
+                        <div className="h-full bg-white transition-all duration-1000" style={{ width: `${(user.xp % CONFIG.XP_TARGET) / CONFIG.XP_TARGET * 100}%` }}></div>
+                    </div>
+                </div>
+
+                <div className="flex-1 space-y-4 overflow-y-auto">
+                   <button onClick={()=>setLang(lang==='pt'?'en':'pt')} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
+                      <Globe size={20}/> <span>{lang === 'pt' ? 'English' : 'Português'}</span>
+                   </button>
+                   <button onClick={()=>setIsDark(!isDark)} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
+                      {isDark ? <Sun size={20}/> : <Moon size={20}/>} <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
+                   </button>
+                   <button onClick={handleShare} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
+                      <Share2 size={20}/> <span>Share App</span>
+                   </button>
+                </div>
+
+                <div className="pt-8">
+                   <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex items-center gap-3 w-full p-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold justify-center shadow-lg hover:shadow-purple-500/20 transition-all">
+                      <Instagram size={20}/> @seumssagista
+                   </a>
+                </div>
+             </div>
           </div>
       )}
 
-      {/* TELA DE SUCESSO (COM TICKET) */}
-      {success && (
-        <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 pt-32 animate-enter text-center">
-            <div className="w-24 h-24 bg-[#32D74B] text-black rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(50,215,75,0.4)] animate-enter">
-                <Check size={40} strokeWidth={4} />
-            </div>
-            <h2 className="text-3xl font-black text-white mb-2">TUDO CERTO!</h2>
-            <p className="text-gray-400 mb-8 text-sm">Confira os detalhes abaixo e envie para o WhatsApp.</p>
+      {/* HEADER FIXO */}
+      <header className={`h-20 flex-shrink-0 flex items-center justify-between px-6 border-b backdrop-blur-md transition-colors duration-500 ${isDark ? 'bg-zinc-950/80 border-white/5' : 'bg-white/80 border-blue-100'}`}>
+        <div className="flex items-center gap-4">
+          <button onClick={()=>setMenuOpen(true)} className={`p-3 rounded-full transition-colors ${isDark ? 'hover:bg-zinc-800' : 'hover:bg-blue-50 text-blue-900'}`}><Menu size={24}/></button>
+          <div className="flex flex-col">
+            <span className="font-bold text-base tracking-wide">Thalyson Massagens</span>
+            <span className="text-[10px] opacity-60 flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"/> Online</span>
+          </div>
+        </div>
+        <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className={`p-3 rounded-full border transition-all hover:scale-105 ${isDark ? 'border-zinc-800 bg-zinc-900 text-zinc-400' : 'border-blue-100 bg-white text-blue-600'}`}><Instagram size={20}/></a>
+      </header>
 
-            {/* TICKET RESUMO VISUAL */}
-            <div className="w-full max-w-sm">
-                <TicketSummary 
-                    data={data} 
-                    financials={financials} 
-                    hasCoupon={hasCoupon} 
-                    xp={xp} 
-                    isInteractive={false} 
-                />
-            </div>
-
-            {/* BOTÃO WHATSAPP */}
-            <a href={generateMessage()} target="_blank" rel="noreferrer" 
-                className="w-full max-w-sm primary-btn py-4 text-lg flex items-center justify-center gap-3 shadow-lg shadow-[#32D74B]/20 btn-pulse mb-3">
-                <MessageCircle size={22} fill="currentColor" /> Enviar no WhatsApp
-            </a>
-
-            {/* BOTÃO AGENDA */}
-            <button onClick={addToCalendar} className="w-full max-w-sm h-14 rounded-2xl bg-[#1A1A1A] border border-[#333] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#222]">
-                <CalendarIcon size={18}/> Adicionar na Agenda
-            </button>
-            
-            <button onClick={() => { setData(prev => ({...prev, service: null})); setSuccess(false); setStage(0); window.scrollTo(0,0); }} className="mt-6 flex items-center gap-2 text-gray-600 font-bold text-xs uppercase hover:text-white">
-                <RefreshCw size={12}/> Fazer Novo Pedido
-            </button>
+      {/* PROGRESS BAR */}
+      {step < 4 && (
+        <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-900 flex-shrink-0">
+          <div className="h-full bg-blue-600 transition-all duration-700 ease-out shadow-[0_0_15px_rgba(37,99,235,0.4)]" style={{ width: `${((step+1)/4)*100}%` }} />
         </div>
       )}
 
-      {/* FLUXO PRINCIPAL */}
-      {!success && (
-      <main className="max-w-md mx-auto pt-28 px-5">
+      {/* CONTEÚDO COM SCROLL */}
+      <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-6 pb-32 scroll-smooth">
+        <div className="max-w-md mx-auto animate-fade-in">
         
-        {/* INTRODUÇÃO */}
-        <section ref={refs.intro} className={`${stage === 0 ? 'block animate-enter' : 'hidden'}`}>
-            <div className="my-6">
-                <p className="text-[#0A84FF] font-bold text-[10px] uppercase tracking-widest mb-1">{Utils.getGreeting()}</p>
-                {/* TITULO ANIMADO */}
-                <h1 className="text-3xl font-bold text-white leading-tight title-anim">
-                    Thalyson<br/>Massagens.
-                </h1>
+        {/* STEP 0: SERVIÇOS & AVALIAÇÕES */}
+        {step === 0 && (
+          <div className="space-y-10">
+            <div className="space-y-3">
+              <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-500">{T.welcome}, {user.name.split(' ')[0] || ''}</h1>
+              <p className="text-base opacity-70 font-light max-w-[280px] leading-relaxed">{T.subtitle}</p>
             </div>
-
-            <ReviewsList />
-
-            <div className="card-base p-6 border-[#222] bg-[#111] mb-8">
-                 <div className="space-y-4">
-                    <div>
-                        <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 ml-1">Seu Nome</label>
-                        <input value={data.name} onChange={e => setData({...data, name: e.target.value})} placeholder="Como prefere ser chamado?" className="input-field"/>
-                    </div>
-                    <div>
-                        <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 ml-1">Idade</label>
-                        <input type="tel" maxLength={2} value={data.age} onChange={e => setData({...data, age: e.target.value.replace(/\D/g,'')})} placeholder="Ex: 30" className="input-field"/>
-                    </div>
-                    <div onClick={() => { Utils.vibrate(); setData({...data, medical: !data.medical}) }} 
-                        className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${data.medical ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#0A0A0A] border-[#222]'}`}>
-                        <div className={`w-5 h-5 rounded border flex items-center justify-center ${data.medical ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#444]'}`}>{data.medical && <Check size={14} className="text-white"/>}</div>
-                        <p className="text-xs text-gray-400">Maior de idade e saudável</p>
-                    </div>
+            
+            <div className="space-y-6">
+              {DB.services.map((s) => (
+                <div key={s.id} onClick={() => setBooking({ ...booking, service: s })}
+                  className={`relative p-8 rounded-[2rem] border-2 cursor-pointer transition-all duration-300 active:scale-95 group overflow-hidden
+                    ${booking.service?.id === s.id 
+                      ? 'border-blue-500 bg-blue-500/5 shadow-2xl shadow-blue-500/10' 
+                      : `border-transparent ${isDark ? 'bg-zinc-900 hover:bg-zinc-800' : 'bg-white shadow-lg hover:shadow-xl'}`
+                    }`}
+                >
+                   {s.badge && <span className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-bl-2xl uppercase tracking-wider shadow-lg">{s.badge}</span>}
+                   
+                   <div className="flex justify-between items-start mb-6 mt-2">
+                      <div className="p-4 rounded-2xl bg-blue-100/10 text-blue-500 ring-1 ring-blue-500/20"><s.icon size={28} /></div>
+                      <div className="text-right pr-2">
+                        <span className="block text-3xl font-bold tracking-tight">R$ {s.price}</span>
+                        <span className="text-[10px] font-bold uppercase opacity-40 tracking-wider">{T.investment}</span>
+                      </div>
+                   </div>
+                   
+                   <h3 className="font-bold text-2xl mb-3">{T.services[s.id].title}</h3>
+                   <p className="text-sm opacity-70 leading-relaxed font-light">{T.services[s.id].desc}</p>
+                   
+                   <div className="mt-6 pt-4 border-t border-dashed border-zinc-500/10 flex items-center gap-2 text-xs opacity-50 font-medium">
+                      <Clock size={14}/> {s.time} {T.duration}
+                   </div>
                 </div>
-                {data.name.length > 2 && data.age && data.medical && (
-                    <button onClick={() => advanceStage(1, refs.mood)} className="primary-btn w-full py-4 mt-4 flex items-center justify-center gap-2">
-                        Começar <ArrowRight size={18}/>
-                    </button>
-                )}
+              ))}
             </div>
-            <FAQSection />
-        </section>
+            
+            <div className="pt-4">
+                <div className="flex items-center justify-between mb-4 px-2">
+                    <h3 className="text-sm font-bold uppercase tracking-widest opacity-50">{T.reviews_title}</h3>
+                    <div className="flex text-amber-400 gap-1"><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/></div>
+                </div>
 
-        {/* 1. VIBE */}
-        <section ref={refs.mood} className={`${stage === 1 ? 'block animate-enter' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white">01. O que você busca hoje?</h3>
-            <div className="grid grid-cols-3 gap-3">
-                {MOODS.map(m => (
-                    <button key={m.id} onClick={() => { setData({...data, mood: m}); advanceStage(2, refs.services); }}
-                        className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all ${data.mood?.id === m.id ? 'border-white bg-[#222]' : 'bg-[#111] border-[#222]'}`}>
-                        <m.icon size={24} className={`mb-2 ${m.color}`}/>
-                        <span className="text-xs font-bold text-white">{m.label}</span>
-                    </button>
-                ))}
-            </div>
-        </section>
-
-        {/* 2. SERVIÇOS */}
-        <section ref={refs.services} className={`${stage === 2 ? 'block animate-enter' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white">02. Escolha o Serviço</h3>
-            <div className="space-y-4">
-                {SERVICES.map(s => (
-                    <div key={s.id} onClick={() => { setData({...data, service: s}); advanceStage(3, refs.datetime); }} 
-                        className={`card-base p-5 cursor-pointer border transition-all ${s.highlight ? 'border-[#FFD60A]/50 bg-[#1A1A1A]' : 'border-[#222]'} ${data.service?.id === s.id ? 'card-selected' : ''}`}>
-                        
-                        {s.badge && <div className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[9px] font-black px-3 py-1 rounded-bl-xl">{s.badge}</div>}
-                        
-                        <div className="flex justify-between items-start mb-2">
-                            <h3 className={`text-lg font-bold ${data.service?.id === s.id ? 'text-[#0A84FF]' : 'text-white'}`}>{s.name}</h3>
-                            <span className="text-white font-bold bg-[#222] px-3 py-1 rounded-lg text-sm">{Utils.formatBRL(s.price)}</span>
+                <div className="space-y-3 mb-6">
+                    {DB.reviews.slice(0, 3).map((r, i) => (
+                        <div key={i} className={`p-4 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-blue-50'}`}>
+                             <p className="text-xs italic opacity-70 mb-2 line-clamp-2">"{r.text}"</p>
+                             <div className="flex justify-between items-center">
+                                 <span className="text-[10px] font-bold uppercase text-blue-500">{r.name}</span>
+                                 <div className="flex text-amber-400 gap-0.5">{[...Array(r.stars)].map((_,k)=><Star key={k} size={8} fill="currentColor"/>)}</div>
+                             </div>
                         </div>
-                        <p className="text-xs text-gray-400 leading-relaxed">{s.desc}</p>
-                    </div>
-                ))}
-            </div>
-        </section>
-
-        {/* 3. DATA E HORA */}
-        <section ref={refs.datetime} className={`${stage === 3 ? 'block animate-enter' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white">03. Data e Hora</h3>
-            <div className="card-base p-4 bg-[#111]">
-                <div className="ios-scroll pb-2">
-                    {[...Array(14)].map((_, i) => {
-                        const d = new Date(); d.setDate(d.getDate() + i);
-                        const isSel = data.date && new Date(data.date).getDate() === d.getDate();
-                        return (
-                            <button key={i} onClick={() => { Utils.vibrate(); setData({...data, date: d, time: null}); }} 
-                                className={`min-w-[70px] h-[80px] rounded-xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#161616] border-[#222] text-gray-400'}`}>
-                                <span className="text-[10px] font-bold uppercase mb-1">{d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
-                                <span className="text-2xl font-bold">{d.getDate()}</span>
-                            </button>
-                        )
-                    })}
-                </div>
-                <div className={`grid grid-cols-4 gap-2 mt-4 ${data.date ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
-                    {TIME_SLOTS.map(t => {
-                        const blocked = Utils.isTimeBlocked(data.date, t);
-                        return (
-                        <button key={t} disabled={blocked} onClick={() => { setData({...data, time: t}); advanceStage(4, refs.extras); }} 
-                            className={`py-3 rounded-lg text-xs font-bold border ${data.time === t ? 'bg-white text-black' : blocked ? 'opacity-20 line-through' : 'bg-[#1A1A1A] border-[#2A2A2A] text-gray-300'}`}>
-                            {t}
-                        </button>
-                    )})}
-                </div>
-            </div>
-        </section>
-
-        {/* 4. EXTRAS */}
-        <section ref={refs.extras} className={`${stage === 4 ? 'block animate-enter' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white">04. Personalize</h3>
-            <div className="card-base divide-y divide-[#222] mb-4">
-                {[
-                   { id: 'upgrade', label: '+30 Minutos', icon: Clock, price: data.service?.price * CONFIG.PRICES.UPGRADE_PCT },
-                   { id: 'touch', label: 'Interação', icon: Flame, price: CONFIG.PRICES.TOUCH },
-                   { id: 'aroma', label: 'Aromaterapia', icon: Wind, price: CONFIG.PRICES.AROMA }
-                ].map((item) => (
-                    <div key={item.id} onClick={() => { Utils.vibrate(); setData({...data, extras: {...data.extras, [item.id]: !data.extras[item.id]}}); }} className="p-4 flex justify-between items-center cursor-pointer">
-                        <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full border flex items-center justify-center ${data.extras[item.id] ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'border-[#333] bg-[#0F0F0F] text-gray-500'}`}>
-                                {data.extras[item.id] ? <Check size={18}/> : <item.icon size={18}/>}
-                            </div>
-                            <span className="font-bold text-white text-sm">{item.label}</span>
-                        </div>
-                        <span className="text-[#0A84FF] font-bold text-sm">+ {Utils.formatBRL(item.price)}</span>
-                    </div>
-                ))}
-            </div>
-
-            <div className="card-base p-4 border-[#222] bg-[#111]">
-                <h4 className="text-xs font-bold text-gray-400 uppercase mb-3 flex items-center gap-2"><Music size={12}/> Som Ambiente</h4>
-                <div className="ios-scroll pb-1">
-                     {PREFERENCES.music.map(m => (
-                         <button key={m} onClick={() => setData({...data, prefs: {...data.prefs, music: m}})} 
-                             className={`px-4 py-2 rounded-lg text-[11px] font-bold border whitespace-nowrap ${data.prefs.music === m ? 'bg-[#FFD60A] border-[#FFD60A] text-black' : 'bg-[#161616] border-[#333] text-gray-400'}`}>
-                             {m}
-                         </button>
-                     ))}
-                </div>
-            </div>
-
-            <button onClick={() => advanceStage(5, refs.location)} className="primary-btn w-full py-4 mt-4">Continuar</button>
-        </section>
-
-        {/* 5. LOCALIZAÇÃO */}
-        <section ref={refs.location} className={`${stage === 5 ? 'block animate-enter' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white">05. Localização</h3>
-            <div className="mb-4">
-                <div className="ios-scroll pb-2">
-                    {LOCATIONS_DB.map(c => (
-                        <button key={c.id} onClick={() => setData({...data, location: {...data.location, city: c}})} 
-                            className={`px-4 py-3 rounded-xl text-xs font-bold border whitespace-nowrap ${data.location.city.id === c.id ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'bg-[#161616] border-[#333] text-gray-400'}`}>
-                            {c.name} {data.location.type !== 'motel' && c.fee > 0 && `(+${Utils.formatBRL(c.fee * 2)})`}
-                        </button>
                     ))}
                 </div>
-            </div>
 
-            <div className="grid grid-cols-4 gap-2 mb-4">
-                {LOCATION_TYPES.map(t => (
-                    <button key={t.id} onClick={() => setData({...data, location: {...data.location, type: t.id}})}
-                        className={`flex flex-col items-center justify-center p-3 rounded-xl border ${data.location.type === t.id ? 'bg-[#0A84FF]/10 border-[#0A84FF] text-[#0A84FF]' : 'bg-[#121212] border-[#222] text-gray-500'}`}>
-                        <t.icon size={20} className="mb-1.5"/>
-                        <span className="text-[9px] font-bold uppercase">{t.label}</span>
-                    </button>
-                ))}
+                <button onClick={() => setReviewsOpen(true)} className={`w-full py-4 rounded-2xl font-bold text-sm border transition-all flex items-center justify-center gap-2 ${isDark ? 'border-zinc-800 hover:bg-zinc-800' : 'border-blue-100 hover:bg-blue-50 text-blue-600'}`}>
+                    <MessageCircle size={18}/> {T.reviews_btn}
+                </button>
             </div>
+          </div>
+        )}
 
-            <div className="card-base p-4 bg-[#111] border-[#222]">
-                {data.location.type === 'home' && (
-                    <div className="space-y-3">
-                        <div className="flex gap-2"><input placeholder="Rua" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} className="input-field w-2/3"/><input placeholder="Nº" type="tel" value={data.location.number} onChange={e => setData({...data, location: {...data.location, number: e.target.value}})} className="input-field w-1/3"/></div>
-                        <input placeholder="Bairro" value={data.location.district} onChange={e => setData({...data, location: {...data.location, district: e.target.value}})} className="input-field"/>
-                        <input placeholder="Referência" value={data.location.reference} onChange={e => setData({...data, location: {...data.location, reference: e.target.value}})} className="input-field"/>
+        {/* STEP 1: DATA E HORA */}
+        {step === 1 && (
+          <div className="space-y-10 animate-slide-in">
+             <button onClick={()=>setStep(0)} className="flex items-center gap-2 text-xs font-bold opacity-40 hover:opacity-100 transition-opacity"><ChevronLeft size={16}/> Voltar</button>
+             
+             <div className="text-center">
+                <h2 className="text-3xl font-bold text-blue-500 mb-2">{T.date_title}</h2>
+                <p className="text-sm opacity-60">{T.date_sub}</p>
+             </div>
+
+             <div className="space-y-4">
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6">
+                  {[0, 1, 2, 3, 4, 5, 6].map((offset) => {
+                    const d = new Date(); d.setDate(d.getDate() + offset);
+                    const isSelected = booking.date?.toDateString() === d.toDateString();
+                    return (
+                      <button key={offset} onClick={() => setBooking({ ...booking, date: d, time: null })}
+                        className={`min-w-[5.5rem] h-[7rem] rounded-[24px] flex flex-col items-center justify-center gap-2 transition-all border-2 flex-shrink-0
+                          ${isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-500/30 scale-105' : isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500' : 'bg-white border-zinc-100 text-zinc-400'}`}
+                      >
+                        <span className="text-[10px] font-bold uppercase tracking-widest">{d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'short' }).slice(0,3)}</span>
+                        <span className="text-3xl font-black">{d.getDate()}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+             </div>
+
+             <div className={`transition-all duration-500 ${booking.date ? 'opacity-100 translate-y-0' : 'opacity-30 translate-y-4 pointer-events-none'}`}>
+                <h3 className="text-xs font-bold uppercase opacity-40 mb-6 text-center">{T.time_title}</h3>
+                
+                {/* GRID DE HORÁRIOS COM LÓGICA DE ESGOTADO */}
+                <div className="grid grid-cols-4 gap-3">
+                  {['09:00', '10:00', '11:00', '13:00', '15:00', '18:00', '19:00', '20:00'].map((time) => {
+                     let disabled = false;
+                     let soldOut = false;
+                     
+                     if (booking.date) {
+                        const now = new Date();
+                        const [h] = time.split(':');
+                        const selectedDate = new Date(booking.date);
+                        
+                        // Passado
+                        if (selectedDate.toDateString() === now.toDateString() && parseInt(h) <= now.getHours()) {
+                            disabled = true;
+                        } else {
+                            // Lógica de Esgotado
+                            soldOut = isTimeSoldOut(booking.date, time);
+                        }
+                     }
+
+                     return (
+                        <button key={time} disabled={disabled || soldOut} 
+                          onClick={() => {
+                              setBooking({ ...booking, time });
+                              generateViewingCount(); // Trigger Scarcity
+                          }}
+                          className={`relative py-4 rounded-2xl text-xs font-bold border transition-all overflow-hidden
+                            ${soldOut 
+                                ? 'opacity-40 cursor-not-allowed bg-red-500/5 border-red-500/20 text-red-500' 
+                                : booking.time === time 
+                                    ? 'bg-white text-blue-900 border-white shadow-lg scale-110 z-10' 
+                                    : disabled 
+                                        ? 'opacity-20 line-through cursor-not-allowed border-transparent' 
+                                        : isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-400' : 'bg-white border-zinc-200 text-zinc-600'}`}
+                        >
+                          {time}
+                          {soldOut && <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/80 text-[8px] uppercase tracking-widest text-red-500 font-black rotate-12">Esgotado</div>}
+                        </button>
+                     );
+                  })}
+                </div>
+                
+                {/* MENSAGEM DE ESCASSEZ */}
+                {booking.time && (
+                    <div className="mt-6 flex justify-center animate-fade-in">
+                        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2">
+                            <Eye size={14} className="animate-pulse"/> {viewingCount} {T.viewing_now}
+                        </div>
                     </div>
                 )}
-                
-                {/* LÓGICA DE APTO CORRIGIDA */}
-                {data.location.type === 'apto' && (
-                     <div className="space-y-3">
-                        <div className="flex gap-2">
-                             <input placeholder="Rua do Prédio" className="input-field w-2/3" value={data.location.street} onChange={e => setData({...data, location: {...data.location, street: e.target.value}})} />
-                             <input placeholder="Nº Rua" className="input-field w-1/3" value={data.location.number} onChange={e => setData({...data, location: {...data.location, number: e.target.value}})} />
-                        </div>
-                        <div className="flex gap-2">
-                             <input placeholder="Nº Apto / Bloco" className="input-field w-1/2" value={data.location.aptNumber} onChange={e => setData({...data, location: {...data.location, aptNumber: e.target.value}})} />
-                             <input placeholder="Bairro" className="input-field w-1/2" value={data.location.district} onChange={e => setData({...data, location: {...data.location, district: e.target.value}})} />
-                        </div>
-                     </div>
+             </div>
+          </div>
+        )}
+
+        {/* STEP 2: DADOS E LOCAL */}
+        {step === 2 && (
+          <div className="space-y-8 animate-slide-in">
+             <button onClick={()=>setStep(1)} className="flex items-center gap-2 text-xs font-bold opacity-40 hover:opacity-100 transition-opacity"><ChevronLeft size={16}/> Voltar</button>
+             
+             <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-blue-500 mb-2">{T.location_title}</h2>
+                <p className="text-sm opacity-60">{T.location_sub}</p>
+             </div>
+
+             <div className={`p-1.5 rounded-[24px] flex ${isDark ? 'bg-zinc-900' : 'bg-zinc-200'}`}>
+                {[{ id: 'home', label: 'Home', icon: Home }, { id: 'motel', label: 'Motel', icon: BedDouble }, { id: 'hotel', label: 'Hotel', icon: Building }].map((type) => (
+                  <button key={type.id} onClick={() => setBooking({ ...booking, locationType: type.id })}
+                    className={`flex-1 py-4 rounded-[20px] text-xs font-bold flex items-center justify-center gap-2 transition-all duration-300 ${booking.locationType === type.id ? (isDark ? 'bg-zinc-800 text-white shadow-lg' : 'bg-white text-black shadow-lg') : 'opacity-50 hover:opacity-100'}`}
+                  >
+                    <type.icon size={16} /> {type.label}
+                  </button>
+                ))}
+             </div>
+
+             <div className="space-y-4">
+                <div className={`flex items-center px-6 rounded-[24px] border transition-colors focus-within:border-blue-500 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`}>
+                   <User size={18} className="opacity-40 mr-4"/>
+                   <input value={user.name} onChange={(e) => setUser({...user, name: e.target.value})} placeholder={T.name_placeholder} className="w-full py-6 bg-transparent outline-none text-sm font-medium"/>
+                </div>
+
+                {booking.locationType === 'home' && (
+                  <div className="space-y-4 animate-fade-in">
+                    <p className="text-xs font-bold text-amber-500 flex items-center gap-1 pl-2"><Info size={12}/> {T.address_warn}</p>
+                    <div className="grid grid-cols-[1fr_80px] gap-4">
+                       <input placeholder="Rua / Avenida" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.street} onChange={(e) => setBooking({...booking, address: {...booking.address, street: e.target.value}})} />
+                       <input type="tel" placeholder="Nº" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.number} onChange={(e) => setBooking({...booking, address: {...booking.address, number: e.target.value}})} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                       <input placeholder="Bairro" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.district} onChange={(e) => setBooking({...booking, address: {...booking.address, district: e.target.value}})} />
+                       <input placeholder="Cidade" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.city} onChange={(e) => setBooking({...booking, address: {...booking.address, city: e.target.value}})} />
+                    </div>
+                    <input 
+                        placeholder={T.comp_placeholder} 
+                        className={`w-full p-6 rounded-[24px] border text-sm outline-none border-blue-500/30 focus:border-blue-500 ${isDark ? 'bg-zinc-900' : 'bg-white'}`} 
+                        value={booking.address.comp} 
+                        onChange={(e) => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} 
+                    />
+                  </div>
                 )}
 
-                {/* MOTEL SIMPLIFICADO */}
-                {data.location.type === 'motel' && (
-                     <div className="space-y-3">
-                         <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-xl flex items-center gap-3">
-                            <Flame size={20} className="text-red-500"/>
-                            <p className="text-xs text-red-200">Motel: Taxa fixa de R$ 75,00 será aplicada.</p>
-                         </div>
-                         <input placeholder="Nome do Motel" className="input-field" onChange={e => setData({...data, location: {...data.location, motelName: e.target.value}})}/>
-                     </div>
-                )}
-
-                {data.location.type === 'hotel' && (
-                    <div className="space-y-3">
-                       <input placeholder="Nome do Hotel" className="input-field" onChange={e => setData({...data, location: {...data.location, hotelName: e.target.value}})}/>
-                       <input placeholder="Quarto" className="input-field" onChange={e => setData({...data, location: {...data.location, roomNumber: e.target.value}})} />
+                {booking.locationType === 'motel' && (
+                    <div className="p-6 rounded-[24px] bg-blue-500/10 border border-blue-500/20 text-blue-500 animate-fade-in flex gap-4 items-center">
+                        <Info size={24} className="shrink-0"/>
+                        <p className="text-xs font-medium leading-relaxed">{T.motel_warn}</p>
                     </div>
                 )}
+
+                {booking.locationType === 'hotel' && (
+                   <div className="space-y-4 animate-fade-in">
+                      <input placeholder={T.hotel_name} className={`w-full p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.placeName} onChange={(e) => setBooking({...booking, address: {...booking.address, placeName: e.target.value}})} />
+                       <div className="grid grid-cols-2 gap-4">
+                          <input placeholder="Cidade" className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.city} onChange={(e) => setBooking({...booking, address: {...booking.address, city: e.target.value}})} />
+                          <input placeholder={T.room} className={`p-6 rounded-[24px] border text-sm outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.comp} onChange={(e) => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} />
+                       </div>
+                   </div>
+                )}
+             </div>
+
+             <div className="pt-8">
+               <h3 className="text-xs font-bold uppercase opacity-40 mb-6 ml-1">{T.extras_title}</h3>
+               <div className="space-y-3">
+                 {DB.extras.map(extra => (
+                   <div key={extra.id} onClick={() => setBooking({ ...booking, extras: { ...booking.extras, [extra.id]: !booking.extras[extra.id] } })}
+                    className={`flex items-center justify-between p-5 rounded-[24px] border cursor-pointer transition-all ${booking.extras[extra.id] ? 'border-blue-500 bg-blue-500/5' : isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`}
+                   >
+                     <div className="flex items-center gap-4">
+                       <div className={`p-3 rounded-full ${booking.extras[extra.id] ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-500'}`}><extra.icon size={18}/></div>
+                       <div><p className="text-sm font-bold">{T.extras[extra.id].label}</p><p className="text-[11px] opacity-60">{T.extras[extra.id].desc}</p></div>
+                     </div>
+                     <span className={`text-sm font-bold ${booking.extras[extra.id] ? 'text-blue-500' : 'opacity-30'}`}>+ R$ {extra.price}</span>
+                   </div>
+                 ))}
+               </div>
+             </div>
+          </div>
+        )}
+
+        {/* STEP 3: RESUMO E PAGAMENTO */}
+        {step === 3 && (
+          <div className="space-y-10 animate-slide-in pb-10">
+             <button onClick={()=>setStep(2)} className="flex items-center gap-2 text-xs font-bold opacity-40 hover:opacity-100 transition-opacity"><ChevronLeft size={16}/> Voltar</button>
+             
+             <div className="text-center">
+                <h2 className="text-3xl font-bold text-blue-500">{T.resume_title}</h2>
+             </div>
+
+             <div className={`rounded-[2rem] border overflow-hidden ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200 shadow-xl'}`}>
+                <div className="p-8 space-y-4">
+                   <div className="flex justify-between items-center text-lg font-bold"><span>{T.services[booking.service.id].title}</span><span>R$ {booking.service.price}</span></div>
+                   
+                   {Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => (
+                     <div key={k} className="flex justify-between items-center text-sm opacity-60"><span>+ {T.extras[k].label}</span><span>R$ {DB.extras.find(e => e.id === k).price}</span></div>
+                   ))}
+                   
+                   {booking.appliedCoupon && (
+                     <div className="flex justify-between items-center text-sm font-bold text-blue-500 bg-blue-500/10 p-3 rounded-xl">
+                        <span>{booking.appliedCoupon.title}</span>
+                        <span>- R$ {booking.appliedCoupon.val}</span>
+                     </div>
+                   )}
+                   
+                   <div className="border-t border-dashed border-zinc-500/20 my-2 pt-6 flex justify-between items-center">
+                      <span className="text-lg font-black opacity-80">Total</span>
+                      <span className="text-4xl font-black text-blue-500">R$ {getFinancials.total}</span>
+                   </div>
+                   
+                   {/* AVISO DE UBER NO CHECKOUT */}
+                   <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-amber-500 bg-amber-500/5 p-3 rounded-xl border border-amber-500/20">
+                       <Car size={14}/> {T.uber_warn}
+                   </div>
+                </div>
                 
-                <button disabled={!isAddressValid()} onClick={() => advanceStage(6, refs.payment)} className="primary-btn w-full py-4 mt-4 disabled:opacity-50">Confirmar Local</button>
+                {/* SELECTOR DE CUPOM CORRIGIDO */}
+                <div className="bg-black/5 p-6 flex items-center justify-between">
+                   <div className="flex items-center gap-3 text-xs font-bold opacity-60"><Ticket size={18} /> <span>{T.coupon_label}:</span></div>
+                   {user.coupons.length > 0 ? (
+                      booking.appliedCoupon ? (
+                        <button onClick={() => setBooking({...booking, appliedCoupon: null})} className="text-xs text-red-500 font-bold hover:underline flex items-center gap-2 px-3 py-1.5 bg-red-500/10 rounded-lg"><Trash2 size={14}/> {T.remove}</button>
+                      ) : (
+                        <select 
+                            onChange={(e) => {
+                                const c = user.coupons.find(coup => String(coup.id) === e.target.value);
+                                setBooking({...booking, appliedCoupon: c});
+                            }} 
+                            className="bg-transparent text-sm font-bold text-blue-500 outline-none cursor-pointer uppercase tracking-wider text-right w-40"
+                        >
+                           <option value="">{T.coupon_select}</option>
+                           {user.coupons.map(c => <option key={c.id} value={c.id}>R$ {c.val} - {c.title}</option>)}
+                        </select>
+                      )
+                   ) : <span className="text-xs opacity-40">{T.coupon_none}</span>}
+                </div>
+             </div>
+
+             <div className="space-y-4">
+                <h3 className="text-xs font-bold uppercase opacity-40 ml-1">{T.payment_title}</h3>
+                <div className="grid grid-cols-3 gap-3">
+                   {[{ id: 'pix', label: 'PIX', icon: QrCode }, { id: 'card', label: 'Cartão', icon: CreditCard }, { id: 'money', label: 'Cash', icon: Banknote }].map((p) => (
+                     <button key={p.id} onClick={() => setBooking({ ...booking, payment: p.id })}
+                       className={`flex flex-col items-center justify-center gap-2 py-6 rounded-[24px] border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-500/30 scale-105' : isDark ? 'bg-zinc-900 border-zinc-800 opacity-60 hover:opacity-100' : 'bg-white border-zinc-200 opacity-60 hover:opacity-100'}`}
+                     >
+                       <p.icon size={24} /> <span className="text-[10px] font-black uppercase tracking-wider">{p.label}</span>
+                     </button>
+                   ))}
+                </div>
+             </div>
+
+             <div className="flex items-center gap-4 p-4 rounded-2xl border border-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                <div onClick={() => setBooking({...booking, termsAccepted: !booking.termsAccepted})} className={`cursor-pointer w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all shrink-0 ${booking.termsAccepted ? 'bg-blue-600 border-blue-600 text-white' : 'border-zinc-500'}`}>
+                   {booking.termsAccepted && <Check size={16} strokeWidth={4} />}
+                </div>
+                <p className="text-xs opacity-60 leading-relaxed">
+                   {T.terms_agree} <span onClick={()=>setTermsOpen(true)} className="font-bold underline text-blue-500 cursor-pointer hover:text-blue-400">{T.terms_link}</span>.
+                </p>
+             </div>
+          </div>
+        )}
+
+        {/* STEP 4: SUCESSO */}
+        {step === 4 && (
+            <div className="flex flex-col items-center justify-center pt-16 animate-scale-in text-center h-full">
+                <div className="relative mb-10">
+                     <div className="absolute inset-0 bg-blue-500 blur-3xl opacity-30 rounded-full animate-pulse"></div>
+                     <div className="w-32 h-32 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-2xl relative z-10">
+                        <Check size={64} className="text-white" strokeWidth={5}/>
+                     </div>
+                </div>
+                
+                <h1 className="text-5xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">{T.success_title}</h1>
+                <p className="text-lg opacity-60 max-w-[300px] mx-auto mb-16 font-light leading-relaxed">
+                    {T.success_msg}
+                </p>
+
+                <a href={generateZap()} target="_blank" rel="noreferrer" 
+                   className="w-full py-6 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl text-xl shadow-xl shadow-blue-600/30 flex items-center justify-center gap-3 animate-bounce-slow transition-transform active:scale-95">
+                    <MessageCircle size={28} fill="currentColor"/> {T.btn_zap}
+                </a>
+                
+                <button onClick={handleReset} className="mt-12 text-xs font-bold opacity-40 hover:opacity-100 uppercase tracking-widest">
+                    Voltar ao início
+                </button>
             </div>
-        </section>
-
-        {/* 6. PAGAMENTO */}
-        <section ref={refs.payment} className={`${stage === 6 ? 'block animate-enter' : 'hidden'}`}>
-            <h3 className="text-lg font-bold mb-4 text-white">06. Pagamento</h3>
-            <div className="card-base p-4 grid grid-cols-3 gap-3 mb-32">
-                {['pix', 'dinheiro', 'cartao'].map(method => (
-                    <button key={method} onClick={() => { setData({...data, payment: method}); advanceStage(7, null); if(method==='pix') {navigator.clipboard.writeText(CONFIG.PIX_KEY); showToast('Pix Copiado!');} }} 
-                        className={`flex flex-col items-center gap-2 p-4 rounded-xl border ${data.payment === method ? 'bg-[#0A84FF]/20 border-[#0A84FF]' : 'border-[#333] bg-[#121212]'}`}>
-                        <span className="text-[10px] font-bold uppercase text-white">{method}</span>
-                    </button>
-                ))}
-            </div>
-        </section>
-
-        {/* 7. REVISÃO (TICKET INTERATIVO) */}
-        <section className={`${stage === 7 ? 'block animate-enter' : 'hidden'}`}>
-             <h3 className="text-lg font-bold mb-4 text-white">07. Revisão</h3>
-             <TicketSummary 
-                data={data} 
-                financials={financials} 
-                hasCoupon={hasCoupon} 
-                onToggleCoupon={() => { setHasCoupon(true); setData({...data, couponRescued: true}); Utils.vibrate(); showToast('Desconto Aplicado!'); }}
-                xp={xp}
-                isInteractive={true} 
-            />
-             <button onClick={() => { setSuccess(true); window.scrollTo(0,0); }} className="primary-btn w-full h-14 text-lg flex items-center justify-center gap-2 mb-32">
-                Confirmar Agendamento <MessageCircle size={20}/>
-            </button>
-        </section>
-
+        )}
+        </div>
       </main>
+
+      {/* FOOTER FIXO */}
+      {step < 4 && (
+          <div className={`h-24 flex-shrink-0 flex items-center justify-center px-6 border-t backdrop-blur-xl transition-all duration-500 ${isDark ? 'bg-zinc-950/90 border-white/5' : 'bg-white/90 border-zinc-200'}`}>
+             <div className="w-full max-w-md flex items-center gap-6">
+                {step < 3 && booking.service && (
+                   <div className="flex-1 animate-fade-in">
+                      <span className="block text-[10px] font-bold uppercase opacity-40 tracking-wider mb-1">Total</span>
+                      <span className="block text-3xl font-black text-blue-500">R$ {getFinancials.total}</span>
+                   </div>
+                )}
+                
+                <button
+                   disabled={!isStepValid()}
+                   onClick={() => step === 3 ? handleFinish() : setStep(step + 1)}
+                   className={`h-16 rounded-[24px] font-bold flex items-center justify-center gap-3 px-10 transition-all active:scale-95 shadow-lg
+                     ${step < 3 ? 'flex-1 ml-auto' : 'w-full'} 
+                     ${!isStepValid() 
+                        ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed opacity-50 shadow-none' 
+                        : 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/30'}`}
+                >
+                   {step === 3 ? T.btn_finish : T.btn_continue}
+                   {step === 3 ? <CheckCircle2 size={24}/> : <ArrowRight size={24} />}
+                </button>
+             </div>
+          </div>
       )}
 
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; } 
+        .animate-scale-in { animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); } 
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } } 
+        @keyframes slideRight { from { transform: translateX(-100%); } to { transform: translateX(0); } } 
+        .animate-slide-right { animation: slideRight 0.4s cubic-bezier(0.16, 1, 0.3, 1); } 
+        .animate-fade-in { animation: fadeIn 0.8s ease-out; } 
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } 
+        .animate-slide-in { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); } 
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-up { animation: slideUpModal 0.4s ease-out; }
+        @keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .animate-bounce-slow { animation: bounce 3s infinite; }
+      `}</style>
     </div>
   );
 }
