@@ -7,7 +7,7 @@ import {
   User, Building, BedDouble, Trash2, 
   Heart, Smile, Instagram, Moon, Sun, ShieldCheck, 
   CheckCircle2, Home, Share2, 
-  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car, Gift
+  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car, Gift, Menu
 } from 'lucide-react';
 
 // ==================================================================================
@@ -17,11 +17,11 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v26_js_pure', 
+  STORAGE_KEY: '@thaly_app_v28_build_fixed', 
   XP_TARGET: 500, 
 };
 
-// LISTA DE AVALIAÇÕES
+// --- LISTA DE AVALIAÇÕES ---
 const REVIEWS_DATA = [
   { n: "Tiago", t: "Energia surreal. A massagem foi perfeita.", s: 5 },
   { n: "Pedro H.", t: "Fui pra relaxar e saí renovado. Recomendo.", s: 5 },
@@ -53,7 +53,7 @@ const TEXTS = {
   pt: {
     welcome: "Olá,",
     subtitle: "Vamos agendar seu momento de paz?",
-    reviews_count: "Ver opiniões de outros clientes",
+    reviews_count: "Ver opiniões de clientes",
     reviews_title: "O que dizem sobre mim",
     choose_service: "1. Qual massagem você prefere?",
     duration: "minutos",
@@ -72,7 +72,7 @@ const TEXTS = {
     input_hotel: "Nome do Hotel",
     input_room: "Número do Quarto",
     motel_note: "Para Motéis: Combinamos o local exato pelo WhatsApp.",
-    pay_title: "4. Forma de Pagamento",
+    pay_title: "4. Como prefere pagar?",
     pay_pix: "PIX",
     pay_card: "Cartão",
     pay_cash: "Dinheiro",
@@ -86,7 +86,7 @@ const TEXTS = {
     next_btn: "PRÓXIMO PASSO",
     uber_note: "+ Taxa de deslocamento (Uber)",
     success_title: "Tudo pronto!",
-    success_sub: "Seu pedido foi gerado. Agora é só enviar a mensagem no WhatsApp para eu confirmar.",
+    success_sub: "Seu pedido foi gerado. Envie a mensagem no WhatsApp para eu confirmar.",
     whatsapp_btn: "ENVIAR CONFIRMAÇÃO",
     back_home: "Voltar para o início",
     address_warn: "Preciso do endereço completo para chegar até você.",
@@ -246,7 +246,7 @@ const DB = {
 };
 
 // ==================================================================================
-// 2. COMPONENTES VISUAIS
+// 2. COMPONENTES DE UI
 // ==================================================================================
 
 const Toast = ({ msg, show }) => (
@@ -321,7 +321,7 @@ export default function App() {
   const [step, setStep] = useState(0); 
   const [lang, setLang] = useState('pt');
   
-  // Modais
+  // Estados de Interface
   const [termsOpen, setTermsOpen] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
@@ -334,7 +334,6 @@ export default function App() {
   // ESTADO CLIENT-ONLY
   const [isClient, setIsClient] = useState(false);
   
-  // USUÁRIO
   const [user, setUser] = useState({ 
       name: '', 
       xp: 0, 
@@ -343,7 +342,6 @@ export default function App() {
       hasSeenWelcome: false 
   });
 
-  // BOOKING
   const [booking, setBooking] = useState({
     service: null, 
     extras: {}, 
@@ -369,7 +367,7 @@ export default function App() {
     } else {
         setUser(prev => ({
             ...prev,
-            coupons: [{ id: 'welcome', val: 12, title: 'Cupom Boas Vindas' }]
+            coupons: [{ id: 'welcome12', val: 12, title: 'Cupom Boas Vindas' }]
         }));
     }
   }, []);
@@ -382,7 +380,7 @@ export default function App() {
   // WELCOME POPUP
   useEffect(() => {
       if (isClient && !user.hasSeenWelcome) {
-          const hasWelcome = user.coupons && user.coupons.find(c => c.id === 'welcome');
+          const hasWelcome = user.coupons && user.coupons.find(c => c.id === 'welcome12');
           if(hasWelcome) {
             setTimeout(() => setWelcomePopup(true), 1500);
           }
@@ -487,7 +485,7 @@ export default function App() {
 
   const openZap = () => {
     const f = getFinancials;
-    const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
+    const dateStr = booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US');
     
     let locTxt = "";
     if(booking.locationType === 'home') locTxt = `🏠 *${T.zap.section_loc} (Casa)*\nEnd: ${booking.address.street}, ${booking.address.number}\nRef: ${booking.address.comp}\nBairro: ${booking.address.district} - ${booking.address.city}`;
@@ -526,7 +524,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
   };
 
-  // Loading para evitar erro de hidratação
+  // Safe loading
   if (!isClient) return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-zinc-950">
        <div className="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center text-white font-black text-5xl animate-pulse">T.</div>
@@ -572,9 +570,14 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
             <span className="text-xs opacity-60 text-zinc-400 font-medium">Massoterapeuta</span>
           </div>
         </div>
-        <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
-            <Globe size={24} className="text-zinc-400"/>
-        </button>
+        <div className="flex gap-4">
+            <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+                <Globe size={24} className="text-zinc-400"/>
+            </button>
+            <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+                <Instagram size={24} className="text-purple-500"/>
+            </a>
+        </div>
       </header>
 
       {/* PROGRESSO */}
@@ -590,7 +593,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
 
           {/* STEP 0: SERVIÇOS */}
           {step === 0 && (
-            <>
+            <div className="space-y-10">
               <div className="space-y-4">
                 <h1 className="text-4xl font-bold text-white leading-tight">{T.welcome} <br/><span className="text-blue-500">{user.name.split(' ')[0] || ''}</span></h1>
                 <p className="text-xl text-zinc-400 font-light leading-relaxed">{T.subtitle}</p>
@@ -609,12 +612,12 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   ))}
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           {/* STEP 1: DATA E HORA */}
           {step === 1 && (
-            <>
+            <div className="space-y-10 animate-slide-in">
               <div className="text-center">
                 <h2 className="text-3xl font-bold text-white mb-3">{T.select_time_title}</h2>
                 <p className="text-lg text-zinc-400 font-light">{T.date_sub}</p>
@@ -648,7 +651,6 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                        if (booking.date) {
                           const now = new Date();
                           const [h] = time.split(':');
-                          // Bloqueia se já passou da hora hoje
                           if (booking.date.toDateString() === now.toDateString() && parseInt(h) <= now.getHours()) disabled = true;
                        }
                        const isSel = booking.time === time;
@@ -667,12 +669,12 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           {/* STEP 2: LOCAL */}
           {step === 2 && (
-            <>
+            <div className="space-y-8 animate-slide-in">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-white mb-2">{T.location_title}</h2>
               </div>
@@ -789,8 +791,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   {Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => (
                     <div key={k} className="flex justify-between text-lg text-zinc-400">
                       <span>+ {T.extras_list[k].label}</span>
-                      {/* Safety Check */}
-                      <span>{T.currency} {DB.extras.find(e => e.id === k)?.price || 0}</span>
+                      <span>{T.currency} {DB.extras.find(e => e.id === k).price}</span>
                     </div>
                   ))}
 
@@ -861,7 +862,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
           </div>
         )}
 
-        {/* PASSO 4: SUCESSO */}
+        {/* STEP 4: SUCESSO */}
         {step === 4 && (
             <div className="flex flex-col items-center justify-center pt-24 animate-scale-in text-center h-full">
                 <div className="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(34,197,94,0.4)] mb-10 animate-bounce-slow">
