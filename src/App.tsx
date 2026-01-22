@@ -9,32 +9,55 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES & BANCO DE DADOS
+// 1. DADOS E CONFIGURAÇÕES GLOBAIS
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v22_stable', 
+  STORAGE_KEY: '@thaly_app_v23_final_production', // Chave única para evitar conflitos
   XP_TARGET: 500, 
 };
 
-// TEXTOS (COPY ACOLHEDORA)
+// --- LISTA DE AVALIAÇÕES (Carregada antes do App) ---
+const REVIEWS_DATA = [
+  { n: "Tiago", t: "Energia surreal. A massagem foi perfeita.", s: 5 },
+  { n: "Pedro H.", t: "Fui pra relaxar e saí renovado. Recomendo.", s: 5 },
+  { n: "Curioso SP", t: "Mão firme, pegada excelente.", s: 5 },
+  { n: "Marcos", t: "Paguei o extra pra tocar e valeu cada centavo.", s: 5 },
+  { n: "Empresário", t: "O sigilo foi absoluto. Profissional.", s: 5 },
+  { n: "Roberto", t: "O upgrade de 30 minutos vale a pena.", s: 5 },
+  { n: "Carlos A.", t: "Pontual e educado. Gostei muito.", s: 5 },
+  { n: "Lucas", t: "A mistura de força e suavidade é incrível.", s: 5 },
+  { n: "Gustavo", t: "Ambiente, música e cheiro relaxantes.", s: 5 },
+  { n: "Felipe", t: "Resolveu minha dor na lombar em uma sessão.", s: 5 },
+  { n: "J.P.", t: "Corpo a corpo de verdade. Experiência única.", s: 5 },
+  { n: "André", t: "Respeita os limites mas entrega prazer.", s: 5 },
+  { n: "Breno", t: "Dormi na maca de tão bom.", s: 5 },
+  { n: "Caio", t: "Sensação de liberdade total.", s: 5 },
+  { n: "Vitor", t: "Me senti renovado.", s: 5 },
+  { n: "Renan", t: "Extremamente educado e com papo bom.", s: 5 },
+  { n: "Paulo", t: "O óleo morno faz toda diferença.", s: 5 },
+  { n: "Ricardo", t: "Vale a pena esperar a agenda liberar.", s: 5 },
+  { n: "Sérgio", t: "Nota 10. Nada a reclamar.", s: 5 },
+  { n: "Fernando", t: "Paz de espírito e corpo relaxado.", s: 5 }
+];
+
 const TEXTS = {
   pt: {
     welcome: "Olá,",
     subtitle: "Vamos agendar seu momento de paz?",
-    reviews_count: "Ver opiniões de outros clientes",
+    reviews_count: "Ver opiniões de clientes",
     reviews_title: "O que dizem sobre mim",
     choose_service: "1. Qual massagem você prefere?",
     duration: "minutos",
     currency: "R$",
     select_time_title: "2. Escolha o dia e horário",
-    date_sub: "Toque no dia desejado abaixo:",
-    time_title: "Horários Disponíveis (09h às 20h)",
+    date_sub: "Toque no dia e depois no horário:",
+    time_title: "Horários (09:00 às 20:00)",
     location_title: "3. Onde devo ir?",
     input_name: "Seu Nome",
-    input_name_placeholder: "Digite seu nome aqui",
+    input_name_placeholder: "Digite seu nome",
     input_addr: "Endereço (Rua)",
     input_num: "Número",
     input_bairro: "Bairro",
@@ -43,35 +66,37 @@ const TEXTS = {
     input_hotel: "Nome do Hotel",
     input_room: "Número do Quarto",
     motel_note: "Para Motéis: Combinamos o local exato pelo WhatsApp.",
-    pay_title: "4. Como prefere pagar?",
+    pay_title: "4. Forma de Pagamento",
     pay_pix: "PIX",
     pay_card: "Cartão",
     pay_cash: "Dinheiro",
     extras_title: "Gostaria de incluir algo?",
-    coupon_title: "Seus Descontos",
-    coupon_select: "Toque para usar desconto",
-    coupon_none: "Sem descontos no momento",
+    coupon_title: "Descontos Disponíveis",
+    coupon_select: "Toque para usar cupom",
+    coupon_none: "Sem cupons no momento",
     remove: "Remover",
     total_label: "Valor Total",
     book_btn: "ENVIAR PEDIDO NO ZAP",
-    next_btn: "PRÓXIMO PASSO",
+    next_btn: "AVANÇAR",
     uber_note: "+ Taxa de deslocamento (Uber)",
     success_title: "Tudo pronto!",
-    success_sub: "Seu pedido foi gerado. Agora é só enviar a mensagem no WhatsApp para eu confirmar.",
+    success_sub: "Seu pedido foi gerado. Envie a mensagem no WhatsApp para eu confirmar.",
     whatsapp_btn: "ENVIAR CONFIRMAÇÃO",
     back_home: "Voltar para o início",
-    address_warn: "Preciso do endereço completo para chegar até você.",
+    address_warn: "Preencha todos os dados para eu chegar até você.",
     today: "Hoje",
     tomorrow: "Amanhã",
     popup_welcome_title: "Presente de Boas-Vindas!",
     popup_welcome_msg: "Você ganhou R$ 12,00 de desconto na sua primeira sessão.",
     popup_level_title: "Parabéns!",
     popup_level_msg: "Você atingiu um novo nível e ganhou um Cupom de R$ 20,00!",
+    sold_out: "Esgotado",
+    viewing_now: "pessoas vendo agora",
     
     services: {
       relaxante: { title: "Relaxante", subtitle: "Leve e Tranquila", desc: "Movimentos suaves para tirar o peso das costas e acalmar a mente." },
       sensitiva: { title: "Sensitiva", subtitle: "Toque Pele com Pele", desc: "Uma massagem focada em sensações sutis e despertar o corpo." },
-      mista: { title: "Completa", subtitle: "A Mais Pedida", desc: "Começa tirando a tensão muscular e termina com a parte sensitiva. Inclui finalização." }
+      mista: { title: "Completa", subtitle: "A Mais Pedida", desc: "Relaxante + Sensitiva + Finalização. A experiência total." }
     },
     
     extras_list: {
@@ -82,8 +107,8 @@ const TEXTS = {
 
     terms_body: [
       "1. Respeito: O atendimento é profissional. Qualquer conduta agressiva encerra a sessão.",
-      "2. Higiene: Levo tudo higienizado e esterilizado. Prezo pela limpeza.",
-      "3. Sigilo: Sua privacidade é total. O que acontece na sessão, fica na sessão.",
+      "2. Higiene: Levo tudo higienizado. Prezo pela limpeza e segurança.",
+      "3. Sigilo: Sua privacidade é total.",
       "4. Motel: A entrada do motel é por conta do cliente.",
       "5. Pagamento: É feito logo após o término da massagem."
     ],
@@ -108,94 +133,6 @@ const TEXTS = {
       payment: "Pagamento:",
       wait: "Aguardo sua confirmação!"
     }
-  },
-  en: {
-    welcome: "Hello,",
-    subtitle: "Let's book your moment of peace?",
-    reviews_count: "See reviews",
-    reviews_title: "Client Testimonials",
-    choose_service: "1. Choose Session",
-    duration: "min",
-    currency: "R$",
-    select_time_title: "2. Date & Time",
-    date_sub: "Tap on the desired day:",
-    time_title: "Available Hours",
-    location_title: "3. Location",
-    input_name: "Your Name",
-    input_name_placeholder: "Type your name",
-    input_addr: "Address (Street)",
-    input_num: "Number",
-    input_bairro: "District",
-    input_city: "City",
-    input_comp: "Unit/Apt",
-    input_hotel: "Hotel Name",
-    input_room: "Room Number",
-    motel_note: "For Motels: We decide the place on WhatsApp.",
-    pay_title: "4. Payment Method",
-    pay_pix: "PIX",
-    pay_card: "Card",
-    pay_cash: "Cash",
-    extras_title: "Include extras?",
-    coupon_title: "Your Coupons",
-    coupon_select: "Tap to select",
-    coupon_none: "No coupons available",
-    remove: "Remove",
-    total_label: "Total Value",
-    book_btn: "SEND REQUEST",
-    next_btn: "NEXT STEP",
-    uber_note: "+ Uber Fee (Round trip)",
-    success_title: "All set!",
-    success_sub: "Now just send the confirmation on WhatsApp.",
-    whatsapp_btn: "SEND ON WHATSAPP",
-    back_home: "Back to home",
-    address_warn: "Please fill in the full address.",
-    today: "Today",
-    tomorrow: "Tomorrow",
-    popup_welcome_title: "Welcome Gift!",
-    popup_welcome_msg: "You got R$ 12.00 off your first session.",
-    popup_level_title: "Congratulations!",
-    popup_level_msg: "You reached a new level and earned a R$ 20.00 Coupon!",
-
-    services: {
-      relaxante: { title: "Relaxing", subtitle: "Light & Peaceful", desc: "Gentle movements to remove back weight and calm the mind." },
-      sensitiva: { title: "Sensitive", subtitle: "Skin-to-Skin", desc: "A massage focused on subtle sensations and body awakening." },
-      mista: { title: "Complete", subtitle: "Best Seller", desc: "Starts with muscle relaxation and ends with the sensitive part. Finishing included." }
-    },
-
-    extras_list: {
-      more_time: { label: "+30 Minutes", sub: "More massage time" },
-      touch: { label: "Interactive Touch", sub: "You can touch too" },
-      aroma: { label: "Aromatherapy", sub: "Relaxing essential oils" }
-    },
-
-    terms_body: [
-      "1. Respect: Professional service.",
-      "2. Hygiene: I value hygiene.",
-      "3. Privacy: Guaranteed secrecy.",
-      "4. Motel: Entrance fee is on the client.",
-      "5. Payment: Done immediately after service."
-    ],
-    terms_title: "Good to Know",
-    terms_agree: "I agree to the rules",
-    terms_link: "Read Rules",
-    terms_btn: "I Understand",
-
-    zap: {
-      greeting: ["Good morning", "Good afternoon", "Good evening"],
-      intro: "Hi Thalyson! I'd like to book:",
-      section_serv: "💆‍♂️ SESSION",
-      section_loc: "📍 LOCATION",
-      section_fin: "💰 VALUES",
-      item_serv: "Service:",
-      item_extra: "Extras:",
-      subtotal: "Subtotal:",
-      discount: "Discount:",
-      uber_label: "🚗 Uber (Round Trip):",
-      uber_val: "To calculate",
-      total_pay: "Total to Pay:",
-      payment: "Payment:",
-      wait: "Waiting for confirmation!"
-    }
   }
 };
 
@@ -209,93 +146,50 @@ const DB = {
     { id: 'more_time', price: 77, icon: Clock },
     { id: 'touch', price: 63, icon: Heart },
     { id: 'aroma', price: 5, icon: Smile }
-  ],
-  // LISTA DE AVALIAÇÕES RESTAURADA (ESSENCIAL PARA NÃO QUEBRAR)
-  reviews: [
-    { name: "Tiago", text: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", stars: 5 },
-    { name: "Anônimo", text: "O toque dele vicia. A finalização foi absurda, adorei.", stars: 5 },
-    { name: "Pedro H.", text: "Fui pra relaxar e saí renovado. A massagem é real mesmo.", stars: 5 },
-    { name: "Curioso SP", text: "Mão firme, pegada excelente. O óleo quente faz diferença.", stars: 5 },
-    { name: "Marcos", text: "Paguei o extra pra tocar e valeu cada centavo. Muito cheiroso.", stars: 5 },
-    { name: "Empresário", text: "Sou casado, tinha receio. O sigilo foi absoluto.", stars: 5 },
-    { name: "Roberto", text: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", stars: 5 },
-    { name: "Fã", text: "Visual nota 1000. Super educado.", stars: 5 },
-    { name: "Carlos A.", text: "Profissionalismo raro hoje em dia. Pontual.", stars: 5 },
-    { name: "Lucas", text: "A mistura de força e suavidade é incrível. Recomendo.", stars: 5 },
-    { name: "Gustavo", text: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", stars: 5 },
-    { name: "Felipe", text: "Tinha muita dor na lombar, ele resolveu em uma sessão.", stars: 5 },
-    { name: "J.P.", text: "O corpo a corpo é quente de verdade. Uma experiência única.", stars: 5 },
-    { name: "André", text: "Gostei que ele respeita os limites, mas entrega muito prazer.", stars: 5 },
-    { name: "Turista RJ", text: "Atendimento no hotel foi super rápido e discreto.", stars: 5 },
-    { name: "Breno", text: "Fiz a relaxante e dormi na maca de tão bom.", stars: 5 },
-    { name: "Dr. Marcelo", text: "A técnica dele é diferente de tudo. Vale cada real.", stars: 5 },
-    { name: "Caio", text: "Sensação de liberdade total. O toque extra é obrigatório.", stars: 5 },
-    { name: "Vitor", text: "Me senti renovado. Energia lá em cima depois da sessão.", stars: 5 },
-    { name: "Renan", text: "Extremamente educado e com papo bom.", stars: 5 },
-    { name: "Paulo", text: "O óleo morno é um detalhe que faz toda diferença.", stars: 5 },
-    { name: "Cliente Antigo", text: "Já fiz com vários, o Thalyson é o melhor da região.", stars: 5 },
-    { name: "Advogado SP", text: "Pontualidade britânica. Chegou na hora marcada.", stars: 5 },
-    { name: "Anônimo", text: "A finalização é intensa mesmo, cumpriu o que prometeu.", stars: 5 },
-    { name: "Motorista", text: "Massagem terapêutica de verdade, tirou todos os nós.", stars: 5 },
-    { name: "Designer", text: "Experiência sensorial incrível. O cheiro, o toque, a música.", stars: 5 },
-    { name: "Matheus", text: "Muito gente fina. O tempo passou voando.", stars: 5 },
-    { name: "Bruno", text: "Melhor investimento da semana. Relaxamento total.", stars: 5 },
-    { name: "Rafa", text: "Toque firme, mas sensível. Sabe onde tocar.", stars: 5 },
-    { name: "Tech Guy", text: "Gostei da facilidade de agendar pelo app.", stars: 5 },
-    { name: "Pedro", text: "Me ajudou muito com a ansiedade. Gratidão.", stars: 5 },
-    { name: "Ricardo", text: "Valeu a pena esperar a agenda liberar.", stars: 5 },
-    { name: "Sérgio", text: "Nota 10. Nada a reclamar.", stars: 5 },
-    { name: "Médico", text: "Muito higiênico e cuidadoso.", stars: 5 },
-    { name: "Fernando", text: "Paz de espírito e corpo relaxado. Obrigado.", stars: 5 }
   ]
 };
 
 // ==================================================================================
-// 2. COMPONENTES VISUAIS (MODAIS E UI)
+// 2. COMPONENTES DE INTERFACE (Acessíveis)
 // ==================================================================================
 
 const Toast = ({ msg, show }) => (
-  <div className={`fixed top-12 left-1/2 -translate-x-1/2 z-[120] transition-all duration-500 pointer-events-none ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-    <div className="bg-blue-600/95 backdrop-blur-md text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-3 font-bold text-base border border-blue-400/30 whitespace-nowrap">
+  <div className={`fixed top-12 left-1/2 -translate-x-1/2 z-[130] transition-all duration-500 pointer-events-none ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+    <div className="bg-blue-600/95 backdrop-blur-md text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-3 font-bold text-lg border border-blue-400/30 whitespace-nowrap">
       <CheckCircle2 size={24} />
       <span>{msg}</span>
     </div>
   </div>
 );
 
-// MODAL GENÉRICO ACOLHEDOR
 const Modal = ({ isOpen, onClose, children, title }) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center">
+    <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
-      <div className="relative w-full max-w-md bg-zinc-950 border-t border-zinc-800 sm:border sm:rounded-3xl p-8 pb-10 animate-slide-up shadow-2xl max-h-[85vh] flex flex-col">
-        <div className="w-16 h-1.5 bg-zinc-700 rounded-full mx-auto mb-8 flex-shrink-0 opacity-50"/>
-        {title && (
-            <div className="flex justify-between items-center mb-6 flex-shrink-0">
-                <h3 className="text-2xl font-bold text-white tracking-tight">{title}</h3>
-                <button onClick={onClose} className="p-3 bg-zinc-800 rounded-full text-zinc-400 hover:text-white"><X size={24}/></button>
-            </div>
-        )}
+      <div className="relative w-full max-w-md bg-zinc-950 border border-zinc-800 rounded-3xl p-6 pb-8 animate-slide-up shadow-2xl max-h-[85vh] flex flex-col">
+        <div className="flex justify-between items-center mb-6 flex-shrink-0">
+            <h3 className="text-2xl font-bold text-white tracking-tight">{title}</h3>
+            <button onClick={onClose} className="p-3 bg-zinc-800 rounded-full text-zinc-400 hover:text-white"><X size={24}/></button>
+        </div>
         <div className="overflow-y-auto flex-1 scrollbar-hide px-1">{children}</div>
       </div>
     </div>
   );
 };
 
-// POPUP DE RECOMPENSA (GAMIFICATION)
 const RewardPopup = ({ isOpen, onClose, title, msg }) => {
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={onClose}></div>
             <div className="relative bg-gradient-to-br from-blue-900 to-zinc-900 border border-blue-500/50 p-8 rounded-[2rem] text-center max-w-sm w-full animate-scale-in shadow-[0_0_50px_rgba(37,99,235,0.3)]">
-                <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl animate-bounce-slow">
-                    <Gift size={40} className="text-white" />
+                <div className="w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl animate-bounce-slow">
+                    <Gift size={48} className="text-white" />
                 </div>
-                <h2 className="text-2xl font-black text-white mb-2">{title}</h2>
+                <h2 className="text-3xl font-black text-white mb-4">{title}</h2>
                 <p className="text-zinc-300 text-lg leading-relaxed mb-8">{msg}</p>
-                <button onClick={onClose} className="w-full py-4 bg-white text-blue-900 font-bold rounded-xl text-lg hover:bg-blue-50 transition-colors">
+                <button onClick={onClose} className="w-full py-5 bg-white text-blue-900 font-bold rounded-xl text-xl hover:bg-blue-50 transition-colors">
                     Resgatar Agora
                 </button>
             </div>
@@ -303,7 +197,7 @@ const RewardPopup = ({ isOpen, onClose, title, msg }) => {
     );
 };
 
-// CARD DE SERVIÇO (DESIGN CLARO E GRANDE)
+// Card Grande e Fácil de Ler
 const ServiceCard = ({ s, selected, onClick, T }) => (
   <div onClick={onClick} className={`relative p-6 rounded-[24px] border-2 transition-all duration-200 cursor-pointer ${selected ? 'bg-blue-900/20 border-blue-500 shadow-xl' : 'bg-zinc-900 border-zinc-800 hover:border-zinc-600'}`}>
     <div className="flex justify-between items-start mb-4">
@@ -325,12 +219,11 @@ const ServiceCard = ({ s, selected, onClick, T }) => (
 );
 
 // ==================================================================================
-// 3. APP PRINCIPAL
+// 3. LÓGICA PRINCIPAL DO APP
 // ==================================================================================
 
 export default function App() {
   const [step, setStep] = useState(0); 
-  const [lang, setLang] = useState('pt');
   
   // Estados de Interface
   const [termsOpen, setTermsOpen] = useState(false);
@@ -338,15 +231,15 @@ export default function App() {
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
+  const [viewingCount, setViewingCount] = useState(0);
   
   const scrollRef = useRef(null);
-  const T = TEXTS[lang];
+  const T = TEXTS.pt; // Apenas PT para simplificar e focar
 
   // USUÁRIO & PERSISTÊNCIA (AUTO-SAVE)
   const [user, setUser] = useState(() => {
     try {
        const s = localStorage.getItem(CONFIG.STORAGE_KEY);
-       // Estado Inicial Padrão
        const defaultState = { 
            name: '', 
            xp: 0, 
@@ -358,7 +251,7 @@ export default function App() {
     } catch { return { name: '', xp: 0, coupons: [] }; }
   });
 
-  // BOOKING STATE
+  // BOOKING STATE (Inicia com endereço salvo se houver)
   const [booking, setBooking] = useState({
     service: null, 
     extras: {}, 
@@ -371,28 +264,30 @@ export default function App() {
     termsAccepted: false
   });
 
-  // Persistir Dados
+  // Salvar no LocalStorage sempre que o user mudar
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
   
-  // Popup de Boas Vindas (Apenas 1 vez)
+  // Popup de Boas Vindas (Apenas 1 vez na vida do usuário)
   useEffect(() => {
       if (!user.hasSeenWelcome && user.coupons.find(c => c.id === 'welcome')) {
-          setTimeout(() => setWelcomePopup(true), 1500);
+          setTimeout(() => setWelcomePopup(true), 1000);
       }
   }, []);
 
-  // Fechar Popup Boas Vindas
   const closeWelcome = () => {
       setWelcomePopup(false);
       setUser(u => ({...u, hasSeenWelcome: true}));
   };
 
-  // Scroll topo ao mudar etapa
   useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
 
   const showToast = (msg) => {
     setToast({ show: true, msg });
     setTimeout(() => setToast({ show: false, msg: '' }), 3000);
+  };
+
+  const generateViewingCount = () => {
+      setViewingCount(Math.floor(Math.random() * (6 - 2 + 1)) + 2);
   };
 
   const getFinancials = useMemo(() => {
@@ -430,7 +325,7 @@ export default function App() {
   };
 
   const nextStep = () => {
-      // Salvar Endereço Automaticamente ao sair do passo 2
+      // SALVA O ENDEREÇO AUTOMATICAMENTE AO PASSAR DA TELA 2
       if (step === 2 && booking.locationType === 'home') {
           setUser(u => ({ ...u, name: user.name, savedAddress: booking.address }));
       }
@@ -438,39 +333,40 @@ export default function App() {
   };
 
   const finishBooking = () => {
-    // 1. Remove cupom usado
+    // 1. Remove cupom usado (Comparação segura)
     let updatedCoupons = [...user.coupons];
     if (booking.appliedCoupon) {
       updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     }
     
-    // 2. Adiciona XP e verifica Nível
+    // 2. Gamificação
     const newXP = user.xp + getFinancials.total;
     let leveledUp = false;
     
     if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
-        updatedCoupons.push({ id: Date.now(), val: 20, title: 'Cupom Nível Prata' });
+        updatedCoupons.push({ id: Date.now(), val: 20, title: 'Cupom de Retorno' });
         leveledUp = true;
     }
     
     setUser({ ...user, xp: newXP, coupons: updatedCoupons });
     
-    if(leveledUp) setLevelUpPopup(true); // Mostra popup de nível
+    if(leveledUp) setLevelUpPopup(true);
     setStep(4);
   };
 
   const reset = () => {
     setStep(0);
+    // Mantém o endereço salvo, mas limpa o agendamento atual
     setBooking({ 
         service: null, extras: {}, date: null, time: null, locationType: 'home', 
-        address: user.savedAddress || {}, // Mantém endereço salvo
+        address: user.savedAddress || { city: '', district: '', street: '', number: '', comp: '', placeName: '' }, 
         payment: '', appliedCoupon: null, termsAccepted: false 
     });
   };
 
   const openZap = () => {
     const f = getFinancials;
-    const dateStr = booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US');
+    const dateStr = booking.date.toLocaleDateString('pt-BR');
     
     let locTxt = "";
     if(booking.locationType === 'home') locTxt = `🏠 *${T.zap.section_loc} (Casa)*\nEnd: ${booking.address.street}, ${booking.address.number}\nRef: ${booking.address.comp}\nBairro: ${booking.address.district} - ${booking.address.city}`;
@@ -506,12 +402,6 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
   };
 
-  if (loading) return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-zinc-950">
-       <div className="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center text-white font-black text-5xl animate-pulse">T.</div>
-    </div>
-  );
-
   return (
     <div className="h-[100dvh] w-full bg-zinc-950 text-zinc-100 font-sans flex flex-col overflow-hidden selection:bg-blue-500/30">
       
@@ -519,21 +409,21 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
       
       {/* MODALS */}
       <Modal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} title={T.terms_title}>
-         <div className="space-y-6 text-base text-zinc-300 leading-relaxed font-light">
-            {T.terms_body.map((t,i)=><p key={i} className="p-4 bg-zinc-900 rounded-xl border border-white/5">{t}</p>)}
+         <div className="space-y-6 text-lg text-zinc-300 leading-relaxed font-light">
+            {T.terms_body.map((t,i)=><p key={i} className="p-4 bg-zinc-900 rounded-xl border border-zinc-800">{t}</p>)}
          </div>
-         <button onClick={()=>setTermsOpen(false)} className="w-full mt-8 py-5 bg-blue-600 text-white font-bold rounded-2xl text-lg">{T.terms_btn}</button>
+         <button onClick={()=>setTermsOpen(false)} className="w-full mt-8 py-5 bg-blue-600 text-white font-bold rounded-2xl text-xl">{T.terms_btn}</button>
       </Modal>
 
       <Modal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} title={T.reviews_title}>
          <div className="space-y-4">
-            {DB.reviews.map((r, i) => (
-               <div key={i} className="p-5 rounded-2xl bg-white/5 border border-white/5">
+            {REVIEWS_DATA.map((r, i) => (
+               <div key={i} className="p-5 rounded-2xl bg-white/5 border border-zinc-800">
                   <div className="flex justify-between mb-3">
-                     <span className="font-bold text-blue-400 text-sm">{r.name}</span>
-                     <div className="flex text-amber-400 gap-0.5">{[...Array(r.stars)].map((_,k)=><Star key={k} size={14} fill="currentColor"/>)}</div>
+                     <span className="font-bold text-blue-400 text-base">{r.n}</span>
+                     <div className="flex text-amber-400 gap-0.5">{[...Array(r.s)].map((_,k)=><Star key={k} size={14} fill="currentColor"/>)}</div>
                   </div>
-                  <p className="text-base text-zinc-300 italic leading-relaxed">"{r.text}"</p>
+                  <p className="text-base text-zinc-300 italic leading-relaxed">"{r.t}"</p>
                </div>
             ))}
          </div>
@@ -543,7 +433,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
       <RewardPopup isOpen={levelUpPopup} onClose={()=>setLevelUpPopup(false)} title={T.popup_level_title} msg={T.popup_level_msg} />
 
       {/* --- HEADER --- */}
-      <header className="h-24 px-8 flex items-center justify-between border-b border-white/5 bg-zinc-950/90 backdrop-blur-md z-20 shrink-0">
+      <header className="h-24 px-8 flex items-center justify-between border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-md z-20 shrink-0">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-blue-600/30">T.</div>
           <div className="flex flex-col">
@@ -551,9 +441,13 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
             <span className="text-xs opacity-60 text-zinc-400 font-medium">Massoterapeuta</span>
           </div>
         </div>
-        <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
-            <Globe size={24} className="text-zinc-400"/>
-        </button>
+        <div className="flex items-center gap-3">
+            <div className="flex flex-col items-end mr-2">
+                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Seu Nível</span>
+                <span className="text-xl font-black text-white">{user.xp} XP</span>
+            </div>
+            <Trophy size={28} className="text-yellow-500"/>
+        </div>
       </header>
 
       {/* --- PROGRESSO --- */}
@@ -604,7 +498,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   {[...Array(7)].map((_, i) => {
                     const d = new Date(); d.setDate(d.getDate() + i);
                     const isSel = booking.date?.toDateString() === d.toDateString();
-                    let lbl = d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'short' }).slice(0,3);
+                    let lbl = d.toLocaleDateString('pt-BR', { weekday: 'short' }).slice(0,3);
                     if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
 
                     return (
@@ -627,11 +521,16 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                        if (booking.date) {
                           const now = new Date();
                           const [h] = time.split(':');
+                          // Bloqueia horários passados de hoje
                           if (booking.date.toDateString() === now.toDateString() && parseInt(h) <= now.getHours()) disabled = true;
                        }
                        const isSel = booking.time === time;
                        return (
-                          <button key={time} disabled={disabled} onClick={() => setBooking({ ...booking, time })}
+                          <button key={time} disabled={disabled} 
+                            onClick={() => {
+                                setBooking({ ...booking, time });
+                                generateViewingCount();
+                            }}
                             className={`py-5 rounded-2xl text-base font-bold border-2 transition-all
                               ${booking.time === time 
                                   ? 'bg-white text-blue-900 border-white shadow-xl scale-105 z-10' 
@@ -642,6 +541,14 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                        );
                     })}
                   </div>
+                  {/* Escassez */}
+                  {booking.time && (
+                    <div className="mt-8 flex justify-center animate-fade-in">
+                        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500 px-5 py-2 rounded-full text-sm font-bold flex items-center gap-3 shadow-lg shadow-amber-500/5">
+                            <Eye size={18} className="animate-pulse"/> {viewingCount} {T.viewing_now}
+                        </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </>
@@ -732,7 +639,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                 )}
              </div>
 
-             <div className="pt-10 border-t border-white/5 mt-10">
+             <div className="pt-10 border-t border-zinc-800 mt-10">
                <h3 className="text-sm font-bold uppercase text-zinc-500 mb-6">{T.extras_title}</h3>
                <div className="space-y-4">
                  {DB.extras.map(extra => (
@@ -756,7 +663,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
           <div className="space-y-12 animate-slide-in pb-10">
              <button onClick={()=>setStep(2)} className="flex items-center gap-2 text-base font-bold text-zinc-500 hover:text-white transition-colors"><ChevronLeft size={24}/> Voltar</button>
              
-             <div className="bg-zinc-900 border border-white/10 rounded-[32px] p-8 relative overflow-hidden shadow-2xl">
+             <div className="bg-zinc-900 border border-zinc-800 rounded-[32px] p-8 relative overflow-hidden shadow-2xl">
                 <div className="space-y-6 relative z-10">
                   <div className="flex justify-between items-center pb-6 border-b border-zinc-800">
                     <span className="font-bold text-2xl text-white">{T.services[booking.service.id].title}</span>
@@ -803,7 +710,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                     </div>
                   )}
 
-                  <div className="pt-6 border-t border-white/10 flex flex-col gap-2">
+                  <div className="pt-6 border-t border-zinc-800 flex flex-col gap-2">
                     <div className="flex justify-between items-end">
                       <span className="text-sm font-bold text-zinc-500 uppercase">{T.total_label}</span>
                       <span className="text-5xl font-black text-white">{T.currency} {getFinancials.total}</span>
@@ -818,7 +725,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                 <div className="grid grid-cols-3 gap-4">
                   {[{id:'pix', l:T.pay_pix, i:QrCode}, {id:'card', l:T.pay_card, i:CreditCard}, {id:'money', l:T.pay_cash, i:Banknote}].map(p => (
                     <button key={p.id} onClick={() => setBooking({ ...booking, payment: p.id })}
-                      className={`flex flex-col items-center justify-center gap-3 py-8 rounded-[24px] border-2 transition-all ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}
+                      className={`flex flex-col items-center justify-center gap-3 py-8 rounded-[24px] border-2 transition-all duration-200 ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}
                     >
                       <p.i size={32}/> <span className="text-sm font-bold uppercase">{p.l}</span>
                     </button>
@@ -861,7 +768,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
 
       {/* --- FOOTER FIXO --- */}
       {step < 4 && (
-          <div className="h-32 flex-shrink-0 flex items-center justify-center px-8 border-t border-white/5 bg-zinc-950/90 backdrop-blur-xl pb-6">
+          <div className="h-32 flex-shrink-0 flex items-center justify-center px-8 border-t border-zinc-800 bg-zinc-950/90 backdrop-blur-xl pb-6">
              <div className="w-full max-w-md flex items-center gap-6">
                 {step < 3 && booking.service && (
                    <div className="flex-1 animate-fade-in">
