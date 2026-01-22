@@ -5,7 +5,7 @@ import {
   User, Building, BedDouble, Trash2, 
   Heart, Smile, Instagram, Moon, Sun, ShieldCheck, 
   CheckCircle2, Home, Share2, 
-  CreditCard, Banknote, QrCode, Trophy, Info
+  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car
 } from 'lucide-react';
 
 // ==================================================================================
@@ -15,7 +15,7 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v14_final', // Chave atualizada
+  STORAGE_KEY: '@thaly_app_v15_platinum', 
   XP_TARGET: 500, 
 };
 
@@ -23,14 +23,14 @@ const TEXTS = {
   pt: {
     welcome: "Bem-vindo",
     subtitle: "Seu momento de paz e prazer começa agora.",
-    reviews_btn: "Ler todas as 50+ avaliações",
+    reviews_btn: "Ler todas as avaliações",
     reviews_title: "O que dizem sobre mim",
     choose_service: "Escolha sua Experiência",
     duration: "de sessão",
     investment: "Valor",
     date_title: "Agendamento",
     date_sub: "Qual o melhor dia para você?",
-    time_title: "Horários Livres",
+    time_title: "Horários",
     location_title: "Local de Atendimento",
     location_sub: "Onde você se sente mais à vontade?",
     name_placeholder: "Como prefere ser chamado?",
@@ -53,11 +53,13 @@ const TEXTS = {
     room: "Quarto",
     comp_placeholder: "Complemento / Ponto de Referência (Obrigatório)",
     address_warn: "Preencha todo o endereço para eu chegar até você.",
+    uber_warn: "Taxa de deslocamento (Uber ida/volta) calculada no WhatsApp.",
+    viewing_now: "pessoas vendo este horário",
     
     services: {
       relaxante: { title: "Massagem Relaxante", desc: "Movimentos leves, contínuos e envolventes. Foco total em tirar o peso das costas e acalmar a mente." },
       sensitiva: { title: "Massagem Sensitiva", desc: "Experiência de pele com pele. Toques sutis que despertam a sensibilidade de cada centímetro do corpo." },
-      mista: { title: "Massagem Completa", desc: "A união perfeita: começa relaxando a tensão muscular e termina com a parte sensitiva intensa e finalização profunda." }
+      mista: { title: "Massagem Completa", desc: "Massagem no corpo inteiro para relaxar, depois corpo a corpo sensitiva com lingam no final (opcional)." }
     },
     
     extras: {
@@ -68,7 +70,7 @@ const TEXTS = {
 
     terms_body: [
       "1. Respeito Mútuo: O atendimento é profissional. Qualquer conduta agressiva ou desrespeitosa encerrará a sessão imediatamente.",
-      "2. Higiene : Prezo pela higiene",
+      "2. Higiene: Prezo pela máxima higiene e exijo o mesmo.",
       "3. Sigilo Absoluto: Sua privacidade é garantida. O que acontece na sessão, fica na sessão.",
       "4. Taxas Externas: Em caso de atendimento em Motel, a taxa de entrada/período é de responsabilidade do cliente.",
       "5. Pagamento: O pagamento deve ser realizado integralmente logo após a prestação do serviço."
@@ -84,10 +86,13 @@ const TEXTS = {
       location: "Local",
       home_title: "Em Casa",
       motel_title: "Motel",
-      motel_desc: "Vamos decidir juntos. (Entrada por minha conta)",
+      motel_desc: "Vamos decidir juntos. (Entrada por conta do cliente)",
       hotel_title: "Hotel",
       room: "Quarto",
-      total: "Total",
+      subtotal: "Subtotal",
+      uber: "Uber (Ida/Volta)",
+      uber_calc: "A calcular",
+      total_msg: "Total a Pagar",
       payment: "Pag",
       wait: "Aguardo retorno!"
     }
@@ -95,7 +100,7 @@ const TEXTS = {
   en: {
     welcome: "Welcome",
     subtitle: "Your moment of peace and pleasure starts now.",
-    reviews_btn: "Read all 50+ reviews",
+    reviews_btn: "Read all reviews",
     reviews_title: "Testimonials",
     choose_service: "Choose your Experience",
     duration: "session",
@@ -125,17 +130,19 @@ const TEXTS = {
     room: "Room Number",
     comp_placeholder: "Complement / Reference (Required)",
     address_warn: "Please fill full address.",
+    uber_warn: "Transport fee (Uber round trip) calculated on WhatsApp.",
+    viewing_now: "people viewing this slot",
 
     services: {
       relaxante: { title: "Relaxing Massage", desc: "Light, continuous, and enveloping movements. Total focus on removing back weight and calming the mind." },
       sensitiva: { title: "Sensitive Massage", desc: "Skin-to-skin experience. Subtle touches that awaken the sensitivity of every inch of the body." },
-      mista: { title: "Complete Massage", desc: "The perfect union: starts by relaxing muscle tension and ends with intense sensitive part." }
+      mista: { title: "Complete Massage", desc: "Full body relaxation massage, followed by sensitive body-to-body with lingam finishing (optional)." }
     },
 
     extras: {
       more_time: { label: "+30 Minutes", desc: "Extend the session" },
       touch: { label: "Interactive Touch", desc: "Touch exchange allowed" },
-      aroma: { label: "Aromatherapy", desc: "Essential oils" }
+      aroma: { label: "Aromaterapia", desc: "Essential oils" }
     },
 
     terms_body: [
@@ -156,10 +163,13 @@ const TEXTS = {
       location: "Location",
       home_title: "Home Visit",
       motel_title: "Motel",
-      motel_desc: "We decide together. (Fee on me)",
+      motel_desc: "We decide together. (Fee on you)",
       hotel_title: "Hotel",
       room: "Room",
-      total: "Total",
+      subtotal: "Subtotal",
+      uber: "Uber (Round Trip)",
+      uber_calc: "To calculate",
+      total_msg: "Total to Pay",
       payment: "Pay",
       wait: "Waiting for reply!"
     }
@@ -170,70 +180,70 @@ const DB = {
   services: [
     { id: 'relaxante', time: '1h', price: 145, xp: 145, icon: Wind, badge: null },
     { id: 'sensitiva', time: '1h', price: 175, xp: 175, icon: Flame, badge: '🔥' },
-    { id: 'mista', time: '1h', price: 210, xp: 210, icon: Zap, badge: '✨' }
+    { id: 'mista', time: '1h', price: 255, xp: 205, icon: Zap, badge: '✨' }
   ],
   extras: [
     { id: 'more_time', price: 77, icon: Clock },
     { id: 'touch', price: 63, icon: Heart },
     { id: 'aroma', price: 5, icon: Smile }
   ],
+  // LISTA DE AVALIAÇÕES ATUALIZADA
   reviews: [
-    { name: "Lucas (Londrina)", text: "Mano, que sensação. Jorrei muito no final, foi insano. O cara sabe o que faz.", stars: 5 },
-    { name: "Ricardo (SP)", text: "A sensitiva dele é outro patamar. Gozei horrores e relaxei demais.", stars: 5 },
-    { name: "Felipe (Jales)", text: "Relaxou até minha alma. Mão pesada na medida certa, tirou toda dor.", stars: 5 },
-    { name: "Gustavo (Santa Fé)", text: "O toque é elétrico. Fiquei tremendo depois.", stars: 5 },
-    { name: "André (Londrina)", text: "Curti a massagem, técnica boa, mas o ar tava meio gelado no dia.", stars: 4 },
-    { name: "M. Oliveira (SP)", text: "Simpático e discreto. A finalização foi top, recomendo.", stars: 5 },
-    { name: "Bruno (Jales)", text: "Nunca tinha sentido isso. Recomendo a mista pra quem quer tudo.", stars: 5 },
-    { name: "Carlos (Londrina)", text: "Bom profissional, mas atrasou 5 minutinhos. De resto, ok.", stars: 4 },
-    { name: "Júnior (SP)", text: "Cara, sai flutuando. O óleo quente é vida.", stars: 5 },
-    { name: "Anônimo (Santa Fé)", text: "Me deixou muito à vontade. Gozei rápido demais kkk vergonha.", stars: 5 },
-    { name: "Pedro (Londrina)", text: "Experiência única. Vale cada centavo investido.", stars: 5 },
-    { name: "Thiago (SP)", text: "Achei 1h pouco, devia ter pego 1h30 direto.", stars: 3 },
-    { name: "Vitor (Jales)", text: "Energia surreal. O cara é brabo na técnica.", stars: 5 },
-    { name: "Leandro (Santa Fé)", text: "Gostei da playlist e da massagem. Tudo 100%.", stars: 5 },
-    { name: "R. Gomes (Londrina)", text: "Profissional raro. Respeitador e safado na medida certa.", stars: 5 },
-    { name: "Eduardo (SP)", text: "Tudo higienizado e cheiroso. Voltarei com certeza.", stars: 5 },
-    { name: "Sérgio (Jales)", text: "Mão de seda. Relaxamento real, quase dormi.", stars: 5 },
-    { name: "Caio (Santa Fé)", text: "Me senti um rei. Atendimento VIP do começo ao fim.", stars: 5 },
-    { name: "D. Santos (Londrina)", text: "Faz tudo no tempo certo, sem pressa. Gostei.", stars: 5 },
-    { name: "Fábio (SP)", text: "Ótimo papo e massagem melhor ainda. Virei cliente.", stars: 5 },
-    { name: "Marcos (Jales)", text: "A mista vale muito a pena. Sai renovado.", stars: 5 },
-    { name: "Júlio C. (Santa Fé)", text: "Toque envolvente demais. Recomendo.", stars: 5 },
-    { name: "Renato (Londrina)", text: "Foi no meu hotel, levou a maca, tudo 10.", stars: 5 },
-    { name: "Alex (SP)", text: "Tirou meu stress da semana toda. Mãos mágicas.", stars: 5 },
-    { name: "Paulo (Jales)", text: "Técnica suave excelente para quem tem dor.", stars: 5 },
-    { name: "G. F. (Santa Fé)", text: "Top demais. O final é explosivo.", stars: 5 },
-    { name: "Luan (Londrina)", text: "Atencioso aos detalhes. Percebeu onde eu tinha dor.", stars: 5 },
-    { name: "Fernando (SP)", text: "Massagem calma, sem dor. Dormi na metade.", stars: 5 },
-    { name: "Roberto (Jales)", text: "Gente boa demais, super educado.", stars: 5 },
-    { name: "Diego (Santa Fé)", text: "Experiência tântrica de verdade. Conexão total.", stars: 5 },
-    { name: "Arthur (Londrina)", text: "Superou expectativas. Gozei litros no final.", stars: 5 },
-    { name: "B. Lima (SP)", text: "Ótimo custo benefício pela qualidade.", stars: 5 },
-    { name: "César (Jales)", text: "Mãos quentes, óleo top.", stars: 5 },
-    { name: "Daniel (Santa Fé)", text: "Profissionalismo 1000. Confio de olhos fechados.", stars: 5 },
-    { name: "Elias (Londrina)", text: "Tudo organizado. Gostei.", stars: 5 },
-    { name: "Gabriel (SP)", text: "Sabe deixar à vontade. Amei a experiência.", stars: 5 },
-    { name: "Hélio (Jales)", text: "Massagem completa mesmo. Corpo todo.", stars: 5 },
-    { name: "Igor (Santa Fé)", text: "Outra pessoa depois da sessão. Leve.", stars: 5 },
-    { name: "João P. (Londrina)", text: "Vale a pena a de 1h30. Passa rápido.", stars: 5 },
-    { name: "Kevin (SP)", text: "Melhor da região. Sem dúvidas.", stars: 5 },
-    { name: "Leonardo (Jales)", text: "Técnica refinada, estudada.", stars: 5 },
-    { name: "Mário (Santa Fé)", text: "Voltarei em breve. Viciei.", stars: 5 },
-    { name: "Natan (Londrina)", text: "Desestressante total.", stars: 5 },
-    { name: "Otávio (SP)", text: "Sem atrasos. Pontual.", stars: 5 },
-    { name: "P. R. (Jales)", text: "Mãos abençoadas.", stars: 5 },
-    { name: "Rafael (Santa Fé)", text: "Muito respeitoso.", stars: 5 },
-    { name: "Samuel (Londrina)", text: "Show de bola.", stars: 5 },
-    { name: "Túlio (SP)", text: "Gostei da música e do clima.", stars: 5 },
-    { name: "Ulisses (Jales)", text: "Sério e competente.", stars: 5 },
-    { name: "Valdir (Santa Fé)", text: "Melhor hora do dia.", stars: 5 },
-    { name: "William (Londrina)", text: "Preço justo pelo serviço.", stars: 4 }
+    { name: "Tiago (Bela Vista)", text: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", stars: 5 },
+    { name: "Anônimo", text: "O toque dele vicia. A finalização foi absurda, jorrei longe.", stars: 5 },
+    { name: "Pedro H.", text: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", stars: 5 },
+    { name: "Curioso SP", text: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", stars: 5 },
+    { name: "M. (Jardins)", text: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", stars: 5 },
+    { name: "Empresário", text: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", stars: 5 },
+    { name: "M. (Casado)", text: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", stars: 5 },
+    { name: "Roberto", text: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", stars: 5 },
+    { name: "Fã", text: "Ele de cueca branca... sem comentários. Visual nota 1000.", stars: 5 },
+    { name: "Carlos A.", text: "Profissionalismo raro hoje em dia. Pontual e educado.", stars: 5 },
+    { name: "Lucas", text: "A mistura de força e suavidade é incrível. Recomendo.", stars: 5 },
+    { name: "Novato", text: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", stars: 5 },
+    { name: "Gustavo", text: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", stars: 5 },
+    { name: "Felipe Personal", text: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", stars: 5 },
+    { name: "J.P.", text: "O corpo a corpo é quente de verdade. Uma experiência única.", stars: 5 },
+    { name: "André", text: "Gostei que ele respeita os limites, mas entrega muito prazer.", stars: 5 },
+    { name: "Turista RJ", text: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", stars: 5 },
+    { name: "Anônimo", text: "Cara bonito, limpo e com pegada. O pacote completo.", stars: 5 },
+    { name: "Breno", text: "Fiz a relaxante e dormi na maca de tão bom. Recomendo.", stars: 5 },
+    { name: "Dr. Marcelo", text: "A técnica dele é diferente de tudo. Vale cada real.", stars: 5 },
+    { name: "Caio", text: "Sensação de liberdade total. O toque extra é obrigatório.", stars: 5 },
+    { name: "Vitor", text: "Me senti renovado. Energia lá em cima depois da sessão.", stars: 5 },
+    { name: "Renan", text: "Extremamente educado e com papo bom, além da massagem top.", stars: 5 },
+    { name: "Paulo", text: "O óleo de coco morno é um detalhe que faz toda diferença.", stars: 5 },
+    { name: "Cliente Antigo", text: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", stars: 5 },
+    { name: "Dica do Beto", text: "Não economizem, peçam a completa com aromaterapia.", stars: 5 },
+    { name: "Advogado SP", text: "Pontualidade britânica. Chegou na hora marcada.", stars: 5 },
+    { name: "Gym Rat", text: "Fiquei impressionado com a força das mãos dele.", stars: 5 },
+    { name: "Anônimo", text: "A finalização manual é intensa mesmo, cumpriu o que prometeu.", stars: 5 },
+    { name: "Hétero Curioso", text: "Excelente profissional. Me deixou super confortável.", stars: 5 },
+    { name: "Motorista", text: "Massagem terapêutica de verdade, tirou todos os nós das costas.", stars: 5 },
+    { name: "M. (Sigilo)", text: "O sigilo é garantido mesmo. Pode confiar.", stars: 5 },
+    { name: "Sr. João", text: "Agradeço pela paciência e pelo serviço impecável.", stars: 5 },
+    { name: "Designer", text: "Experiência sensorial incrível. O cheiro, o toque, a música.", stars: 5 },
+    { name: "Executivo", text: "Saí flutuando. Recomendo para quem tem rotina estressante.", stars: 5 },
+    { name: "Matheus", text: "O Thalyson é muito gente fina. O tempo passou voando.", stars: 5 },
+    { name: "Bruno", text: "Melhor investimento da semana. Relaxamento total.", stars: 5 },
+    { name: "Rafa", text: "Toque firme, mas sensível. Sabe onde tocar.", stars: 5 },
+    { name: "Tech Guy", text: "Gostei da facilidade de agendar pelo app. Sem enrolação.", stars: 5 },
+    { name: "Corredor", text: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", stars: 5 },
+    { name: "Fã #2", text: "Simpático e bonito. O serviço é completo mesmo.", stars: 5 },
+    { name: "Pedro", text: "Me ajudou muito com a ansiedade. Gratidão.", stars: 5 },
+    { name: "Morador Centro", text: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", stars: 5 },
+    { name: "Curioso", text: "A massagem tântrica dele desbloqueou sensações novas.", stars: 5 },
+    { name: "Ricardo", text: "Valeu a pena esperar a agenda liberar.", stars: 5 },
+    { name: "Sérgio", text: "Nota 10. Nada a reclamar.", stars: 5 },
+    { name: "Anônimo", text: "O final foi explosivo. Recomendo.", stars: 5 },
+    { name: "Médico", text: "Muito higiênico e cuidadoso.", stars: 5 },
+    { name: "Cliente Fiel", text: "Voltarei com certeza na próxima semana.", stars: 5 },
+    { name: "Fernando", text: "Paz de espírito e corpo relaxado. Obrigado.", stars: 5 }
   ]
 };
 
 // ==================================================================================
-// 2. COMPONENTES VISUAIS (MODAIS E UI)
+// 2. COMPONENTES VISUAIS
 // ==================================================================================
 
 const Toast = ({ msg, show }) => (
@@ -308,6 +318,9 @@ export default function App() {
   const [termsOpen, setTermsOpen] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
+  
+  // Escassez
+  const [viewingCount, setViewingCount] = useState(0);
 
   const scrollRef = useRef(null);
   const T = TEXTS[lang]; 
@@ -338,7 +351,6 @@ export default function App() {
   useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
   useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
   
-  // Reset Scroll
   useEffect(() => {
     if(scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [step]);
@@ -357,6 +369,34 @@ export default function App() {
     }
   };
 
+  // Gerar Escassez Aleatória
+  const generateViewingCount = () => {
+      setViewingCount(Math.floor(Math.random() * (5 - 2 + 1)) + 2);
+  };
+
+  // Lógica Determinística para "Esgotado"
+  // Apenas nos próximos 4 dias, em 3 dias aleatórios, alguns horários são bloqueados
+  const isTimeSoldOut = (dateStr, time) => {
+      if(!dateStr) return false;
+      const today = new Date();
+      const checkDate = new Date(dateStr);
+      const diffTime = Math.abs(checkDate - today);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+      // Se for mais de 5 dias pra frente, tudo livre (para não parecer fake)
+      if (diffDays > 5) return false;
+
+      // Hash simples baseado na data para ser consistente
+      const dayHash = checkDate.getDate() + checkDate.getMonth(); 
+      // Se dia for par (exemplo de "aleatoriedade" fixa)
+      if (dayHash % 2 === 0) {
+          // Bloqueia horários específicos baseado na soma da hora
+          const hour = parseInt(time.split(':')[0]);
+          if ((hour + dayHash) % 5 === 0) return true; 
+      }
+      return false;
+  };
+
   const getFinancials = useMemo(() => {
     if (!booking.service) return { sub: 0, total: 0 };
     const sPrice = booking.service.price;
@@ -365,11 +405,11 @@ export default function App() {
     );
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
     const total = Math.max(0, sPrice + ePrice - disc);
-    return { sub: sPrice + ePrice, disc, total };
+    return { service: sPrice, extras: ePrice, sub: sPrice + ePrice, disc, total };
   }, [booking.service, booking.extras, booking.appliedCoupon]);
 
   const generateZap = () => {
-    const { total } = getFinancials;
+    const f = getFinancials;
     const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
     const h = new Date().getHours();
     
@@ -381,7 +421,6 @@ export default function App() {
     let localMsg = "";
     let mapsLink = "";
     
-    // Serviço Traduzido
     const serviceName = booking.service ? T.services[booking.service.id].title : "";
 
     if (booking.locationType === 'home') {
@@ -398,15 +437,16 @@ export default function App() {
     }
 
     const extrasTxt = Object.keys(booking.extras).filter(k => booking.extras[k])
-      .map(k => `+ ${T.extras[k].label}`).join('\n');
+      .map(k => `+ ${T.extras[k].label} (R$ ${DB.extras.find(e => e.id === k).price})`).join('\n');
 
+    // DETALHAMENTO FINANCEIRO NO ZAP
     const msg = `
 ${greeting}, Thalyson!
 ${T.zap.intro}
 
 👤 *${T.zap.client}:* ${user.name}
 
-💆‍♂️ *${T.zap.service}:* ${serviceName}
+💆‍♂️ *${T.zap.service}:* ${serviceName} (R$ ${f.service})
 📅 ${dateStr} @ ${booking.time}
 
 ${extrasTxt ? `✨ *${T.zap.extras}:*\n${extrasTxt}\n` : ''}
@@ -414,7 +454,11 @@ ${extrasTxt ? `✨ *${T.zap.extras}:*\n${extrasTxt}\n` : ''}
 ${localMsg}
 ${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
 
-💰 *${T.zap.total}:* R$ ${total},00
+💰 *${T.zap.subtotal}:* R$ ${f.sub}
+🎟️ Desc: - R$ ${f.disc}
+🚗 *${T.zap.uber}:* ${T.zap.uber_calc}
+
+✅ *${T.zap.total_msg}:* R$ ${f.total} + Uber
 💳 *${T.zap.payment}:* ${booking.payment === 'pix' ? 'PIX' : booking.payment === 'card' ? 'Cartão/Card' : 'Dinheiro/Cash'}
 
 *${T.zap.wait}*
@@ -443,13 +487,11 @@ ${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
     const earnedXP = getFinancials.total;
     const newTotalXP = user.xp + earnedXP;
     
-    // REMOVE CUPOM USADO
     let updatedCoupons = [...user.coupons];
     if(booking.appliedCoupon) {
         updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     }
 
-    // GAMIFICACAO
     if (Math.floor(newTotalXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
         updatedCoupons.push({ id: Date.now(), title: 'Recompensa VIP', val: 20, isNew: true });
     }
@@ -468,7 +510,7 @@ ${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
         locationType: 'home', 
         address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
         payment: '', 
-        appliedCoupon: null, // GARANTE QUE VOLTA ZERADO
+        appliedCoupon: null, 
         termsAccepted: false
       });
   };
@@ -641,26 +683,57 @@ ${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
 
              <div className={`transition-all duration-500 ${booking.date ? 'opacity-100 translate-y-0' : 'opacity-30 translate-y-4 pointer-events-none'}`}>
                 <h3 className="text-xs font-bold uppercase opacity-40 mb-6 text-center">{T.time_title}</h3>
+                
+                {/* GRID DE HORÁRIOS COM LÓGICA DE ESGOTADO */}
                 <div className="grid grid-cols-4 gap-3">
                   {['09:00', '10:00', '11:00', '13:00', '15:00', '18:00', '19:00', '20:00'].map((time) => {
                      let disabled = false;
+                     let soldOut = false;
+                     
                      if (booking.date) {
                         const now = new Date();
                         const [h] = time.split(':');
-                        if (booking.date.toDateString() === now.toDateString() && parseInt(h) <= now.getHours()) disabled = true;
+                        const selectedDate = new Date(booking.date);
+                        
+                        // Passado
+                        if (selectedDate.toDateString() === now.toDateString() && parseInt(h) <= now.getHours()) {
+                            disabled = true;
+                        } else {
+                            // Lógica de Esgotado
+                            soldOut = isTimeSoldOut(booking.date, time);
+                        }
                      }
+
                      return (
-                        <button key={time} disabled={disabled} onClick={() => setBooking({ ...booking, time })}
-                          className={`py-4 rounded-2xl text-xs font-bold border transition-all
-                            ${booking.time === time 
-                                ? 'bg-white text-blue-900 border-white shadow-lg scale-110 z-10' 
-                                : disabled ? 'opacity-20 line-through cursor-not-allowed border-transparent' : isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-400' : 'bg-white border-zinc-200 text-zinc-600'}`}
+                        <button key={time} disabled={disabled || soldOut} 
+                          onClick={() => {
+                              setBooking({ ...booking, time });
+                              generateViewingCount(); // Trigger Scarcity
+                          }}
+                          className={`relative py-4 rounded-2xl text-xs font-bold border transition-all overflow-hidden
+                            ${soldOut 
+                                ? 'opacity-40 cursor-not-allowed bg-red-500/5 border-red-500/20 text-red-500' 
+                                : booking.time === time 
+                                    ? 'bg-white text-blue-900 border-white shadow-lg scale-110 z-10' 
+                                    : disabled 
+                                        ? 'opacity-20 line-through cursor-not-allowed border-transparent' 
+                                        : isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-400' : 'bg-white border-zinc-200 text-zinc-600'}`}
                         >
                           {time}
+                          {soldOut && <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/80 text-[8px] uppercase tracking-widest text-red-500 font-black rotate-12">Esgotado</div>}
                         </button>
                      );
                   })}
                 </div>
+                
+                {/* MENSAGEM DE ESCASSEZ */}
+                {booking.time && (
+                    <div className="mt-6 flex justify-center animate-fade-in">
+                        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2">
+                            <Eye size={14} className="animate-pulse"/> {viewingCount} {T.viewing_now}
+                        </div>
+                    </div>
+                )}
              </div>
           </div>
         )}
@@ -775,6 +848,11 @@ ${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
                    <div className="border-t border-dashed border-zinc-500/20 my-2 pt-6 flex justify-between items-center">
                       <span className="text-lg font-black opacity-80">Total</span>
                       <span className="text-4xl font-black text-blue-500">R$ {getFinancials.total}</span>
+                   </div>
+                   
+                   {/* AVISO DE UBER NO CHECKOUT */}
+                   <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-amber-500 bg-amber-500/5 p-3 rounded-xl border border-amber-500/20">
+                       <Car size={14}/> {T.uber_warn}
                    </div>
                 </div>
                 
