@@ -5,7 +5,8 @@ import {
   User, Building, BedDouble, Trash2, 
   Heart, Smile, Instagram, Moon, Sun, ShieldCheck, 
   CheckCircle2, Home, Share2, 
-  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car, Gift, Bell
+  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car, Gift, Bell,
+  Volume2, VolumeX
 } from 'lucide-react';
 
 // ==================================================================================
@@ -15,23 +16,27 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v35_final_vite', 
-  XP_TARGET: 500,
-  // Link de áudio direto
-  AUDIO_URL: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=forest-lullaby-110624.mp3"
+  STORAGE_KEY: '@thaly_app_v40_gamified',
+  // Som de natureza (Pássaros + Água + Ambiente Relaxante)
+  AUDIO_URL: "https://cdn.pixabay.com/download/audio/2022/02/07/audio_142b93e62d.mp3?filename=forest-lullaby-110624.mp3"
 };
+
+// Configuração da Gamificação
+const LEVEL_SYSTEM = [
+  { level: 1, xpNeeded: 0, reward: 12, title: "Iniciante" },
+  { level: 2, xpNeeded: 400, reward: 20, title: "Bronze" },
+  { level: 3, xpNeeded: 1000, reward: 30, title: "Prata" },
+  { level: 4, xpNeeded: 2000, reward: 50, title: "Ouro" }
+];
 
 const REVIEWS_DATA = [
   { n: "Tiago", t: "Energia surreal. A massagem foi perfeita.", s: 5 },
   { n: "Pedro H.", t: "Fui pra relaxar e saí renovado. Recomendo.", s: 5 },
   { n: "Curioso SP", t: "Mão firme, pegada excelente.", s: 5 },
   { n: "Marcos", t: "Paguei o extra pra tocar e valeu cada centavo.", s: 5 },
-  { n: "Empresário", t: "O sigilo foi absoluto. Profissional.", s: 5 },
   { n: "Roberto", t: "O upgrade de 30 minutos vale a pena.", s: 5 },
-  { n: "Carlos A.", t: "Pontual e educado. Gostei muito.", s: 5 },
   { n: "Lucas", t: "A mistura de força e suavidade é incrível.", s: 5 },
-  { n: "Gustavo", t: "Ambiente, música e cheiro relaxantes.", s: 5 },
-  { n: "Felipe", t: "Resolveu minha dor na lombar em uma sessão.", s: 5 }
+  { n: "Gustavo", t: "Ambiente, música e cheiro relaxantes.", s: 5 }
 ];
 
 const DB = {
@@ -51,6 +56,8 @@ const TEXTS = {
   pt: {
     welcome: "Olá,",
     subtitle: "Escolha seu momento de paz.",
+    level_label: "Nível",
+    next_reward: "Próximo prêmio:",
     reviews_count: "Ver avaliações",
     reviews_title: "Experiências Reais",
     choose_service: "Escolha a Sessão",
@@ -90,11 +97,10 @@ const TEXTS = {
     today: "Hoje",
     tomorrow: "Amanhã",
     
-    // Popup & Notif
     popup_welcome_title: "Bem-vindo!",
-    popup_welcome_msg: "Você ganhou R$ 15,00 OFF na primeira sessão.",
-    popup_level_title: "Nível Subiu!",
-    popup_level_msg: "Você ganhou um cupom de R$ 20,00 por fidelidade.",
+    popup_welcome_msg: "Você ganhou R$ 12,00 OFF na primeira sessão.",
+    popup_level_title: "Subiu de Nível!",
+    popup_level_msg: "Você desbloqueou um novo desconto exclusivo.",
     notif_title: "Thalyson Massagens",
     notif_body: "Você tem um novo cupom disponível!",
     btn_notif: "Ativar Notificações",
@@ -138,6 +144,8 @@ const TEXTS = {
   en: {
     welcome: "Hello,",
     subtitle: "Your peace moment.",
+    level_label: "Level",
+    next_reward: "Next reward:",
     reviews_count: "See reviews",
     reviews_title: "Testimonials",
     choose_service: "Select Session",
@@ -178,9 +186,9 @@ const TEXTS = {
     tomorrow: "Tomorrow",
     
     popup_welcome_title: "Welcome!",
-    popup_welcome_msg: "You got R$ 15.00 OFF.",
+    popup_welcome_msg: "You got R$ 12.00 OFF.",
     popup_level_title: "Level Up!",
-    popup_level_msg: "You earned a R$ 20.00 Coupon.",
+    popup_level_msg: "You unlocked a new discount.",
     notif_title: "Thalyson Massage",
     notif_body: "New coupon available!",
     btn_notif: "Enable Notifications",
@@ -268,6 +276,59 @@ const RewardPopup = ({ isOpen, onClose, title, msg, onAllowNotif, btnText, close
     );
 };
 
+const XPBar = ({ xp, isDark, texts }) => {
+    // Encontrar nível atual e próximo
+    let currentLevel = LEVEL_SYSTEM[0];
+    let nextLevel = LEVEL_SYSTEM[1];
+
+    for (let i = 0; i < LEVEL_SYSTEM.length; i++) {
+        if (xp >= LEVEL_SYSTEM[i].xpNeeded) {
+            currentLevel = LEVEL_SYSTEM[i];
+            nextLevel = LEVEL_SYSTEM[i+1] || null;
+        }
+    }
+
+    if (!nextLevel) return (
+        <div className={`mt-4 p-4 rounded-2xl ${isDark ? 'bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-amber-500/30' : 'bg-yellow-50 border border-yellow-200'}`}>
+             <div className="flex items-center gap-3">
+                 <Trophy className="text-amber-500" size={24} />
+                 <div>
+                     <p className="font-bold text-sm text-amber-500">Nível Máximo!</p>
+                     <p className="text-xs opacity-70">Você é um cliente VIP Ouro.</p>
+                 </div>
+             </div>
+        </div>
+    );
+
+    const progress = Math.min(100, Math.max(0, ((xp - currentLevel.xpNeeded) / (nextLevel.xpNeeded - currentLevel.xpNeeded)) * 100));
+
+    return (
+        <div className={`mt-4 p-4 rounded-2xl border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+            <div className="flex justify-between items-end mb-2">
+                <div>
+                    <span className="text-[10px] font-bold uppercase opacity-50 tracking-wider">{texts.level_label} {currentLevel.level}</span>
+                    <h3 className="font-bold text-sm">{currentLevel.title}</h3>
+                </div>
+                <div className="text-right">
+                    <span className="text-[10px] opacity-60 block">{texts.next_reward}</span>
+                    <span className="font-bold text-blue-500 text-xs">R$ {nextLevel.reward} OFF</span>
+                </div>
+            </div>
+            {/* Barra */}
+            <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-100'}`}>
+                <div 
+                    className="h-full bg-gradient-to-r from-blue-600 to-cyan-400 transition-all duration-1000 ease-out" 
+                    style={{ width: `${progress}%` }}
+                ></div>
+            </div>
+            <div className="mt-1 flex justify-between text-[10px] opacity-40 font-mono">
+                <span>{xp} XP</span>
+                <span>{nextLevel.xpNeeded} XP</span>
+            </div>
+        </div>
+    );
+};
+
 // ==================================================================================
 // 3. APP PRINCIPAL
 // ==================================================================================
@@ -277,13 +338,16 @@ export default function App() {
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
   
+  // Audio State
+  const [isMuted, setIsMuted] = useState(false);
+  const audioRef = useRef(null);
+
   // Modais
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   
-  const audioRef = useRef(null);
   const scrollRef = useRef(null);
   const T = TEXTS[lang]; 
   const [isClient, setIsClient] = useState(false);
@@ -311,41 +375,53 @@ export default function App() {
         setUser(d);
         if(d.savedAddress) setBooking(p => ({...p, address: d.savedAddress}));
     } else {
-        setUser(p => ({...p, coupons: [{ id: 'welcome', val: 15, title: '🎁 Boas Vindas' }]}));
+        // Primeira vez: Cupom de 12 reais (Nível 1)
+        setUser(p => ({...p, coupons: [{ id: 'lvl1', val: 12, title: '🎁 Boas Vindas' }]}));
     }
   }, []);
 
-  // --- LÓGICA DE ÁUDIO "AUTO MÁGICO" ---
+  // --- CONTROLE DE ÁUDIO ---
   useEffect(() => {
     if (!isClient) return;
-
-    const playAudio = async () => {
-      if (audioRef.current) {
-        audioRef.current.volume = 0.2;
-        try {
-          // Tenta tocar imediatamente (pode falhar no iPhone/Chrome)
-          await audioRef.current.play();
-        } catch (err) {
-          // Se falhar, adiciona um listener para tocar no PRIMEIRO clique em qualquer lugar
-          const unlockAudio = () => {
-            if(audioRef.current) audioRef.current.play().catch(()=>{});
-            // Remove os listeners para não tentar de novo
-            document.removeEventListener('click', unlockAudio);
-            document.removeEventListener('touchstart', unlockAudio);
-          };
-          document.addEventListener('click', unlockAudio);
-          document.addEventListener('touchstart', unlockAudio);
+    
+    // Tenta tocar
+    const tryPlay = async () => {
+        if(audioRef.current) {
+            audioRef.current.volume = 0.3; // Volume ambiente agradável
+            try {
+                if(!isMuted) await audioRef.current.play();
+                else audioRef.current.pause();
+            } catch (e) {
+                // Bloqueado pelo navegador
+                setIsMuted(true); 
+            }
         }
-      }
     };
+    tryPlay();
 
-    playAudio();
+    // Listener para desbloquear áudio no primeiro clique se estiver travado
+    const unlock = () => {
+        if(audioRef.current && !isMuted) {
+            audioRef.current.play().catch(()=>{});
+        }
+    };
+    window.addEventListener('click', unlock, { once: true });
+    
+    return () => window.removeEventListener('click', unlock);
+  }, [isClient, isMuted]); // Reage quando muda o estado de Mute
 
-    // Popup de boas vindas
-    setTimeout(() => {
-        if (!user.hasSeenWelcome) setWelcomePopup(true);
-    }, 2000);
+  useEffect(() => {
+    if(isClient && audioRef.current) {
+        if(isMuted) audioRef.current.pause();
+        else audioRef.current.play().catch(()=>{});
+    }
+  }, [isMuted, isClient]);
 
+  // Popup de boas vindas
+  useEffect(() => {
+     if(isClient && !user.hasSeenWelcome) {
+         setTimeout(() => setWelcomePopup(true), 1500);
+     }
   }, [isClient, user.hasSeenWelcome]);
 
   useEffect(() => { if(isClient) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user, isClient]);
@@ -384,15 +460,42 @@ export default function App() {
     return !!booking.payment;
   };
 
+  // --- LÓGICA DE GAMIFICAÇÃO AVANÇADA ---
   const finishBooking = () => {
     let updatedCoupons = [...user.coupons];
-    if (booking.appliedCoupon) updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
+    // Remove cupom usado
+    if (booking.appliedCoupon) {
+        updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
+    }
     
-    const newXP = user.xp + getFinancials.total;
-    if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
-        updatedCoupons.push({ id: Date.now(), val: 20, title: '🏆 Nível Prata' });
+    // Adiciona XP
+    const earnedXP = getFinancials.total;
+    const oldXP = user.xp;
+    const newXP = oldXP + earnedXP;
+
+    // Checa se subiu de nível
+    let leveledUp = false;
+    let newReward = null;
+
+    for (let i = 0; i < LEVEL_SYSTEM.length; i++) {
+        const lvl = LEVEL_SYSTEM[i];
+        // Se o XP novo atingiu o requisito E o XP velho não tinha atingido
+        if (newXP >= lvl.xpNeeded && oldXP < lvl.xpNeeded && lvl.level > 1) {
+            leveledUp = true;
+            newReward = lvl.reward;
+            // Adiciona o cupom do novo nível
+            updatedCoupons.push({ 
+                id: `lvl${lvl.level}_${Date.now()}`, 
+                val: lvl.reward, 
+                title: `🏆 Nível ${lvl.title}` 
+            });
+        }
+    }
+
+    if (leveledUp) {
         setLevelUpPopup(true);
     }
+
     setUser({ ...user, xp: newXP, coupons: updatedCoupons });
     setStep(4);
   };
@@ -430,8 +533,10 @@ ${T.zap.payment} ${booking.payment}
   return (
     <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
       
-      {/* AUDIO ESCONDIDO QUE TENTA TOCAR NO LOAD */}
-      <audio ref={audioRef} loop className="hidden"><source src={CONFIG.AUDIO_URL} type="audio/mp3" /></audio>
+      {/* COMPONENTE DE ÁUDIO */}
+      <audio ref={audioRef} loop preload="auto">
+          <source src={CONFIG.AUDIO_URL} type="audio/mp3" />
+      </audio>
 
       {/* HEADER (NAVBAR) */}
       <header className={`h-16 px-6 flex items-center justify-between z-20 shrink-0 ${isDark ? 'bg-zinc-950 border-b border-zinc-800' : 'bg-white border-b border-slate-200'}`}>
@@ -439,7 +544,11 @@ ${T.zap.payment} ${booking.payment}
           <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-xs shadow-lg shadow-blue-500/30">T.</div>
           <span className="font-bold text-sm tracking-tight">Thalyson</span>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2">
+            {/* BOTÃO DE SOM */}
+            <button onClick={() => setIsMuted(!isMuted)} className={`p-2 rounded-full transition-all ${isMuted ? (isDark ? 'bg-red-500/10 text-red-500' : 'bg-red-100 text-red-500') : (isDark ? 'bg-emerald-500/10 text-emerald-500' : 'bg-emerald-100 text-emerald-600')}`}>
+                {isMuted ? <VolumeX size={18}/> : <Volume2 size={18}/>}
+            </button>
             <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`p-2 rounded-full ${isDark ? 'bg-zinc-900 text-zinc-400' : 'bg-slate-100 text-slate-600'}`}><Globe size={18}/></button>
             <button onClick={() => setIsDark(!isDark)} className={`p-2 rounded-full ${isDark ? 'bg-zinc-900 text-amber-400' : 'bg-slate-100 text-blue-600'}`}>{isDark ? <Sun size={18}/> : <Moon size={18}/>}</button>
             <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className={`p-2 rounded-full ${isDark ? 'bg-zinc-900 text-pink-500' : 'bg-slate-100 text-pink-600'}`}><Instagram size={18}/></a>
@@ -458,7 +567,11 @@ ${T.zap.payment} ${booking.payment}
               <div className="mb-6">
                 <h1 className="text-2xl font-bold mb-1">{T.welcome} <span className="text-blue-500">{user.name ? user.name.split(' ')[0] : 'Visitante'}</span></h1>
                 <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.subtitle}</p>
-                <div onClick={() => setReviewsOpen(true)} className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold cursor-pointer hover:bg-blue-500/20 transition-colors">
+                
+                {/* BARRA DE GAMIFICAÇÃO */}
+                <XPBar xp={user.xp} isDark={isDark} texts={T} />
+
+                <div onClick={() => setReviewsOpen(true)} className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold cursor-pointer hover:bg-blue-500/20 transition-colors">
                    <Star size={12} fill="currentColor"/> {T.reviews_count}
                 </div>
               </div>
