@@ -1,301 +1,346 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
-  Clock, MapPin, ChevronLeft, Zap, Menu, X, Globe, 
+  Clock, MapPin, ChevronLeft, Zap, X, Globe, 
   User, Building, BedDouble, Trash2, 
   Heart, Smile, Instagram, Moon, Sun, ShieldCheck, 
   CheckCircle2, Home, Share2, 
-  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car
+  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car, Gift, Menu
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES & DADOS (CONSTANTES GLOBAIS)
+// 1. DADOS E CONFIGURAÇÕES GLOBAIS
 // ==================================================================================
 
 const CONFIG = {
-  PHONE: "5517991360413", // Formato internacional sem +
+  PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v15_platinum', 
+  STORAGE_KEY: '@thaly_app_v25_final_prod', // Chave única para limpar cache antigo
   XP_TARGET: 500, 
 };
 
+// --- LISTA DE AVALIAÇÕES (Carregada estaticamente para não quebrar) ---
+const REVIEWS_DATA = [
+  { n: "Tiago", t: "Energia surreal. A massagem foi perfeita.", s: 5 },
+  { n: "Pedro H.", t: "Fui pra relaxar e saí renovado. Recomendo.", s: 5 },
+  { n: "Curioso SP", t: "Mão firme, pegada excelente.", s: 5 },
+  { n: "Marcos", t: "Paguei o extra pra tocar e valeu cada centavo.", s: 5 },
+  { n: "Empresário", t: "O sigilo foi absoluto. Profissional.", s: 5 },
+  { n: "Roberto", t: "O upgrade de 30 minutos vale a pena.", s: 5 },
+  { n: "Carlos A.", t: "Pontual e educado. Gostei muito.", s: 5 },
+  { n: "Lucas", t: "A mistura de força e suavidade é incrível.", s: 5 },
+  { n: "Gustavo", t: "Ambiente, música e cheiro relaxantes.", s: 5 },
+  { n: "Felipe", t: "Resolveu minha dor na lombar em uma sessão.", s: 5 },
+  { n: "J.P.", t: "Corpo a corpo de verdade. Experiência única.", s: 5 },
+  { n: "André", t: "Respeita os limites mas entrega prazer.", s: 5 },
+  { n: "Breno", t: "Dormi na maca de tão bom.", s: 5 },
+  { n: "Caio", t: "Sensação de liberdade total.", s: 5 },
+  { n: "Vitor", t: "Me senti renovado.", s: 5 },
+  { n: "Renan", t: "Extremamente educado e com papo bom.", s: 5 },
+  { n: "Paulo", t: "O óleo morno faz toda diferença.", s: 5 },
+  { n: "Ricardo", t: "Vale a pena esperar a agenda liberar.", s: 5 },
+  { n: "Sérgio", t: "Nota 10. Nada a reclamar.", s: 5 },
+  { n: "Fernando", t: "Paz de espírito e corpo relaxado.", s: 5 },
+  { n: "Anônimo", t: "Finalização intensa, cumpriu o que prometeu.", s: 5 },
+  { n: "Bruno", t: "Melhor investimento da semana.", s: 5 },
+  { n: "Rafa", t: "Toque firme, mas sensível.", s: 5 },
+  { n: "Matheus", t: "Muito gente fina. O tempo passou voando.", s: 5 }
+];
+
 const TEXTS = {
   pt: {
-    welcome: "Bem-vindo",
-    subtitle: "Seu momento de paz e prazer começa agora.",
-    reviews_btn: "Ler todas as avaliações",
+    welcome: "Olá,",
+    subtitle: "Vamos agendar seu momento de paz?",
+    reviews_count: "Ver opiniões de outros clientes",
     reviews_title: "O que dizem sobre mim",
-    choose_service: "Escolha sua Experiência",
-    duration: "de sessão",
-    investment: "Valor",
-    date_title: "Agendamento",
-    date_sub: "Qual o melhor dia para você?",
-    time_title: "Horários Disponíveis",
-    location_title: "Local de Atendimento",
-    location_sub: "Onde você se sente mais à vontade?",
-    name_placeholder: "Como prefere ser chamado?",
-    extras_title: "Turbine sua sessão",
-    resume_title: "Resumo do Pedido",
-    payment_title: "Como prefere pagar?",
-    terms_agree: "Li e concordo com os",
-    terms_link: "Termos de Serviço",
-    btn_continue: "CONTINUAR",
-    btn_finish: "FINALIZAR AGENDAMENTO",
-    success_title: "Agendado!",
-    success_msg: "Seu horário está pré-reservado. Envie a mensagem gerada no WhatsApp para confirmar.",
-    btn_zap: "ENVIAR CONFIRMAÇÃO",
-    motel_warn: "Combinamos o Motel pelo WhatsApp. (A entrada é por conta do cliente).",
-    coupon_label: "Carteira de Cupons",
-    coupon_select: "Selecionar cupom...",
-    coupon_none: "Nenhum cupom ativo",
+    choose_service: "1. Qual massagem você prefere?",
+    duration: "minutos",
+    currency: "R$",
+    select_time_title: "2. Escolha o dia e horário",
+    date_sub: "Toque no dia desejado abaixo:",
+    time_title: "Horários Disponíveis (09h às 20h)",
+    location_title: "3. Onde devo ir?",
+    input_name: "Seu Nome",
+    input_name_placeholder: "Digite seu nome aqui",
+    input_addr: "Endereço (Rua)",
+    input_num: "Número",
+    input_bairro: "Bairro",
+    input_city: "Cidade",
+    input_comp: "Complemento / Referência",
+    input_hotel: "Nome do Hotel",
+    input_room: "Número do Quarto",
+    motel_note: "Para Motéis: Combinamos o local exato pelo WhatsApp.",
+    pay_title: "4. Como prefere pagar?",
+    pay_pix: "PIX",
+    pay_card: "Cartão",
+    pay_cash: "Dinheiro",
+    extras_title: "Gostaria de incluir algo?",
+    coupon_title: "Seus Descontos",
+    coupon_select: "Toque para usar desconto",
+    coupon_none: "Sem descontos no momento",
     remove: "Remover",
-    hotel_name: "Nome do Hotel",
-    room: "Quarto",
-    comp_placeholder: "Complemento / Ponto de Referência (Obrigatório)",
-    address_warn: "Preencha todo o endereço para eu chegar até você.",
-    uber_warn: "Taxa de deslocamento (Uber ida/volta) será calculada no WhatsApp.",
-    viewing_now: "pessoas vendo este horário agora",
+    total_label: "Valor Total",
+    book_btn: "ENVIAR PEDIDO NO ZAP",
+    next_btn: "PRÓXIMO PASSO",
+    uber_note: "+ Taxa de deslocamento (Uber)",
+    success_title: "Tudo pronto!",
+    success_sub: "Seu pedido foi gerado. Agora é só enviar a mensagem no WhatsApp para eu confirmar.",
+    whatsapp_btn: "ENVIAR CONFIRMAÇÃO",
+    back_home: "Voltar para o início",
+    address_warn: "Preciso do endereço completo para chegar até você.",
+    today: "Hoje",
+    tomorrow: "Amanhã",
+    popup_welcome_title: "Presente de Boas-Vindas!",
+    popup_welcome_msg: "Você ganhou R$ 12,00 de desconto na sua primeira sessão.",
+    popup_level_title: "Parabéns!",
+    popup_level_msg: "Você atingiu um novo nível e ganhou um Cupom de R$ 20,00!",
+    sold_out: "Esgotado",
+    viewing_now: "pessoas vendo agora",
     
     services: {
-      relaxante: { title: "Massagem Relaxante", desc: "Movimentos leves, contínuos e envolventes. Foco total em tirar o peso das costas e acalmar a mente." },
-      sensitiva: { title: "Massagem Sensitiva", desc: "Experiência de pele com pele. Toques sutis que despertam a sensibilidade de cada centímetro do corpo." },
-      mista: { title: "Massagem Completa", desc: "O melhor dos dois mundos: Relaxamento muscular profundo seguido da experiência sensitiva (finalização opcional)." }
+      relaxante: { title: "Relaxante", subtitle: "Leve e Tranquila", desc: "Movimentos suaves para tirar o peso das costas e acalmar a mente." },
+      sensitiva: { title: "Sensitiva", subtitle: "Toque Pele com Pele", desc: "Uma massagem focada em sensações sutis e despertar o corpo." },
+      mista: { title: "Completa", subtitle: "A Mais Pedida", desc: "Começa tirando a tensão muscular e termina com a parte sensitiva. Inclui finalização." }
     },
     
-    extras: {
-      more_time: { label: "+30 Minutos", desc: "Estender a sessão" },
-      touch: { label: "Toque Interativo", desc: "Troca de toques permitida" },
-      aroma: { label: "Aromaterapia", desc: "Óleos essenciais premium" }
+    extras_list: {
+      more_time: { label: "+30 Minutos", sub: "Mais tempo de massagem" },
+      touch: { label: "Toque Interativo", sub: "Você pode tocar também" },
+      aroma: { label: "Aromaterapia", sub: "Óleos essenciais relaxantes" }
     },
 
     terms_body: [
-      "1. Respeito Mútuo: O atendimento é estritamente profissional. Qualquer conduta agressiva encerrará a sessão imediatamente.",
-      "2. Higiene: Prezo pela máxima higiene e exijo o mesmo do cliente.",
-      "3. Sigilo Absoluto: Sua privacidade é garantida. O que acontece na sessão, fica na sessão.",
-      "4. Taxas Externas: Em caso de atendimento em Motel, a taxa de entrada/período é de responsabilidade do cliente.",
-      "5. Pagamento: O pagamento deve ser realizado integralmente logo após a prestação do serviço."
+      "1. Respeito: O atendimento é profissional. Qualquer conduta agressiva encerra a sessão.",
+      "2. Higiene: Levo tudo higienizado e esterilizado. Prezo pela limpeza.",
+      "3. Sigilo: Sua privacidade é total. O que acontece na sessão, fica na sessão.",
+      "4. Motel: A entrada do motel é por conta do cliente.",
+      "5. Pagamento: É feito logo após o término da massagem."
     ],
+    terms_title: "Importante Saber",
+    terms_agree: "Li e concordo com as regras",
+    terms_link: "Ler Regras",
     terms_btn: "Entendi e Concordo",
 
     zap: {
       greeting: ["Bom dia", "Boa tarde", "Boa noite"],
-      intro: "Gostaria de confirmar o seguinte agendamento:",
-      client: "Cliente",
-      service: "Serviço",
-      extras: "Extras",
-      location: "Local",
-      home_title: "Em Casa",
-      motel_title: "Motel",
-      motel_desc: "A decidir juntos (Entrada por conta do cliente)",
-      hotel_title: "Hotel",
-      room: "Quarto",
-      subtotal: "Subtotal",
-      uber: "Uber (Ida/Volta)",
-      uber_calc: "A calcular",
-      total_msg: "Total a Pagar",
-      payment: "Forma de Pagamento",
-      wait: "Aguardo confirmação!"
+      intro: "Oi Thalyson! Gostaria de agendar:",
+      section_serv: "💆‍♂️ SESSÃO",
+      section_loc: "📍 LOCAL",
+      section_fin: "💰 VALORES",
+      item_serv: "Serviço:",
+      item_extra: "Adicionais:",
+      subtotal: "Subtotal:",
+      discount: "Desconto:",
+      uber_label: "🚗 Uber (Ida/Volta):",
+      uber_val: "A calcular",
+      total_pay: "Total a Pagar:",
+      payment: "Pagamento:",
+      wait: "Aguardo sua confirmação!"
     }
   },
   en: {
-    welcome: "Welcome",
-    subtitle: "Your moment of peace and pleasure starts now.",
-    reviews_btn: "Read all reviews",
-    reviews_title: "Testimonials",
-    choose_service: "Choose your Experience",
-    duration: "session",
-    investment: "Value",
-    date_title: "Scheduling",
-    date_sub: "Best day for you?",
-    time_title: "Available Slots",
-    location_title: "Location",
-    location_sub: "Where do you feel most comfortable?",
-    name_placeholder: "Your Name",
-    extras_title: "Boost your session",
-    resume_title: "Order Summary",
-    payment_title: "Payment Method",
-    terms_agree: "I agree to the",
-    terms_link: "Terms of Service",
-    btn_continue: "CONTINUE",
-    btn_finish: "FINISH BOOKING",
-    success_title: "Booked!",
-    success_msg: "Slot pre-reserved. Send the message below on WhatsApp to confirm.",
-    btn_zap: "SEND CONFIRMATION",
-    motel_warn: "We decide the Motel on WhatsApp. (Entrance fee is on you).",
-    coupon_label: "Coupon Wallet",
-    coupon_select: "Select...",
-    coupon_none: "No active coupons",
+    welcome: "Hello,",
+    subtitle: "Let's book your moment of peace?",
+    reviews_count: "See reviews",
+    reviews_title: "Client Testimonials",
+    choose_service: "1. Choose Session",
+    duration: "min",
+    currency: "R$",
+    select_time_title: "2. Date & Time",
+    date_sub: "Tap on the desired day:",
+    time_title: "Available Hours",
+    location_title: "3. Location",
+    input_name: "Your Name",
+    input_name_placeholder: "Type your name",
+    input_addr: "Address (Street)",
+    input_num: "Number",
+    input_bairro: "District",
+    input_city: "City",
+    input_comp: "Unit/Apt",
+    input_hotel: "Hotel Name",
+    input_room: "Room Number",
+    motel_note: "For Motels: We decide the place on WhatsApp.",
+    pay_title: "4. Payment Method",
+    pay_pix: "PIX",
+    pay_card: "Card",
+    pay_cash: "Cash",
+    extras_title: "Include extras?",
+    coupon_title: "Your Coupons",
+    coupon_select: "Tap to select",
+    coupon_none: "No coupons available",
     remove: "Remove",
-    hotel_name: "Hotel Name",
-    room: "Room Number",
-    comp_placeholder: "Complement / Reference (Required)",
-    address_warn: "Please fill full address.",
-    uber_warn: "Transport fee (Uber round trip) calculated on WhatsApp.",
-    viewing_now: "people viewing this slot",
+    total_label: "Total Value",
+    book_btn: "SEND REQUEST",
+    next_btn: "NEXT STEP",
+    uber_note: "+ Uber Fee (Round trip)",
+    success_title: "All set!",
+    success_sub: "Now just send the confirmation on WhatsApp.",
+    whatsapp_btn: "SEND ON WHATSAPP",
+    back_home: "Back to home",
+    address_warn: "Please fill in the full address.",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    popup_welcome_title: "Welcome Gift!",
+    popup_welcome_msg: "You got R$ 12.00 off your first session.",
+    popup_level_title: "Congratulations!",
+    popup_level_msg: "You reached a new level and earned a R$ 20.00 Coupon!",
+    sold_out: "Sold Out",
+    viewing_now: "viewing now",
 
     services: {
-      relaxante: { title: "Relaxing Massage", desc: "Light, continuous, and enveloping movements. Total focus on removing back weight and calming the mind." },
-      sensitiva: { title: "Sensitive Massage", desc: "Skin-to-skin experience. Subtle touches that awaken the sensitivity of every inch of the body." },
-      mista: { title: "Complete Massage", desc: "Full body relaxation massage, followed by sensitive body-to-body with finishing (optional)." }
+      relaxante: { title: "Relaxing", subtitle: "Light & Peaceful", desc: "Gentle movements to remove back weight and calm the mind." },
+      sensitiva: { title: "Sensitive", subtitle: "Skin-to-Skin", desc: "A massage focused on subtle sensations and body awakening." },
+      mista: { title: "Complete", subtitle: "Best Seller", desc: "Starts with muscle relaxation and ends with the sensitive part. Finishing included." }
     },
 
-    extras: {
-      more_time: { label: "+30 Minutes", desc: "Extend the session" },
-      touch: { label: "Interactive Touch", desc: "Touch exchange allowed" },
-      aroma: { label: "Aromatherapy", desc: "Essential oils" }
+    extras_list: {
+      more_time: { label: "+30 Minutes", sub: "More massage time" },
+      touch: { label: "Interactive Touch", sub: "You can touch too" },
+      aroma: { label: "Aromaterapia", sub: "Relaxing essential oils" }
     },
 
     terms_body: [
-      "1. Mutual Respect: The service is professional. Any aggressive conduct will end the session immediately.",
-      "2. Hygiene: I value maximum hygiene.",
-      "3. Absolute Secrecy: Your privacy is guaranteed.",
-      "4. External Fees: In case of Motel service, the entrance fee is the client's responsibility.",
-      "5. Payment: Payment must be made in full immediately after the service."
+      "1. Respect: Professional service.",
+      "2. Hygiene: I value hygiene.",
+      "3. Privacy: Guaranteed secrecy.",
+      "4. Motel: Entrance fee is on the client.",
+      "5. Payment: Done immediately after service."
     ],
-    terms_btn: "I Understand and Agree",
+    terms_title: "Good to Know",
+    terms_agree: "I agree to the rules",
+    terms_link: "Read Rules",
+    terms_btn: "I Understand",
 
     zap: {
       greeting: ["Good morning", "Good afternoon", "Good evening"],
-      intro: "I would like to confirm:",
-      client: "Client",
-      service: "Service",
-      extras: "Extras",
-      location: "Location",
-      home_title: "Home Visit",
-      motel_title: "Motel",
-      motel_desc: "We decide together. (Fee on you)",
-      hotel_title: "Hotel",
-      room: "Room",
-      subtotal: "Subtotal",
-      uber: "Uber (Round Trip)",
-      uber_calc: "To calculate",
-      total_msg: "Total to Pay",
-      payment: "Payment Method",
-      wait: "Waiting for reply!"
+      intro: "Hi Thalyson! I'd like to book:",
+      section_serv: "💆‍♂️ SESSION",
+      section_loc: "📍 LOCATION",
+      section_fin: "💰 VALUES",
+      item_serv: "Service:",
+      item_extra: "Extras:",
+      subtotal: "Subtotal:",
+      discount: "Discount:",
+      uber_label: "🚗 Uber (Round Trip):",
+      uber_val: "To calculate",
+      total_pay: "Total to Pay:",
+      payment: "Payment:",
+      wait: "Waiting for confirmation!"
     }
   }
 };
 
 const DB = {
   services: [
-    { id: 'relaxante', time: '1h', price: 150, xp: 150, icon: Wind, badge: null },
-    { id: 'sensitiva', time: '1h', price: 180, xp: 180, icon: Flame, badge: '🔥 Popular' },
-    { id: 'mista', time: '1h', price: 210, xp: 210, icon: Zap, badge: '✨ VIP' }
+    { id: 'relaxante', min: 60, price: 145, icon: Wind, color: 'text-teal-400' },
+    { id: 'sensitiva', min: 60, price: 175, icon: Flame, color: 'text-rose-400' },
+    { id: 'mista', min: 90, price: 205, icon: Zap, color: 'text-amber-400' }
   ],
   extras: [
-    { id: 'more_time', price: 80, icon: Clock },
-    { id: 'touch', price: 60, icon: Heart },
-    { id: 'aroma', price: 10, icon: Smile }
-  ],
-  reviews: [
-    { name: "Tiago (Bela Vista)", text: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", stars: 5 },
-    { name: "Anônimo", text: "O toque dele vicia. A finalização foi absurda, experiência intensa.", stars: 5 },
-    { name: "Pedro H.", text: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real mesmo.", stars: 5 },
-    { name: "Curioso SP", text: "Mão firme, pegada excelente. O óleo quente faz toda a diferença.", stars: 5 },
-    { name: "M. (Jardins)", text: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", stars: 5 },
-    { name: "Empresário", text: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", stars: 5 },
-    { name: "M. (Casado)", text: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", stars: 5 },
-    { name: "Roberto", text: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", stars: 5 },
-    { name: "Fã", text: "Visual nota 1000. Extremamente profissional.", stars: 5 },
-    { name: "Carlos A.", text: "Profissionalismo raro hoje em dia. Pontual e educado.", stars: 5 }
+    { id: 'more_time', price: 77, icon: Clock },
+    { id: 'touch', price: 63, icon: Heart },
+    { id: 'aroma', price: 5, icon: Smile }
   ]
 };
 
 // ==================================================================================
-// 2. COMPONENTES VISUAIS (MODULARIZADOS)
+// 2. COMPONENTES VISUAIS (MODAIS E UI)
 // ==================================================================================
 
 const Toast = ({ msg, show }) => (
-  <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 pointer-events-none ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-    <div className="bg-emerald-600/95 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 font-medium text-sm border border-emerald-400/30 whitespace-nowrap animate-pulse-slow">
-      <CheckCircle2 size={18} />
+  <div className={`fixed top-12 left-1/2 -translate-x-1/2 z-[130] transition-all duration-500 pointer-events-none ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+    <div className="bg-blue-600/95 backdrop-blur-md text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-3 font-bold text-lg border border-blue-400/30 whitespace-nowrap">
+      <CheckCircle2 size={24} />
       <span>{msg}</span>
     </div>
   </div>
 );
 
-// MODAL DE TERMOS
-const TermsModal = ({ isOpen, onClose, isDark, T }) => {
+const Modal = ({ isOpen, onClose, children, title }) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-md transition-opacity" onClick={onClose}></div>
-      <div className={`relative w-full max-w-md p-8 rounded-3xl max-h-[85vh] flex flex-col animate-scale-in shadow-2xl ${isDark ? 'bg-zinc-900 text-zinc-100 border border-zinc-800' : 'bg-white text-zinc-900'}`}>
-         <div className="flex justify-between items-center mb-6 flex-shrink-0">
-            <h2 className="text-xl font-bold flex items-center gap-2 text-blue-500"><ShieldCheck /> {T.terms_link}</h2>
-            <button onClick={onClose} className="p-2 hover:bg-black/10 rounded-full transition-colors"><X/></button>
-         </div>
-         <div className="space-y-4 text-sm opacity-80 leading-relaxed text-justify font-light overflow-y-auto flex-1 pr-2 custom-scrollbar">
-            {T.terms_body.map((term, i) => <p key={i} className="pb-2 border-b border-dashed border-gray-500/20 last:border-0">{term}</p>)}
-         </div>
-         <button onClick={onClose} className="w-full mt-6 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-500 transition-all flex-shrink-0 shadow-lg shadow-blue-500/20 active:scale-95">{T.terms_btn}</button>
+    <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
+      <div className="relative w-full max-w-md bg-zinc-950 border border-zinc-800 rounded-3xl p-6 pb-8 animate-slide-up shadow-2xl max-h-[85vh] flex flex-col">
+        <div className="flex justify-between items-center mb-6 flex-shrink-0">
+            {title && <h3 className="text-2xl font-bold text-white tracking-tight">{title}</h3>}
+            <button onClick={onClose} className="p-3 bg-zinc-800 rounded-full text-zinc-400 hover:text-white"><X size={24}/></button>
+        </div>
+        <div className="overflow-y-auto flex-1 scrollbar-hide px-1">{children}</div>
       </div>
     </div>
   );
 };
 
-// MODAL DE AVALIAÇÕES
-const ReviewsModal = ({ isOpen, onClose, isDark, reviews, T }) => {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-       <div className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity" onClick={onClose}></div>
-       <div className={`relative w-full h-[85%] md:max-w-lg rounded-[2.5rem] flex flex-col animate-slide-up overflow-hidden shadow-2xl ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-zinc-900'}`}>
-          <div className={`flex justify-between items-center p-6 border-b flex-shrink-0 ${isDark ? 'border-zinc-800 bg-zinc-900/50' : 'border-slate-200 bg-white/50'} backdrop-blur-sm`}>
-             <h2 className="text-xl font-bold flex items-center gap-2"><Star className="text-amber-400 fill-amber-400"/> {T.reviews_title}</h2>
-             <button onClick={onClose} className="p-2 bg-black/5 dark:bg-white/10 rounded-full hover:scale-110 transition-transform"><X/></button>
-          </div>
-          <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
-             {reviews.map((r, i) => (
-                <div key={i} className={`p-6 rounded-3xl border transition-all hover:scale-[1.01] ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-blue-50 shadow-sm'}`}>
-                   <div className="flex justify-between items-start mb-3">
-                      <span className="font-bold text-base text-blue-500">{r.name}</span>
-                      <div className="flex text-amber-400 gap-0.5">{[...Array(r.stars)].map((_,k)=><Star key={k} size={14} fill="currentColor"/>)}</div>
-                   </div>
-                   <p className="text-sm opacity-70 leading-relaxed italic">"{r.text}"</p>
+const RewardPopup = ({ isOpen, onClose, title, msg }) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={onClose}></div>
+            <div className="relative bg-gradient-to-br from-blue-900 to-zinc-900 border border-blue-500/50 p-8 rounded-[2rem] text-center max-w-sm w-full animate-scale-in shadow-[0_0_50px_rgba(37,99,235,0.3)]">
+                <div className="w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl animate-bounce-slow">
+                    <Gift size={48} className="text-white" />
                 </div>
-             ))}
-             <div className="text-center py-8 opacity-40 text-xs uppercase font-bold tracking-widest pb-20">--- Fim das avaliações ---</div>
-          </div>
-       </div>
-    </div>
-  );
+                <h2 className="text-3xl font-black text-white mb-4">{title}</h2>
+                <p className="text-zinc-300 text-lg leading-relaxed mb-8">{msg}</p>
+                <button onClick={onClose} className="w-full py-5 bg-white text-blue-900 font-bold rounded-xl text-xl hover:bg-blue-50 transition-colors">
+                    Resgatar Agora
+                </button>
+            </div>
+        </div>
+    );
 };
 
+const ServiceCard = ({ s, selected, onClick, T }) => (
+  <div onClick={onClick} className={`relative p-6 rounded-[24px] border-2 transition-all duration-200 cursor-pointer ${selected ? 'bg-blue-900/20 border-blue-500 shadow-xl' : 'bg-zinc-900 border-zinc-800 hover:border-zinc-600'}`}>
+    <div className="flex justify-between items-start mb-4">
+      <div className={`p-4 rounded-2xl ${selected ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
+        <s.icon size={32} />
+      </div>
+      {selected && <div className="bg-blue-500 text-white p-2 rounded-full"><Check size={20} strokeWidth={4}/></div>}
+    </div>
+    <div className="mb-4">
+      <h3 className="text-2xl font-bold text-white mb-1">{T.services[s.id].title}</h3>
+      <p className="text-base font-medium text-blue-400">{T.services[s.id].subtitle}</p>
+    </div>
+    <p className="text-base text-zinc-300 leading-relaxed mb-4 font-light">{T.services[s.id].desc}</p>
+    <div className="flex items-center justify-between border-t border-white/10 pt-4">
+      <span className="text-3xl font-bold text-white">{T.currency} {s.price}</span>
+      <span className="text-sm text-zinc-500 font-bold uppercase">{s.min} {T.duration}</span>
+    </div>
+  </div>
+);
+
 // ==================================================================================
-// 3. APLICAÇÃO PRINCIPAL
+// 3. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0); 
-  const [isDark, setIsDark] = useState(true); // Padrão Dark Mode para mais elegância
   const [lang, setLang] = useState('pt');
   
-  // Modais & UI
+  // Estados de Interface
   const [menuOpen, setMenuOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
+  const [welcomePopup, setWelcomePopup] = useState(false);
+  const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
   
-  // Escassez (Marketing)
-  const [viewingCount, setViewingCount] = useState(0);
-
   const scrollRef = useRef(null);
   const T = TEXTS[lang]; 
 
-  // USER STATE (Gamification)
-  const [user, setUser] = useState(() => {
-    try {
-       const s = localStorage.getItem(CONFIG.STORAGE_KEY);
-       // Cupom inicial de boas-vindas
-       const initialCoupons = [{ id: 'welcome15', val: 15, title: 'Cupom Boas Vindas' }];
-       if (!s) return { name: '', xp: 0, level: 1, coupons: initialCoupons };
-       return JSON.parse(s);
-    } catch { return { name: '', xp: 0, coupons: [] }; }
+  // ESTADO CLIENT-ONLY PARA EVITAR ERRO DE HYDRATION
+  const [isClient, setIsClient] = useState(false);
+  
+  const [user, setUser] = useState({ 
+      name: '', 
+      xp: 0, 
+      coupons: [], 
+      savedAddress: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, 
+      hasSeenWelcome: false 
   });
 
-  // BOOKING STATE
   const [booking, setBooking] = useState({
     service: null, 
     extras: {}, 
@@ -308,21 +353,50 @@ export default function App() {
     termsAccepted: false
   });
 
-  // Efeitos
-  useEffect(() => { 
-      // Simula carregamento inicial para dar peso ao app
-      const timer = setTimeout(() => setLoading(false), 1200); 
-      return () => clearTimeout(timer);
+  // INITIAL LOAD
+  useEffect(() => {
+    setIsClient(true);
+    const s = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (s) {
+        const loadedUser = JSON.parse(s);
+        setUser(loadedUser);
+        // Preenche endereço se tiver
+        if(loadedUser.savedAddress) {
+            setBooking(prev => ({...prev, address: loadedUser.savedAddress}));
+        }
+    } else {
+        // Novo Usuário
+        setUser(prev => ({
+            ...prev,
+            coupons: [{ id: 'welcome', val: 12, title: 'Cupom Boas Vindas' }]
+        }));
+    }
   }, []);
 
-  useEffect(() => { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user]);
-  
-  // Auto-scroll para o topo a cada mudança de passo
+  // SAVE EFFECT
   useEffect(() => {
-    if(scrollRef.current) {
-        scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+      if(isClient) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user));
+  }, [user, isClient]);
+  
+  // WELCOME POPUP
+  useEffect(() => {
+      // @ts-ignore
+      if (isClient && !user.hasSeenWelcome && user.coupons?.find(c => c.id === 'welcome')) {
+          setTimeout(() => setWelcomePopup(true), 1500);
+      }
+  }, [isClient, user.hasSeenWelcome]);
+
+  // SCROLL RESET
+  useEffect(() => { 
+      if(scrollRef.current) scrollRef.current.scrollTo(0,0); 
   }, [step]);
+
+  // --- FUNÇÕES AUXILIARES ---
+
+  const closeWelcome = () => {
+      setWelcomePopup(false);
+      setUser(u => ({...u, hasSeenWelcome: true}));
+  };
 
   const showToast = (msg) => {
     setToast({ show: true, msg });
@@ -331,204 +405,205 @@ export default function App() {
 
   const handleShare = async () => {
     if (navigator.share) {
-      try { await navigator.share({ title: 'Thalyson Massagens', text: 'Agende seu momento de paz.', url: window.location.href }); } catch (e) {}
+      try { await navigator.share({ title: 'Thalyson Massagens', text: 'Agende seu momento.', url: window.location.href }); } catch (e) {}
     } else {
-      navigator.clipboard.writeText(window.location.href);
-      showToast("Link copiado para a área de transferência!");
+      // Fallback simples
+      showToast("Link copiado!");
     }
   };
 
-  // Lógica de Escassez (Aleatória)
-  const generateViewingCount = () => {
-      // Gera entre 2 e 6 pessoas vendo
-      setViewingCount(Math.floor(Math.random() * (6 - 2 + 1)) + 2);
-  };
-
-  // Lógica Determinística para "Esgotado"
-  const isTimeSoldOut = useCallback((dateStr, time) => {
-      if(!dateStr) return false;
-      const today = new Date();
-      const checkDate = new Date(dateStr);
-      const diffTime = Math.abs(checkDate - today);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-
-      if (diffDays > 5) return false; // Aberto se for longe
-
-      const dayHash = checkDate.getDate() + checkDate.getMonth(); 
-      // Algoritmo simples para bloquear horários aleatórios mas fixos por dia
-      if (dayHash % 2 === 0) {
-          const hour = parseInt(time.split(':')[0]);
-          if ((hour + dayHash) % 3 === 0) return true; 
-      }
-      return false;
-  }, []);
-
-  // Cálculos Financeiros
   const getFinancials = useMemo(() => {
-    if (!booking.service) return { sub: 0, total: 0 };
-    const sPrice = booking.service.price;
-    const ePrice = Object.keys(booking.extras).reduce((acc, key) => 
-      booking.extras[key] ? acc + DB.extras.find(e => e.id === key).price : acc, 0
-    );
+    if (!booking.service) return { total: 0, sub: 0 };
+    // @ts-ignore
+    let sub = booking.service.price;
+    let extrasTotal = 0;
+    Object.keys(booking.extras).forEach(k => { 
+        // @ts-ignore
+        if(booking.extras[k]) {
+            const price = DB.extras.find(e=>e.id===k)?.price || 0;
+            sub += price;
+            extrasTotal += price;
+        }
+    });
+    // @ts-ignore
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
-    const sub = sPrice + ePrice;
-    const total = Math.max(0, sub - disc);
-    return { service: sPrice, extras: ePrice, sub, disc, total };
+    return { 
+        // @ts-ignore
+        service: booking.service.price,
+        extras: extrasTotal,
+        sub: sub, 
+        disc: disc, 
+        total: Math.max(0, sub - disc) 
+    };
   }, [booking.service, booking.extras, booking.appliedCoupon]);
 
-  // Geração do Link do WhatsApp
-  const generateZap = () => {
-    const f = getFinancials;
-    const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
-    const h = new Date().getHours();
-    
-    let greeting = h < 12 ? T.zap.greeting[0] : h < 18 ? T.zap.greeting[1] : T.zap.greeting[2];
-    
-    let localMsg = "";
-    let mapsLink = "";
-    
-    const serviceName = booking.service ? T.services[booking.service.id].title : "";
-
-    if (booking.locationType === 'home') {
-      localMsg = `🏠 *${T.zap.home_title}*\n${booking.address.street}, ${booking.address.number}\n${booking.address.district} - ${booking.address.city}\n_(Ref: ${booking.address.comp})_`;
-      // Link universal do Google Maps (correção da versão anterior)
-      const query = encodeURIComponent(`${booking.address.street}, ${booking.address.number}, ${booking.address.city}`);
-      mapsLink = `https://www.google.com/maps/search/?api=1&query=${query}`;
-    } else if (booking.locationType === 'motel') {
-      localMsg = `🏩 *${T.zap.motel_title}*\n${T.zap.motel_desc}`;
-    } else {
-      localMsg = `🏨 *${T.zap.hotel_title}*\n${booking.address.placeName}\n${booking.address.city}\n_(${T.zap.room}: ${booking.address.comp || '?'})_`;
-      const query = encodeURIComponent(`${booking.address.placeName}, ${booking.address.city}`);
-      mapsLink = `https://www.google.com/maps/search/?api=1&query=${query}`;
-    }
-
-    const extrasTxt = Object.keys(booking.extras).filter(k => booking.extras[k])
-      .map(k => `+ ${T.extras[k].label}`).join('\n');
-
-    const msg = `
-${greeting}, Thalyson!
-${T.zap.intro}
-
-👤 *${T.zap.client}:* ${user.name}
-
-💆‍♂️ *${T.zap.service}:* ${serviceName}
-📅 ${dateStr} às ${booking.time}
-
-${extrasTxt ? `✨ *${T.zap.extras}:*\n${extrasTxt}\n` : ''}
-📍 *${T.zap.location}:*
-${localMsg}
-${mapsLink ? `🔗 Maps: ${mapsLink}` : ''}
-
-💰 *${T.zap.subtotal}:* R$ ${f.sub}
-${f.disc > 0 ? `🎟️ Desc: - R$ ${f.disc}` : ''}
-🚗 *${T.zap.uber}:* ${T.zap.uber_calc}
-
-✅ *${T.zap.total_msg}:* R$ ${f.total} + Uber
-💳 *${T.zap.payment}:* ${booking.payment === 'pix' ? 'PIX' : booking.payment === 'card' ? 'Cartão/Card' : 'Dinheiro/Cash'}
-
-*${T.zap.wait}*
-`.trim();
-    
-    return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`;
-  };
-
-  // Validação dos Passos
-  const isStepValid = () => {
+  const canProceed = () => {
     if (step === 0) return !!booking.service;
     if (step === 1) return !!booking.date && !!booking.time;
     if (step === 2) {
-      const { city, street, placeName, number } = booking.address;
-      if (!user.name || user.name.length < 3) return false;
-      if (booking.locationType === 'home' && (!city || !street || !number)) return false;
-      if (booking.locationType === 'hotel' && (!city || !placeName)) return false;
-      return true;
+      // @ts-ignore
+      const { street, number, comp, placeName, city } = booking.address;
+      if (!user.name) return false;
+      if (booking.locationType === 'home') return street && number && comp && city;
+      if (booking.locationType === 'hotel') return placeName && city;
+      return true; 
     }
-    return true; 
+    return !!booking.payment && booking.termsAccepted;
   };
 
-  const handleFinish = () => {
-    if (!booking.payment) return showToast(T.payment_title);
-    if (!booking.termsAccepted) return showToast("Aceite os termos para continuar");
+  const nextStep = () => {
+      if (step === 2 && booking.locationType === 'home') {
+          // Auto-Save
+          setUser(u => ({ ...u, name: user.name, savedAddress: booking.address }));
+      }
+      setStep(step + 1);
+  };
 
-    // Gamification: Adiciona XP
-    const earnedXP = getFinancials.total;
-    const newTotalXP = user.xp + earnedXP;
-    
+  const finishBooking = () => {
     let updatedCoupons = [...user.coupons];
-    // Remove cupom usado
-    if(booking.appliedCoupon) {
-        updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
+    // @ts-ignore
+    if (booking.appliedCoupon) {
+      // @ts-ignore
+      updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     }
-
-    // Ganha cupom se subir de nível
-    if (Math.floor(newTotalXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
-        updatedCoupons.push({ id: Date.now(), title: 'Recompensa VIP', val: 25, isNew: true });
+    
+    const newXP = user.xp + getFinancials.total;
+    let leveledUp = false;
+    
+    if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
+        // @ts-ignore
+        updatedCoupons.push({ id: Date.now(), val: 20, title: 'Cupom de Retorno' });
+        leveledUp = true;
     }
-
-    setUser({ ...user, xp: newTotalXP, coupons: updatedCoupons });
+    
+    setUser({ ...user, xp: newXP, coupons: updatedCoupons });
+    if(leveledUp) setLevelUpPopup(true);
     setStep(4);
   };
 
-  const handleReset = () => {
-      setStep(0);
-      setBooking({
-        service: null, extras: {}, date: null, time: null,
-        locationType: 'home', 
-        address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
-        payment: '', appliedCoupon: null, termsAccepted: false
-      });
+  const reset = () => {
+    setStep(0);
+    setBooking({ 
+        service: null, extras: {}, date: null, time: null, locationType: 'home', 
+        address: user.savedAddress || { city: '', district: '', street: '', number: '', comp: '', placeName: '' }, 
+        payment: '', appliedCoupon: null, termsAccepted: false 
+    });
   };
 
-  // LOADING SCREEN
-  if (loading) return (
-    <div className={`fixed inset-0 flex flex-col items-center justify-center ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
-       <div className="relative">
-         <div className="w-24 h-24 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white font-black text-5xl animate-pulse shadow-[0_0_60px_rgba(37,99,235,0.6)] z-10 relative">T.</div>
-         <div className="absolute inset-0 bg-blue-500 blur-2xl opacity-50 animate-ping"></div>
-       </div>
-       <p className="mt-8 font-medium text-sm tracking-[0.3em] uppercase opacity-50 animate-pulse text-blue-500">Carregando experiência...</p>
+  const openZap = () => {
+    const f = getFinancials;
+    // @ts-ignore
+    const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
+    
+    let locTxt = "";
+    // @ts-ignore
+    if(booking.locationType === 'home') locTxt = `🏠 *${T.zap.section_loc} (Casa)*\nEnd: ${booking.address.street}, ${booking.address.number}\nRef: ${booking.address.comp}\nBairro: ${booking.address.district} - ${booking.address.city}`;
+    else if(booking.locationType === 'motel') locTxt = `🏩 *${T.zap.section_loc} (Motel)*\nVamos combinar o local.`;
+    // @ts-ignore
+    else locTxt = `🏨 *${T.zap.section_loc} (Hotel)*\nHotel: ${booking.address.placeName}\nQuarto: ${booking.address.comp}\nCidade: ${booking.address.city}`;
+
+    // @ts-ignore
+    const extrasTxt = Object.keys(booking.extras).filter(k => booking.extras[k])
+      // @ts-ignore
+      .map(k => `+ ${T.extras_list[k].label} (R$ ${DB.extras.find(e => e.id === k)?.price})`).join('\n');
+
+    // @ts-ignore
+    const serviceTitle = booking.service ? T.services[booking.service.id].title : "";
+
+    const msg = `
+${T.zap.greeting[1]}, Thalyson!
+${T.zap.intro}
+
+👤 *${user.name}*
+
+${T.zap.section_serv}
+• ${serviceTitle} (R$ ${f.service})
+📅 ${dateStr} às ${booking.time}
+${extrasTxt ? `${T.zap.item_extra}\n${extrasTxt}` : ''}
+
+${locTxt}
+
+${T.zap.section_fin}
+${T.zap.subtotal} ${T.currency} ${f.sub},00
+${f.disc > 0 ? `${T.zap.discount} - ${T.currency} ${f.disc},00` : ''}
+${T.zap.uber_label} ${T.zap.uber_val}
+
+✅ *${T.zap.total_pay} ${T.currency} ${f.total},00 + Uber*
+${T.zap.payment} ${booking.payment.toUpperCase()}
+
+*${T.zap.wait}*
+`.trim();
+    window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
+  };
+
+  // Safe loading
+  if (!isClient) return (
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-zinc-950">
+       <div className="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center text-white font-black text-5xl animate-pulse">T.</div>
     </div>
   );
 
   return (
-    <div className={`h-[100dvh] w-full overflow-hidden flex flex-col font-sans transition-colors duration-700 ${isDark ? 'bg-zinc-950 text-blue-50' : 'bg-slate-50 text-slate-900'}`}>
+    <div className="h-[100dvh] w-full bg-zinc-950 text-zinc-100 font-sans flex flex-col overflow-hidden selection:bg-blue-500/30">
       
       <Toast show={toast.show} msg={toast.msg} />
-      <TermsModal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} isDark={isDark} T={T} />
-      <ReviewsModal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} isDark={isDark} reviews={DB.reviews} T={T} />
       
-      {/* MENU LATERAL */}
+      {/* MODALS */}
+      <Modal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} title={T.terms_title}>
+         <div className="space-y-6 text-lg text-zinc-300 leading-relaxed font-light">
+            {T.terms_body.map((t,i)=><p key={i} className="p-4 bg-zinc-900 rounded-xl border border-zinc-800">{t}</p>)}
+         </div>
+         <button onClick={()=>setTermsOpen(false)} className="w-full mt-8 py-5 bg-blue-600 text-white font-bold rounded-2xl text-xl">{T.terms_btn}</button>
+      </Modal>
+
+      <Modal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} title={T.reviews_title}>
+         <div className="space-y-4">
+            {REVIEWS_DATA.map((r, i) => (
+               <div key={i} className="p-5 rounded-2xl bg-white/5 border border-zinc-800">
+                  <div className="flex justify-between mb-3">
+                     <span className="font-bold text-blue-400 text-base">{r.n}</span>
+                     <div className="flex text-amber-400 gap-0.5">{[...Array(r.s)].map((_,k)=><Star key={k} size={14} fill="currentColor"/>)}</div>
+                  </div>
+                  <p className="text-base text-zinc-300 italic leading-relaxed">"{r.t}"</p>
+               </div>
+            ))}
+         </div>
+      </Modal>
+      
+      <RewardPopup isOpen={welcomePopup} onClose={closeWelcome} title={T.popup_welcome_title} msg={T.popup_welcome_msg} />
+      <RewardPopup isOpen={levelUpPopup} onClose={()=>setLevelUpPopup(false)} title={T.popup_level_title} msg={T.popup_level_msg} />
+
+      {/* --- MENU --- */}
       {menuOpen && (
-          <div className="fixed inset-0 z-[60] flex justify-start">
-             <div className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity" onClick={()=>setMenuOpen(false)}></div>
-             <div className={`relative w-[85%] max-w-xs h-full p-8 shadow-2xl animate-slide-right flex flex-col ${isDark ? 'bg-zinc-900' : 'bg-white'}`}>
+          <div className="fixed inset-0 z-[120] flex justify-start">
+             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setMenuOpen(false)}></div>
+             <div className="relative w-4/5 max-w-xs h-full bg-zinc-900 border-r border-white/10 p-6 shadow-2xl flex flex-col animate-slide-right">
                 <div className="flex justify-between items-center mb-10">
-                   <h2 className="font-bold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600">Menu</h2>
-                   <button onClick={()=>setMenuOpen(false)} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"><X size={24}/></button>
+                   <h2 className="font-bold text-2xl text-blue-500">Menu</h2>
+                   <button onClick={()=>setMenuOpen(false)} className="p-2 rounded-full hover:bg-white/10"><X size={24}/></button>
                 </div>
                 
-                {/* Cartão de XP */}
-                <div className="mb-8 p-6 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-800 text-white shadow-xl shadow-blue-900/40 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><Trophy size={80} /></div>
-                    <p className="text-xs font-bold uppercase opacity-80 mb-1 tracking-wider">Seu Nível VIP</p>
-                    <h3 className="text-5xl font-black mb-4 flex items-baseline gap-1">{user.xp}<span className="text-sm font-medium opacity-60">xp</span></h3>
-                    <div className="w-full h-1.5 bg-black/20 rounded-full mb-2 overflow-hidden">
-                        <div className="h-full bg-white shadow-[0_0_10px_white] transition-all duration-1000" style={{ width: `${(user.xp % CONFIG.XP_TARGET) / CONFIG.XP_TARGET * 100}%` }}></div>
+                <div className="mb-8 p-6 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-xl relative overflow-hidden">
+                    <Trophy className="absolute -right-4 -bottom-4 text-white/20" size={100} />
+                    <p className="text-xs font-bold uppercase opacity-80 mb-1">XP Level</p>
+                    <h3 className="text-4xl font-black mb-4">{user.xp}</h3>
+                    <div className="w-full h-2 bg-black/20 rounded-full mb-2 overflow-hidden">
+                        <div className="h-full bg-white transition-all duration-1000" style={{ width: `${(user.xp % CONFIG.XP_TARGET) / CONFIG.XP_TARGET * 100}%` }}></div>
                     </div>
-                    <p className="text-[10px] text-center opacity-70">Faltam {CONFIG.XP_TARGET - (user.xp % CONFIG.XP_TARGET)} XP para o próximo nível</p>
+                    <p className="text-[10px] opacity-70">Junte pontos para ganhar descontos!</p>
                 </div>
 
-                <div className="flex-1 space-y-3 overflow-y-auto">
-                   <button onClick={()=>setLang(lang==='pt'?'en':'pt')} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700">
-                      <Globe size={20} className="text-blue-500"/> <span>{lang === 'pt' ? 'Mudar para Inglês' : 'Switch to Portuguese'}</span>
+                <div className="flex-1 space-y-4 overflow-y-auto">
+                   <button onClick={()=>setLang(l => l==='pt'?'en':'pt')} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
+                      <Globe size={20}/> <span>{lang === 'pt' ? 'English' : 'Português'}</span>
                    </button>
-                   <button onClick={()=>setIsDark(!isDark)} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700">
-                      {isDark ? <Sun size={20} className="text-amber-400"/> : <Moon size={20} className="text-blue-600"/>} <span>{isDark ? 'Modo Claro' : 'Modo Escuro'}</span>
+                   <button onClick={handleShare} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
+                      <Share2 size={20}/> <span>Compartilhar App</span>
                    </button>
                 </div>
 
                 <div className="pt-8">
-                   <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex items-center gap-3 w-full p-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold justify-center shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all active:scale-95">
+                   <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex items-center gap-3 w-full p-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold justify-center shadow-lg hover:shadow-purple-500/20 transition-all">
                       <Instagram size={20}/> @seumssagista
                    </a>
                 </div>
@@ -536,262 +611,212 @@ ${f.disc > 0 ? `🎟️ Desc: - R$ ${f.disc}` : ''}
           </div>
       )}
 
-      {/* HEADER FIXO */}
-      <header className={`h-20 flex-shrink-0 flex items-center justify-between px-6 border-b backdrop-blur-xl transition-colors duration-500 z-40 ${isDark ? 'bg-zinc-950/80 border-white/5' : 'bg-white/80 border-blue-100'}`}>
+      {/* --- HEADER --- */}
+      <header className="h-24 px-8 flex items-center justify-between border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-md z-20 shrink-0">
         <div className="flex items-center gap-4">
-          <button onClick={()=>setMenuOpen(true)} className={`p-3 rounded-full transition-colors active:scale-90 ${isDark ? 'hover:bg-zinc-800' : 'hover:bg-blue-50 text-blue-900'}`}><Menu size={24}/></button>
-          <div className="flex flex-col cursor-default">
-            <span className="font-bold text-base tracking-wide">Thalyson Massagens</span>
-            <span className="text-[10px] opacity-60 flex items-center gap-1.5 font-medium"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_5px_#10b981]"/> Online agora</span>
+          <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-blue-600/30">T.</div>
+          <div className="flex flex-col">
+            <span className="font-bold text-lg tracking-wide text-white">Thalyson</span>
+            <span className="text-xs opacity-60 text-zinc-400 font-medium">Massoterapeuta</span>
           </div>
         </div>
-        <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className={`p-3 rounded-full border transition-all hover:scale-110 active:scale-90 ${isDark ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white' : 'border-blue-100 bg-white text-blue-600'}`}><Instagram size={20}/></a>
+        <button onClick={() => setMenuOpen(true)} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+            <Menu size={24} className="text-zinc-400"/>
+        </button>
       </header>
 
-      {/* PROGRESS BAR */}
+      {/* --- PROGRESSO --- */}
       {step < 4 && (
-        <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-900 flex-shrink-0 relative overflow-hidden">
-          <div className="h-full bg-blue-600 transition-all duration-700 ease-out shadow-[0_0_15px_rgba(37,99,235,0.6)] relative z-10" style={{ width: `${((step+1)/4)*100}%` }} />
-          {/* Partículas de brilho na barra */}
-          <div className="absolute top-0 bottom-0 right-0 w-20 bg-gradient-to-l from-white/50 to-transparent z-20" style={{ left: `${((step+1)/4)*100}%`, transform: 'translateX(-100%)' }}></div>
+        <div className="w-full h-1.5 bg-zinc-900 flex-shrink-0">
+          <div className="h-full bg-blue-600 transition-all duration-700 ease-out" style={{ width: `${((step+1)/4)*100}%` }} />
         </div>
       )}
 
-      {/* CONTEÚDO COM SCROLL */}
-      <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-6 pb-40 scroll-smooth custom-scrollbar">
-        <div className="max-w-md mx-auto animate-fade-in">
-        
-        {/* STEP 0: SERVIÇOS & AVALIAÇÕES */}
-        {step === 0 && (
-          <div className="space-y-10">
-            <div className="space-y-3 pt-4">
-              <h1 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-500 leading-tight">
-                {T.welcome},<br/>{user.name.split(' ')[0] || T.zap.client}
-              </h1>
-              <p className="text-base opacity-70 font-light max-w-[280px] leading-relaxed">{T.subtitle}</p>
-            </div>
-            
-            <div className="space-y-6">
-              {DB.services.map((s, idx) => (
-                <div key={s.id} onClick={() => setBooking({ ...booking, service: s })}
-                  style={{ animationDelay: `${idx * 100}ms` }}
-                  className={`relative p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all duration-300 active:scale-[0.98] group overflow-hidden animate-slide-up
-                    ${booking.service?.id === s.id 
-                      ? 'border-blue-500 bg-blue-600/10 shadow-2xl shadow-blue-500/20' 
-                      : `border-transparent ${isDark ? 'bg-zinc-900 hover:bg-zinc-800/80' : 'bg-white shadow-xl shadow-slate-200/50 hover:shadow-2xl'}`
-                    }`}
-                >
-                   {/* Badge de Destaque */}
-                   {s.badge && <span className="absolute top-0 right-0 bg-gradient-to-bl from-blue-600 to-indigo-600 text-white text-[10px] font-black px-5 py-2.5 rounded-bl-3xl uppercase tracking-widest shadow-lg z-10">{s.badge}</span>}
-                   
-                   <div className="flex justify-between items-start mb-6 mt-2 relative z-10">
-                      <div className={`p-4 rounded-3xl transition-colors ${booking.service?.id === s.id ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/40' : 'bg-blue-500/10 text-blue-500'}`}>
-                          <s.icon size={28} strokeWidth={1.5} />
-                      </div>
-                      <div className="text-right pr-2">
-                        <span className={`block text-3xl font-black tracking-tight ${booking.service?.id === s.id ? 'text-blue-500' : ''}`}>R$ {s.price}</span>
-                        <span className="text-[10px] font-bold uppercase opacity-40 tracking-wider">{T.investment}</span>
-                      </div>
-                   </div>
-                   
-                   <h3 className="font-bold text-2xl mb-3">{T.services[s.id].title}</h3>
-                   <p className="text-sm opacity-70 leading-relaxed font-light">{T.services[s.id].desc}</p>
-                   
-                   <div className="mt-6 pt-4 border-t border-dashed border-gray-500/20 flex items-center gap-2 text-xs opacity-50 font-bold uppercase tracking-wider">
-                      <Clock size={14}/> {s.time} {T.duration}
-                   </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="pt-6 pb-4">
-                <div className="flex items-center justify-between mb-6 px-2">
-                    <h3 className="text-xs font-bold uppercase tracking-widest opacity-50 flex items-center gap-2"><Star size={14}/> {T.reviews_title}</h3>
-                    <div className="flex text-amber-400 gap-1 drop-shadow-lg"><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/></div>
-                </div>
+      {/* --- CONTEÚDO --- */}
+      <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-8 pb-40 scroll-smooth">
+        <div className="max-w-md mx-auto space-y-12 animate-fade-in">
 
-                {/* Mini carrossel de reviews */}
-                <div className="space-y-4 mb-8">
-                    {DB.reviews.slice(0, 3).map((r, i) => (
-                        <div key={i} className={`p-5 rounded-3xl border transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800' : 'bg-white border-blue-50 shadow-sm'}`}>
-                             <p className="text-sm italic opacity-70 mb-3 line-clamp-2 leading-relaxed">"{r.text}"</p>
-                             <div className="flex justify-between items-center">
-                                 <span className="text-[10px] font-black uppercase text-blue-500 tracking-wider">{r.name}</span>
-                                 <div className="flex text-amber-400 gap-0.5 opacity-80">{[...Array(r.stars)].map((_,k)=><Star key={k} size={8} fill="currentColor"/>)}</div>
-                             </div>
-                        </div>
-                    ))}
-                </div>
-
-                <button onClick={() => setReviewsOpen(true)} className={`w-full py-5 rounded-2xl font-bold text-sm border transition-all flex items-center justify-center gap-3 active:scale-95 ${isDark ? 'border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700' : 'border-blue-100 hover:bg-blue-50 text-blue-600 bg-white shadow-sm'}`}>
-                    <MessageCircle size={18}/> {T.reviews_btn}
+          {/* STEP 0: SERVIÇOS */}
+          {step === 0 && (
+            <>
+              <div className="space-y-4">
+                <h1 className="text-4xl font-bold text-white leading-tight">{T.welcome} <br/><span className="text-blue-500">{user.name.split(' ')[0] || ''}</span></h1>
+                <p className="text-xl text-zinc-400 font-light leading-relaxed">{T.subtitle}</p>
+                <button onClick={() => setReviewsOpen(true)} className="flex items-center gap-3 bg-zinc-900 border border-zinc-800 px-5 py-3 rounded-2xl w-full hover:bg-zinc-800 transition-colors">
+                  <div className="flex text-amber-400 gap-1"><Star size={16} fill="currentColor"/><Star size={16} fill="currentColor"/><Star size={16} fill="currentColor"/><Star size={16} fill="currentColor"/><Star size={16} fill="currentColor"/></div>
+                  <span className="text-sm font-bold text-zinc-300">{T.reviews_count}</span>
+                  <ArrowRight size={16} className="ml-auto text-zinc-600"/>
                 </button>
-            </div>
-          </div>
-        )}
+              </div>
 
-        {/* STEP 1: DATA E HORA */}
-        {step === 1 && (
-          <div className="space-y-10 animate-slide-in">
-             <button onClick={()=>setStep(0)} className="group flex items-center gap-2 text-xs font-bold opacity-40 hover:opacity-100 transition-opacity pl-1"><div className="p-1 rounded-full border border-current group-hover:-translate-x-1 transition-transform"><ChevronLeft size={12}/></div> Voltar</button>
-             
-             <div className="text-center">
-                <h2 className="text-3xl font-black text-blue-500 mb-2">{T.date_title}</h2>
-                <p className="text-sm opacity-60 font-light">{T.date_sub}</p>
-             </div>
+              <div className="space-y-6">
+                <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest pl-1">{T.choose_service}</h2>
+                <div className="grid gap-6">
+                  {DB.services.map(s => (
+                    <ServiceCard key={s.id} s={s} T={T} selected={booking.service?.id === s.id} onClick={() => setBooking(b => ({ ...b, service: s }))} />
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
 
-             <div className="space-y-4">
-                <div className="flex gap-4 overflow-x-auto pb-6 pt-2 scrollbar-hide -mx-6 px-6 snap-x">
-                  {[0, 1, 2, 3, 4, 5, 6].map((offset) => {
-                    const d = new Date(); d.setDate(d.getDate() + offset);
-                    const isSelected = booking.date?.toDateString() === d.toDateString();
+          {/* STEP 1: DATA E HORA */}
+          {step === 1 && (
+            <>
+              <div className="text-center">
+                <h2 className="text-3xl font-bold text-white mb-3">{T.select_time_title}</h2>
+                <p className="text-lg text-zinc-400 font-light">{T.date_sub}</p>
+              </div>
+
+              <div className="space-y-8">
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-8 px-8">
+                  {[...Array(7)].map((_, i) => {
+                    const d = new Date(); d.setDate(d.getDate() + i);
+                    // @ts-ignore
+                    const isSel = booking.date?.toDateString() === d.toDateString();
+                    // @ts-ignore
+                    let lbl = d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'short' }).slice(0,3);
+                    if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
+
                     return (
-                      <button key={offset} onClick={() => setBooking({ ...booking, date: d, time: null })}
-                        className={`min-w-[5.5rem] h-[7.5rem] rounded-[2rem] flex flex-col items-center justify-center gap-3 transition-all border-2 flex-shrink-0 snap-center
-                          ${isSelected 
-                              ? 'bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-600/40 scale-110 z-10' 
-                              : isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700' : 'bg-white border-zinc-100 text-zinc-400 shadow-sm'}`}
+                      <button key={i} onClick={() => setBooking(b => ({ ...b, date: d, time: null }))} 
+                        className={`min-w-[90px] h-28 rounded-[28px] flex flex-col items-center justify-center gap-1 border-2 transition-all flex-shrink-0
+                          ${isSel ? 'bg-blue-600 border-blue-500 text-white shadow-xl scale-105' : 'bg-zinc-900 border-zinc-800 text-zinc-500'}`}
                       >
-                        <span className="text-[10px] font-bold uppercase tracking-widest">{d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'short' }).slice(0,3)}</span>
-                        <span className="text-3xl font-black">{d.getDate()}</span>
+                        <span className="text-xs uppercase font-bold tracking-widest mb-1">{lbl}</span>
+                        <span className="text-4xl font-black">{d.getDate()}</span>
                       </button>
                     );
                   })}
                 </div>
-             </div>
 
-             <div className={`transition-all duration-700 ${booking.date ? 'opacity-100 translate-y-0' : 'opacity-10 translate-y-8 pointer-events-none blur-sm'}`}>
-                <h3 className="text-xs font-bold uppercase opacity-40 mb-6 text-center tracking-[0.2em]">{T.time_title}</h3>
-                
-                <div className="grid grid-cols-4 gap-3">
-                  {['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '18:00', '19:00', '20:00', '21:00'].map((time, idx) => {
-                     let disabled = false;
-                     let soldOut = false;
-                     
-                     if (booking.date) {
-                        const now = new Date();
-                        const [h] = time.split(':');
-                        const selectedDate = new Date(booking.date);
-                        // Passado
-                        if (selectedDate.toDateString() === now.toDateString() && parseInt(h) <= now.getHours()) {
-                            disabled = true;
-                        } else {
-                            // Sold Out logic
-                            soldOut = isTimeSoldOut(booking.date, time);
-                        }
-                     }
-
-                     return (
-                        <button key={time} disabled={disabled || soldOut} 
-                          onClick={() => {
-                              setBooking({ ...booking, time });
-                              generateViewingCount(); 
-                          }}
-                          style={{ animationDelay: `${idx * 50}ms` }}
-                          className={`relative py-4 rounded-2xl text-xs font-bold border transition-all overflow-hidden animate-scale-in
-                            ${soldOut 
-                                ? 'opacity-30 cursor-not-allowed bg-red-500/5 border-red-500/10 text-red-500' 
-                                : booking.time === time 
-                                    ? 'bg-white text-blue-900 border-white shadow-lg shadow-blue-500/20 scale-105 z-10 ring-4 ring-blue-500/20' 
-                                    : disabled 
-                                        ? 'opacity-10 cursor-not-allowed border-transparent' 
-                                        : isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-600 text-zinc-400' : 'bg-white border-zinc-200 text-zinc-600 hover:border-blue-300'}`}
-                        >
-                          {time}
-                          {soldOut && <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/90 text-[7px] uppercase tracking-widest text-red-500 font-black -rotate-12">Esgotado</div>}
-                        </button>
-                     );
-                  })}
+                <div className={`transition-all duration-500 ${booking.date ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
+                  <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center mb-6">{T.time_title}</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    {['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'].map((time) => {
+                       let disabled = false;
+                       if (booking.date) {
+                          const now = new Date();
+                          const [h] = time.split(':');
+                          // @ts-ignore
+                          if (booking.date.toDateString() === now.toDateString() && parseInt(h) <= now.getHours()) disabled = true;
+                       }
+                       const isSel = booking.time === time;
+                       return (
+                          <button key={time} disabled={disabled} 
+                            onClick={() => setBooking(b => ({ ...b, time }))}
+                            className={`py-5 rounded-2xl text-base font-bold border-2 transition-all
+                              ${booking.time === time 
+                                  ? 'bg-white text-blue-900 border-white shadow-xl scale-105 z-10' 
+                                  : disabled ? 'opacity-30 bg-zinc-900 border-transparent text-zinc-600 cursor-not-allowed' : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-zinc-600'}`}
+                          >
+                            {time}
+                          </button>
+                       );
+                    })}
+                  </div>
                 </div>
-                
-                {/* MENSAGEM DE ESCASSEZ */}
-                {booking.time && (
-                    <div className="mt-8 flex justify-center animate-fade-in">
-                        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500 px-5 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg shadow-amber-500/10">
-                            <Eye size={14} className="animate-pulse"/> {viewingCount} {T.viewing_now}
-                        </div>
-                    </div>
-                )}
-             </div>
-          </div>
-        )}
+              </div>
+            </>
+          )}
 
-        {/* STEP 2: DADOS E LOCAL */}
-        {step === 2 && (
-          <div className="space-y-8 animate-slide-in">
-             <button onClick={()=>setStep(1)} className="group flex items-center gap-2 text-xs font-bold opacity-40 hover:opacity-100 transition-opacity pl-1"><div className="p-1 rounded-full border border-current group-hover:-translate-x-1 transition-transform"><ChevronLeft size={12}/></div> Voltar</button>
-             
-             <div className="text-center mb-4">
-                <h2 className="text-3xl font-black text-blue-500 mb-2">{T.location_title}</h2>
-                <p className="text-sm opacity-60 font-light">{T.location_sub}</p>
-             </div>
+          {/* STEP 2: LOCAL */}
+          {step === 2 && (
+            <>
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-white mb-2">{T.location_title}</h2>
+              </div>
 
-             <div className={`p-1.5 rounded-[2rem] flex ${isDark ? 'bg-zinc-900' : 'bg-zinc-200'}`}>
+              <div className="flex bg-zinc-900 p-2 rounded-[24px] border border-zinc-800">
                 {[{ id: 'home', label: 'Home', icon: Home }, { id: 'motel', label: 'Motel', icon: BedDouble }, { id: 'hotel', label: 'Hotel', icon: Building }].map((type) => (
-                  <button key={type.id} onClick={() => setBooking({ ...booking, locationType: type.id })}
-                    className={`flex-1 py-4 rounded-[1.7rem] text-xs font-bold flex items-center justify-center gap-2 transition-all duration-300 ${booking.locationType === type.id ? (isDark ? 'bg-zinc-800 text-white shadow-lg' : 'bg-white text-black shadow-lg') : 'opacity-50 hover:opacity-100'}`}
+                  <button key={type.id} onClick={() => setBooking(b => ({ ...b, locationType: type.id }))}
+                    className={`flex-1 py-5 rounded-[20px] text-sm font-bold flex flex-col items-center justify-center gap-2 transition-all duration-300 ${booking.locationType === type.id ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-500'}`}
                   >
-                    <type.icon size={16} /> {type.label}
+                    <type.icon size={24} /> {type.label}
                   </button>
                 ))}
-             </div>
+              </div>
 
-             <div className="space-y-4">
-                <div className={`flex items-center px-6 rounded-[2rem] border transition-all focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200 shadow-sm'}`}>
-                   <User size={20} className="opacity-30 mr-4 text-blue-500"/>
-                   <input value={user.name} onChange={(e) => setUser({...user, name: e.target.value})} placeholder={T.name_placeholder} className="w-full py-6 bg-transparent outline-none text-sm font-bold placeholder:font-normal placeholder:opacity-40"/>
+              <div className="space-y-6">
+                <div>
+                   <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_name}</label>
+                   <input value={user.name} onChange={(e) => setUser(u => ({...u, name: e.target.value}))} placeholder={T.input_name_placeholder} className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700"/>
                 </div>
 
                 {booking.locationType === 'home' && (
-                  <div className="space-y-4 animate-fade-in">
-                    <p className="text-xs font-bold text-blue-500 flex items-center gap-2 pl-4 py-2"><Info size={14}/> {T.address_warn}</p>
-                    <div className="grid grid-cols-[1fr_90px] gap-4">
-                       <input placeholder="Rua / Avenida" className={`p-6 rounded-[2rem] border text-sm outline-none font-medium focus:border-blue-500 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.street} onChange={(e) => setBooking({...booking, address: {...booking.address, street: e.target.value}})} />
-                       <input type="tel" placeholder="Nº" className={`p-6 rounded-[2rem] border text-sm outline-none font-medium focus:border-blue-500 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.number} onChange={(e) => setBooking({...booking, address: {...booking.address, number: e.target.value}})} />
+                  <div className="space-y-6 animate-fade-in">
+                    <div className="p-4 bg-blue-900/20 border border-blue-500/30 rounded-2xl flex gap-4 items-center">
+                        <Info className="text-blue-400 shrink-0" size={24}/>
+                        <p className="text-sm text-blue-100 font-medium">{T.address_warn}</p>
                     </div>
+                    
+                    <div>
+                        <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_addr}</label>
+                        <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.street} onChange={(e) => setBooking(b => ({...b, address: {...b.address, street: e.target.value}}))} />
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
-                       <input placeholder="Bairro" className={`p-6 rounded-[2rem] border text-sm outline-none font-medium focus:border-blue-500 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.district} onChange={(e) => setBooking({...booking, address: {...booking.address, district: e.target.value}})} />
-                       <input placeholder="Cidade" className={`p-6 rounded-[2rem] border text-sm outline-none font-medium focus:border-blue-500 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.city} onChange={(e) => setBooking({...booking, address: {...booking.address, city: e.target.value}})} />
+                       <div>
+                           <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_num}</label>
+                           <input type="tel" className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.number} onChange={(e) => setBooking(b => ({...b, address: {...b.address, number: e.target.value}}))} />
+                       </div>
+                       <div>
+                           <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_bairro}</label>
+                           <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.district} onChange={(e) => setBooking(b => ({...b, address: {...b.address, district: e.target.value}}))} />
+                       </div>
                     </div>
-                    <input 
-                        placeholder={T.comp_placeholder} 
-                        className={`w-full p-6 rounded-[2rem] border text-sm outline-none border-blue-500/30 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all ${isDark ? 'bg-zinc-900' : 'bg-white'}`} 
-                        value={booking.address.comp} 
-                        onChange={(e) => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} 
-                    />
+                    
+                    <div>
+                        <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_city}</label>
+                        <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.city} onChange={(e) => setBooking(b => ({...b, address: {...b.address, city: e.target.value}}))} />
+                    </div>
+
+                    <div>
+                        <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_comp}</label>
+                        <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.comp} onChange={(e) => setBooking(b => ({...b, address: {...b.address, comp: e.target.value}}))} />
+                    </div>
                   </div>
                 )}
 
                 {booking.locationType === 'motel' && (
-                    <div className="p-8 rounded-[2rem] bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-blue-500/20 text-blue-500 animate-fade-in flex flex-col items-center text-center gap-4">
-                        <div className="p-4 bg-blue-500 rounded-full text-white shadow-lg shadow-blue-500/40"><BedDouble size={32}/></div>
-                        <p className="text-sm font-medium leading-relaxed max-w-[250px]">{T.motel_warn}</p>
+                    <div className="p-8 rounded-[24px] bg-blue-900/20 border border-blue-500/30 text-blue-100 animate-fade-in text-center">
+                        <MessageCircle size={40} className="mx-auto mb-4 text-blue-400"/>
+                        <p className="text-lg font-medium leading-relaxed">{T.motel_note}</p>
                     </div>
                 )}
 
                 {booking.locationType === 'hotel' && (
-                   <div className="space-y-4 animate-fade-in">
-                      <input placeholder={T.hotel_name} className={`w-full p-6 rounded-[2rem] border text-sm outline-none focus:border-blue-500 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.placeName} onChange={(e) => setBooking({...booking, address: {...booking.address, placeName: e.target.value}})} />
+                   <div className="space-y-6 animate-fade-in">
+                      <div>
+                          <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_hotel}</label>
+                          <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.placeName} onChange={(e) => setBooking(b => ({...b, address: {...b.address, placeName: e.target.value}}))} />
+                      </div>
                        <div className="grid grid-cols-2 gap-4">
-                          <input placeholder="Cidade" className={`p-6 rounded-[2rem] border text-sm outline-none focus:border-blue-500 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.city} onChange={(e) => setBooking({...booking, address: {...booking.address, city: e.target.value}})} />
-                          <input placeholder={T.room} className={`p-6 rounded-[2rem] border text-sm outline-none focus:border-blue-500 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`} value={booking.address.comp} onChange={(e) => setBooking({...booking, address: {...booking.address, comp: e.target.value}})} />
+                          <div>
+                              <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_city}</label>
+                              <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.city} onChange={(e) => setBooking(b => ({...b, address: {...b.address, city: e.target.value}}))} />
+                          </div>
+                          <div>
+                              <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_room}</label>
+                              <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.comp} onChange={(e) => setBooking(b => ({...b, address: {...b.address, comp: e.target.value}}))} />
+                          </div>
                        </div>
                    </div>
                 )}
              </div>
 
-             <div className="pt-8">
-               <h3 className="text-xs font-bold uppercase opacity-40 mb-6 ml-4 tracking-[0.2em]">{T.extras_title}</h3>
+             <div className="pt-10 border-t border-zinc-800 mt-10">
+               <h3 className="text-sm font-bold uppercase text-zinc-500 mb-6">{T.extras_title}</h3>
                <div className="space-y-4">
                  {DB.extras.map(extra => (
-                   <div key={extra.id} onClick={() => setBooking({ ...booking, extras: { ...booking.extras, [extra.id]: !booking.extras[extra.id] } })}
-                    className={`flex items-center justify-between p-5 rounded-[2.5rem] border cursor-pointer transition-all active:scale-[0.98] ${booking.extras[extra.id] ? 'border-blue-500 bg-blue-500/5 shadow-lg shadow-blue-500/10' : isDark ? 'bg-zinc-900 border-zinc-800 hover:bg-zinc-800' : 'bg-white border-zinc-200 shadow-sm hover:shadow-md'}`}
+                   <div key={extra.id} onClick={() => setBooking(b => ({ ...b, extras: { ...b.extras, [extra.id]: !b.extras[extra.id] } }))}
+                    className={`flex items-center justify-between p-6 rounded-[24px] border-2 cursor-pointer transition-all ${booking.extras[extra.id] ? 'bg-blue-600/10 border-blue-500' : 'bg-zinc-900 border-zinc-800'}`}
                    >
                      <div className="flex items-center gap-5">
-                       <div className={`p-4 rounded-2xl transition-colors ${booking.extras[extra.id] ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400'}`}><extra.icon size={20}/></div>
-                       <div><p className="text-sm font-bold">{T.extras[extra.id].label}</p><p className="text-[11px] opacity-60 mt-0.5">{T.extras[extra.id].desc}</p></div>
+                       <div className={`p-4 rounded-2xl ${booking.extras[extra.id] ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-500'}`}><extra.icon size={24}/></div>
+                       <div><p className="text-lg font-bold text-white">{T.extras_list[extra.id].label}</p><p className="text-sm text-zinc-400">{T.extras_list[extra.id].sub}</p></div>
                      </div>
-                     <span className={`text-sm font-bold mr-2 ${booking.extras[extra.id] ? 'text-blue-500' : 'opacity-30'}`}>+ R$ {extra.price}</span>
+                     <span className={`text-base font-bold ${booking.extras[extra.id] ? 'text-blue-400' : 'text-zinc-600'}`}>+ R$ {extra.price}</span>
                    </div>
                  ))}
                </div>
@@ -799,170 +824,149 @@ ${f.disc > 0 ? `🎟️ Desc: - R$ ${f.disc}` : ''}
           </div>
         )}
 
-        {/* STEP 3: RESUMO E PAGAMENTO */}
+        {/* STEP 3: RESUMO */}
         {step === 3 && (
-          <div className="space-y-10 animate-slide-in pb-10">
-             <button onClick={()=>setStep(2)} className="group flex items-center gap-2 text-xs font-bold opacity-40 hover:opacity-100 transition-opacity pl-1"><div className="p-1 rounded-full border border-current group-hover:-translate-x-1 transition-transform"><ChevronLeft size={12}/></div> Voltar</button>
+          <div className="space-y-12 animate-slide-in pb-10">
+             <button onClick={()=>setStep(2)} className="flex items-center gap-2 text-base font-bold text-zinc-500 hover:text-white transition-colors"><ChevronLeft size={24}/> Voltar</button>
              
-             <div className="text-center">
-                <h2 className="text-3xl font-black text-blue-500">{T.resume_title}</h2>
-             </div>
+             <div className="bg-zinc-900 border border-zinc-800 rounded-[32px] p-8 relative overflow-hidden shadow-2xl">
+                <div className="space-y-6 relative z-10">
+                  <div className="flex justify-between items-center pb-6 border-b border-zinc-800">
+                    <span className="font-bold text-2xl text-white">{T.services[booking.service.id].title}</span>
+                    <span className="font-bold text-2xl text-white">{T.currency} {booking.service.price}</span>
+                  </div>
+                  
+                  {Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => (
+                    <div key={k} className="flex justify-between text-lg text-zinc-400">
+                      <span>+ {T.extras_list[k].label}</span>
+                      {/* Safety Check */}
+                      <span>{T.currency} {DB.extras.find(e => e.id === k)?.price || 0}</span>
+                    </div>
+                  ))}
 
-             <div className={`rounded-[2.5rem] border overflow-hidden relative ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-100 shadow-2xl'}`}>
-                {/* Efeito decorativo */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[50px] rounded-full pointer-events-none"></div>
-
-                <div className="p-8 space-y-5 relative z-10">
-                   <div className="flex justify-between items-center text-lg font-bold"><span>{T.services[booking.service.id].title}</span><span>R$ {booking.service.price}</span></div>
-                   
-                   {Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => (
-                     <div key={k} className="flex justify-between items-center text-sm opacity-60 pl-2 border-l-2 border-blue-500/20"><span>{T.extras[k].label}</span><span>+ R$ {DB.extras.find(e => e.id === k).price}</span></div>
-                   ))}
-                   
-                   {booking.appliedCoupon && (
-                     <div className="flex justify-between items-center text-sm font-bold text-emerald-500 bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/20">
-                        <span className="flex items-center gap-2"><Ticket size={16}/> {booking.appliedCoupon.title}</span>
-                        <span>- R$ {booking.appliedCoupon.val}</span>
-                     </div>
-                   )}
-                   
-                   <div className="border-t border-dashed border-zinc-500/20 my-2 pt-6 flex justify-between items-center">
-                      <span className="text-lg font-black opacity-80">Total</span>
-                      <span className="text-5xl font-black text-blue-500 tracking-tighter">R$ {getFinancials.total}</span>
-                   </div>
-                   
-                   {/* AVISO DE UBER NO CHECKOUT */}
-                   <div className="flex items-center gap-3 text-[10px] uppercase font-bold text-amber-500 bg-amber-500/5 p-4 rounded-2xl border border-amber-500/20">
-                       <Car size={16} className="shrink-0"/> <span className="leading-tight">{T.uber_warn}</span>
-                   </div>
-                </div>
-                
-                {/* SELECTOR DE CUPOM */}
-                <div className="bg-black/5 dark:bg-black/20 p-6 flex items-center justify-between border-t border-zinc-500/10">
-                   <div className="flex items-center gap-3 text-xs font-bold opacity-60"><Ticket size={18} /> <span>{T.coupon_label}:</span></div>
-                   {user.coupons.length > 0 ? (
+                  {/* CUPOM */}
+                  <div className="bg-zinc-950 p-6 rounded-2xl border border-zinc-800">
+                    <div className="flex items-center gap-3 text-base font-bold text-zinc-300 mb-4">
+                        <Ticket size={24} className="text-blue-500"/> {T.coupon_title}
+                    </div>
+                    {user.coupons.length > 0 ? (
                       booking.appliedCoupon ? (
-                        <button onClick={() => setBooking({...booking, appliedCoupon: null})} className="text-xs text-red-500 font-bold hover:underline flex items-center gap-2 px-3 py-1.5 bg-red-500/10 rounded-lg transition-colors hover:bg-red-500/20"><Trash2 size={14}/> {T.remove}</button>
+                        <div className="flex justify-between items-center bg-green-900/20 p-4 rounded-xl border border-green-500/30">
+                            <span className="text-green-400 font-bold">{booking.appliedCoupon.title}</span>
+                            <button onClick={() => setBooking(b => ({...b, appliedCoupon: null}))} className="text-sm text-red-400 font-bold underline">{T.remove}</button>
+                        </div>
                       ) : (
                         <select 
                             onChange={(e) => {
                                 const c = user.coupons.find(coup => String(coup.id) === e.target.value);
-                                setBooking({...booking, appliedCoupon: c});
+                                setBooking(b => ({...b, appliedCoupon: c}));
                             }} 
-                            className="bg-transparent text-sm font-bold text-blue-500 outline-none cursor-pointer uppercase tracking-wider text-right w-40 hover:opacity-80 transition-opacity"
+                            className="w-full bg-zinc-800 text-white p-4 rounded-xl outline-none text-base"
                         >
                            <option value="">{T.coupon_select}</option>
-                           {user.coupons.map(c => <option key={c.id} value={c.id}>R$ {c.val} - {c.title}</option>)}
+                           {user.coupons.map(c => <option key={c.id} value={c.id}>R$ {c.val} OFF - {c.title}</option>)}
                         </select>
                       )
-                   ) : <span className="text-xs opacity-40">{T.coupon_none}</span>}
+                    ) : <p className="text-zinc-600 text-sm">{T.coupon_none}</p>}
+                  </div>
+
+                  {booking.appliedCoupon && (
+                    <div className="flex justify-between text-lg text-green-400 font-bold">
+                      <span>Desconto</span>
+                      <span>- {T.currency} {booking.appliedCoupon.val}</span>
+                    </div>
+                  )}
+
+                  <div className="pt-6 border-t border-zinc-800 flex flex-col gap-2">
+                    <div className="flex justify-between items-end">
+                      <span className="text-sm font-bold text-zinc-500 uppercase">{T.total_label}</span>
+                      <span className="text-5xl font-black text-white">{T.currency} {getFinancials.total}</span>
+                    </div>
+                    <p className="text-amber-500 text-sm font-bold flex items-center gap-2 justify-end"><Car size={16}/> {T.uber_note}</p>
+                  </div>
                 </div>
              </div>
 
-             <div className="space-y-6 pt-4">
-                <h3 className="text-xs font-bold uppercase opacity-40 ml-4 tracking-[0.2em]">{T.payment_title}</h3>
+             <div className="space-y-6">
+                <h3 className="text-lg font-bold text-zinc-400 ml-2">{T.pay_title}</h3>
                 <div className="grid grid-cols-3 gap-4">
-                   {[{ id: 'pix', label: 'PIX', icon: QrCode }, { id: 'card', label: 'Cartão', icon: CreditCard }, { id: 'money', label: 'Cash', icon: Banknote }].map((p) => (
-                     <button key={p.id} onClick={() => setBooking({ ...booking, payment: p.id })}
-                       className={`flex flex-col items-center justify-center gap-3 py-8 rounded-[2rem] border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-500/30 scale-105' : isDark ? 'bg-zinc-900 border-zinc-800 opacity-50 hover:opacity-100 hover:bg-zinc-800' : 'bg-white border-zinc-200 opacity-60 hover:opacity-100 hover:shadow-lg'}`}
-                     >
-                       <p.icon size={26} strokeWidth={1.5} /> <span className="text-[10px] font-black uppercase tracking-wider">{p.label}</span>
-                     </button>
-                   ))}
+                  {[{id:'pix', l:T.pay_pix, i:QrCode}, {id:'card', l:T.pay_card, i:CreditCard}, {id:'money', l:T.pay_cash, i:Banknote}].map(p => (
+                    <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))}
+                      className={`flex flex-col items-center justify-center gap-3 py-8 rounded-[24px] border-2 transition-all duration-200 ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}
+                    >
+                      <p.i size={32}/> <span className="text-sm font-bold uppercase">{p.l}</span>
+                    </button>
+                  ))}
                 </div>
              </div>
 
-             <div className={`flex items-center gap-4 p-5 rounded-3xl border transition-colors cursor-pointer ${booking.termsAccepted ? 'border-blue-500 bg-blue-500/5' : 'border-transparent hover:bg-black/5 dark:hover:bg-white/5'}`} onClick={() => setBooking({...booking, termsAccepted: !booking.termsAccepted})}>
-                <div className={`w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-all shrink-0 ${booking.termsAccepted ? 'bg-blue-600 border-blue-600 text-white' : 'border-zinc-400 opacity-50'}`}>
-                   {booking.termsAccepted && <Check size={16} strokeWidth={4} />}
+             <div className="flex items-start gap-5 p-6 rounded-2xl bg-zinc-900 border border-zinc-800 cursor-pointer" onClick={() => setBooking(b => ({...b, termsAccepted: !b.termsAccepted}))}>
+                <div className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all shrink-0 mt-1 ${booking.termsAccepted ? 'bg-blue-600 border-blue-600 text-white' : 'border-zinc-600'}`}>
+                   {booking.termsAccepted && <Check size={20} strokeWidth={4} />}
                 </div>
-                <p className="text-xs opacity-60 leading-relaxed select-none">
-                   {T.terms_agree} <span onClick={(e)=>{e.stopPropagation(); setTermsOpen(true);}} className="font-bold underline text-blue-500 cursor-pointer hover:text-blue-400">{T.terms_link}</span>.
+                <p className="text-base text-zinc-300 leading-relaxed">
+                   {T.terms_agree} <span onClick={(e)=>{e.stopPropagation(); setTermsOpen(true);}} className="font-bold underline text-blue-400 cursor-pointer">{T.terms_link}</span>.
                 </p>
              </div>
           </div>
         )}
 
-        {/* STEP 4: SUCESSO */}
+        {/* PASSO 4: SUCESSO */}
         {step === 4 && (
-            <div className="flex flex-col items-center justify-center pt-20 animate-scale-in text-center h-full">
-                <div className="relative mb-12 group cursor-pointer" onClick={handleShare}>
-                     <div className="absolute inset-0 bg-emerald-500 blur-[60px] opacity-40 rounded-full animate-pulse-slow"></div>
-                     <div className="w-40 h-40 bg-gradient-to-tr from-emerald-400 to-teal-600 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/30 relative z-10 transition-transform group-hover:scale-105">
-                        <Check size={80} className="text-white drop-shadow-lg" strokeWidth={5}/>
-                     </div>
-                     <div className="absolute bottom-0 right-0 bg-white text-emerald-600 p-3 rounded-full shadow-lg z-20"><Share2 size={20}/></div>
+            <div className="flex flex-col items-center justify-center pt-24 animate-scale-in text-center h-full">
+                <div className="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(34,197,94,0.4)] mb-10 animate-bounce-slow">
+                   <Check size={64} className="text-zinc-950" strokeWidth={4}/>
                 </div>
                 
-                <h1 className="text-5xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500 tracking-tight">{T.success_title}</h1>
-                <p className="text-lg opacity-60 max-w-[320px] mx-auto mb-16 font-light leading-relaxed">
-                    {T.success_msg}
-                </p>
-
-                <a href={generateZap()} target="_blank" rel="noreferrer" 
-                   className="w-full py-6 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-[2rem] text-xl shadow-xl shadow-emerald-500/30 flex items-center justify-center gap-3 animate-bounce-slow transition-transform active:scale-95 group relative overflow-hidden">
-                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-                    <MessageCircle size={28} fill="currentColor" className="relative z-10"/> <span className="relative z-10">{T.btn_zap}</span>
-                </a>
+                <h1 className="text-5xl font-black text-white mb-6">{T.success_title}</h1>
+                <p className="text-xl text-zinc-400 max-w-[320px] mx-auto leading-relaxed mb-16">{T.success_sub}</p>
                 
-                <button onClick={handleReset} className="mt-12 text-xs font-bold opacity-30 hover:opacity-100 uppercase tracking-[0.2em] transition-opacity">
-                    Voltar ao início
+                <button onClick={openZap} className="w-full py-6 bg-[#25D366] hover:bg-[#1da851] text-white font-bold rounded-3xl text-xl shadow-2xl flex items-center justify-center gap-4 active:scale-95 transition-all">
+                  <MessageCircle size={32} fill="white"/> {T.whatsapp_btn}
+                </button>
+                
+                <button onClick={reset} className="mt-12 text-sm font-bold text-zinc-500 hover:text-white uppercase tracking-widest p-4">
+                    {T.back_home}
                 </button>
             </div>
         )}
         </div>
       </main>
 
-      {/* FOOTER FIXO (NEXT BUTTON) */}
+      {/* --- FOOTER FIXO (AÇÃO) --- */}
       {step < 4 && (
-          <div className={`fixed bottom-0 left-0 right-0 h-28 flex items-center justify-center px-6 backdrop-blur-xl transition-all duration-500 z-50 ${isDark ? 'bg-zinc-950/80 border-t border-white/5' : 'bg-white/80 border-t border-zinc-200'}`}>
-             <div className="w-full max-w-md flex items-center gap-6 pb-4">
+          <div className="h-32 flex-shrink-0 flex items-center justify-center px-8 border-t border-zinc-800 bg-zinc-950/90 backdrop-blur-xl pb-6">
+             <div className="w-full max-w-md flex items-center gap-6">
                 {step < 3 && booking.service && (
-                   <div className="flex-1 animate-fade-in pl-2">
-                      <span className="block text-[9px] font-bold uppercase opacity-40 tracking-wider mb-0.5">Total Estimado</span>
-                      <span className="block text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">R$ {getFinancials.total}</span>
+                   <div className="flex-1 animate-fade-in">
+                      <span className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">{T.total_label}</span>
+                      <span className="block text-4xl font-black text-white">R$ {getFinancials.total}</span>
                    </div>
                 )}
                 
                 <button
-                   disabled={!isStepValid()}
-                   onClick={() => step === 3 ? handleFinish() : setStep(step + 1)}
-                   className={`h-16 rounded-[2rem] font-black flex items-center justify-center gap-3 px-8 transition-all active:scale-95 shadow-lg
-                     ${step < 3 ? 'flex-1 ml-auto' : 'w-full'} 
-                     ${!isStepValid() 
-                        ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed opacity-50 shadow-none' 
-                        : 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/40 hover:shadow-blue-500/60'}`}
+                   disabled={!canProceed()}
+                   onClick={() => step === 3 ? finishBooking() : nextStep()}
+                   className={`h-20 rounded-[24px] font-bold flex items-center justify-center gap-4 px-8 transition-all active:scale-95 shadow-lg flex-1 text-lg
+                     ${!canProceed() 
+                        ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' 
+                        : 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/30'}`}
                 >
-                   <span className="text-sm uppercase tracking-wide">{step === 3 ? T.btn_finish : T.btn_continue}</span>
-                   {step === 3 ? <CheckCircle2 size={20}/> : <ArrowRight size={20} />}
+                   {step === 3 ? T.book_btn : T.next_btn} {step !== 3 && <ArrowRight size={28}/>}
                 </button>
              </div>
           </div>
       )}
 
-      {/* CSS GLOBAL & ANIMAÇÕES */}
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
         .scrollbar-hide::-webkit-scrollbar { display: none; } 
-        
-        .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; } 
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } } 
-        
-        @keyframes slideRight { from { transform: translateX(-100%); } to { transform: translateX(0); } } 
-        .animate-slide-right { animation: slideRight 0.4s cubic-bezier(0.16, 1, 0.3, 1); } 
-        
-        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; } 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } 
-        
-        .animate-slide-in { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; } 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .animate-slide-up { animation: slideUpModal 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        
+        .animate-fade-in { animation: fadeIn 0.8s ease-out; } 
+        .animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); } 
+        .animate-scale-in { animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); } 
         .animate-bounce-slow { animation: bounce 3s infinite; }
-        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } 
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } 
+        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
       `}</style>
     </div>
   );
