@@ -1,27 +1,24 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
-  Clock, MapPin, ChevronLeft, Zap, X, Globe, 
-  User, Building, BedDouble, Trash2, 
-  Heart, Smile, Instagram, Moon, Sun, ShieldCheck, 
-  CheckCircle2, Home, Share2, 
-  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car, Gift, Bell,
-  Volume2, VolumeX, Map
+  Clock, Zap, X, Globe, Building, BedDouble, 
+  Heart, Smile, Instagram, Moon, Sun, Home, 
+  CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
+  Volume2, VolumeX, MapPin
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DADOS E CONFIGURAÇÕES
+// 1. CONFIGURAÇÕES E DADOS
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v50_final_pro',
-  // Som de natureza premium (Pássaros + Água + Ambiente Relaxante)
+  STORAGE_KEY: '@thaly_app_vFinal_Gold',
+  // Link de áudio confiável (Natureza/Floresta)
   AUDIO_URL: "https://cdn.pixabay.com/download/audio/2022/02/07/audio_142b93e62d.mp3?filename=forest-lullaby-110624.mp3"
 };
 
-// Sistema de Níveis e Prêmios
 const LEVEL_SYSTEM = [
   { level: 1, xpNeeded: 0, reward: 12, title: "Iniciante" },
   { level: 2, xpNeeded: 400, reward: 20, title: "Bronze" },
@@ -32,7 +29,6 @@ const LEVEL_SYSTEM = [
 const REVIEWS_DATA = [
   { n: "Tiago", t: "A sensitiva foi uma experiência de outro mundo.", s: 5 },
   { n: "Pedro H.", t: "Fui estressado e saí flutuando. A relaxante é séria e funciona.", s: 5 },
-  { n: "Curioso SP", t: "Mão firme. O adicional de troca de energia vale muito.", s: 5 },
   { n: "Marcos", t: "Profissionalismo nota 10. O ambiente com aroma faz toda diferença.", s: 5 },
   { n: "Roberto", t: "A Mista é perfeita. Começa leve e termina intenso.", s: 5 }
 ];
@@ -46,8 +42,8 @@ const DB = {
       icon: Wind, 
       color: 'text-teal-400',
       title: "Relaxante Terapêutica",
-      desc: "Foco total em saúde mental e física.",
-      details: "Técnica focada 100% em tirar dores, stress e ansiedade. Massagista profissional. **Nota: Nesta modalidade não há toques íntimos.**"
+      desc: "Alívio de dores, ansiedade e stress.",
+      details: "Massagem técnica focada 100% no bem-estar físico e mental. Remove nódulos de tensão. **Obs: Nesta modalidade não há toques íntimos.**"
     },
     { 
       id: 'sensitiva', 
@@ -56,8 +52,8 @@ const DB = {
       icon: Flame, 
       color: 'text-rose-400',
       title: "Sensitiva Tântrica",
-      desc: "Conexão, desejo e sensações à flor da pele.",
-      details: "Uma experiência de bioletricidade. **Massagista atende de cueca.** Foco total em despertar sensações intensas e prazerosas pelo corpo todo."
+      desc: "Conexão, desejo e bioeletricidade.",
+      details: "Focada em despertar a energia corporal e sensações intensas. **O massagista atende de cueca.** Uma experiência sensorial completa."
     },
     { 
       id: 'mista', 
@@ -65,9 +61,9 @@ const DB = {
       price: 205, 
       icon: Zap, 
       color: 'text-amber-400',
-      title: "Experiência Completa (Mista)",
-      desc: "O melhor dos dois mundos. A mais pedida.",
-      details: "Começa com a massagem relaxante para soltar a musculatura e termina com a intensidade da sensitiva. **Massagista de cueca.** Perfeito para quem quer tudo."
+      title: "Experiência Mista",
+      desc: "O equilíbrio perfeito (Relax + Sensitiva).",
+      details: "Começa com a massagem relaxante para soltar a musculatura e termina com a intensidade da sensitiva. **Massagista de cueca.** A mais pedida."
     }
   ],
   extras: [
@@ -76,20 +72,20 @@ const DB = {
       price: 77, 
       icon: Clock,
       label: "+30 Minutos",
-      desc: "Estenda seu prazer e relaxamento."
+      desc: "Estenda seu tempo de prazer."
     },
     { 
       id: 'touch', 
       price: 63, 
       icon: Heart,
       label: "Troca de Energia",
-      desc: "Liberdade para tocar no massagista (interativo)."
+      desc: "Interativo: Você pode tocar no massagista."
     },
     { 
       id: 'aroma', 
       price: 15, 
       icon: Wind,
-      label: "Aromaterapia Premium",
+      label: "Aromaterapia",
       desc: "Essências afrodisíacas e relaxantes no ar."
     }
   ]
@@ -98,131 +94,70 @@ const DB = {
 const TEXTS = {
   pt: {
     welcome: "Olá,",
-    subtitle: "Seu momento de prazer e paz começa agora.",
-    level_label: "Nível",
-    next_reward: "Próximo prêmio:",
-    reviews_count: "Ver depoimentos",
+    subtitle: "Seu momento de prazer e paz.",
+    reviews_count: "Avaliações",
     reviews_title: "O que dizem...",
-    select_time_title: "Quando será?",
-    date_sub: "Agenda atualizada:",
-    location_title: "Onde atendo você?",
+    select_time_title: "Agendamento",
+    date_sub: "Horários disponíveis:",
+    location_title: "Local de Atendimento",
     input_name: "Seu Nome",
-    input_name_placeholder: "Como quer ser chamado?",
     input_addr: "Endereço",
     input_num: "Número",
     input_bairro: "Bairro",
     input_city: "Cidade",
     input_comp: "Complemento",
     input_hotel: "Nome do Hotel",
-    input_room: "Número do Quarto",
-    motel_note: "Motel: Combinamos a entrada pelo WhatsApp.",
-    pay_title: "Forma de Pagamento",
-    pay_pix: "Pix",
-    pay_card: "Cartão",
-    pay_cash: "Dinheiro",
-    extras_title: "Turbine sua Sessão",
+    input_room: "Quarto",
+    motel_note: "Motel: Combinamos detalhes no WhatsApp.",
+    pay_title: "Pagamento",
+    extras_title: "Adicionais (Opcional)",
     coupon_title: "Seus Cupons",
-    coupon_select: "Escolher desconto",
-    coupon_none: "Sem cupons disponíveis",
+    coupon_select: "Selecionar desconto",
+    coupon_none: "Sem cupons",
     remove: "Remover",
-    total_label: "Investimento Total",
+    total_label: "Total",
     book_btn: "Finalizar no WhatsApp",
-    next_btn: "Avançar",
+    next_btn: "Continuar",
     uber_note: "+ Taxa Uber (Ida/Volta)",
-    success_title: "Tudo Pronto!",
-    success_sub: "O texto já está pronto. Basta enviar no WhatsApp para confirmar.",
-    whatsapp_btn: "Enviar Pedido",
-    back_home: "Voltar ao Início",
+    success_title: "Pedido Gerado!",
+    success_sub: "Envie a mensagem pronta no WhatsApp para confirmar.",
+    whatsapp_btn: "Enviar Agora",
+    back_home: "Voltar",
     today: "Hoje",
     tomorrow: "Amanhã",
     
-    popup_welcome_title: "Presente de Boas-Vindas!",
-    popup_welcome_msg: "Ganhe R$ 12,00 de desconto na sua primeira experiência.",
+    popup_welcome_title: "Bem-vindo!",
+    popup_welcome_msg: "Você ganhou R$ 12,00 OFF na primeira vez.",
     popup_level_title: "Subiu de Nível!",
-    popup_level_msg: "Sua fidelidade gerou um desconto maior.",
-    notif_title: "Thalyson Massagens",
-    notif_body: "Novo desconto desbloqueado!",
-    btn_notif: "Ativar Avisos",
-    btn_close: "Fechar",
-
+    popup_level_msg: "Você desbloqueou um desconto maior!",
+    
     terms_body: [
-      "1. Higiene: Todo material é descartável ou esterilizado.",
-      "2. Sigilo: Sua privacidade é absoluta.",
-      "3. Segurança: Atendimento em local seguro.",
-      "4. Pagamento: Realizado ao final do atendimento."
+      "1. Higiene: Material descartável e banho tomado.",
+      "2. Sigilo: Privacidade absoluta garantida.",
+      "3. Respeito: Profissionalismo acima de tudo.",
+      "4. Pagamento: Ao final do atendimento."
     ],
-    terms_title: "Regras de Ouro",
+    terms_title: "Regras",
     terms_link: "Ler regras",
     terms_btn: "Entendi",
 
     zap: {
       intro: "Oi Thalyson! Vim pelo App e quero agendar:",
-      section_serv: "🔥 *SERVIÇO ESCOLHIDO*",
+      section_serv: "🔥 *SERVIÇO*",
       section_det: "📝 *DETALHES*",
-      section_loc: "📍 *LOCALIZAÇÃO*",
+      section_loc: "📍 *LOCAL*",
       section_fin: "💰 *VALORES*",
-      map_link: "🗺️ *Abrir no Mapa:*",
-      wait: "Aguardo sua confirmação!"
+      map_link: "🗺️ *Ver no Mapa:*",
+      wait: "Aguardo retorno!"
     }
   },
   en: {
-    // Mantendo fallback simples em inglês
-    welcome: "Hello,",
-    subtitle: "Your moment of peace.",
-    level_label: "Level",
-    next_reward: "Next reward:",
-    reviews_count: "Reviews",
-    reviews_title: "Reviews",
-    select_time_title: "Date & Time",
-    date_sub: "Availability:",
-    location_title: "Location",
-    input_name: "Name",
-    input_name_placeholder: "Your name...",
-    input_addr: "Address",
-    input_num: "Number",
-    input_bairro: "District",
-    input_city: "City",
-    input_comp: "Unit",
-    input_hotel: "Hotel Name",
-    input_room: "Room Number",
-    motel_note: "Motel: Discuss on Zap.",
-    pay_title: "Payment",
-    pay_pix: "Pix",
-    pay_card: "Card",
-    pay_cash: "Cash",
-    extras_title: "Add-ons",
-    coupon_title: "Coupons",
-    coupon_select: "Select",
-    coupon_none: "None",
-    remove: "Remove",
-    total_label: "Total",
-    book_btn: "Finish on WhatsApp",
-    next_btn: "Next",
-    uber_note: "+ Uber Fee",
-    success_title: "Ready!",
-    success_sub: "Send on WhatsApp.",
-    whatsapp_btn: "Send Now",
-    back_home: "Home",
-    today: "Today",
-    tomorrow: "Tomorrow",
-    popup_welcome_title: "Welcome!",
-    popup_welcome_msg: "R$ 12.00 OFF.",
-    popup_level_title: "Level Up!",
-    popup_level_msg: "New discount unlocked.",
-    notif_title: "Thalyson",
-    notif_body: "New coupon!",
-    btn_notif: "Enable",
-    btn_close: "Close",
-    terms_body: ["Professional service only."],
-    terms_title: "Rules",
-    terms_link: "Rules",
-    terms_btn: "Ok",
-    zap: { intro: "Hi! Booking:", section_serv: "SERVICE", section_det: "DETAILS", section_loc: "LOCATION", section_fin: "TOTAL", map_link: "Map:", wait: "Waiting!" }
+    welcome: "Hello,", subtitle: "Relax time.", reviews_count: "Reviews", reviews_title: "Reviews", select_time_title: "Date & Time", date_sub: "Availability:", location_title: "Location", input_name: "Name", input_addr: "Address", input_num: "Number", input_bairro: "District", input_city: "City", input_comp: "Unit", input_hotel: "Hotel", input_room: "Room", motel_note: "Motel: Discuss on Zap.", pay_title: "Payment", extras_title: "Add-ons", coupon_title: "Coupons", coupon_select: "Select", coupon_none: "None", remove: "Remove", total_label: "Total", book_btn: "Finish", next_btn: "Next", uber_note: "+ Uber Fee", success_title: "Ready!", success_sub: "Send on WhatsApp.", whatsapp_btn: "Send Now", back_home: "Home", today: "Today", tomorrow: "Tomorrow", popup_welcome_title: "Welcome!", popup_welcome_msg: "R$ 12.00 OFF.", popup_level_title: "Level Up!", popup_level_msg: "New Discount!", terms_body: ["Professional service only."], terms_title: "Rules", terms_link: "Rules", terms_btn: "Ok", zap: { intro: "Hi! Booking:", section_serv: "SERVICE", section_det: "DETAILS", section_loc: "LOCATION", section_fin: "TOTAL", map_link: "Map:", wait: "Waiting!" }
   }
 };
 
 // ==================================================================================
-// 2. COMPONENTES AUXILIARES
+// 2. COMPONENTES
 // ==================================================================================
 
 const Modal = ({ isOpen, onClose, children, title, isDark }) => {
@@ -241,7 +176,7 @@ const Modal = ({ isOpen, onClose, children, title, isDark }) => {
   );
 };
 
-const XPBar = ({ xp, isDark, texts }) => {
+const XPBar = ({ xp, isDark }) => {
     let currentLevel = LEVEL_SYSTEM[0];
     let nextLevel = LEVEL_SYSTEM[1];
 
@@ -253,12 +188,12 @@ const XPBar = ({ xp, isDark, texts }) => {
     }
 
     if (!nextLevel) return (
-        <div className={`mt-4 p-4 rounded-2xl ${isDark ? 'bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-amber-500/30' : 'bg-yellow-50 border border-yellow-200'}`}>
+        <div className={`mt-4 p-4 rounded-2xl border ${isDark ? 'bg-amber-900/20 border-amber-500/30' : 'bg-amber-50 border-amber-200'}`}>
              <div className="flex items-center gap-3">
                  <Trophy className="text-amber-500" size={24} />
                  <div>
-                     <p className="font-bold text-sm text-amber-500">Cliente VIP Ouro</p>
-                     <p className="text-xs opacity-70">Você tem acesso aos melhores descontos.</p>
+                     <p className="font-bold text-sm text-amber-500">Nível Ouro (Máximo)</p>
+                     <p className="text-xs opacity-70">Você possui R$ 50 OFF fixo.</p>
                  </div>
              </div>
         </div>
@@ -270,11 +205,11 @@ const XPBar = ({ xp, isDark, texts }) => {
         <div className={`mt-4 p-4 rounded-2xl border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
             <div className="flex justify-between items-end mb-2">
                 <div>
-                    <span className="text-[10px] font-bold uppercase opacity-50 tracking-wider">{texts.level_label} {currentLevel.level}</span>
+                    <span className="text-[10px] font-bold uppercase opacity-50 tracking-wider">Nível {currentLevel.level}</span>
                     <h3 className="font-bold text-sm text-blue-500">{currentLevel.title}</h3>
                 </div>
                 <div className="text-right">
-                    <span className="text-[10px] opacity-60 block">{texts.next_reward}</span>
+                    <span className="text-[10px] opacity-60 block">Próximo cupom:</span>
                     <span className="font-bold text-green-500 text-xs">R$ {nextLevel.reward} OFF</span>
                 </div>
             </div>
@@ -298,7 +233,7 @@ export default function App() {
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
   
-  // Audio State
+  // Audio
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef(null);
 
@@ -312,89 +247,87 @@ export default function App() {
   const T = TEXTS[lang]; 
   const [isClient, setIsClient] = useState(false);
   
-  // User Data
+  // User & Booking
   const [user, setUser] = useState({ 
       name: '', xp: 0, coupons: [], 
       savedAddress: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, 
       hasSeenWelcome: false 
   });
 
-  // Booking Data
   const [booking, setBooking] = useState({
     service: null, extras: {}, date: null, time: null, locationType: 'home', 
     address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
     payment: '', appliedCoupon: null
   });
 
-  // --- INIT & LOGIC ---
+  // --- INICIALIZAÇÃO ---
   useEffect(() => {
     setIsClient(true);
     const s = localStorage.getItem(CONFIG.STORAGE_KEY);
     if (s) {
-        const d = JSON.parse(s);
-        setUser(d);
-        if(d.savedAddress) setBooking(p => ({...p, address: d.savedAddress}));
+        setUser(JSON.parse(s));
     } else {
-        // Primeira vez: Cupom de 12 reais
         setUser(p => ({...p, coupons: [{ id: 'lvl1', val: 12, title: '🎁 Boas Vindas' }]}));
     }
   }, []);
 
-  // --- CORREÇÃO DE ÁUDIO ---
+  // --- AUDIO INTELIGENTE ---
   useEffect(() => {
     if (!isClient) return;
-    
-    // Tenta tocar no load
-    const tryPlay = async () => {
+
+    // 1. Tenta tocar assim que carrega
+    const attemptAutoPlay = async () => {
         if(audioRef.current) {
-            audioRef.current.volume = 0.3; 
+            audioRef.current.volume = 0.3;
             try {
-                if(!isMuted) await audioRef.current.play();
-            } catch (e) {
-                // Se falhar (bloqueio), marca como mutado
-                setIsMuted(true); 
+                await audioRef.current.play();
+                setIsMuted(false);
+            } catch (err) {
+                // Se o navegador bloquear, muta e espera clique
+                setIsMuted(true);
             }
         }
     };
-    tryPlay();
+    attemptAutoPlay();
 
-    // Listener MÁGICO: No primeiro clique em QUALQUER lugar, desbloqueia o som
+    // 2. Destrava no primeiro clique
     const unlockAudio = () => {
         if(audioRef.current) {
-            audioRef.current.play().then(() => setIsMuted(false)).catch(()=>{});
+            audioRef.current.play()
+                .then(() => setIsMuted(false))
+                .catch(() => {});
         }
-        // Remove listener após primeira interação
+        // Remove os ouvintes para não rodar de novo
         document.removeEventListener('click', unlockAudio);
         document.removeEventListener('touchstart', unlockAudio);
     };
-    
+
     document.addEventListener('click', unlockAudio);
     document.addEventListener('touchstart', unlockAudio);
-    
+
     return () => {
         document.removeEventListener('click', unlockAudio);
         document.removeEventListener('touchstart', unlockAudio);
-    }
+    };
   }, [isClient]);
 
-  // Controle Manual do Mute
+  // Controle do botão de Mute
   useEffect(() => {
-    if(isClient && audioRef.current) {
-        if(isMuted) audioRef.current.pause();
-        else audioRef.current.play().catch(()=>{});
-    }
+      if(isClient && audioRef.current) {
+          if(isMuted) audioRef.current.pause();
+          else audioRef.current.play().catch(()=>{});
+      }
   }, [isMuted, isClient]);
 
-  // Popup Welcome
+  // Popup
   useEffect(() => {
-     if(isClient && !user.hasSeenWelcome) {
-         setTimeout(() => setWelcomePopup(true), 2000);
-     }
+     if(isClient && !user.hasSeenWelcome) setTimeout(() => setWelcomePopup(true), 2000);
   }, [isClient, user.hasSeenWelcome]);
 
   useEffect(() => { if(isClient) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user, isClient]);
   useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
 
+  // --- LÓGICA DE NEGÓCIO ---
   const getFinancials = useMemo(() => {
     if (!booking.service) return { total: 0, sub: 0 };
     let sub = booking.service.price;
@@ -419,18 +352,16 @@ export default function App() {
     let updatedCoupons = [...user.coupons];
     if (booking.appliedCoupon) updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     
-    const earnedXP = getFinancials.total;
     const oldXP = user.xp;
-    const newXP = oldXP + earnedXP;
+    const newXP = oldXP + getFinancials.total;
 
     let leveledUp = false;
-    for (let i = 0; i < LEVEL_SYSTEM.length; i++) {
-        const lvl = LEVEL_SYSTEM[i];
+    LEVEL_SYSTEM.forEach(lvl => {
         if (newXP >= lvl.xpNeeded && oldXP < lvl.xpNeeded && lvl.level > 1) {
             leveledUp = true;
             updatedCoupons.push({ id: `lvl${lvl.level}_${Date.now()}`, val: lvl.reward, title: `🏆 Nível ${lvl.title}` });
         }
-    }
+    });
 
     if (leveledUp) setLevelUpPopup(true);
     setUser({ ...user, xp: newXP, coupons: updatedCoupons });
@@ -441,26 +372,27 @@ export default function App() {
     const f = getFinancials;
     const dateStr = booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US');
     
-    // Constrói Endereço e Link do Mapa
+    // Gerar Link do Mapa
     let locTxt = "";
-    let mapLink = "";
+    let mapQuery = "";
     
     if(booking.locationType === 'home') {
-        const fullAddr = `${booking.address.street}, ${booking.address.number} - ${booking.address.city}, ${booking.address.district}`;
-        locTxt = `🏠 *Casa:* ${fullAddr}\n📝 *Comp:* ${booking.address.comp || 'N/A'}`;
-        mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddr)}`;
+        const fullAddr = `${booking.address.street}, ${booking.address.number}, ${booking.address.city}`;
+        locTxt = `🏠 *Casa:* ${fullAddr}\n📝 *Comp:* ${booking.address.comp || '-'}`;
+        mapQuery = fullAddr;
     } else if(booking.locationType === 'motel') {
-        locTxt = `🏩 *Motel:* Combinar local exato pelo chat.`;
+        locTxt = `🏩 *Motel:* Definir no chat.`;
     } else {
-        const fullAddr = `${booking.address.placeName} - ${booking.address.city}`;
+        const fullAddr = `${booking.address.placeName}, ${booking.address.city}`;
         locTxt = `🏨 *Hotel:* ${fullAddr}\n🚪 *Quarto:* ${booking.address.comp}`;
-        mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddr)}`;
+        mapQuery = fullAddr;
     }
+    
+    const mapLink = mapQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}` : '';
 
-    // Detalhes dos Extras
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => {
         const ext = DB.extras.find(e=>e.id===k);
-        return `✅ + ${ext.label} (${ext.desc})`;
+        return `✅ + ${ext.label}`;
     }).join('\n');
 
     const msg = `
@@ -469,7 +401,7 @@ ${T.zap.intro} *${user.name}*
 ${T.zap.section_serv}
 💆‍♂️ *${booking.service.title}*
 📅 ${dateStr} às ${booking.time}
-⏳ Duração: ${booking.service.min} min
+${booking.service.desc}
 
 ${extrasList ? `${T.zap.section_det}\n${extrasList}\n` : ''}
 ${T.zap.section_loc}
@@ -477,12 +409,12 @@ ${locTxt}
 ${mapLink ? `\n${T.zap.map_link} ${mapLink}` : ''}
 
 ${T.zap.section_fin}
-💵 Subtotal: R$ ${f.sub}
-🎟️ Desconto: - R$ ${f.disc}
-🚕 *Nota:* ${T.uber_note}
+Subtotal: R$ ${f.sub}
+Desconto: - R$ ${f.disc}
+${T.uber_note}
 
-💎 *TOTAL A PAGAR: R$ ${f.total}*
-💳 Pagamento via: *${booking.payment.toUpperCase()}*
+💎 *TOTAL: R$ ${f.total}*
+Pagamento: *${booking.payment.toUpperCase()}*
 
 ${T.zap.wait}
 `.trim();
@@ -495,19 +427,19 @@ ${T.zap.wait}
   return (
     <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
       
-      {/* ÁUDIO */}
+      {/* Elemento de Áudio */}
       <audio ref={audioRef} loop preload="auto">
           <source src={CONFIG.AUDIO_URL} type="audio/mp3" />
       </audio>
 
-      {/* HEADER */}
+      {/* NAVBAR */}
       <header className={`h-16 px-6 flex items-center justify-between z-20 shrink-0 ${isDark ? 'bg-zinc-950 border-b border-zinc-800' : 'bg-white border-b border-slate-200'}`}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-xs shadow-lg shadow-blue-500/30">T.</div>
           <span className="font-bold text-sm tracking-tight">Thalyson</span>
         </div>
         <div className="flex gap-2">
-            <button onClick={() => setIsMuted(!isMuted)} className={`p-2 rounded-full transition-all ${isMuted ? (isDark ? 'bg-red-500/10 text-red-500' : 'bg-red-100 text-red-500') : (isDark ? 'bg-emerald-500/10 text-emerald-500' : 'bg-emerald-100 text-emerald-600')}`}>
+            <button onClick={() => setIsMuted(!isMuted)} className={`p-2 rounded-full transition-all ${isMuted ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-500'}`}>
                 {isMuted ? <VolumeX size={18}/> : <Volume2 size={18}/>}
             </button>
             <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`p-2 rounded-full ${isDark ? 'bg-zinc-900 text-zinc-400' : 'bg-slate-100 text-slate-600'}`}><Globe size={18}/></button>
@@ -516,7 +448,7 @@ ${T.zap.wait}
         </div>
       </header>
 
-      {/* CONTENT */}
+      {/* CONTEÚDO */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-6 pb-32 scroll-smooth relative">
         <div className={`fixed top-16 left-0 w-full h-6 z-10 pointer-events-none bg-gradient-to-b ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}></div>
 
@@ -528,10 +460,8 @@ ${T.zap.wait}
               <div className="mb-6">
                 <h1 className="text-2xl font-bold mb-1">{T.welcome} <span className="text-blue-500">{user.name ? user.name.split(' ')[0] : 'Visitante'}</span></h1>
                 <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.subtitle}</p>
-                
-                <XPBar xp={user.xp} isDark={isDark} texts={T} />
-
-                <div onClick={() => setReviewsOpen(true)} className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold cursor-pointer hover:bg-blue-500/20 transition-colors">
+                <XPBar xp={user.xp} isDark={isDark} />
+                <div onClick={() => setReviewsOpen(true)} className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold cursor-pointer hover:bg-blue-500/20">
                    <Star size={12} fill="currentColor"/> {T.reviews_count}
                 </div>
               </div>
@@ -545,18 +475,18 @@ ${T.zap.wait}
                         <div className={`p-3 rounded-2xl ${booking.service?.id === s.id ? 'bg-blue-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={24}/></div>
                         <div className="text-right">
                            <span className="block text-xl font-bold">{T.currency} {s.price}</span>
-                           <span className="text-[10px] uppercase font-bold opacity-60">{s.min} {T.duration}</span>
+                           <span className="text-[10px] uppercase font-bold opacity-60">{s.min} min</span>
                         </div>
                      </div>
                      <h3 className="font-bold text-lg mb-1">{s.title}</h3>
-                     <p className={`text-sm mb-3 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{s.desc}</p>
+                     <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{s.desc}</p>
                      
-                     {/* DETALHES COMPLETOS PARA GERAR DESEJO */}
+                     {/* DESCRIÇÃO EXPANDIDA (COPYWRITING) */}
                      {booking.service?.id === s.id && (
-                        <div className={`mt-3 p-3 rounded-xl text-xs leading-relaxed animate-fade-in ${isDark ? 'bg-black/20 text-zinc-400' : 'bg-slate-100 text-slate-600'}`}>
-                            <div className="flex items-center gap-2 font-bold mb-1 opacity-100"><Info size={12}/> Detalhes:</div>
-                            <p>{s.details}</p>
-                        </div>
+                         <div className={`mt-3 p-3 rounded-xl text-xs leading-relaxed animate-fade-in ${isDark ? 'bg-black/20 text-zinc-300' : 'bg-slate-100 text-slate-700'}`}>
+                             <div className="flex items-center gap-2 font-bold mb-1 text-blue-500"><Info size={12}/> Detalhes Importantes:</div>
+                             <p>{s.details}</p>
+                         </div>
                      )}
                   </div>
                 ))}
@@ -578,7 +508,6 @@ ${T.zap.wait}
                   const isSel = booking.date?.toDateString() === d.toDateString();
                   let lbl = d.toLocaleDateString(lang==='pt'?'pt-BR':'en-US', {weekday:'short'}).slice(0,3);
                   if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
-
                   return (
                     <button key={i} onClick={() => setBooking(b => ({ ...b, date: d, time: null }))} 
                       className={`min-w-[70px] h-20 rounded-2xl flex flex-col items-center justify-center gap-1 border-2 transition-all flex-shrink-0 ${isSel ? 'bg-blue-600 border-blue-600 text-white shadow-lg' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500' : 'bg-white border-slate-200 text-slate-400')}`}
@@ -591,22 +520,13 @@ ${T.zap.wait}
               </div>
 
               <div className={`grid grid-cols-4 gap-3 ${!booking.date ? 'opacity-30 pointer-events-none' : ''}`}>
-                 {['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'].map(t => {
-                     let disabled = false;
-                     if(booking.date) {
-                         const now = new Date();
-                         if(booking.date.toDateString() === now.toDateString() && parseInt(t) <= now.getHours()) disabled = true;
-                     }
-                     if(disabled) return null; 
-
-                     return (
-                         <button key={t} onClick={() => setBooking(b => ({...b, time: t}))}
-                            className={`py-3 rounded-xl text-xs font-bold border transition-all ${booking.time === t ? 'bg-blue-600 text-white border-blue-600 shadow-md' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-600' : 'bg-white border-slate-200 hover:border-slate-300')}`}
-                         >
-                            {t}
-                         </button>
-                     )
-                 })}
+                 {['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'].map(t => (
+                     <button key={t} onClick={() => setBooking(b => ({...b, time: t}))}
+                        className={`py-3 rounded-xl text-xs font-bold border transition-all ${booking.time === t ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200')}`}
+                     >
+                        {t}
+                     </button>
+                 ))}
               </div>
             </div>
           )}
@@ -615,9 +535,8 @@ ${T.zap.wait}
           {step === 2 && (
             <div className="animate-slide-in">
               <h2 className="text-xl font-bold text-center mb-6">{T.location_title}</h2>
-              
               <div className={`flex p-1 rounded-xl mb-6 ${isDark ? 'bg-zinc-900' : 'bg-slate-100'}`}>
-                 {[{id:'home', l:'Casa/Apt', i:Home}, {id:'motel', l:'Motel', i:BedDouble}, {id:'hotel', l:'Hotel', i:Building}].map(x => (
+                 {[{id:'home', l:'Casa', i:Home}, {id:'motel', l:'Motel', i:BedDouble}, {id:'hotel', l:'Hotel', i:Building}].map(x => (
                     <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`flex-1 py-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${booking.locationType === x.id ? (isDark ? 'bg-zinc-800 text-white shadow' : 'bg-white text-black shadow') : 'opacity-50'}`}>
                         <x.i size={14}/> {x.l}
                     </button>
@@ -627,7 +546,7 @@ ${T.zap.wait}
               <div className="space-y-4">
                  <div>
                     <label className={`text-xs font-bold ml-1 mb-1 block uppercase ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.input_name}</label>
-                    <input value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} className={`w-full p-4 rounded-2xl border outline-none text-base ${isDark ? 'bg-zinc-900 border-zinc-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`} placeholder={T.input_name_placeholder} />
+                    <input value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} className={`w-full p-4 rounded-2xl border outline-none text-base ${isDark ? 'bg-zinc-900 border-zinc-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`} />
                  </div>
 
                  {booking.locationType === 'home' && (
@@ -638,16 +557,9 @@ ${T.zap.wait}
                         </div>
                         <input value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} placeholder={T.input_bairro} className={`w-full p-4 rounded-2xl border outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}/>
                         <input value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} placeholder={T.input_city} className={`w-full p-4 rounded-2xl border outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}/>
-                        <input value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} placeholder={T.input_comp} className={`w-full p-4 rounded-2xl border outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}/>
                      </div>
                  )}
                  
-                 {booking.locationType === 'motel' && (
-                     <div className={`p-6 rounded-2xl text-center text-sm ${isDark ? 'bg-blue-900/20 text-blue-200' : 'bg-blue-50 text-blue-800'}`}>
-                         <p>{T.motel_note}</p>
-                     </div>
-                 )}
-
                  {booking.locationType === 'hotel' && (
                     <div className="space-y-4 animate-fade-in">
                         <input value={booking.address.placeName} onChange={e=>setBooking(b=>({...b, address: {...b.address, placeName: e.target.value}}))} placeholder={T.input_hotel} className={`w-full p-4 rounded-2xl border outline-none ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}/>
@@ -754,7 +666,7 @@ ${T.zap.wait}
         </div>
       </main>
 
-      {/* FOOTER NAV */}
+      {/* FLOATING BAR */}
       {step < 4 && (
          <div className="fixed bottom-6 left-6 right-6 z-50">
             <div className={`p-2 rounded-[2rem] shadow-2xl flex items-center gap-4 pr-3 backdrop-blur-xl border ${isDark ? 'bg-zinc-900/90 border-zinc-700' : 'bg-white/90 border-zinc-200'}`}>
@@ -797,32 +709,35 @@ ${T.zap.wait}
          </div>
       </Modal>
 
-      <RewardPopup 
-        isOpen={welcomePopup} 
-        onClose={()=>{setWelcomePopup(false); setUser(u=>({...u, hasSeenWelcome: true}));}} 
-        title={T.popup_welcome_title} 
-        msg={T.popup_welcome_msg} 
-        btnText={T.btn_close} 
-        closeText={T.btn_close}
-        onAllowNotif={()=>setWelcomePopup(false)}
-        isDark={isDark} 
+      <RewardPopup isOpen={welcomePopup} onClose={()=>{setWelcomePopup(false); setUser(u=>({...u, hasSeenWelcome: true}));}} 
+        title={T.popup_welcome_title} msg={T.popup_welcome_msg} btnText={T.terms_btn} closeText={T.btn_close} onAllowNotif={()=>setWelcomePopup(false)} isDark={isDark} 
       />
-
-      <RewardPopup 
-        isOpen={levelUpPopup} 
-        onClose={()=>setLevelUpPopup(false)} 
-        title={T.popup_level_title} 
-        msg={T.popup_level_msg} 
-        btnText={T.btn_close} 
-        closeText={T.btn_close}
-        onAllowNotif={()=>setLevelUpPopup(false)}
-        isDark={isDark} 
-      />
+      
+      <RewardPopup isOpen={levelUpPopup} onClose={()=>setLevelUpPopup(false)} title={T.popup_level_title} msg={T.popup_level_msg} btnText={T.terms_btn} closeText={T.btn_close} onAllowNotif={()=>setLevelUpPopup(false)} isDark={isDark} />
       
       <div className={`fixed top-0 left-0 w-full h-8 z-10 pointer-events-none bg-gradient-to-b ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}/>
       <div className={`fixed bottom-0 left-0 w-full h-24 z-10 pointer-events-none bg-gradient-to-t ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}/>
 
-      <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } .animate-fade-in { animation: fadeIn 0.6s ease-out; } .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); } .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); } .animate-bounce-slow { animation: bounce 3s infinite; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
+      <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } .animate-fade-in { animation: fadeIn 0.6s ease-out; } .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); } .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }`}</style>
     </div>
   );
 }
+
+const RewardPopup = ({ isOpen, onClose, title, msg, onAllowNotif, btnText, closeText, isDark }) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in" onClick={onClose}></div>
+            <div className={`relative p-8 rounded-[2rem] text-center max-w-sm w-full animate-scale-in shadow-2xl ${isDark ? 'bg-zinc-900 border border-zinc-800 text-white' : 'bg-white text-zinc-900'}`}>
+                <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
+                    <Gift size={40} className="text-white" />
+                </div>
+                <h2 className="text-2xl font-black mb-2">{title}</h2>
+                <p className="opacity-70 text-base leading-relaxed mb-8">{msg}</p>
+                <button onClick={onAllowNotif} className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl text-base hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
+                    <Bell size={18}/> {btnText}
+                </button>
+            </div>
+        </div>
+    );
+};
