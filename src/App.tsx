@@ -1,4 +1,4 @@
-'use client';
+l'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
@@ -17,12 +17,12 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v33_final_master', 
+  STORAGE_KEY: '@thaly_app_v34_final_master', 
   XP_TARGET: 500,
+  // Link de áudio direto. Se der erro, troque por um link hospedado no seu servidor/Vercel
   AUDIO_URL: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=forest-lullaby-110624.mp3"
 };
 
-// LISTA DE AVALIAÇÕES
 const REVIEWS_DATA = [
   { n: "Tiago", t: "Energia surreal. A massagem foi perfeita.", s: 5 },
   { n: "Pedro H.", t: "Fui pra relaxar e saí renovado. Recomendo.", s: 5 },
@@ -63,6 +63,7 @@ const TEXTS = {
     time_title: "Horários (09h às 20h)",
     location_title: "Onde será?",
     input_name: "Seu Nome",
+    input_name_placeholder: "Digite seu nome...",
     input_addr: "Endereço",
     input_num: "Número",
     input_bairro: "Bairro",
@@ -72,9 +73,14 @@ const TEXTS = {
     input_room: "Quarto",
     motel_note: "Motel: Combinamos no Zap.",
     pay_title: "Pagamento",
+    pay_pix: "Pix",
+    pay_card: "Cartão",
+    pay_cash: "Dinheiro",
     extras_title: "Adicionais",
     coupon_title: "Cupons",
     coupon_select: "Selecionar",
+    coupon_none: "Sem cupons",
+    remove: "Remover",
     total_label: "Total Estimado",
     book_btn: "Confirmar no Zap",
     next_btn: "Continuar",
@@ -85,7 +91,6 @@ const TEXTS = {
     back_home: "Início",
     today: "Hoje",
     tomorrow: "Amanhã",
-    enter_app: "Toque para Entrar",
     
     // Popup & Notif
     popup_welcome_title: "Bem-vindo!",
@@ -118,7 +123,7 @@ const TEXTS = {
     ],
     terms_title: "Regras",
     terms_agree: "Concordo com as regras",
-    terms_link: "Ler",
+    terms_link: "Ler termos",
     terms_btn: "Ok, entendi",
 
     zap: {
@@ -128,6 +133,7 @@ const TEXTS = {
       section_loc: "📍",
       section_fin: "💰",
       total_pay: "Total:",
+      payment: "Pagamento:",
       wait: "Aguardo retorno!"
     }
   },
@@ -144,6 +150,7 @@ const TEXTS = {
     time_title: "Hours (09am - 08pm)",
     location_title: "Location",
     input_name: "Name",
+    input_name_placeholder: "Type your name...",
     input_addr: "Address",
     input_num: "Number",
     input_bairro: "District",
@@ -153,9 +160,14 @@ const TEXTS = {
     input_room: "Room",
     motel_note: "Motel: Discuss on Zap.",
     pay_title: "Payment",
+    pay_pix: "Pix",
+    pay_card: "Card",
+    pay_cash: "Cash",
     extras_title: "Add-ons",
     coupon_title: "Coupons",
     coupon_select: "Select",
+    coupon_none: "No coupons",
+    remove: "Remove",
     total_label: "Total",
     book_btn: "Confirm on Zap",
     next_btn: "Continue",
@@ -166,7 +178,6 @@ const TEXTS = {
     back_home: "Home",
     today: "Today",
     tomorrow: "Tomorrow",
-    enter_app: "Tap to Enter",
     
     popup_welcome_title: "Welcome!",
     popup_welcome_msg: "You got R$ 15.00 OFF.",
@@ -198,7 +209,7 @@ const TEXTS = {
     ],
     terms_title: "Rules",
     terms_agree: "I agree to rules",
-    terms_link: "Read",
+    terms_link: "Read rules",
     terms_btn: "Ok",
 
     zap: {
@@ -208,6 +219,7 @@ const TEXTS = {
       section_loc: "📍",
       section_fin: "💰",
       total_pay: "Total:",
+      payment: "Payment:",
       wait: "Waiting reply!"
     }
   }
@@ -259,7 +271,7 @@ const RewardPopup = ({ isOpen, onClose, title, msg, onAllowNotif, btnText, close
 };
 
 // ==================================================================================
-// 3. APP
+// 3. APP PRINCIPAL
 // ==================================================================================
 
 export default function App() {
@@ -273,10 +285,7 @@ export default function App() {
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   
-  // Zen Mode
-  const [entered, setEntered] = useState(false);
   const audioRef = useRef(null);
-  
   const scrollRef = useRef(null);
   const T = TEXTS[lang]; 
   const [isClient, setIsClient] = useState(false);
@@ -308,24 +317,41 @@ export default function App() {
     }
   }, []);
 
-  useEffect(() => { if(isClient) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user, isClient]);
-  
+  // --- LÓGICA DE ÁUDIO "AUTO MÁGICO" ---
   useEffect(() => {
-      // Trigger Welcome Popup ONLY after entering
-      if (entered && !user.hasSeenWelcome && user.coupons.some(c => c.id === 'welcome')) {
-          setTimeout(() => setWelcomePopup(true), 1500);
-      }
-  }, [entered, user.hasSeenWelcome]);
+    if (!isClient) return;
 
-  useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
-
-  const handleEnterApp = () => {
-      setEntered(true);
+    const playAudio = async () => {
       if (audioRef.current) {
-          audioRef.current.volume = 0.2; 
-          audioRef.current.play().catch(() => {});
+        audioRef.current.volume = 0.2;
+        try {
+          // Tenta tocar imediatamente (pode falhar no iPhone/Chrome)
+          await audioRef.current.play();
+        } catch (err) {
+          // Se falhar, adiciona um listener para tocar no PRIMEIRO clique em qualquer lugar
+          const unlockAudio = () => {
+            audioRef.current.play();
+            // Remove os listeners para não tentar de novo
+            document.removeEventListener('click', unlockAudio);
+            document.removeEventListener('touchstart', unlockAudio);
+          };
+          document.addEventListener('click', unlockAudio);
+          document.addEventListener('touchstart', unlockAudio);
+        }
       }
-  };
+    };
+
+    playAudio();
+
+    // Popup de boas vindas
+    setTimeout(() => {
+        if (!user.hasSeenWelcome) setWelcomePopup(true);
+    }, 2000);
+
+  }, [isClient, user.hasSeenWelcome]);
+
+  useEffect(() => { if(isClient) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); }, [user, isClient]);
+  useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
 
   const requestNotif = () => {
       if ('Notification' in window) {
@@ -337,7 +363,7 @@ export default function App() {
       }
       setWelcomePopup(false);
       setLevelUpPopup(false);
-      if(welcomePopup) setUser(u => ({...u, hasSeenWelcome: true}));
+      setUser(u => ({...u, hasSeenWelcome: true}));
   };
 
   const getFinancials = useMemo(() => {
@@ -403,24 +429,12 @@ ${T.zap.payment} ${booking.payment}
 
   if (!isClient) return <div className="bg-zinc-950 h-screen w-full"/>;
 
-  // TELA ZEN
-  if (!entered) return (
-      <div className="fixed inset-0 bg-zinc-950 flex flex-col items-center justify-center z-[200] cursor-pointer" onClick={handleEnterApp}>
-          <audio ref={audioRef} loop><source src={CONFIG.AUDIO_URL} type="audio/mp3" /></audio>
-          <div className="relative mb-10">
-              <div className="w-28 h-28 bg-gradient-to-tr from-blue-600 to-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_80px_rgba(37,99,235,0.6)] animate-pulse">
-                  <span className="text-4xl text-white font-black">T.</span>
-              </div>
-              <div className="absolute -inset-4 border border-white/10 rounded-full animate-ping opacity-20"></div>
-          </div>
-          <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">Thalyson Massagens</h1>
-          <p className="text-zinc-400 text-base animate-bounce mt-4">{T.enter_app}</p>
-      </div>
-  );
-
   return (
     <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
       
+      {/* AUDIO ESCONDIDO QUE TENTA TOCAR NO LOAD */}
+      <audio ref={audioRef} loop className="hidden"><source src={CONFIG.AUDIO_URL} type="audio/mp3" /></audio>
+
       {/* HEADER (NAVBAR) */}
       <header className={`h-16 px-6 flex items-center justify-between z-20 shrink-0 ${isDark ? 'bg-zinc-950 border-b border-zinc-800' : 'bg-white border-b border-slate-200'}`}>
         <div className="flex items-center gap-3">
@@ -444,7 +458,7 @@ ${T.zap.payment} ${booking.payment}
           {step === 0 && (
             <div className="animate-fade-in">
               <div className="mb-6">
-                <h1 className="text-2xl font-bold mb-1">{T.welcome} <span className="text-blue-500">{user.name.split(' ')[0]}</span></h1>
+                <h1 className="text-2xl font-bold mb-1">{T.welcome} <span className="text-blue-500">{user.name ? user.name.split(' ')[0] : 'Visitante'}</span></h1>
                 <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.subtitle}</p>
                 <div onClick={() => setReviewsOpen(true)} className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold cursor-pointer hover:bg-blue-500/20 transition-colors">
                    <Star size={12} fill="currentColor"/> {T.reviews_count}
@@ -504,7 +518,7 @@ ${T.zap.payment} ${booking.payment}
                          const now = new Date();
                          if(booking.date.toDateString() === now.toDateString() && parseInt(t) <= now.getHours()) disabled = true;
                      }
-                     if(disabled) return null; // Esconde horários passados
+                     if(disabled) return null; 
 
                      return (
                          <button key={t} onClick={() => setBooking(b => ({...b, time: t}))}
@@ -671,7 +685,7 @@ ${T.zap.payment} ${booking.payment}
                 
                 <button 
                     disabled={!canProceed()} 
-                    onClick={() => step === 3 ? finishBooking() : nextStep()}
+                    onClick={() => step === 3 ? finishBooking() : setStep(s => s + 1)}
                     className={`h-12 px-6 rounded-full font-bold flex items-center justify-center gap-2 transition-all ${step < 3 ? 'ml-auto' : 'w-full'} ${!canProceed() ? 'bg-zinc-500 opacity-50 cursor-not-allowed text-white' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'}`}
                 >
                     {step === 3 ? T.book_btn : T.next_btn} {step !== 3 && <ArrowRight size={18}/>}
