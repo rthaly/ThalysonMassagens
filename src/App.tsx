@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
-  Clock, MapPin, ChevronLeft, Zap, X, Globe, 
+  Clock, MapPin, ChevronLeft, Zap, Menu, X, Globe, 
   User, Building, BedDouble, Trash2, 
   Heart, Smile, Instagram, Moon, Sun, ShieldCheck, 
   CheckCircle2, Home, Share2, 
@@ -9,17 +9,17 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DADOS E CONFIGURAÇÕES
+// 1. DADOS ESTÁTICOS (GLOBAIS PARA NÃO QUEBRAR O RENDER)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v26_fixed', 
+  STORAGE_KEY: '@thaly_app_restore_v1', 
   XP_TARGET: 500, 
 };
 
-// DADOS ESTÁTICOS
+// LISTA DE AVALIAÇÕES (Fixa e Segura)
 const REVIEWS_DATA = [
   { n: "Tiago", t: "Energia surreal. A massagem foi perfeita.", s: 5 },
   { n: "Pedro H.", t: "Fui pra relaxar e saí renovado. Recomendo.", s: 5 },
@@ -42,6 +42,19 @@ const REVIEWS_DATA = [
   { n: "Sérgio", t: "Nota 10. Nada a reclamar.", s: 5 },
   { n: "Fernando", t: "Paz de espírito e corpo relaxado.", s: 5 }
 ];
+
+const DB = {
+  services: [
+    { id: 'relaxante', min: 60, price: 145, icon: Wind, color: 'text-teal-400' },
+    { id: 'sensitiva', min: 60, price: 175, icon: Flame, color: 'text-rose-400' },
+    { id: 'mista', min: 90, price: 205, icon: Zap, color: 'text-amber-400' }
+  ],
+  extras: [
+    { id: 'more_time', price: 77, icon: Clock },
+    { id: 'touch', price: 63, icon: Heart },
+    { id: 'aroma', price: 5, icon: Smile }
+  ]
+};
 
 const TEXTS = {
   pt: {
@@ -83,7 +96,7 @@ const TEXTS = {
     success_sub: "Seu pedido foi gerado. Envie a mensagem no WhatsApp para eu confirmar.",
     whatsapp_btn: "ENVIAR CONFIRMAÇÃO",
     back_home: "Voltar para o início",
-    address_warn: "Preencha todos os dados para eu chegar até você.",
+    address_warn: "Preciso do endereço completo para chegar até você.",
     today: "Hoje",
     tomorrow: "Amanhã",
     popup_welcome_title: "Presente de Boas-Vindas!",
@@ -226,21 +239,8 @@ const TEXTS = {
   }
 };
 
-const DB = {
-  services: [
-    { id: 'relaxante', min: 60, price: 145, icon: Wind, color: 'text-teal-400' },
-    { id: 'sensitiva', min: 60, price: 175, icon: Flame, color: 'text-rose-400' },
-    { id: 'mista', min: 90, price: 205, icon: Zap, color: 'text-amber-400' }
-  ],
-  extras: [
-    { id: 'more_time', price: 77, icon: Clock },
-    { id: 'touch', price: 63, icon: Heart },
-    { id: 'aroma', price: 5, icon: Smile }
-  ]
-};
-
 // ==================================================================================
-// 2. COMPONENTES VISUAIS (MODAIS E UI)
+// 2. COMPONENTES DE UI
 // ==================================================================================
 
 const Toast = ({ msg, show }) => (
@@ -314,8 +314,10 @@ const ServiceCard = ({ s, selected, onClick, T }) => (
 export default function App() {
   const [step, setStep] = useState(0); 
   const [lang, setLang] = useState('pt');
+  const [isClient, setIsClient] = useState(false);
   
   // Modais
+  const [menuOpen, setMenuOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
@@ -325,11 +327,7 @@ export default function App() {
   const scrollRef = useRef(null);
   const T = TEXTS[lang];
 
-  // ========================================================================
-  // CORREÇÃO CRÍTICA DE HYDRATION: STATE INICIAL SEGURO
-  // ========================================================================
-  
-  // 1. Estado inicial VAZIO para o servidor
+  // USUÁRIO (Dados seguros)
   const [user, setUser] = useState({ 
       name: '', 
       xp: 0, 
@@ -338,6 +336,7 @@ export default function App() {
       hasSeenWelcome: false 
   });
 
+  // BOOKING
   const [booking, setBooking] = useState({
     service: null, 
     extras: {}, 
@@ -350,22 +349,17 @@ export default function App() {
     termsAccepted: false
   });
 
-  // 2. Estado para controlar se estamos no cliente
-  const [isClient, setIsClient] = useState(false);
-
-  // 3. useEffect para carregar do localStorage APENAS no cliente
+  // EFEITO DE INICIALIZAÇÃO DO CLIENTE (Resolve o erro do Vercel)
   useEffect(() => {
     setIsClient(true);
     const s = localStorage.getItem(CONFIG.STORAGE_KEY);
     if (s) {
         const loadedUser = JSON.parse(s);
         setUser(loadedUser);
-        // Se tiver endereço salvo, já preenche o booking
         if(loadedUser.savedAddress) {
-            setBooking(b => ({...b, address: loadedUser.savedAddress}));
+            setBooking(prev => ({...prev, address: loadedUser.savedAddress}));
         }
     } else {
-        // Se não tiver dados, cria usuário padrão
         setUser(prev => ({
             ...prev,
             coupons: [{ id: 'welcome', val: 12, title: 'Cupom Boas Vindas' }]
@@ -373,31 +367,39 @@ export default function App() {
     }
   }, []);
 
-  // 4. Salvar no localStorage sempre que 'user' mudar (apenas se for cliente)
+  // Salvar sempre que mudar o user (apenas se for cliente)
   useEffect(() => {
-      if(isClient) {
-          localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user));
-      }
+      if(isClient) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user));
   }, [user, isClient]);
 
-  // 5. Popup de Boas Vindas (com delay)
+  // Boas Vindas
   useEffect(() => {
       if (isClient && !user.hasSeenWelcome && user.coupons.find(c => c.id === 'welcome')) {
-          const timer = setTimeout(() => setWelcomePopup(true), 1500);
-          return () => clearTimeout(timer);
+          setTimeout(() => setWelcomePopup(true), 1500);
       }
-  }, [isClient, user.hasSeenWelcome]); // Dependências corrigidas
+  }, [isClient, user.hasSeenWelcome]);
+
+  // Scroll Reset
+  useEffect(() => { 
+      if(scrollRef.current) scrollRef.current.scrollTo(0,0); 
+  }, [step]);
 
   const closeWelcome = () => {
       setWelcomePopup(false);
       setUser(u => ({...u, hasSeenWelcome: true}));
   };
 
-  useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
-
   const showToast = (msg) => {
     setToast({ show: true, msg });
     setTimeout(() => setToast({ show: false, msg: '' }), 3000);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Thalyson Massagens', text: 'Agende seu momento.', url: window.location.href }); } catch (e) {}
+    } else {
+      // Fallback
+    }
   };
 
   const getFinancials = useMemo(() => {
@@ -406,9 +408,11 @@ export default function App() {
     let extrasTotal = 0;
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
-            const price = DB.extras.find(e=>e.id===k).price;
-            sub += price;
-            extrasTotal += price;
+            const item = DB.extras.find(e=>e.id===k);
+            if(item) {
+                sub += item.price;
+                extrasTotal += item.price;
+            }
         }
     });
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
@@ -435,7 +439,6 @@ export default function App() {
   };
 
   const nextStep = () => {
-      // SALVA O ENDEREÇO
       if (step === 2 && booking.locationType === 'home') {
           setUser(u => ({ ...u, name: user.name, savedAddress: booking.address }));
       }
@@ -457,7 +460,6 @@ export default function App() {
     }
     
     setUser({ ...user, xp: newXP, coupons: updatedCoupons });
-    
     if(leveledUp) setLevelUpPopup(true);
     setStep(4);
   };
@@ -473,7 +475,7 @@ export default function App() {
 
   const openZap = () => {
     const f = getFinancials;
-    const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
+    const dateStr = booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US');
     
     let locTxt = "";
     if(booking.locationType === 'home') locTxt = `🏠 *${T.zap.section_loc} (Casa)*\nEnd: ${booking.address.street}, ${booking.address.number}\nRef: ${booking.address.comp}\nBairro: ${booking.address.district} - ${booking.address.city}`;
@@ -481,7 +483,10 @@ export default function App() {
     else locTxt = `🏨 *${T.zap.section_loc} (Hotel)*\nHotel: ${booking.address.placeName}\nQuarto: ${booking.address.comp}\nCidade: ${booking.address.city}`;
 
     const extrasTxt = Object.keys(booking.extras).filter(k => booking.extras[k])
-      .map(k => `+ ${T.extras_list[k].label} (R$ ${DB.extras.find(e => e.id === k).price})`).join('\n');
+      .map(k => {
+          const i = DB.extras.find(e => e.id === k);
+          return i ? `+ ${T.extras_list[k].label} (R$ ${i.price})` : '';
+      }).join('\n');
 
     const msg = `
 ${T.zap.greeting[1]}, Thalyson!
@@ -509,7 +514,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
   };
 
-  // Se não estiver no cliente ainda, retorna um Loading para evitar erro de hidratação
+  // Se não estiver no cliente, mostra tela de loading (Evita erro de Hydration)
   if (!isClient) return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-zinc-950">
        <div className="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center text-white font-black text-5xl animate-pulse">T.</div>
@@ -521,7 +526,6 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
       
       <Toast show={toast.show} msg={toast.msg} />
       
-      {/* MODALS */}
       <Modal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} title={T.terms_title}>
          <div className="space-y-6 text-lg text-zinc-300 leading-relaxed font-light">
             {T.terms_body.map((t,i)=><p key={i} className="p-4 bg-zinc-900 rounded-xl border border-zinc-800">{t}</p>)}
@@ -546,7 +550,45 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
       <RewardPopup isOpen={welcomePopup} onClose={closeWelcome} title={T.popup_welcome_title} msg={T.popup_welcome_msg} />
       <RewardPopup isOpen={levelUpPopup} onClose={()=>setLevelUpPopup(false)} title={T.popup_level_title} msg={T.popup_level_msg} />
 
-      {/* --- HEADER --- */}
+      {/* MENU (Z-Index alto para garantir clique) */}
+      {menuOpen && (
+          <div className="fixed inset-0 z-[120] flex justify-start">
+             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={()=>setMenuOpen(false)}></div>
+             <div className="relative w-4/5 max-w-xs h-full bg-zinc-900 border-r border-white/10 p-6 shadow-2xl flex flex-col animate-slide-right">
+                <div className="flex justify-between items-center mb-10">
+                   <h2 className="font-bold text-2xl text-blue-500">Menu</h2>
+                   <button onClick={()=>setMenuOpen(false)} className="p-2 rounded-full hover:bg-white/10"><X size={24}/></button>
+                </div>
+                
+                <div className="mb-8 p-6 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-xl relative overflow-hidden">
+                    <Trophy className="absolute -right-4 -bottom-4 text-white/20" size={100} />
+                    <p className="text-xs font-bold uppercase opacity-80 mb-1">Seus Pontos (XP)</p>
+                    <h3 className="text-4xl font-black mb-4">{user.xp}</h3>
+                    <div className="w-full h-2 bg-black/20 rounded-full mb-2 overflow-hidden">
+                        <div className="h-full bg-white transition-all duration-1000" style={{ width: `${(user.xp % CONFIG.XP_TARGET) / CONFIG.XP_TARGET * 100}%` }}></div>
+                    </div>
+                    <p className="text-[10px] opacity-70">Junte pontos para ganhar descontos!</p>
+                </div>
+
+                <div className="flex-1 space-y-4 overflow-y-auto">
+                   <button onClick={()=>setLang(l => l==='pt'?'en':'pt')} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
+                      <Globe size={20}/> <span>{lang === 'pt' ? 'English' : 'Português'}</span>
+                   </button>
+                   <button onClick={handleShare} className="flex items-center gap-4 w-full p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium">
+                      <Share2 size={20}/> <span>Compartilhar App</span>
+                   </button>
+                </div>
+
+                <div className="pt-8">
+                   <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex items-center gap-3 w-full p-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold justify-center shadow-lg hover:shadow-purple-500/20 transition-all">
+                      <Instagram size={20}/> @seumssagista
+                   </a>
+                </div>
+             </div>
+          </div>
+      )}
+
+      {/* HEADER */}
       <header className="h-24 px-8 flex items-center justify-between border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-md z-20 shrink-0">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-blue-600/30">T.</div>
@@ -555,23 +597,23 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
             <span className="text-xs opacity-60 text-zinc-400 font-medium">Massoterapeuta</span>
           </div>
         </div>
-        <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
-            <Globe size={24} className="text-zinc-400"/>
+        <button onClick={() => setMenuOpen(true)} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+            <Menu size={24} className="text-zinc-400"/>
         </button>
       </header>
 
-      {/* --- PROGRESSO --- */}
+      {/* PROGRESSO */}
       {step < 4 && (
         <div className="w-full h-1.5 bg-zinc-900 flex-shrink-0">
           <div className="h-full bg-blue-600 transition-all duration-700 ease-out" style={{ width: `${((step+1)/4)*100}%` }} />
         </div>
       )}
 
-      {/* --- CONTEÚDO --- */}
+      {/* CONTEÚDO */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-8 pb-40 scroll-smooth">
         <div className="max-w-md mx-auto space-y-12 animate-fade-in">
 
-          {/* PASSO 0: SERVIÇOS */}
+          {/* STEP 0: SERVIÇOS */}
           {step === 0 && (
             <>
               <div className="space-y-4">
@@ -595,7 +637,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
             </>
           )}
 
-          {/* PASSO 1: DATA E HORA */}
+          {/* STEP 1: DATA E HORA */}
           {step === 1 && (
             <>
               <div className="text-center">
@@ -631,7 +673,6 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                        if (booking.date) {
                           const now = new Date();
                           const [h] = time.split(':');
-                          // Bloqueia se já passou da hora hoje
                           if (booking.date.toDateString() === now.toDateString() && parseInt(h) <= now.getHours()) disabled = true;
                        }
                        const isSel = booking.time === time;
@@ -653,7 +694,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
             </>
           )}
 
-          {/* PASSO 2: LOCAL */}
+          {/* STEP 2: LOCAL */}
           {step === 2 && (
             <>
               <div className="text-center mb-8">
@@ -757,7 +798,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
           </div>
         )}
 
-        {/* PASSO 3: RESUMO */}
+        {/* STEP 3: RESUMO */}
         {step === 3 && (
           <div className="space-y-12 animate-slide-in pb-10">
              <button onClick={()=>setStep(2)} className="flex items-center gap-2 text-base font-bold text-zinc-500 hover:text-white transition-colors"><ChevronLeft size={24}/> Voltar</button>
@@ -843,7 +884,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
           </div>
         )}
 
-        {/* PASSO 4: SUCESSO */}
+        {/* STEP 4: SUCESSO */}
         {step === 4 && (
             <div className="flex flex-col items-center justify-center pt-24 animate-scale-in text-center h-full">
                 <div className="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(34,197,94,0.4)] mb-10 animate-bounce-slow">
@@ -865,7 +906,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
         </div>
       </main>
 
-      {/* --- FOOTER FIXO (AÇÃO) --- */}
+      {/* --- FOOTER FIXO --- */}
       {step < 4 && (
           <div className="h-32 flex-shrink-0 flex items-center justify-center px-8 border-t border-zinc-800 bg-zinc-950/90 backdrop-blur-xl pb-6">
              <div className="w-full max-w-md flex items-center gap-6">
