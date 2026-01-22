@@ -7,7 +7,7 @@ import {
   User, Building, BedDouble, Trash2, 
   Heart, Smile, Instagram, Moon, Sun, ShieldCheck, 
   CheckCircle2, Home, Share2, 
-  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car, Gift, Menu, Bell, Volume2, VolumeX
+  CreditCard, Banknote, QrCode, Trophy, Info, Eye, Car, Gift, Bell, Menu
 } from 'lucide-react';
 
 // ==================================================================================
@@ -17,13 +17,12 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v31_nature', 
+  STORAGE_KEY: '@thaly_app_v32_deploy_fix', 
   XP_TARGET: 500,
-  // Som de natureza (chuva suave na floresta)
   AUDIO_URL: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=forest-lullaby-110624.mp3"
 };
 
-// LISTA DE AVALIAÇÕES (COMPLETA)
+// LISTA DE AVALIAÇÕES
 const REVIEWS_DATA = [
   { n: "Tiago", t: "Energia surreal. A massagem foi perfeita.", s: 5 },
   { n: "Pedro H.", t: "Fui pra relaxar e saí renovado. Recomendo.", s: 5 },
@@ -47,26 +46,13 @@ const REVIEWS_DATA = [
   { n: "Fernando", t: "Paz de espírito e corpo relaxado.", s: 5 }
 ];
 
-const DB = {
-  services: [
-    { id: 'relaxante', min: 60, price: 125, icon: Wind, color: 'text-teal-400' },
-    { id: 'sensitiva', min: 60, price: 155, icon: Flame, color: 'text-rose-400' },
-    { id: 'mista', min: 90, price: 205, icon: Zap, color: 'text-amber-400' }
-  ],
-  extras: [
-    { id: 'more_time', price: 77, icon: Clock },
-    { id: 'touch', price: 63, icon: Heart },
-    { id: 'aroma', price: 5, icon: Smile }
-  ]
-};
-
 const TEXTS = {
   pt: {
     welcome: "Olá,",
     subtitle: "Escolha como deseja relaxar hoje.",
-    reviews_count: "Ver avaliações de clientes",
+    reviews_count: "Ver opiniões de clientes",
     reviews_title: "O que dizem sobre mim",
-    choose_service: "1. Escolha sua Sessão",
+    choose_service: "1. Qual massagem você prefere?",
     duration: "minutos",
     currency: "R$",
     select_time_title: "2. Data e Horário",
@@ -104,9 +90,9 @@ const TEXTS = {
     today: "Hoje",
     tomorrow: "Amanhã",
     popup_welcome_title: "Presente de Boas-Vindas!",
-    popup_welcome_msg: "Você ganhou R$ 12,00 de desconto na sua primeira sessão.",
+    popup_welcome_msg: "Você ganhou R$ 15,00 de desconto na sua primeira sessão.",
     popup_level_title: "Parabéns! Novo Nível!",
-    popup_level_msg: "Você é um cliente especial! Ganhou um Cupom de R$ 20,00.",
+    popup_level_msg: "Você é um cliente especial! Ganhou um Cupom de R$ 25,00.",
     notification_title: "Cupons Ativos",
     notification_msg: "Você recebeu um novo cupom de desconto!",
     allow_notif: "Ativar Notificações",
@@ -247,8 +233,21 @@ const TEXTS = {
   }
 };
 
+const DB = {
+  services: [
+    { id: 'relaxante', min: 60, price: 125, icon: Wind, color: 'text-teal-400' },
+    { id: 'sensitiva', min: 60, price: 155, icon: Flame, color: 'text-rose-400' },
+    { id: 'mista', min: 90, price: 205, icon: Zap, color: 'text-amber-400' }
+  ],
+  extras: [
+    { id: 'more_time', price: 77, icon: Clock },
+    { id: 'touch', price: 63, icon: Heart },
+    { id: 'aroma', price: 5, icon: Smile }
+  ]
+};
+
 // ==================================================================================
-// 2. COMPONENTES DE UI
+// 2. COMPONENTES VISUAIS
 // ==================================================================================
 
 const Toast = ({ msg, show }) => (
@@ -287,10 +286,15 @@ const RewardPopup = ({ isOpen, onClose, title, msg, onAllowNotif }) => {
                 </div>
                 <h2 className="text-3xl font-black text-white mb-4">{title}</h2>
                 <p className="text-zinc-300 text-lg leading-relaxed mb-8">{msg}</p>
-                <button onClick={onAllowNotif} className="w-full py-5 bg-white text-blue-900 font-bold rounded-xl text-xl hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
-                    <Bell size={20}/> {title.includes("Nível") ? "Receber Cupom" : "Ativar Notificações"}
-                </button>
-                <button onClick={onClose} className="mt-4 text-zinc-500 text-sm font-bold uppercase tracking-widest">Fechar</button>
+                
+                <div className="space-y-3">
+                    <button onClick={onAllowNotif} className="w-full py-4 bg-white text-blue-900 font-bold rounded-xl text-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+                        <Bell size={20} /> {title.includes("Nível") ? "Receber Cupom" : "Ativar Notificações"}
+                    </button>
+                    <button onClick={onClose} className="w-full py-4 bg-transparent text-zinc-400 font-bold rounded-xl text-sm hover:text-white">
+                        Fechar
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -374,7 +378,7 @@ export default function App() {
     } else {
         setUser(prev => ({
             ...prev,
-            coupons: [{ id: 'welcome', val: 12, title: 'Cupom Boas Vindas' }]
+            coupons: [{ id: 'welcome', val: 15, title: 'Cupom Boas Vindas' }]
         }));
     }
   }, []);
@@ -384,7 +388,7 @@ export default function App() {
       if(isClient) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user));
   }, [user, isClient]);
   
-  // POPUP BOAS VINDAS (Só aparece depois de entrar no App)
+  // POPUP BOAS VINDAS
   useEffect(() => {
       if (entered && !user.hasSeenWelcome && user.coupons.find(c => c.id === 'welcome')) {
           setTimeout(() => setWelcomePopup(true), 1500);
@@ -406,6 +410,11 @@ export default function App() {
       }
   };
 
+  const closeWelcome = () => {
+      setWelcomePopup(false);
+      setUser(u => ({...u, hasSeenWelcome: true}));
+  };
+
   const requestNotifPermission = () => {
       if ('Notification' in window) {
           Notification.requestPermission().then(permission => {
@@ -423,6 +432,14 @@ export default function App() {
   const showToast = (msg) => {
     setToast({ show: true, msg });
     setTimeout(() => setToast({ show: false, msg: '' }), 3000);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Thalyson Massagens', text: 'Agende seu momento.', url: window.location.href }); } catch (e) {}
+    } else {
+      showToast("Link copiado!");
+    }
   };
 
   const getFinancials = useMemo(() => {
@@ -463,7 +480,6 @@ export default function App() {
 
   const nextStep = () => {
       if (step === 2 && booking.locationType === 'home') {
-          // Auto-Save Address
           setUser(u => ({ ...u, name: user.name, savedAddress: booking.address }));
       }
       setStep(step + 1);
@@ -471,17 +487,15 @@ export default function App() {
 
   const finishBooking = () => {
     let updatedCoupons = [...user.coupons];
-    // Remove cupom usado
     if (booking.appliedCoupon) {
       updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     }
     
-    // Gamificação
     const newXP = user.xp + getFinancials.total;
     let leveledUp = false;
     
     if (Math.floor(newXP / CONFIG.XP_TARGET) > Math.floor(user.xp / CONFIG.XP_TARGET)) {
-        updatedCoupons.push({ id: Date.now(), val: 20, title: 'Cupom Nível Prata' });
+        updatedCoupons.push({ id: Date.now(), val: 25, title: 'Cupom Nível Prata' });
         leveledUp = true;
     }
     
@@ -573,6 +587,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
       
       <Toast show={toast.show} msg={toast.msg} />
       
+      {/* MODALS */}
       <Modal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} title={T.terms_title}>
          <div className="space-y-6 text-lg text-zinc-300 leading-relaxed font-light">
             {T.terms_body.map((t,i)=><p key={i} className="p-4 bg-zinc-900 rounded-xl border border-zinc-800">{t}</p>)}
@@ -606,14 +621,9 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
             <span className="text-xs opacity-60 text-zinc-400 font-medium">Massoterapeuta</span>
           </div>
         </div>
-        <div className="flex gap-4">
-            <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
-                <Globe size={24} className="text-zinc-400"/>
-            </button>
-            <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
-                <Instagram size={24} className="text-purple-500"/>
-            </a>
-        </div>
+        <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+            <Globe size={24} className="text-zinc-400"/>
+        </button>
       </header>
 
       {/* PROGRESSO */}
@@ -629,7 +639,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
 
           {/* STEP 0: SERVIÇOS */}
           {step === 0 && (
-            <>
+            <div className="space-y-10">
               <div className="space-y-4">
                 <h1 className="text-4xl font-bold text-white leading-tight">{T.welcome} <br/><span className="text-blue-500">{user.name.split(' ')[0] || ''}</span></h1>
                 <p className="text-xl text-zinc-400 font-light leading-relaxed">{T.subtitle}</p>
@@ -648,12 +658,12 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   ))}
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           {/* STEP 1: DATA E HORA */}
           {step === 1 && (
-            <>
+            <div className="space-y-10 animate-slide-in">
               <div className="text-center">
                 <h2 className="text-3xl font-bold text-white mb-3">{T.select_time_title}</h2>
                 <p className="text-lg text-zinc-400 font-light">{T.date_sub}</p>
@@ -664,7 +674,6 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   {[...Array(7)].map((_, i) => {
                     const d = new Date(); d.setDate(d.getDate() + i);
                     const isSel = booking.date?.toDateString() === d.toDateString();
-                    // @ts-ignore
                     let lbl = d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'short' }).slice(0,3);
                     if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
 
@@ -692,17 +701,14 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                           if (booking.date.toDateString() === now.toDateString() && parseInt(h) <= now.getHours()) disabled = true;
                        }
                        const isSel = booking.time === time;
-                       
-                       // Se horário passou, fica invisível para limpar
-                       if(disabled) return null;
-
+                       // Se ja passou, nao mostra ou mostra desabilitado (optando por mostrar desabilitado para clareza)
                        return (
                           <button key={time} disabled={disabled} 
                             onClick={() => setBooking(b => ({ ...b, time }))}
                             className={`py-5 rounded-2xl text-base font-bold border-2 transition-all
                               ${booking.time === time 
                                   ? 'bg-white text-blue-900 border-white shadow-xl scale-105 z-10' 
-                                  : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-zinc-600'}`}
+                                  : disabled ? 'opacity-20 bg-transparent border-transparent cursor-not-allowed' : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-zinc-600'}`}
                           >
                             {time}
                           </button>
@@ -711,12 +717,12 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           {/* STEP 2: LOCAL */}
           {step === 2 && (
-            <>
+            <div className="space-y-8 animate-slide-in">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-white mb-2">{T.location_title}</h2>
               </div>
