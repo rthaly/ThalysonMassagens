@@ -9,17 +9,17 @@ import {
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DADOS E CONFIGURAÇÕES GLOBAIS
+// 1. DADOS E CONFIGURAÇÕES
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v25_production', 
+  STORAGE_KEY: '@thaly_app_v26_fixed', 
   XP_TARGET: 500, 
 };
 
-// --- LISTA DE AVALIAÇÕES COMPLETA ---
+// DADOS ESTÁTICOS
 const REVIEWS_DATA = [
   { n: "Tiago", t: "Energia surreal. A massagem foi perfeita.", s: 5 },
   { n: "Pedro H.", t: "Fui pra relaxar e saí renovado. Recomendo.", s: 5 },
@@ -243,7 +243,7 @@ const DB = {
 // 2. COMPONENTES VISUAIS (MODAIS E UI)
 // ==================================================================================
 
-const Toast = ({ msg, show }: { msg: string; show: boolean }) => (
+const Toast = ({ msg, show }) => (
   <div className={`fixed top-12 left-1/2 -translate-x-1/2 z-[130] transition-all duration-500 pointer-events-none ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
     <div className="bg-blue-600/95 backdrop-blur-md text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-3 font-bold text-lg border border-blue-400/30 whitespace-nowrap">
       <CheckCircle2 size={24} />
@@ -252,7 +252,7 @@ const Toast = ({ msg, show }: { msg: string; show: boolean }) => (
   </div>
 );
 
-const Modal = ({ isOpen, onClose, children, title }: { isOpen: boolean; onClose: () => void; children: React.ReactNode; title?: string }) => {
+const Modal = ({ isOpen, onClose, children, title }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4">
@@ -268,7 +268,7 @@ const Modal = ({ isOpen, onClose, children, title }: { isOpen: boolean; onClose:
   );
 };
 
-const RewardPopup = ({ isOpen, onClose, title, msg }: { isOpen: boolean; onClose: () => void; title: string; msg: string }) => {
+const RewardPopup = ({ isOpen, onClose, title, msg }) => {
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
@@ -287,7 +287,7 @@ const RewardPopup = ({ isOpen, onClose, title, msg }: { isOpen: boolean; onClose
     );
 };
 
-const ServiceCard = ({ s, selected, onClick, T }: any) => (
+const ServiceCard = ({ s, selected, onClick, T }) => (
   <div onClick={onClick} className={`relative p-6 rounded-[24px] border-2 transition-all duration-200 cursor-pointer ${selected ? 'bg-blue-900/20 border-blue-500 shadow-xl' : 'bg-zinc-900 border-zinc-800 hover:border-zinc-600'}`}>
     <div className="flex justify-between items-start mb-4">
       <div className={`p-4 rounded-2xl ${selected ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
@@ -313,73 +313,89 @@ const ServiceCard = ({ s, selected, onClick, T }: any) => (
 
 export default function App() {
   const [step, setStep] = useState(0); 
-  const [lang, setLang] = useState<'pt' | 'en'>('pt');
+  const [lang, setLang] = useState('pt');
   
-  // Estados de Interface
+  // Modais
   const [termsOpen, setTermsOpen] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '' });
   
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const T = TEXTS[lang]; 
+  const scrollRef = useRef(null);
+  const T = TEXTS[lang];
 
-  // USUÁRIO & PERSISTÊNCIA (AUTO-SAVE)
-  const [user, setUser] = useState(() => {
-    try {
-       // Check for window availability for SSR safety
-       if (typeof window !== 'undefined') {
-           const s = localStorage.getItem(CONFIG.STORAGE_KEY);
-           const defaultState = { 
-               name: '', 
-               xp: 0, 
-               coupons: [{ id: 'welcome', val: 12, title: 'Cupom Boas Vindas' }],
-               savedAddress: { street: '', number: '', district: '', city: '', comp: '' }, 
-               hasSeenWelcome: false 
-           };
-           return s ? { ...defaultState, ...JSON.parse(s) } : defaultState;
-       }
-       return { name: '', xp: 0, coupons: [] };
-    } catch { return { name: '', xp: 0, coupons: [] }; }
+  // ========================================================================
+  // CORREÇÃO CRÍTICA DE HYDRATION: STATE INICIAL SEGURO
+  // ========================================================================
+  
+  // 1. Estado inicial VAZIO para o servidor
+  const [user, setUser] = useState({ 
+      name: '', 
+      xp: 0, 
+      coupons: [], 
+      savedAddress: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, 
+      hasSeenWelcome: false 
   });
 
-  // BOOKING STATE
-  const [booking, setBooking] = useState<any>({
+  const [booking, setBooking] = useState({
     service: null, 
     extras: {}, 
     date: null, 
     time: null,
     locationType: 'home', 
-    address: user.savedAddress || { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
+    address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
     payment: '', 
     appliedCoupon: null, 
     termsAccepted: false
   });
 
-  // Persistir Dados
-  useEffect(() => { 
-      if (typeof window !== 'undefined') {
-          localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); 
-      }
-  }, [user]);
-  
-  // Popup de Boas Vindas (Apenas 1 vez)
+  // 2. Estado para controlar se estamos no cliente
+  const [isClient, setIsClient] = useState(false);
+
+  // 3. useEffect para carregar do localStorage APENAS no cliente
   useEffect(() => {
-      // @ts-ignore
-      if (!user.hasSeenWelcome && user.coupons?.find(c => c.id === 'welcome')) {
-          setTimeout(() => setWelcomePopup(true), 1500);
-      }
+    setIsClient(true);
+    const s = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (s) {
+        const loadedUser = JSON.parse(s);
+        setUser(loadedUser);
+        // Se tiver endereço salvo, já preenche o booking
+        if(loadedUser.savedAddress) {
+            setBooking(b => ({...b, address: loadedUser.savedAddress}));
+        }
+    } else {
+        // Se não tiver dados, cria usuário padrão
+        setUser(prev => ({
+            ...prev,
+            coupons: [{ id: 'welcome', val: 12, title: 'Cupom Boas Vindas' }]
+        }));
+    }
   }, []);
+
+  // 4. Salvar no localStorage sempre que 'user' mudar (apenas se for cliente)
+  useEffect(() => {
+      if(isClient) {
+          localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user));
+      }
+  }, [user, isClient]);
+
+  // 5. Popup de Boas Vindas (com delay)
+  useEffect(() => {
+      if (isClient && !user.hasSeenWelcome && user.coupons.find(c => c.id === 'welcome')) {
+          const timer = setTimeout(() => setWelcomePopup(true), 1500);
+          return () => clearTimeout(timer);
+      }
+  }, [isClient, user.hasSeenWelcome]); // Dependências corrigidas
 
   const closeWelcome = () => {
       setWelcomePopup(false);
-      setUser((u: any) => ({...u, hasSeenWelcome: true}));
+      setUser(u => ({...u, hasSeenWelcome: true}));
   };
 
   useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
 
-  const showToast = (msg: string) => {
+  const showToast = (msg) => {
     setToast({ show: true, msg });
     setTimeout(() => setToast({ show: false, msg: '' }), 3000);
   };
@@ -390,7 +406,7 @@ export default function App() {
     let extrasTotal = 0;
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
-            const price = DB.extras.find(e=>e.id===k)?.price || 0;
+            const price = DB.extras.find(e=>e.id===k).price;
             sub += price;
             extrasTotal += price;
         }
@@ -411,7 +427,6 @@ export default function App() {
     if (step === 2) {
       const { street, number, comp, placeName, city } = booking.address;
       if (!user.name) return false;
-      // Validação: ENDEREÇO SALVO
       if (booking.locationType === 'home') return street && number && comp && city;
       if (booking.locationType === 'hotel') return placeName && city;
       return true; 
@@ -420,21 +435,19 @@ export default function App() {
   };
 
   const nextStep = () => {
-      // SALVA O ENDEREÇO AUTOMATICAMENTE AO PASSAR DA TELA 2
+      // SALVA O ENDEREÇO
       if (step === 2 && booking.locationType === 'home') {
-          setUser((u: any) => ({ ...u, name: user.name, savedAddress: booking.address }));
+          setUser(u => ({ ...u, name: user.name, savedAddress: booking.address }));
       }
       setStep(step + 1);
   };
 
   const finishBooking = () => {
-    // 1. Remove cupom usado
     let updatedCoupons = [...user.coupons];
     if (booking.appliedCoupon) {
-      updatedCoupons = updatedCoupons.filter((c:any) => String(c.id) !== String(booking.appliedCoupon.id));
+      updatedCoupons = updatedCoupons.filter(c => String(c.id) !== String(booking.appliedCoupon.id));
     }
     
-    // 2. Gamificação
     const newXP = user.xp + getFinancials.total;
     let leveledUp = false;
     
@@ -468,8 +481,7 @@ export default function App() {
     else locTxt = `🏨 *${T.zap.section_loc} (Hotel)*\nHotel: ${booking.address.placeName}\nQuarto: ${booking.address.comp}\nCidade: ${booking.address.city}`;
 
     const extrasTxt = Object.keys(booking.extras).filter(k => booking.extras[k])
-      // @ts-ignore
-      .map(k => `+ ${T.extras_list[k].label} (R$ ${DB.extras.find(e => e.id === k)?.price})`).join('\n');
+      .map(k => `+ ${T.extras_list[k].label} (R$ ${DB.extras.find(e => e.id === k).price})`).join('\n');
 
     const msg = `
 ${T.zap.greeting[1]}, Thalyson!
@@ -497,10 +509,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
   };
 
-  // Safe loading state for SSR
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => { setIsClient(true); }, []);
-
+  // Se não estiver no cliente ainda, retorna um Loading para evitar erro de hidratação
   if (!isClient) return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-zinc-950">
        <div className="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center text-white font-black text-5xl animate-pulse">T.</div>
@@ -515,7 +524,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
       {/* MODALS */}
       <Modal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} title={T.terms_title}>
          <div className="space-y-6 text-lg text-zinc-300 leading-relaxed font-light">
-            {T.terms_body.map((t: string, i: number)=><p key={i} className="p-4 bg-zinc-900 rounded-xl border border-zinc-800">{t}</p>)}
+            {T.terms_body.map((t,i)=><p key={i} className="p-4 bg-zinc-900 rounded-xl border border-zinc-800">{t}</p>)}
          </div>
          <button onClick={()=>setTermsOpen(false)} className="w-full mt-8 py-5 bg-blue-600 text-white font-bold rounded-2xl text-xl">{T.terms_btn}</button>
       </Modal>
@@ -579,7 +588,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                 <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest pl-1">{T.choose_service}</h2>
                 <div className="grid gap-6">
                   {DB.services.map(s => (
-                    <ServiceCard key={s.id} s={s} T={T} selected={booking.service?.id === s.id} onClick={() => setBooking((b: any) => ({ ...b, service: s }))} />
+                    <ServiceCard key={s.id} s={s} T={T} selected={booking.service?.id === s.id} onClick={() => setBooking(b => ({ ...b, service: s }))} />
                   ))}
                 </div>
               </div>
@@ -599,12 +608,11 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   {[...Array(7)].map((_, i) => {
                     const d = new Date(); d.setDate(d.getDate() + i);
                     const isSel = booking.date?.toDateString() === d.toDateString();
-                    // @ts-ignore
                     let lbl = d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'short' }).slice(0,3);
                     if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
 
                     return (
-                      <button key={i} onClick={() => setBooking((b: any) => ({ ...b, date: d, time: null }))} 
+                      <button key={i} onClick={() => setBooking(b => ({ ...b, date: d, time: null }))} 
                         className={`min-w-[90px] h-28 rounded-[28px] flex flex-col items-center justify-center gap-1 border-2 transition-all flex-shrink-0
                           ${isSel ? 'bg-blue-600 border-blue-500 text-white shadow-xl scale-105' : 'bg-zinc-900 border-zinc-800 text-zinc-500'}`}
                       >
@@ -629,7 +637,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                        const isSel = booking.time === time;
                        return (
                           <button key={time} disabled={disabled} 
-                            onClick={() => setBooking((b: any) => ({ ...b, time }))}
+                            onClick={() => setBooking(b => ({ ...b, time }))}
                             className={`py-5 rounded-2xl text-base font-bold border-2 transition-all
                               ${booking.time === time 
                                   ? 'bg-white text-blue-900 border-white shadow-xl scale-105 z-10' 
@@ -654,7 +662,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
 
               <div className="flex bg-zinc-900 p-2 rounded-[24px] border border-zinc-800">
                 {[{ id: 'home', label: 'Home', icon: Home }, { id: 'motel', label: 'Motel', icon: BedDouble }, { id: 'hotel', label: 'Hotel', icon: Building }].map((type) => (
-                  <button key={type.id} onClick={() => setBooking((b: any) => ({ ...b, locationType: type.id }))}
+                  <button key={type.id} onClick={() => setBooking(b => ({ ...b, locationType: type.id }))}
                     className={`flex-1 py-5 rounded-[20px] text-sm font-bold flex flex-col items-center justify-center gap-2 transition-all duration-300 ${booking.locationType === type.id ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-500'}`}
                   >
                     <type.icon size={24} /> {type.label}
@@ -665,7 +673,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
               <div className="space-y-6">
                 <div>
                    <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_name}</label>
-                   <input value={user.name} onChange={(e) => setUser((u: any) => ({...u, name: e.target.value}))} placeholder={T.input_name_placeholder} className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700"/>
+                   <input value={user.name} onChange={(e) => setUser(u => ({...u, name: e.target.value}))} placeholder={T.input_name_placeholder} className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700"/>
                 </div>
 
                 {booking.locationType === 'home' && (
@@ -677,28 +685,28 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                     
                     <div>
                         <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_addr}</label>
-                        <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.street} onChange={(e) => setBooking((b: any) => ({...b, address: {...b.address, street: e.target.value}}))} />
+                        <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.street} onChange={(e) => setBooking(b => ({...b, address: {...b.address, street: e.target.value}}))} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                        <div>
                            <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_num}</label>
-                           <input type="tel" className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.number} onChange={(e) => setBooking((b: any) => ({...b, address: {...b.address, number: e.target.value}}))} />
+                           <input type="tel" className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.number} onChange={(e) => setBooking(b => ({...b, address: {...b.address, number: e.target.value}}))} />
                        </div>
                        <div>
                            <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_bairro}</label>
-                           <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.district} onChange={(e) => setBooking((b: any) => ({...b, address: {...b.address, district: e.target.value}}))} />
+                           <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.district} onChange={(e) => setBooking(b => ({...b, address: {...b.address, district: e.target.value}}))} />
                        </div>
                     </div>
                     
                     <div>
                         <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_city}</label>
-                        <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.city} onChange={(e) => setBooking((b: any) => ({...b, address: {...b.address, city: e.target.value}}))} />
+                        <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.city} onChange={(e) => setBooking(b => ({...b, address: {...b.address, city: e.target.value}}))} />
                     </div>
 
                     <div>
                         <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_comp}</label>
-                        <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.comp} onChange={(e) => setBooking((b: any) => ({...b, address: {...b.address, comp: e.target.value}}))} />
+                        <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.comp} onChange={(e) => setBooking(b => ({...b, address: {...b.address, comp: e.target.value}}))} />
                     </div>
                   </div>
                 )}
@@ -714,16 +722,16 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                    <div className="space-y-6 animate-fade-in">
                       <div>
                           <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_hotel}</label>
-                          <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.placeName} onChange={(e) => setBooking((b: any) => ({...b, address: {...b.address, placeName: e.target.value}}))} />
+                          <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.placeName} onChange={(e) => setBooking(b => ({...b, address: {...b.address, placeName: e.target.value}}))} />
                       </div>
                        <div className="grid grid-cols-2 gap-4">
                           <div>
                               <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_city}</label>
-                              <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.city} onChange={(e) => setBooking((b: any) => ({...b, address: {...b.address, city: e.target.value}}))} />
+                              <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.city} onChange={(e) => setBooking(b => ({...b, address: {...b.address, city: e.target.value}}))} />
                           </div>
                           <div>
                               <label className="text-sm font-bold text-zinc-400 ml-2 mb-2 block">{T.input_room}</label>
-                              <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.comp} onChange={(e) => setBooking((b: any) => ({...b, address: {...b.address, comp: e.target.value}}))} />
+                              <input className="w-full p-6 rounded-[24px] bg-zinc-900 border border-zinc-800 text-lg text-white outline-none focus:border-blue-500 placeholder-zinc-700" value={booking.address.comp} onChange={(e) => setBooking(b => ({...b, address: {...b.address, comp: e.target.value}}))} />
                           </div>
                        </div>
                    </div>
@@ -734,7 +742,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                <h3 className="text-sm font-bold uppercase text-zinc-500 mb-6">{T.extras_title}</h3>
                <div className="space-y-4">
                  {DB.extras.map(extra => (
-                   <div key={extra.id} onClick={() => setBooking((b: any) => ({ ...b, extras: { ...b.extras, [extra.id]: !b.extras[extra.id] } }))}
+                   <div key={extra.id} onClick={() => setBooking(b => ({ ...b, extras: { ...b.extras, [extra.id]: !b.extras[extra.id] } }))}
                     className={`flex items-center justify-between p-6 rounded-[24px] border-2 cursor-pointer transition-all ${booking.extras[extra.id] ? 'bg-blue-600/10 border-blue-500' : 'bg-zinc-900 border-zinc-800'}`}
                    >
                      <div className="flex items-center gap-5">
@@ -764,8 +772,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                   {Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => (
                     <div key={k} className="flex justify-between text-lg text-zinc-400">
                       <span>+ {T.extras_list[k].label}</span>
-                      {/* Safety Check */}
-                      <span>{T.currency} {DB.extras.find(e => e.id === k)?.price || 0}</span>
+                      <span>{T.currency} {DB.extras.find(e => e.id === k).price}</span>
                     </div>
                   ))}
 
@@ -778,18 +785,18 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                       booking.appliedCoupon ? (
                         <div className="flex justify-between items-center bg-green-900/20 p-4 rounded-xl border border-green-500/30">
                             <span className="text-green-400 font-bold">{booking.appliedCoupon.title}</span>
-                            <button onClick={() => setBooking((b: any) => ({...b, appliedCoupon: null}))} className="text-sm text-red-400 font-bold underline">{T.remove}</button>
+                            <button onClick={() => setBooking(b => ({...b, appliedCoupon: null}))} className="text-sm text-red-400 font-bold underline">{T.remove}</button>
                         </div>
                       ) : (
                         <select 
                             onChange={(e) => {
-                                const c = user.coupons.find((coup: any) => String(coup.id) === e.target.value);
-                                setBooking((b: any) => ({...b, appliedCoupon: c}));
+                                const c = user.coupons.find(coup => String(coup.id) === e.target.value);
+                                setBooking(b => ({...b, appliedCoupon: c}));
                             }} 
                             className="w-full bg-zinc-800 text-white p-4 rounded-xl outline-none text-base"
                         >
                            <option value="">{T.coupon_select}</option>
-                           {user.coupons.map((c: any) => <option key={c.id} value={c.id}>R$ {c.val} OFF - {c.title}</option>)}
+                           {user.coupons.map(c => <option key={c.id} value={c.id}>R$ {c.val} OFF - {c.title}</option>)}
                         </select>
                       )
                     ) : <p className="text-zinc-600 text-sm">{T.coupon_none}</p>}
@@ -816,7 +823,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                 <h3 className="text-lg font-bold text-zinc-400 ml-2">{T.pay_title}</h3>
                 <div className="grid grid-cols-3 gap-4">
                   {[{id:'pix', l:T.pay_pix, i:QrCode}, {id:'card', l:T.pay_card, i:CreditCard}, {id:'money', l:T.pay_cash, i:Banknote}].map(p => (
-                    <button key={p.id} onClick={() => setBooking((b: any) => ({ ...b, payment: p.id }))}
+                    <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))}
                       className={`flex flex-col items-center justify-center gap-3 py-8 rounded-[24px] border-2 transition-all duration-200 ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}
                     >
                       <p.i size={32}/> <span className="text-sm font-bold uppercase">{p.l}</span>
@@ -825,7 +832,7 @@ ${T.zap.payment} ${booking.payment.toUpperCase()}
                 </div>
              </div>
 
-             <div className="flex items-start gap-5 p-6 rounded-2xl bg-zinc-900 border border-zinc-800 cursor-pointer" onClick={() => setBooking((b: any) => ({...b, termsAccepted: !b.termsAccepted}))}>
+             <div className="flex items-start gap-5 p-6 rounded-2xl bg-zinc-900 border border-zinc-800 cursor-pointer" onClick={() => setBooking(b => ({...b, termsAccepted: !b.termsAccepted}))}>
                 <div className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all shrink-0 mt-1 ${booking.termsAccepted ? 'bg-blue-600 border-blue-600 text-white' : 'border-zinc-600'}`}>
                    {booking.termsAccepted && <Check size={20} strokeWidth={4} />}
                 </div>
