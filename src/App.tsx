@@ -15,7 +15,7 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_v15_platinum', 
+  STORAGE_KEY: '@thaly_app_vFinal_Diamond', 
   XP_TARGET: 500, 
 };
 
@@ -180,14 +180,16 @@ const DB = {
   services: [
     { id: 'relaxante', time: '1h', price: 145, xp: 145, icon: Wind, badge: null },
     { id: 'sensitiva', time: '1h', price: 175, xp: 175, icon: Flame, badge: '🔥' },
-    { id: 'mista', time: '1h30', price: 255, xp: 255, icon: Zap, badge: '✨' }
+    { id: 'mista', time: '1h', price: 205, xp: 205, icon: Zap, badge: '✨' }
   ],
   extras: [
     { id: 'more_time', price: 77, icon: Clock },
     { id: 'touch', price: 63, icon: Heart },
     { id: 'aroma', price: 5, icon: Smile }
   ],
-  // LISTA DE AVALIAÇÕES ATUALIZADA
+  // =======================================================
+  // 50 AVALIAÇÕES ADICIONADAS
+  // =======================================================
   reviews: [
     { name: "Tiago (Bela Vista)", text: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", stars: 5 },
     { name: "Anônimo", text: "O toque dele vicia. A finalização foi absurda, jorrei longe.", stars: 5 },
