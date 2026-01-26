@@ -36,7 +36,7 @@ const getData = (lang) => {
             { 
               id: 'relaxante', 
               min: 60, 
-              price: 125, 
+              price: 90, 
               icon: Wind, 
               title: isPT ? "Relaxante Terapêutica" : "Therapeutic Relax",
               desc: isPT ? "Alívio de dores, ansiedade e stress." : "Pain relief, anxiety and stress.",
@@ -45,7 +45,7 @@ const getData = (lang) => {
             { 
               id: 'sensitiva', 
               min: 60, 
-              price: 155, 
+              price: 115, 
               icon: Flame, 
               title: isPT ? "Sensitiva Tântrica" : "Tantric Sensitive",
               desc: isPT ? "Conexão, desejo e bioeletricidade." : "Connection, desire and bioelectricity.",
@@ -54,7 +54,7 @@ const getData = (lang) => {
             { 
               id: 'mista', 
               min: 60, 
-              price: 205, 
+              price: 160, 
               icon: Zap, 
               title: isPT ? "Experiência Mista" : "Mixed Experience",
               desc: isPT ? "O equilíbrio perfeito (Relax + Sensitiva)." : "The perfect balance (Relax + Sensitive).",
@@ -64,21 +64,21 @@ const getData = (lang) => {
         extras: [
             { 
               id: 'more_time', 
-              price: 77, 
+              price: 55, 
               icon: Clock, 
               label: isPT ? "+30 Minutos" : "+30 Minutes",
               desc: isPT ? "Estenda seu tempo de prazer." : "Extend your pleasure time."
             },
             { 
               id: 'touch', 
-              price: 63, 
+              price: 55, 
               icon: Heart,
               label: isPT ? "Troca de Energia" : "Energy Exchange",
               desc: isPT ? "Interativo: Você pode tocar no massagista." : "Interactive: You can touch the masseur."
             },
             { 
               id: 'aroma', 
-              price: 15, 
+              price: 5, 
               icon: Wind,
               label: isPT ? "Aromaterapia" : "Aromatherapy",
               desc: isPT ? "Essências afrodisíacas e relaxantes no ar." : "Aphrodisiac and relaxing essences in the air."
