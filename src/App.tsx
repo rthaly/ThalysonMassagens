@@ -13,7 +13,7 @@ import {
 
 const CONFIG = {
   PHONE: "5517991360413", 
-  INSTAGRAM_URL: "https://instagram.com/seumssagista", 
+  INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
   STORAGE_KEY: '@thaly_app_vFinal_Global', 
 };
 
