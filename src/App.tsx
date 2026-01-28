@@ -4,220 +4,183 @@ import {
   Clock, Zap, X, Globe, Building, BedDouble, 
   Heart, Instagram, Moon, Sun, Home, 
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
-  ChevronLeft, Loader2, Eye
+  ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. DICIONÁRIOS E DADOS MULTILINGUAGEM
+// 1. CONFIGURAÇÕES E DADOS
 // ==================================================================================
 
 const CONFIG = {
-  PHONE: "5517991360413", 
-  INSTAGRAM_URL: "https://instagram.com/seumssagista", 
-  STORAGE_KEY: '@thaly_app_vFinal_Global', 
+  PHONE: "5517991360413", // Seu número
+  INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
+  STORAGE_KEY: '@thaly_app_vSegura_2026', 
 };
 
 const TIME_SLOTS = [
   '09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00', '21:00'
 ];
 
-// Função geradora de dados baseada no idioma
 const getData = (lang) => {
     const isPT = lang === 'pt';
     
     return {
         levels: [
-            { level: 1, xpNeeded: 0, reward: 12, title: isPT ? "Iniciante" : "Beginner" },
-            { level: 2, xpNeeded: 400, reward: 20, title: isPT ? "Bronze" : "Bronze" },
-            { level: 3, xpNeeded: 1000, reward: 30, title: isPT ? "Prata" : "Silver" },
-            { level: 4, xpNeeded: 2000, reward: 50, title: isPT ? "Ouro" : "Gold" }
+            { level: 1, xpNeeded: 0, reward: 12, title: isPT ? "Cliente Novo" : "New Client" },
+            { level: 2, xpNeeded: 400, reward: 20, title: isPT ? "Cliente Bronze" : "Bronze Client" },
+            { level: 3, xpNeeded: 1000, reward: 30, title: isPT ? "Cliente Prata" : "Silver Client" },
+            { level: 4, xpNeeded: 2000, reward: 50, title: isPT ? "Cliente VIP (Ouro)" : "VIP Gold" }
         ],
         services: [
             { 
               id: 'relaxante', 
               min: 60, 
-              price: 125, 
+              price: 90, 
               icon: Wind, 
-              title: isPT ? "Relaxante Terapêutica" : "Therapeutic Relax",
-              desc: isPT ? "Alívio de dores, ansiedade e stress." : "Pain relief, anxiety and stress.",
-              details: isPT ? "Massagem técnica focada 100% no bem-estar físico e mental. Remove nódulos de tensão. **Obs: Nesta modalidade não há toques íntimos.**" : "Technical massage focused 100% on physical and mental well-being. Removes tension knots. **Note: No intimate touches in this modality.**"
+              title: isPT ? "Massagem Relaxante" : "Relaxing Massage",
+              desc: isPT ? "Para tirar dor nas costas, cansaço e estresse." : "To remove back pain, tiredness and stress.",
+              details: isPT ? `O QUE ACONTECE NESTA SESSÃO?
+1. Você fica deitado (roupa íntima ou sem, coberto com toalha).
+2. Uso cremes e óleos para deslizar as mãos.
+3. Faço movimentos firmes nas costas, pernas e braços para soltar os "nós" dos músculos.
+4. OBJETIVO: Tirar a dor do corpo e relaxar a mente.
+⚠️ ATENÇÃO: Nesta massagem NÃO existe toque nas partes íntimas.` : "Technical massage focused on physical relief. No intimate touches."
             },
             { 
               id: 'sensitiva', 
               min: 60, 
-              price: 155, 
+              price: 115, 
               icon: Flame, 
-              title: isPT ? "Sensitiva Tântrica" : "Tantric Sensitive",
-              desc: isPT ? "Conexão, desejo e bioeletricidade." : "Connection, desire and bioelectricity.",
-              details: isPT ? "Focada em despertar a energia corporal e sensações intensas. **O massagista atende de cueca.** Uma experiência sensorial completa." : "Focused on awakening body energy and intense sensations. **Masseur wears underwear.** A complete sensory experience."
+              title: isPT ? "Massagem Sensitiva" : "Sensitive Massage",
+              desc: isPT ? "Toques leves de pena e ponta de dedos para arrepiar." : "Light touches to cause shivers.",
+              details: isPT ? `O QUE ACONTECE NESTA SESSÃO?
+1. O ambiente é preparado com luz baixa e música.
+2. O foco NÃO é apertar músculo, e sim acordar a pele.
+3. Uso toques muito suaves (penas, ponta dos dedos) pelo corpo todo.
+4. Gera uma sensação intensa de arrepio e prazer sensorial.
+5. Massagista atende de cueca para maior liberdade de movimentos.
+⚠️ Inclui toques na virilha e região pélvica para circulação de energia.` : "Focus on sensory awakening, light touches over the whole body."
             },
             { 
               id: 'mista', 
               min: 60, 
-              price: 205, 
+              price: 160, 
               icon: Zap, 
-              title: isPT ? "Experiência Mista" : "Mixed Experience",
-              desc: isPT ? "O equilíbrio perfeito (Relax + Sensitiva)." : "The perfect balance (Relax + Sensitive).",
-              details: isPT ? "Começa com a massagem relaxante para soltar a musculatura e termina com a intensidade da sensitiva. **Massagista de cueca.** A mais pedida." : "Starts with relaxing massage to loosen muscles and ends with the intensity of sensitive. **Masseur wears underwear.** Most requested."
+              title: isPT ? "Experiência Completa (Com Lingam)" : "Full Experience (With Lingam)",
+              desc: isPT ? "A união da Relaxante + Tântrica + Finalização." : "Relaxing + Tantric + Happy Ending.",
+              details: isPT ? `O QUE ACONTECE NESTA SESSÃO?
+1. Começamos tirando a tensão muscular (Relaxante).
+2. Aumentamos a intensidade com a massagem corpo a corpo (Body to Body).
+3. LINGAM MASSAGE: É a massagem na zona íntima (pênis e testículos).
+   - Não é apenas uma masturbação mecânica.
+   - É feita com toques técnicos, óleos específicos e manobras para prolongar o prazer e controlar a energia antes do clímax.
+4. Finalização manual inclusa.` : "The complete combo. Starts with relaxing muscles, moves to body-to-body contact, and finishes with Lingam Massage (intimate massage) designed for intense pleasure and energy control. Manual ending included."
             }
         ],
         extras: [
             { 
               id: 'more_time', 
-              price: 77, 
+              price: 55, 
               icon: Clock, 
-              label: isPT ? "+30 Minutos" : "+30 Minutes",
-              desc: isPT ? "Estenda seu tempo de prazer." : "Extend your pleasure time."
+              label: isPT ? "+30 Minutos de Sessão" : "+30 Minutes",
+              desc: isPT ? "Mais tempo para curtir a massagem." : "More time to enjoy."
             },
             { 
               id: 'touch', 
-              price: 63, 
+              price: 55, 
               icon: Heart,
-              label: isPT ? "Troca de Energia" : "Energy Exchange",
-              desc: isPT ? "Interativo: Você pode tocar no massagista." : "Interactive: You can touch the masseur."
+              label: isPT ? "Toque Invertido (Interativo)" : "Interactive Touch",
+              desc: isPT ? "Você pode tocar no massagista durante a sessão." : "You are allowed to touch the masseur."
             },
             { 
               id: 'aroma', 
-              price: 15, 
+              price: 5, 
               icon: Wind,
-              label: isPT ? "Aromaterapia" : "Aromatherapy",
-              desc: isPT ? "Essências afrodisíacas e relaxantes no ar." : "Aphrodisiac and relaxing essences in the air."
+              label: isPT ? "Óleos Especiais" : "Aromatherapy",
+              desc: isPT ? "Cheiro e aquecimento para relaxar mais." : "Scents and heating to relax more."
             }
         ],
         reviews: [
-            // AVALIAÇÕES ORIGINAIS (DINÂMICAS)
-            { n: "Tiago", t: isPT ? "A sensitiva foi uma experiência de outro mundo." : "Sensitive was out of this world.", s: 5 },
-            { n: "Pedro H.", t: isPT ? "Fui estressado e saí flutuando." : "Went in stressed, came out floating.", s: 5 },
-            { n: "Marcos", t: isPT ? "Profissionalismo nota 10." : "Professionalism 10/10.", s: 5 },
-            
-            // NOVAS AVALIAÇÕES ADICIONADAS
-            { n: "Tiago (Bela Vista)", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", s: 5 },
-            { n: "Anônimo", t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", s: 5 },
-            { n: "Curioso SP", t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", s: 5 },
-            { n: "M. (Jardins)", t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", s: 5 },
-            { n: "Empresário", t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", s: 5 },
-            { n: "M. (Casado)", t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", s: 5 },
-            { n: "Roberto", t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", s: 5 },
-            { n: "Fã", t: "Ele de cueca branca... sem comentários. Visual nota 1000.", s: 5 },
-            { n: "Carlos A.", t: "Profissionalismo raro hoje em dia. Pontual e educado.", s: 5 },
-            { n: "Lucas", t: "A mistura de força e suavidade é incrível. Recomendo.", s: 5 },
-            { n: "Novato", t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", s: 5 },
-            { n: "Gustavo", t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", s: 5 },
-            { n: "Felipe Personal", t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", s: 5 },
-            { n: "J.P.", t: "O corpo a corpo é quente de verdade. Uma experiência única.", s: 5 },
-            { n: "André", t: "Gostei que ele respeita os limites, mas entrega muito prazer.", s: 5 },
-            { n: "Turista RJ", t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", s: 5 },
-            { n: "Anônimo", t: "Cara bonito, limpo e com pegada. O pacote completo.", s: 5 },
-            { n: "Breno", t: "Fiz a relaxante e dormi na maca de tão bom. Recomendo.", s: 5 },
-            { n: "Dr. Marcelo", t: "A técnica dele é diferente de tudo. Vale cada real.", s: 5 },
-            { n: "Caio", t: "Sensação de liberdade total. O toque extra é obrigatório.", s: 5 },
-            { n: "Vitor", t: "Me senti renovado. Energia lá em cima depois da sessão.", s: 5 },
-            { n: "Renan", t: "Extremamente educado e com papo bom, além da massagem top.", s: 5 },
-            { n: "Paulo", t: "O óleo de coco morno é um detalhe que faz toda diferença.", s: 5 },
-            { n: "Cliente Antigo", t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", s: 5 },
-            { n: "Dica do Beto", t: "Não economizem, peçam a completa com aromaterapia.", s: 5 },
-            { n: "Advogado SP", t: "Pontualidade britânica. Chegou na hora marcada.", s: 5 },
-            { n: "Gym Rat", t: "Fiquei impressionado com a força das mãos dele.", s: 5 },
-            { n: "Hétero Curioso", t: "Excelente profissional. Me deixou super confortável.", s: 5 },
-            { n: "Motorista", t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", s: 5 },
-            { n: "M. (Sigilo)", t: "O sigilo é garantido mesmo. Pode confiar.", s: 5 },
-            { n: "Sr. João", t: "Agradeço pela paciência e pelo serviço impecável.", s: 5 },
-            { n: "Designer", t: "Experiência sensorial incrível. O cheiro, o toque, a música.", s: 5 },
-            { n: "Executivo", t: "Saí flutuando. Recomendo para quem tem rotina estressante.", s: 5 },
-            { n: "Matheus", t: "O Thalyson é muito gente fina. O tempo passou voando.", s: 5 },
-            { n: "Bruno", t: "Melhor investimento da semana. Relaxamento total.", s: 5 },
-            { n: "Rafa", t: "Toque firme, mas sensível. Sabe onde tocar.", s: 5 },
-            { n: "Tech Guy", t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", s: 5 },
-            { n: "Corredor", t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", s: 5 },
-            { n: "Fã #2", t: "Simpático e bonito. O serviço é completo mesmo.", s: 5 },
-            { n: "Pedro", t: "Me ajudou muito com a ansiedade. Gratidão.", s: 5 },
-            { n: "Morador Centro", t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", s: 5 },
-            { n: "Curioso", t: "A massagem tântrica dele desbloqueou sensações novas.", s: 5 },
-            { n: "Ricardo", t: "Valeu a pena esperar a agenda liberar.", s: 5 },
-            { n: "Sérgio", t: "Nota 10. Nada a reclamar.", s: 5 },
-            { n: "Médico", t: "Muito higiênico e cuidadoso.", s: 5 },
-            { n: "Cliente Fiel", t: "Voltarei com certeza na próxima semana.", s: 5 },
-            { n: "Fernando", t: "Paz de espírito e corpo relaxado. Obrigado.", s: 5 }
+            { n: "Tiago", t: "O Thalyson explicou tudo antes, me senti muito seguro. A massagem é incrível.", s: 5 },
+            { n: "Pedro H.", t: "A Lingam foi diferente de tudo. Muita técnica, não é só 'bater uma'. Recomendo.", s: 5 },
+            { n: "Marcos", t: "Cara super profissional e discreto. O lugar é limpo e organizado.", s: 5 },
+            { n: "Cliente Anônimo", t: "Fiz a Mista. O corpo a corpo é sensacional.", s: 5 },
+            { n: "Roberto", t: "Achei o preço justo pelo nível do serviço. Vou voltar.", s: 5 }
         ],
         text: {
-            loading: isPT ? "CARREGANDO APP..." : "LOADING APP...",
-            welcome: isPT ? "Olá," : "Hello,",
-            subtitle: isPT ? "Seu momento de prazer e paz." : "Your moment of pleasure and peace.",
-            reviews_count: isPT ? "Avaliações" : "Reviews",
-            reviews_title: isPT ? "O que dizem..." : "Reviews...",
-            select_time_title: isPT ? "Agendamento" : "Booking",
-            date_sub: isPT ? "Horários disponíveis:" : "Available slots:",
-            location_title: isPT ? "Local de Atendimento" : "Service Location",
-            input_name: isPT ? "Seu Nome" : "Your Name",
-            input_addr: isPT ? "Endereço" : "Address",
-            input_num: isPT ? "Número" : "Number",
+            loading: isPT ? "CARREGANDO AGENDAMENTO..." : "LOADING APP...",
+            welcome: isPT ? "Bem-vindo," : "Welcome,",
+            subtitle: isPT ? "Escolha sua experiência abaixo:" : "Choose your experience below:",
+            reviews_count: isPT ? "Opinião de quem já foi" : "Reviews",
+            reviews_title: isPT ? "Avaliações Reais" : "Real Reviews",
+            select_time_title: isPT ? "Escolha o Dia e Hora" : "Select Date & Time",
+            date_sub: isPT ? "Horários livres na minha agenda:" : "Available slots:",
+            location_title: isPT ? "Onde será o atendimento?" : "Service Location",
+            input_name: isPT ? "Seu Nome Completo" : "Your Full Name",
+            input_addr: isPT ? "Endereço (Rua)" : "Address (Street)",
+            input_num: isPT ? "Número da Casa/Prédio" : "Number",
             input_bairro: isPT ? "Bairro" : "District",
             input_city: isPT ? "Cidade" : "City",
-            input_comp: isPT ? "Complemento" : "Unit/Apt",
+            input_comp: isPT ? "Complemento (Apto, Bloco)" : "Unit/Apt",
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
-            input_room: isPT ? "Quarto" : "Room",
-            motel_note: isPT ? "Motel: Combinamos detalhes no WhatsApp." : "Motel: We discuss details on WhatsApp.",
-            pay_title: isPT ? "Pagamento" : "Payment",
-            pay_pix: "Pix",
-            pay_card: isPT ? "Cartão" : "Card",
-            pay_cash: isPT ? "Dinheiro" : "Cash",
-            extras_title: isPT ? "Adicionais (Opcional)" : "Add-ons (Optional)",
-            coupon_title: isPT ? "Seus Cupons" : "Your Coupons",
-            coupon_select: isPT ? "Selecionar desconto" : "Select discount",
-            coupon_none: isPT ? "Sem cupons" : "No coupons",
+            input_room: isPT ? "Número do Quarto" : "Room Number",
+            motel_note: isPT ? "Motel: O nome do motel e a suíte combinamos no WhatsApp." : "Motel: We discuss details on WhatsApp.",
+            pay_title: isPT ? "Como prefere pagar?" : "Payment Method",
+            pay_pix: "Pix (Instantâneo)",
+            pay_card: isPT ? "Cartão (Crédito/Débito)" : "Card",
+            pay_cash: isPT ? "Dinheiro (Espécie)" : "Cash",
+            extras_title: isPT ? "Quer adicionar algo a mais?" : "Add-ons",
+            coupon_title: isPT ? "Seus Descontos" : "Your Coupons",
+            coupon_select: isPT ? "Usar desconto" : "Select discount",
+            coupon_none: isPT ? "Sem descontos hoje" : "No coupons",
             remove: isPT ? "Remover" : "Remove",
-            total_label: "Total",
+            total_label: "Valor Final",
             book_btn: isPT ? "Finalizar no WhatsApp" : "Finish on WhatsApp",
-            next_btn: isPT ? "Continuar" : "Continue",
-            uber_note: isPT ? "+ Taxa Uber (Ida/Volta)" : "+ Uber Fee (Roundtrip)",
-            success_title: isPT ? "Pedido Gerado!" : "Order Generated!",
-            success_sub: isPT ? "Envie a mensagem pronta no WhatsApp para confirmar." : "Send the pre-filled message on WhatsApp to confirm.",
-            whatsapp_btn: isPT ? "Enviar Agora" : "Send Now",
-            back_home: isPT ? "Voltar" : "Back",
+            next_btn: isPT ? "Próximo Passo" : "Continue",
+            uber_note: isPT ? "+ Taxa de Deslocamento (Uber)" : "+ Uber Fee",
+            success_title: isPT ? "Tudo Certo!" : "All Set!",
+            success_sub: isPT ? "Agora basta enviar a mensagem que gerei para mim no WhatsApp para confirmar seu horário." : "Send the message on WhatsApp to confirm.",
+            whatsapp_btn: isPT ? "Enviar Pedido no WhatsApp" : "Send on WhatsApp",
+            back_home: isPT ? "Voltar ao Início" : "Back Home",
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
             currency: isPT ? "R$" : "$",
-            scarcity_msg: isPT ? "pessoas vendo agora" : "people viewing now",
-            level_gold_title: isPT ? "Nível Ouro (Máximo)" : "Gold Level (Max)",
-            level_gold_desc: isPT ? "Você possui R$ 50 OFF fixo." : "You have fixed R$ 50 OFF.",
-            level_next: isPT ? "Próximo cupom:" : "Next coupon:",
+            level_gold_title: isPT ? "Nível VIP (Máximo)" : "VIP Level",
+            level_gold_desc: isPT ? "Você tem desconto máximo fixo." : "You have max discount.",
+            level_next: isPT ? "Próximo nível:" : "Next level:",
             level_label: isPT ? "Nível" : "Level",
             empty_date: isPT ? "Selecione um dia acima" : "Select a day above",
-            empty_slots: isPT ? "Agenda lotada ou encerrada." : "Schedule full or closed.",
-            try_tomorrow: isPT ? "Tente selecionar amanhã." : "Try selecting tomorrow.",
-            details_label: isPT ? "Detalhes Importantes:" : "Important Details:",
+            empty_slots: isPT ? "Agenda cheia ou encerrada." : "Full schedule.",
+            try_tomorrow: isPT ? "Tente outro dia." : "Try another day.",
+            details_label: isPT ? "EXPLICANDO O SERVIÇO:" : "SERVICE DETAILS:",
             discount_applied: isPT ? "Desconto aplicado:" : "Discount applied:",
+            security_note: isPT ? "Seus dados ficam salvos apenas no seu celular." : "Data saved locally on your device only.",
             
-            popup_welcome_title: isPT ? "Bem-vindo!" : "Welcome!",
-            popup_welcome_msg: isPT ? "Você ganhou R$ 12,00 OFF na primeira vez." : "You got R$ 12.00 OFF for the first time.",
-            popup_level_title: isPT ? "Subiu de Nível!" : "Level Up!",
-            popup_level_msg: isPT ? "Você desbloqueou um desconto maior!" : "You unlocked a bigger discount!",
+            agree_terms: isPT ? "Li e concordo com as regras de higiene e respeito." : "I agree with hygiene and respect rules.",
             
             terms_body: isPT ? [
-              "1. Higiene: Material descartável e banho tomado.",
-              "2. Sigilo: Privacidade absoluta garantida.",
-              "3. Respeito: Profissionalismo acima de tudo.",
-              "4. Pagamento: Ao final do atendimento."
+              "1. HIGIENE É OBRIGATÓRIA: Esteja de banho tomado. Eu também estarei.",
+              "2. RESPEITO TOTAL: Qualquer agressividade ou desrespeito encerra a sessão na hora e o valor não é devolvido.",
+              "3. PAGAMENTO: É feito ao final do atendimento.",
+              "4. SIGILO: O que acontece na sessão, fica na sessão. Sua privacidade é garantida.",
+              "5. LOCAL: Se for na sua casa/hotel, preciso de um espaço limpo e seguro para montar a maca (se necessário)."
             ] : [
-              "1. Hygiene: Disposable material.",
-              "2. Secrecy: Absolute privacy guaranteed.",
-              "3. Respect: Professionalism above all.",
-              "4. Payment: At the end of the service."
+              "1. Hygiene is mandatory.", "2. Respect is mandatory.", "3. Payment at the end.", "4. Total secrecy guaranteed."
             ],
-            terms_title: isPT ? "Regras" : "Rules",
-            terms_link: isPT ? "Ler regras" : "Read rules",
-            terms_btn: isPT ? "Entendi" : "Got it",
+            terms_title: isPT ? "Regras da Casa (Leia Antes)" : "House Rules",
+            terms_link: isPT ? "Ler Regras de Segurança" : "Read Safety Rules",
+            terms_btn: isPT ? "Entendi e Concordo" : "I Agree",
             btn_close: isPT ? "Fechar" : "Close",
         
             zap: {
               intro: isPT ? "Oi Thalyson! Vim pelo App e quero agendar:" : "Hi Thalyson! From the App, I want to book:",
-              section_serv: isPT ? "🔥 *SERVIÇO*" : "🔥 *SERVICE*",
+              section_serv: isPT ? "💆‍♂️ *O SERVIÇO*" : "💆‍♂️ *SERVICE*",
               section_det: isPT ? "📝 *DETALHES*" : "📝 *DETAILS*",
-              section_loc: isPT ? "📍 *LOCAL*" : "📍 *LOCATION*",
-              section_fin: isPT ? "💰 *VALORES*" : "💰 *VALUES*",
-              map_link: isPT ? "🗺️ *Ver no Mapa:*" : "🗺️ *See on Map:*",
-              wait: isPT ? "Aguardo retorno!" : "Waiting for reply!",
-              house: isPT ? "Casa" : "Home",
+              section_loc: isPT ? "📍 *ONDE VAI SER*" : "📍 *LOCATION*",
+              section_fin: isPT ? "💰 *VALOR A PAGAR*" : "💰 *VALUE*",
+              map_link: isPT ? "🗺️ *Endereço no Mapa:*" : "🗺️ *Map:*",
+              wait: isPT ? "Pode confirmar se está livre?" : "Can you confirm?",
+              house: isPT ? "Minha Casa" : "Home",
               hotel: "Hotel",
               motel: "Motel"
             }
@@ -226,7 +189,7 @@ const getData = (lang) => {
 };
 
 // ==================================================================================
-// 2. COMPONENTES AUXILIARES
+// 2. COMPONENTES
 // ==================================================================================
 
 const LoadingScreen = ({ isDark, text }) => (
@@ -321,7 +284,7 @@ export default function App() {
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
   
-  // Scarcity Logic (Random & Discrete)
+  // Viewer Fake Counter
   const [viewers, setViewers] = useState(0);
   const [showScarcity, setShowScarcity] = useState(false);
   const scarcityTimeout = useRef(null);
@@ -335,41 +298,42 @@ export default function App() {
   const scrollRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
   
-  // Data State (Carregado dinamicamente)
+  // Data State
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
 
-  // User & Booking
+  // User State
   const [user, setUser] = useState({ 
       name: '', xp: 0, coupons: [], 
       savedAddress: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, 
       hasSeenWelcome: false 
   });
 
+  // Booking State
   const [booking, setBooking] = useState({
     service: null, extras: {}, date: null, time: null, locationType: 'home', 
     address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
-    payment: '', appliedCoupon: null
+    payment: '', appliedCoupon: null,
+    termsAccepted: false // NOVO: Validação de segurança
   });
 
-  // --- INICIALIZAÇÃO ---
+  // Inicialização e Persistência
   useEffect(() => {
     setIsClient(true);
-    setTimeout(() => setLoading(false), 2500);
+    setTimeout(() => setLoading(false), 2000);
 
     try {
         const s = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (s) {
             setUser(JSON.parse(s));
         } else {
-            setUser(p => ({...p, coupons: [{ id: 'lvl1', val: 12, title: '🎁 Boas Vindas' }]}));
+            setUser(p => ({...p, coupons: [{ id: 'lvl1', val: 12, title: '🎁 Cupom de Boas Vindas' }]}));
         }
     } catch (e) {
         console.warn("Storage disabled");
     }
   }, []);
 
-  // Popup Welcome
   useEffect(() => {
      if(!loading && isClient && !user.hasSeenWelcome) {
          const timer = setTimeout(() => setWelcomePopup(true), 1500);
@@ -377,7 +341,6 @@ export default function App() {
      }
   }, [loading, isClient, user.hasSeenWelcome]);
 
-  // Persistencia
   useEffect(() => { 
       if(isClient && !loading) {
           try {
@@ -388,25 +351,19 @@ export default function App() {
 
   useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
 
-  // Lógica de Escassez (Gatilho)
   const triggerScarcity = () => {
-      // Aleatório entre 2 e 5
       const randomViewers = Math.floor(Math.random() * 4) + 2; 
       setViewers(randomViewers);
       setShowScarcity(true);
-      
       if(scarcityTimeout.current) clearTimeout(scarcityTimeout.current);
-      scarcityTimeout.current = setTimeout(() => setShowScarcity(false), 3000); // Some em 3s
+      scarcityTimeout.current = setTimeout(() => setShowScarcity(false), 3000);
   };
 
-  // --- LÓGICA DE NEGÓCIO ---
-  
+  // Lógica de Agendamento
   const availableTimes = useMemo(() => {
       if (!booking.date) return [];
-      
       const now = new Date();
       const selectedDate = new Date(booking.date);
-      
       const isToday = selectedDate.getDate() === now.getDate() && 
                       selectedDate.getMonth() === now.getMonth() &&
                       selectedDate.getFullYear() === now.getFullYear();
@@ -429,16 +386,19 @@ export default function App() {
     return { sub, disc, total: Math.max(0, sub - disc) };
   }, [booking.service, booking.extras, booking.appliedCoupon, DATA.extras]);
 
+  // VALIDAÇÕES DE SEGURANÇA
   const canProceed = useCallback(() => {
     if (step === 0) return !!booking.service;
     if (step === 1) return !!booking.date && !!booking.time;
     if (step === 2) {
-      if (!user.name || user.name.trim().length < 2) return false;
+      // Validação mais forte no nome
+      if (!user.name || user.name.trim().length < 3) return false;
       if (booking.locationType === 'home') return booking.address.street && booking.address.number && booking.address.city;
       if (booking.locationType === 'hotel') return booking.address.placeName && booking.address.city;
       return true; 
     }
-    return !!booking.payment;
+    // Passo 3 exige pagamento E aceite dos termos
+    return !!booking.payment && booking.termsAccepted;
   }, [step, booking, user.name]);
 
   const finishBooking = () => {
@@ -472,7 +432,7 @@ export default function App() {
         locTxt = `🏠 *${T.zap.house}:* ${fullAddr}\n📝 *Comp:* ${booking.address.comp || '-'}`;
         mapQuery = fullAddr;
     } else if(booking.locationType === 'motel') {
-        locTxt = `🏩 *${T.zap.motel}:* Definir no chat.`;
+        locTxt = `🏩 *${T.zap.motel}:* Vamos combinar no chat.`;
     } else {
         const fullAddr = `${booking.address.placeName}, ${booking.address.city}`;
         locTxt = `🏨 *${T.zap.hotel}:* ${fullAddr}\n🚪 *Quarto:* ${booking.address.comp || '-'}`;
@@ -493,7 +453,6 @@ ${T.zap.intro} *${user.name}*
 ${T.zap.section_serv}
 💆‍♂️ *${booking.service.title}*
 📅 ${dateStr} às ${booking.time}
-${booking.service.desc}
 
 ${extrasList ? `${T.zap.section_det}\n${extrasList}\n` : ''}
 ${T.zap.section_loc}
@@ -508,6 +467,8 @@ ${T.uber_note}
 💎 *TOTAL: ${T.currency} ${f.total}*
 Pagamento: *${booking.payment.toUpperCase()}*
 
+🔐 *Termos:* O cliente declarou ter lido e aceito as regras de higiene e respeito.
+
 ${T.zap.wait}
 `.trim();
 
@@ -521,7 +482,7 @@ ${T.zap.wait}
   return (
     <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
       
-      {/* SCARCITY TOAST (Discreto no meio) */}
+      {/* Visualizador - Escassez */}
       <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[90] pointer-events-none transition-all duration-500 ${showScarcity ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
            <div className="bg-black/80 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-white/10">
                <Eye size={18} className="text-emerald-400 animate-pulse" />
@@ -529,7 +490,7 @@ ${T.zap.wait}
            </div>
       </div>
 
-      {/* NAVBAR */}
+      {/* CABEÇALHO */}
       <header className={`h-16 px-6 flex items-center justify-between z-20 shrink-0 ${isDark ? 'bg-zinc-950 border-b border-zinc-800' : 'bg-white border-b border-slate-200'}`}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-xs shadow-lg shadow-blue-500/30">T.</div>
@@ -542,13 +503,13 @@ ${T.zap.wait}
         </div>
       </header>
 
-      {/* CONTEÚDO */}
+      {/* ÁREA PRINCIPAL */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-6 pb-32 scroll-smooth relative">
         <div className={`fixed top-16 left-0 w-full h-6 z-10 pointer-events-none bg-gradient-to-b ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}></div>
 
         <div className="max-w-md mx-auto space-y-8 pt-2">
 
-          {/* 0. SERVIÇOS */}
+          {/* PASSO 0: SERVIÇOS */}
           {step === 0 && (
             <div className="animate-fade-in">
               <div className="mb-6">
@@ -565,29 +526,30 @@ ${T.zap.wait}
                   <div key={s.id} onClick={() => setBooking(b => ({ ...b, service: s }))} 
                     className={`p-5 rounded-3xl border-2 cursor-pointer transition-all active:scale-[0.98] ${booking.service?.id === s.id ? 'border-blue-500 bg-blue-500/5' : (isDark ? 'border-zinc-800 bg-zinc-900' : 'border-slate-200 bg-white')}`}
                   >
-                     <div className="flex justify-between items-center mb-3">
+                      <div className="flex justify-between items-center mb-3">
                         <div className={`p-3 rounded-2xl ${booking.service?.id === s.id ? 'bg-blue-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={24}/></div>
                         <div className="text-right">
                            <span className="block text-xl font-bold">{T.currency} {s.price}</span>
                            <span className="text-[10px] uppercase font-bold opacity-60">{s.min} min</span>
                         </div>
-                     </div>
-                     <h3 className="font-bold text-lg mb-1">{s.title}</h3>
-                     <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{s.desc}</p>
-                     
-                     {booking.service?.id === s.id && (
-                         <div className={`mt-3 p-3 rounded-xl text-xs leading-relaxed animate-fade-in ${isDark ? 'bg-black/20 text-zinc-300' : 'bg-slate-100 text-slate-700'}`}>
-                             <div className="flex items-center gap-2 font-bold mb-1 text-blue-500"><Info size={12}/> {T.details_label}</div>
-                             <p>{s.details}</p>
-                         </div>
-                     )}
+                      </div>
+                      <h3 className="font-bold text-lg mb-1">{s.title}</h3>
+                      <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{s.desc}</p>
+                      
+                      {/* Explicação detalhada do serviço */}
+                      {booking.service?.id === s.id && (
+                          <div className={`mt-4 p-4 rounded-2xl text-xs leading-relaxed animate-fade-in border ${isDark ? 'bg-black/40 text-zinc-300 border-zinc-700' : 'bg-blue-50 text-slate-700 border-blue-100'}`}>
+                             <div className="flex items-center gap-2 font-bold mb-2 text-blue-500"><Info size={14}/> {T.details_label}</div>
+                             <p className="whitespace-pre-line leading-5">{s.details}</p>
+                          </div>
+                      )}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* 1. DATA */}
+          {/* PASSO 1: DATA E HORA */}
           {step === 1 && (
             <div className="animate-slide-in">
               <div className="text-center mb-6">
@@ -643,7 +605,7 @@ ${T.zap.wait}
             </div>
           )}
 
-          {/* 2. LOCAL E EXTRAS */}
+          {/* PASSO 2: CADASTRO E LOCAL */}
           {step === 2 && (
             <div className="animate-slide-in">
               <h2 className="text-xl font-bold text-center mb-6">{T.location_title}</h2>
@@ -656,9 +618,15 @@ ${T.zap.wait}
               </div>
 
               <div className="space-y-4">
-                 <div>
+                 <div className="animate-fade-in">
                     <label className={`text-xs font-bold ml-1 mb-1 block uppercase ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.input_name}</label>
-                    <input value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} className={`w-full p-4 rounded-2xl border outline-none text-base transition-colors focus:border-blue-500 ${isDark ? 'bg-zinc-900 border-zinc-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`} />
+                    <input 
+                        value={user.name} 
+                        onChange={e=>setUser(u=>({...u, name: e.target.value}))} 
+                        placeholder="Ex: João Silva"
+                        className={`w-full p-4 rounded-2xl border outline-none text-base transition-colors focus:border-blue-500 ${isDark ? 'bg-zinc-900 border-zinc-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`} 
+                    />
+                    <p className={`text-[10px] mt-2 flex items-center gap-1 ${isDark?'text-zinc-500':'text-zinc-400'}`}><ShieldCheck size={10}/> {T.security_note}</p>
                  </div>
 
                  {booking.locationType === 'home' && (
@@ -709,7 +677,7 @@ ${T.zap.wait}
             </div>
           )}
 
-          {/* 3. CHECKOUT */}
+          {/* PASSO 3: PAGAMENTO E TERMOS */}
           {step === 3 && (
             <div className="animate-slide-in pb-10">
                <div className={`p-6 rounded-3xl border shadow-xl ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}>
@@ -769,13 +737,25 @@ ${T.zap.wait}
                    </div>
                </div>
                
-               <div onClick={() => setTermsOpen(true)} className="flex items-center justify-center gap-2 mt-6 opacity-50 text-xs cursor-pointer hover:underline">
-                   <Info size={12}/> {T.terms_link}
+               {/* SEGURANÇA: Aceite de Termos */}
+               <div className={`mt-8 p-4 rounded-2xl border flex flex-col gap-3 ${isDark ? 'bg-amber-900/10 border-amber-500/30' : 'bg-amber-50 border-amber-200'}`}>
+                    <div className="flex items-start gap-3">
+                         <AlertTriangle className="text-amber-500 shrink-0" size={20}/>
+                         <div>
+                             <h4 className="text-sm font-bold text-amber-500 mb-1">{T.terms_title}</h4>
+                             <p className="text-xs opacity-70 mb-2 cursor-pointer underline" onClick={() => setTermsOpen(true)}>{T.terms_link}</p>
+                         </div>
+                    </div>
+                    <label className="flex items-center gap-3 p-3 rounded-xl bg-black/10 cursor-pointer">
+                        <input type="checkbox" checked={booking.termsAccepted} onChange={e=>setBooking(b=>({...b, termsAccepted: e.target.checked}))} className="w-5 h-5 accent-blue-600 rounded"/>
+                        <span className="text-xs font-bold">{T.agree_terms}</span>
+                    </label>
                </div>
+
             </div>
           )}
 
-          {/* 4. SUCESSO */}
+          {/* PASSO 4: SUCESSO */}
           {step === 4 && (
              <div className="flex flex-col items-center justify-center pt-10 text-center animate-scale-in">
                  <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/30 mb-6 animate-bounce-slow">
@@ -786,14 +766,14 @@ ${T.zap.wait}
                  <button onClick={openZap} className="w-full py-5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-lg shadow-xl flex items-center justify-center gap-3 transition-transform active:scale-95">
                      <MessageCircle size={24} fill="white"/> {T.whatsapp_btn}
                  </button>
-                 <button onClick={()=>{setStep(0); setBooking({...booking, service: null, payment: '', appliedCoupon: null});}} className="mt-8 text-xs font-bold uppercase opacity-50 tracking-widest hover:opacity-100">{T.back_home}</button>
+                 <button onClick={()=>{setStep(0); setBooking({...booking, service: null, payment: '', appliedCoupon: null, termsAccepted: false});}} className="mt-8 text-xs font-bold uppercase opacity-50 tracking-widest hover:opacity-100">{T.back_home}</button>
              </div>
           )}
 
         </div>
       </main>
 
-      {/* FLOATING BAR */}
+      {/* BARRA FLUTUANTE INFERIOR */}
       {step < 4 && (
          <div className="fixed bottom-6 left-6 right-6 z-50">
             <div className={`p-2 rounded-[2rem] shadow-2xl flex items-center gap-4 pr-3 backdrop-blur-xl border ${isDark ? 'bg-zinc-900/90 border-zinc-700' : 'bg-white/90 border-zinc-200'}`}>
@@ -817,7 +797,7 @@ ${T.zap.wait}
          </div>
       )}
 
-      {/* MODALS */}
+      {/* MODAL DE AVALIAÇÕES */}
       <Modal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} title={T.reviews_title} isDark={isDark}>
          <div className="space-y-3">
             {DATA.reviews.map((r,i)=>(
@@ -829,17 +809,19 @@ ${T.zap.wait}
          </div>
       </Modal>
 
+      {/* MODAL DE REGRAS (TERMOS) */}
       <Modal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} title={T.terms_title} isDark={isDark}>
          <div className="space-y-4">
-            {T.terms_body.map((t,i)=><p key={i} className="text-sm opacity-80">{t}</p>)}
-            <button onClick={()=>setTermsOpen(false)} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold">{T.terms_btn}</button>
+            {T.terms_body.map((t,i)=><p key={i} className="text-sm opacity-80 border-l-2 border-blue-500 pl-3">{t}</p>)}
+            <button onClick={()=>setTermsOpen(false)} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold mt-4">{T.terms_btn}</button>
          </div>
       </Modal>
 
+      {/* GRADIENTES VISUAIS */}
       <div className={`fixed top-0 left-0 w-full h-8 z-10 pointer-events-none bg-gradient-to-b ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}/>
       <div className={`fixed bottom-0 left-0 w-full h-24 z-10 pointer-events-none bg-gradient-to-t ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}/>
 
-      {/* Popups de Recompensa */}
+      {/* POPUPS DE RECOMPENSA */}
       {welcomePopup && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in" onClick={()=>setWelcomePopup(false)}></div>
