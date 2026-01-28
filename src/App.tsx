@@ -12,58 +12,71 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v17.3 - FINAL UX & SYSTEM FIX
+ * THALYSON APP OS v17.5 - FINAL UX MOBILE POLISH
  * ==================================================================================
- * 1. [FIX] Cupom de Boas-vindas agora persiste após escolher o serviço.
- * 2. [XP] Sistema "Prestige": Após nível 4, ganha R$50 a cada 500XP (Infinito).
- * 3. [UX] Botão Home adicionado ao Footer.
- * 4. [ZAP] Layout da mensagem reformulado para estilo "Ticket/Recibo".
- * 5. [DATA] Preços e Avaliações mantidos.
+ * 1. [UI FOOTER] Botões de navegação compactos (ícones) para caber em qualquer tela.
+ * 2. [TYPOGRAPHY] Textos dos botões reduzidos e estilizados para evitar quebra.
+ * 3. [UX] Botão "Avançar" agora integra o valor total de forma limpa.
+ * 4. [SYSTEM] Toda lógica de Preço, XP Infinito e Motel mantida intacta.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v17_3_final', 
+  STORAGE_KEY: '@thaly_app_v17_5_mobile_ui', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM
+// 2. DESIGN SYSTEM (REFINED FOR COMPACTNESS)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
-  const baseStyle = "relative flex items-center justify-center font-bold transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 rounded-2xl";
+  const baseStyle = "relative flex items-center justify-center font-bold transition-all duration-200 active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden";
+  
   const variants = {
     primary: "bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-500/20 border border-amber-400",
-    secondary: "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700",
-    whatsapp: "bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-green-500/20 border border-green-500/20",
-    outline: "bg-transparent border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500"
+    secondary: "bg-zinc-800 text-zinc-200 border border-zinc-700 active:bg-zinc-700",
+    whatsapp: "bg-[#25D366] active:bg-[#20bd5a] text-white shadow-lg shadow-green-500/20 border border-green-500/20",
+    outline: "bg-transparent border border-zinc-700 text-zinc-400 active:text-white active:border-zinc-500",
+    icon: "bg-zinc-800/80 backdrop-blur-md border border-zinc-700 text-white hover:bg-zinc-700" // New variant for nav buttons
   };
-  const sizes = { sm: "h-9 text-xs px-3", md: "h-12 text-sm px-6", lg: "h-14 text-base px-8", xl: "h-16 text-lg px-8" };
+  
+  // Adjusted sizes for better mobile fit
+  const sizes = { 
+    sm: "h-10 text-[10px] px-3", 
+    md: "h-12 text-xs px-4", 
+    lg: "h-14 text-sm px-6", 
+    xl: "h-14 text-sm px-6",
+    icon: "h-12 w-12 p-0 flex-shrink-0" // New size for icon buttons
+  };
 
   return (
     <button onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
-      {loading ? <Loader2 size={18} className="animate-spin mr-2"/> : (Icon && <Icon size={18} className="mr-2" strokeWidth={2.5} />)}
-      {children}
+      {loading ? <Loader2 size={18} className="animate-spin"/> : (
+        <>
+          {Icon && <Icon size={18} className={children ? "mr-2" : ""} strokeWidth={2.5} />}
+          {children}
+        </>
+      )}
     </button>
   );
 };
 
 const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "text", error, isDark }) => (
-  <div className="space-y-2 w-full">
-    {label && <label className={`text-[11px] font-medium uppercase tracking-widest ml-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{label}</label>}
+  <div className="space-y-1.5 w-full">
+    {label && <label className={`text-[9px] font-black uppercase tracking-widest ml-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{label}</label>}
     <div className="relative group">
       <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-amber-500' : 'text-slate-400 group-focus-within:text-amber-500'}`}>{Icon && <Icon size={18} />}</div>
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full pl-12 pr-4 py-4 rounded-2xl border outline-none text-sm transition-all ${error ? 'border-red-500/50 focus:border-red-500 bg-red-500/5' : (isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-100 focus:border-amber-500/50 focus:bg-zinc-900' : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500')}`} />
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full pl-11 pr-4 py-3.5 rounded-2xl border outline-none text-base font-medium transition-all ${error ? 'border-red-500/50 focus:border-red-500 bg-red-500/5' : (isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-100 focus:border-amber-500/50 focus:bg-zinc-900' : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500')}`} />
     </div>
-    {error && <p className="text-red-400 text-[10px] ml-2 mt-1 animate-slide-in">{error}</p>}
+    {error && <p className="text-red-400 text-[9px] ml-2 mt-1 animate-slide-in font-bold">{error}</p>}
   </div>
 );
 
 const Card = ({ children, isDark, className = '', onClick, active = false }) => (
-  <div onClick={onClick} className={`relative p-6 rounded-3xl transition-all duration-500 overflow-hidden group ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} ${isDark ? `bg-zinc-900/40 backdrop-blur-md ${active ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-zinc-800/60 hover:border-zinc-700'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
+  <div onClick={onClick} className={`relative p-5 rounded-[1.2rem] transition-all duration-200 overflow-hidden ${onClick ? 'cursor-pointer active:scale-[0.98] touch-manipulation' : ''} ${isDark ? `bg-zinc-900/60 backdrop-blur-md ${active ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-zinc-800/60'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
     {children}
   </div>
 );
@@ -77,13 +90,13 @@ const Confetti = ({ active }) => {
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    const particles = Array.from({ length: 80 }, () => ({
+    const particles = Array.from({ length: 60 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height - canvas.height,
-      w: Math.random() * 8 + 4,
-      h: Math.random() * 8 + 4,
+      w: Math.random() * 6 + 3,
+      h: Math.random() * 6 + 3,
       color: ['#f59e0b', '#fbbf24', '#ffffff', '#d97706'][Math.floor(Math.random() * 4)],
-      speed: Math.random() * 2 + 1,
+      speed: Math.random() * 3 + 2,
       angle: Math.random() * 360,
       spin: Math.random() * 5 - 2.5
     }));
@@ -117,7 +130,6 @@ const Confetti = ({ active }) => {
 const getData = (lang) => {
     const isPT = lang === 'pt';
     return {
-        // NÍVEIS BASE (Até 800 XP)
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor", color: "text-zinc-400" },
             { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" },
@@ -278,8 +290,8 @@ const getData = (lang) => {
             coupon_placeholder: isPT ? "Código do convite..." : "Invite code...",
             coupon_btn: isPT ? "Validar" : "Validate",
             remove: isPT ? "Remover" : "Remove",
-            total_label: isPT ? "Investimento Total" : "Total Investment",
-            book_btn: isPT ? "Enviar Solicitação" : "Send Request",
+            total_label: isPT ? "Total" : "Total",
+            book_btn: isPT ? "Confirmar" : "Confirm",
             next_btn: isPT ? "Avançar" : "Next",
             uber_warning: isPT ? "Taxa de transporte (Uber) combinamos no chat" : "Transport fee (Uber) arranged in chat",
             success_title: isPT ? "Tudo certo!" : "All set!",
@@ -408,7 +420,7 @@ export default function App() {
                 setBooking(b => ({...b, address: parsed.savedAddress}));
             }
         } else {
-            setUser(p => ({...p, coupons: [] })); // Inicializa vazio
+            setUser(p => ({...p, coupons: [] })); 
         }
     } catch (e) {
         console.error("Storage error", e);
@@ -442,7 +454,7 @@ export default function App() {
           ...prev,
           type: type,
           item: item,
-          // Mantém o cupom aplicado se já existir (Correção)
+          // MANTÉM CUPOM APLICADO
           extras: {}, 
           payment: '',
           termsAccepted: false
@@ -453,7 +465,6 @@ export default function App() {
       if (!booking.date) return [];
       const slots = ['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00', '21:00'];
       const now = new Date();
-      // Safe check for valid date object
       const selectedDate = new Date(booking.date);
       if (isNaN(selectedDate)) return [];
       
@@ -463,7 +474,6 @@ export default function App() {
           const currentHour = now.getHours();
           return slots.filter(time => {
               const [hour] = time.split(':').map(Number);
-              // LÓGICA CORRIGIDA: Se for 18:50 (hora 18), 19:00 aparece (19 > 18).
               return hour > currentHour;
           });
       }
@@ -490,7 +500,7 @@ export default function App() {
   const estimatedXP = useMemo(() => {
       const baseXP = financials.total;
       const isPack = booking.type === 'pack' || booking.type === 'subscription';
-      const percentage = isPack ? 0.30 : 0.15; // 30% pra pack, 15% pra single
+      const percentage = isPack ? 0.30 : 0.15; 
       return Math.floor(baseXP * percentage);
   }, [financials.total, booking.type]);
 
@@ -499,8 +509,8 @@ export default function App() {
       // Se XP for maior que o nível máximo (800)
       if (currentXP >= 800) {
           const cycleXP = currentXP - 800;
-          const nextRewardAt = 500 - (cycleXP % 500); // Falta quanto para o próximo 500
-          return { needed: nextRewardAt, reward: 50, title: "Prestige" }; // Recompensa fixa de 50
+          const nextRewardAt = 500 - (cycleXP % 500); 
+          return { needed: nextRewardAt, reward: 50, title: "Prestige" }; 
       }
       
       const nextLevel = DATA.levels.find(l => l.xpNeeded > currentXP);
@@ -1004,20 +1014,31 @@ ${T.zap.wait}
         </div>
       </main>
 
-      {/* FOOTER */}
+      {/* FOOTER - MOBILE OPTIMIZED */}
       {step < 4 && (
-         <div className="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none">
-            <div className="pointer-events-auto max-w-md mx-auto">
-                <div className={`p-2 rounded-[2rem] shadow-2xl flex items-center gap-4 pr-3 backdrop-blur-xl border transition-colors duration-500 ${isDark ? 'bg-zinc-900/90 border-zinc-700' : 'bg-white/90 border-zinc-200'}`}>
-                    {step > 0 ? (
-                        <div className="flex gap-2">
-                            <button onClick={()=>setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform border ${isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-slate-100 border-slate-200'}`}><Home size={24}/></button>
-                            <button onClick={()=>setStep(step-1)} className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform border ${isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-slate-100 border-slate-200'}`}><ChevronLeft size={24}/></button>
+         <div className="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-safe">
+            <div className={`w-full p-4 backdrop-blur-xl border-t transition-all duration-300 ${isDark ? 'bg-zinc-950/80 border-zinc-800' : 'bg-white/80 border-slate-200'}`}>
+                <div className="pointer-events-auto max-w-md mx-auto flex items-center gap-3">
+                    {step > 0 && (
+                      <div className="flex gap-2">
+                        <Button variant="icon" size="icon" onClick={() => setStep(0)} icon={Home} />
+                        <Button variant="icon" size="icon" onClick={() => setStep(step - 1)} icon={ChevronLeft} />
+                      </div>
+                    )}
+                    
+                    {/* Botão Avançar Integrado */}
+                    <button 
+                      onClick={handleNextStep} 
+                      className={`flex-1 h-12 rounded-2xl font-bold text-xs flex items-center justify-between px-6 transition-all shadow-lg shadow-amber-500/20 active:scale-[0.98] ${step < 3 ? 'bg-amber-500 text-black hover:bg-amber-400' : 'bg-amber-500 text-black'}`}
+                    >
+                      <span className="uppercase tracking-widest">{step === 3 ? T.book_btn : T.next_btn}</span>
+                      {booking.item && (
+                        <div className="flex flex-col items-end leading-none">
+                          <span className="text-[10px] opacity-60 font-medium">TOTAL</span>
+                          <span className="text-sm font-black">{T.currency || 'R$'} {financials.total}</span>
                         </div>
-                    ) : null}
-                    {step < 3 && booking.item && (<div className="flex-1 pl-2 animate-fade-in"><span className="block text-[9px] font-bold uppercase opacity-50 tracking-wider mb-0.5">{T.total_label}</span><span className="block text-2xl font-black tracking-tight text-amber-500">{T.currency || 'R$'} {financials.total}</span></div>)}
-                    <button onClick={handleNextStep} className={`h-14 px-8 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg ${step < 3 ? 'ml-auto' : 'w-full'} bg-amber-500 text-black shadow-amber-500/30 hover:bg-amber-400 hover:scale-[1.02] active:scale-95`}>
-                        {step === 3 ? T.book_btn : T.next_btn} {step !== 3 && <ArrowRight size={18} strokeWidth={3}/>}
+                      )}
+                      {!booking.item && <ArrowRight size={18} strokeWidth={2.5}/>}
                     </button>
                 </div>
             </div>
@@ -1088,7 +1109,7 @@ ${T.zap.wait}
         </div>
       )}
 
-      <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.6s ease-out}.animate-slide-up{animation:slideUp 0.5s cubic-bezier(0.16,1,0.3,1)}.animate-slide-in{animation:slideIn 0.5s cubic-bezier(0.16,1,0.3,1)}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1)}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.3s ease-out}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}@keyframes slideDown{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
+      <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.6s ease-out}.animate-slide-up{animation:slideUp 0.5s cubic-bezier(0.16,1,0.3,1)}.animate-slide-in{animation:slideIn 0.5s cubic-bezier(0.16,1,0.3,1)}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1)}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.3s ease-out}.pb-safe{padding-bottom:env(safe-area-inset-bottom,24px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}@keyframes slideDown{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
     </div>
   );
 }
