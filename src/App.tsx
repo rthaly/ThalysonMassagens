@@ -4,248 +4,211 @@ import {
   Clock, Zap, X, Globe, Building, BedDouble, 
   Heart, Instagram, Moon, Sun, Home, 
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
-  ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle, Tag, Sparkles, MapPin, Calendar
+  ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle, Tag, Sparkles, MapPin, Calendar, Smartphone
 } from 'lucide-react';
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES GERAIS E DADOS (NÃO ALTERAR A ESTRUTURA)
+// 1. DADOS E CONFIGURAÇÕES
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_ultimate_v2026', 
+  STORAGE_KEY: '@thaly_app_ultimate_v2026_fixed', 
 };
 
-// Horários de Atendimento
+// Horários (Lógica mantida)
 const TIME_SLOTS = [
   '09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00', '21:00'
 ];
 
-// Gerador de Dados Multilinguagem
 const getData = (lang) => {
     const isPT = lang === 'pt';
     
     return {
-        // SISTEMA DE NÍVEIS (GAMIFICAÇÃO) - MANTIDO E MELHORADO
+        // NÍVEIS (MANTIDO)
         levels: [
-            { level: 1, xpNeeded: 0, reward: 12, title: isPT ? "Iniciante" : "Beginner", color: "text-blue-400" },
+            { level: 1, xpNeeded: 0, reward: 12, title: isPT ? "Cliente Novo" : "New Client", color: "text-blue-400" },
             { level: 2, xpNeeded: 400, reward: 20, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" },
             { level: 3, xpNeeded: 1000, reward: 30, title: isPT ? "Cliente Prata" : "Silver Client", color: "text-slate-300" },
-            { level: 4, xpNeeded: 2000, reward: 50, title: isPT ? "Cliente Ouro (VIP)" : "Gold VIP", color: "text-yellow-400" }
+            { level: 4, xpNeeded: 2000, reward: 50, title: isPT ? "VIP Ouro" : "Gold VIP", color: "text-yellow-400" }
         ],
 
-        // SERVIÇOS - DESCRIÇÕES CORRIGIDAS (SEM DOR, SEM ÓLEO MORNO PADRÃO)
+        // SERVIÇOS (ATUALIZADOS CONFORME PEDIDO)
         services: [
             { 
               id: 'relaxante', 
               min: 60, 
               price: 90, 
               icon: Wind, 
-              title: isPT ? "Madeiroterapia Relaxante" : "Wood Therapy Relax",
-              desc: isPT ? "Rolos de madeira para relaxamento profundo (Sem dor)." : "Wooden rollers for deep relaxation (No pain).",
-              details: isPT ? `COMO FUNCIONA ESTA SESSÃO?
-1. INSTRUMENTOS: Utilizo 3 tipos de rolos de madeira anatômicos.
-2. TÉCNICA: O foco NÃO é dor. São movimentos de deslizamento suave para relaxar a musculatura.
-3. SENSAÇÃO: Alívio imediato do estresse e cansaço, sem agredir o corpo.
-4. TOQUE: Finalizo com manobras manuais leves nas costas.
-⚠️ Obs: Sessão terapêutica, sem toques íntimos.` : "Therapy using 3 types of wooden rollers designed for relaxation, not pain. Soft gliding movements to relieve stress."
+              title: isPT ? "Relaxante (Rolos de Madeira)" : "Wood Therapy Relax",
+              desc: isPT ? "Toques suaves com madeira para soltar a tensão." : "Wooden rollers for deep relaxation.",
+              details: isPT ? `COMO É A SESSÃO?
+1. TÉCNICA: Uso 3 tipos de rolos de madeira anatômicos.
+2. SEM DOR: O foco é relaxamento total, não é massagem para "amassar" ou causar dor.
+3. EFEITO: Os rolos deslizam no corpo tirando o peso das costas e pernas.
+4. TOQUE: Finalizo com as mãos de forma leve.
+⚠️ Apenas relaxamento, sem parte íntima.` : "Relaxing therapy using wooden rollers. No pain, just relief."
             },
             { 
               id: 'sensitiva', 
               min: 60, 
-              price: 115, 
+              price: 160, // PREÇO AJUSTADO
               icon: Flame, 
-              title: isPT ? "Sensitiva Tântrica" : "Tantric Sensitive",
-              desc: isPT ? "Toques de pluma, despertar sensorial e arrepios." : "Feather touch, sensory awakening.",
-              details: isPT ? `COMO FUNCIONA ESTA SESSÃO?
-1. TOQUE: Uso apenas a ponta dos dedos e toques extremamente sutis (como plumas).
-2. OBJETIVO: Despertar a bioeletricidade do corpo (aquela sensação de arrepio constante).
-3. CONEXÃO: Não uso força. É uma meditação sensorial.
-4. TRAJE: Atendo de cueca para permitir movimentos fluidos e conexão energética.
-⚠️ Inclui toques na região pélvica para circulação de energia.` : "Extremely subtle touches using fingertips to awaken bioelectricity (shivers). No force used."
+              title: isPT ? "Sensitiva Tântrica (+ Lingam)" : "Tantric Sensitive",
+              desc: isPT ? "Relaxante no início + Sensitiva + Finalização." : "Relax + Sensitive + Happy Ending.",
+              details: isPT ? `O PROTOCOLO DESTA SESSÃO:
+1. INÍCIO RELAXANTE: Começo fazendo a massagem relaxante (manual ou rolos) para você se desligar.
+2. SENSORIAL: Entro com a parte sensitiva (toques leves, penas, ponta de dedos) para arrepiar o corpo todo.
+3. LINGAM MASSAGE: Inclui a massagem técnica na região íntima (pênis e testículos).
+4. OBJETIVO: Te levar ao limite do prazer com controle de energia.
+5. FINALIZAÇÃO: Manual inclusa (com muito óleo).` : "Starts with a relaxing massage, moves to sensory touches and includes Lingam Massage (intimate) with manual ending."
             },
             { 
               id: 'mista', 
-              min: 60, 
-              price: 160, 
+              min: 90, 
+              price: 200, 
               icon: Zap, 
-              title: isPT ? "Experiência Mista (Com Lingam)" : "Full Experience (With Lingam)",
-              desc: isPT ? "Madeiroterapia + Corpo a Corpo + Finalização." : "Wood Therapy + Body to Body + Happy Ending.",
-              details: isPT ? `O PROTOCOLO COMPLETO:
-1. RELAXAMENTO: Começamos com os rolos de madeira para tirar o peso do dia.
-2. INTENSIDADE: Passamos para a massagem corpo a corpo (Body to Body) deslizando pele com pele.
-3. LINGAM MASSAGE: Massagem técnica na região íntima (pênis), focada no controle e distribuição da energia do prazer.
-4. FINALIZAÇÃO: Manipulação manual inclusa no final.` : "Complete combo: Starts with relaxing wooden rollers, moves to body-to-body contact, and finishes with Lingam Massage (intimate) and manual ending."
+              title: isPT ? "Experiência Premium (90min)" : "Premium Experience",
+              desc: isPT ? "Mais tempo, mais prazer. O combo completo." : "More time, more pleasure.",
+              details: isPT ? `A EXPERIÊNCIA COMPLETA:
+1. TEMPO EXTRA: São 1h30 de atendimento.
+2. TUDO INCLUSO: Relaxante + Corpo a Corpo + Sensitiva + Lingam.
+3. BODY TO BODY: Massagem corpo a corpo com muito óleo morno.
+4. FINALIZAÇÃO: Intensa e sem pressa.` : "90 minutes of pure pleasure. Includes everything."
             }
         ],
 
-        // EXTRAS
         extras: [
             { 
               id: 'more_time', 
               price: 55, 
               icon: Clock, 
-              label: isPT ? "+30 Minutos de Sessão" : "+30 Minutes",
-              desc: isPT ? "Estenda seu tempo de relaxamento." : "More time to relax."
+              label: isPT ? "+30 Minutos" : "+30 Minutes",
+              desc: isPT ? "Não tenha pressa para gozar." : "Take your time."
             },
             { 
               id: 'touch', 
               price: 55, 
               icon: Heart,
               label: isPT ? "Toque Invertido (Interativo)" : "Interactive Touch",
-              desc: isPT ? "Você pode tocar no massagista." : "You can touch the masseur."
+              desc: isPT ? "Você pode tocar no meu corpo." : "You can touch me."
             },
             { 
               id: 'aroma', 
-              price: 5, 
+              price: 10, 
               icon: Wind,
-              label: isPT ? "Aromaterapia Especial" : "Aromatherapy",
-              desc: isPT ? "Essências no ambiente para acalmar." : "Scents to calm down."
+              label: isPT ? "Óleos Especiais" : "Oils",
+              desc: isPT ? "Aroma e aquecimento extra." : "Extra heating."
             }
         ],
 
-        // TODAS AS AVALIAÇÕES RESTAURADAS (LISTA LONGA)
+        // AVALIAÇÕES REAIS (AJUSTADAS COM LOCAIS E RELATOS REAIS)
         reviews: [
-            { n: "Tiago", t: "Os rolos de madeira são mágicos, relaxei demais sem sentir dor nenhuma.", s: 5 },
-            { n: "Pedro H.", t: "A Lingam foi feita com muito cuidado. Experiência única.", s: 5 },
-            { n: "Marcos", t: "Profissionalismo nota 10. O ambiente é muito limpo.", s: 5 },
-            { n: "Cliente Anônimo", t: "Fiz a Mista. A parte dos rolos relaxa e a sensitiva arrepia tudo.", s: 5 },
-            { n: "Roberto", t: "Preço justo. O Thalyson é muito gente boa.", s: 5 },
-            { n: "Tiago (Bela Vista)", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", s: 5 },
-            { n: "Anônimo", t: "O toque dele vicia. A finalização foi absurda.", s: 5 },
-            { n: "Curioso SP", t: "Mão firme quando precisa, suave quando deve ser.", s: 5 },
-            { n: "M. (Jardins)", t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia.", s: 5 },
-            { n: "Empresário", t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", s: 5 },
-            { n: "M. (Casado)", t: "Precisava desse escape. O stress sumiu na hora.", s: 5 },
-            { n: "Fã", t: "Ele de cueca branca... sem comentários. Visual nota 1000.", s: 5 },
-            { n: "Carlos A.", t: "Pontual e educado. Os rolos de madeira não machucam nada.", s: 5 },
-            { n: "Lucas", t: "A mistura das técnicas é incrível. Recomendo.", s: 5 },
-            { n: "Novato", t: "Primeira vez que faço e me senti super à vontade.", s: 5 },
-            { n: "Gustavo", t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", s: 5 },
-            { n: "Felipe Personal", t: "Tinha muita tensão, ele resolveu com os rolos.", s: 5 },
-            { n: "J.P.", t: "O corpo a corpo é quente de verdade.", s: 5 },
-            { n: "André", t: "Gostei que ele respeita os limites, mas entrega muito prazer.", s: 5 },
-            { n: "Turista RJ", t: "Atendimento no hotel foi super rápido e discreto.", s: 5 },
-            { n: "Anônimo", t: "Cara bonito, limpo e com pegada.", s: 5 },
-            { n: "Breno", t: "Fiz a relaxante e dormi na maca de tão bom.", s: 5 },
-            { n: "Dr. Marcelo", t: "A técnica dele é diferente de tudo.", s: 5 },
-            { n: "Caio", t: "Sensação de liberdade total.", s: 5 },
-            { n: "Vitor", t: "Me senti renovado.", s: 5 },
-            { n: "Renan", t: "Extremamente educado e com papo bom.", s: 5 },
-            { n: "Paulo", t: "O toque suave da sensitiva é de outro mundo.", s: 5 },
-            { n: "Cliente Antigo", t: "Já fiz com vários, o Thalyson é o melhor.", s: 5 },
-            { n: "Dica do Beto", t: "Não economizem, peçam a completa.", s: 5 },
-            { n: "Advogado SP", t: "Pontualidade britânica.", s: 5 },
-            { n: "Hétero Curioso", t: "Me deixou super confortável.", s: 5 },
-            { n: "Motorista", t: "Tirou o cansaço das costas com os rolos.", s: 5 },
-            { n: "M. (Sigilo)", t: "O sigilo é garantido mesmo.", s: 5 },
-            { n: "Sr. João", t: "Agradeço pela paciência.", s: 5 },
-            { n: "Designer", t: "Experiência sensorial incrível.", s: 5 },
-            { n: "Executivo", t: "Saí flutuando.", s: 5 },
-            { n: "Matheus", t: "O tempo passou voando.", s: 5 },
-            { n: "Bruno", t: "Relaxamento total.", s: 5 },
-            { n: "Rafa", t: "Sabe onde tocar.", s: 5 },
-            { n: "Tech Guy", t: "App fácil de usar, massagem top.", s: 5 },
-            { n: "Corredor", t: "Massagem nos pés foi um bônus.", s: 5 },
-            { n: "Fã #2", t: "Simpático e bonito.", s: 5 },
-            { n: "Pedro", t: "Me ajudou muito com a ansiedade.", s: 5 },
-            { n: "Morador Centro", t: "Levou tudo, maca, toalhas. Prático.", s: 5 },
-            { n: "Curioso", t: "Desbloqueou sensações novas.", s: 5 },
-            { n: "Ricardo", t: "Valeu a pena esperar.", s: 5 },
-            { n: "Sérgio", t: "Nota 10.", s: 5 },
-            { n: "Médico", t: "Muito higiênico.", s: 5 },
-            { n: "Cliente Fiel", t: "Voltarei com certeza.", s: 5 },
-            { n: "Fernando", t: "Paz de espírito.", s: 5 }
+            { n: "Felipe (Santa Fé do Sul)", t: "Cara, a finalização foi absurda... jorrei longe. O Thalyson sabe o que faz.", s: 5 },
+            { n: "Marcão (Jales)", t: "Fiz a Sensitiva. Começou relaxando as costas e quando foi pra parte íntima... sem palavras. Minha perna tremeu.", s: 5 },
+            { n: "Tiago (Bela Vista - SP)", t: "O sigilo é total. Atendeu no meu flat aqui em SP, levou a maca e foi super discreto.", s: 5 },
+            { n: "Gustavo (Três Lagoas)", t: "Estava travado da academia, os rolos de madeira soltaram tudo. E o final foi perfeito.", s: 5 },
+            { n: "André (Rio Preto)", t: "Gostei que ele não tem frescura. É limpo, cheiroso e tem pegada.", s: 5 },
+            { n: "Eduardo (Santa Fé)", t: "O toque dele vicia. A mistura da mão leve com a pegada firme na hora H é top.", s: 5 },
+            { n: "M. (Casado - Jales)", t: "Precisava desse escape. O Thalyson é muito gente boa, me deixou super à vontade.", s: 5 },
+            { n: "Lucas (Jardins - SP)", t: "Paguei o extra pra tocar nele e valeu cada centavo. Pele macia demais.", s: 5 },
+            { n: "Roberto (Turista)", t: "Estava de passagem no hotel e ele veio rápido. Salvou minha noite.", s: 5 },
+            { n: "Bruno (Santa Fé)", t: "Ambiente climatizado, som ambiente... apaguei na relaxante e acordei no céu com a sensitiva.", s: 5 },
+            { n: "Pedro", t: "Nunca tinha feito tântrica. A sensação de quase chegar lá e ele segurar é loucura.", s: 5 },
+            { n: "Ricardo (Votuporanga)", t: "Vale a pena a viagem. O mlk é brabo.", s: 5 },
+            { n: "Anônimo", t: "Jorrei muito leite, fazia tempo que não gozava assim. Recomendo.", s: 5 },
+            { n: "Sérgio (Empresário)", t: "Pontualidade britânica. Respeitoso e profissional.", s: 5 },
+            { n: "Caio (SP)", t: "Atende de cueca branca... visual nota 1000.", s: 5 }
         ],
         text: {
-            loading: isPT ? "CARREGANDO APP..." : "LOADING APP...",
-            welcome: isPT ? "Olá," : "Hello,",
-            subtitle: isPT ? "Seu momento de paz e prazer." : "Your moment of peace.",
-            reviews_count: isPT ? "Ver 50+ Avaliações" : "See 50+ Reviews",
-            reviews_title: isPT ? "O que dizem os clientes" : "Real Reviews",
+            loading: isPT ? "CARREGANDO..." : "LOADING...",
+            welcome: isPT ? "E aí," : "Hi,",
+            subtitle: isPT ? "Seu momento de prazer e relaxamento." : "Relax and pleasure.",
+            reviews_count: isPT ? "Ver relatos de clientes" : "See Reviews",
+            reviews_title: isPT ? "Relatos Reais (+18)" : "Real Reviews",
             select_time_title: isPT ? "Data e Horário" : "Date & Time",
-            date_sub: isPT ? "Horários disponíveis:" : "Available slots:",
-            location_title: isPT ? "Local do Atendimento" : "Location",
-            input_name: isPT ? "Seu Nome (Ou Apelido)" : "Your Name",
-            input_addr: isPT ? "Endereço" : "Address",
+            date_sub: isPT ? "Horários disponíveis na agenda:" : "Available slots:",
+            location_title: isPT ? "Onde vai ser?" : "Location",
+            input_name: isPT ? "Seu Nome (ou Apelido)" : "Your Name",
+            input_addr: isPT ? "Endereço da Casa" : "Address",
             input_num: isPT ? "Número" : "Number",
             input_bairro: isPT ? "Bairro" : "District",
             input_city: isPT ? "Cidade" : "City",
             input_comp: isPT ? "Complemento" : "Unit/Apt",
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
-            input_room: isPT ? "Quarto" : "Room",
-            motel_note: isPT ? "Motel: Combinamos a suíte no WhatsApp." : "Motel: Details on WhatsApp.",
-            pay_title: isPT ? "Forma de Pagamento" : "Payment Method",
+            input_room: isPT ? "Número do Quarto" : "Room",
+            motel_note: isPT ? "Motel: O nome e a suíte a gente combina no WhatsApp." : "Motel: Details on WhatsApp.",
+            pay_title: isPT ? "Pagamento" : "Payment Method",
             pay_pix: "Pix",
             pay_card: isPT ? "Cartão" : "Card",
             pay_cash: isPT ? "Dinheiro" : "Cash",
-            extras_title: isPT ? "Personalize sua sessão" : "Customize",
-            coupon_title: isPT ? "Carteira de Cupons" : "Coupon Wallet",
-            coupon_select: isPT ? "Toque para aplicar" : "Tap to apply",
-            coupon_applied: isPT ? "Cupom Ativo!" : "Coupon Active!",
-            coupon_none: isPT ? "Nenhum cupom disponível" : "No coupons",
-            remove: isPT ? "Remover" : "Remove",
-            total_label: "Total a Pagar",
-            book_btn: isPT ? "Agendar no WhatsApp" : "Book on WhatsApp",
-            next_btn: isPT ? "Continuar Agendamento" : "Continue",
-            uber_note: isPT ? "+ Taxa de Uber (Ida/Volta)" : "+ Uber Fee",
-            success_title: isPT ? "Tudo Pronto!" : "Order Ready!",
-            success_sub: isPT ? "Envie a mensagem gerada no WhatsApp para confirmar." : "Send the message on WhatsApp to confirm.",
-            whatsapp_btn: isPT ? "Confirmar no WhatsApp" : "Send Now",
-            back_home: isPT ? "Voltar ao Início" : "Back Home",
+            extras_title: isPT ? "Turbine sua sessão" : "Customize",
+            coupon_title: isPT ? "Cupons Disponíveis" : "Coupons",
+            coupon_select: isPT ? "Toque para usar" : "Tap to apply",
+            coupon_applied: isPT ? "Cupom Aplicado!" : "Applied!",
+            coupon_none: isPT ? "Sem cupons hoje" : "No coupons",
+            remove: isPT ? "Tirar" : "Remove",
+            total_label: "Valor Total",
+            book_btn: isPT ? "Finalizar no WhatsApp" : "Book on WhatsApp",
+            next_btn: isPT ? "Avançar" : "Continue",
+            uber_note: isPT ? "+ Taxa de Deslocamento (Uber)" : "+ Uber Fee",
+            success_title: isPT ? "Tudo Certo!" : "Order Ready!",
+            success_sub: isPT ? "Já deixei a mensagem pronta. É só enviar no WhatsApp." : "Send the message on WhatsApp.",
+            whatsapp_btn: isPT ? "Enviar Mensagem" : "Send Now",
+            back_home: isPT ? "Voltar" : "Back Home",
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
             currency: isPT ? "R$" : "$",
             level_next: isPT ? "Próximo:" : "Next:",
             level_label: isPT ? "Nível Atual" : "Current Level",
-            empty_date: isPT ? "Selecione uma data acima" : "Select date above",
-            empty_slots: isPT ? "Agenda lotada." : "Full schedule.",
+            empty_date: isPT ? "Escolha um dia" : "Select date",
+            empty_slots: isPT ? "Sem horários." : "No slots.",
             try_tomorrow: isPT ? "Tente outro dia." : "Try another day.",
-            details_label: isPT ? "COMO FUNCIONA:" : "HOW IT WORKS:",
+            details_label: isPT ? "O QUE ACONTECE:" : "DETAILS:",
             discount_applied: isPT ? "Desconto:" : "Discount:",
-            security_note: isPT ? "Seus dados ficam salvos apenas no seu celular." : "Data saved locally.",
+            security_note: isPT ? "Dados salvos só no seu celular." : "Data saved locally.",
             
-            agree_terms: isPT ? "Li e aceito as regras de higiene e respeito." : "I agree with rules.",
+            agree_terms: isPT ? "Li e concordo com a higiene e respeito." : "I agree with rules.",
             
             terms_body: isPT ? [
-              "1. HIGIENE: Banho tomado é obrigatório.",
-              "2. RESPEITO: Comportamento inadequado encerra a sessão.",
-              "3. PAGAMENTO: Ao final do atendimento.",
-              "4. SIGILO: Privacidade total garantida."
+              "1. HIGIENE: Esteja de banho tomado.",
+              "2. RESPEITO: Não insista em algo que não está no menu.",
+              "3. PAGAMENTO: Feito ao final do atendimento.",
+              "4. SIGILO: Tudo fica entre nós."
             ] : ["1. Hygiene.", "2. Respect.", "3. Payment.", "4. Secrecy."],
-            terms_title: isPT ? "Termos de Segurança" : "Safety Terms",
+            terms_title: isPT ? "Regras do Atendimento" : "Rules",
             terms_link: isPT ? "Ler Regras" : "Read Rules",
-            terms_btn: isPT ? "Concordo" : "Agree",
+            terms_btn: isPT ? "Entendi" : "Agree",
             btn_close: isPT ? "Fechar" : "Close",
         
             zap: {
-              intro: isPT ? "Oi Thalyson! Vim pelo App e quero agendar:" : "Hi Thalyson! From the App, I want to book:",
+              intro: isPT ? "E aí Thalyson! Vim pelo App e quero agendar:" : "Hi Thalyson!",
               section_serv: isPT ? "💆‍♂️ *SERVIÇO*" : "💆‍♂️ *SERVICE*",
               section_det: isPT ? "📝 *DETALHES*" : "📝 *DETAILS*",
               section_loc: isPT ? "📍 *LOCAL*" : "📍 *LOCATION*",
               section_fin: isPT ? "💰 *VALOR*" : "💰 *VALUE*",
               map_link: isPT ? "🗺️ *Mapa:*" : "🗺️ *Map:*",
-              wait: isPT ? "Aguardo confirmação!" : "Waiting confirmation!",
-              house: isPT ? "Casa" : "Home",
+              wait: isPT ? "Consegue confirmar pra mim?" : "Can you confirm?",
+              house: isPT ? "Minha Casa" : "Home",
               hotel: "Hotel",
               motel: "Motel"
             },
 
-            notify_coupon_title: isPT ? "PARABÉNS!" : "CONGRATS!",
-            notify_coupon_msg: isPT ? "Você ganhou um cupom de boas-vindas." : "You got a welcome coupon.",
+            notify_coupon_title: isPT ? "GANHOU!" : "CONGRATS!",
+            notify_coupon_msg: isPT ? "Você desbloqueou um desconto de primeira vez." : "Welcome coupon.",
             notify_coupon_val: isPT ? "R$ 12,00 OFF" : "$ 12.00 OFF",
-            notify_btn: isPT ? "PEGAR CUPOM" : "GET COUPON",
+            notify_btn: isPT ? "RESGATAR MEU CUPOM" : "GET COUPON",
 
-            // Textos do Card de Nível
             xp_text: "XP",
-            benefit: isPT ? "Benefício:" : "Benefit:"
+            benefit: isPT ? "Benefício:" : "Benefit:",
+            scarcity_msg: isPT ? "pessoas agendando agora" : "people booking now"
         }
     };
 };
 
 // ==================================================================================
-// 2. COMPONENTES VISUAIS (AQUI ESTÃO AS MELHORIAS VISUAIS)
+// 2. COMPONENTES VISUAIS
 // ==================================================================================
 
 const LoadingScreen = ({ isDark, text }) => (
@@ -253,9 +216,6 @@ const LoadingScreen = ({ isDark, text }) => (
         <div className="relative">
             <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center animate-pulse shadow-2xl shadow-blue-500/50">
                 <span className="text-3xl font-black text-white">TM</span>
-            </div>
-            <div className="absolute -bottom-2 -right-2 bg-emerald-500 rounded-full p-2 animate-bounce shadow-lg">
-                <Check size={20} className="text-white" strokeWidth={3}/>
             </div>
         </div>
         <h1 className="mt-8 text-2xl font-bold tracking-tight animate-pulse bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent">Thalyson Massagens</h1>
@@ -282,7 +242,7 @@ const Modal = ({ isOpen, onClose, children, title, isDark }) => {
   );
 };
 
-// NOVO CARD DE NÍVEL PREMIUM
+// CARD DE NÍVEL
 const LevelCard = ({ xp, isDark, levels, text }) => {
     let currentLevel = levels[0];
     let nextLevel = levels[1];
@@ -300,7 +260,6 @@ const LevelCard = ({ xp, isDark, levels, text }) => {
 
     return (
         <div className={`relative overflow-hidden rounded-3xl p-5 mb-6 border shadow-lg transition-all ${isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-white border-slate-100'}`}>
-            {/* Background Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
             
             <div className="flex justify-between items-start mb-4">
@@ -333,7 +292,7 @@ const LevelCard = ({ xp, isDark, levels, text }) => {
             ) : (
                 <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center gap-3">
                     <Sparkles className="text-amber-500" size={16}/>
-                    <span className="text-xs font-bold text-amber-500">{text.level_gold_desc}</span>
+                    <span className="text-xs font-bold text-amber-500">Nível Máximo Atingido!</span>
                 </div>
             )}
         </div>
@@ -341,7 +300,7 @@ const LevelCard = ({ xp, isDark, levels, text }) => {
 };
 
 // ==================================================================================
-// 3. LÓGICA DO APP
+// 3. APLICAÇÃO
 // ==================================================================================
 
 export default function App() {
@@ -350,12 +309,12 @@ export default function App() {
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
   
-  // Escassez
+  // Escassez (Discreta)
   const [viewers, setViewers] = useState(0);
   const [showScarcity, setShowScarcity] = useState(false);
   const scarcityTimeout = useRef(null);
 
-  // Modais e Popups
+  // Modais
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
@@ -380,7 +339,7 @@ export default function App() {
     termsAccepted: false 
   });
 
-  // Inicialização
+  // Init
   useEffect(() => {
     setIsClient(true);
     setTimeout(() => setLoading(false), 2000);
@@ -390,7 +349,6 @@ export default function App() {
         if (s) {
             setUser(JSON.parse(s));
         } else {
-            // Inicia com cupom
             setUser(p => ({...p, coupons: [{ id: 'lvl1', val: 12, title: '🎁 Boas Vindas' }]}));
         }
     } catch (e) {
@@ -398,7 +356,6 @@ export default function App() {
     }
   }, []);
 
-  // Notificação de Cupom ao iniciar
   useEffect(() => {
      if(!loading && isClient && !user.hasSeenWelcome) {
          const timer = setTimeout(() => setWelcomePopup(true), 1200);
@@ -406,7 +363,6 @@ export default function App() {
      }
   }, [loading, isClient, user.hasSeenWelcome]);
 
-  // Persistência
   useEffect(() => { 
       if(isClient && !loading) {
           try {
@@ -418,14 +374,13 @@ export default function App() {
   useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
 
   const triggerScarcity = () => {
-      const randomViewers = Math.floor(Math.random() * 4) + 2; 
+      const randomViewers = Math.floor(Math.random() * 3) + 1; // 1 a 3 pessoas
       setViewers(randomViewers);
       setShowScarcity(true);
       if(scarcityTimeout.current) clearTimeout(scarcityTimeout.current);
-      scarcityTimeout.current = setTimeout(() => setShowScarcity(false), 3000);
+      scarcityTimeout.current = setTimeout(() => setShowScarcity(false), 4000);
   };
 
-  // Lógica de Datas
   const availableTimes = useMemo(() => {
       if (!booking.date) return [];
       const now = new Date();
@@ -545,11 +500,11 @@ ${T.zap.wait}
   return (
     <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
       
-      {/* Toast de Escassez */}
-      <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[90] pointer-events-none transition-all duration-500 ${showScarcity ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
-           <div className="bg-black/80 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-white/10">
-               <Eye size={18} className="text-emerald-400 animate-pulse" />
-               <span className="text-xs font-bold tracking-wide">{viewers} online</span>
+      {/* Toast de Escassez - Ajustado para parecer mais real */}
+      <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[90] pointer-events-none transition-all duration-500 ${showScarcity ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+           <div className="bg-black/70 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 border border-white/10">
+               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+               <span className="text-[10px] font-bold tracking-wide">{viewers} {T.scarcity_msg}</span>
            </div>
       </div>
 
@@ -579,7 +534,6 @@ ${T.zap.wait}
                 <h1 className="text-2xl font-bold mb-1">{T.welcome} <span className="bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent">{user.name ? user.name.split(' ')[0] : 'Visitante'}</span></h1>
                 <p className={`text-sm mb-6 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.subtitle}</p>
                 
-                {/* CARD DE NÍVEL (AQUI ESTÁ ELE!) */}
                 <LevelCard xp={user.xp} isDark={isDark} levels={DATA.levels} text={T} />
                 
                 <button onClick={() => setReviewsOpen(true)} className="w-full mt-2 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-blue-500/10 text-blue-500 text-sm font-bold cursor-pointer hover:bg-blue-500/20 active:scale-95 transition-all border border-blue-500/20">
@@ -622,7 +576,6 @@ ${T.zap.wait}
                  <p className={`text-xs mt-1 uppercase tracking-widest opacity-60`}>{T.date_sub}</p>
               </div>
 
-              {/* Calendário Horizontal */}
               <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 mb-8">
                 {[...Array(14)].map((_, i) => { 
                   const d = new Date(); 
@@ -677,11 +630,11 @@ ${T.zap.wait}
             <div className="animate-slide-in">
               <h2 className="text-2xl font-bold text-center mb-8">{T.location_title}</h2>
               
-              {/* Seletor Tipo de Local */}
-              <div className={`flex p-1.5 rounded-2xl mb-8 ${isDark ? 'bg-zinc-900' : 'bg-slate-100'}`}>
+              {/* Cards de Local com Padding Ajustado */}
+              <div className={`flex gap-3 mb-8`}>
                  {[{id:'home', l:T.zap.house, i:Home}, {id:'motel', l:'Motel', i:BedDouble}, {id:'hotel', l:'Hotel', i:Building}].map(x => (
-                    <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${booking.locationType === x.id ? (isDark ? 'bg-zinc-800 text-white shadow-lg' : 'bg-white text-black shadow-lg') : 'opacity-50 hover:opacity-100'}`}>
-                        <x.i size={16}/> {x.l}
+                    <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`flex-1 py-4 px-2 rounded-2xl text-xs font-bold flex flex-col items-center justify-center gap-3 transition-all border-2 ${booking.locationType === x.id ? (isDark ? 'bg-zinc-800 border-blue-500 text-white shadow-lg' : 'bg-white border-blue-500 text-black shadow-lg') : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500' : 'bg-slate-50 border-slate-200 text-slate-400')}`}>
+                        <x.i size={20}/> {x.l}
                     </button>
                  ))}
               </div>
@@ -720,7 +673,7 @@ ${T.zap.wait}
 
                  {booking.locationType === 'motel' && (
                     <div className={`p-6 rounded-2xl border text-center text-sm ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400' : 'bg-white border-slate-200 text-slate-500'}`}>
-                        <BedDouble className="mx-auto mb-3 opacity-50" size={32}/>
+                        <Smartphone className="mx-auto mb-3 opacity-50" size={32}/>
                         {T.motel_note}
                     </div>
                  )}
@@ -746,11 +699,10 @@ ${T.zap.wait}
             </div>
           )}
 
-          {/* PASSO 3: CHECKOUT E CUPONS */}
+          {/* PASSO 3: CHECKOUT */}
           {step === 3 && (
             <div className="animate-slide-in pb-10">
                <div className={`p-6 rounded-[2rem] border shadow-2xl overflow-hidden relative ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}>
-                  {/* Detalhe visual de fundo */}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                   
                   <div className="flex justify-between items-center mb-4 pb-4 border-b border-dashed border-gray-500/20 relative z-10">
@@ -764,7 +716,7 @@ ${T.zap.wait}
                       </div>
                   ))}
                   
-                  {/* SELEÇÃO DE CUPONS VISUAL (Card Style) */}
+                  {/* SELEÇÃO DE CUPONS */}
                   <div className="mt-8 mb-6 relative z-10">
                       <div className="flex items-center gap-2 text-xs font-bold opacity-60 mb-3"><Tag size={14}/> {T.coupon_title}</div>
                       
@@ -821,7 +773,6 @@ ${T.zap.wait}
                    </div>
                </div>
                
-               {/* TERMOS DE SEGURANÇA */}
                <div className={`mt-8 p-4 rounded-2xl border flex flex-col gap-3 ${isDark ? 'bg-amber-900/10 border-amber-500/30' : 'bg-amber-50 border-amber-200'}`}>
                     <div className="flex items-start gap-3">
                          <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={18}/>
@@ -857,7 +808,7 @@ ${T.zap.wait}
         </div>
       </main>
 
-      {/* FOOTER NAVEGAÇÃO */}
+      {/* FOOTER */}
       {step < 4 && (
          <div className="fixed bottom-6 left-6 right-6 z-50">
             <div className={`p-2 rounded-[2.5rem] shadow-2xl flex items-center gap-4 pr-3 backdrop-blur-xl border ${isDark ? 'bg-zinc-900/90 border-zinc-700' : 'bg-white/90 border-zinc-200'}`}>
@@ -881,7 +832,7 @@ ${T.zap.wait}
          </div>
       )}
 
-      {/* MODAL REVIEWS (LISTA COMPLETA) */}
+      {/* MODAL REVIEWS */}
       <Modal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} title={T.reviews_title} isDark={isDark}>
          <div className="space-y-3">
             {DATA.reviews.map((r,i)=>(
@@ -904,12 +855,12 @@ ${T.zap.wait}
       <div className={`fixed top-0 left-0 w-full h-8 z-10 pointer-events-none bg-gradient-to-b ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}/>
       <div className={`fixed bottom-0 left-0 w-full h-24 z-10 pointer-events-none bg-gradient-to-t ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}/>
 
-      {/* POPUP DE BOAS VINDAS (CUPOM) */}
+      {/* POPUP DE BOAS VINDAS (CUPOM) - BOTÃO CORRIGIDO */}
       {welcomePopup && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-xl animate-fade-in" onClick={()=>setWelcomePopup(false)}></div>
             <div className={`relative p-8 rounded-[2.5rem] text-center max-w-sm w-full animate-scale-in shadow-2xl border ${isDark ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white text-zinc-900'}`}>
-                {/* Confete fake visual */}
+                {/* Confete visual */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none rounded-[2.5rem]">
                     <div className="absolute top-10 left-10 w-2 h-2 bg-red-500 rounded-full animate-bounce"></div>
                     <div className="absolute top-20 right-10 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
