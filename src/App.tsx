@@ -58,9 +58,10 @@ const getData = (lang) => {
               icon: Zap, 
               title: isPT ? "Experiência Mista" : "Mixed Experience",
               desc: isPT ? "O equilíbrio perfeito (Relax + Sensitiva)." : "The perfect balance (Relax + Sensitive).",
-              details: isPT ? "Começa com a massagem relaxante para soltar a musculatura e começar com a intensidade da sensitiva, passo pro corpo a corpo e fecho com a tântrica (finalização manual inclusa).
-Lembrando: é focado no seu prazer, sem penetração ou oral, apenas manual e sensorial. : "It starts with the relaxing massage to loosen the muscles and start with the intensity of the sensitive, I move to the body to body and close with the tantric (manual finishing included).
-Remembering: it is focused on your pleasure, without penetration or oral, only manual and sensory."
+              // CORREÇÃO 1: Uso de crases (`) para permitir texto em múltiplas linhas
+              details: isPT ? `Começa com a massagem relaxante para soltar a musculatura e começar com a intensidade da sensitiva, passo pro corpo a corpo e fecho com a tântrica (finalização manual inclusa).
+Lembrando: é focado no seu prazer, sem penetração ou oral, apenas manual e sensorial.` : `It starts with the relaxing massage to loosen the muscles and start with the intensity of the sensitive, I move to the body to body and close with the tantric (manual finishing included).
+Remembering: it is focused on your pleasure, without penetration or oral, only manual and sensory.`
             }
         ],
         extras: [
@@ -482,6 +483,7 @@ export default function App() {
     }
     
     const encodedQuery = encodeURIComponent(mapQuery);
+    // CORREÇÃO 2: Adicionadas as crases e corrigida a sintaxe da URL
     const mapLink = mapQuery ? `https://www.google.com/maps/search/?api=1&query=${encodedQuery}` : '';
 
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => {
@@ -567,22 +569,22 @@ ${T.zap.wait}
                   <div key={s.id} onClick={() => setBooking(b => ({ ...b, service: s }))} 
                     className={`p-5 rounded-3xl border-2 cursor-pointer transition-all active:scale-[0.98] ${booking.service?.id === s.id ? 'border-blue-500 bg-blue-500/5' : (isDark ? 'border-zinc-800 bg-zinc-900' : 'border-slate-200 bg-white')}`}
                   >
-                     <div className="flex justify-between items-center mb-3">
+                      <div className="flex justify-between items-center mb-3">
                         <div className={`p-3 rounded-2xl ${booking.service?.id === s.id ? 'bg-blue-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={24}/></div>
                         <div className="text-right">
                            <span className="block text-xl font-bold">{T.currency} {s.price}</span>
                            <span className="text-[10px] uppercase font-bold opacity-60">{s.min} min</span>
                         </div>
-                     </div>
-                     <h3 className="font-bold text-lg mb-1">{s.title}</h3>
-                     <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{s.desc}</p>
-                     
-                     {booking.service?.id === s.id && (
-                         <div className={`mt-3 p-3 rounded-xl text-xs leading-relaxed animate-fade-in ${isDark ? 'bg-black/20 text-zinc-300' : 'bg-slate-100 text-slate-700'}`}>
+                      </div>
+                      <h3 className="font-bold text-lg mb-1">{s.title}</h3>
+                      <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{s.desc}</p>
+                      
+                      {booking.service?.id === s.id && (
+                          <div className={`mt-3 p-3 rounded-xl text-xs leading-relaxed animate-fade-in ${isDark ? 'bg-black/20 text-zinc-300' : 'bg-slate-100 text-slate-700'}`}>
                              <div className="flex items-center gap-2 font-bold mb-1 text-blue-500"><Info size={12}/> {T.details_label}</div>
                              <p>{s.details}</p>
-                         </div>
-                     )}
+                          </div>
+                      )}
                   </div>
                 ))}
               </div>
