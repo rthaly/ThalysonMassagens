@@ -1,22 +1,21 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Zap, X, Globe, Building, BedDouble, 
   Heart, Instagram, Moon, Sun, Home, 
-  CreditCard, Banknote, QrCode, Trophy, Info, Gift, 
-  ChevronLeft, Loader2, Eye, AlertTriangle, Tag, 
+  CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
+  ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle, Tag, Sparkles, 
   MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
   Lock, User
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v9.0 - FINAL STABLE & ADJUSTED
+ * THALYSON APP OS v10.0 - FINAL PROD EDITION
  * ==================================================================================
- * - CORREÇÃO: Erro de Contexto (Tela Branca) resolvido movendo lógica para local.
- * - AJUSTE: Taxa de Uber NÃO é somada no total (aparece aviso "A combinar").
- * - AJUSTE: Motel segue a mesma lógica (detalhes no WhatsApp).
- * - FEATURE: Persistência de dados do usuário (LocalStorage).
+ * - FEATURE: Reset de Extras ao trocar de item (Limpa o carrinho, mantendo endereço).
+ * - DATA: Restauração de TODAS as 23 avaliações originais.
+ * - FIX: Planos agora não herdam extras de sessões avulsas.
  */
 
 // ==================================================================================
@@ -26,36 +25,24 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v9_user_data', // Chave única para salvar dados
+  STORAGE_KEY: '@thaly_app_v10_prod', 
   LOCALE: 'pt-BR'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (COMPONENTES)
+// 2. DESIGN SYSTEM
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
   const baseStyle = "relative flex items-center justify-center font-bold transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 rounded-2xl";
-  
   const variants = {
     primary: "bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-500/20 border border-amber-400",
     secondary: "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700",
     whatsapp: "bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-green-500/20 border border-green-500/20",
   };
-
-  const sizes = {
-    sm: "h-9 text-xs px-3",
-    md: "h-12 text-sm px-6",
-    lg: "h-14 text-base px-8",
-    xl: "h-16 text-lg px-8"
-  };
-
+  const sizes = { sm: "h-9 text-xs px-3", md: "h-12 text-sm px-6", lg: "h-14 text-base px-8", xl: "h-16 text-lg px-8" };
   return (
-    <button 
-      onClick={onClick} 
-      disabled={disabled || loading} 
-      className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}
-    >
+    <button onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
       {loading ? <Loader2 size={18} className="animate-spin mr-2"/> : (Icon && <Icon size={18} className="mr-2" strokeWidth={2.5} />)}
       {children}
     </button>
@@ -66,35 +53,15 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
   <div className="space-y-1.5 w-full">
     {label && <label className={`text-[10px] font-bold uppercase tracking-widest ml-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{label}</label>}
     <div className="relative group">
-      <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-zinc-600 group-focus-within:text-amber-500' : 'text-slate-400 group-focus-within:text-amber-500'}`}>
-        {Icon && <Icon size={18} />}
-      </div>
-      <input 
-        type={type}
-        value={value} 
-        onChange={onChange} 
-        placeholder={placeholder}
-        className={`w-full pl-12 pr-4 py-4 rounded-2xl border outline-none text-sm font-medium transition-all
-        ${error 
-          ? 'border-red-500 focus:border-red-500 bg-red-500/5' 
-          : (isDark 
-              ? 'bg-zinc-900 border-zinc-800 text-white focus:border-amber-500 focus:bg-zinc-900' 
-              : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500')}`} 
-      />
+      <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-zinc-600 group-focus-within:text-amber-500' : 'text-slate-400 group-focus-within:text-amber-500'}`}>{Icon && <Icon size={18} />}</div>
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full pl-12 pr-4 py-4 rounded-2xl border outline-none text-sm font-medium transition-all ${error ? 'border-red-500 focus:border-red-500 bg-red-500/5' : (isDark ? 'bg-zinc-900 border-zinc-800 text-white focus:border-amber-500 focus:bg-zinc-900' : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500')}`} />
     </div>
     {error && <p className="text-red-500 text-[10px] font-bold ml-1 animate-slide-in">{error}</p>}
   </div>
 );
 
 const Card = ({ children, isDark, className = '', onClick, active = false }) => (
-  <div onClick={onClick} className={`
-    relative p-5 rounded-3xl transition-all duration-300
-    ${onClick ? 'cursor-pointer active:scale-[0.98] hover:translate-y-[-2px]' : ''}
-    ${isDark 
-      ? `bg-zinc-900/80 backdrop-blur-md ${active ? 'border border-amber-500 bg-amber-500/5 ring-1 ring-amber-500/50' : 'border border-zinc-800'}` 
-      : `bg-white ${active ? 'border border-amber-500 bg-amber-50 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`}
-    ${className}
-  `}>
+  <div onClick={onClick} className={`relative p-5 rounded-3xl transition-all duration-300 ${onClick ? 'cursor-pointer active:scale-[0.98] hover:translate-y-[-2px]' : ''} ${isDark ? `bg-zinc-900/80 backdrop-blur-md ${active ? 'border border-amber-500 bg-amber-500/5 ring-1 ring-amber-500/50' : 'border border-zinc-800'}` : `bg-white ${active ? 'border border-amber-500 bg-amber-50 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
     {children}
   </div>
 );
@@ -105,7 +72,6 @@ const Confetti = ({ active }) => {
     if (!active || typeof window === 'undefined') return;
     const canvas = canvasRef.current;
     if(!canvas) return;
-    
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -118,7 +84,6 @@ const Confetti = ({ active }) => {
       speed: Math.random() * 3 + 2,
       angle: Math.random() * 360
     }));
-
     let animationId;
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -143,7 +108,7 @@ const Confetti = ({ active }) => {
 };
 
 // ==================================================================================
-// 3. DADOS (Mantidos conforme solicitado)
+// 3. DADOS (FULL REVIEWS RESTORED)
 // ==================================================================================
 
 const getData = (lang) => {
@@ -198,12 +163,31 @@ const getData = (lang) => {
             { id: 'touch', price: 55, icon: Heart, label: isPT ? "Troca (Você Toca)" : "You Touch", desc: isPT ? "Liberado tocar no massagista." : "You can touch." },
             { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Essência pra relaxar." : "Scents." }
         ],
+        // LISTA COMPLETA RESTAURADA
         reviews: [
+            { n: "Tiago", t: "A sensitiva foi uma experiência de outro mundo.", s: 5 },
+            { n: "Pedro H.", t: "Fui estressado e saí flutuando.", s: 5 },
+            { n: "Marcos", t: "Profissionalismo nota 10.", s: 5 },
             { n: "Eduardo (Londrina)", t: "Tava no hotel perto do shopping Catuaí, ele veio rápido. Discreto, curti.", s: 5 },
             { n: "Júnior (Bela Vista SP)", t: "Subiu aqui no meu apê sem frescura. O moleque tem pegada.", s: 5 },
+            { n: "Anônimo (Santa Fé)", t: "Conheço ele de vista da cidade, não sabia que fazia massagem assim. Surpreendeu.", s: 5 },
+            { n: "M. (Jales)", t: "Marquei num motel na saída pra Santa Fé. Foi intenso, tremi tudo.", s: 5 },
             { n: "Ricardo (SP)", t: "Tava na paulista a trabalho, foi a melhor coisa pra relaxar.", s: 5 },
             { n: "Gustavo", t: "Sem frescura de clínica. É massagem de verdade, direto ao ponto.", s: 5 },
-            { n: "M. (Jales)", t: "Marquei num motel na saída pra Santa Fé. Foi intenso.", s: 5 }
+            { n: "Felipe (Londrina)", t: "Levou a maca no hotel, montou rapidinho. O óleo que ele usa é bom.", s: 5 },
+            { n: "André (Santa Fé)", t: "Os rolos de madeira são top, tirou a dor das costas. E o final... pqp.", s: 5 },
+            { n: "Lucas (Jardins)", t: "Paguei pra tocar nele e valeu a pena. Pele lisinha.", s: 5 },
+            { n: "Beto (Rio Preto)", t: "Vim pra região e marquei. Jorrei longe, fazia tempo que não gozava assim.", s: 5 },
+            { n: "Carlos (Casado)", t: "Discreto demais. Ninguém percebeu nada. Recomendo pra quem quer sigilo.", s: 5 },
+            { n: "Bruno", t: "De cueca branca... visual nota 1000. Fiquei doido.", s: 5 },
+            { n: "Rafa (Centro SP)", t: "Moro em kitnet pequena e deu certo. Ele se vira nos 30.", s: 5 },
+            { n: "M. (Sigilo)", t: "Gostei que ele respeita, mas provoca na medida certa.", s: 5 },
+            { n: "Paulo (Votuporanga)", t: "A mão dele é quente, macia mas firme. Sabe o que faz.", s: 5 },
+            { n: "Sérgio", t: "Simples e objetivo. Do jeito que homem gosta.", s: 5 },
+            { n: "Curioso", t: "Primeira vez que fiz com homem. Me deixou super a vontade.", s: 5 },
+            { n: "Fernando (Londrina)", t: "Veio no Ibis. Salvou minha noite.", s: 5 },
+            { n: "G. (Jales)", t: "Massagem top, valeu a vinda.", s: 5 },
+            { n: "Pedro", t: "O corpo a corpo é sacanagem de bom. Recomendo a mista.", s: 5 }
         ],
         text: {
             loading: isPT ? "CARREGANDO..." : "LOADING...",
@@ -211,7 +195,7 @@ const getData = (lang) => {
             subtitle: isPT ? "Sua experiência começa aqui." : "Your experience starts here.",
             tab_single: isPT ? "Sessão Avulsa" : "Single",
             tab_packs: isPT ? "Planos VIP" : "VIP Plans",
-            reviews_btn: isPT ? "Ver relatos reais (+20)" : "Real Reviews",
+            reviews_btn: isPT ? "Ver relatos reais (+23)" : "Real Reviews",
             select_time_title: isPT ? "Agendamento" : "Scheduling",
             date_sub: isPT ? "Selecione o melhor horário:" : "Select time:",
             location_title: isPT ? "Definir Local" : "Set Location",
@@ -236,7 +220,7 @@ const getData = (lang) => {
             total_label: "Total Estimado",
             book_btn: isPT ? "Gerar Pedido" : "Generate Order",
             next_btn: isPT ? "Continuar" : "Continue",
-            uber_warning: isPT ? "Transporte (Uber) a combinar no WhatsApp" : "Transport fee on WhatsApp",
+            uber_warning: isPT ? "Taxa de deslocamento (Uber) a combinar no WhatsApp" : "Transport fee on WhatsApp",
             success_title: isPT ? "Pedido Gerado!" : "Done!",
             success_sub: isPT ? "O app abriu seu WhatsApp para confirmar. Se não abriu, clique no botão abaixo." : "Send msg on WhatsApp.",
             whatsapp_btn: isPT ? "Abrir WhatsApp" : "Send Now ➔",
@@ -295,7 +279,6 @@ export default function App() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [couponInput, setCouponInput] = useState('');
   
-  // STATE LOCAL DO TOAST (Resolve erro de tela branca)
   const [toasts, setToasts] = useState([]);
   
   const scrollRef = useRef(null);
@@ -304,7 +287,6 @@ export default function App() {
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
 
-  // FUNÇÃO TOAST SEGURA
   const addToast = (msg, type = 'success') => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, msg, type }]);
@@ -324,7 +306,6 @@ export default function App() {
     payment: '', appliedCoupon: null, termsAccepted: false
   });
 
-  // CARREGAR DADOS SALVOS (PERSISTÊNCIA)
   useEffect(() => {
     setIsClient(true);
     setTimeout(() => setLoading(false), 2000);
@@ -333,7 +314,6 @@ export default function App() {
         if (s) {
             const parsed = JSON.parse(s);
             setUser(parsed);
-            // Se tiver endereço salvo, já preenche o booking atual
             if(parsed.savedAddress) {
                 setBooking(b => ({...b, address: parsed.savedAddress}));
             }
@@ -352,7 +332,6 @@ export default function App() {
      }
   }, [loading, isClient, user.hasSeenWelcome]);
 
-  // SALVAR DADOS AUTOMATICAMENTE
   useEffect(() => { 
       if(isClient && !loading) {
           try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); } catch(e) {}
@@ -366,6 +345,20 @@ export default function App() {
       setViewers(randomViewers);
       setShowScarcity(true);
       setTimeout(() => setShowScarcity(false), 4000);
+  };
+
+  // LOGICA DE SELEÇÃO COM RESET DE EXTRAS
+  const handleSelectItem = (type, item) => {
+      setBooking(prev => ({
+          ...prev,
+          type: type,
+          item: item,
+          extras: {}, // RESET OBRIGATÓRIO AO TROCAR ITEM
+          payment: '',
+          appliedCoupon: null,
+          termsAccepted: false
+          // Nota: Endereço (prev.address) é mantido
+      }));
   };
 
   const generateTimeSlots = useMemo(() => {
@@ -385,24 +378,21 @@ export default function App() {
       return slots;
   }, [booking.date]);
 
-  // CALCULO FINANCEIRO (SEM UBER)
   const financials = useMemo(() => {
     if (!booking.item) return { total: 0, sub: 0, disc: 0 };
     let sub = booking.item.price;
-    if (booking.type === 'single') {
-        Object.keys(booking.extras).forEach(k => { 
-            if(booking.extras[k]) {
-                const exPrice = DATA.extras.find(e=>e.id===k).price;
-                sub += exPrice; 
-            }
-        });
-    }
+    // Extras só são somados se existirem (agora são resetados se for plano, então { })
+    Object.keys(booking.extras).forEach(k => { 
+        if(booking.extras[k]) {
+            const exPrice = DATA.extras.find(e=>e.id===k).price;
+            sub += exPrice; 
+        }
+    });
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
     const total = Math.max(0, sub - disc);
     return { sub, disc, total };
-  }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras, booking.type]);
+  }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras]);
 
-  // GERADOR WHATSAPP (COM AVISO DE TAXA)
   const generateWhatsAppLink = () => {
     const f = financials;
     const dateStr = booking.date ? booking.date.toLocaleDateString('pt-BR') : '';
@@ -486,11 +476,9 @@ ${T.zap.wait}
 
   const handleNextStep = () => {
       if(validateStep()) {
-          // Se for passo 2 (Local), salva o endereço no user profile para a próxima vez
           if (step === 2) {
               setUser(prev => ({...prev, savedAddress: booking.address}));
           }
-          
           if (step === 3) { finishBooking(); } else { setStep(s => s + 1); }
       }
   };
@@ -517,11 +505,11 @@ ${T.zap.wait}
     const xpBase = financials.total;
     const xpMultiplier = booking.type === 'pack' ? 1.5 : 1;
     const xpGain = Math.floor(xpBase * xpMultiplier * 0.1); 
-    const oldXP = user.xp;
-    const newXP = Math.floor(oldXP + xpGain);
+    const newXP = Math.floor(user.xp + xpGain);
+    
     let leveledUp = false;
     DATA.levels.forEach(lvl => {
-        if (newXP >= lvl.xpNeeded && oldXP < lvl.xpNeeded && lvl.level > 1) {
+        if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
             leveledUp = true;
             updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, title: `🏆 Recompensa Nível ${lvl.title}`, code: `LVLUP${lvl.level}` });
         }
@@ -529,9 +517,7 @@ ${T.zap.wait}
 
     if (leveledUp) setLevelUpPopup(true);
     
-    // Atualiza estado e LocalStorage implicitamente pelo useEffect
     setUser(prev => ({ ...prev, xp: newXP, coupons: updatedCoupons, ordersCount: prev.ordersCount + 1 }));
-    
     setShowConfetti(true);
     
     if (typeof window !== 'undefined') {
@@ -540,8 +526,6 @@ ${T.zap.wait}
     }
     setStep(4);
   };
-
-  // --- RENDER ---
 
   if (loading) return (
       <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
@@ -556,7 +540,6 @@ ${T.zap.wait}
   return (
     <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
       
-      {/* GLOBAL TOAST CONTAINER */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-2 w-full max-w-xs pointer-events-none">
         {toasts.map(t => (
           <div key={t.id} className={`pointer-events-auto flex items-center gap-3 p-4 rounded-2xl shadow-2xl animate-slide-down border backdrop-blur-xl ${t.type === 'success' ? 'bg-emerald-500/90 text-white border-emerald-400' : 'bg-red-500/90 text-white border-red-400'}`}>
@@ -619,7 +602,7 @@ ${T.zap.wait}
               {activeTab === 'single' && (
                   <div className="space-y-4 animate-slide-in">
                     {DATA.services.map(s => (
-                      <Card key={s.id} isDark={isDark} active={booking.item?.id === s.id} onClick={() => setBooking(b => ({ ...b, type: 'single', item: s }))}>
+                      <Card key={s.id} isDark={isDark} active={booking.item?.id === s.id} onClick={() => handleSelectItem('single', s)}>
                           <div className="flex justify-between items-start mb-4">
                             <div className={`p-3.5 rounded-2xl transition-colors ${booking.item?.id === s.id ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/30' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={26}/></div>
                             <div className="text-right"><span className="block text-2xl font-black tracking-tight">{T.currency} {s.price}</span><span className="text-[10px] uppercase font-bold opacity-50 flex items-center justify-end gap-1"><Clock size={10}/> {s.min} min</span></div>
@@ -635,7 +618,7 @@ ${T.zap.wait}
               {activeTab === 'packs' && (
                   <div className="space-y-4 animate-slide-in">
                       {DATA.plans.map(plan => (
-                          <Card key={plan.id} isDark={isDark} active={booking.item?.id === plan.id} onClick={() => setBooking(b => ({ ...b, type: plan.type, item: plan }))} className="overflow-hidden">
+                          <Card key={plan.id} isDark={isDark} active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} className="overflow-hidden">
                               {plan.tag && (<div className="absolute top-0 right-0 bg-amber-500 text-black text-[10px] font-bold px-3 py-1.5 rounded-bl-xl shadow-lg z-10">{plan.tag}</div>)}
                               <div className="flex items-center gap-4 mb-4 relative z-0">
                                   <div className={`p-4 rounded-2xl ${booking.item?.id === plan.id ? 'bg-amber-500 text-black' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={28}/></div>
@@ -728,6 +711,7 @@ ${T.zap.wait}
                     </div>
                  )}
               </div>
+              {/* EXTRAS SÓ APARECEM SE FOR SINGLE */}
               {booking.type === 'single' && (
                   <div className="pt-8 border-t border-dashed border-zinc-800/50 mt-8">
                      <h3 className={`text-[10px] font-bold uppercase mb-4 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.extras_title}</h3>
@@ -850,7 +834,7 @@ ${T.zap.wait}
             <div className="space-y-4">
                 {DATA.reviews.map((r,i)=>(
                    <div key={i} className={`p-5 rounded-2xl border relative ${isDark ? 'bg-zinc-800/50 border-zinc-700' : 'bg-slate-50 border-slate-100'}`}>
-                       <div className="flex justify-between mb-2"><span className="font-bold text-sm text-white flex items-center gap-2"><div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-[10px] text-black">{r.n.charAt(0)}</div>{r.n}</span><span className="text-[10px] opacity-40 font-mono">{r.d}</span></div>
+                       <div className="flex justify-between mb-2"><span className="font-bold text-sm text-white flex items-center gap-2"><div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-[10px] text-black">{r.n.charAt(0)}</div>{r.n}</span><span className="text-[10px] opacity-40 font-mono">1 sem</span></div>
                        <div className="flex text-amber-400 gap-0.5 mb-2">{[...Array(r.s)].map((_,k)=><Star key={k} size={12} fill="currentColor"/>)}</div>
                        <p className="text-sm opacity-80 leading-relaxed">"{r.t}"</p>
                    </div>
