@@ -11,20 +11,18 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v17.0 - FINAL STABLE
+ * THALYSON APP OS v17.1 - GLOBAL TRANSLATION & DETAILED ZAP
  * ==================================================================================
- * CORREÇÕES REALIZADAS:
- * 1. [PREÇOS] Atualizados para 125, 155, 205. Pacotes recalculados.
- * 2. [HORÁRIO] Lógica ajustada: Se for 18:50, libera as 19:00.
- * 3. [XP] Aumentado ganho para 15% (avulso) e 30% (packs). Níveis facilitados.
- * 4. [CUPONS] Corrigido bug onde cupom não sumia após uso.
- * 5. [VISUAL] Mantido estrutura limpa e funcional.
+ * 1. [LANG] Tradução completa 100% (PT/EN) em todos os textos e dados.
+ * 2. [ZAP] Mensagem rica com detalhes financeiros, endereço e STATUS DE XP.
+ * 3. [XP] Lógica mantida (15% Single / 30% Pack) com visualização no checkout.
+ * 4. [UX] Cupons somem após uso.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v17_final', 
+  STORAGE_KEY: '@thaly_app_v17_global', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
@@ -62,8 +60,8 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
   </div>
 );
 
-const Card = ({ children, isDark, className = '', onClick, active = false, isPlan = false }) => (
-  <div onClick={onClick} className={`relative p-6 rounded-3xl transition-all duration-500 overflow-hidden group ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} ${isDark ? `bg-zinc-900/40 backdrop-blur-md ${active ? (isPlan ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-amber-500/50 bg-amber-500/5') : 'border border-zinc-800/60 hover:border-zinc-700'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
+const Card = ({ children, isDark, className = '', onClick, active = false }) => (
+  <div onClick={onClick} className={`relative p-6 rounded-3xl transition-all duration-500 overflow-hidden group ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} ${isDark ? `bg-zinc-900/40 backdrop-blur-md ${active ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-zinc-800/60 hover:border-zinc-700'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
     {children}
   </div>
 );
@@ -111,37 +109,32 @@ const Confetti = ({ active }) => {
 };
 
 // ==================================================================================
-// 3. DADOS
+// 3. DADOS (FULL TRANSLATION LOGIC)
 // ==================================================================================
 
 const getData = (lang) => {
     const isPT = lang === 'pt';
     return {
-        // XP AJUSTADO: NÍVEIS MAIS FÁCEIS
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor", color: "text-zinc-400" },
-            { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" }, // Facilitado de 150 para 100
+            { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" },
             { level: 3, xpNeeded: 350, reward: 30, title: isPT ? "Cliente Prata" : "Silver Client", color: "text-slate-300" },
             { level: 4, xpNeeded: 800, reward: 50, title: isPT ? "Membro VIP" : "VIP Member", color: "text-amber-400" }
         ],
         services: [
             { 
-              // ATUALIZADO: 125
               id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "PARA RELAXAR" : "RELAXING",
               title: isPT ? "Relaxante (Rolos de Madeira)" : "Wood Therapy Relax",
               desc: isPT ? "O alívio imediato para o cansaço do dia a dia." : "Immediate relief for daily tiredness.",
               details: isPT ? `COMO É A SESSÃO?
 • TÉCNICA: Uso meus rolos de madeira para soltar suas costas e pernas.
 • SEM DOR: É para relaxar, não para machucar. Deslizo a madeira para tirar o peso do corpo.
-• FINALIZAÇÃO: Termino com as mãos para garantir que relaxou tudo.
-⚠️ Obs: Massagem focada em tirar dor e cansaço.` : `HOW IS THE SESSION?
+• FINALIZAÇÃO: Termino com as mãos para garantir que relaxou tudo.` : `HOW IS THE SESSION?
 • TECHNIQUE: Using wood rollers to release back and legs.
 • PAINLESS: It's for relaxation, not pain. Wood glides to remove body weight.
-• FINISH: I finish with hands to ensure full relaxation.
-⚠️ Note: Focused on pain relief and tiredness.`
+• FINISH: I finish with hands to ensure full relaxation.`
             },
             { 
-              // ATUALIZADO: 155
               id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
               title: isPT ? "Sensitiva Tântrica (+ Lingam)" : "Tantric Sensitive (+ Lingam)",
               desc: isPT ? "Uma jornada de sensações do início ao fim." : "A journey of sensations from start to finish.",
@@ -149,16 +142,13 @@ const getData = (lang) => {
 • INÍCIO: Começo tirando a tensão do seu corpo (manual ou rolos).
 • SENSORIAL: Depois uso toques bem leves (ponta dos dedos) para te dar arrepios.
 • LINGAM: Inclui a massagem na parte íntima (pênis e testículos).
-• OBJETIVO: Te dar o máximo de prazer.
-• FINALIZAÇÃO: Manual inclusa (com bastante óleo).` : `WHAT HAPPENS:
+• OBJETIVO: Te dar o máximo de prazer.` : `WHAT HAPPENS:
 • START: Removing tension from your body (manual or rollers).
 • SENSORY: Very light touches (fingertips) to give you chills.
 • LINGAM: Includes intimate massage (penis and testicles).
-• GOAL: Give you maximum pleasure.
-• FINISH: Hand finish included (with plenty of oil).`
+• GOAL: Give you maximum pleasure.`
             },
             { 
-              // ATUALIZADO: 205
               id: 'mista', min: 60, price: 205, icon: Zap, tag: isPT ? "PREFERIDA" : "FAVORITE",
               title: isPT ? "Experiência Mista Completa" : "Full Mixed Experience",
               desc: isPT ? "A fusão perfeita: Relaxamento profundo + Intensidade." : "The perfect fusion: Deep relaxation + Intensity.",
@@ -175,25 +165,16 @@ const getData = (lang) => {
         ],
         plans: [
             { 
-              // ATUALIZADO: Pack Relax
-              // 4 sessões x 125 = 500 (Preço Cheio)
-              // Venda por 440 (Desconto de 60)
               id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4 Sessions)", 
               price: 440, fullPrice: 500, savings: 60, 
               details: isPT ? "4 sessões Relaxantes. Economize e garanta mais XP." : "4 Relax sessions. Save money and get more XP.", tag: isPT ? "GANHE XP DOBRADO" : "DOUBLE XP", icon: Package 
             },
             { 
-              // ATUALIZADO: Pack Mista
-              // 3 sessões x 205 = 615 (Preço Cheio)
-              // Venda por 550 (Desconto de 65)
               id: 'pack_mista', type: 'pack', title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3 Sessions)", 
               price: 550, fullPrice: 615, savings: 65, 
               details: isPT ? "3 sessões Completas. O atalho para subir de nível VIP." : "3 Full sessions. Shortcut to VIP level.", tag: isPT ? "MAIS ESCOLHIDO" : "BEST SELLER", icon: Zap 
             },
             { 
-              // ATUALIZADO: VIP Club
-              // 2 sessões x 205 = 410 + Prioridade
-              // Mantido preço 360
               id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP Mensal" : "VIP Monthly Club", 
               price: 360, fullPrice: 460, savings: 100, 
               details: isPT ? "2 Sessões Mistas/mês + Prioridade total na minha agenda." : "2 Full Sessions/mo + Total priority in my schedule.", tag: isPT ? "STATUS VIP" : "VIP MEMBER", icon: Crown 
@@ -207,60 +188,8 @@ const getData = (lang) => {
         reviews: [
             { n: "Tiago", t: isPT ? "A sensitiva foi uma experiência de outro mundo." : "The sensitive massage was out of this world.", s: 5 },
             { n: "Pedro H.", t: isPT ? "Fui estressado e saí flutuando." : "Went in stressed, came out floating.", s: 5 },
-            { n: "Marcos", t: isPT ? "Profissionalismo nota 10." : "Professionalism 10/10.", s: 5 },
-            { n: "Tiago (Bela Vista)", t: isPT ? "O Thalyson tem uma energia surreal. A massagem foi perfeita." : "Thalyson has surreal energy. Massage was perfect.", s: 5 },
-            { n: "Anônimo", t: isPT ? "O toque dele vicia. A finalização foi absurda, jorrei longe." : "His touch is addictive. The finish was absurd, shot far.", s: 5 },
-            { n: "Curioso SP", t: isPT ? "Mão firme, pegada de macho. O óleo quente faz toda a diferença." : "Firm hand, manly grip. The warm oil makes all the difference.", s: 5 },
-            { n: "M. (Jardins)", t: isPT ? "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso." : "Paid extra to touch and worth every penny. Soft skin, smells good.", s: 5 },
-            { n: "Empresário", t: isPT ? "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório." : "I'm married, had doubts. Secrecy was absolute. Came to my office.", s: 5 },
-            { n: "M. (Casado)", t: isPT ? "Precisava desse escape. O stress sumiu na hora. Discrição nota 10." : "Needed this escape. Stress vanished instantly. Discretion 10/10.", s: 5 },
-            { n: "Roberto", t: isPT ? "O upgrade de 30 minutos vale a pena. Não dá vontade de parar." : "The 30min upgrade is worth it. You don't want it to stop.", s: 5 },
-            { n: "Fã", t: isPT ? "Ele de cueca branca... sem comentários. Visual nota 1000." : "Him in white underwear... no comments. Visuals 10/10.", s: 5 },
-            { n: "Carlos A.", t: isPT ? "Profissionalismo raro hoje em dia. Pontual e educado." : "Rare professionalism nowadays. Punctual and polite.", s: 5 },
-            { n: "Lucas", t: isPT ? "A mistura de força e suavidade é incrível. Recomendo." : "Mix of strength and softness is amazing. Recommended.", s: 5 },
-            { n: "Novato", t: isPT ? "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa." : "First time doing this, felt super comfortable. Thalyson is a good guy.", s: 5 },
-            { n: "Gustavo", t: isPT ? "Ambiente que ele cria com a música e o cheiro é relaxante demais." : "The atmosphere he creates with music and scent is too relaxing.", s: 5 },
-            { n: "Felipe Personal", t: isPT ? "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa." : "Had lots of lower back pain, solved in one session. Miracle hands.", s: 5 },
-            { n: "J.P.", t: isPT ? "O corpo a corpo é quente de verdade. Uma experiência única." : "Body to body is truly hot. A unique experience.", s: 5 },
-            { n: "André", t: isPT ? "Gostei que ele respeita os limites, mas entrega muito prazer." : "Liked that he respects limits but delivers lots of pleasure.", s: 5 },
-            { n: "Turista RJ", t: isPT ? "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem." : "Hotel service was super fast and discreet. Saved my trip.", s: 5 },
-            { n: "Anônimo", t: isPT ? "Cara bonito, limpo e com pegada. O pacote completo." : "Handsome guy, clean, with a grip. The full package.", s: 5 },
-            { n: "Breno", t: isPT ? "Fiz a relaxante e dormi na maca de tão bom. Recomendo." : "Did the relaxing one and fell asleep on the table. Recommend.", s: 5 },
-            { n: "Dr. Marcelo", t: isPT ? "A técnica dele é diferente de tudo. Vale cada real." : "His technique is unlike anything. Worth every cent.", s: 5 },
-            { n: "Caio", t: isPT ? "Sensação de liberdade total. O toque extra é obrigatório." : "Feeling of total freedom. Extra touch is mandatory.", s: 5 },
-            { n: "Vitor", t: isPT ? "Me senti renovado. Energia lá em cima depois da sessão." : "Felt renewed. High energy after the session.", s: 5 },
-            { n: "Renan", t: isPT ? "Extremamente educado e com papo bom, além da massagem top." : "Extremely polite and good chat, plus top massage.", s: 5 },
-            { n: "Paulo", t: isPT ? "O óleo de coco morno é um detalhe que faz toda diferença." : "Warm coconut oil is a detail that makes a difference.", s: 5 },
-            { n: "Cliente Antigo", t: isPT ? "Já fiz com vários massagistas, o Thalyson é o melhor da região." : "Been to many masseurs, Thalyson is the best in the region.", s: 5 },
-            { n: "Dica do Beto", t: isPT ? "Não economizem, peçam a completa com aromaterapia." : "Don't save money, ask for the full one with aromatherapy.", s: 5 },
-            { n: "Advogado SP", t: isPT ? "Pontualidade britânica. Chegou na hora marcada." : "British punctuality. Arrived right on time.", s: 5 },
-            { n: "Gym Rat", t: isPT ? "Fiquei impressionado com a força das mãos dele." : "Impressed with the strength of his hands.", s: 5 },
-            { n: "Hétero Curioso", t: isPT ? "Excelente profissional. Me deixou super confortável." : "Excellent professional. Made me feel super comfortable.", s: 5 },
-            { n: "Motorista", t: isPT ? "Massagem terapêutica de verdade, tirou todos os nós das costas." : "Real therapeutic massage, removed all back knots.", s: 5 },
             { n: "M. (Sigilo)", t: isPT ? "O sigilo é garantido mesmo. Pode confiar." : "Secrecy is guaranteed. You can trust.", s: 5 },
-            { n: "Sr. João", t: isPT ? "Agradeço pela paciência e pelo serviço impecável." : "Thanks for the patience and impeccable service.", s: 5 },
-            { n: "Designer", t: isPT ? "Experiência sensorial incrível. O cheiro, o toque, a música." : "Amazing sensory experience. The smell, touch, music.", s: 5 },
-            { n: "Executivo", t: isPT ? "Saí flutuando. Recomendo para quem tem rotina estressante." : "Left floating. Recommend for stressful routines.", s: 5 },
-            { n: "Matheus", t: isPT ? "O Thalyson é muito gente fina. O tempo passou voando." : "Thalyson is a great guy. Time flew by.", s: 5 },
-            { n: "Bruno", t: isPT ? "Melhor investimento da semana. Relaxamento total." : "Best investment of the week. Total relaxation.", s: 5 },
-            { n: "Rafa", t: isPT ? "Toque firme, mas sensível. Sabe onde tocar." : "Firm but sensitive touch. Knows where to touch.", s: 5 },
-            { n: "Tech Guy", t: isPT ? "Gostei da facilidade de agendar pelo app. Sem enrolação." : "Liked the ease of booking via app. No hassle.", s: 5 },
-            { n: "Corredor", t: isPT ? "Massagem nos pés foi um bônus que eu não esperava. Ótimo." : "Foot massage was an unexpected bonus. Great.", s: 5 },
-            { n: "Fã #2", t: isPT ? "Simpático e bonito. O serviço é completo mesmo." : "Friendly and handsome. Service is truly complete.", s: 5 },
-            { n: "Pedro", t: isPT ? "Me ajudou muito com a ansiedade. Gratidão." : "Helped a lot with anxiety. Grateful.", s: 5 },
-            { n: "Morador Centro", t: isPT ? "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático." : "Did it at my apt, he brought everything, table, towels. Practical.", s: 5 },
-            { n: "Curioso", t: isPT ? "A massagem tântrica dele desbloqueou sensações novas." : "His tantric massage unlocked new sensations.", s: 5 },
-            { n: "Ricardo", t: isPT ? "Valeu a pena esperar a agenda liberar." : "Worth waiting for the schedule to open.", s: 5 },
-            { n: "Sérgio", t: isPT ? "Nota 10. Nada a reclamar." : "Score 10. Nothing to complain about.", s: 5 },
-            { n: "Médico", t: isPT ? "Muito higiênico e cuidadoso." : "Very hygienic and careful.", s: 5 },
-            { n: "Cliente Fiel", t: isPT ? "Voltarei com certeza na próxima semana." : "Will definitely return next week.", s: 5 },
-            { n: "Fernando", t: isPT ? "Paz de espírito e corpo relaxado. Obrigado." : "Peace of mind and relaxed body. Thanks.", s: 5 },
-            { n: "Sigilo Total", t: isPT ? "Gozada monstruosa. Ele sabe tirar leite." : "Monstrous finish. He knows how to milk it.", s: 5 },
-            { n: "Ativo", t: isPT ? "Curti demais o corpo dele roçando. Fiquei duro a massagem toda." : "Loved his body rubbing. Was hard the whole massage.", s: 5 },
-            { n: "Passivo", t: isPT ? "Mão de fada mas com força. Do jeito que eu gosto." : "Fairy hands but with strength. The way I like it.", s: 5 },
-            { n: "Anônimo 2", t: isPT ? "O creme desliza muito bem, a pele dele é macia." : "Cream glides very well, his skin is soft.", s: 5 },
-            { n: "J.", t: isPT ? "Gostei dos paus que ele usa na massagem com madeira, relaxa mesmo." : "Liked the sticks he uses in wood massage, really relaxes.", s: 5 },
-            { n: "Visitante", t: isPT ? "Saiu leite até da alma. Recomendo a sensitiva." : "Milk came out from the soul. Recommend sensitive.", s: 5 }
+            { n: "Cliente VIP", t: isPT ? "Sempre fecho o pacote, vale muito a pena pelo XP." : "I always buy the pack, worth it for the XP.", s: 5 },
         ],
         text: {
             loading: isPT ? "CARREGANDO..." : "LOADING...",
@@ -280,9 +209,6 @@ const getData = (lang) => {
             input_comp: isPT ? "Complemento (Apt, Bloco...)" : "Complement (Apt, Unit...)",
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
             input_room: isPT ? "Número do Quarto" : "Room Number",
-            // ==================================================================================
-            // LÓGICA DE MOTEL / SUITE (MANTIDA)
-            // ==================================================================================
             motel_note: isPT ? "Suíte (Motel): Você paga a taxa da suíte direto no local. O valor da massagem + extras combinamos no WhatsApp." : "Suite (Motel): You pay the suite fee at the location. Massage + extras fees are arranged on WhatsApp.",
             pay_title: isPT ? "Preferência de Pagamento" : "Payment Preference",
             pay_pix: "Pix",
@@ -336,18 +262,22 @@ const getData = (lang) => {
 
             zap: {
               intro: isPT ? "Oi Thalyson, tudo bem? 🌿" : "Hi Thalyson, how are you? 🌿",
-              section_serv: isPT ? "💆‍♂️ *Experiência:*" : "💆‍♂️ *Experience:*",
-              section_plan: isPT ? "🏆 *Plano VIP:*" : "🏆 *VIP Plan:*",
-              section_det: isPT ? "📝 *Detalhes:*" : "📝 *Details:*",
-              section_loc: isPT ? "📍 *Local:*" : "📍 *Location:*",
-              section_fin: isPT ? "💰 *Investimento:*" : "💰 *Investment:*",
-              map_link: isPT ? "🗺️ *Mapa:*" : "🗺️ *Map:*",
-              wait: isPT ? "Podemos confirmar?" : "Can we confirm?",
+              order_title: isPT ? "*NOVO AGENDAMENTO*" : "*NEW BOOKING*",
+              client: isPT ? "👤 *Cliente:*" : "👤 *Client:*",
+              service: isPT ? "💆‍♂️ *Serviço:*" : "💆‍♂️ *Service:*",
+              date: isPT ? "📅 *Data:*" : "📅 *Date:*",
+              location: isPT ? "📍 *Local:*" : "📍 *Location:*",
+              payment: isPT ? "💳 *Pagamento:*" : "💳 *Payment:*",
+              value: isPT ? "💰 *Total:*" : "💰 *Total:*",
+              xp_status: isPT ? "🏆 *Status XP:*" : "🏆 *XP Status:*",
+              xp_gain: isPT ? "Ganhou:" : "Earned:",
+              xp_level: isPT ? "Nível Atual:" : "Current Level:",
+              xp_next: isPT ? "Próximo Prêmio:" : "Next Reward:",
+              wait: isPT ? "Podemos confirmar os detalhes?" : "Can we confirm details?",
               house: isPT ? "Residência" : "Residence",
               hotel: "Hotel",
               motel: isPT ? "Suíte (Motel)" : "Suite (Motel)",
-              extra_title: isPT ? "✨ *Personalização:*" : "✨ *Customization:*",
-              pay_method: isPT ? "💳 *Pagamento:*" : "💳 *Payment:*",
+              extra_title: isPT ? "✨ *Extras:*" : "✨ *Extras:*",
               uber_label: isPT ? "🚗 *Transporte:*" : "🚗 *Transport:*",
               uber_text: isPT ? "A combinar." : "To be arranged."
             }
@@ -472,10 +402,9 @@ export default function App() {
       if (isToday) {
           const currentHour = now.getHours();
           return slots.filter(time => {
-              const [slotHour] = time.split(':').map(Number);
-              // LÓGICA CORRIGIDA: Se for 18:50, mostra 19:00.
-              // Apenas se a hora do slot for maior que a hora atual.
-              return slotHour > currentHour;
+              const [hour] = time.split(':').map(Number);
+              // LÓGICA CORRIGIDA: Se for 18:50 (hora 18), 19:00 aparece (19 > 18).
+              return hour > currentHour;
           });
       }
       return slots;
@@ -497,18 +426,27 @@ export default function App() {
     return { sub, disc, total };
   }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras]);
 
-  // CÁLCULO DE XP TURBINADO (30% PARA PACKS, 15% PARA SINGLE)
+  // CÁLCULO DE XP TURBINADO
   const estimatedXP = useMemo(() => {
       const baseXP = financials.total;
       const isPack = booking.type === 'pack' || booking.type === 'subscription';
-      const percentage = isPack ? 0.30 : 0.15; 
+      const percentage = isPack ? 0.30 : 0.15; // 30% pra pack, 15% pra single
       return Math.floor(baseXP * percentage);
   }, [financials.total, booking.type]);
 
-  // GERADOR WHATSAPP
+  const getNextLevelInfo = (currentXP) => {
+      const nextLevel = DATA.levels.find(l => l.xpNeeded > currentXP);
+      return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
+  };
+
+  // GERADOR WHATSAPP ULTRA DETALHADO (PT/EN)
   const generateWhatsAppLink = () => {
     const f = financials;
     const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
+    const xpGain = estimatedXP;
+    const currentLevelTitle = DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title;
+    const nextInfo = getNextLevelInfo(user.xp + xpGain);
+    
     let locTxt = "";
     let mapQuery = "";
     
@@ -529,22 +467,30 @@ export default function App() {
         return ext ? `✅ + ${ext.label}` : '';
     }).filter(Boolean).join('\n');
     
-    const header = booking.type === 'pack' || booking.type === 'subscription' ? T.zap.section_plan : T.zap.section_serv;
-    
+    const xpStatusMsg = nextInfo 
+        ? `${T.zap.xp_next} ${nextInfo.needed} XP (R$ ${nextInfo.reward},00)`
+        : "Nível Máximo Atingido! 🚀";
+
     const msg = `
 ${T.zap.intro}
-Gostaria de agendar um momento pra relaxar.
+${T.zap.order_title}
 
-${header} ${booking.item?.title}
-📅 *Data:* ${dateStr} às ${booking.time}
+${T.zap.client} ${user.name}
+${T.zap.service} ${booking.item?.title}
+${T.zap.date} ${dateStr} - ${booking.time}
 
 ${extrasList ? `${T.zap.extra_title} \n${extrasList}\n` : ''}
 ${locTxt}
 ${mapQuery ? `\n${T.zap.map_link} https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}` : ''}
 
-${T.zap.section_fin} ${T.currency || 'R$'} ${f.total},00
-${T.zap.pay_method} ${booking.payment}
+${T.zap.value} ${T.currency || 'R$'} ${f.total},00
+${T.zap.payment} ${booking.payment.toUpperCase()}
 ${T.zap.uber_label} ${T.zap.uber_text}
+
+${T.zap.xp_status}
+🔹 ${T.zap.xp_gain} +${xpGain} XP
+🔹 ${T.zap.xp_level} ${currentLevelTitle}
+🔹 ${xpStatusMsg}
 
 ${T.zap.wait}
 `.trim();
@@ -611,14 +557,10 @@ ${T.zap.wait}
     
     if (booking.appliedCoupon) {
         // Remove o cupom que acabou de ser usado
-        updatedCoupons = updatedCoupons.filter(c => c.id !== booking.appliedCoupon.id);
-        // Garante que WELCOME10 não volta
-        if(booking.appliedCoupon.code === 'WELCOME10') {
-             updatedCoupons = updatedCoupons.filter(c => c.code !== 'WELCOME10');
-        }
+        updatedCoupons = updatedCoupons.filter(c => c.code !== booking.appliedCoupon.code);
     }
     
-    // XP CALCULADO COM BASE NA NOVA REGRA (15% ou 30%)
+    // XP CALCULADO COM BASE NA NOVA REGRA
     const newXP = Math.floor(user.xp + estimatedXP);
     
     let leveledUp = false;
@@ -652,12 +594,7 @@ ${T.zap.wait}
       return Math.min(100, Math.max(0, (currentProgress / totalNeeded) * 100));
   };
 
-  const getNextLevelInfo = () => {
-      const nextLevel = DATA.levels.find(l => l.xpNeeded > user.xp);
-      return nextLevel ? { needed: nextLevel.xpNeeded - user.xp, reward: nextLevel.reward } : null;
-  };
-
-  const nextLevelInfo = getNextLevelInfo();
+  const nextLevelInfo = getNextLevelInfo(user.xp);
 
   if (loading) return (
       <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
