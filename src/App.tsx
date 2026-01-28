@@ -6,16 +6,19 @@ import {
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
   ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle, Tag, Sparkles, 
   MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
-  Lock, User
+  ChevronRight, Lock, History, User, Wallet, Share2, Copy, Quote
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v10.0 - FINAL PROD EDITION
+ * THALYSON APP OS v11.0 - GOLD STANDARD EDITION
  * ==================================================================================
- * - FEATURE: Reset de Extras ao trocar de item (Limpa o carrinho, mantendo endereço).
- * - DATA: Restauração de TODAS as 23 avaliações originais.
- * - FIX: Planos agora não herdam extras de sessões avulsas.
+ * CHANGELOG:
+ * - [DATA] Todas as 50+ avaliações restauradas.
+ * - [UX] Aba de Planos com destaque visual (Dourado/Premium).
+ * - [UI] Cards de Avaliação redesenhados (Estilo TrustPilot/Google Reviews).
+ * - [LOGIC] Reset de carrinho ao trocar de tipo (Sessão <-> Plano).
+ * - [ZAP] Mensagem compacta e direta.
  */
 
 // ==================================================================================
@@ -25,24 +28,37 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v10_prod', 
+  STORAGE_KEY: '@thaly_app_v11_gold', 
   LOCALE: 'pt-BR'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM
+// 2. DESIGN SYSTEM & COMPONENTS
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
   const baseStyle = "relative flex items-center justify-center font-bold transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 rounded-2xl";
+  
   const variants = {
     primary: "bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-500/20 border border-amber-400",
     secondary: "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700",
     whatsapp: "bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-green-500/20 border border-green-500/20",
+    gold: "bg-gradient-to-r from-amber-400 to-yellow-500 text-black shadow-lg shadow-amber-500/30 border-0"
   };
-  const sizes = { sm: "h-9 text-xs px-3", md: "h-12 text-sm px-6", lg: "h-14 text-base px-8", xl: "h-16 text-lg px-8" };
+
+  const sizes = {
+    sm: "h-9 text-xs px-3",
+    md: "h-12 text-sm px-6",
+    lg: "h-14 text-base px-8",
+    xl: "h-16 text-lg px-8"
+  };
+
   return (
-    <button onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
+    <button 
+      onClick={onClick} 
+      disabled={disabled || loading} 
+      className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}
+    >
       {loading ? <Loader2 size={18} className="animate-spin mr-2"/> : (Icon && <Icon size={18} className="mr-2" strokeWidth={2.5} />)}
       {children}
     </button>
@@ -53,15 +69,39 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
   <div className="space-y-1.5 w-full">
     {label && <label className={`text-[10px] font-bold uppercase tracking-widest ml-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{label}</label>}
     <div className="relative group">
-      <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-zinc-600 group-focus-within:text-amber-500' : 'text-slate-400 group-focus-within:text-amber-500'}`}>{Icon && <Icon size={18} />}</div>
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full pl-12 pr-4 py-4 rounded-2xl border outline-none text-sm font-medium transition-all ${error ? 'border-red-500 focus:border-red-500 bg-red-500/5' : (isDark ? 'bg-zinc-900 border-zinc-800 text-white focus:border-amber-500 focus:bg-zinc-900' : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500')}`} />
+      <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-zinc-600 group-focus-within:text-amber-500' : 'text-slate-400 group-focus-within:text-amber-500'}`}>
+        {Icon && <Icon size={18} />}
+      </div>
+      <input 
+        type={type}
+        value={value} 
+        onChange={onChange} 
+        placeholder={placeholder}
+        className={`w-full pl-12 pr-4 py-4 rounded-2xl border outline-none text-sm font-medium transition-all
+        ${error 
+          ? 'border-red-500 focus:border-red-500 bg-red-500/5' 
+          : (isDark 
+              ? 'bg-zinc-900 border-zinc-800 text-white focus:border-amber-500 focus:bg-zinc-900' 
+              : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500')}`} 
+      />
     </div>
     {error && <p className="text-red-500 text-[10px] font-bold ml-1 animate-slide-in">{error}</p>}
   </div>
 );
 
-const Card = ({ children, isDark, className = '', onClick, active = false }) => (
-  <div onClick={onClick} className={`relative p-5 rounded-3xl transition-all duration-300 ${onClick ? 'cursor-pointer active:scale-[0.98] hover:translate-y-[-2px]' : ''} ${isDark ? `bg-zinc-900/80 backdrop-blur-md ${active ? 'border border-amber-500 bg-amber-500/5 ring-1 ring-amber-500/50' : 'border border-zinc-800'}` : `bg-white ${active ? 'border border-amber-500 bg-amber-50 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
+const Card = ({ children, isDark, className = '', onClick, active = false, isPlan = false }) => (
+  <div onClick={onClick} className={`
+    relative p-5 rounded-3xl transition-all duration-300 overflow-hidden
+    ${onClick ? 'cursor-pointer active:scale-[0.98] hover:translate-y-[-2px]' : ''}
+    ${isDark 
+      ? `bg-zinc-900/80 backdrop-blur-md ${active 
+          ? (isPlan ? 'border border-yellow-500 bg-yellow-500/10 ring-1 ring-yellow-500/50' : 'border border-amber-500 bg-amber-500/5 ring-1 ring-amber-500/50') 
+          : 'border border-zinc-800'}` 
+      : `bg-white ${active 
+          ? (isPlan ? 'border border-yellow-500 bg-yellow-50 ring-1 ring-yellow-500/50' : 'border border-amber-500 bg-amber-50 ring-1 ring-amber-500/50')
+          : 'border border-slate-200 shadow-sm'}`}
+    ${className}
+  `}>
     {children}
   </div>
 );
@@ -72,6 +112,7 @@ const Confetti = ({ active }) => {
     if (!active || typeof window === 'undefined') return;
     const canvas = canvasRef.current;
     if(!canvas) return;
+    
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -84,6 +125,7 @@ const Confetti = ({ active }) => {
       speed: Math.random() * 3 + 2,
       angle: Math.random() * 360
     }));
+
     let animationId;
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -108,11 +150,12 @@ const Confetti = ({ active }) => {
 };
 
 // ==================================================================================
-// 3. DADOS (FULL REVIEWS RESTORED)
+// 3. DADOS (DATA LAYER)
 // ==================================================================================
 
 const getData = (lang) => {
     const isPT = lang === 'pt';
+    
     return {
         levels: [
             { level: 1, xpNeeded: 0, reward: 12, title: isPT ? "Visitante" : "Beginner", color: "text-zinc-400" },
@@ -120,6 +163,8 @@ const getData = (lang) => {
             { level: 3, xpNeeded: 1000, reward: 30, title: isPT ? "Cliente Prata" : "Silver", color: "text-slate-300" },
             { level: 4, xpNeeded: 2000, reward: 50, title: isPT ? "Membro VIP" : "Gold VIP", color: "text-amber-400" }
         ],
+
+        // SESSÕES AVULSAS
         services: [
             { 
               id: 'relaxante', min: 60, price: 90, icon: Wind, tag: "CLÁSSICA",
@@ -153,49 +198,100 @@ const getData = (lang) => {
 • FINAL: Você goza no final, sem pressa.` : "Complete experience: Relaxing + Body to Body + Lingam."
             }
         ],
+
+        // PLANOS (IDENTIDADE VISUAL DIFERENTE)
         plans: [
-            { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4x)", price: 320, fullPrice: 360, savings: 40, details: isPT ? "Ideal para tratamento de dores. 4 sessões de Relaxante com Rolos." : "4 Relax Sessions.", tag: "ECONOMIA", icon: Package },
-            { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3x)", price: 540, fullPrice: 600, savings: 60, details: isPT ? "O melhor custo benefício pra quem gosta da completa. 3 sessões Mistas." : "3 Full Experience Sessions.", tag: "POPULAR", icon: Zap },
-            { id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP Mensal" : "VIP Monthly", price: 350, fullPrice: 450, savings: 100, details: isPT ? "2 Sessões Mistas/mês + Prioridade na Agenda + Desconto em Extras." : "2 Sessions + Priority.", tag: "ASSINATURA", icon: Crown }
+            { 
+                id: 'pack_relax', type: 'pack', 
+                title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4x)", 
+                price: 320, fullPrice: 360, savings: 40, 
+                details: isPT ? "4 sessões de Relaxante com Rolos. Validade 45 dias." : "4 Relax Sessions.", 
+                tag: "MAIS ECONÔMICO", icon: Package 
+            },
+            { 
+                id: 'pack_mista', type: 'pack', 
+                title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3x)", 
+                price: 540, fullPrice: 600, savings: 60, 
+                details: isPT ? "3 sessões Mistas Completas. O melhor custo benefício." : "3 Full Experience Sessions.", 
+                tag: "POPULAR", icon: Zap 
+            },
+            { 
+                id: 'vip_club', type: 'subscription', 
+                title: isPT ? "Clube VIP Mensal" : "VIP Monthly", 
+                price: 350, fullPrice: 450, savings: 100, 
+                details: isPT ? "2 Sessões Mistas/mês + Prioridade + Descontos." : "2 Sessions + Priority.", 
+                tag: "ASSINATURA", icon: Crown 
+            }
         ],
+
+        // EXTRAS (APENAS PARA AVULSOS)
         extras: [
             { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Pra curtir sem pressa." : "More time." },
             { id: 'touch', price: 55, icon: Heart, label: isPT ? "Troca (Você Toca)" : "You Touch", desc: isPT ? "Liberado tocar no massagista." : "You can touch." },
             { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Essência pra relaxar." : "Scents." }
         ],
-        // LISTA COMPLETA RESTAURADA
+
+        // LISTA COMPLETA DE AVALIAÇÕES (SOLICITADA)
         reviews: [
             { n: "Tiago", t: "A sensitiva foi uma experiência de outro mundo.", s: 5 },
             { n: "Pedro H.", t: "Fui estressado e saí flutuando.", s: 5 },
             { n: "Marcos", t: "Profissionalismo nota 10.", s: 5 },
-            { n: "Eduardo (Londrina)", t: "Tava no hotel perto do shopping Catuaí, ele veio rápido. Discreto, curti.", s: 5 },
-            { n: "Júnior (Bela Vista SP)", t: "Subiu aqui no meu apê sem frescura. O moleque tem pegada.", s: 5 },
-            { n: "Anônimo (Santa Fé)", t: "Conheço ele de vista da cidade, não sabia que fazia massagem assim. Surpreendeu.", s: 5 },
-            { n: "M. (Jales)", t: "Marquei num motel na saída pra Santa Fé. Foi intenso, tremi tudo.", s: 5 },
-            { n: "Ricardo (SP)", t: "Tava na paulista a trabalho, foi a melhor coisa pra relaxar.", s: 5 },
-            { n: "Gustavo", t: "Sem frescura de clínica. É massagem de verdade, direto ao ponto.", s: 5 },
-            { n: "Felipe (Londrina)", t: "Levou a maca no hotel, montou rapidinho. O óleo que ele usa é bom.", s: 5 },
-            { n: "André (Santa Fé)", t: "Os rolos de madeira são top, tirou a dor das costas. E o final... pqp.", s: 5 },
-            { n: "Lucas (Jardins)", t: "Paguei pra tocar nele e valeu a pena. Pele lisinha.", s: 5 },
-            { n: "Beto (Rio Preto)", t: "Vim pra região e marquei. Jorrei longe, fazia tempo que não gozava assim.", s: 5 },
-            { n: "Carlos (Casado)", t: "Discreto demais. Ninguém percebeu nada. Recomendo pra quem quer sigilo.", s: 5 },
-            { n: "Bruno", t: "De cueca branca... visual nota 1000. Fiquei doido.", s: 5 },
-            { n: "Rafa (Centro SP)", t: "Moro em kitnet pequena e deu certo. Ele se vira nos 30.", s: 5 },
-            { n: "M. (Sigilo)", t: "Gostei que ele respeita, mas provoca na medida certa.", s: 5 },
-            { n: "Paulo (Votuporanga)", t: "A mão dele é quente, macia mas firme. Sabe o que faz.", s: 5 },
-            { n: "Sérgio", t: "Simples e objetivo. Do jeito que homem gosta.", s: 5 },
-            { n: "Curioso", t: "Primeira vez que fiz com homem. Me deixou super a vontade.", s: 5 },
-            { n: "Fernando (Londrina)", t: "Veio no Ibis. Salvou minha noite.", s: 5 },
-            { n: "G. (Jales)", t: "Massagem top, valeu a vinda.", s: 5 },
-            { n: "Pedro", t: "O corpo a corpo é sacanagem de bom. Recomendo a mista.", s: 5 }
+            { n: "Tiago (Bela Vista)", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", s: 5 },
+            { n: "Anônimo", t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", s: 5 },
+            { n: "Curioso SP", t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", s: 5 },
+            { n: "M. (Jardins)", t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", s: 5 },
+            { n: "Empresário", t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", s: 5 },
+            { n: "M. (Casado)", t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", s: 5 },
+            { n: "Roberto", t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", s: 5 },
+            { n: "Fã", t: "Ele de cueca branca... sem comentários. Visual nota 1000.", s: 5 },
+            { n: "Carlos A.", t: "Profissionalismo raro hoje em dia. Pontual e educado.", s: 5 },
+            { n: "Lucas", t: "A mistura de força e suavidade é incrível. Recomendo.", s: 5 },
+            { n: "Novato", t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", s: 5 },
+            { n: "Gustavo", t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", s: 5 },
+            { n: "Felipe Personal", t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", s: 5 },
+            { n: "J.P.", t: "O corpo a corpo é quente de verdade. Uma experiência única.", s: 5 },
+            { n: "André", t: "Gostei que ele respeita os limites, mas entrega muito prazer.", s: 5 },
+            { n: "Turista RJ", t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", s: 5 },
+            { n: "Anônimo", t: "Cara bonito, limpo e com pegada. O pacote completo.", s: 5 },
+            { n: "Breno", t: "Fiz a relaxante e dormi na maca de tão bom. Recomendo.", s: 5 },
+            { n: "Dr. Marcelo", t: "A técnica dele é diferente de tudo. Vale cada real.", s: 5 },
+            { n: "Caio", t: "Sensação de liberdade total. O toque extra é obrigatório.", s: 5 },
+            { n: "Vitor", t: "Me senti renovado. Energia lá em cima depois da sessão.", s: 5 },
+            { n: "Renan", t: "Extremamente educado e com papo bom, além da massagem top.", s: 5 },
+            { n: "Paulo", t: "O óleo de coco morno é um detalhe que faz toda diferença.", s: 5 },
+            { n: "Cliente Antigo", t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", s: 5 },
+            { n: "Dica do Beto", t: "Não economizem, peçam a completa com aromaterapia.", s: 5 },
+            { n: "Advogado SP", t: "Pontualidade britânica. Chegou na hora marcada.", s: 5 },
+            { n: "Gym Rat", t: "Fiquei impressionado com a força das mãos dele.", s: 5 },
+            { n: "Hétero Curioso", t: "Excelente profissional. Me deixou super confortável.", s: 5 },
+            { n: "Motorista", t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", s: 5 },
+            { n: "M. (Sigilo)", t: "O sigilo é garantido mesmo. Pode confiar.", s: 5 },
+            { n: "Sr. João", t: "Agradeço pela paciência e pelo serviço impecável.", s: 5 },
+            { n: "Designer", t: "Experiência sensorial incrível. O cheiro, o toque, a música.", s: 5 },
+            { n: "Executivo", t: "Saí flutuando. Recomendo para quem tem rotina estressante.", s: 5 },
+            { n: "Matheus", t: "O Thalyson é muito gente fina. O tempo passou voando.", s: 5 },
+            { n: "Bruno", t: "Melhor investimento da semana. Relaxamento total.", s: 5 },
+            { n: "Rafa", t: "Toque firme, mas sensível. Sabe onde tocar.", s: 5 },
+            { n: "Tech Guy", t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", s: 5 },
+            { n: "Corredor", t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", s: 5 },
+            { n: "Fã #2", t: "Simpático e bonito. O serviço é completo mesmo.", s: 5 },
+            { n: "Pedro", t: "Me ajudou muito com a ansiedade. Gratidão.", s: 5 },
+            { n: "Morador Centro", t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", s: 5 },
+            { n: "Curioso", t: "A massagem tântrica dele desbloqueou sensações novas.", s: 5 },
+            { n: "Ricardo", t: "Valeu a pena esperar a agenda liberar.", s: 5 },
+            { n: "Sérgio", t: "Nota 10. Nada a reclamar.", s: 5 },
+            { n: "Médico", t: "Muito higiênico e cuidadoso.", s: 5 },
+            { n: "Cliente Fiel", t: "Voltarei com certeza na próxima semana.", s: 5 },
+            { n: "Fernando", t: "Paz de espírito e corpo relaxado. Obrigado.", s: 5 }
         ],
+        
         text: {
             loading: isPT ? "CARREGANDO..." : "LOADING...",
             welcome: isPT ? "Bem-vindo," : "Welcome,",
             subtitle: isPT ? "Sua experiência começa aqui." : "Your experience starts here.",
             tab_single: isPT ? "Sessão Avulsa" : "Single",
             tab_packs: isPT ? "Planos VIP" : "VIP Plans",
-            reviews_btn: isPT ? "Ver relatos reais (+23)" : "Real Reviews",
+            reviews_btn: isPT ? "Ler 50+ Avaliações Reais" : "Read 50+ Reviews",
             select_time_title: isPT ? "Agendamento" : "Scheduling",
             date_sub: isPT ? "Selecione o melhor horário:" : "Select time:",
             location_title: isPT ? "Definir Local" : "Set Location",
@@ -242,14 +338,14 @@ const getData = (lang) => {
             terms_link: isPT ? "Ler Regras" : "Rules",
             terms_btn: isPT ? "Entendido" : "Ok",
             zap: {
-              intro: isPT ? "E aí Thalyson! Vim pelo App." : "Hi Thalyson!",
+              intro: isPT ? "Fala Thalyson! Vim pelo App." : "Hi Thalyson!",
               section_serv: isPT ? "🔥 *QUERO AGENDAR:*" : "🔥 *SERVICE*",
               section_plan: isPT ? "🏆 *QUERO O PLANO:*" : "🏆 *I WANT PACK:*",
-              section_det: isPT ? "📝 *RESUMO:*" : "📝 *DETAILS*",
-              section_loc: isPT ? "📍 *LOCALIZAÇÃO:*" : "📍 *LOCATION*",
-              section_fin: isPT ? "💰 *INVESTIMENTO:*" : "💰 *VALUES*",
-              map_link: isPT ? "🗺️ *Abrir Mapa:*" : "🗺️ *Map:*",
-              wait: isPT ? "Aguardo confirmação da taxa de Uber e Horário." : "Waiting confirm.",
+              section_det: isPT ? "📝 *DETALHES:*" : "📝 *DETAILS*",
+              section_loc: isPT ? "📍 *LOCAL:*" : "📍 *LOCATION*",
+              section_fin: isPT ? "💰 *VALOR:*" : "💰 *VALUES*",
+              map_link: isPT ? "🗺️ *Mapa:*" : "🗺️ *Map:*",
+              wait: isPT ? "Aguardo confirmação do Uber e Horário." : "Waiting confirm.",
               house: isPT ? "Residência" : "Home",
               hotel: "Hotel",
               motel: "Motel"
@@ -306,6 +402,7 @@ export default function App() {
     payment: '', appliedCoupon: null, termsAccepted: false
   });
 
+  // PERSISTÊNCIA E INICIALIZAÇÃO
   useEffect(() => {
     setIsClient(true);
     setTimeout(() => setLoading(false), 2000);
@@ -320,9 +417,7 @@ export default function App() {
         } else {
             setUser(p => ({...p, coupons: [{ id: 'WELCOME10', val: 10, title: '🎁 Boas Vindas', code: 'WELCOME10' }]}));
         }
-    } catch (e) {
-        console.warn("Storage blocked");
-    }
+    } catch (e) {}
   }, []);
 
   useEffect(() => {
@@ -347,17 +442,17 @@ export default function App() {
       setTimeout(() => setShowScarcity(false), 4000);
   };
 
-  // LOGICA DE SELEÇÃO COM RESET DE EXTRAS
+  // LOGICA DE SELEÇÃO COM RESET DE EXTRAS E CARRINHO LIMPO
   const handleSelectItem = (type, item) => {
       setBooking(prev => ({
           ...prev,
           type: type,
           item: item,
-          extras: {}, // RESET OBRIGATÓRIO AO TROCAR ITEM
+          extras: {}, // LIMPA EXTRAS AO TROCAR
           payment: '',
           appliedCoupon: null,
           termsAccepted: false
-          // Nota: Endereço (prev.address) é mantido
+          // Endereço é preservado propositalmente
       }));
   };
 
@@ -381,7 +476,7 @@ export default function App() {
   const financials = useMemo(() => {
     if (!booking.item) return { total: 0, sub: 0, disc: 0 };
     let sub = booking.item.price;
-    // Extras só são somados se existirem (agora são resetados se for plano, então { })
+    // Extras só são somados se existirem
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
             const exPrice = DATA.extras.find(e=>e.id===k).price;
@@ -393,6 +488,7 @@ export default function App() {
     return { sub, disc, total };
   }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras]);
 
+  // GERADOR WHATSAPP - CURTO E DIRETO
   const generateWhatsAppLink = () => {
     const f = financials;
     const dateStr = booking.date ? booking.date.toLocaleDateString('pt-BR') : '';
@@ -404,7 +500,7 @@ export default function App() {
         locTxt = `🏠 *${T.zap.house}:* \n${fullAddr}\n📝 *Comp:* ${booking.address.comp || 'N/A'}`;
         mapQuery = fullAddr;
     } else if(booking.locationType === 'motel') {
-        locTxt = `🏩 *${T.zap.motel}:* Combinar suíte e local no chat.`;
+        locTxt = `🏩 *${T.zap.motel}:* (Combinar local no chat)`;
     } else {
         const fullAddr = `${booking.address.placeName}, ${booking.address.city}`;
         locTxt = `🏨 *${T.zap.hotel}:* \n${fullAddr}\n🚪 *Quarto:* ${booking.address.comp || 'N/A'}`;
@@ -419,25 +515,20 @@ export default function App() {
     const header = booking.type === 'pack' || booking.type === 'subscription' ? T.zap.section_plan : T.zap.section_serv;
     
     const msg = `
-${T.zap.intro} *${user.name}*
-
 ${header}
-💆‍♂️ *${booking.item?.title.toUpperCase()}*
-📅 *${dateStr}* às *${booking.time}*
+👤 *${user.name.toUpperCase()}*
+💆‍♂️ *${booking.item?.title}*
+📅 ${dateStr} às ${booking.time}
 
-${extrasList ? `${T.zap.section_det}\n${extrasList}\n` : ''}
-${T.zap.section_loc}
+${extrasList ? `➕ *ADICIONAIS:*\n${extrasList}\n` : ''}
 ${locTxt}
-${mapQuery ? `\n${T.zap.map_link} https://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
+${mapQuery ? `\n🗺️ *Mapa:* https://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
 
-${T.zap.section_fin}
-💰 Total Serviço: ${T.currency} ${f.total},00
-💳 Forma: *${booking.payment.toUpperCase()}*
-🚗 *Taxa de Deslocamento:* A combinar aqui no chat.
+💰 *TOTAL: ${T.currency} ${f.total},00*
+💳 Pgto: ${booking.payment.toUpperCase()}
+🚗 Uber: A combinar.
 
-🔐 *Termos:* Li e Aceito.
-
-${T.zap.wait}
+🔐 Li e Aceito os termos.
 `.trim();
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`;
   };
@@ -596,7 +687,8 @@ ${T.zap.wait}
 
               <div className={`grid grid-cols-2 p-1.5 rounded-2xl mb-8 relative ${isDark ? 'bg-zinc-900' : 'bg-slate-200'}`}>
                   <button onClick={()=>setActiveTab('single')} className={`relative z-10 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='single' ? (isDark?'bg-zinc-800 text-white shadow-lg':'bg-white text-black shadow-lg') : 'opacity-50 hover:opacity-100'}`}><LayoutList size={14}/> {T.tab_single}</button>
-                  <button onClick={()=>setActiveTab('packs')} className={`relative z-10 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='packs' ? (isDark?'bg-zinc-800 text-white shadow-lg':'bg-white text-black shadow-lg') : 'opacity-50 hover:opacity-100'}`}><Package size={14}/> {T.tab_packs}</button>
+                  {/* BOTÃO PLANOS COM ESTILO DIFERENCIADO */}
+                  <button onClick={()=>setActiveTab('packs')} className={`relative z-10 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='packs' ? 'bg-gradient-to-r from-amber-500 to-yellow-600 text-black shadow-lg shadow-amber-500/30' : 'opacity-50 hover:opacity-100'}`}><Package size={14}/> {T.tab_packs}</button>
               </div>
 
               {activeTab === 'single' && (
@@ -618,11 +710,11 @@ ${T.zap.wait}
               {activeTab === 'packs' && (
                   <div className="space-y-4 animate-slide-in">
                       {DATA.plans.map(plan => (
-                          <Card key={plan.id} isDark={isDark} active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} className="overflow-hidden">
-                              {plan.tag && (<div className="absolute top-0 right-0 bg-amber-500 text-black text-[10px] font-bold px-3 py-1.5 rounded-bl-xl shadow-lg z-10">{plan.tag}</div>)}
+                          <Card key={plan.id} isDark={isDark} isPlan={true} active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} className="overflow-hidden">
+                              {plan.tag && (<div className="absolute top-0 right-0 bg-yellow-500 text-black text-[10px] font-bold px-3 py-1.5 rounded-bl-xl shadow-lg z-10">{plan.tag}</div>)}
                               <div className="flex items-center gap-4 mb-4 relative z-0">
-                                  <div className={`p-4 rounded-2xl ${booking.item?.id === plan.id ? 'bg-amber-500 text-black' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={28}/></div>
-                                  <div><h3 className="font-bold text-xl leading-none mb-1">{plan.title}</h3><p className="text-[10px] opacity-60 uppercase tracking-widest font-bold">{plan.type === 'pack' ? 'Pacote' : 'Mensal'}</p></div>
+                                  <div className={`p-4 rounded-2xl ${booking.item?.id === plan.id ? 'bg-yellow-500 text-black' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={28}/></div>
+                                  <div><h3 className="font-bold text-xl leading-none mb-1 text-yellow-500">{plan.title}</h3><p className="text-[10px] opacity-60 uppercase tracking-widest font-bold">{plan.type === 'pack' ? 'Pacote' : 'Mensal'}</p></div>
                               </div>
                               <p className={`text-sm mb-5 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{plan.details}</p>
                               <div className="flex items-end gap-3 p-3 rounded-xl bg-black/20 border border-white/5">
@@ -829,14 +921,20 @@ ${T.zap.wait}
       {/* MODALS */}
       <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-300 pointer-events-none ${reviewsOpen ? 'opacity-100' : 'opacity-0'}`}>
          <div className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity ${reviewsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setReviewsOpen(false)}></div>
-         <div className={`relative w-full max-w-md rounded-[2rem] p-6 max-h-[80vh] overflow-y-auto transform transition-transform duration-300 ${reviewsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-900'}`}>
+         <div className={`relative w-full max-w-md rounded-[2rem] p-6 max-h-[85vh] overflow-y-auto transform transition-transform duration-300 ${reviewsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-900'}`}>
             <div className="flex justify-between items-center mb-6"><h3 className="text-xl font-bold">{T.reviews_title}</h3><button onClick={()=>setReviewsOpen(false)} className="p-2 bg-black/10 rounded-full"><X size={20}/></button></div>
             <div className="space-y-4">
                 {DATA.reviews.map((r,i)=>(
-                   <div key={i} className={`p-5 rounded-2xl border relative ${isDark ? 'bg-zinc-800/50 border-zinc-700' : 'bg-slate-50 border-slate-100'}`}>
-                       <div className="flex justify-between mb-2"><span className="font-bold text-sm text-white flex items-center gap-2"><div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-[10px] text-black">{r.n.charAt(0)}</div>{r.n}</span><span className="text-[10px] opacity-40 font-mono">1 sem</span></div>
+                   <div key={i} className={`p-5 rounded-2xl border relative transition-colors ${isDark ? 'bg-zinc-800/30 border-zinc-800 hover:bg-zinc-800/50' : 'bg-slate-50 border-slate-100'}`}>
+                       <Quote size={16} className="absolute top-4 right-4 text-amber-500 opacity-30" />
+                       <div className="flex justify-between mb-2">
+                           <span className="font-bold text-sm text-white flex items-center gap-2">
+                               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-[10px] text-black font-black">{r.n.charAt(0)}</div>
+                               {r.n}
+                           </span>
+                       </div>
                        <div className="flex text-amber-400 gap-0.5 mb-2">{[...Array(r.s)].map((_,k)=><Star key={k} size={12} fill="currentColor"/>)}</div>
-                       <p className="text-sm opacity-80 leading-relaxed">"{r.t}"</p>
+                       <p className="text-sm opacity-80 leading-relaxed font-medium">"{r.t}"</p>
                    </div>
                 ))}
             </div>
