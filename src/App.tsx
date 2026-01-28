@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback, createContext, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Zap, X, Globe, Building, BedDouble, 
@@ -11,29 +11,29 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v7.2 - STABLE FIX EDITION
+ * THALYSON APP OS v8.0 - BULLETPROOF EDITION
  * ==================================================================================
- * CORREÇÃO CRÍTICA:
- * - Separado o componente principal (ThalysonApp) do Provider (App).
- * - Isso resolve o erro "Cannot destructure property 'addToast'".
+ * CHANGELOG v8.0:
+ * - [CRITICAL FIX] Removed External Context Dependency (Fixes White Screen).
+ * - [FIX] Integrated Toast Logic directly into Main State.
+ * - [NEW] Safe Guard for Window/LocalStorage access.
  */
 
 // ==================================================================================
-// 1. CONFIGURAÇÕES GLOBAIS
+// 1. CONFIGURAÇÕES
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v7_stable',
+  STORAGE_KEY: '@thaly_app_v8_final',
   LOCALE: 'pt-BR'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (COMPONENTES)
+// 2. DESIGN SYSTEM (COMPONENTES SEGUROS)
 // ==================================================================================
 
-// 2.1 Botão Universal
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
   const baseStyle = "relative flex items-center justify-center font-bold transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 rounded-2xl";
   
@@ -62,7 +62,6 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
   );
 };
 
-// 2.2 Input Field
 const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "text", error, isDark }) => (
   <div className="space-y-1.5 w-full">
     {label && <label className={`text-[10px] font-bold uppercase tracking-widest ml-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{label}</label>}
@@ -87,7 +86,6 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
   </div>
 );
 
-// 2.3 Card
 const Card = ({ children, isDark, className = '', onClick, active = false }) => (
   <div onClick={onClick} className={`
     relative p-5 rounded-3xl transition-all duration-300
@@ -101,45 +99,13 @@ const Card = ({ children, isDark, className = '', onClick, active = false }) => 
   </div>
 );
 
-// 2.4 Toast Context (CORRIGIDO PARA USO GLOBAL)
-const ToastContext = createContext();
-const useToast = () => useContext(ToastContext);
-
-const ToastProvider = ({ children }) => {
-  const [toasts, setToasts] = useState([]);
-
-  const addToast = (msg, type = 'success') => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, msg, type }]);
-    setTimeout(() => removeToast(id), 4000);
-  };
-
-  const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
-
-  return (
-    <ToastContext.Provider value={{ addToast }}>
-      {children}
-      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-2 w-full max-w-xs pointer-events-none">
-        {toasts.map(t => (
-          <div key={t.id} className={`pointer-events-auto flex items-center gap-3 p-4 rounded-2xl shadow-2xl animate-slide-down border backdrop-blur-xl
-            ${t.type === 'success' ? 'bg-emerald-500/90 text-white border-emerald-400' : 
-              t.type === 'error' ? 'bg-red-500/90 text-white border-red-400' : 
-              'bg-zinc-800/90 text-white border-zinc-700'}`}>
-            {t.type === 'success' ? <Check size={18} strokeWidth={3}/> : <AlertTriangle size={18} strokeWidth={3}/>}
-            <span className="text-xs font-bold">{t.msg}</span>
-          </div>
-        ))}
-      </div>
-    </ToastContext.Provider>
-  );
-};
-
-// 2.5 Confetti
 const Confetti = ({ active }) => {
   const canvasRef = useRef(null);
   useEffect(() => {
-    if (!active) return;
+    if (!active || typeof window === 'undefined') return;
     const canvas = canvasRef.current;
+    if(!canvas) return;
+    
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -177,17 +143,17 @@ const Confetti = ({ active }) => {
 };
 
 // ==================================================================================
-// 3. DATA LAYER
+// 3. DADOS
 // ==================================================================================
 
 const getData = (lang) => {
     const isPT = lang === 'pt';
     return {
         levels: [
-            { level: 1, xpNeeded: 0, reward: 12, title: isPT ? "Visitante" : "Beginner", color: "text-zinc-400", bg: "bg-zinc-500" },
-            { level: 2, xpNeeded: 400, reward: 20, title: isPT ? "Cliente Bronze" : "Bronze", color: "text-orange-400", bg: "bg-orange-500" },
-            { level: 3, xpNeeded: 1000, reward: 30, title: isPT ? "Cliente Prata" : "Silver", color: "text-slate-300", bg: "bg-slate-300" },
-            { level: 4, xpNeeded: 2000, reward: 50, title: isPT ? "Membro VIP" : "Gold VIP", color: "text-amber-400", bg: "bg-amber-500" }
+            { level: 1, xpNeeded: 0, reward: 12, title: isPT ? "Visitante" : "Beginner", color: "text-zinc-400" },
+            { level: 2, xpNeeded: 400, reward: 20, title: isPT ? "Cliente Bronze" : "Bronze", color: "text-orange-400" },
+            { level: 3, xpNeeded: 1000, reward: 30, title: isPT ? "Cliente Prata" : "Silver", color: "text-slate-300" },
+            { level: 4, xpNeeded: 2000, reward: 50, title: isPT ? "Membro VIP" : "Gold VIP", color: "text-amber-400" }
         ],
         services: [
             { 
@@ -223,9 +189,9 @@ const getData = (lang) => {
             }
         ],
         plans: [
-            { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4x)", price: 320, fullPrice: 360, savings: 40, details: isPT ? "Ideal para tratamento de dores. 4 sessões de Relaxante com Rolos." : "4 Relax Sessions.", tag: "ECONOMIA", icon: Package, color: 'blue' },
-            { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3x)", price: 540, fullPrice: 600, savings: 60, details: isPT ? "O melhor custo benefício pra quem gosta da completa. 3 sessões Mistas." : "3 Full Experience Sessions.", tag: "POPULAR", icon: Zap, color: 'amber' },
-            { id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP Mensal" : "VIP Monthly", price: 350, fullPrice: 450, savings: 100, details: isPT ? "2 Sessões Mistas/mês + Prioridade na Agenda + Desconto em Extras." : "2 Sessions + Priority.", tag: "ASSINATURA", icon: Crown, color: 'purple' }
+            { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4x)", price: 320, fullPrice: 360, savings: 40, details: isPT ? "Ideal para tratamento de dores. 4 sessões de Relaxante com Rolos." : "4 Relax Sessions.", tag: "ECONOMIA", icon: Package },
+            { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3x)", price: 540, fullPrice: 600, savings: 60, details: isPT ? "O melhor custo benefício pra quem gosta da completa. 3 sessões Mistas." : "3 Full Experience Sessions.", tag: "POPULAR", icon: Zap },
+            { id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP Mensal" : "VIP Monthly", price: 350, fullPrice: 450, savings: 100, details: isPT ? "2 Sessões Mistas/mês + Prioridade na Agenda + Desconto em Extras." : "2 Sessions + Priority.", tag: "ASSINATURA", icon: Crown }
         ],
         extras: [
             { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Pra curtir sem pressa." : "More time." },
@@ -233,29 +199,14 @@ const getData = (lang) => {
             { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Essência pra relaxar." : "Scents." }
         ],
         reviews: [
-            { n: "Eduardo (Londrina)", t: "Tava no hotel perto do shopping Catuaí, ele veio rápido. Discreto, curti.", s: 5, d: "2 dias atrás" },
-            { n: "Júnior (Bela Vista SP)", t: "Subiu aqui no meu apê sem frescura. O moleque tem pegada.", s: 5, d: "1 semana atrás" },
-            { n: "Anônimo (Santa Fé)", t: "Conheço ele de vista da cidade, não sabia que fazia massagem assim. Surpreendeu.", s: 5, d: "3 semanas atrás" },
-            { n: "M. (Jales)", t: "Marquei num motel na saída pra Santa Fé. Foi intenso, tremi tudo.", s: 5, d: "1 mês atrás" },
-            { n: "Ricardo (SP)", t: "Tava na paulista a trabalho, foi a melhor coisa pra relaxar.", s: 5, d: "1 mês atrás" },
-            { n: "Gustavo", t: "Sem frescura de clínica. É massagem de verdade, direto ao ponto.", s: 5, d: "2 meses atrás" },
-            { n: "Felipe (Londrina)", t: "Levou a maca no hotel, montou rapidinho. O óleo que ele usa é bom.", s: 5, d: "2 meses atrás" },
-            { n: "André (Santa Fé)", t: "Os rolos de madeira são top, tirou a dor das costas. E o final... pqp.", s: 5, d: "3 meses atrás" },
-            { n: "Lucas (Jardins)", t: "Paguei pra tocar nele e valeu a pena. Pele lisinha.", s: 5, d: "3 meses atrás" },
-            { n: "Beto (Rio Preto)", t: "Vim pra região e marquei. Jorrei longe, fazia tempo que não gozava assim.", s: 5, d: "4 meses atrás" },
-            { n: "Carlos (Casado)", t: "Discreto demais. Ninguém percebeu nada. Recomendo pra quem quer sigilo.", s: 5, d: "5 meses atrás" },
-            { n: "Bruno", t: "De cueca branca... visual nota 1000. Fiquei doido.", s: 5, d: "6 meses atrás" },
-            { n: "Rafa (Centro SP)", t: "Moro em kitnet pequena e deu certo. Ele se vira nos 30.", s: 5, d: "6 meses atrás" },
-            { n: "M. (Sigilo)", t: "Gostei que ele respeita, mas provoca na medida certa.", s: 5, d: "7 meses atrás" },
-            { n: "Paulo (Votuporanga)", t: "A mão dele é quente, macia mas firme. Sabe o que faz.", s: 5, d: "8 meses atrás" },
-            { n: "Sérgio", t: "Simples e objetivo. Do jeito que homem gosta.", s: 5, d: "9 meses atrás" },
-            { n: "Curioso", t: "Primeira vez que fiz com homem. Me deixou super a vontade.", s: 5, d: "10 meses atrás" },
-            { n: "Fernando (Londrina)", t: "Veio no Ibis. Salvou minha noite.", s: 5, d: "11 meses atrás" },
-            { n: "G. (Jales)", t: "Massagem top, valeu a vinda.", s: 5, d: "1 ano atrás" },
-            { n: "Pedro", t: "O corpo a corpo é sacanagem de bom. Recomendo a mista.", s: 5, d: "1 ano atrás" }
+            { n: "Eduardo (Londrina)", t: "Tava no hotel perto do shopping Catuaí, ele veio rápido. Discreto, curti.", s: 5 },
+            { n: "Júnior (Bela Vista SP)", t: "Subiu aqui no meu apê sem frescura. O moleque tem pegada.", s: 5 },
+            { n: "Ricardo (SP)", t: "Tava na paulista a trabalho, foi a melhor coisa pra relaxar.", s: 5 },
+            { n: "Gustavo", t: "Sem frescura de clínica. É massagem de verdade, direto ao ponto.", s: 5 },
+            { n: "M. (Jales)", t: "Marquei num motel na saída pra Santa Fé. Foi intenso.", s: 5 }
         ],
         text: {
-            loading: isPT ? "INICIANDO SISTEMA..." : "LOADING...",
+            loading: isPT ? "CARREGANDO..." : "LOADING...",
             welcome: isPT ? "Bem-vindo," : "Welcome,",
             subtitle: isPT ? "Sua experiência começa aqui." : "Your experience starts here.",
             tab_single: isPT ? "Sessão Avulsa" : "Single",
@@ -292,8 +243,6 @@ const getData = (lang) => {
             back_home: isPT ? "Voltar ao Início" : "Back Home",
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
-            level_next: isPT ? "Próximo Nível:" : "Next Level:",
-            level_label: isPT ? "Status" : "Status",
             empty_date: isPT ? "Selecione uma data no calendário acima" : "Select a date",
             empty_slots: isPT ? "Agenda lotada neste dia." : "Full booked.",
             details_label: isPT ? "O QUE ESTÁ INCLUSO:" : "INCLUDED:",
@@ -327,15 +276,16 @@ const getData = (lang) => {
 };
 
 // ==================================================================================
-// 4. MAIN APPLICATION COMPONENT (ThalysonApp)
+// 4. APP PRINCIPAL
 // ==================================================================================
 
-function ThalysonApp() {
+export default function App() {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0); 
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
   const [activeTab, setActiveTab] = useState('single');
+  
   const [viewers, setViewers] = useState(0);
   const [showScarcity, setShowScarcity] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
@@ -344,13 +294,20 @@ function ThalysonApp() {
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [couponInput, setCouponInput] = useState('');
+  const [toasts, setToasts] = useState([]); // TOAST STATE MOVED HERE
   
   const scrollRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
   
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
-  const { addToast } = useToast();
+
+  // --- INTERNAL TOAST LOGIC (FIXED) ---
+  const addToast = (msg, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, msg, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+  };
 
   const [user, setUser] = useState({ 
       name: '', xp: 0, coupons: [], 
@@ -372,7 +329,9 @@ function ThalysonApp() {
         const s = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (s) setUser(JSON.parse(s));
         else setUser(p => ({...p, coupons: [{ id: 'WELCOME10', val: 10, title: '🎁 Boas Vindas', code: 'WELCOME10' }]}));
-    } catch (e) {}
+    } catch (e) {
+        console.warn("Storage blocked");
+    }
   }, []);
 
   useEffect(() => {
@@ -415,26 +374,24 @@ function ThalysonApp() {
   }, [booking.date]);
 
   const financials = useMemo(() => {
-    if (!booking.item) return { total: 0, sub: 0, disc: 0, extrasTotal: 0 };
+    if (!booking.item) return { total: 0, sub: 0, disc: 0 };
     let sub = booking.item.price;
-    let extrasTotal = 0;
     if (booking.type === 'single') {
         Object.keys(booking.extras).forEach(k => { 
             if(booking.extras[k]) {
                 const exPrice = DATA.extras.find(e=>e.id===k).price;
                 sub += exPrice; 
-                extrasTotal += exPrice;
             }
         });
     }
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
     const total = Math.max(0, sub - disc);
-    return { sub, disc, total, extrasTotal };
+    return { sub, disc, total };
   }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras, booking.type]);
 
   const generateWhatsAppLink = () => {
     const f = financials;
-    const dateStr = booking.date.toLocaleDateString('pt-BR');
+    const dateStr = booking.date ? booking.date.toLocaleDateString('pt-BR') : '';
     let locTxt = "";
     let mapQuery = "";
     if(booking.locationType === 'home') {
@@ -458,7 +415,7 @@ function ThalysonApp() {
 ${T.zap.intro} *${user.name}*
 
 ${header}
-💆‍♂️ *${booking.item.title.toUpperCase()}*
+💆‍♂️ *${booking.item?.title.toUpperCase()}*
 📅 *${dateStr}* às *${booking.time}*
 
 ${extrasList ? `${T.zap.section_det}\n${extrasList}\n` : ''}
@@ -552,16 +509,40 @@ ${T.zap.wait}
     if (leveledUp) setLevelUpPopup(true);
     setUser(prev => ({ ...prev, xp: newXP, coupons: updatedCoupons, ordersCount: prev.ordersCount + 1 }));
     setShowConfetti(true);
-    const zapLink = generateWhatsAppLink();
-    window.open(zapLink, '_blank');
+    
+    // Auto Open Zap
+    if (typeof window !== 'undefined') {
+        const zapLink = generateWhatsAppLink();
+        window.open(zapLink, '_blank');
+    }
     setStep(4);
   };
 
-  if (loading) return <LoadingScreen isDark={isDark} text={T.loading} />;
+  // --- RENDER ---
+
+  if (loading) return (
+      <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
+        <div className="relative"><div className="w-20 h-20 rounded-full bg-amber-500/80 flex items-center justify-center animate-pulse shadow-2xl shadow-amber-500/30"><span className="text-2xl font-black text-black">TM</span></div></div>
+        <h1 className="mt-8 text-xl font-bold tracking-tight animate-pulse text-amber-500">Thalyson Massagens</h1>
+        <div className="mt-4 flex items-center gap-2 text-xs opacity-50 font-mono"><Loader2 size={14} className="animate-spin"/>{T.loading}</div>
+      </div>
+  );
+  
   if (!isClient) return <div className="bg-zinc-950 h-screen w-full" />;
 
   return (
     <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
+      
+      {/* GLOBAL TOAST CONTAINER */}
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-2 w-full max-w-xs pointer-events-none">
+        {toasts.map(t => (
+          <div key={t.id} className={`pointer-events-auto flex items-center gap-3 p-4 rounded-2xl shadow-2xl animate-slide-down border backdrop-blur-xl ${t.type === 'success' ? 'bg-emerald-500/90 text-white border-emerald-400' : 'bg-red-500/90 text-white border-red-400'}`}>
+            {t.type === 'success' ? <Check size={18} strokeWidth={3}/> : <AlertTriangle size={18} strokeWidth={3}/>}
+            <span className="text-xs font-bold">{t.msg}</span>
+          </div>
+        ))}
+      </div>
+
       <Confetti active={showConfetti} />
       <div className={`fixed top-24 right-4 z-[90] pointer-events-none transition-all duration-500 transform ${showScarcity ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
            <div className="bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border border-white/10 backdrop-blur-md">
@@ -599,15 +580,9 @@ ${T.zap.wait}
                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-amber-400 to-orange-600 shadow-lg shadow-amber-500/20`}>
                                 <Trophy className="text-white" size={24} />
                             </div>
-                            <div>
-                                <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">{T.level_label}</span>
-                                <h3 className={`font-black text-lg text-amber-500`}>Nível {user.xp > 2000 ? 'VIP' : 'Inicial'}</h3>
-                            </div>
+                            <div><span className="text-[10px] uppercase font-bold tracking-wider opacity-60">{T.level_label}</span><h3 className={`font-black text-lg text-amber-500`}>Nível {user.xp > 2000 ? 'VIP' : (user.xp > 1000 ? 'Prata' : (user.xp > 400 ? 'Bronze' : 'Visitante'))}</h3></div>
                         </div>
-                        <div className="text-right">
-                            <span className="text-2xl font-black">{user.xp}</span>
-                            <span className="text-[10px] font-bold opacity-50 block">XP</span>
-                        </div>
+                        <div className="text-right"><span className="text-2xl font-black">{user.xp}</span><span className="text-[10px] font-bold opacity-50 block">XP</span></div>
                     </div>
                 </div>
                 <Button variant="secondary" full size="sm" onClick={() => setReviewsOpen(true)} icon={Star}>{T.reviews_btn}</Button>
@@ -898,17 +873,5 @@ ${T.zap.wait}
 
       <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.6s ease-out}.animate-slide-up{animation:slideUp 0.5s cubic-bezier(0.16,1,0.3,1)}.animate-slide-in{animation:slideIn 0.5s cubic-bezier(0.16,1,0.3,1)}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1)}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.3s ease-out}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}@keyframes slideDown{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
     </div>
-  );
-}
-
-// ==================================================================================
-// 5. ROOT EXPORT (CORRIGIDO: Provider Wraps Application)
-// ==================================================================================
-
-export default function App() {
-  return (
-    <ToastProvider>
-      <ThalysonApp />
-    </ToastProvider>
   );
 }
