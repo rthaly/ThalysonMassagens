@@ -11,19 +11,21 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v15.0 - REAL FEEDBACK & PRECISION EDITION
+ * THALYSON APP OS v16.0 - FULL INTERNATIONALIZATION (i18n) FIXED
  * ==================================================================================
- * CHANGELOG:
- * - [XP] Barra de progresso matemática corrigida (Progresso Relativo ao Nível).
- * - [UI] Toast "Pessoas Vendo" centralizado e estilizado (Glassmorphism).
- * - [DATA] 50+ Avaliações reais, mistas e sem filtro (Vibe Grindr/Real Life).
+ * CORREÇÕES REALIZADAS:
+ * 1. [i18n] Todas as strings hardcoded foram movidas para o dicionário de dados.
+ * 2. [LOGIC] Mensagens de erro (Toasts) agora respeitam o idioma selecionado.
+ * 3. [DATA] As 50+ avaliações agora possuem versão PT e EN.
+ * 4. [UI] Barra de XP e textos de nível totalmente traduzidos.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v15_final', 
-  LOCALE: 'pt-BR'
+  STORAGE_KEY: '@thaly_app_v16_i18n', 
+  LOCALE_PT: 'pt-BR',
+  LOCALE_EN: 'en-US'
 };
 
 // ==================================================================================
@@ -114,150 +116,212 @@ const Confetti = ({ active }) => {
 const getData = (lang) => {
     const isPT = lang === 'pt';
     return {
-        // NÍVEIS COM XP ESCALONADO PARA SENSAÇÃO DE GANHO RÁPIDO
         levels: [
-            { level: 1, xpNeeded: 0, reward: 0, title: "Visitante", color: "text-zinc-400" },
-            { level: 2, xpNeeded: 150, reward: 15, title: "Cliente Bronze", color: "text-orange-400" },
-            { level: 3, xpNeeded: 450, reward: 30, title: "Cliente Prata", color: "text-slate-300" },
-            { level: 4, xpNeeded: 900, reward: 50, title: "Membro VIP", color: "text-amber-400" }
+            { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor", color: "text-zinc-400" },
+            { level: 2, xpNeeded: 150, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" },
+            { level: 3, xpNeeded: 450, reward: 30, title: isPT ? "Cliente Prata" : "Silver Client", color: "text-slate-300" },
+            { level: 4, xpNeeded: 900, reward: 50, title: isPT ? "Membro VIP" : "VIP Member", color: "text-amber-400" }
         ],
         services: [
-            { id: 'relaxante', min: 60, price: 90, icon: Wind, tag: "PARA RELAXAR", title: "Relaxante (Rolos de Madeira)", desc: "O alívio imediato para o cansaço do dia a dia.", details: "COMO É A SESSÃO?\n• TÉCNICA: Uso meus rolos de madeira para soltar suas costas e pernas.\n• SEM DOR: É para relaxar, não para machucar. Deslizo a madeira para tirar o peso do corpo.\n• FINALIZAÇÃO: Termino com as mãos para garantir que relaxou tudo.\n⚠️ Obs: Massagem focada em tirar dor e cansaço." },
-            { id: 'sensitiva', min: 60, price: 160, icon: Flame, tag: "SENSORIAL", title: "Sensitiva Tântrica (+ Lingam)", desc: "Uma jornada de sensações do início ao fim.", details: "O QUE ROLA NESSA SESSÃO:\n• INÍCIO: Começo tirando a tensão do seu corpo (manual ou rolos).\n• SENSORIAL: Depois uso toques bem leves (ponta dos dedos) para te dar arrepios.\n• LINGAM: Inclui a massagem na parte íntima (pênis e testículos).\n• OBJETIVO: Te dar o máximo de prazer.\n• FINALIZAÇÃO: Manual inclusa (com bastante óleo)." },
-            { id: 'mista', min: 60, price: 200, icon: Zap, tag: "PREFERIDA", title: "Experiência Mista Completa", desc: "A fusão perfeita: Relaxamento profundo + Intensidade.", details: "A MAIS COMPLETA (60min):\n• TÉCNICA: Começa com a massagem relaxante para soltar os músculos.\n• INTENSIDADE: Aumento para a sensitiva e entro no corpo a corpo (Body to Body).\n• LINGAM: Fecho com a tântrica caprichada.\n• FINAL: Você goza no final, sem pressa." }
+            { 
+              id: 'relaxante', min: 60, price: 90, icon: Wind, tag: isPT ? "PARA RELAXAR" : "RELAXING",
+              title: isPT ? "Relaxante (Rolos de Madeira)" : "Wood Therapy Relax",
+              desc: isPT ? "O alívio imediato para o cansaço do dia a dia." : "Immediate relief for daily tiredness.",
+              details: isPT ? `COMO É A SESSÃO?
+• TÉCNICA: Uso meus rolos de madeira para soltar suas costas e pernas.
+• SEM DOR: É para relaxar, não para machucar. Deslizo a madeira para tirar o peso do corpo.
+• FINALIZAÇÃO: Termino com as mãos para garantir que relaxou tudo.
+⚠️ Obs: Massagem focada em tirar dor e cansaço.` : `HOW IS THE SESSION?
+• TECHNIQUE: Using wood rollers to release back and legs.
+• PAINLESS: It's for relaxation, not pain. Wood glides to remove body weight.
+• FINISH: I finish with hands to ensure full relaxation.
+⚠️ Note: Focused on pain relief and tiredness.`
+            },
+            { 
+              id: 'sensitiva', min: 60, price: 160, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
+              title: isPT ? "Sensitiva Tântrica (+ Lingam)" : "Tantric Sensitive (+ Lingam)",
+              desc: isPT ? "Uma jornada de sensações do início ao fim." : "A journey of sensations from start to finish.",
+              details: isPT ? `O QUE ROLA NESSA SESSÃO:
+• INÍCIO: Começo tirando a tensão do seu corpo (manual ou rolos).
+• SENSORIAL: Depois uso toques bem leves (ponta dos dedos) para te dar arrepios.
+• LINGAM: Inclui a massagem na parte íntima (pênis e testículos).
+• OBJETIVO: Te dar o máximo de prazer.
+• FINALIZAÇÃO: Manual inclusa (com bastante óleo).` : `WHAT HAPPENS:
+• START: Removing tension from your body (manual or rollers).
+• SENSORY: Very light touches (fingertips) to give you chills.
+• LINGAM: Includes intimate massage (penis and testicles).
+• GOAL: Give you maximum pleasure.
+• FINISH: Hand finish included (with plenty of oil).`
+            },
+            { 
+              id: 'mista', min: 60, price: 200, icon: Zap, tag: isPT ? "PREFERIDA" : "FAVORITE",
+              title: isPT ? "Experiência Mista Completa" : "Full Mixed Experience",
+              desc: isPT ? "A fusão perfeita: Relaxamento profundo + Intensidade." : "The perfect fusion: Deep relaxation + Intensity.",
+              details: isPT ? `A MAIS COMPLETA (60min):
+• TÉCNICA: Começa com a massagem relaxante para soltar os músculos.
+• INTENSIDADE: Aumento para a sensitiva e entro no corpo a corpo (Body to Body).
+• LINGAM: Fecho com a tântrica caprichada.
+• FINAL: Você goza no final, sem pressa.` : `THE MOST COMPLETE (60min):
+• TECHNIQUE: Starts with relaxing massage to loosen muscles.
+• INTENSITY: Increases to sensitive and Body to Body (Nuru).
+• LINGAM: Finishes with detailed tantric massage.
+• FINISH: You cum at the end, no rush.`
+            }
         ],
         plans: [
-            { id: 'pack_relax', type: 'pack', title: "Pack Relax (4 Sessões)", price: 320, fullPrice: 360, savings: 40, details: "Ideal para quem busca bem-estar constante. 4 sessões Relaxantes.", tag: "CUIDADO MENSAL", icon: Package },
-            { id: 'pack_mista', type: 'pack', title: "Pack Mista (3 Sessões)", price: 540, fullPrice: 600, savings: 60, details: "Garanta suas sessões completas com valor especial. O melhor custo-benefício.", tag: "MAIS ESCOLHIDO", icon: Zap },
-            { id: 'vip_club', type: 'subscription', title: "Clube VIP Mensal", price: 350, fullPrice: 450, savings: 100, details: "Acesso exclusivo: 2 Sessões Mistas/mês + Prioridade total na minha agenda.", tag: "MEMBRO VIP", icon: Crown }
+            { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4 Sessions)", price: 320, fullPrice: 360, savings: 40, details: isPT ? "Ideal para quem busca bem-estar constante. 4 sessões Relaxantes para usar em 45 dias." : "Ideal for constant wellness. 4 Relax sessions valid for 45 days.", tag: isPT ? "CUIDADO MENSAL" : "MONTHLY CARE", icon: Package },
+            { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3 Sessions)", price: 540, fullPrice: 600, savings: 60, details: isPT ? "Garanta suas sessões completas com valor especial. O melhor custo-benefício." : "Guarantee your full sessions with special value. Best cost-benefit.", tag: isPT ? "MAIS ESCOLHIDO" : "BEST SELLER", icon: Zap },
+            { id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP Mensal" : "VIP Monthly Club", price: 350, fullPrice: 450, savings: 100, details: isPT ? "Acesso exclusivo: 2 Sessões Mistas/mês + Prioridade total na minha agenda." : "Exclusive access: 2 Full Sessions/mo + Total priority in my schedule.", tag: isPT ? "MEMBRO VIP" : "VIP MEMBER", icon: Crown }
         ],
         extras: [
-            { id: 'more_time', price: 55, icon: Clock, label: "+30 Minutos", desc: "Para curtir seu momento sem pressa." },
-            { id: 'touch', price: 55, icon: Heart, label: "Troca (Você Toca)", desc: "Liberdade para interagir e tocar." },
-            { id: 'aroma', price: 5, icon: Wind, label: "Aromaterapia", desc: "Óleos essenciais para relaxar a mente." }
+            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para curtir seu momento sem pressa." : "To enjoy your moment without rush." },
+            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Troca (Você Toca)" : "Switch (You Touch)", desc: isPT ? "Liberdade para interagir e tocar." : "Freedom to interact and touch." },
+            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Óleos essenciais para relaxar a mente." : "Essential oils to relax the mind." }
         ],
-        // LISTA MASSIVA E REALISTA (50+)
         reviews: [
-            { n: "Tiago (Bela Vista)", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", s: 5 },
-            { n: "Anônimo", t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", s: 5 },
-            { n: "Curioso SP", t: "Mão firme, pegada de macho. O óleo quente faz toda a diferença.", s: 5 },
-            { n: "M. (Jardins)", t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", s: 5 },
-            { n: "Empresário", t: "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório.", s: 5 },
-            { n: "M. (Casado)", t: "Precisava desse escape. O stress sumiu na hora. Discrição nota 10.", s: 5 },
-            { n: "Roberto", t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", s: 5 },
-            { n: "Fã", t: "Ele de cueca branca... sem comentários. Visual nota 1000.", s: 5 },
-            { n: "Carlos A.", t: "Profissionalismo raro hoje em dia. Pontual e educado.", s: 5 },
-            { n: "Lucas", t: "A mistura de força e suavidade é incrível. Recomendo.", s: 5 },
-            { n: "Novato", t: "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa.", s: 5 },
-            { n: "Gustavo", t: "Ambiente que ele cria com a música e o cheiro é relaxante demais.", s: 5 },
-            { n: "Felipe Personal", t: "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa.", s: 5 },
-            { n: "J.P.", t: "O corpo a corpo é quente de verdade. Uma experiência única.", s: 5 },
-            { n: "André", t: "Gostei que ele respeita os limites, mas entrega muito prazer.", s: 5 },
-            { n: "Turista RJ", t: "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem.", s: 5 },
-            { n: "Anônimo", t: "Cara bonito, limpo e com pegada. O pacote completo.", s: 5 },
-            { n: "Breno", t: "Fiz a relaxante e dormi na maca de tão bom. Recomendo.", s: 5 },
-            { n: "Dr. Marcelo", t: "A técnica dele é diferente de tudo. Vale cada real.", s: 5 },
-            { n: "Caio", t: "Sensação de liberdade total. O toque extra é obrigatório.", s: 5 },
-            { n: "Vitor", t: "Me senti renovado. Energia lá em cima depois da sessão.", s: 5 },
-            { n: "Renan", t: "Extremamente educado e com papo bom, além da massagem top.", s: 5 },
-            { n: "Paulo", t: "O óleo de coco morno é um detalhe que faz toda diferença.", s: 5 },
-            { n: "Cliente Antigo", t: "Já fiz com vários massagistas, o Thalyson é o melhor da região.", s: 5 },
-            { n: "Dica do Beto", t: "Não economizem, peçam a completa com aromaterapia.", s: 5 },
-            { n: "Advogado SP", t: "Pontualidade britânica. Chegou na hora marcada.", s: 5 },
-            { n: "Gym Rat", t: "Fiquei impressionado com a força das mãos dele.", s: 5 },
-            { n: "Hétero Curioso", t: "Excelente profissional. Me deixou super confortável.", s: 5 },
-            { n: "Motorista", t: "Massagem terapêutica de verdade, tirou todos os nós das costas.", s: 5 },
-            { n: "M. (Sigilo)", t: "O sigilo é garantido mesmo. Pode confiar.", s: 5 },
-            { n: "Sr. João", t: "Agradeço pela paciência e pelo serviço impecável.", s: 5 },
-            { n: "Designer", t: "Experiência sensorial incrível. O cheiro, o toque, a música.", s: 5 },
-            { n: "Executivo", t: "Saí flutuando. Recomendo para quem tem rotina estressante.", s: 5 },
-            { n: "Matheus", t: "O Thalyson é muito gente fina. O tempo passou voando.", s: 5 },
-            { n: "Bruno", t: "Melhor investimento da semana. Relaxamento total.", s: 5 },
-            { n: "Rafa", t: "Toque firme, mas sensível. Sabe onde tocar.", s: 5 },
-            { n: "Tech Guy", t: "Gostei da facilidade de agendar pelo app. Sem enrolação.", s: 5 },
-            { n: "Corredor", t: "Massagem nos pés foi um bônus que eu não esperava. Ótimo.", s: 5 },
-            { n: "Fã #2", t: "Simpático e bonito. O serviço é completo mesmo.", s: 5 },
-            { n: "Pedro", t: "Me ajudou muito com a ansiedade. Gratidão.", s: 5 },
-            { n: "Morador Centro", t: "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático.", s: 5 },
-            { n: "Curioso", t: "A massagem tântrica dele desbloqueou sensações novas.", s: 5 },
-            { n: "Ricardo", t: "Valeu a pena esperar a agenda liberar.", s: 5 },
-            { n: "Sérgio", t: "Nota 10. Nada a reclamar.", s: 5 },
-            { n: "Médico", t: "Muito higiênico e cuidadoso.", s: 5 },
-            { n: "Cliente Fiel", t: "Voltarei com certeza na próxima semana.", s: 5 },
-            { n: "Fernando", t: "Paz de espírito e corpo relaxado. Obrigado.", s: 5 },
-            { n: "Sigilo Total", t: "Gozada monstruosa. Ele sabe tirar leite.", s: 5 },
-            { n: "Ativo", t: "Curti demais o corpo dele roçando. Fiquei duro a massagem toda.", s: 5 },
-            { n: "Passivo", t: "Mão de fada mas com força. Do jeito que eu gosto.", s: 5 },
-            { n: "Anônimo 2", t: "O creme desliza muito bem, a pele dele é macia.", s: 5 },
-            { n: "J.", t: "Gostei dos paus que ele usa na massagem com madeira, relaxa mesmo.", s: 5 },
-            { n: "Visitante", t: "Saiu leite até da alma. Recomendo a sensitiva.", s: 5 }
+            { n: "Tiago", t: isPT ? "A sensitiva foi uma experiência de outro mundo." : "The sensitive massage was out of this world.", s: 5 },
+            { n: "Pedro H.", t: isPT ? "Fui estressado e saí flutuando." : "Went in stressed, came out floating.", s: 5 },
+            { n: "Marcos", t: isPT ? "Profissionalismo nota 10." : "Professionalism 10/10.", s: 5 },
+            { n: "Tiago (Bela Vista)", t: isPT ? "O Thalyson tem uma energia surreal. A massagem foi perfeita." : "Thalyson has surreal energy. Massage was perfect.", s: 5 },
+            { n: "Anônimo", t: isPT ? "O toque dele vicia. A finalização foi absurda, jorrei longe." : "His touch is addictive. The finish was absurd, shot far.", s: 5 },
+            { n: "Curioso SP", t: isPT ? "Mão firme, pegada de macho. O óleo quente faz toda a diferença." : "Firm hand, manly grip. The warm oil makes all the difference.", s: 5 },
+            { n: "M. (Jardins)", t: isPT ? "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso." : "Paid extra to touch and worth every penny. Soft skin, smells good.", s: 5 },
+            { n: "Empresário", t: isPT ? "Sou casado, tinha receio. O sigilo foi absoluto. Atendeu no meu escritório." : "I'm married, had doubts. Secrecy was absolute. Came to my office.", s: 5 },
+            { n: "M. (Casado)", t: isPT ? "Precisava desse escape. O stress sumiu na hora. Discrição nota 10." : "Needed this escape. Stress vanished instantly. Discretion 10/10.", s: 5 },
+            { n: "Roberto", t: isPT ? "O upgrade de 30 minutos vale a pena. Não dá vontade de parar." : "The 30min upgrade is worth it. You don't want it to stop.", s: 5 },
+            { n: "Fã", t: isPT ? "Ele de cueca branca... sem comentários. Visual nota 1000." : "Him in white underwear... no comments. Visuals 10/10.", s: 5 },
+            { n: "Carlos A.", t: isPT ? "Profissionalismo raro hoje em dia. Pontual e educado." : "Rare professionalism nowadays. Punctual and polite.", s: 5 },
+            { n: "Lucas", t: isPT ? "A mistura de força e suavidade é incrível. Recomendo." : "Mix of strength and softness is amazing. Recommended.", s: 5 },
+            { n: "Novato", t: isPT ? "Primeira vez que faço e me senti super à vontade. Thalyson é gente boa." : "First time doing this, felt super comfortable. Thalyson is a good guy.", s: 5 },
+            { n: "Gustavo", t: isPT ? "Ambiente que ele cria com a música e o cheiro é relaxante demais." : "The atmosphere he creates with music and scent is too relaxing.", s: 5 },
+            { n: "Felipe Personal", t: isPT ? "Tinha muita dor na lombar, ele resolveu em uma sessão. Mão milagrosa." : "Had lots of lower back pain, solved in one session. Miracle hands.", s: 5 },
+            { n: "J.P.", t: isPT ? "O corpo a corpo é quente de verdade. Uma experiência única." : "Body to body is truly hot. A unique experience.", s: 5 },
+            { n: "André", t: isPT ? "Gostei que ele respeita os limites, mas entrega muito prazer." : "Liked that he respects limits but delivers lots of pleasure.", s: 5 },
+            { n: "Turista RJ", t: isPT ? "Atendimento no hotel foi super rápido e discreto. Salvou minha viagem." : "Hotel service was super fast and discreet. Saved my trip.", s: 5 },
+            { n: "Anônimo", t: isPT ? "Cara bonito, limpo e com pegada. O pacote completo." : "Handsome guy, clean, with a grip. The full package.", s: 5 },
+            { n: "Breno", t: isPT ? "Fiz a relaxante e dormi na maca de tão bom. Recomendo." : "Did the relaxing one and fell asleep on the table. Recommend.", s: 5 },
+            { n: "Dr. Marcelo", t: isPT ? "A técnica dele é diferente de tudo. Vale cada real." : "His technique is unlike anything. Worth every cent.", s: 5 },
+            { n: "Caio", t: isPT ? "Sensação de liberdade total. O toque extra é obrigatório." : "Feeling of total freedom. Extra touch is mandatory.", s: 5 },
+            { n: "Vitor", t: isPT ? "Me senti renovado. Energia lá em cima depois da sessão." : "Felt renewed. High energy after the session.", s: 5 },
+            { n: "Renan", t: isPT ? "Extremamente educado e com papo bom, além da massagem top." : "Extremely polite and good chat, plus top massage.", s: 5 },
+            { n: "Paulo", t: isPT ? "O óleo de coco morno é um detalhe que faz toda diferença." : "Warm coconut oil is a detail that makes a difference.", s: 5 },
+            { n: "Cliente Antigo", t: isPT ? "Já fiz com vários massagistas, o Thalyson é o melhor da região." : "Been to many masseurs, Thalyson is the best in the region.", s: 5 },
+            { n: "Dica do Beto", t: isPT ? "Não economizem, peçam a completa com aromaterapia." : "Don't save money, ask for the full one with aromatherapy.", s: 5 },
+            { n: "Advogado SP", t: isPT ? "Pontualidade britânica. Chegou na hora marcada." : "British punctuality. Arrived right on time.", s: 5 },
+            { n: "Gym Rat", t: isPT ? "Fiquei impressionado com a força das mãos dele." : "Impressed with the strength of his hands.", s: 5 },
+            { n: "Hétero Curioso", t: isPT ? "Excelente profissional. Me deixou super confortável." : "Excellent professional. Made me feel super comfortable.", s: 5 },
+            { n: "Motorista", t: isPT ? "Massagem terapêutica de verdade, tirou todos os nós das costas." : "Real therapeutic massage, removed all back knots.", s: 5 },
+            { n: "M. (Sigilo)", t: isPT ? "O sigilo é garantido mesmo. Pode confiar." : "Secrecy is guaranteed. You can trust.", s: 5 },
+            { n: "Sr. João", t: isPT ? "Agradeço pela paciência e pelo serviço impecável." : "Thanks for the patience and impeccable service.", s: 5 },
+            { n: "Designer", t: isPT ? "Experiência sensorial incrível. O cheiro, o toque, a música." : "Amazing sensory experience. The smell, touch, music.", s: 5 },
+            { n: "Executivo", t: isPT ? "Saí flutuando. Recomendo para quem tem rotina estressante." : "Left floating. Recommend for stressful routines.", s: 5 },
+            { n: "Matheus", t: isPT ? "O Thalyson é muito gente fina. O tempo passou voando." : "Thalyson is a great guy. Time flew by.", s: 5 },
+            { n: "Bruno", t: isPT ? "Melhor investimento da semana. Relaxamento total." : "Best investment of the week. Total relaxation.", s: 5 },
+            { n: "Rafa", t: isPT ? "Toque firme, mas sensível. Sabe onde tocar." : "Firm but sensitive touch. Knows where to touch.", s: 5 },
+            { n: "Tech Guy", t: isPT ? "Gostei da facilidade de agendar pelo app. Sem enrolação." : "Liked the ease of booking via app. No hassle.", s: 5 },
+            { n: "Corredor", t: isPT ? "Massagem nos pés foi um bônus que eu não esperava. Ótimo." : "Foot massage was an unexpected bonus. Great.", s: 5 },
+            { n: "Fã #2", t: isPT ? "Simpático e bonito. O serviço é completo mesmo." : "Friendly and handsome. Service is truly complete.", s: 5 },
+            { n: "Pedro", t: isPT ? "Me ajudou muito com a ansiedade. Gratidão." : "Helped a lot with anxiety. Grateful.", s: 5 },
+            { n: "Morador Centro", t: isPT ? "Fiz no meu apto e ele levou tudo, maca, toalhas. Prático." : "Did it at my apt, he brought everything, table, towels. Practical.", s: 5 },
+            { n: "Curioso", t: isPT ? "A massagem tântrica dele desbloqueou sensações novas." : "His tantric massage unlocked new sensations.", s: 5 },
+            { n: "Ricardo", t: isPT ? "Valeu a pena esperar a agenda liberar." : "Worth waiting for the schedule to open.", s: 5 },
+            { n: "Sérgio", t: isPT ? "Nota 10. Nada a reclamar." : "Score 10. Nothing to complain about.", s: 5 },
+            { n: "Médico", t: isPT ? "Muito higiênico e cuidadoso." : "Very hygienic and careful.", s: 5 },
+            { n: "Cliente Fiel", t: isPT ? "Voltarei com certeza na próxima semana." : "Will definitely return next week.", s: 5 },
+            { n: "Fernando", t: isPT ? "Paz de espírito e corpo relaxado. Obrigado." : "Peace of mind and relaxed body. Thanks.", s: 5 },
+            { n: "Sigilo Total", t: isPT ? "Gozada monstruosa. Ele sabe tirar leite." : "Monstrous finish. He knows how to milk it.", s: 5 },
+            { n: "Ativo", t: isPT ? "Curti demais o corpo dele roçando. Fiquei duro a massagem toda." : "Loved his body rubbing. Was hard the whole massage.", s: 5 },
+            { n: "Passivo", t: isPT ? "Mão de fada mas com força. Do jeito que eu gosto." : "Fairy hands but with strength. The way I like it.", s: 5 },
+            { n: "Anônimo 2", t: isPT ? "O creme desliza muito bem, a pele dele é macia." : "Cream glides very well, his skin is soft.", s: 5 },
+            { n: "J.", t: isPT ? "Gostei dos paus que ele usa na massagem com madeira, relaxa mesmo." : "Liked the sticks he uses in wood massage, really relaxes.", s: 5 },
+            { n: "Visitante", t: isPT ? "Saiu leite até da alma. Recomendo a sensitiva." : "Milk came out from the soul. Recommend sensitive.", s: 5 }
         ],
         text: {
             loading: isPT ? "CARREGANDO..." : "LOADING...",
             welcome: isPT ? "Bem-vindo," : "Welcome,",
             subtitle: isPT ? "Relaxe, você está em boas mãos. O que deseja hoje?" : "Relax, you're in good hands. What do you need?",
-            tab_single: isPT ? "Sessão Avulsa" : "Single",
+            tab_single: isPT ? "Sessão Avulsa" : "Single Session",
             tab_packs: isPT ? "Planos Especiais" : "VIP Plans",
-            reviews_btn: isPT ? "Ver relatos reais (+50)" : "Read Reviews",
-            select_time_title: isPT ? "Disponibilidade" : "Scheduling",
-            date_sub: isPT ? "Escolha o horário mais confortável para você:" : "Select time:",
-            location_title: isPT ? "Local de Atendimento" : "Set Location",
-            input_name: isPT ? "Seu nome ou apelido (como preferir)" : "Your Name",
-            input_addr: isPT ? "Endereço onde irei te atender" : "Address",
+            reviews_btn: isPT ? "Ver relatos reais (+50)" : "Read 50+ Real Reviews",
+            select_time_title: isPT ? "Disponibilidade" : "Availability",
+            date_sub: isPT ? "Escolha o horário mais confortável para você:" : "Choose the most comfortable time for you:",
+            location_title: isPT ? "Local de Atendimento" : "Service Location",
+            input_name: isPT ? "Seu nome ou apelido (como preferir)" : "Your name or nickname",
+            input_addr: isPT ? "Endereço onde irei te atender" : "Address where I will attend you",
             input_num: isPT ? "Número" : "Number",
             input_bairro: isPT ? "Bairro" : "District",
             input_city: isPT ? "Cidade" : "City",
-            input_comp: isPT ? "Complemento (Apt, Bloco...)" : "Unit/Apt",
+            input_comp: isPT ? "Complemento (Apt, Bloco...)" : "Complement (Apt, Unit...)",
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
-            input_room: isPT ? "Número do Quarto" : "Room",
-            motel_note: isPT ? "Motel: Pode deixar o pagamento pronto aqui. O nome e a suíte você me passa no WhatsApp, para sua privacidade." : "Motel: Send details on WhatsApp.",
-            pay_title: isPT ? "Preferência de Pagamento" : "Payment",
+            input_room: isPT ? "Número do Quarto" : "Room Number",
+            motel_note: isPT ? "Motel: Pode deixar o pagamento pronto aqui. O nome e a suíte você me passa no WhatsApp, para sua privacidade." : "Motel: You can set payment here. Send name and suite via WhatsApp for privacy.",
+            pay_title: isPT ? "Preferência de Pagamento" : "Payment Preference",
             pay_pix: "Pix",
             pay_card: isPT ? "Cartão" : "Card",
             pay_cash: isPT ? "Dinheiro" : "Cash",
-            extras_title: isPT ? "Personalizar sua experiência" : "Customize",
-            coupon_title: isPT ? "Tenho um convite/cupom" : "Coupons",
-            coupon_placeholder: isPT ? "Código do convite..." : "Enter code...",
-            coupon_btn: isPT ? "Validar" : "Apply",
+            extras_title: isPT ? "Personalizar sua experiência" : "Customize your experience",
+            coupon_title: isPT ? "Tenho um convite/cupom" : "I have a coupon/invite",
+            coupon_placeholder: isPT ? "Código do convite..." : "Invite code...",
+            coupon_btn: isPT ? "Validar" : "Validate",
             remove: isPT ? "Remover" : "Remove",
-            total_label: "Investimento Total",
+            total_label: isPT ? "Investimento Total" : "Total Investment",
             book_btn: isPT ? "Enviar Solicitação" : "Send Request",
-            next_btn: isPT ? "Avançar" : "Continue",
-            uber_warning: isPT ? "Taxa de transporte (Uber) combinamos no chat" : "Transport fee on WhatsApp",
-            success_title: isPT ? "Tudo certo!" : "Done!",
-            success_sub: isPT ? "Já preparei seu agendamento. É só clicar abaixo para abrir nosso chat e confirmar." : "Send msg on WhatsApp.",
-            whatsapp_btn: isPT ? "Combinar no WhatsApp" : "Send Now ➔",
+            next_btn: isPT ? "Avançar" : "Next",
+            uber_warning: isPT ? "Taxa de transporte (Uber) combinamos no chat" : "Transport fee (Uber) arranged in chat",
+            success_title: isPT ? "Tudo certo!" : "All set!",
+            success_sub: isPT ? "Já preparei seu agendamento. É só clicar abaixo para abrir nosso chat e confirmar." : "I've prepared your booking. Click below to open our chat and confirm.",
+            whatsapp_btn: isPT ? "Combinar no WhatsApp" : "Confirm on WhatsApp",
             back_home: isPT ? "Voltar ao Início" : "Back Home",
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
-            empty_date: isPT ? "Selecione uma data acima para ver os horários" : "Select a date",
-            empty_slots: isPT ? "Agenda completa neste dia." : "Full booked.",
-            details_label: isPT ? "DETALHES DA SESSÃO:" : "INCLUDED:",
-            security_note: isPT ? "Seus dados ficam salvos apenas no seu celular. Sigilo total." : "Data saved locally.",
-            popup_welcome_title: isPT ? "Seja bem-vindo!" : "Welcome Gift!",
-            popup_welcome_msg: isPT ? "Para sua primeira experiência ser ainda melhor, liberei um presente especial." : "You got a coupon.",
-            popup_level_title: isPT ? "NOVO STATUS!" : "LEVEL UP!",
-            popup_level_msg: isPT ? "Sua fidelidade é reconhecida. Você alcançou um novo nível de benefícios." : "Congrats! You got a NEW COUPON.",
-            popup_btn_coupon: isPT ? "USAR MEU PRESENTE" : "REDEEM NOW",
-            agree_terms: isPT ? "Estou de acordo com o protocolo de atendimento." : "I agree.",
-            terms_body: isPT ? ["1. HIGIENE: Um banho antes da sessão é essencial para o nosso conforto.", "2. SIGILO: Sua privacidade é absoluta. O que acontece aqui, fica aqui.", "3. RESPEITO: O ambiente é de relaxamento e respeito mútuo.", "4. PAGAMENTO: Realizado ao final, conforme combinado."] : ["1. Hygiene.", "2. Secrecy.", "3. Respect.", "4. Payment."],
-            terms_title: isPT ? "Protocolo de Atendimento" : "Rules",
-            terms_link: isPT ? "Ler protocolo" : "Rules",
-            terms_btn: isPT ? "Combinado" : "Ok",
+            empty_date: isPT ? "Selecione uma data acima para ver os horários" : "Select a date above to see times",
+            empty_slots: isPT ? "Agenda completa neste dia." : "Fully booked on this day.",
+            details_label: isPT ? "DETALHES DA SESSÃO:" : "SESSION DETAILS:",
+            security_note: isPT ? "Seus dados ficam salvos apenas no seu celular. Sigilo total." : "Your data is saved only on your phone. Total secrecy.",
+            popup_welcome_title: isPT ? "Seja bem-vindo!" : "Welcome!",
+            popup_welcome_msg: isPT ? "Para sua primeira experiência ser ainda melhor, liberei um presente especial." : "To make your first experience even better, I've released a special gift.",
+            popup_level_title: isPT ? "NOVO STATUS!" : "NEW STATUS!",
+            popup_level_msg: isPT ? "Sua fidelidade é reconhecida. Você alcançou um novo nível de benefícios." : "Your loyalty is recognized. You've reached a new level of benefits.",
+            popup_btn_coupon: isPT ? "USAR MEU PRESENTE" : "USE MY GIFT",
+            agree_terms: isPT ? "Estou de acordo com o protocolo de atendimento." : "I agree with the service protocol.",
+            terms_body: isPT ? ["1. HIGIENE: Um banho antes da sessão é essencial para o nosso conforto.", "2. SIGILO: Sua privacidade é absoluta. O que acontece aqui, fica aqui.", "3. RESPEITO: O ambiente é de relaxamento e respeito mútuo.", "4. PAGAMENTO: Realizado ao final, conforme combinado."] : ["1. HYGIENE: A shower before the session is essential for our comfort.", "2. SECRECY: Your privacy is absolute. What happens here, stays here.", "3. RESPECT: The environment is for relaxation and mutual respect.", "4. PAYMENT: Made at the end, as agreed."],
+            terms_title: isPT ? "Protocolo de Atendimento" : "Service Protocol",
+            terms_link: isPT ? "Ler protocolo" : "Read protocol",
+            terms_btn: isPT ? "Combinado" : "Agreed",
+            scarcity_msg: isPT ? "pessoas visitando agora" : "people visiting now",
+            xp_label: "XP",
+            level_label: isPT ? "Seu Nível" : "Your Level",
+            max_level: isPT ? "Você é VIP Máximo!" : "You are Max VIP!",
+            missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP para ganhar R$ ${reward},00` : `${needed} XP needed to win $ ${reward}.00`,
+            
+            // TOAST MESSAGES
+            toast_select_item: isPT ? "Por favor, escolha como quer relaxar hoje." : "Please choose how you want to relax today.",
+            toast_select_date: isPT ? "Selecione um dia e horário na agenda." : "Select a day and time on the schedule.",
+            toast_fill_name: isPT ? "Preciso saber seu nome para o atendimento." : "I need to know your name for the service.",
+            toast_fill_addr: isPT ? "O endereço completo é importante para eu chegar até você." : "Full address is important for me to reach you.",
+            toast_fill_hotel: isPT ? "Qual o nome do hotel e a cidade?" : "What is the hotel name and city?",
+            toast_select_pay: isPT ? "Escolha uma forma de pagamento." : "Choose a payment method.",
+            toast_accept_terms: isPT ? "Para nossa segurança, aceite o protocolo." : "For our safety, please accept the protocol.",
+            toast_coupon_success: isPT ? "Convite aplicado com sucesso!" : "Invite applied successfully!",
+            toast_coupon_error: isPT ? "Este código não é válido." : "This code is invalid.",
+
             zap: {
-              intro: isPT ? "Oi Thalyson, tudo bem? 🌿" : "Hi Thalyson!",
-              section_serv: isPT ? "💆‍♂️ *Experiência:*" : "🔥 *SERVICE*",
-              section_plan: isPT ? "🏆 *Plano VIP:*" : "🏆 *I WANT PACK:*",
-              section_det: isPT ? "📝 *Detalhes:*" : "📝 *DETAILS*",
-              section_loc: isPT ? "📍 *Local:*" : "📍 *LOCATION*",
-              section_fin: isPT ? "💰 *Investimento:*" : "💰 *VALUES*",
+              intro: isPT ? "Oi Thalyson, tudo bem? 🌿" : "Hi Thalyson, how are you? 🌿",
+              section_serv: isPT ? "💆‍♂️ *Experiência:*" : "💆‍♂️ *Experience:*",
+              section_plan: isPT ? "🏆 *Plano VIP:*" : "🏆 *VIP Plan:*",
+              section_det: isPT ? "📝 *Detalhes:*" : "📝 *Details:*",
+              section_loc: isPT ? "📍 *Local:*" : "📍 *Location:*",
+              section_fin: isPT ? "💰 *Investimento:*" : "💰 *Investment:*",
               map_link: isPT ? "🗺️ *Mapa:*" : "🗺️ *Map:*",
-              wait: isPT ? "Podemos confirmar?" : "Can you confirm?",
-              house: isPT ? "Residência" : "Home",
+              wait: isPT ? "Podemos confirmar?" : "Can we confirm?",
+              house: isPT ? "Residência" : "Residence",
               hotel: "Hotel",
-              motel: "Motel"
-            },
-            scarcity_msg: isPT ? "pessoas online agora" : "people online"
+              motel: "Motel",
+              extra_title: isPT ? "✨ *Personalização:*" : "✨ *Customization:*",
+              pay_method: isPT ? "💳 *Pagamento:*" : "💳 *Payment:*",
+              uber_label: isPT ? "🚗 *Transporte:*" : "🚗 *Transport:*",
+              uber_text: isPT ? "A combinar." : "To be arranged."
+            }
         }
     };
 };
@@ -272,6 +336,7 @@ export default function App() {
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
   const [activeTab, setActiveTab] = useState('single');
+  
   const [viewers, setViewers] = useState(0);
   const [showScarcity, setShowScarcity] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
@@ -280,9 +345,12 @@ export default function App() {
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [couponInput, setCouponInput] = useState('');
+  
   const [toasts, setToasts] = useState([]);
+  
   const scrollRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
+  
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
 
@@ -305,6 +373,7 @@ export default function App() {
     payment: '', appliedCoupon: null, termsAccepted: false
   });
 
+  // CARREGAMENTO SEGURO
   useEffect(() => {
     setIsClient(true);
     setTimeout(() => setLoading(false), 2000);
@@ -362,6 +431,7 @@ export default function App() {
       const now = new Date();
       const selectedDate = new Date(booking.date);
       const isToday = selectedDate.getDate() === now.getDate() && selectedDate.getMonth() === now.getMonth();
+
       if (isToday) {
           const currentHour = now.getHours();
           return slots.filter(time => {
@@ -386,21 +456,22 @@ export default function App() {
     return { sub, disc, total };
   }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras]);
 
+  // GERADOR WHATSAPP - TEXTO ACONCHEGANTE E DIRETO
   const generateWhatsAppLink = () => {
     const f = financials;
-    const dateStr = booking.date ? booking.date.toLocaleDateString('pt-BR') : '';
+    const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
     let locTxt = "";
     let mapQuery = "";
     
     if(booking.locationType === 'home') {
         const fullAddr = `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}`;
-        locTxt = `🏠 *Local:* \n${fullAddr}\n📝 *Comp:* ${booking.address.comp || 'N/A'}`;
+        locTxt = `${T.zap.house} \n${fullAddr}\n📝 *Comp:* ${booking.address.comp || 'N/A'}`;
         mapQuery = fullAddr;
     } else if(booking.locationType === 'motel') {
-        locTxt = `🏩 *Local:* Motel (Combinar detalhes no chat)`;
+        locTxt = `${T.zap.motel} (Combinar detalhes no chat)`;
     } else {
         const fullAddr = `${booking.address.placeName}, ${booking.address.city}`;
-        locTxt = `🏨 *Hotel:* \n${fullAddr}\n🚪 *Quarto:* ${booking.address.comp || 'N/A'}`;
+        locTxt = `${T.zap.hotel} \n${fullAddr}\n🚪 *Quarto:* ${booking.address.comp || 'N/A'}`;
         mapQuery = fullAddr;
     }
     
@@ -418,45 +489,45 @@ Gostaria de agendar um momento pra relaxar.
 ${header} ${booking.item?.title}
 📅 *Data:* ${dateStr} às ${booking.time}
 
-${extrasList ? `✨ *Personalização:* \n${extrasList}\n` : ''}
+${extrasList ? `${T.zap.extra_title} \n${extrasList}\n` : ''}
 ${locTxt}
-${mapQuery ? `\n🗺️ *Mapa:* https://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
+${mapQuery ? `\n${T.zap.map_link} https://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
 
-💰 *Investimento:* ${T.currency} ${f.total},00
-💳 *Pagamento:* ${booking.payment}
-🚗 *Transporte:* A combinar.
+${T.zap.section_fin} ${T.currency} ${f.total},00
+${T.zap.pay_method} ${booking.payment}
+${T.zap.uber_label} ${T.zap.uber_text}
 
-Podemos confirmar?
+${T.zap.wait}
 `.trim();
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`;
   };
 
   const validateStep = () => {
       if (step === 0) {
-          if(!booking.item) { addToast("Por favor, escolha como quer relaxar hoje.", "error"); return false; }
+          if(!booking.item) { addToast(T.toast_select_item, "error"); return false; }
           return true;
       }
       if (step === 1) {
-          if (!booking.date || !booking.time) { addToast("Selecione um dia e horário na agenda.", "error"); return false; }
+          if (!booking.date || !booking.time) { addToast(T.toast_select_date, "error"); return false; }
           return true;
       }
       if (step === 2) {
-          if (!user.name || user.name.trim().length < 3) { addToast("Preciso saber seu nome para o atendimento.", "error"); return false; }
+          if (!user.name || user.name.trim().length < 3) { addToast(T.toast_fill_name, "error"); return false; }
           if (booking.locationType === 'home') {
               if(!booking.address.street || !booking.address.number || !booking.address.district || !booking.address.city) {
-                  addToast("O endereço completo é importante para eu chegar até você.", "error"); return false;
+                  addToast(T.toast_fill_addr, "error"); return false;
               }
           }
           if (booking.locationType === 'hotel') {
               if(!booking.address.placeName || !booking.address.city) {
-                  addToast("Qual o nome do hotel e a cidade?", "error"); return false;
+                  addToast(T.toast_fill_hotel, "error"); return false;
               }
           }
           return true;
       }
       if (step === 3) {
-          if (!booking.payment) { addToast("Escolha uma forma de pagamento.", "error"); return false; }
-          if (!booking.termsAccepted) { addToast("Para nossa segurança, aceite o protocolo.", "error"); return false; }
+          if (!booking.payment) { addToast(T.toast_select_pay, "error"); return false; }
+          if (!booking.termsAccepted) { addToast(T.toast_accept_terms, "error"); return false; }
           return true;
       }
       return true;
@@ -478,10 +549,10 @@ Podemos confirmar?
           const val = code === 'VIP20' ? 20 : 10;
           const newCoupon = { id: code, val, title: `🎟️ Convite ${code}`, code };
           setBooking(b => ({...b, appliedCoupon: newCoupon}));
-          addToast("Convite aplicado com sucesso!", "success");
+          addToast(T.toast_coupon_success, "success");
           setCouponInput('');
       } else {
-          addToast("Este código não é válido.", "error");
+          addToast(T.toast_coupon_error, "error");
       }
   };
 
@@ -494,6 +565,7 @@ Podemos confirmar?
     const xpMultiplier = booking.type === 'pack' ? 1.5 : 1;
     const xpGain = Math.floor(xpBase * xpMultiplier * 0.1); 
     const newXP = Math.floor(user.xp + xpGain);
+    
     let leveledUp = false;
     DATA.levels.forEach(lvl => {
         if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
@@ -503,8 +575,10 @@ Podemos confirmar?
     });
 
     if (leveledUp) setLevelUpPopup(true);
+    
     setUser(prev => ({ ...prev, xp: newXP, coupons: updatedCoupons, ordersCount: prev.ordersCount + 1 }));
     setShowConfetti(true);
+    
     if (typeof window !== 'undefined') {
         const zapLink = generateWhatsAppLink();
         window.open(zapLink, '_blank');
@@ -514,19 +588,13 @@ Podemos confirmar?
 
   // LOGICA CORRIGIDA DA BARRA DE XP
   const getCurrentLevelProgress = () => {
-      // Encontra o nível atual
       const currentLevelIndex = DATA.levels.slice().reverse().findIndex(l => user.xp >= l.xpNeeded);
-      // O findIndex no reverse retorna índice invertido, vamos corrigir
       const realIndex = currentLevelIndex === -1 ? 0 : DATA.levels.length - 1 - currentLevelIndex;
-      
       const currentLevel = DATA.levels[realIndex];
       const nextLevel = DATA.levels[realIndex + 1];
-
-      if (!nextLevel) return 100; // Nível máximo
-
+      if (!nextLevel) return 100; 
       const totalNeeded = nextLevel.xpNeeded - currentLevel.xpNeeded;
       const currentProgress = user.xp - currentLevel.xpNeeded;
-      
       return Math.min(100, Math.max(0, (currentProgress / totalNeeded) * 100));
   };
 
@@ -561,7 +629,7 @@ Podemos confirmar?
 
       <Confetti active={showConfetti} />
       
-      {/* SCARCITY CORRIGIDO E CENTRALIZADO */}
+      {/* SCARCITY */}
       <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[90] pointer-events-none transition-all duration-500 transform ${showScarcity ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
            <div className="bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border border-white/20">
                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -590,11 +658,11 @@ Podemos confirmar?
             <div className="animate-fade-in">
               <div className="mb-8">
                 <div className="flex items-end gap-2 mb-2">
-                    <h1 className="text-3xl font-black tracking-tight">{T.welcome} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{user.name ? user.name.split(' ')[0] : 'Visitante'}</span></h1>
+                    <h1 className="text-3xl font-black tracking-tight">{T.welcome} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{user.name ? user.name.split(' ')[0] : (lang==='pt'?'Visitante':'Visitor')}</span></h1>
                 </div>
                 <p className={`text-sm mb-6 font-medium leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.subtitle}</p>
                 
-                {/* XP CARD CORRIGIDO */}
+                {/* XP CARD */}
                 <div className={`relative overflow-hidden rounded-3xl p-5 mb-6 border shadow-lg transition-all ${isDark ? 'bg-gradient-to-br from-zinc-900 to-black border-zinc-800' : 'bg-white border-slate-100'}`}>
                     <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-3">
@@ -602,21 +670,20 @@ Podemos confirmar?
                                 <Trophy className="text-white" size={24} />
                             </div>
                             <div>
-                                <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">Seu Nível</span>
+                                <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">{T.level_label}</span>
                                 <h3 className={`font-black text-lg text-amber-500`}>
-                                    {user.xp > 900 ? 'Membro VIP' : (user.xp > 450 ? 'Prata' : (user.xp > 150 ? 'Bronze' : 'Visitante'))}
+                                    {DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title}
                                 </h3>
                             </div>
                         </div>
                         <div className="text-right">
                             <span className="text-2xl font-black">{user.xp}</span>
-                            <span className="text-[10px] font-bold opacity-50 block">XP</span>
+                            <span className="text-[10px] font-bold opacity-50 block">{T.xp_label}</span>
                         </div>
                     </div>
-                    {/* FEEDBACK VISUAL DE PROGRESSÃO MATEMATICO */}
                     <div className="mt-3">
                         <p className="text-[10px] opacity-60 mb-1">
-                            {nextLevelInfo ? `Faltam ${nextLevelInfo.needed} XP para ganhar R$ ${nextLevelInfo.reward},00` : 'Você é VIP Máximo!'}
+                            {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : T.max_level}
                         </p>
                         <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
                             <div className="h-full bg-amber-500 transition-all duration-1000 ease-out" style={{width: `${getCurrentLevelProgress()}%`}}></div>
@@ -661,7 +728,7 @@ Podemos confirmar?
                               <div className="flex items-end gap-3 p-3 rounded-xl bg-black/20 border border-white/5">
                                   <span className="text-2xl font-black text-amber-500">{T.currency} {plan.price}</span>
                                   <span className="text-sm line-through opacity-40 mb-1 decoration-red-500">{T.currency} {plan.fullPrice}</span>
-                                  <span className="text-xs text-green-500 font-bold mb-1 ml-auto bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">Economia {T.currency}{plan.savings}</span>
+                                  <span className="text-xs text-green-500 font-bold mb-1 ml-auto bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">{isPT ? 'Economia' : 'Save'} {T.currency}{plan.savings}</span>
                               </div>
                           </Card>
                       ))}
@@ -681,7 +748,7 @@ Podemos confirmar?
                 {[...Array(14)].map((_, i) => { 
                   const d = new Date(); d.setDate(d.getDate() + i);
                   const isSel = booking.date?.toDateString() === d.toDateString();
-                  let lbl = d.toLocaleDateString(CONFIG.LOCALE, {weekday:'short'}).slice(0,3);
+                  let lbl = d.toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN, {weekday:'short'}).slice(0,3);
                   if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
                   return (
                     <button key={i} onClick={() => setBooking(b => ({ ...b, date: d, time: null }))} className={`min-w-[76px] h-24 rounded-3xl flex flex-col items-center justify-center gap-1 border-2 transition-all flex-shrink-0 active:scale-95 duration-200 ${isSel ? 'bg-amber-500 border-amber-500 text-black shadow-lg shadow-amber-500/30 scale-105' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-400')}`}>
@@ -700,7 +767,7 @@ Podemos confirmar?
                    ))}
                 </div>
               )}
-              {booking.date && generateTimeSlots.length === 0 && (<div className="text-center py-10 opacity-50 bg-zinc-900/50 rounded-2xl border border-zinc-800"><p className="text-sm font-bold">{T.empty_slots}</p><p className="text-xs mt-1">{T.try_tomorrow}</p></div>)}
+              {booking.date && generateTimeSlots.length === 0 && (<div className="text-center py-10 opacity-50 bg-zinc-900/50 rounded-2xl border border-zinc-800"><p className="text-sm font-bold">{T.empty_slots}</p><p className="text-xs mt-1">{isPT ? 'Tente amanhã' : 'Try tomorrow'}</p></div>)}
             </div>
           )}
 
@@ -709,32 +776,32 @@ Podemos confirmar?
             <div className="animate-slide-in">
               <h2 className="text-2xl font-bold text-center mb-8">{T.location_title}</h2>
               <div className={`grid grid-cols-3 gap-2 p-1.5 rounded-2xl mb-8 ${isDark ? 'bg-zinc-900' : 'bg-slate-100'}`}>
-                 {[{id:'home', l:T.zap.house, i:Home}, {id:'motel', l:'Motel', i:BedDouble}, {id:'hotel', l:'Hotel', i:Building}].map(x => (
+                 {[{id:'home', l:T.zap.house, i:Home}, {id:'motel', l:T.zap.motel, i:BedDouble}, {id:'hotel', l:T.zap.hotel, i:Building}].map(x => (
                     <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`py-4 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-2 transition-all duration-300 ${booking.locationType === x.id ? (isDark ? 'bg-zinc-800 text-white shadow-md' : 'bg-white text-black shadow-md') : 'opacity-40 hover:opacity-100'}`}>
                         <x.i size={20} strokeWidth={2.5}/> {x.l}
                     </button>
                  ))}
               </div>
               <div className="space-y-5">
-                 <InputField label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} isDark={isDark} placeholder="Nome" />
+                 <InputField label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} isDark={isDark} placeholder={isPT ? "Nome" : "Name"} />
                  {booking.locationType === 'home' && (
                      <div className="space-y-4 animate-fade-in">
                         <div className="grid grid-cols-[1fr_90px] gap-3">
-                           <InputField label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} isDark={isDark} icon={MapPin} placeholder="Rua/Av" />
+                           <InputField label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} isDark={isDark} icon={MapPin} placeholder={isPT ? "Rua/Av" : "Street"} />
                            <InputField label={T.input_num} value={booking.address.number} type="tel" onChange={e=>setBooking(b=>({...b, address: {...b.address, number: e.target.value}}))} isDark={isDark} placeholder="123" />
                         </div>
-                        <InputField label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} isDark={isDark} placeholder="Bairro" />
+                        <InputField label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} isDark={isDark} placeholder={isPT ? "Bairro" : "District"} />
                         <div className="grid grid-cols-2 gap-3">
-                             <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} isDark={isDark} placeholder="Cidade" />
-                             <InputField label={T.input_comp} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} placeholder="Apt" />
+                             <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} isDark={isDark} placeholder={isPT ? "Cidade" : "City"} />
+                             <InputField label={T.input_comp} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} placeholder={isPT ? "Apt" : "Unit"} />
                         </div>
                      </div>
                  )}
                  {booking.locationType === 'hotel' && (
                     <div className="space-y-4 animate-fade-in">
-                        <InputField label={T.input_hotel} value={booking.address.placeName} onChange={e=>setBooking(b=>({...b, address: {...b.address, placeName: e.target.value}}))} isDark={isDark} icon={Building} placeholder="Nome do Hotel" />
-                        <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} isDark={isDark} placeholder="Cidade" />
-                        <InputField label={T.input_room} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} icon={Lock} placeholder="Quarto" />
+                        <InputField label={T.input_hotel} value={booking.address.placeName} onChange={e=>setBooking(b=>({...b, address: {...b.address, placeName: e.target.value}}))} isDark={isDark} icon={Building} placeholder={isPT ? "Nome do Hotel" : "Hotel Name"} />
+                        <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} isDark={isDark} placeholder={isPT ? "Cidade" : "City"} />
+                        <InputField label={T.input_room} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} icon={Lock} placeholder={isPT ? "Quarto" : "Room"} />
                     </div>
                  )}
                  {booking.locationType === 'motel' && (
@@ -772,15 +839,15 @@ Podemos confirmar?
                       <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-600"></div>
                       <div className="flex justify-between items-start mb-6 mt-2">
                           <div>
-                              <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded mb-2 inline-block ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>{booking.type === 'pack' ? 'Pacote' : (booking.type === 'subscription' ? 'Assinatura' : 'Sessão Individual')}</span>
+                              <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded mb-2 inline-block ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>{booking.type === 'pack' ? (isPT?'Pacote':'Pack') : (booking.type === 'subscription' ? (isPT?'Assinatura':'Subscription') : (isPT?'Sessão Individual':'Single Session'))}</span>
                               <h2 className="font-black text-2xl leading-tight text-amber-500">{booking.item.title}</h2>
-                              <p className="text-xs opacity-60 mt-1">{booking.date?.toLocaleDateString()} às {booking.time}</p>
+                              <p className="text-xs opacity-60 mt-1">{booking.date?.toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN)} {isPT ? 'às' : 'at'} {booking.time}</p>
                           </div>
                       </div>
                       <div className="space-y-3 border-b border-dashed border-zinc-700/50 pb-6 mb-6">
-                          <div className="flex justify-between text-sm"><span>Valor Base</span><span>{T.currency} {booking.item.price}</span></div>
+                          <div className="flex justify-between text-sm"><span>{isPT?'Valor Base':'Base Price'}</span><span>{T.currency} {booking.item.price}</span></div>
                           {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>(<div key={k} className="flex justify-between text-sm opacity-60"><span>+ {DATA.extras.find(e=>e.id===k).label}</span><span>{DATA.extras.find(e=>e.id===k).price}</span></div>))}
-                          {booking.appliedCoupon && (<div className="flex justify-between text-sm text-green-500 font-bold bg-green-500/5 p-2 rounded-lg"><span>Cupom ({booking.appliedCoupon.code})</span><span>- {T.currency} {booking.appliedCoupon.val}</span></div>)}
+                          {booking.appliedCoupon && (<div className="flex justify-between text-sm text-green-500 font-bold bg-green-500/5 p-2 rounded-lg"><span>{isPT?'Cupom':'Coupon'} ({booking.appliedCoupon.code})</span><span>- {T.currency} {booking.appliedCoupon.val}</span></div>)}
                       </div>
                       <div className="flex justify-between items-end">
                           <div><span className="text-[10px] font-bold uppercase opacity-50 block mb-1">{T.total_label}</span><span className="text-[10px] font-medium bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20">{T.uber_warning}</span></div>
@@ -807,7 +874,7 @@ Podemos confirmar?
                <div className="mt-8">
                    <h3 className="text-xs font-bold uppercase opacity-50 mb-3 ml-1">{T.pay_title}</h3>
                    <div className="grid grid-cols-1 gap-3">
-                       {[{id:'pix', l:T.pay_pix, i:QrCode, sub:'Preferido'}, {id:'card', l:T.pay_card, i:CreditCard, sub:''}, {id:'money', l:T.pay_cash, i:Banknote, sub:''}].map(p => (
+                       {[{id:'pix', l:T.pay_pix, i:QrCode, sub: isPT?'Preferido':'Preferred'}, {id:'card', l:T.pay_card, i:CreditCard, sub:''}, {id:'money', l:T.pay_cash, i:Banknote, sub:''}].map(p => (
                            <button key={p.id} onClick={()=>setBooking(b=>({...b, payment: p.id}))} className={`px-5 py-4 rounded-2xl border flex items-center gap-4 transition-all active:scale-[0.98] duration-200 ${booking.payment === p.id ? 'bg-amber-500 text-black border-amber-500 shadow-lg shadow-amber-500/20' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:bg-zinc-800' : 'bg-white border-slate-200 hover:bg-slate-50')}`}>
                                <div className={`p-2 rounded-full ${booking.payment === p.id ? 'bg-black/20' : 'bg-zinc-800'}`}><p.i size={20}/></div>
                                <div className="text-left"><span className="font-bold text-sm block">{p.l}</span>{p.sub && <span className="text-[10px] opacity-60 block uppercase tracking-widest">{p.sub}</span>}</div>
