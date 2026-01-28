@@ -6,23 +6,25 @@ import {
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
   ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle, Tag, Sparkles, 
   MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
-  ChevronRight, Lock, History, User, Wallet, Share2, Copy, Quote, Smile
+  ChevronRight, Lock, History, User, Wallet, Share2, Copy, Quote, Smile,
+  RotateCcw
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v17.2 - FIX & RESTORE
+ * THALYSON APP OS v17.3 - FINAL UX & SYSTEM FIX
  * ==================================================================================
- * 1. [RESTORE] Todas as 50+ avaliações estão de volta.
- * 2. [ZAP] Preços dos extras incluídos na mensagem.
- * 3. [UX] Botão do Popup aplica o cupom AUTOMATICAMENTE.
- * 4. [FIX] Preços mantidos (125/155/205) e lógica de horário corrigida.
+ * 1. [FIX] Cupom de Boas-vindas agora persiste após escolher o serviço.
+ * 2. [XP] Sistema "Prestige": Após nível 4, ganha R$50 a cada 500XP (Infinito).
+ * 3. [UX] Botão Home adicionado ao Footer.
+ * 4. [ZAP] Layout da mensagem reformulado para estilo "Ticket/Recibo".
+ * 5. [DATA] Preços e Avaliações mantidos.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v17_2_fixed', 
+  STORAGE_KEY: '@thaly_app_v17_3_final', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
@@ -60,8 +62,8 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
   </div>
 );
 
-const Card = ({ children, isDark, className = '', onClick, active = false, isPlan = false }) => (
-  <div onClick={onClick} className={`relative p-6 rounded-3xl transition-all duration-500 overflow-hidden group ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} ${isDark ? `bg-zinc-900/40 backdrop-blur-md ${active ? (isPlan ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-amber-500/50 bg-amber-500/5') : 'border border-zinc-800/60 hover:border-zinc-700'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
+const Card = ({ children, isDark, className = '', onClick, active = false }) => (
+  <div onClick={onClick} className={`relative p-6 rounded-3xl transition-all duration-500 overflow-hidden group ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} ${isDark ? `bg-zinc-900/40 backdrop-blur-md ${active ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-zinc-800/60 hover:border-zinc-700'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
     {children}
   </div>
 );
@@ -109,12 +111,13 @@ const Confetti = ({ active }) => {
 };
 
 // ==================================================================================
-// 3. DADOS (FULL REVIEWS RESTORED)
+// 3. DADOS
 // ==================================================================================
 
 const getData = (lang) => {
     const isPT = lang === 'pt';
     return {
+        // NÍVEIS BASE (Até 800 XP)
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor", color: "text-zinc-400" },
             { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" },
@@ -318,15 +321,15 @@ const getData = (lang) => {
 
             zap: {
               intro: isPT ? "Oi Thalyson, tudo bem? 🌿" : "Hi Thalyson, how are you? 🌿",
-              order_title: isPT ? "*NOVO AGENDAMENTO*" : "*NEW BOOKING*",
+              order_title: isPT ? "*PEDIDO CONFIRMADO*" : "*ORDER CONFIRMED*",
               client: isPT ? "👤 *Cliente:*" : "👤 *Client:*",
               service: isPT ? "💆‍♂️ *Serviço:*" : "💆‍♂️ *Service:*",
-              date: isPT ? "📅 *Data:*" : "📅 *Date:*",
-              location: isPT ? "📍 *Local:*" : "📍 *Location:*",
+              date: isPT ? "🗓️ *Data:*" : "🗓️ *Date:*",
+              location: isPT ? "📍 *Localização:*" : "📍 *Location:*",
               payment: isPT ? "💳 *Pagamento:*" : "💳 *Payment:*",
-              value: isPT ? "💰 *Total:*" : "💰 *Total:*",
-              xp_status: isPT ? "🏆 *Status XP:*" : "🏆 *XP Status:*",
-              xp_gain: isPT ? "Ganhou:" : "Earned:",
+              value: isPT ? "💰 *RESUMO FINANCEIRO:*" : "💰 *FINANCIAL SUMMARY:*",
+              xp_status: isPT ? "🏆 *FIDELIDADE:*" : "🏆 *LOYALTY:*",
+              xp_gain: isPT ? "XP Ganho:" : "XP Earned:",
               xp_level: isPT ? "Nível Atual:" : "Current Level:",
               xp_next: isPT ? "Próximo Prêmio:" : "Next Reward:",
               wait: isPT ? "Podemos confirmar os detalhes?" : "Can we confirm details?",
@@ -405,7 +408,7 @@ export default function App() {
                 setBooking(b => ({...b, address: parsed.savedAddress}));
             }
         } else {
-            setUser(p => ({...p, coupons: [] })); // Inicializa vazio, popup vai adicionar
+            setUser(p => ({...p, coupons: [] })); // Inicializa vazio
         }
     } catch (e) {
         console.error("Storage error", e);
@@ -439,9 +442,9 @@ export default function App() {
           ...prev,
           type: type,
           item: item,
+          // Mantém o cupom aplicado se já existir (Correção)
           extras: {}, 
           payment: '',
-          appliedCoupon: null,
           termsAccepted: false
       }));
   };
@@ -491,12 +494,20 @@ export default function App() {
       return Math.floor(baseXP * percentage);
   }, [financials.total, booking.type]);
 
+  // LÓGICA INFINITA DE NÍVEL
   const getNextLevelInfo = (currentXP) => {
+      // Se XP for maior que o nível máximo (800)
+      if (currentXP >= 800) {
+          const cycleXP = currentXP - 800;
+          const nextRewardAt = 500 - (cycleXP % 500); // Falta quanto para o próximo 500
+          return { needed: nextRewardAt, reward: 50, title: "Prestige" }; // Recompensa fixa de 50
+      }
+      
       const nextLevel = DATA.levels.find(l => l.xpNeeded > currentXP);
       return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
   };
 
-  // GERADOR WHATSAPP ULTRA DETALHADO (PT/EN)
+  // GERADOR WHATSAPP ESTILO TICKET
   const generateWhatsAppLink = () => {
     const f = financials;
     const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
@@ -509,20 +520,20 @@ export default function App() {
     
     if(booking.locationType === 'home') {
         const fullAddr = `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}`;
-        locTxt = `${T.zap.house} \n${fullAddr}\n📝 *Comp:* ${booking.address.comp || 'N/A'}`;
+        locTxt = `${T.zap.house}\n📍 ${fullAddr}\n📝 Comp: ${booking.address.comp || '-'}`;
         mapQuery = fullAddr;
     } else if(booking.locationType === 'motel') {
-        locTxt = `${T.zap.motel} (Combinar detalhes e valor total no chat)`;
+        locTxt = `${T.zap.motel}\n⚠️ (Combinar detalhes e valor total da suíte no chat)`;
     } else {
         const fullAddr = `${booking.address.placeName}, ${booking.address.city}`;
-        locTxt = `${T.zap.hotel} \n${fullAddr}\n🚪 *Quarto:* ${booking.address.comp || 'N/A'}`;
+        locTxt = `${T.zap.hotel}: ${booking.address.placeName}\n📍 ${booking.address.city}\n🚪 Quarto: ${booking.address.comp || '-'}`;
         mapQuery = fullAddr;
     }
     
-    // CORREÇÃO: ADICIONAR PREÇO AOS EXTRAS NO WHATSAPP
+    // EXTRAS COM PREÇO NO ZAP
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => {
         const ext = DATA.extras.find(e=>e.id===k);
-        return ext ? `✅ + ${ext.label} (+ ${T.currency || 'R$'} ${ext.price})` : '';
+        return ext ? `✅ ${ext.label} (+ R$ ${ext.price})` : '';
     }).filter(Boolean).join('\n');
     
     const xpStatusMsg = nextInfo 
@@ -532,16 +543,20 @@ export default function App() {
     const msg = `
 ${T.zap.intro}
 ${T.zap.order_title}
+_____________________________
 
 ${T.zap.client} ${user.name}
 ${T.zap.service} ${booking.item?.title}
 ${T.zap.date} ${dateStr} - ${booking.time}
 
-${extrasList ? `${T.zap.extra_title} \n${extrasList}\n` : ''}
+${extrasList ? `${T.zap.extra_title}\n${extrasList}\n` : ''}
+${T.zap.location}
 ${locTxt}
-${mapQuery ? `\n${T.zap.map_link} https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}` : ''}
+${mapQuery ? `\n🔗 *Mapa:* http://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
+_____________________________
 
-${T.zap.value} ${T.currency || 'R$'} ${f.total},00
+${T.zap.value}
+Total: R$ ${f.total},00
 ${T.zap.payment} ${booking.payment.toUpperCase()}
 ${T.zap.uber_label} ${T.zap.uber_text}
 
@@ -622,12 +637,26 @@ ${T.zap.wait}
     const newXP = Math.floor(user.xp + estimatedXP);
     
     let leveledUp = false;
+    
+    // LÓGICA DE LEVEL UP NORMAL
     DATA.levels.forEach(lvl => {
         if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
             leveledUp = true;
             updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, title: `🏆 Recompensa Nível ${lvl.title}`, code: `LVLUP${lvl.level}` });
         }
     });
+
+    // LÓGICA DE LEVEL UP INFINITO (PRESTIGE)
+    if (newXP >= 800) {
+        const oldCycle = Math.floor((user.xp - 800) / 500);
+        const newCycle = Math.floor((newXP - 800) / 500);
+        
+        if (newCycle > oldCycle && newCycle >= 0) {
+             leveledUp = true;
+             // GANHA CUPOM DE 50 A CADA 500 XP
+             updatedCoupons.push({ id: `PRESTIGE_${Date.now()}`, val: 50, title: `🏆 Bônus Prestige`, code: `VIPMASTER` });
+        }
+    }
 
     if (leveledUp) setLevelUpPopup(true);
     
@@ -642,6 +671,13 @@ ${T.zap.wait}
   };
 
   const getCurrentLevelProgress = () => {
+      // BARRA DE PROGRESSO INFINITA
+      if (user.xp >= 800) {
+          const cycleXP = user.xp - 800;
+          const progressInCycle = cycleXP % 500;
+          return (progressInCycle / 500) * 100;
+      }
+
       const currentLevelIndex = DATA.levels.slice().reverse().findIndex(l => user.xp >= l.xpNeeded);
       const realIndex = currentLevelIndex === -1 ? 0 : DATA.levels.length - 1 - currentLevelIndex;
       const currentLevel = DATA.levels[realIndex];
@@ -721,7 +757,7 @@ ${T.zap.wait}
                             <div>
                                 <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">{T.level_label}</span>
                                 <h3 className={`font-black text-lg text-amber-500`}>
-                                    {DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title}
+                                    {user.xp >= 800 ? "VIP Master (Infinito)" : (DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title)}
                                 </h3>
                             </div>
                         </div>
@@ -732,7 +768,7 @@ ${T.zap.wait}
                     </div>
                     <div className="mt-3">
                         <p className="text-[10px] opacity-60 mb-1">
-                            {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : T.max_level}
+                            {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : "Ciclo Infinito: Ganhe R$ 50 a cada 500 XP"}
                         </p>
                         <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
                             <div className="h-full bg-amber-500 transition-all duration-1000 ease-out" style={{width: `${getCurrentLevelProgress()}%`}}></div>
@@ -973,7 +1009,12 @@ ${T.zap.wait}
          <div className="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none">
             <div className="pointer-events-auto max-w-md mx-auto">
                 <div className={`p-2 rounded-[2rem] shadow-2xl flex items-center gap-4 pr-3 backdrop-blur-xl border transition-colors duration-500 ${isDark ? 'bg-zinc-900/90 border-zinc-700' : 'bg-white/90 border-zinc-200'}`}>
-                    {step > 0 && (<button onClick={()=>setStep(step-1)} className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform border ${isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-slate-100 border-slate-200'}`}><ChevronLeft size={24}/></button>)}
+                    {step > 0 ? (
+                        <div className="flex gap-2">
+                            <button onClick={()=>setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform border ${isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-slate-100 border-slate-200'}`}><Home size={24}/></button>
+                            <button onClick={()=>setStep(step-1)} className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform border ${isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-slate-100 border-slate-200'}`}><ChevronLeft size={24}/></button>
+                        </div>
+                    ) : null}
                     {step < 3 && booking.item && (<div className="flex-1 pl-2 animate-fade-in"><span className="block text-[9px] font-bold uppercase opacity-50 tracking-wider mb-0.5">{T.total_label}</span><span className="block text-2xl font-black tracking-tight text-amber-500">{T.currency || 'R$'} {financials.total}</span></div>)}
                     <button onClick={handleNextStep} className={`h-14 px-8 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg ${step < 3 ? 'ml-auto' : 'w-full'} bg-amber-500 text-black shadow-amber-500/30 hover:bg-amber-400 hover:scale-[1.02] active:scale-95`}>
                         {step === 3 ? T.book_btn : T.next_btn} {step !== 3 && <ArrowRight size={18} strokeWidth={3}/>}
