@@ -11,18 +11,20 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v16.3 - STABLE REFINED
+ * THALYSON APP OS v17.0 - FINAL STABLE
  * ==================================================================================
- * 1. Baseado na v16.2 (Estável).
- * 2. XP ajustado: Visualização do ganho de XP no Checkout.
- * 3. Mantida lógica de Motel/Suíte.
- * 4. Refinamento visual sem quebrar estrutura.
+ * CORREÇÕES REALIZADAS:
+ * 1. [PREÇOS] Atualizados para 125, 155, 205. Pacotes recalculados.
+ * 2. [HORÁRIO] Lógica ajustada: Se for 18:50, libera as 19:00.
+ * 3. [XP] Aumentado ganho para 15% (avulso) e 30% (packs). Níveis facilitados.
+ * 4. [CUPONS] Corrigido bug onde cupom não sumia após uso.
+ * 5. [VISUAL] Mantido estrutura limpa e funcional.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v16_stable', 
+  STORAGE_KEY: '@thaly_app_v17_final', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
@@ -115,15 +117,17 @@ const Confetti = ({ active }) => {
 const getData = (lang) => {
     const isPT = lang === 'pt';
     return {
+        // XP AJUSTADO: NÍVEIS MAIS FÁCEIS
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor", color: "text-zinc-400" },
-            { level: 2, xpNeeded: 150, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" },
-            { level: 3, xpNeeded: 450, reward: 30, title: isPT ? "Cliente Prata" : "Silver Client", color: "text-slate-300" },
-            { level: 4, xpNeeded: 900, reward: 50, title: isPT ? "Membro VIP" : "VIP Member", color: "text-amber-400" }
+            { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" }, // Facilitado de 150 para 100
+            { level: 3, xpNeeded: 350, reward: 30, title: isPT ? "Cliente Prata" : "Silver Client", color: "text-slate-300" },
+            { level: 4, xpNeeded: 800, reward: 50, title: isPT ? "Membro VIP" : "VIP Member", color: "text-amber-400" }
         ],
         services: [
             { 
-              id: 'relaxante', min: 60, price: 90, icon: Wind, tag: isPT ? "PARA RELAXAR" : "RELAXING",
+              // ATUALIZADO: 125
+              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "PARA RELAXAR" : "RELAXING",
               title: isPT ? "Relaxante (Rolos de Madeira)" : "Wood Therapy Relax",
               desc: isPT ? "O alívio imediato para o cansaço do dia a dia." : "Immediate relief for daily tiredness.",
               details: isPT ? `COMO É A SESSÃO?
@@ -137,7 +141,8 @@ const getData = (lang) => {
 ⚠️ Note: Focused on pain relief and tiredness.`
             },
             { 
-              id: 'sensitiva', min: 60, price: 160, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
+              // ATUALIZADO: 155
+              id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
               title: isPT ? "Sensitiva Tântrica (+ Lingam)" : "Tantric Sensitive (+ Lingam)",
               desc: isPT ? "Uma jornada de sensações do início ao fim." : "A journey of sensations from start to finish.",
               details: isPT ? `O QUE ROLA NESSA SESSÃO:
@@ -153,7 +158,8 @@ const getData = (lang) => {
 • FINISH: Hand finish included (with plenty of oil).`
             },
             { 
-              id: 'mista', min: 60, price: 200, icon: Zap, tag: isPT ? "PREFERIDA" : "FAVORITE",
+              // ATUALIZADO: 205
+              id: 'mista', min: 60, price: 205, icon: Zap, tag: isPT ? "PREFERIDA" : "FAVORITE",
               title: isPT ? "Experiência Mista Completa" : "Full Mixed Experience",
               desc: isPT ? "A fusão perfeita: Relaxamento profundo + Intensidade." : "The perfect fusion: Deep relaxation + Intensity.",
               details: isPT ? `A MAIS COMPLETA (60min):
@@ -168,9 +174,30 @@ const getData = (lang) => {
             }
         ],
         plans: [
-            { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4 Sessions)", price: 320, fullPrice: 360, savings: 40, details: isPT ? "Ideal para quem busca bem-estar constante. 4 sessões Relaxantes para usar em 45 dias." : "Ideal for constant wellness. 4 Relax sessions valid for 45 days.", tag: isPT ? "CUIDADO MENSAL" : "MONTHLY CARE", icon: Package },
-            { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3 Sessions)", price: 540, fullPrice: 600, savings: 60, details: isPT ? "Garanta suas sessões completas com valor especial. O melhor custo-benefício." : "Guarantee your full sessions with special value. Best cost-benefit.", tag: isPT ? "MAIS ESCOLHIDO" : "BEST SELLER", icon: Zap },
-            { id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP Mensal" : "VIP Monthly Club", price: 350, fullPrice: 450, savings: 100, details: isPT ? "Acesso exclusivo: 2 Sessões Mistas/mês + Prioridade total na minha agenda." : "Exclusive access: 2 Full Sessions/mo + Total priority in my schedule.", tag: isPT ? "MEMBRO VIP" : "VIP MEMBER", icon: Crown }
+            { 
+              // ATUALIZADO: Pack Relax
+              // 4 sessões x 125 = 500 (Preço Cheio)
+              // Venda por 440 (Desconto de 60)
+              id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4 Sessions)", 
+              price: 440, fullPrice: 500, savings: 60, 
+              details: isPT ? "4 sessões Relaxantes. Economize e garanta mais XP." : "4 Relax sessions. Save money and get more XP.", tag: isPT ? "GANHE XP DOBRADO" : "DOUBLE XP", icon: Package 
+            },
+            { 
+              // ATUALIZADO: Pack Mista
+              // 3 sessões x 205 = 615 (Preço Cheio)
+              // Venda por 550 (Desconto de 65)
+              id: 'pack_mista', type: 'pack', title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3 Sessions)", 
+              price: 550, fullPrice: 615, savings: 65, 
+              details: isPT ? "3 sessões Completas. O atalho para subir de nível VIP." : "3 Full sessions. Shortcut to VIP level.", tag: isPT ? "MAIS ESCOLHIDO" : "BEST SELLER", icon: Zap 
+            },
+            { 
+              // ATUALIZADO: VIP Club
+              // 2 sessões x 205 = 410 + Prioridade
+              // Mantido preço 360
+              id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP Mensal" : "VIP Monthly Club", 
+              price: 360, fullPrice: 460, savings: 100, 
+              details: isPT ? "2 Sessões Mistas/mês + Prioridade total na minha agenda." : "2 Full Sessions/mo + Total priority in my schedule.", tag: isPT ? "STATUS VIP" : "VIP MEMBER", icon: Crown 
+            }
         ],
         extras: [
             { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para curtir seu momento sem pressa." : "To enjoy your moment without rush." },
@@ -437,7 +464,6 @@ export default function App() {
       if (!booking.date) return [];
       const slots = ['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00', '21:00'];
       const now = new Date();
-      // Safe check for valid date object
       const selectedDate = new Date(booking.date);
       if (isNaN(selectedDate)) return [];
       
@@ -446,8 +472,10 @@ export default function App() {
       if (isToday) {
           const currentHour = now.getHours();
           return slots.filter(time => {
-              const [hour] = time.split(':').map(Number);
-              return hour > currentHour + 1;
+              const [slotHour] = time.split(':').map(Number);
+              // LÓGICA CORRIGIDA: Se for 18:50, mostra 19:00.
+              // Apenas se a hora do slot for maior que a hora atual.
+              return slotHour > currentHour;
           });
       }
       return slots;
@@ -458,7 +486,6 @@ export default function App() {
     let sub = booking.item.price;
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
-            // SAFETY CHECK: Ensure extra exists in data before accessing price
             const extData = DATA.extras.find(e=>e.id===k);
             if(extData) {
                 sub += extData.price; 
@@ -470,12 +497,12 @@ export default function App() {
     return { sub, disc, total };
   }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras]);
 
-  // CÁLCULO DE XP (COM BÔNUS PARA PACKS)
+  // CÁLCULO DE XP TURBINADO (30% PARA PACKS, 15% PARA SINGLE)
   const estimatedXP = useMemo(() => {
       const baseXP = financials.total;
-      // Lógica: Packs dão 1.5x mais XP proporcional ao valor para incentivar
-      const xpMultiplier = (booking.type === 'pack' || booking.type === 'subscription') ? 1.5 : 1;
-      return Math.floor(baseXP * xpMultiplier * 0.1);
+      const isPack = booking.type === 'pack' || booking.type === 'subscription';
+      const percentage = isPack ? 0.30 : 0.15; 
+      return Math.floor(baseXP * percentage);
   }, [financials.total, booking.type]);
 
   // GERADOR WHATSAPP
@@ -579,12 +606,19 @@ ${T.zap.wait}
   };
 
   const finishBooking = () => {
+    // CORREÇÃO: REMOVER CUPOM USADO DA LISTA
     let updatedCoupons = Array.isArray(user.coupons) ? [...user.coupons] : [];
-    if (booking.appliedCoupon && booking.appliedCoupon.id.includes('WELCOME')) {
+    
+    if (booking.appliedCoupon) {
+        // Remove o cupom que acabou de ser usado
         updatedCoupons = updatedCoupons.filter(c => c.id !== booking.appliedCoupon.id);
+        // Garante que WELCOME10 não volta
+        if(booking.appliedCoupon.code === 'WELCOME10') {
+             updatedCoupons = updatedCoupons.filter(c => c.code !== 'WELCOME10');
+        }
     }
     
-    // XP CALCULADO COM BASE NA LÓGICA DO PACOTE
+    // XP CALCULADO COM BASE NA NOVA REGRA (15% ou 30%)
     const newXP = Math.floor(user.xp + estimatedXP);
     
     let leveledUp = false;
