@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
   Clock, Zap, X, Globe, Building, BedDouble, 
   Heart, Instagram, Moon, Sun, Home, 
-  CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
-  ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle, Tag, Sparkles, 
+  CreditCard, Banknote, QrCode, Trophy, Info, Gift, 
+  ChevronLeft, Loader2, Eye, AlertTriangle, Tag, 
   MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
-  ChevronRight, Lock, History, User, Wallet, Share2, Copy
+  Lock, User
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v8.0 - BULLETPROOF EDITION
+ * THALYSON APP OS v9.0 - FINAL STABLE & ADJUSTED
  * ==================================================================================
- * CHANGELOG v8.0:
- * - [CRITICAL FIX] Removed External Context Dependency (Fixes White Screen).
- * - [FIX] Integrated Toast Logic directly into Main State.
- * - [NEW] Safe Guard for Window/LocalStorage access.
+ * - CORREÇÃO: Erro de Contexto (Tela Branca) resolvido movendo lógica para local.
+ * - AJUSTE: Taxa de Uber NÃO é somada no total (aparece aviso "A combinar").
+ * - AJUSTE: Motel segue a mesma lógica (detalhes no WhatsApp).
+ * - FEATURE: Persistência de dados do usuário (LocalStorage).
  */
 
 // ==================================================================================
@@ -26,12 +26,12 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v8_final',
+  STORAGE_KEY: '@thaly_app_v9_user_data', // Chave única para salvar dados
   LOCALE: 'pt-BR'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (COMPONENTES SEGUROS)
+// 2. DESIGN SYSTEM (COMPONENTES)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
@@ -143,7 +143,7 @@ const Confetti = ({ active }) => {
 };
 
 // ==================================================================================
-// 3. DADOS
+// 3. DADOS (Mantidos conforme solicitado)
 // ==================================================================================
 
 const getData = (lang) => {
@@ -223,7 +223,7 @@ const getData = (lang) => {
             input_comp: isPT ? "Comp. (Apt, Bloco)" : "Unit/Apt",
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
             input_room: isPT ? "Quarto" : "Room",
-            motel_note: isPT ? "Motel: Envie o nome e a suíte pelo WhatsApp após confirmar." : "Motel: Send details on WhatsApp.",
+            motel_note: isPT ? "Motel: Selecione e pague agora. Detalhes da suíte combinamos no WhatsApp." : "Motel: Send details on WhatsApp.",
             pay_title: isPT ? "Pagamento" : "Payment",
             pay_pix: "Pix (Instantâneo)",
             pay_card: isPT ? "Cartão (Crédito/Débito)" : "Card",
@@ -236,7 +236,7 @@ const getData = (lang) => {
             total_label: "Total Estimado",
             book_btn: isPT ? "Gerar Pedido" : "Generate Order",
             next_btn: isPT ? "Continuar" : "Continue",
-            uber_note: isPT ? "Inclui Taxa de Deslocamento (Uber)" : "Includes Uber Fee",
+            uber_warning: isPT ? "Transporte (Uber) a combinar no WhatsApp" : "Transport fee on WhatsApp",
             success_title: isPT ? "Pedido Gerado!" : "Done!",
             success_sub: isPT ? "O app abriu seu WhatsApp para confirmar. Se não abriu, clique no botão abaixo." : "Send msg on WhatsApp.",
             whatsapp_btn: isPT ? "Abrir WhatsApp" : "Send Now ➔",
@@ -265,7 +265,7 @@ const getData = (lang) => {
               section_loc: isPT ? "📍 *LOCALIZAÇÃO:*" : "📍 *LOCATION*",
               section_fin: isPT ? "💰 *INVESTIMENTO:*" : "💰 *VALUES*",
               map_link: isPT ? "🗺️ *Abrir Mapa:*" : "🗺️ *Map:*",
-              wait: isPT ? "Aguardo sua confirmação!" : "Waiting confirm.",
+              wait: isPT ? "Aguardo confirmação da taxa de Uber e Horário." : "Waiting confirm.",
               house: isPT ? "Residência" : "Home",
               hotel: "Hotel",
               motel: "Motel"
@@ -276,7 +276,7 @@ const getData = (lang) => {
 };
 
 // ==================================================================================
-// 4. APP PRINCIPAL
+// 4. MAIN APP
 // ==================================================================================
 
 export default function App() {
@@ -294,7 +294,9 @@ export default function App() {
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [couponInput, setCouponInput] = useState('');
-  const [toasts, setToasts] = useState([]); // TOAST STATE MOVED HERE
+  
+  // STATE LOCAL DO TOAST (Resolve erro de tela branca)
+  const [toasts, setToasts] = useState([]);
   
   const scrollRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
@@ -302,7 +304,7 @@ export default function App() {
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
 
-  // --- INTERNAL TOAST LOGIC (FIXED) ---
+  // FUNÇÃO TOAST SEGURA
   const addToast = (msg, type = 'success') => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, msg, type }]);
@@ -322,13 +324,22 @@ export default function App() {
     payment: '', appliedCoupon: null, termsAccepted: false
   });
 
+  // CARREGAR DADOS SALVOS (PERSISTÊNCIA)
   useEffect(() => {
     setIsClient(true);
     setTimeout(() => setLoading(false), 2000);
     try {
         const s = localStorage.getItem(CONFIG.STORAGE_KEY);
-        if (s) setUser(JSON.parse(s));
-        else setUser(p => ({...p, coupons: [{ id: 'WELCOME10', val: 10, title: '🎁 Boas Vindas', code: 'WELCOME10' }]}));
+        if (s) {
+            const parsed = JSON.parse(s);
+            setUser(parsed);
+            // Se tiver endereço salvo, já preenche o booking atual
+            if(parsed.savedAddress) {
+                setBooking(b => ({...b, address: parsed.savedAddress}));
+            }
+        } else {
+            setUser(p => ({...p, coupons: [{ id: 'WELCOME10', val: 10, title: '🎁 Boas Vindas', code: 'WELCOME10' }]}));
+        }
     } catch (e) {
         console.warn("Storage blocked");
     }
@@ -341,6 +352,7 @@ export default function App() {
      }
   }, [loading, isClient, user.hasSeenWelcome]);
 
+  // SALVAR DADOS AUTOMATICAMENTE
   useEffect(() => { 
       if(isClient && !loading) {
           try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); } catch(e) {}
@@ -373,6 +385,7 @@ export default function App() {
       return slots;
   }, [booking.date]);
 
+  // CALCULO FINANCEIRO (SEM UBER)
   const financials = useMemo(() => {
     if (!booking.item) return { total: 0, sub: 0, disc: 0 };
     let sub = booking.item.price;
@@ -389,17 +402,19 @@ export default function App() {
     return { sub, disc, total };
   }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras, booking.type]);
 
+  // GERADOR WHATSAPP (COM AVISO DE TAXA)
   const generateWhatsAppLink = () => {
     const f = financials;
     const dateStr = booking.date ? booking.date.toLocaleDateString('pt-BR') : '';
     let locTxt = "";
     let mapQuery = "";
+    
     if(booking.locationType === 'home') {
         const fullAddr = `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}`;
         locTxt = `🏠 *${T.zap.house}:* \n${fullAddr}\n📝 *Comp:* ${booking.address.comp || 'N/A'}`;
         mapQuery = fullAddr;
     } else if(booking.locationType === 'motel') {
-        locTxt = `🏩 *${T.zap.motel}:* Definirei no chat.`;
+        locTxt = `🏩 *${T.zap.motel}:* Combinar suíte e local no chat.`;
     } else {
         const fullAddr = `${booking.address.placeName}, ${booking.address.city}`;
         locTxt = `🏨 *${T.zap.hotel}:* \n${fullAddr}\n🚪 *Quarto:* ${booking.address.comp || 'N/A'}`;
@@ -410,7 +425,9 @@ export default function App() {
         const ext = DATA.extras.find(e=>e.id===k);
         return `✅ + ${ext.label}`;
     }).join('\n');
+    
     const header = booking.type === 'pack' || booking.type === 'subscription' ? T.zap.section_plan : T.zap.section_serv;
+    
     const msg = `
 ${T.zap.intro} *${user.name}*
 
@@ -424,10 +441,9 @@ ${locTxt}
 ${mapQuery ? `\n${T.zap.map_link} https://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
 
 ${T.zap.section_fin}
-💰 Total: ${T.currency} ${f.total},00
+💰 Total Serviço: ${T.currency} ${f.total},00
 💳 Forma: *${booking.payment.toUpperCase()}*
-${f.disc > 0 ? `🎟️ Cupom aplicado: -R$${f.disc}` : ''}
-🚗 *${T.uber_note}*
+🚗 *Taxa de Deslocamento:* A combinar aqui no chat.
 
 🔐 *Termos:* Li e Aceito.
 
@@ -470,6 +486,11 @@ ${T.zap.wait}
 
   const handleNextStep = () => {
       if(validateStep()) {
+          // Se for passo 2 (Local), salva o endereço no user profile para a próxima vez
+          if (step === 2) {
+              setUser(prev => ({...prev, savedAddress: booking.address}));
+          }
+          
           if (step === 3) { finishBooking(); } else { setStep(s => s + 1); }
       }
   };
@@ -507,10 +528,12 @@ ${T.zap.wait}
     });
 
     if (leveledUp) setLevelUpPopup(true);
+    
+    // Atualiza estado e LocalStorage implicitamente pelo useEffect
     setUser(prev => ({ ...prev, xp: newXP, coupons: updatedCoupons, ordersCount: prev.ordersCount + 1 }));
+    
     setShowConfetti(true);
     
-    // Auto Open Zap
     if (typeof window !== 'undefined') {
         const zapLink = generateWhatsAppLink();
         window.open(zapLink, '_blank');
@@ -743,7 +766,7 @@ ${T.zap.wait}
                           {booking.appliedCoupon && (<div className="flex justify-between text-sm text-green-500 font-bold bg-green-500/5 p-2 rounded-lg"><span>Cupom ({booking.appliedCoupon.code})</span><span>- {T.currency} {booking.appliedCoupon.val}</span></div>)}
                       </div>
                       <div className="flex justify-between items-end">
-                          <div><span className="text-[10px] font-bold uppercase opacity-50 block mb-1">{T.total_label}</span><span className="text-[10px] font-medium bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20">{T.uber_note}</span></div>
+                          <div><span className="text-[10px] font-bold uppercase opacity-50 block mb-1">{T.total_label}</span><span className="text-[10px] font-medium bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20">{T.uber_warning}</span></div>
                           <span className="text-4xl font-black tracking-tighter text-white">{T.currency} {financials.total}</span>
                       </div>
                    </div>
