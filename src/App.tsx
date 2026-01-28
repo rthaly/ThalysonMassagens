@@ -11,53 +11,37 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v12.0 - COZY & WELCOMING EDITION
+ * THALYSON APP OS v13.0 - STABLE & COZY FIXED
  * ==================================================================================
- * MUDANÇAS DE TOM DE VOZ (TONE OF VOICE):
- * - De: "Vendas/Agressivo" -> Para: "Acolhedor/Experiência".
- * - WhatsApp: Texto humanizado, educado e fluido.
- * - UI: Termos mais suaves ("Investimento" no lugar de "Preço", "Personalizar" no lugar de "Extras").
- * - Foco: Criar conexão e segurança antes mesmo do primeiro "Oi".
+ * CORREÇÕES REALIZADAS:
+ * 1. [FIX] Tela Branca: Reset da chave de storage (v13) e validações nulas adicionadas.
+ * 2. [UI] Scarcity Popup: Centralizado no topo (não cobre botões).
+ * 3. [UX] Toast System: Integrado localmente sem dependências externas.
  */
-
-// ==================================================================================
-// 1. CONFIGURAÇÕES
-// ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v12_cozy', 
+  STORAGE_KEY: '@thaly_app_v13_stable', // Mudei a chave para limpar dados antigos corrompidos
   LOCALE: 'pt-BR'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (COMPONENTES VISUAIS)
+// 2. DESIGN SYSTEM
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
   const baseStyle = "relative flex items-center justify-center font-bold transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 rounded-2xl";
-  
   const variants = {
-    primary: "bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-500/20 border border-amber-400", // Mantido o Gold da marca
+    primary: "bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-500/20 border border-amber-400",
     secondary: "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700",
     whatsapp: "bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-green-500/20 border border-green-500/20",
     outline: "bg-transparent border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500"
   };
-
-  const sizes = {
-    sm: "h-9 text-xs px-3",
-    md: "h-12 text-sm px-6",
-    lg: "h-14 text-base px-8",
-    xl: "h-16 text-lg px-8"
-  };
+  const sizes = { sm: "h-9 text-xs px-3", md: "h-12 text-sm px-6", lg: "h-14 text-base px-8", xl: "h-16 text-lg px-8" };
 
   return (
-    <button 
-      onClick={onClick} 
-      disabled={disabled || loading} 
-      className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}
-    >
+    <button onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
       {loading ? <Loader2 size={18} className="animate-spin mr-2"/> : (Icon && <Icon size={18} className="mr-2" strokeWidth={2.5} />)}
       {children}
     </button>
@@ -68,39 +52,15 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
   <div className="space-y-2 w-full">
     {label && <label className={`text-[11px] font-medium uppercase tracking-widest ml-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{label}</label>}
     <div className="relative group">
-      <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-amber-500' : 'text-slate-400 group-focus-within:text-amber-500'}`}>
-        {Icon && <Icon size={18} />}
-      </div>
-      <input 
-        type={type}
-        value={value} 
-        onChange={onChange} 
-        placeholder={placeholder}
-        className={`w-full pl-12 pr-4 py-4 rounded-2xl border outline-none text-sm transition-all
-        ${error 
-          ? 'border-red-500/50 focus:border-red-500 bg-red-500/5' 
-          : (isDark 
-              ? 'bg-zinc-900/50 border-zinc-800 text-zinc-100 focus:border-amber-500/50 focus:bg-zinc-900' 
-              : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500')}`} 
-      />
+      <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-amber-500' : 'text-slate-400 group-focus-within:text-amber-500'}`}>{Icon && <Icon size={18} />}</div>
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full pl-12 pr-4 py-4 rounded-2xl border outline-none text-sm transition-all ${error ? 'border-red-500/50 focus:border-red-500 bg-red-500/5' : (isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-100 focus:border-amber-500/50 focus:bg-zinc-900' : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500')}`} />
     </div>
     {error && <p className="text-red-400 text-[10px] ml-2 mt-1 animate-slide-in">{error}</p>}
   </div>
 );
 
 const Card = ({ children, isDark, className = '', onClick, active = false, isPlan = false }) => (
-  <div onClick={onClick} className={`
-    relative p-6 rounded-3xl transition-all duration-500 overflow-hidden group
-    ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''}
-    ${isDark 
-      ? `bg-zinc-900/40 backdrop-blur-md ${active 
-          ? (isPlan ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-amber-500/50 bg-amber-500/5') 
-          : 'border border-zinc-800/60 hover:border-zinc-700'}` 
-      : `bg-white ${active 
-          ? 'border border-amber-500 ring-1 ring-amber-500/50' 
-          : 'border border-slate-200 shadow-sm'}`}
-    ${className}
-  `}>
+  <div onClick={onClick} className={`relative p-6 rounded-3xl transition-all duration-500 overflow-hidden group ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} ${isDark ? `bg-zinc-900/40 backdrop-blur-md ${active ? (isPlan ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-amber-500/50 bg-amber-500/5') : 'border border-zinc-800/60 hover:border-zinc-700'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
     {children}
   </div>
 );
@@ -111,7 +71,6 @@ const Confetti = ({ active }) => {
     if (!active || typeof window === 'undefined') return;
     const canvas = canvasRef.current;
     if(!canvas) return;
-    
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -125,7 +84,6 @@ const Confetti = ({ active }) => {
       angle: Math.random() * 360,
       spin: Math.random() * 5 - 2.5
     }));
-
     let animationId;
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -150,22 +108,18 @@ const Confetti = ({ active }) => {
 };
 
 // ==================================================================================
-// 3. DADOS & TEXTOS (A ALMA DO APP)
+// 3. DADOS
 // ==================================================================================
 
 const getData = (lang) => {
     const isPT = lang === 'pt';
-    
     return {
-        // NÍVEIS DE FIDELIDADE (Mantidos, funcionam bem)
         levels: [
             { level: 1, xpNeeded: 0, reward: 12, title: isPT ? "Visitante" : "Beginner", color: "text-zinc-400" },
             { level: 2, xpNeeded: 400, reward: 20, title: isPT ? "Cliente Bronze" : "Bronze", color: "text-orange-400" },
             { level: 3, xpNeeded: 1000, reward: 30, title: isPT ? "Cliente Prata" : "Silver", color: "text-slate-300" },
             { level: 4, xpNeeded: 2000, reward: 50, title: isPT ? "Membro VIP" : "Gold VIP", color: "text-amber-400" }
         ],
-
-        // SESSÕES AVULSAS (DESCRIÇÕES ORIGINAIS MANTIDAS)
         services: [
             { 
               id: 'relaxante', min: 60, price: 90, icon: Wind, tag: "PARA RELAXAR",
@@ -199,40 +153,16 @@ const getData = (lang) => {
 • FINAL: Você goza no final, sem pressa.` : "Complete experience: Relaxing + Body to Body + Lingam."
             }
         ],
-
-        // PLANOS (DESCRIÇÕES MAIS SUAVES)
         plans: [
-            { 
-                id: 'pack_relax', type: 'pack', 
-                title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4x)", 
-                price: 320, fullPrice: 360, savings: 40, 
-                details: isPT ? "Ideal para quem busca bem-estar constante. 4 sessões Relaxantes para usar em 45 dias." : "4 Relax Sessions.", 
-                tag: "CUIDADO MENSAL", icon: Package 
-            },
-            { 
-                id: 'pack_mista', type: 'pack', 
-                title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3x)", 
-                price: 540, fullPrice: 600, savings: 60, 
-                details: isPT ? "Garanta suas sessões completas com valor especial. O melhor custo-benefício." : "3 Full Experience Sessions.", 
-                tag: "MAIS ESCOLHIDO", icon: Zap 
-            },
-            { 
-                id: 'vip_club', type: 'subscription', 
-                title: isPT ? "Clube VIP Mensal" : "VIP Monthly", 
-                price: 350, fullPrice: 450, savings: 100, 
-                details: isPT ? "Acesso exclusivo: 2 Sessões Mistas/mês + Prioridade total na minha agenda." : "2 Sessions + Priority.", 
-                tag: "MEMBRO VIP", icon: Crown 
-            }
+            { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4x)", price: 320, fullPrice: 360, savings: 40, details: isPT ? "Ideal para quem busca bem-estar constante. 4 sessões Relaxantes para usar em 45 dias." : "4 Relax Sessions.", tag: "CUIDADO MENSAL", icon: Package },
+            { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3x)", price: 540, fullPrice: 600, savings: 60, details: isPT ? "Garanta suas sessões completas com valor especial. O melhor custo-benefício." : "3 Full Experience Sessions.", tag: "MAIS ESCOLHIDO", icon: Zap },
+            { id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP Mensal" : "VIP Monthly", price: 350, fullPrice: 450, savings: 100, details: isPT ? "Acesso exclusivo: 2 Sessões Mistas/mês + Prioridade total na minha agenda." : "2 Sessions + Priority.", tag: "MEMBRO VIP", icon: Crown }
         ],
-
-        // EXTRAS (NOMES MANTIDOS, MAS CONTEXTO SERÁ MAIS SUAVE)
         extras: [
             { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para curtir seu momento sem pressa." : "More time." },
             { id: 'touch', price: 55, icon: Heart, label: isPT ? "Troca (Você Toca)" : "You Touch", desc: isPT ? "Liberdade para interagir e tocar." : "You can touch." },
             { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Óleos essenciais para relaxar a mente." : "Scents." }
         ],
-
-        // TODAS AS AVALIAÇÕES (RESTAURADAS E COMPLETAS)
         reviews: [
             { n: "Tiago", t: "A sensitiva foi uma experiência de outro mundo.", s: 5 },
             { n: "Pedro H.", t: "Fui estressado e saí flutuando.", s: 5 },
@@ -285,22 +215,16 @@ const getData = (lang) => {
             { n: "Cliente Fiel", t: "Voltarei com certeza na próxima semana.", s: 5 },
             { n: "Fernando", t: "Paz de espírito e corpo relaxado. Obrigado.", s: 5 }
         ],
-        
-        // TEXTOS DE INTERFACE (UI) - TOM MAIS "COZY" E HUMANO
         text: {
-            loading: isPT ? "PREPARANDO..." : "LOADING...",
-            welcome: isPT ? "Olá," : "Hello,",
+            loading: isPT ? "CARREGANDO..." : "LOADING...",
+            welcome: isPT ? "Bem-vindo," : "Welcome,",
             subtitle: isPT ? "Relaxe, você está em boas mãos. O que deseja hoje?" : "Relax, you're in good hands. What do you need?",
             tab_single: isPT ? "Sessão Avulsa" : "Single",
             tab_packs: isPT ? "Planos Especiais" : "VIP Plans",
             reviews_btn: isPT ? "Veja o que dizem sobre a experiência" : "Read Reviews",
-            
-            // TITULOS DE SEÇÃO
             select_time_title: isPT ? "Disponibilidade" : "Scheduling",
             date_sub: isPT ? "Escolha o horário mais confortável para você:" : "Select time:",
             location_title: isPT ? "Local de Atendimento" : "Set Location",
-            
-            // INPUTS
             input_name: isPT ? "Seu nome ou apelido (como preferir)" : "Your Name",
             input_addr: isPT ? "Endereço onde irei te atender" : "Address",
             input_num: isPT ? "Número" : "Number",
@@ -310,58 +234,52 @@ const getData = (lang) => {
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
             input_room: isPT ? "Número do Quarto" : "Room",
             motel_note: isPT ? "Motel: Pode deixar o pagamento pronto aqui. O nome e a suíte você me passa no WhatsApp, para sua privacidade." : "Motel: Send details on WhatsApp.",
-            
-            // PAGAMENTO & EXTRAS
             pay_title: isPT ? "Preferência de Pagamento" : "Payment",
             pay_pix: "Pix",
             pay_card: isPT ? "Cartão" : "Card",
             pay_cash: isPT ? "Dinheiro" : "Cash",
             extras_title: isPT ? "Personalizar sua experiência" : "Customize",
-            
             coupon_title: isPT ? "Tenho um convite/cupom" : "Coupons",
             coupon_placeholder: isPT ? "Código do convite..." : "Enter code...",
             coupon_btn: isPT ? "Validar" : "Apply",
             remove: isPT ? "Remover" : "Remove",
             total_label: "Investimento Total",
-            
-            // BOTÕES DE AÇÃO
             book_btn: isPT ? "Enviar Solicitação" : "Send Request",
             next_btn: isPT ? "Avançar" : "Continue",
             uber_warning: isPT ? "Taxa de transporte (Uber) combinamos no chat" : "Transport fee on WhatsApp",
-            
-            // SUCCESS
             success_title: isPT ? "Tudo certo!" : "Done!",
             success_sub: isPT ? "Já preparei seu agendamento. É só clicar abaixo para abrir nosso chat e confirmar." : "Send msg on WhatsApp.",
             whatsapp_btn: isPT ? "Combinar no WhatsApp" : "Send Now ➔",
             back_home: isPT ? "Voltar ao Início" : "Back Home",
-            
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
             empty_date: isPT ? "Selecione uma data acima para ver os horários" : "Select a date",
             empty_slots: isPT ? "Agenda completa neste dia." : "Full booked.",
             details_label: isPT ? "DETALHES DA SESSÃO:" : "INCLUDED:",
             security_note: isPT ? "Seus dados ficam salvos apenas no seu celular. Sigilo total." : "Data saved locally.",
-            
-            // POPUPS
             popup_welcome_title: isPT ? "Seja bem-vindo!" : "Welcome Gift!",
             popup_welcome_msg: isPT ? "Para sua primeira experiência ser ainda melhor, liberei um presente especial." : "You got a coupon.",
             popup_level_title: isPT ? "NOVO STATUS!" : "LEVEL UP!",
             popup_level_msg: isPT ? "Sua fidelidade é reconhecida. Você alcançou um novo nível de benefícios." : "Congrats! You got a NEW COUPON.",
             popup_btn_coupon: isPT ? "USAR MEU PRESENTE" : "REDEEM NOW",
-            
-            // TERMOS
             agree_terms: isPT ? "Estou de acordo com o protocolo de atendimento." : "I agree.",
-            terms_body: isPT ? [
-              "1. HIGIENE: Um banho antes da sessão é essencial para o nosso conforto.",
-              "2. SIGILO: Sua privacidade é absoluta. O que acontece aqui, fica aqui.",
-              "3. RESPEITO: O ambiente é de relaxamento e respeito mútuo.",
-              "4. PAGAMENTO: Realizado ao final, conforme combinado."
-            ] : ["1. Hygiene.", "2. Secrecy.", "3. Respect.", "4. Payment."],
+            terms_body: isPT ? ["1. HIGIENE: Um banho antes da sessão é essencial para o nosso conforto.", "2. SIGILO: Sua privacidade é absoluta. O que acontece aqui, fica aqui.", "3. RESPEITO: O ambiente é de relaxamento e respeito mútuo.", "4. PAGAMENTO: Realizado ao final, conforme combinado."] : ["1. Hygiene.", "2. Secrecy.", "3. Respect.", "4. Payment."],
             terms_title: isPT ? "Protocolo de Atendimento" : "Rules",
             terms_link: isPT ? "Ler protocolo" : "Rules",
             terms_btn: isPT ? "Combinado" : "Ok",
-            
-            // ZAP (TEXTOS DINÂMICOS NO COMPONENTE)
+            zap: {
+              intro: isPT ? "Oi Thalyson, tudo bem? 🌿" : "Hi Thalyson!",
+              section_serv: isPT ? "💆‍♂️ *Experiência:*" : "🔥 *SERVICE*",
+              section_plan: isPT ? "🏆 *Plano VIP:*" : "🏆 *I WANT PACK:*",
+              section_det: isPT ? "📝 *Detalhes:*" : "📝 *DETAILS*",
+              section_loc: isPT ? "📍 *Local:*" : "📍 *LOCATION*",
+              section_fin: isPT ? "💰 *Investimento:*" : "💰 *VALUES*",
+              map_link: isPT ? "🗺️ *Mapa:*" : "🗺️ *Map:*",
+              wait: isPT ? "Podemos confirmar?" : "Can you confirm?",
+              house: isPT ? "Residência" : "Home",
+              hotel: "Hotel",
+              motel: "Motel"
+            },
             scarcity_msg: isPT ? "pessoas visitando agora" : "people booking"
         }
     };
@@ -377,7 +295,6 @@ export default function App() {
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
   const [activeTab, setActiveTab] = useState('single');
-  
   const [viewers, setViewers] = useState(0);
   const [showScarcity, setShowScarcity] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
@@ -386,12 +303,9 @@ export default function App() {
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [couponInput, setCouponInput] = useState('');
-  
   const [toasts, setToasts] = useState([]);
-  
   const scrollRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
-  
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
 
@@ -414,7 +328,6 @@ export default function App() {
     payment: '', appliedCoupon: null, termsAccepted: false
   });
 
-  // CARREGAMENTO SEGURO
   useEffect(() => {
     setIsClient(true);
     setTimeout(() => setLoading(false), 2000);
@@ -459,7 +372,7 @@ export default function App() {
           ...prev,
           type: type,
           item: item,
-          extras: {}, // RESET DE EXTRAS - IMPORTANTE
+          extras: {}, 
           payment: '',
           appliedCoupon: null,
           termsAccepted: false
@@ -472,7 +385,6 @@ export default function App() {
       const now = new Date();
       const selectedDate = new Date(booking.date);
       const isToday = selectedDate.getDate() === now.getDate() && selectedDate.getMonth() === now.getMonth();
-
       if (isToday) {
           const currentHour = now.getHours();
           return slots.filter(time => {
@@ -486,7 +398,6 @@ export default function App() {
   const financials = useMemo(() => {
     if (!booking.item) return { total: 0, sub: 0, disc: 0 };
     let sub = booking.item.price;
-    // Extras só contam se for single
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
             const exPrice = DATA.extras.find(e=>e.id===k).price;
@@ -498,7 +409,6 @@ export default function App() {
     return { sub, disc, total };
   }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras]);
 
-  // GERADOR WHATSAPP - TEXTO ACONCHEGANTE E DIRETO
   const generateWhatsAppLink = () => {
     const f = financials;
     const dateStr = booking.date ? booking.date.toLocaleDateString('pt-BR') : '';
@@ -522,12 +432,13 @@ export default function App() {
         return `✅ + ${ext.label}`;
     }).join('\n');
     
-    // TEXTO MAIS HUMANO E MENOS "ROBÔ"
+    const header = booking.type === 'pack' || booking.type === 'subscription' ? T.zap.section_plan : T.zap.section_serv;
+    
     const msg = `
-Oi Thalyson, tudo bem? 🌿
+${T.zap.intro}
 Gostaria de agendar um momento pra relaxar.
 
-💆‍♂️ *Experiência:* ${booking.item?.title}
+${header} ${booking.item?.title}
 📅 *Data:* ${dateStr} às ${booking.time}
 
 ${extrasList ? `✨ *Personalização:* \n${extrasList}\n` : ''}
@@ -650,8 +561,8 @@ Podemos confirmar?
       </div>
 
       <Confetti active={showConfetti} />
-      <div className={`fixed top-24 right-4 z-[90] pointer-events-none transition-all duration-500 transform ${showScarcity ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
-           <div className="bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border border-white/10 backdrop-blur-md">
+      <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-[90] pointer-events-none transition-all duration-500 transform ${showScarcity ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+           <div className="bg-red-600/90 text-white px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border border-white/10 backdrop-blur-md">
                <Eye size={16} className="animate-pulse" />
                <span className="text-xs font-bold tracking-wide">{viewers} {T.scarcity_msg}</span>
            </div>
@@ -679,7 +590,7 @@ Podemos confirmar?
                 <div className="flex items-end gap-2 mb-2">
                     <h1 className="text-3xl font-black tracking-tight">{T.welcome} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{user.name ? user.name.split(' ')[0] : 'Visitante'}</span></h1>
                 </div>
-                <p className={`text-sm mb-6 font-medium leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.subtitle}</p>
+                <p className={`text-sm mb-6 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.subtitle}</p>
                 <div className={`relative overflow-hidden rounded-3xl p-5 mb-6 border shadow-lg transition-all ${isDark ? 'bg-gradient-to-br from-zinc-900 to-black border-zinc-800' : 'bg-white border-slate-100'}`}>
                     <div className="flex justify-between items-start mb-4">
                         <div className="flex items-center gap-3">
@@ -718,11 +629,11 @@ Podemos confirmar?
               {activeTab === 'packs' && (
                   <div className="space-y-4 animate-slide-in">
                       {DATA.plans.map(plan => (
-                          <Card key={plan.id} isDark={isDark} isPlan={true} active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} className="overflow-hidden">
+                          <Card key={plan.id} isDark={isDark} active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} className="overflow-hidden">
                               {plan.tag && (<div className="absolute top-0 right-0 bg-amber-500 text-black text-[10px] font-bold px-3 py-1.5 rounded-bl-xl shadow-lg z-10">{plan.tag}</div>)}
                               <div className="flex items-center gap-4 mb-4 relative z-0">
                                   <div className={`p-4 rounded-2xl ${booking.item?.id === plan.id ? 'bg-amber-500 text-black' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={28}/></div>
-                                  <div><h3 className="font-bold text-xl leading-none mb-1 text-amber-500">{plan.title}</h3><p className="text-[10px] opacity-60 uppercase tracking-widest font-bold">{plan.type === 'pack' ? 'Pacote' : 'Mensal'}</p></div>
+                                  <div><h3 className="font-bold text-xl leading-none mb-1">{plan.title}</h3><p className="text-[10px] opacity-60 uppercase tracking-widest font-bold">{plan.type === 'pack' ? 'Pacote' : 'Mensal'}</p></div>
                               </div>
                               <p className={`text-sm mb-5 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{plan.details}</p>
                               <div className="flex items-end gap-3 p-3 rounded-xl bg-black/20 border border-white/5">
