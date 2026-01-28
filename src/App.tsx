@@ -6,46 +6,46 @@ import {
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
   ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle, Tag, Sparkles, 
   MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
-  ChevronRight, Lock, History, User, Wallet, Share2, Copy, Quote, Smile,
-  RotateCcw
+  ChevronRight, Lock, History, User, Wallet, Share2, Copy, Quote, Smile
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v17.3 - FINAL UX & SYSTEM FIX
+ * THALYSON APP OS v17.4 - MOBILE FIRST EDITION
  * ==================================================================================
- * 1. [FIX] Cupom de Boas-vindas agora persiste após escolher o serviço.
- * 2. [XP] Sistema "Prestige": Após nível 4, ganha R$50 a cada 500XP (Infinito).
- * 3. [UX] Botão Home adicionado ao Footer.
- * 4. [ZAP] Layout da mensagem reformulado para estilo "Ticket/Recibo".
- * 5. [DATA] Preços e Avaliações mantidos.
+ * 1. [MOBILE] Ajuste de Viewport (100dvh) para não cortar em Safari/Chrome Mobile.
+ * 2. [MOBILE] Inputs com text-base (16px) para evitar Auto-Zoom no iOS.
+ * 3. [UX] Botão Home fixo e seguro contra 'Home Bar' do iPhone.
+ * 4. [LOGIC] Mantido: Preços (125/155/205), XP Infinito, Cupons Automáticos.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v17_3_final', 
+  STORAGE_KEY: '@thaly_app_v17_4_mobile', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM
+// 2. DESIGN SYSTEM (MOBILE OPTIMIZED)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
-  const baseStyle = "relative flex items-center justify-center font-bold transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 rounded-2xl";
+  // Active scale ajustado para sensação de app nativo
+  const baseStyle = "relative flex items-center justify-center font-bold transition-all duration-200 active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation";
   const variants = {
     primary: "bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-500/20 border border-amber-400",
-    secondary: "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700",
-    whatsapp: "bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-green-500/20 border border-green-500/20",
-    outline: "bg-transparent border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500"
+    secondary: "bg-zinc-800 text-zinc-200 border border-zinc-700 active:bg-zinc-700",
+    whatsapp: "bg-[#25D366] active:bg-[#20bd5a] text-white shadow-lg shadow-green-500/20 border border-green-500/20",
+    outline: "bg-transparent border border-zinc-700 text-zinc-400 active:text-white active:border-zinc-500"
   };
-  const sizes = { sm: "h-9 text-xs px-3", md: "h-12 text-sm px-6", lg: "h-14 text-base px-8", xl: "h-16 text-lg px-8" };
+  // Tamanhos maiores para dedo (Touch Targets)
+  const sizes = { sm: "h-10 text-xs px-4", md: "h-14 text-sm px-6", lg: "h-16 text-base px-8", xl: "h-16 text-lg px-8" };
 
   return (
     <button onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
-      {loading ? <Loader2 size={18} className="animate-spin mr-2"/> : (Icon && <Icon size={18} className="mr-2" strokeWidth={2.5} />)}
+      {loading ? <Loader2 size={20} className="animate-spin mr-2"/> : (Icon && <Icon size={20} className="mr-2" strokeWidth={2.5} />)}
       {children}
     </button>
   );
@@ -53,17 +53,18 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
 
 const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "text", error, isDark }) => (
   <div className="space-y-2 w-full">
-    {label && <label className={`text-[11px] font-medium uppercase tracking-widest ml-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{label}</label>}
+    {label && <label className={`text-[10px] font-bold uppercase tracking-widest ml-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{label}</label>}
     <div className="relative group">
-      <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-amber-500' : 'text-slate-400 group-focus-within:text-amber-500'}`}>{Icon && <Icon size={18} />}</div>
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full pl-12 pr-4 py-4 rounded-2xl border outline-none text-sm transition-all ${error ? 'border-red-500/50 focus:border-red-500 bg-red-500/5' : (isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-100 focus:border-amber-500/50 focus:bg-zinc-900' : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500')}`} />
+      <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-amber-500' : 'text-slate-400 group-focus-within:text-amber-500'}`}>{Icon && <Icon size={20} />}</div>
+      {/* text-base (16px) impede zoom no iPhone */}
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full pl-12 pr-4 py-4 rounded-2xl border outline-none text-base font-medium transition-all ${error ? 'border-red-500/50 focus:border-red-500 bg-red-500/5' : (isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-100 focus:border-amber-500/50 focus:bg-zinc-900' : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500')}`} />
     </div>
-    {error && <p className="text-red-400 text-[10px] ml-2 mt-1 animate-slide-in">{error}</p>}
+    {error && <p className="text-red-400 text-[10px] ml-2 mt-1 animate-slide-in font-bold">{error}</p>}
   </div>
 );
 
 const Card = ({ children, isDark, className = '', onClick, active = false }) => (
-  <div onClick={onClick} className={`relative p-6 rounded-3xl transition-all duration-500 overflow-hidden group ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} ${isDark ? `bg-zinc-900/40 backdrop-blur-md ${active ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-zinc-800/60 hover:border-zinc-700'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
+  <div onClick={onClick} className={`relative p-5 rounded-[1.2rem] transition-all duration-300 overflow-hidden ${onClick ? 'cursor-pointer active:scale-[0.98] touch-manipulation' : ''} ${isDark ? `bg-zinc-900/60 backdrop-blur-md ${active ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-zinc-800/60'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
     {children}
   </div>
 );
@@ -77,13 +78,13 @@ const Confetti = ({ active }) => {
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    const particles = Array.from({ length: 80 }, () => ({
+    const particles = Array.from({ length: 60 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height - canvas.height,
-      w: Math.random() * 8 + 4,
-      h: Math.random() * 8 + 4,
+      w: Math.random() * 6 + 3,
+      h: Math.random() * 6 + 3,
       color: ['#f59e0b', '#fbbf24', '#ffffff', '#d97706'][Math.floor(Math.random() * 4)],
-      speed: Math.random() * 2 + 1,
+      speed: Math.random() * 3 + 2,
       angle: Math.random() * 360,
       spin: Math.random() * 5 - 2.5
     }));
@@ -117,7 +118,6 @@ const Confetti = ({ active }) => {
 const getData = (lang) => {
     const isPT = lang === 'pt';
     return {
-        // NÍVEIS BASE (Até 800 XP)
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor", color: "text-zinc-400" },
             { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" },
@@ -132,12 +132,10 @@ const getData = (lang) => {
               details: isPT ? `COMO É A SESSÃO?
 • TÉCNICA: Uso meus rolos de madeira para soltar suas costas e pernas.
 • SEM DOR: É para relaxar, não para machucar. Deslizo a madeira para tirar o peso do corpo.
-• FINALIZAÇÃO: Termino com as mãos para garantir que relaxou tudo.
-⚠️ Obs: Massagem focada em tirar dor e cansaço.` : `HOW IS THE SESSION?
+• FINALIZAÇÃO: Termino com as mãos para garantir que relaxou tudo.` : `HOW IS THE SESSION?
 • TECHNIQUE: Using wood rollers to release back and legs.
 • PAINLESS: It's for relaxation, not pain. Wood glides to remove body weight.
-• FINISH: I finish with hands to ensure full relaxation.
-⚠️ Note: Focused on pain relief and tiredness.`
+• FINISH: I finish with hands to ensure full relaxation.`
             },
             { 
               id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
@@ -147,13 +145,11 @@ const getData = (lang) => {
 • INÍCIO: Começo tirando a tensão do seu corpo (manual ou rolos).
 • SENSORIAL: Depois uso toques bem leves (ponta dos dedos) para te dar arrepios.
 • LINGAM: Inclui a massagem na parte íntima (pênis e testículos).
-• OBJETIVO: Te dar o máximo de prazer.
-• FINALIZAÇÃO: Manual inclusa (com bastante óleo).` : `WHAT HAPPENS:
+• OBJETIVO: Te dar o máximo de prazer.` : `WHAT HAPPENS:
 • START: Removing tension from your body (manual or rollers).
 • SENSORY: Very light touches (fingertips) to give you chills.
 • LINGAM: Includes intimate massage (penis and testicles).
-• GOAL: Give you maximum pleasure.
-• FINISH: Hand finish included (with plenty of oil).`
+• GOAL: Give you maximum pleasure.`
             },
             { 
               id: 'mista', min: 60, price: 205, icon: Zap, tag: isPT ? "PREFERIDA" : "FAVORITE",
@@ -442,7 +438,7 @@ export default function App() {
           ...prev,
           type: type,
           item: item,
-          // Mantém o cupom aplicado se já existir (Correção)
+          // Mantém o cupom aplicado se já existir
           extras: {}, 
           payment: '',
           termsAccepted: false
@@ -463,7 +459,7 @@ export default function App() {
           const currentHour = now.getHours();
           return slots.filter(time => {
               const [hour] = time.split(':').map(Number);
-              // LÓGICA CORRIGIDA: Se for 18:50 (hora 18), 19:00 aparece (19 > 18).
+              // Se for 18:50 (hora 18), 19:00 aparece (19 > 18).
               return hour > currentHour;
           });
       }
@@ -1006,7 +1002,7 @@ ${T.zap.wait}
 
       {/* FOOTER */}
       {step < 4 && (
-         <div className="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none">
+         <div className="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none pb-safe">
             <div className="pointer-events-auto max-w-md mx-auto">
                 <div className={`p-2 rounded-[2rem] shadow-2xl flex items-center gap-4 pr-3 backdrop-blur-xl border transition-colors duration-500 ${isDark ? 'bg-zinc-900/90 border-zinc-700' : 'bg-white/90 border-zinc-200'}`}>
                     {step > 0 ? (
@@ -1088,7 +1084,7 @@ ${T.zap.wait}
         </div>
       )}
 
-      <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.6s ease-out}.animate-slide-up{animation:slideUp 0.5s cubic-bezier(0.16,1,0.3,1)}.animate-slide-in{animation:slideIn 0.5s cubic-bezier(0.16,1,0.3,1)}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1)}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.3s ease-out}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}@keyframes slideDown{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
+      <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.6s ease-out}.animate-slide-up{animation:slideUp 0.5s cubic-bezier(0.16,1,0.3,1)}.animate-slide-in{animation:slideIn 0.5s cubic-bezier(0.16,1,0.3,1)}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1)}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.3s ease-out}.pb-safe{padding-bottom:env(safe-area-inset-bottom,24px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}@keyframes slideDown{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
     </div>
   );
 }
