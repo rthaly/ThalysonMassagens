@@ -6,24 +6,25 @@ import {
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
   ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle, Tag, Sparkles, 
   MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
-  ChevronRight, Lock, History, User, Wallet, Share2, Copy, Quote, Smile
+  ChevronRight, Lock, History, User, Wallet, Share2, Copy, Quote, Smile,
+  RotateCcw
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v16.1 - STABILITY FIXES
+ * THALYSON APP OS v17.3 - FINAL UX & SYSTEM FIX
  * ==================================================================================
- * AJUSTES TÉCNICOS:
- * 1. [CRASH FIX] Proteção contra leitura de propriedades undefined no LocalStorage.
- * 2. [SAFETY] Verificação de existência de 'extras' antes de calcular preço (evita tela branca).
- * 3. [SYNTAX] Correção na string do Google Maps no gerador de Link.
- * 4. [RENDER] Adicionado optional chaining (?. ) em acessos profundos de objetos.
+ * 1. [FIX] Cupom de Boas-vindas agora persiste após escolher o serviço.
+ * 2. [XP] Sistema "Prestige": Após nível 4, ganha R$50 a cada 500XP (Infinito).
+ * 3. [UX] Botão Home adicionado ao Footer.
+ * 4. [ZAP] Layout da mensagem reformulado para estilo "Ticket/Recibo".
+ * 5. [DATA] Preços e Avaliações mantidos.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v16_i18n', 
+  STORAGE_KEY: '@thaly_app_v17_3_final', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
@@ -61,8 +62,8 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
   </div>
 );
 
-const Card = ({ children, isDark, className = '', onClick, active = false, isPlan = false }) => (
-  <div onClick={onClick} className={`relative p-6 rounded-3xl transition-all duration-500 overflow-hidden group ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} ${isDark ? `bg-zinc-900/40 backdrop-blur-md ${active ? (isPlan ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-amber-500/50 bg-amber-500/5') : 'border border-zinc-800/60 hover:border-zinc-700'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
+const Card = ({ children, isDark, className = '', onClick, active = false }) => (
+  <div onClick={onClick} className={`relative p-6 rounded-3xl transition-all duration-500 overflow-hidden group ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} ${isDark ? `bg-zinc-900/40 backdrop-blur-md ${active ? 'border border-amber-500/50 bg-amber-500/5' : 'border border-zinc-800/60 hover:border-zinc-700'}` : `bg-white ${active ? 'border border-amber-500 ring-1 ring-amber-500/50' : 'border border-slate-200 shadow-sm'}`} ${className}`}>
     {children}
   </div>
 );
@@ -116,15 +117,16 @@ const Confetti = ({ active }) => {
 const getData = (lang) => {
     const isPT = lang === 'pt';
     return {
+        // NÍVEIS BASE (Até 800 XP)
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor", color: "text-zinc-400" },
-            { level: 2, xpNeeded: 150, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" },
-            { level: 3, xpNeeded: 450, reward: 30, title: isPT ? "Cliente Prata" : "Silver Client", color: "text-slate-300" },
-            { level: 4, xpNeeded: 900, reward: 50, title: isPT ? "Membro VIP" : "VIP Member", color: "text-amber-400" }
+            { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze Client", color: "text-orange-400" },
+            { level: 3, xpNeeded: 350, reward: 30, title: isPT ? "Cliente Prata" : "Silver Client", color: "text-slate-300" },
+            { level: 4, xpNeeded: 800, reward: 50, title: isPT ? "Membro VIP" : "VIP Member", color: "text-amber-400" }
         ],
         services: [
             { 
-              id: 'relaxante', min: 60, price: 90, icon: Wind, tag: isPT ? "PARA RELAXAR" : "RELAXING",
+              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "PARA RELAXAR" : "RELAXING",
               title: isPT ? "Relaxante (Rolos de Madeira)" : "Wood Therapy Relax",
               desc: isPT ? "O alívio imediato para o cansaço do dia a dia." : "Immediate relief for daily tiredness.",
               details: isPT ? `COMO É A SESSÃO?
@@ -138,7 +140,7 @@ const getData = (lang) => {
 ⚠️ Note: Focused on pain relief and tiredness.`
             },
             { 
-              id: 'sensitiva', min: 60, price: 160, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
+              id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
               title: isPT ? "Sensitiva Tântrica (+ Lingam)" : "Tantric Sensitive (+ Lingam)",
               desc: isPT ? "Uma jornada de sensações do início ao fim." : "A journey of sensations from start to finish.",
               details: isPT ? `O QUE ROLA NESSA SESSÃO:
@@ -154,7 +156,7 @@ const getData = (lang) => {
 • FINISH: Hand finish included (with plenty of oil).`
             },
             { 
-              id: 'mista', min: 60, price: 200, icon: Zap, tag: isPT ? "PREFERIDA" : "FAVORITE",
+              id: 'mista', min: 60, price: 205, icon: Zap, tag: isPT ? "PREFERIDA" : "FAVORITE",
               title: isPT ? "Experiência Mista Completa" : "Full Mixed Experience",
               desc: isPT ? "A fusão perfeita: Relaxamento profundo + Intensidade." : "The perfect fusion: Deep relaxation + Intensity.",
               details: isPT ? `A MAIS COMPLETA (60min):
@@ -169,9 +171,21 @@ const getData = (lang) => {
             }
         ],
         plans: [
-            { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4 Sessions)", price: 320, fullPrice: 360, savings: 40, details: isPT ? "Ideal para quem busca bem-estar constante. 4 sessões Relaxantes para usar em 45 dias." : "Ideal for constant wellness. 4 Relax sessions valid for 45 days.", tag: isPT ? "CUIDADO MENSAL" : "MONTHLY CARE", icon: Package },
-            { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3 Sessions)", price: 540, fullPrice: 600, savings: 60, details: isPT ? "Garanta suas sessões completas com valor especial. O melhor custo-benefício." : "Guarantee your full sessions with special value. Best cost-benefit.", tag: isPT ? "MAIS ESCOLHIDO" : "BEST SELLER", icon: Zap },
-            { id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP Mensal" : "VIP Monthly Club", price: 350, fullPrice: 450, savings: 100, details: isPT ? "Acesso exclusivo: 2 Sessões Mistas/mês + Prioridade total na minha agenda." : "Exclusive access: 2 Full Sessions/mo + Total priority in my schedule.", tag: isPT ? "MEMBRO VIP" : "VIP MEMBER", icon: Crown }
+            { 
+              id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4 Sessões)" : "Relax Pack (4 Sessions)", 
+              price: 440, fullPrice: 500, savings: 60, 
+              details: isPT ? "4 sessões Relaxantes. Economize e garanta mais XP." : "4 Relax sessions. Save money and get more XP.", tag: isPT ? "GANHE XP DOBRADO" : "DOUBLE XP", icon: Package 
+            },
+            { 
+              id: 'pack_mista', type: 'pack', title: isPT ? "Pack Mista (3 Sessões)" : "Full Pack (3 Sessions)", 
+              price: 550, fullPrice: 615, savings: 65, 
+              details: isPT ? "3 sessões Completas. O atalho para subir de nível VIP." : "3 Full sessions. Shortcut to VIP level.", tag: isPT ? "MAIS ESCOLHIDO" : "BEST SELLER", icon: Zap 
+            },
+            { 
+              id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP Mensal" : "VIP Monthly Club", 
+              price: 360, fullPrice: 460, savings: 100, 
+              details: isPT ? "2 Sessões Mistas/mês + Prioridade total na minha agenda." : "2 Full Sessions/mo + Total priority in my schedule.", tag: isPT ? "STATUS VIP" : "VIP MEMBER", icon: Crown 
+            }
         ],
         extras: [
             { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para curtir seu momento sem pressa." : "To enjoy your moment without rush." },
@@ -254,7 +268,7 @@ const getData = (lang) => {
             input_comp: isPT ? "Complemento (Apt, Bloco...)" : "Complement (Apt, Unit...)",
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
             input_room: isPT ? "Número do Quarto" : "Room Number",
-            motel_note: isPT ? "Motel: Pode deixar o pagamento pronto aqui. O nome e a suíte você me passa no WhatsApp, para sua privacidade." : "Motel: You can set payment here. Send name and suite via WhatsApp for privacy.",
+            motel_note: isPT ? "Suíte (Motel): Você paga a taxa da suíte direto no local. O valor da massagem + extras combinamos no WhatsApp." : "Suite (Motel): You pay the suite fee at the location. Massage + extras fees are arranged on WhatsApp.",
             pay_title: isPT ? "Preferência de Pagamento" : "Payment Preference",
             pay_pix: "Pix",
             pay_card: isPT ? "Cartão" : "Card",
@@ -307,18 +321,22 @@ const getData = (lang) => {
 
             zap: {
               intro: isPT ? "Oi Thalyson, tudo bem? 🌿" : "Hi Thalyson, how are you? 🌿",
-              section_serv: isPT ? "💆‍♂️ *Experiência:*" : "💆‍♂️ *Experience:*",
-              section_plan: isPT ? "🏆 *Plano VIP:*" : "🏆 *VIP Plan:*",
-              section_det: isPT ? "📝 *Detalhes:*" : "📝 *Details:*",
-              section_loc: isPT ? "📍 *Local:*" : "📍 *Location:*",
-              section_fin: isPT ? "💰 *Investimento:*" : "💰 *Investment:*",
-              map_link: isPT ? "🗺️ *Mapa:*" : "🗺️ *Map:*",
-              wait: isPT ? "Podemos confirmar?" : "Can we confirm?",
+              order_title: isPT ? "*PEDIDO CONFIRMADO*" : "*ORDER CONFIRMED*",
+              client: isPT ? "👤 *Cliente:*" : "👤 *Client:*",
+              service: isPT ? "💆‍♂️ *Serviço:*" : "💆‍♂️ *Service:*",
+              date: isPT ? "🗓️ *Data:*" : "🗓️ *Date:*",
+              location: isPT ? "📍 *Localização:*" : "📍 *Location:*",
+              payment: isPT ? "💳 *Pagamento:*" : "💳 *Payment:*",
+              value: isPT ? "💰 *RESUMO FINANCEIRO:*" : "💰 *FINANCIAL SUMMARY:*",
+              xp_status: isPT ? "🏆 *FIDELIDADE:*" : "🏆 *LOYALTY:*",
+              xp_gain: isPT ? "XP Ganho:" : "XP Earned:",
+              xp_level: isPT ? "Nível Atual:" : "Current Level:",
+              xp_next: isPT ? "Próximo Prêmio:" : "Next Reward:",
+              wait: isPT ? "Podemos confirmar os detalhes?" : "Can we confirm details?",
               house: isPT ? "Residência" : "Residence",
               hotel: "Hotel",
-              motel: "Motel",
-              extra_title: isPT ? "✨ *Personalização:*" : "✨ *Customization:*",
-              pay_method: isPT ? "💳 *Pagamento:*" : "💳 *Payment:*",
+              motel: isPT ? "Suíte (Motel)" : "Suite (Motel)",
+              extra_title: isPT ? "✨ *Extras:*" : "✨ *Extras:*",
               uber_label: isPT ? "🚗 *Transporte:*" : "🚗 *Transport:*",
               uber_text: isPT ? "A combinar." : "To be arranged."
             }
@@ -381,7 +399,6 @@ export default function App() {
         const s = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (s) {
             const parsed = JSON.parse(s);
-            // MERGE STATE TO AVOID CRASHES WITH OLD DATA
             setUser(prev => ({
                 ...prev,
                 ...parsed,
@@ -391,7 +408,7 @@ export default function App() {
                 setBooking(b => ({...b, address: parsed.savedAddress}));
             }
         } else {
-            setUser(p => ({...p, coupons: [{ id: 'WELCOME10', val: 10, title: '🎁 Presente de Boas-Vindas', code: 'WELCOME10' }]}));
+            setUser(p => ({...p, coupons: [] })); // Inicializa vazio
         }
     } catch (e) {
         console.error("Storage error", e);
@@ -425,9 +442,9 @@ export default function App() {
           ...prev,
           type: type,
           item: item,
+          // Mantém o cupom aplicado se já existir (Correção)
           extras: {}, 
           payment: '',
-          appliedCoupon: null,
           termsAccepted: false
       }));
   };
@@ -446,7 +463,8 @@ export default function App() {
           const currentHour = now.getHours();
           return slots.filter(time => {
               const [hour] = time.split(':').map(Number);
-              return hour > currentHour + 1;
+              // LÓGICA CORRIGIDA: Se for 18:50 (hora 18), 19:00 aparece (19 > 18).
+              return hour > currentHour;
           });
       }
       return slots;
@@ -457,7 +475,6 @@ export default function App() {
     let sub = booking.item.price;
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
-            // SAFETY CHECK: Ensure extra exists in data before accessing price
             const extData = DATA.extras.find(e=>e.id===k);
             if(extData) {
                 sub += extData.price; 
@@ -469,46 +486,84 @@ export default function App() {
     return { sub, disc, total };
   }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras]);
 
-  // GERADOR WHATSAPP - TEXTO ACONCHEGANTE E DIRETO
+  // CÁLCULO DE XP TURBINADO
+  const estimatedXP = useMemo(() => {
+      const baseXP = financials.total;
+      const isPack = booking.type === 'pack' || booking.type === 'subscription';
+      const percentage = isPack ? 0.30 : 0.15; // 30% pra pack, 15% pra single
+      return Math.floor(baseXP * percentage);
+  }, [financials.total, booking.type]);
+
+  // LÓGICA INFINITA DE NÍVEL
+  const getNextLevelInfo = (currentXP) => {
+      // Se XP for maior que o nível máximo (800)
+      if (currentXP >= 800) {
+          const cycleXP = currentXP - 800;
+          const nextRewardAt = 500 - (cycleXP % 500); // Falta quanto para o próximo 500
+          return { needed: nextRewardAt, reward: 50, title: "Prestige" }; // Recompensa fixa de 50
+      }
+      
+      const nextLevel = DATA.levels.find(l => l.xpNeeded > currentXP);
+      return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
+  };
+
+  // GERADOR WHATSAPP ESTILO TICKET
   const generateWhatsAppLink = () => {
     const f = financials;
     const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
+    const xpGain = estimatedXP;
+    const currentLevelTitle = DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title;
+    const nextInfo = getNextLevelInfo(user.xp + xpGain);
+    
     let locTxt = "";
     let mapQuery = "";
     
     if(booking.locationType === 'home') {
         const fullAddr = `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}`;
-        locTxt = `${T.zap.house} \n${fullAddr}\n📝 *Comp:* ${booking.address.comp || 'N/A'}`;
+        locTxt = `${T.zap.house}\n📍 ${fullAddr}\n📝 Comp: ${booking.address.comp || '-'}`;
         mapQuery = fullAddr;
     } else if(booking.locationType === 'motel') {
-        locTxt = `${T.zap.motel} (Combinar detalhes no chat)`;
+        locTxt = `${T.zap.motel}\n⚠️ (Combinar detalhes e valor total da suíte no chat)`;
     } else {
         const fullAddr = `${booking.address.placeName}, ${booking.address.city}`;
-        locTxt = `${T.zap.hotel} \n${fullAddr}\n🚪 *Quarto:* ${booking.address.comp || 'N/A'}`;
+        locTxt = `${T.zap.hotel}: ${booking.address.placeName}\n📍 ${booking.address.city}\n🚪 Quarto: ${booking.address.comp || '-'}`;
         mapQuery = fullAddr;
     }
     
+    // EXTRAS COM PREÇO NO ZAP
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => {
         const ext = DATA.extras.find(e=>e.id===k);
-        return ext ? `✅ + ${ext.label}` : '';
+        return ext ? `✅ ${ext.label} (+ R$ ${ext.price})` : '';
     }).filter(Boolean).join('\n');
     
-    const header = booking.type === 'pack' || booking.type === 'subscription' ? T.zap.section_plan : T.zap.section_serv;
-    
+    const xpStatusMsg = nextInfo 
+        ? `${T.zap.xp_next} ${nextInfo.needed} XP (R$ ${nextInfo.reward},00)`
+        : "Nível Máximo Atingido! 🚀";
+
     const msg = `
 ${T.zap.intro}
-Gostaria de agendar um momento pra relaxar.
+${T.zap.order_title}
+_____________________________
 
-${header} ${booking.item?.title}
-📅 *Data:* ${dateStr} às ${booking.time}
+${T.zap.client} ${user.name}
+${T.zap.service} ${booking.item?.title}
+${T.zap.date} ${dateStr} - ${booking.time}
 
-${extrasList ? `${T.zap.extra_title} \n${extrasList}\n` : ''}
+${extrasList ? `${T.zap.extra_title}\n${extrasList}\n` : ''}
+${T.zap.location}
 ${locTxt}
-${mapQuery ? `\n${T.zap.map_link} https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}` : ''}
+${mapQuery ? `\n🔗 *Mapa:* http://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
+_____________________________
 
-${T.zap.section_fin} ${T.currency || 'R$'} ${f.total},00
-${T.zap.pay_method} ${booking.payment}
+${T.zap.value}
+Total: R$ ${f.total},00
+${T.zap.payment} ${booking.payment.toUpperCase()}
 ${T.zap.uber_label} ${T.zap.uber_text}
+
+${T.zap.xp_status}
+🔹 ${T.zap.xp_gain} +${xpGain} XP
+🔹 ${T.zap.xp_level} ${currentLevelTitle}
+🔹 ${xpStatusMsg}
 
 ${T.zap.wait}
 `.trim();
@@ -570,22 +625,38 @@ ${T.zap.wait}
   };
 
   const finishBooking = () => {
+    // CORREÇÃO: REMOVER CUPOM USADO DA LISTA
     let updatedCoupons = Array.isArray(user.coupons) ? [...user.coupons] : [];
-    if (booking.appliedCoupon && booking.appliedCoupon.id.includes('WELCOME')) {
-        updatedCoupons = updatedCoupons.filter(c => c.id !== booking.appliedCoupon.id);
+    
+    if (booking.appliedCoupon) {
+        // Remove o cupom que acabou de ser usado
+        updatedCoupons = updatedCoupons.filter(c => c.code !== booking.appliedCoupon.code);
     }
-    const xpBase = financials.total;
-    const xpMultiplier = booking.type === 'pack' ? 1.5 : 1;
-    const xpGain = Math.floor(xpBase * xpMultiplier * 0.1); 
-    const newXP = Math.floor(user.xp + xpGain);
+    
+    // XP CALCULADO COM BASE NA NOVA REGRA
+    const newXP = Math.floor(user.xp + estimatedXP);
     
     let leveledUp = false;
+    
+    // LÓGICA DE LEVEL UP NORMAL
     DATA.levels.forEach(lvl => {
         if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
             leveledUp = true;
             updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, title: `🏆 Recompensa Nível ${lvl.title}`, code: `LVLUP${lvl.level}` });
         }
     });
+
+    // LÓGICA DE LEVEL UP INFINITO (PRESTIGE)
+    if (newXP >= 800) {
+        const oldCycle = Math.floor((user.xp - 800) / 500);
+        const newCycle = Math.floor((newXP - 800) / 500);
+        
+        if (newCycle > oldCycle && newCycle >= 0) {
+             leveledUp = true;
+             // GANHA CUPOM DE 50 A CADA 500 XP
+             updatedCoupons.push({ id: `PRESTIGE_${Date.now()}`, val: 50, title: `🏆 Bônus Prestige`, code: `VIPMASTER` });
+        }
+    }
 
     if (leveledUp) setLevelUpPopup(true);
     
@@ -599,8 +670,14 @@ ${T.zap.wait}
     setStep(4);
   };
 
-  // LOGICA CORRIGIDA DA BARRA DE XP
   const getCurrentLevelProgress = () => {
+      // BARRA DE PROGRESSO INFINITA
+      if (user.xp >= 800) {
+          const cycleXP = user.xp - 800;
+          const progressInCycle = cycleXP % 500;
+          return (progressInCycle / 500) * 100;
+      }
+
       const currentLevelIndex = DATA.levels.slice().reverse().findIndex(l => user.xp >= l.xpNeeded);
       const realIndex = currentLevelIndex === -1 ? 0 : DATA.levels.length - 1 - currentLevelIndex;
       const currentLevel = DATA.levels[realIndex];
@@ -611,12 +688,7 @@ ${T.zap.wait}
       return Math.min(100, Math.max(0, (currentProgress / totalNeeded) * 100));
   };
 
-  const getNextLevelInfo = () => {
-      const nextLevel = DATA.levels.find(l => l.xpNeeded > user.xp);
-      return nextLevel ? { needed: nextLevel.xpNeeded - user.xp, reward: nextLevel.reward } : null;
-  };
-
-  const nextLevelInfo = getNextLevelInfo();
+  const nextLevelInfo = getNextLevelInfo(user.xp);
 
   if (loading) return (
       <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
@@ -685,7 +757,7 @@ ${T.zap.wait}
                             <div>
                                 <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">{T.level_label}</span>
                                 <h3 className={`font-black text-lg text-amber-500`}>
-                                    {DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title}
+                                    {user.xp >= 800 ? "VIP Master (Infinito)" : (DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title)}
                                 </h3>
                             </div>
                         </div>
@@ -696,7 +768,7 @@ ${T.zap.wait}
                     </div>
                     <div className="mt-3">
                         <p className="text-[10px] opacity-60 mb-1">
-                            {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : T.max_level}
+                            {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : "Ciclo Infinito: Ganhe R$ 50 a cada 500 XP"}
                         </p>
                         <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
                             <div className="h-full bg-amber-500 transition-all duration-1000 ease-out" style={{width: `${getCurrentLevelProgress()}%`}}></div>
@@ -868,7 +940,11 @@ ${T.zap.wait}
                       </div>
                       <div className="flex justify-between items-end">
                           <div><span className="text-[10px] font-bold uppercase opacity-50 block mb-1">{T.total_label}</span><span className="text-[10px] font-medium bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20">{T.uber_warning}</span></div>
-                          <span className="text-4xl font-black tracking-tighter text-white">{T.currency || 'R$'} {financials.total}</span>
+                          <div className="text-right">
+                              <span className="block text-4xl font-black tracking-tighter text-white">{T.currency || 'R$'} {financials.total}</span>
+                              {/* VISUALIZAÇÃO DE XP GANHO */}
+                              <span className="text-[10px] font-bold text-amber-500 flex items-center justify-end gap-1 mt-1 opacity-80"><Sparkles size={10}/> +{estimatedXP} XP</span>
+                          </div>
                       </div>
                    </div>
                    <div className="h-4 w-full bg-repeat-x bg-[length:20px_20px] opacity-10" style={{backgroundImage: `linear-gradient(45deg, transparent 33.333%, ${isDark?'#fff':'#000'} 33.333%, ${isDark?'#fff':'#000'} 66.667%, transparent 66.667%), linear-gradient(-45deg, transparent 33.333%, ${isDark?'#fff':'#000'} 33.333%, ${isDark?'#fff':'#000'} 66.667%, transparent 66.667%)`, backgroundSize: '20px 40px', backgroundPosition: '0 -20px'}}></div>
@@ -933,7 +1009,12 @@ ${T.zap.wait}
          <div className="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none">
             <div className="pointer-events-auto max-w-md mx-auto">
                 <div className={`p-2 rounded-[2rem] shadow-2xl flex items-center gap-4 pr-3 backdrop-blur-xl border transition-colors duration-500 ${isDark ? 'bg-zinc-900/90 border-zinc-700' : 'bg-white/90 border-zinc-200'}`}>
-                    {step > 0 && (<button onClick={()=>setStep(step-1)} className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform border ${isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-slate-100 border-slate-200'}`}><ChevronLeft size={24}/></button>)}
+                    {step > 0 ? (
+                        <div className="flex gap-2">
+                            <button onClick={()=>setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform border ${isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-slate-100 border-slate-200'}`}><Home size={24}/></button>
+                            <button onClick={()=>setStep(step-1)} className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform border ${isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-slate-100 border-slate-200'}`}><ChevronLeft size={24}/></button>
+                        </div>
+                    ) : null}
                     {step < 3 && booking.item && (<div className="flex-1 pl-2 animate-fade-in"><span className="block text-[9px] font-bold uppercase opacity-50 tracking-wider mb-0.5">{T.total_label}</span><span className="block text-2xl font-black tracking-tight text-amber-500">{T.currency || 'R$'} {financials.total}</span></div>)}
                     <button onClick={handleNextStep} className={`h-14 px-8 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg ${step < 3 ? 'ml-auto' : 'w-full'} bg-amber-500 text-black shadow-amber-500/30 hover:bg-amber-400 hover:scale-[1.02] active:scale-95`}>
                         {step === 3 ? T.book_btn : T.next_btn} {step !== 3 && <ArrowRight size={18} strokeWidth={3}/>}
@@ -996,7 +1077,13 @@ ${T.zap.wait}
                 <div className="w-20 h-20 bg-zinc-800 rounded-3xl rotate-6 flex items-center justify-center mx-auto mb-6 shadow-2xl border border-zinc-700"><Gift size={40} className="text-amber-500" /></div>
                 <h2 className="text-2xl font-black mb-2">{T.popup_welcome_title}</h2><p className="opacity-70 text-sm leading-relaxed mb-8">{T.popup_welcome_msg}</p>
                 <div className="bg-zinc-950 p-4 rounded-xl border border-dashed border-zinc-800 mb-6"><p className="text-[10px] uppercase font-bold text-zinc-500 mb-1">Seu Código:</p><p className="text-xl font-mono font-black text-amber-500 tracking-widest">WELCOME10</p></div>
-                <Button full variant="primary" onClick={()=>{setWelcomePopup(false); setUser(u=>({...u, hasSeenWelcome: true}));}}>{T.popup_btn_coupon}</Button>
+                <Button full variant="primary" onClick={()=>{
+                    setWelcomePopup(false); 
+                    setUser(u=>({...u, hasSeenWelcome: true}));
+                    const welcomeCoupon = { id: 'WELCOME10', val: 10, title: '🎁 Welcome', code: 'WELCOME10' };
+                    setBooking(b => ({...b, appliedCoupon: welcomeCoupon}));
+                    addToast(T.toast_coupon_success, "success");
+                }}>{T.popup_btn_coupon}</Button>
             </div>
         </div>
       )}
