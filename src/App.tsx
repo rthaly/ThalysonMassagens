@@ -11,18 +11,18 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v13.0 - STABLE & COZY FIXED
+ * THALYSON APP OS v14.0 - FIDELITY BALANCE EDITION
  * ==================================================================================
- * CORREÇÕES REALIZADAS:
- * 1. [FIX] Tela Branca: Reset da chave de storage (v13) e validações nulas adicionadas.
- * 2. [UI] Scarcity Popup: Centralizado no topo (não cobre botões).
- * 3. [UX] Toast System: Integrado localmente sem dependências externas.
+ * CHANGELOG:
+ * - [GAMIFICATION] Níveis ajustados para progressão rápida inicial (Hook Model).
+ * - [BALANCE] Prêmios calculados para não dar prejuízo, mas incentivar retorno.
+ * - [UI] Card de Nível agora mostra explicitamente quanto falta para o próximo prêmio.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v13_stable', // Mudei a chave para limpar dados antigos corrompidos
+  STORAGE_KEY: '@thaly_app_v14_fidelity', 
   LOCALE: 'pt-BR'
 };
 
@@ -114,11 +114,19 @@ const Confetti = ({ active }) => {
 const getData = (lang) => {
     const isPT = lang === 'pt';
     return {
+        // GAMIFICAÇÃO AJUSTADA (MAIS FÁCIL E ATRATIVA)
         levels: [
-            { level: 1, xpNeeded: 0, reward: 12, title: isPT ? "Visitante" : "Beginner", color: "text-zinc-400" },
-            { level: 2, xpNeeded: 400, reward: 20, title: isPT ? "Cliente Bronze" : "Bronze", color: "text-orange-400" },
-            { level: 3, xpNeeded: 1000, reward: 30, title: isPT ? "Cliente Prata" : "Silver", color: "text-slate-300" },
-            { level: 4, xpNeeded: 2000, reward: 50, title: isPT ? "Membro VIP" : "Gold VIP", color: "text-amber-400" }
+            // Nível 1: Começa aqui.
+            { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Beginner", color: "text-zinc-400" },
+            
+            // Nível 2: Atinge rápido (aprox 1 a 2 sessões). Prêmio simbólico R$15 para incentivar 2ª visita.
+            { level: 2, xpNeeded: 150, reward: 15, title: isPT ? "Cliente Bronze" : "Bronze", color: "text-orange-400" },
+            
+            // Nível 3: Cliente recorrente (aprox 3 a 4 sessões totais). Prêmio bom R$30.
+            { level: 3, xpNeeded: 450, reward: 30, title: isPT ? "Cliente Prata" : "Silver", color: "text-slate-300" },
+            
+            // Nível 4: Fidelizado (aprox 7 a 8 sessões). Prêmio VIP R$50.
+            { level: 4, xpNeeded: 900, reward: 50, title: isPT ? "Membro VIP" : "Gold VIP", color: "text-amber-400" }
         ],
         services: [
             { 
@@ -220,67 +228,67 @@ const getData = (lang) => {
             welcome: isPT ? "Bem-vindo," : "Welcome,",
             subtitle: isPT ? "Relaxe, você está em boas mãos. O que deseja hoje?" : "Relax, you're in good hands. What do you need?",
             tab_single: isPT ? "Sessão Avulsa" : "Single",
-            tab_packs: isPT ? "Planos Especiais" : "VIP Plans",
+            tab_packs: isPT ? "Planos VIP" : "VIP Plans",
             reviews_btn: isPT ? "Veja o que dizem sobre a experiência" : "Read Reviews",
             select_time_title: isPT ? "Disponibilidade" : "Scheduling",
-            date_sub: isPT ? "Escolha o horário mais confortável para você:" : "Select time:",
-            location_title: isPT ? "Local de Atendimento" : "Set Location",
-            input_name: isPT ? "Seu nome ou apelido (como preferir)" : "Your Name",
-            input_addr: isPT ? "Endereço onde irei te atender" : "Address",
+            date_sub: isPT ? "Selecione o melhor horário:" : "Select time:",
+            location_title: isPT ? "Definir Local" : "Set Location",
+            input_name: isPT ? "Como te chamo?" : "Your Name",
+            input_addr: isPT ? "Endereço Completo" : "Address",
             input_num: isPT ? "Número" : "Number",
             input_bairro: isPT ? "Bairro" : "District",
             input_city: isPT ? "Cidade" : "City",
-            input_comp: isPT ? "Complemento (Apt, Bloco...)" : "Unit/Apt",
+            input_comp: isPT ? "Comp. (Apt, Bloco)" : "Unit/Apt",
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
-            input_room: isPT ? "Número do Quarto" : "Room",
-            motel_note: isPT ? "Motel: Pode deixar o pagamento pronto aqui. O nome e a suíte você me passa no WhatsApp, para sua privacidade." : "Motel: Send details on WhatsApp.",
-            pay_title: isPT ? "Preferência de Pagamento" : "Payment",
-            pay_pix: "Pix",
-            pay_card: isPT ? "Cartão" : "Card",
-            pay_cash: isPT ? "Dinheiro" : "Cash",
+            input_room: isPT ? "Quarto" : "Room",
+            motel_note: isPT ? "Motel: Selecione e pague agora. Detalhes da suíte combinamos no WhatsApp." : "Motel: Send details on WhatsApp.",
+            pay_title: isPT ? "Pagamento" : "Payment",
+            pay_pix: "Pix (Instantâneo)",
+            pay_card: isPT ? "Cartão (Crédito/Débito)" : "Card",
+            pay_cash: isPT ? "Dinheiro (Presencial)" : "Cash",
             extras_title: isPT ? "Personalizar sua experiência" : "Customize",
             coupon_title: isPT ? "Tenho um convite/cupom" : "Coupons",
-            coupon_placeholder: isPT ? "Código do convite..." : "Enter code...",
+            coupon_placeholder: isPT ? "Digite o código..." : "Enter code...",
             coupon_btn: isPT ? "Validar" : "Apply",
             remove: isPT ? "Remover" : "Remove",
             total_label: "Investimento Total",
-            book_btn: isPT ? "Enviar Solicitação" : "Send Request",
-            next_btn: isPT ? "Avançar" : "Continue",
-            uber_warning: isPT ? "Taxa de transporte (Uber) combinamos no chat" : "Transport fee on WhatsApp",
-            success_title: isPT ? "Tudo certo!" : "Done!",
-            success_sub: isPT ? "Já preparei seu agendamento. É só clicar abaixo para abrir nosso chat e confirmar." : "Send msg on WhatsApp.",
-            whatsapp_btn: isPT ? "Combinar no WhatsApp" : "Send Now ➔",
+            book_btn: isPT ? "Gerar Pedido" : "Generate Order",
+            next_btn: isPT ? "Continuar" : "Continue",
+            uber_warning: isPT ? "Taxa de deslocamento (Uber) a combinar no WhatsApp" : "Transport fee on WhatsApp",
+            success_title: isPT ? "Pedido Gerado!" : "Done!",
+            success_sub: isPT ? "O app abriu seu WhatsApp para confirmar. Se não abriu, clique no botão abaixo." : "Send msg on WhatsApp.",
+            whatsapp_btn: isPT ? "Abrir WhatsApp" : "Send Now ➔",
             back_home: isPT ? "Voltar ao Início" : "Back Home",
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
-            empty_date: isPT ? "Selecione uma data acima para ver os horários" : "Select a date",
-            empty_slots: isPT ? "Agenda completa neste dia." : "Full booked.",
-            details_label: isPT ? "DETALHES DA SESSÃO:" : "INCLUDED:",
-            security_note: isPT ? "Seus dados ficam salvos apenas no seu celular. Sigilo total." : "Data saved locally.",
-            popup_welcome_title: isPT ? "Seja bem-vindo!" : "Welcome Gift!",
-            popup_welcome_msg: isPT ? "Para sua primeira experiência ser ainda melhor, liberei um presente especial." : "You got a coupon.",
-            popup_level_title: isPT ? "NOVO STATUS!" : "LEVEL UP!",
-            popup_level_msg: isPT ? "Sua fidelidade é reconhecida. Você alcançou um novo nível de benefícios." : "Congrats! You got a NEW COUPON.",
-            popup_btn_coupon: isPT ? "USAR MEU PRESENTE" : "REDEEM NOW",
-            agree_terms: isPT ? "Estou de acordo com o protocolo de atendimento." : "I agree.",
-            terms_body: isPT ? ["1. HIGIENE: Um banho antes da sessão é essencial para o nosso conforto.", "2. SIGILO: Sua privacidade é absoluta. O que acontece aqui, fica aqui.", "3. RESPEITO: O ambiente é de relaxamento e respeito mútuo.", "4. PAGAMENTO: Realizado ao final, conforme combinado."] : ["1. Hygiene.", "2. Secrecy.", "3. Respect.", "4. Payment."],
+            empty_date: isPT ? "Selecione uma data no calendário acima" : "Select a date",
+            empty_slots: isPT ? "Agenda lotada neste dia." : "Full booked.",
+            details_label: isPT ? "O QUE ESTÁ INCLUSO:" : "INCLUDED:",
+            security_note: isPT ? "Seus dados ficam salvos apenas no seu celular." : "Data saved locally.",
+            popup_welcome_title: isPT ? "PRESENTAÇO!" : "Welcome Gift!",
+            popup_welcome_msg: isPT ? "Para começarmos bem, liberei um cupom de desconto de primeira vez para você." : "You got a coupon.",
+            popup_level_title: isPT ? "LEVEL UP!" : "LEVEL UP!",
+            popup_level_msg: isPT ? "Sua fidelidade compensa. Você subiu de nível e desbloqueou benefícios." : "Congrats! You got a NEW COUPON.",
+            popup_btn_coupon: isPT ? "RESGATAR AGORA" : "REDEEM NOW",
+            agree_terms: isPT ? "Li e concordo com as regras de higiene e respeito." : "I agree.",
+            terms_body: isPT ? ["1. HIGIENE ESSENCIAL: Por favor, tome banho antes da sessão.", "2. SIGILO TOTAL: O que acontece na sessão, fica na sessão.", "3. RESPEITO MÚTUO: Sem agressividade ou exigências fora do combinado.", "4. PAGAMENTO: Deve ser realizado ao final do atendimento."] : ["1. Hygiene.", "2. Secrecy.", "3. Respect.", "4. Payment."],
             terms_title: isPT ? "Protocolo de Atendimento" : "Rules",
-            terms_link: isPT ? "Ler protocolo" : "Rules",
-            terms_btn: isPT ? "Combinado" : "Ok",
+            terms_link: isPT ? "Ler Regras" : "Rules",
+            terms_btn: isPT ? "Entendido" : "Ok",
             zap: {
               intro: isPT ? "Oi Thalyson, tudo bem? 🌿" : "Hi Thalyson!",
-              section_serv: isPT ? "💆‍♂️ *Experiência:*" : "🔥 *SERVICE*",
-              section_plan: isPT ? "🏆 *Plano VIP:*" : "🏆 *I WANT PACK:*",
-              section_det: isPT ? "📝 *Detalhes:*" : "📝 *DETAILS*",
-              section_loc: isPT ? "📍 *Local:*" : "📍 *LOCATION*",
-              section_fin: isPT ? "💰 *Investimento:*" : "💰 *VALUES*",
-              map_link: isPT ? "🗺️ *Mapa:*" : "🗺️ *Map:*",
-              wait: isPT ? "Podemos confirmar?" : "Can you confirm?",
+              section_serv: isPT ? "🔥 *QUERO AGENDAR:*" : "🔥 *SERVICE*",
+              section_plan: isPT ? "🏆 *QUERO O PLANO:*" : "🏆 *I WANT PACK:*",
+              section_det: isPT ? "📝 *RESUMO:*" : "📝 *DETAILS*",
+              section_loc: isPT ? "📍 *LOCALIZAÇÃO:*" : "📍 *LOCATION*",
+              section_fin: isPT ? "💰 *INVESTIMENTO:*" : "💰 *VALUES*",
+              map_link: isPT ? "🗺️ *Abrir Mapa:*" : "🗺️ *Map:*",
+              wait: isPT ? "Aguardo confirmação da taxa de Uber e Horário." : "Waiting confirm.",
               house: isPT ? "Residência" : "Home",
               hotel: "Hotel",
               motel: "Motel"
             },
-            scarcity_msg: isPT ? "pessoas visitando agora" : "people booking"
+            scarcity_msg: isPT ? "pessoas vendo a agenda agora" : "people booking"
         }
     };
 };
@@ -295,6 +303,7 @@ export default function App() {
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
   const [activeTab, setActiveTab] = useState('single');
+  
   const [viewers, setViewers] = useState(0);
   const [showScarcity, setShowScarcity] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
@@ -303,9 +312,12 @@ export default function App() {
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [couponInput, setCouponInput] = useState('');
+  
   const [toasts, setToasts] = useState([]);
+  
   const scrollRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
+  
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
 
@@ -340,9 +352,11 @@ export default function App() {
                 setBooking(b => ({...b, address: parsed.savedAddress}));
             }
         } else {
-            setUser(p => ({...p, coupons: [{ id: 'WELCOME10', val: 10, title: '🎁 Presente de Boas-Vindas', code: 'WELCOME10' }]}));
+            setUser(p => ({...p, coupons: [{ id: 'WELCOME10', val: 10, title: '🎁 Boas Vindas', code: 'WELCOME10' }]}));
         }
-    } catch (e) {}
+    } catch (e) {
+        console.warn("Storage blocked");
+    }
   }, []);
 
   useEffect(() => {
@@ -385,6 +399,7 @@ export default function App() {
       const now = new Date();
       const selectedDate = new Date(booking.date);
       const isToday = selectedDate.getDate() === now.getDate() && selectedDate.getMonth() === now.getMonth();
+
       if (isToday) {
           const currentHour = now.getHours();
           return slots.filter(time => {
@@ -398,12 +413,14 @@ export default function App() {
   const financials = useMemo(() => {
     if (!booking.item) return { total: 0, sub: 0, disc: 0 };
     let sub = booking.item.price;
-    Object.keys(booking.extras).forEach(k => { 
-        if(booking.extras[k]) {
-            const exPrice = DATA.extras.find(e=>e.id===k).price;
-            sub += exPrice; 
-        }
-    });
+    if (booking.type === 'single') {
+        Object.keys(booking.extras).forEach(k => { 
+            if(booking.extras[k]) {
+                const exPrice = DATA.extras.find(e=>e.id===k).price;
+                sub += exPrice; 
+            }
+        });
+    }
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
     const total = Math.max(0, sub - disc);
     return { sub, disc, total };
@@ -417,13 +434,13 @@ export default function App() {
     
     if(booking.locationType === 'home') {
         const fullAddr = `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}`;
-        locTxt = `🏠 *Local:* \n${fullAddr}\n📝 *Comp:* ${booking.address.comp || 'N/A'}`;
+        locTxt = `🏠 *${T.zap.house}:* \n${fullAddr}\n📝 *Comp:* ${booking.address.comp || 'N/A'}`;
         mapQuery = fullAddr;
     } else if(booking.locationType === 'motel') {
-        locTxt = `🏩 *Local:* Motel (Combinar detalhes no chat)`;
+        locTxt = `🏩 *${T.zap.motel}:* Combinar suíte e local no chat.`;
     } else {
         const fullAddr = `${booking.address.placeName}, ${booking.address.city}`;
-        locTxt = `🏨 *Hotel:* \n${fullAddr}\n🚪 *Quarto:* ${booking.address.comp || 'N/A'}`;
+        locTxt = `🏨 *${T.zap.hotel}:* \n${fullAddr}\n🚪 *Quarto:* ${booking.address.comp || 'N/A'}`;
         mapQuery = fullAddr;
     }
     
@@ -435,51 +452,56 @@ export default function App() {
     const header = booking.type === 'pack' || booking.type === 'subscription' ? T.zap.section_plan : T.zap.section_serv;
     
     const msg = `
-${T.zap.intro}
-Gostaria de agendar um momento pra relaxar.
+${T.zap.intro} *${user.name}*
 
-${header} ${booking.item?.title}
-📅 *Data:* ${dateStr} às ${booking.time}
+${header}
+💆‍♂️ *${booking.item?.title.toUpperCase()}*
+📅 *${dateStr}* às *${booking.time}*
 
-${extrasList ? `✨ *Personalização:* \n${extrasList}\n` : ''}
+${extrasList ? `${T.zap.section_det}\n${extrasList}\n` : ''}
+${T.zap.section_loc}
 ${locTxt}
-${mapQuery ? `\n🗺️ *Mapa:* https://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
+${mapQuery ? `\n${T.zap.map_link} https://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
 
-💰 *Investimento:* ${T.currency} ${f.total},00
-💳 *Pagamento:* ${booking.payment}
-🚗 *Transporte:* A combinar.
+${T.zap.section_fin}
+💰 Total Serviço: ${T.currency} ${f.total},00
+💳 Forma: *${booking.payment.toUpperCase()}*
+🚗 *Taxa de Deslocamento:* A combinar aqui no chat.
 
-Podemos confirmar?
+🔐 *Termos:* Li e Aceito.
+
+${T.zap.wait}
 `.trim();
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`;
   };
 
   const validateStep = () => {
       if (step === 0) {
-          if(!booking.item) { addToast("Por favor, escolha como quer relaxar hoje.", "error"); return false; }
+          if(!booking.item) { addToast("Selecione um serviço ou plano para continuar!", "error"); return false; }
           return true;
       }
       if (step === 1) {
-          if (!booking.date || !booking.time) { addToast("Selecione um dia e horário na agenda.", "error"); return false; }
+          if (!booking.date) { addToast("Por favor, selecione um dia na agenda.", "error"); return false; }
+          if (!booking.time) { addToast("Selecione um horário disponível.", "error"); return false; }
           return true;
       }
       if (step === 2) {
-          if (!user.name || user.name.trim().length < 3) { addToast("Preciso saber seu nome para o atendimento.", "error"); return false; }
+          if (!user.name || user.name.trim().length < 3) { addToast("Como devo te chamar? Preencha seu nome.", "error"); return false; }
           if (booking.locationType === 'home') {
               if(!booking.address.street || !booking.address.number || !booking.address.district || !booking.address.city) {
-                  addToast("O endereço completo é importante para eu chegar até você.", "error"); return false;
+                  addToast("Preencha o endereço completo.", "error"); return false;
               }
           }
           if (booking.locationType === 'hotel') {
               if(!booking.address.placeName || !booking.address.city) {
-                  addToast("Qual o nome do hotel e a cidade?", "error"); return false;
+                  addToast("Informe o nome do Hotel e a Cidade.", "error"); return false;
               }
           }
           return true;
       }
       if (step === 3) {
-          if (!booking.payment) { addToast("Escolha uma forma de pagamento.", "error"); return false; }
-          if (!booking.termsAccepted) { addToast("Para nossa segurança, aceite o protocolo.", "error"); return false; }
+          if (!booking.payment) { addToast("Selecione como deseja pagar.", "error"); return false; }
+          if (!booking.termsAccepted) { addToast("Você precisa aceitar os termos de atendimento.", "error"); return false; }
           return true;
       }
       return true;
@@ -499,12 +521,12 @@ Podemos confirmar?
       const code = couponInput.toUpperCase();
       if(code === 'THALYSON10' || code === 'VIP20' || code === 'WELCOME10') {
           const val = code === 'VIP20' ? 20 : 10;
-          const newCoupon = { id: code, val, title: `🎟️ Convite ${code}`, code };
+          const newCoupon = { id: code, val, title: `🎟️ Código ${code}`, code };
           setBooking(b => ({...b, appliedCoupon: newCoupon}));
-          addToast("Convite aplicado com sucesso!", "success");
+          addToast("Cupom aplicado com sucesso!", "success");
           setCouponInput('');
       } else {
-          addToast("Este código não é válido.", "error");
+          addToast("Cupom inválido ou expirado.", "error");
       }
   };
 
@@ -517,7 +539,6 @@ Podemos confirmar?
     const xpMultiplier = booking.type === 'pack' ? 1.5 : 1;
     const xpGain = Math.floor(xpBase * xpMultiplier * 0.1); 
     const newXP = Math.floor(user.xp + xpGain);
-    
     let leveledUp = false;
     DATA.levels.forEach(lvl => {
         if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
@@ -527,7 +548,6 @@ Podemos confirmar?
     });
 
     if (leveledUp) setLevelUpPopup(true);
-    
     setUser(prev => ({ ...prev, xp: newXP, coupons: updatedCoupons, ordersCount: prev.ordersCount + 1 }));
     setShowConfetti(true);
     
@@ -561,8 +581,8 @@ Podemos confirmar?
       </div>
 
       <Confetti active={showConfetti} />
-      <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-[90] pointer-events-none transition-all duration-500 transform ${showScarcity ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-           <div className="bg-red-600/90 text-white px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border border-white/10 backdrop-blur-md">
+      <div className={`fixed top-24 right-4 z-[90] pointer-events-none transition-all duration-500 transform ${showScarcity ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
+           <div className="bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border border-white/10 backdrop-blur-md">
                <Eye size={16} className="animate-pulse" />
                <span className="text-xs font-bold tracking-wide">{viewers} {T.scarcity_msg}</span>
            </div>
@@ -591,17 +611,39 @@ Podemos confirmar?
                     <h1 className="text-3xl font-black tracking-tight">{T.welcome} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{user.name ? user.name.split(' ')[0] : 'Visitante'}</span></h1>
                 </div>
                 <p className={`text-sm mb-6 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.subtitle}</p>
+                
+                {/* CARD DE NÍVEL REFORMULADO (MAIS CLARO) */}
                 <div className={`relative overflow-hidden rounded-3xl p-5 mb-6 border shadow-lg transition-all ${isDark ? 'bg-gradient-to-br from-zinc-900 to-black border-zinc-800' : 'bg-white border-slate-100'}`}>
-                    <div className="flex justify-between items-start mb-4">
+                    <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-3">
                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-amber-400 to-orange-600 shadow-lg shadow-amber-500/20`}>
                                 <Trophy className="text-white" size={24} />
                             </div>
-                            <div><span className="text-[10px] uppercase font-bold tracking-wider opacity-60">{T.level_label}</span><h3 className={`font-black text-lg text-amber-500`}>Nível {user.xp > 2000 ? 'VIP' : (user.xp > 1000 ? 'Prata' : (user.xp > 400 ? 'Bronze' : 'Visitante'))}</h3></div>
+                            <div>
+                                <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">Seu Nível</span>
+                                <h3 className={`font-black text-lg text-amber-500`}>
+                                    {user.xp > 900 ? 'Membro VIP' : (user.xp > 450 ? 'Prata' : (user.xp > 150 ? 'Bronze' : 'Visitante'))}
+                                </h3>
+                            </div>
                         </div>
-                        <div className="text-right"><span className="text-2xl font-black">{user.xp}</span><span className="text-[10px] font-bold opacity-50 block">XP</span></div>
+                        <div className="text-right">
+                            <span className="text-2xl font-black">{user.xp}</span>
+                            <span className="text-[10px] font-bold opacity-50 block">XP</span>
+                        </div>
+                    </div>
+                    {/* FEEDBACK VISUAL DE PROGRESSÃO */}
+                    <div className="mt-3">
+                        <p className="text-[10px] opacity-60 mb-1">
+                            {user.xp < 150 ? `Faltam ${150 - user.xp} XP para ganhar R$ 15,00` : 
+                             user.xp < 450 ? `Faltam ${450 - user.xp} XP para ganhar R$ 30,00` :
+                             user.xp < 900 ? `Faltam ${900 - user.xp} XP para ser VIP` : 'Você é VIP Máximo!'}
+                        </p>
+                        <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-amber-500" style={{width: `${Math.min(100, (user.xp/900)*100)}%`}}></div>
+                        </div>
                     </div>
                 </div>
+                
                 <Button variant="secondary" full size="sm" onClick={() => setReviewsOpen(true)} icon={Star}>{T.reviews_btn}</Button>
               </div>
 
@@ -694,7 +736,7 @@ Podemos confirmar?
                  ))}
               </div>
               <div className="space-y-5">
-                 <InputField label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} isDark={isDark} placeholder="Nome" />
+                 <InputField label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} isDark={isDark} placeholder="Seu Nome" />
                  {booking.locationType === 'home' && (
                      <div className="space-y-4 animate-fade-in">
                         <div className="grid grid-cols-[1fr_90px] gap-3">
@@ -704,7 +746,7 @@ Podemos confirmar?
                         <InputField label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} isDark={isDark} placeholder="Bairro" />
                         <div className="grid grid-cols-2 gap-3">
                              <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} isDark={isDark} placeholder="Cidade" />
-                             <InputField label={T.input_comp} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} placeholder="Apt" />
+                             <InputField label={T.input_comp} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} placeholder="Apt 101" />
                         </div>
                      </div>
                  )}
@@ -712,7 +754,7 @@ Podemos confirmar?
                     <div className="space-y-4 animate-fade-in">
                         <InputField label={T.input_hotel} value={booking.address.placeName} onChange={e=>setBooking(b=>({...b, address: {...b.address, placeName: e.target.value}}))} isDark={isDark} icon={Building} placeholder="Nome do Hotel" />
                         <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} isDark={isDark} placeholder="Cidade" />
-                        <InputField label={T.input_room} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} icon={Lock} placeholder="Quarto" />
+                        <InputField label={T.input_room} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} icon={Lock} placeholder="Número do Quarto" />
                     </div>
                  )}
                  {booking.locationType === 'motel' && (
@@ -722,7 +764,6 @@ Podemos confirmar?
                     </div>
                  )}
               </div>
-              {/* EXTRAS SÓ APARECEM SE FOR SINGLE */}
               {booking.type === 'single' && (
                   <div className="pt-8 border-t border-dashed border-zinc-800/50 mt-8">
                      <h3 className={`text-[10px] font-bold uppercase mb-4 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.extras_title}</h3>
