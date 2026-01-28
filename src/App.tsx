@@ -58,7 +58,9 @@ const getData = (lang) => {
               icon: Zap, 
               title: isPT ? "Experiência Mista" : "Mixed Experience",
               desc: isPT ? "O equilíbrio perfeito (Relax + Sensitiva)." : "The perfect balance (Relax + Sensitive).",
-              details: isPT ? "Começa com a massagem relaxante para soltar a musculatura e termina com a intensidade da sensitiva. **Massagista de cueca.** A mais pedida." : "Starts with relaxing massage to loosen muscles and ends with the intensity of sensitive. **Masseur wears underwear.** Most requested."
+              details: isPT ? "Começa com a massagem relaxante para soltar a musculatura e começar com a intensidade da sensitiva, passo pro corpo a corpo e fecho com a tântrica (finalização manual inclusa).
+Lembrando: é focado no seu prazer, sem penetração ou oral, apenas manual e sensorial. : "It starts with the relaxing massage to loosen the muscles and start with the intensity of the sensitive, I move to the body to body and close with the tantric (manual finishing included).
+Remembering: it is focused on your pleasure, without penetration or oral, only manual and sensory."
             }
         ],
         extras: [
