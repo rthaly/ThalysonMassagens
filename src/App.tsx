@@ -4,7 +4,7 @@ import {
   Clock, Zap, X, Globe, Building, BedDouble, 
   Heart, Instagram, Moon, Sun, Home, 
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
-  ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle
+  ChevronLeft, Loader2, Eye, ShieldCheck, AlertTriangle, Tag
 } from 'lucide-react';
 
 // ==================================================================================
@@ -12,9 +12,9 @@ import {
 // ==================================================================================
 
 const CONFIG = {
-  PHONE: "5517991360413", // Seu número
+  PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_vSegura_2026', 
+  STORAGE_KEY: '@thaly_app_vMaster_2026', 
 };
 
 const TIME_SLOTS = [
@@ -37,44 +37,40 @@ const getData = (lang) => {
               min: 60, 
               price: 90, 
               icon: Wind, 
-              title: isPT ? "Massagem Relaxante" : "Relaxing Massage",
-              desc: isPT ? "Para tirar dor nas costas, cansaço e estresse." : "To remove back pain, tiredness and stress.",
-              details: isPT ? `O QUE ACONTECE NESTA SESSÃO?
-1. Você fica deitado (roupa íntima ou sem, coberto com toalha).
-2. Uso cremes e óleos para deslizar as mãos.
-3. Faço movimentos firmes nas costas, pernas e braços para soltar os "nós" dos músculos.
-4. OBJETIVO: Tirar a dor do corpo e relaxar a mente.
-⚠️ ATENÇÃO: Nesta massagem NÃO existe toque nas partes íntimas.` : "Technical massage focused on physical relief. No intimate touches."
+              title: isPT ? "Relaxante & Miofascial" : "Myofascial Relax",
+              desc: isPT ? "Terapia com rolos de madeira para dor e tensão." : "Wood therapy for pain and tension.",
+              details: isPT ? `DETALHES TÉCNICOS:
+1. USO DE INSTRUMENTOS: Utilizo 3 tipos de rolos de madeira (Maderoterapia).
+2. TÉCNICA: Liberação Miofascial profunda para soltar a musculatura e a fáscia.
+3. BENEFÍCIOS: Remove nódulos de tensão, melhora a circulação sanguínea e reduz dores crônicas nas costas e pernas.
+4. INDICAÇÃO: Para quem treina pesado, trabalha muito sentado ou sente o corpo "travado".
+⚠️ Nesta modalidade não há toques íntimos.` : "Deep tissue massage using wooden rollers (Wood Therapy) for myofascial release. Best for chronic pain and muscle recovery."
             },
             { 
               id: 'sensitiva', 
               min: 60, 
               price: 115, 
               icon: Flame, 
-              title: isPT ? "Massagem Sensitiva" : "Sensitive Massage",
-              desc: isPT ? "Toques leves de pena e ponta de dedos para arrepiar." : "Light touches to cause shivers.",
-              details: isPT ? `O QUE ACONTECE NESTA SESSÃO?
-1. O ambiente é preparado com luz baixa e música.
-2. O foco NÃO é apertar músculo, e sim acordar a pele.
-3. Uso toques muito suaves (penas, ponta dos dedos) pelo corpo todo.
-4. Gera uma sensação intensa de arrepio e prazer sensorial.
-5. Massagista atende de cueca para maior liberdade de movimentos.
-⚠️ Inclui toques na virilha e região pélvica para circulação de energia.` : "Focus on sensory awakening, light touches over the whole body."
+              title: isPT ? "Sensitiva Tântrica" : "Tantric Sensitive",
+              desc: isPT ? "Toque sutil, bioeletricidade e despertar sensorial." : "Subtle touch and sensory awakening.",
+              details: isPT ? `DETALHES TÉCNICOS:
+1. TÉCNICA: Manobras muito leves e sutis usando as pontas dos dedos para despertar as terminações nervosas da pele.
+2. BIOELETRICIDADE: Foco em fazer a energia do corpo circular, gerando arrepios e sensações intensas sem necessidade de força muscular.
+3. TRAJE: Massagista atende de cueca para permitir fluidez nos movimentos.
+4. Inclui toques na região pélvica/virilha para desbloqueio energético.` : "Focus on sensory awakening using light touches over the whole body to stimulate bioelectricity."
             },
             { 
               id: 'mista', 
               min: 60, 
               price: 160, 
               icon: Zap, 
-              title: isPT ? "Experiência Completa (Com Lingam)" : "Full Experience (With Lingam)",
-              desc: isPT ? "A união da Relaxante + Tântrica + Finalização." : "Relaxing + Tantric + Happy Ending.",
-              details: isPT ? `O QUE ACONTECE NESTA SESSÃO?
-1. Começamos tirando a tensão muscular (Relaxante).
-2. Aumentamos a intensidade com a massagem corpo a corpo (Body to Body).
-3. LINGAM MASSAGE: É a massagem na zona íntima (pênis e testículos).
-   - Não é apenas uma masturbação mecânica.
-   - É feita com toques técnicos, óleos específicos e manobras para prolongar o prazer e controlar a energia antes do clímax.
-4. Finalização manual inclusa.` : "The complete combo. Starts with relaxing muscles, moves to body-to-body contact, and finishes with Lingam Massage (intimate massage) designed for intense pleasure and energy control. Manual ending included."
+              title: isPT ? "Experiência Mista (Com Lingam)" : "Full Experience (With Lingam)",
+              desc: isPT ? "Relaxante + Corpo a Corpo + Finalização." : "Relaxing + Body to Body + Happy Ending.",
+              details: isPT ? `O PROTOCOLO COMPLETO:
+1. INÍCIO: Começamos com a liberação miofascial e relaxante para tirar a tensão.
+2. INTENSIDADE: Evoluímos para a massagem corpo a corpo (Body to Body) com óleo morno.
+3. LINGAM MASSAGE: Massagem técnica e respeitosa na região íntima (pênis), focada em prolongar o prazer e distribuir a energia sexual.
+4. FINALIZAÇÃO: Manipulação manual inclusa no final da terapia.` : "The complete combo. Starts with relaxing/myofascial, moves to body-to-body contact, and finishes with Lingam Massage (intimate massage). Manual ending included."
             }
         ],
         extras: [
@@ -83,113 +79,116 @@ const getData = (lang) => {
               price: 55, 
               icon: Clock, 
               label: isPT ? "+30 Minutos de Sessão" : "+30 Minutes",
-              desc: isPT ? "Mais tempo para curtir a massagem." : "More time to enjoy."
+              desc: isPT ? "Estenda seu tempo de prazer." : "More time to enjoy."
             },
             { 
               id: 'touch', 
               price: 55, 
               icon: Heart,
               label: isPT ? "Toque Invertido (Interativo)" : "Interactive Touch",
-              desc: isPT ? "Você pode tocar no massagista durante a sessão." : "You are allowed to touch the masseur."
+              desc: isPT ? "Você pode tocar no massagista." : "You can touch the masseur."
             },
             { 
               id: 'aroma', 
               price: 5, 
               icon: Wind,
-              label: isPT ? "Óleos Especiais" : "Aromatherapy",
-              desc: isPT ? "Cheiro e aquecimento para relaxar mais." : "Scents and heating to relax more."
+              label: isPT ? "Aromaterapia" : "Aromatherapy",
+              desc: isPT ? "Óleos essenciais para relaxamento profundo." : "Essential oils."
             }
         ],
         reviews: [
-            { n: "Tiago", t: "O Thalyson explicou tudo antes, me senti muito seguro. A massagem é incrível.", s: 5 },
-            { n: "Pedro H.", t: "A Lingam foi diferente de tudo. Muita técnica, não é só 'bater uma'. Recomendo.", s: 5 },
-            { n: "Marcos", t: "Cara super profissional e discreto. O lugar é limpo e organizado.", s: 5 },
-            { n: "Cliente Anônimo", t: "Fiz a Mista. O corpo a corpo é sensacional.", s: 5 },
-            { n: "Roberto", t: "Achei o preço justo pelo nível do serviço. Vou voltar.", s: 5 }
+            { n: "Tiago", t: "Os rolos de madeira soltaram minhas costas de um jeito que mão nenhuma conseguiu. Top.", s: 5 },
+            { n: "Pedro H.", t: "A Lingam foi feita com muito cuidado e técnica. Experiência única.", s: 5 },
+            { n: "Marcos", t: "Profissionalismo nota 10. O ambiente é muito limpo.", s: 5 },
+            { n: "Cliente Anônimo", t: "A mistura da força dos rolos com a suavidade da sensitiva é perfeita.", s: 5 }
         ],
         text: {
-            loading: isPT ? "CARREGANDO AGENDAMENTO..." : "LOADING APP...",
+            loading: isPT ? "CARREGANDO APP..." : "LOADING APP...",
             welcome: isPT ? "Bem-vindo," : "Welcome,",
-            subtitle: isPT ? "Escolha sua experiência abaixo:" : "Choose your experience below:",
-            reviews_count: isPT ? "Opinião de quem já foi" : "Reviews",
-            reviews_title: isPT ? "Avaliações Reais" : "Real Reviews",
-            select_time_title: isPT ? "Escolha o Dia e Hora" : "Select Date & Time",
-            date_sub: isPT ? "Horários livres na minha agenda:" : "Available slots:",
-            location_title: isPT ? "Onde será o atendimento?" : "Service Location",
+            subtitle: isPT ? "Agende sua terapia abaixo:" : "Book your therapy:",
+            reviews_count: isPT ? "Avaliações" : "Reviews",
+            reviews_title: isPT ? "O que dizem os clientes" : "Real Reviews",
+            select_time_title: isPT ? "Data e Horário" : "Date & Time",
+            date_sub: isPT ? "Disponibilidade atual:" : "Available slots:",
+            location_title: isPT ? "Local do Atendimento" : "Location",
             input_name: isPT ? "Seu Nome Completo" : "Your Full Name",
-            input_addr: isPT ? "Endereço (Rua)" : "Address (Street)",
-            input_num: isPT ? "Número da Casa/Prédio" : "Number",
+            input_addr: isPT ? "Endereço" : "Address",
+            input_num: isPT ? "Número" : "Number",
             input_bairro: isPT ? "Bairro" : "District",
             input_city: isPT ? "Cidade" : "City",
-            input_comp: isPT ? "Complemento (Apto, Bloco)" : "Unit/Apt",
+            input_comp: isPT ? "Complemento" : "Unit/Apt",
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
-            input_room: isPT ? "Número do Quarto" : "Room Number",
-            motel_note: isPT ? "Motel: O nome do motel e a suíte combinamos no WhatsApp." : "Motel: We discuss details on WhatsApp.",
-            pay_title: isPT ? "Como prefere pagar?" : "Payment Method",
-            pay_pix: "Pix (Instantâneo)",
-            pay_card: isPT ? "Cartão (Crédito/Débito)" : "Card",
-            pay_cash: isPT ? "Dinheiro (Espécie)" : "Cash",
-            extras_title: isPT ? "Quer adicionar algo a mais?" : "Add-ons",
-            coupon_title: isPT ? "Seus Descontos" : "Your Coupons",
-            coupon_select: isPT ? "Usar desconto" : "Select discount",
-            coupon_none: isPT ? "Sem descontos hoje" : "No coupons",
+            input_room: isPT ? "Quarto" : "Room",
+            motel_note: isPT ? "Motel: Detalhes combinados via WhatsApp." : "Motel: Details on WhatsApp.",
+            pay_title: isPT ? "Forma de Pagamento" : "Payment Method",
+            pay_pix: "Pix",
+            pay_card: isPT ? "Cartão" : "Card",
+            pay_cash: isPT ? "Dinheiro" : "Cash",
+            extras_title: isPT ? "Personalize sua sessão" : "Customize",
+            coupon_title: isPT ? "Carteira de Cupons" : "Coupon Wallet",
+            coupon_select: isPT ? "Toque para aplicar" : "Tap to apply",
+            coupon_applied: isPT ? "Cupom Ativo!" : "Coupon Active!",
+            coupon_none: isPT ? "Nenhum cupom disponível" : "No coupons",
             remove: isPT ? "Remover" : "Remove",
-            total_label: "Valor Final",
-            book_btn: isPT ? "Finalizar no WhatsApp" : "Finish on WhatsApp",
-            next_btn: isPT ? "Próximo Passo" : "Continue",
-            uber_note: isPT ? "+ Taxa de Deslocamento (Uber)" : "+ Uber Fee",
-            success_title: isPT ? "Tudo Certo!" : "All Set!",
-            success_sub: isPT ? "Agora basta enviar a mensagem que gerei para mim no WhatsApp para confirmar seu horário." : "Send the message on WhatsApp to confirm.",
-            whatsapp_btn: isPT ? "Enviar Pedido no WhatsApp" : "Send on WhatsApp",
-            back_home: isPT ? "Voltar ao Início" : "Back Home",
+            total_label: "Total a Pagar",
+            book_btn: isPT ? "Agendar no WhatsApp" : "Book on WhatsApp",
+            next_btn: isPT ? "Continuar" : "Continue",
+            uber_note: isPT ? "+ Taxa de Uber (Ida/Volta)" : "+ Uber Fee",
+            success_title: isPT ? "Pré-agendamento Pronto!" : "Order Ready!",
+            success_sub: isPT ? "Envie a mensagem gerada no WhatsApp para confirmar." : "Send the message on WhatsApp to confirm.",
+            whatsapp_btn: isPT ? "Enviar Agora" : "Send Now",
+            back_home: isPT ? "Início" : "Home",
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
             currency: isPT ? "R$" : "$",
-            level_gold_title: isPT ? "Nível VIP (Máximo)" : "VIP Level",
-            level_gold_desc: isPT ? "Você tem desconto máximo fixo." : "You have max discount.",
-            level_next: isPT ? "Próximo nível:" : "Next level:",
+            level_gold_title: isPT ? "Cliente VIP" : "VIP Client",
+            level_gold_desc: isPT ? "Desconto máximo vitalício." : "Max discount.",
+            level_next: isPT ? "Próximo:" : "Next:",
             level_label: isPT ? "Nível" : "Level",
-            empty_date: isPT ? "Selecione um dia acima" : "Select a day above",
-            empty_slots: isPT ? "Agenda cheia ou encerrada." : "Full schedule.",
+            empty_date: isPT ? "Selecione uma data acima" : "Select date above",
+            empty_slots: isPT ? "Agenda lotada." : "Full schedule.",
             try_tomorrow: isPT ? "Tente outro dia." : "Try another day.",
-            details_label: isPT ? "EXPLICANDO O SERVIÇO:" : "SERVICE DETAILS:",
-            discount_applied: isPT ? "Desconto aplicado:" : "Discount applied:",
-            security_note: isPT ? "Seus dados ficam salvos apenas no seu celular." : "Data saved locally on your device only.",
+            details_label: isPT ? "COMO FUNCIONA:" : "HOW IT WORKS:",
+            discount_applied: isPT ? "Desconto:" : "Discount:",
+            security_note: isPT ? "Dados salvos localmente no seu dispositivo." : "Data saved locally.",
             
-            agree_terms: isPT ? "Li e concordo com as regras de higiene e respeito." : "I agree with hygiene and respect rules.",
+            agree_terms: isPT ? "Li e aceito as regras de higiene e respeito." : "I agree with rules.",
             
             terms_body: isPT ? [
-              "1. HIGIENE É OBRIGATÓRIA: Esteja de banho tomado. Eu também estarei.",
-              "2. RESPEITO TOTAL: Qualquer agressividade ou desrespeito encerra a sessão na hora e o valor não é devolvido.",
-              "3. PAGAMENTO: É feito ao final do atendimento.",
-              "4. SIGILO: O que acontece na sessão, fica na sessão. Sua privacidade é garantida.",
-              "5. LOCAL: Se for na sua casa/hotel, preciso de um espaço limpo e seguro para montar a maca (se necessário)."
-            ] : [
-              "1. Hygiene is mandatory.", "2. Respect is mandatory.", "3. Payment at the end.", "4. Total secrecy guaranteed."
-            ],
-            terms_title: isPT ? "Regras da Casa (Leia Antes)" : "House Rules",
-            terms_link: isPT ? "Ler Regras de Segurança" : "Read Safety Rules",
-            terms_btn: isPT ? "Entendi e Concordo" : "I Agree",
+              "1. HIGIENE: Banho tomado é obrigatório.",
+              "2. RESPEITO: Comportamento inadequado encerra a sessão.",
+              "3. PAGAMENTO: Ao final do atendimento.",
+              "4. SIGILO: Privacidade total garantida."
+            ] : ["1. Hygiene.", "2. Respect.", "3. Payment.", "4. Secrecy."],
+            terms_title: isPT ? "Termos de Segurança" : "Safety Terms",
+            terms_link: isPT ? "Ler Regras" : "Read Rules",
+            terms_btn: isPT ? "Concordo" : "Agree",
             btn_close: isPT ? "Fechar" : "Close",
         
             zap: {
               intro: isPT ? "Oi Thalyson! Vim pelo App e quero agendar:" : "Hi Thalyson! From the App, I want to book:",
-              section_serv: isPT ? "💆‍♂️ *O SERVIÇO*" : "💆‍♂️ *SERVICE*",
+              section_serv: isPT ? "💆‍♂️ *SERVIÇO*" : "💆‍♂️ *SERVICE*",
               section_det: isPT ? "📝 *DETALHES*" : "📝 *DETAILS*",
-              section_loc: isPT ? "📍 *ONDE VAI SER*" : "📍 *LOCATION*",
-              section_fin: isPT ? "💰 *VALOR A PAGAR*" : "💰 *VALUE*",
-              map_link: isPT ? "🗺️ *Endereço no Mapa:*" : "🗺️ *Map:*",
-              wait: isPT ? "Pode confirmar se está livre?" : "Can you confirm?",
-              house: isPT ? "Minha Casa" : "Home",
+              section_loc: isPT ? "📍 *LOCAL*" : "📍 *LOCATION*",
+              section_fin: isPT ? "💰 *VALOR*" : "💰 *VALUE*",
+              map_link: isPT ? "🗺️ *Mapa:*" : "🗺️ *Map:*",
+              wait: isPT ? "Aguardo confirmação!" : "Waiting confirmation!",
+              house: isPT ? "Casa" : "Home",
               hotel: "Hotel",
               motel: "Motel"
-            }
+            },
+
+            // NOVOS TEXTOS DE NOTIFICAÇÃO
+            notify_coupon_title: isPT ? "PARABÉNS!" : "CONGRATS!",
+            notify_coupon_msg: isPT ? "Você ganhou um cupom de boas-vindas." : "You got a welcome coupon.",
+            notify_coupon_val: isPT ? "R$ 12,00 OFF" : "$ 12.00 OFF",
+            notify_btn: isPT ? "PEGAR CUPOM" : "GET COUPON"
         }
     };
 };
 
 // ==================================================================================
-// 2. COMPONENTES
+// 2. COMPONENTES AUXILIARES
 // ==================================================================================
 
 const LoadingScreen = ({ isDark, text }) => (
@@ -197,9 +196,6 @@ const LoadingScreen = ({ isDark, text }) => (
         <div className="relative">
             <div className="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center animate-pulse shadow-2xl shadow-blue-500/50">
                 <span className="text-2xl font-black text-white">TM</span>
-            </div>
-            <div className="absolute -bottom-2 -right-2 bg-emerald-500 rounded-full p-1.5 animate-bounce">
-                <Check size={16} className="text-white" strokeWidth={3}/>
             </div>
         </div>
         <h1 className="mt-8 text-xl font-bold tracking-tight animate-pulse">Thalyson Massagens</h1>
@@ -226,54 +222,6 @@ const Modal = ({ isOpen, onClose, children, title, isDark }) => {
   );
 };
 
-const XPBar = ({ xp, isDark, levels, text }) => {
-    let currentLevel = levels[0];
-    let nextLevel = levels[1];
-
-    for (let i = 0; i < levels.length; i++) {
-        if (xp >= levels[i].xpNeeded) {
-            currentLevel = levels[i];
-            nextLevel = levels[i+1] || null;
-        }
-    }
-
-    if (!nextLevel) return (
-        <div className={`mt-4 p-4 rounded-2xl border ${isDark ? 'bg-amber-900/20 border-amber-500/30' : 'bg-amber-50 border-amber-200'}`}>
-             <div className="flex items-center gap-3">
-                 <Trophy className="text-amber-500" size={24} />
-                 <div>
-                     <p className="font-bold text-sm text-amber-500">{text.level_gold_title}</p>
-                     <p className="text-xs opacity-70">{text.level_gold_desc}</p>
-                 </div>
-             </div>
-        </div>
-    );
-
-    const progress = Math.min(100, Math.max(0, ((xp - currentLevel.xpNeeded) / (nextLevel.xpNeeded - currentLevel.xpNeeded)) * 100));
-
-    return (
-        <div className={`mt-4 p-4 rounded-2xl border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-            <div className="flex justify-between items-end mb-2">
-                <div>
-                    <span className="text-[10px] font-bold uppercase opacity-50 tracking-wider">{text.level_label} {currentLevel.level}</span>
-                    <h3 className="font-bold text-sm text-blue-500">{currentLevel.title}</h3>
-                </div>
-                <div className="text-right">
-                    <span className="text-[10px] opacity-60 block">{text.level_next}</span>
-                    <span className="font-bold text-green-500 text-xs">{text.currency} {nextLevel.reward} OFF</span>
-                </div>
-            </div>
-            <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-100'}`}>
-                <div className="h-full bg-gradient-to-r from-blue-600 to-cyan-400 transition-all duration-1000 ease-out" style={{ width: `${progress}%` }}></div>
-            </div>
-            <div className="mt-1 flex justify-between text-[10px] opacity-40 font-mono">
-                <span>{xp} XP</span>
-                <span>{nextLevel.xpNeeded} XP</span>
-            </div>
-        </div>
-    );
-};
-
 // ==================================================================================
 // 3. APP PRINCIPAL
 // ==================================================================================
@@ -284,12 +232,12 @@ export default function App() {
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
   
-  // Viewer Fake Counter
+  // Escassez
   const [viewers, setViewers] = useState(0);
   const [showScarcity, setShowScarcity] = useState(false);
   const scarcityTimeout = useRef(null);
 
-  // Modais
+  // Modais e Popups
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
@@ -298,26 +246,22 @@ export default function App() {
   const scrollRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
   
-  // Data State
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
 
-  // User State
   const [user, setUser] = useState({ 
       name: '', xp: 0, coupons: [], 
       savedAddress: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, 
       hasSeenWelcome: false 
   });
 
-  // Booking State
   const [booking, setBooking] = useState({
     service: null, extras: {}, date: null, time: null, locationType: 'home', 
     address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
     payment: '', appliedCoupon: null,
-    termsAccepted: false // NOVO: Validação de segurança
+    termsAccepted: false 
   });
 
-  // Inicialização e Persistência
   useEffect(() => {
     setIsClient(true);
     setTimeout(() => setLoading(false), 2000);
@@ -327,16 +271,18 @@ export default function App() {
         if (s) {
             setUser(JSON.parse(s));
         } else {
-            setUser(p => ({...p, coupons: [{ id: 'lvl1', val: 12, title: '🎁 Cupom de Boas Vindas' }]}));
+            // Inicia com cupom
+            setUser(p => ({...p, coupons: [{ id: 'lvl1', val: 12, title: '🎁 Boas Vindas' }]}));
         }
     } catch (e) {
         console.warn("Storage disabled");
     }
   }, []);
 
+  // NOTIFICAÇÃO DE INÍCIO DE CUPOM
   useEffect(() => {
      if(!loading && isClient && !user.hasSeenWelcome) {
-         const timer = setTimeout(() => setWelcomePopup(true), 1500);
+         const timer = setTimeout(() => setWelcomePopup(true), 1000);
          return () => clearTimeout(timer);
      }
   }, [loading, isClient, user.hasSeenWelcome]);
@@ -359,7 +305,6 @@ export default function App() {
       scarcityTimeout.current = setTimeout(() => setShowScarcity(false), 3000);
   };
 
-  // Lógica de Agendamento
   const availableTimes = useMemo(() => {
       if (!booking.date) return [];
       const now = new Date();
@@ -386,18 +331,15 @@ export default function App() {
     return { sub, disc, total: Math.max(0, sub - disc) };
   }, [booking.service, booking.extras, booking.appliedCoupon, DATA.extras]);
 
-  // VALIDAÇÕES DE SEGURANÇA
   const canProceed = useCallback(() => {
     if (step === 0) return !!booking.service;
     if (step === 1) return !!booking.date && !!booking.time;
     if (step === 2) {
-      // Validação mais forte no nome
       if (!user.name || user.name.trim().length < 3) return false;
       if (booking.locationType === 'home') return booking.address.street && booking.address.number && booking.address.city;
       if (booking.locationType === 'hotel') return booking.address.placeName && booking.address.city;
       return true; 
     }
-    // Passo 3 exige pagamento E aceite dos termos
     return !!booking.payment && booking.termsAccepted;
   }, [step, booking, user.name]);
 
@@ -432,7 +374,7 @@ export default function App() {
         locTxt = `🏠 *${T.zap.house}:* ${fullAddr}\n📝 *Comp:* ${booking.address.comp || '-'}`;
         mapQuery = fullAddr;
     } else if(booking.locationType === 'motel') {
-        locTxt = `🏩 *${T.zap.motel}:* Vamos combinar no chat.`;
+        locTxt = `🏩 *${T.zap.motel}:* Definir no chat.`;
     } else {
         const fullAddr = `${booking.address.placeName}, ${booking.address.city}`;
         locTxt = `🏨 *${T.zap.hotel}:* ${fullAddr}\n🚪 *Quarto:* ${booking.address.comp || '-'}`;
@@ -467,7 +409,7 @@ ${T.uber_note}
 💎 *TOTAL: ${T.currency} ${f.total}*
 Pagamento: *${booking.payment.toUpperCase()}*
 
-🔐 *Termos:* O cliente declarou ter lido e aceito as regras de higiene e respeito.
+🔐 *Termos:* Li e Aceito.
 
 ${T.zap.wait}
 `.trim();
@@ -482,15 +424,15 @@ ${T.zap.wait}
   return (
     <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
       
-      {/* Visualizador - Escassez */}
+      {/* Visualizador Escassez */}
       <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[90] pointer-events-none transition-all duration-500 ${showScarcity ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
            <div className="bg-black/80 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-white/10">
                <Eye size={18} className="text-emerald-400 animate-pulse" />
-               <span className="text-xs font-bold tracking-wide">{viewers} {T.scarcity_msg}</span>
+               <span className="text-xs font-bold tracking-wide">{viewers} online</span>
            </div>
       </div>
 
-      {/* CABEÇALHO */}
+      {/* HEADER */}
       <header className={`h-16 px-6 flex items-center justify-between z-20 shrink-0 ${isDark ? 'bg-zinc-950 border-b border-zinc-800' : 'bg-white border-b border-slate-200'}`}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-xs shadow-lg shadow-blue-500/30">T.</div>
@@ -503,7 +445,7 @@ ${T.zap.wait}
         </div>
       </header>
 
-      {/* ÁREA PRINCIPAL */}
+      {/* MAIN */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-6 pb-32 scroll-smooth relative">
         <div className={`fixed top-16 left-0 w-full h-6 z-10 pointer-events-none bg-gradient-to-b ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}></div>
 
@@ -515,7 +457,6 @@ ${T.zap.wait}
               <div className="mb-6">
                 <h1 className="text-2xl font-bold mb-1">{T.welcome} <span className="text-blue-500">{user.name ? user.name.split(' ')[0] : 'Visitante'}</span></h1>
                 <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.subtitle}</p>
-                <XPBar xp={user.xp} isDark={isDark} levels={DATA.levels} text={T} />
                 <button onClick={() => setReviewsOpen(true)} className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold cursor-pointer hover:bg-blue-500/20 active:scale-95 transition-transform">
                    <Star size={12} fill="currentColor"/> {T.reviews_count}
                 </button>
@@ -536,7 +477,6 @@ ${T.zap.wait}
                       <h3 className="font-bold text-lg mb-1">{s.title}</h3>
                       <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{s.desc}</p>
                       
-                      {/* Explicação detalhada do serviço */}
                       {booking.service?.id === s.id && (
                           <div className={`mt-4 p-4 rounded-2xl text-xs leading-relaxed animate-fade-in border ${isDark ? 'bg-black/40 text-zinc-300 border-zinc-700' : 'bg-blue-50 text-slate-700 border-blue-100'}`}>
                              <div className="flex items-center gap-2 font-bold mb-2 text-blue-500"><Info size={14}/> {T.details_label}</div>
@@ -677,7 +617,7 @@ ${T.zap.wait}
             </div>
           )}
 
-          {/* PASSO 3: PAGAMENTO E TERMOS */}
+          {/* PASSO 3: PAGAMENTO E CUPONS */}
           {step === 3 && (
             <div className="animate-slide-in pb-10">
                <div className={`p-6 rounded-3xl border shadow-xl ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}>
@@ -692,30 +632,38 @@ ${T.zap.wait}
                       </div>
                   ))}
                   
-                  {/* Cupom */}
-                  <div className={`mt-4 p-3 rounded-xl flex justify-between items-center ${isDark ? 'bg-black/20' : 'bg-slate-100'}`}>
-                      <div className="flex items-center gap-2 text-xs font-bold opacity-60"><Ticket size={14}/> {T.coupon_title}</div>
+                  {/* SELEÇÃO DE CUPONS VISUAL (Melhoria) */}
+                  <div className="mt-6 mb-4">
+                      <div className="flex items-center gap-2 text-xs font-bold opacity-60 mb-3"><Tag size={14}/> {T.coupon_title}</div>
+                      
                       {user.coupons.length > 0 ? (
-                        booking.appliedCoupon ? (
-                            <button onClick={()=>setBooking(b=>({...b, appliedCoupon: null}))} className="text-xs text-red-500 font-bold">{T.remove}</button>
-                        ) : (
-                            <select onChange={(e)=>{
-                                const c = user.coupons.find(x=>String(x.id)===e.target.value);
-                                setBooking(b=>({...b, appliedCoupon: c}));
-                            }} className={`bg-transparent text-xs font-bold outline-none text-right cursor-pointer ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
-                                <option value="" className="text-black">{T.coupon_select}</option>
-                                {user.coupons.map(c=><option key={c.id} value={c.id} className="text-black">{T.currency} {c.val} OFF</option>)}
-                            </select>
-                        )
-                      ) : <span className="text-xs opacity-50">{T.coupon_none}</span>}
+                        <div className="grid gap-3">
+                            {user.coupons.map(c => {
+                                const isApplied = booking.appliedCoupon?.id === c.id;
+                                return (
+                                    <div key={c.id} onClick={() => setBooking(b => ({...b, appliedCoupon: isApplied ? null : c}))} 
+                                        className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all active:scale-[0.98] flex justify-between items-center
+                                            ${isApplied 
+                                                ? 'border-emerald-500 bg-emerald-500/10' 
+                                                : (isDark ? 'border-zinc-800 bg-zinc-900 hover:border-zinc-700' : 'border-slate-200 bg-slate-50 hover:border-slate-300')
+                                            }`}
+                                    >
+                                        <div>
+                                            <p className="font-bold text-sm">{c.title}</p>
+                                            <p className="text-xs opacity-60">{T.coupon_select}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className={`block font-black text-lg ${isApplied ? 'text-emerald-500' : 'opacity-50'}`}>-{T.currency}{c.val}</span>
+                                            {isApplied && <Check size={16} className="text-emerald-500 ml-auto"/>}
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                      ) : (
+                          <div className="text-center py-4 opacity-50 text-xs border border-dashed rounded-xl">{T.coupon_none}</div>
+                      )}
                   </div>
-
-                  {booking.appliedCoupon && (
-                      <div className="mt-2 flex justify-between text-sm text-green-500 font-bold">
-                          <span>{T.discount_applied}</span>
-                          <span>- {T.currency} {booking.appliedCoupon.val}</span>
-                      </div>
-                  )}
 
                   <div className="mt-4 pt-4 border-t border-dashed border-gray-500/20 flex justify-between items-end">
                       <div>
@@ -773,7 +721,7 @@ ${T.zap.wait}
         </div>
       </main>
 
-      {/* BARRA FLUTUANTE INFERIOR */}
+      {/* FOOTER */}
       {step < 4 && (
          <div className="fixed bottom-6 left-6 right-6 z-50">
             <div className={`p-2 rounded-[2rem] shadow-2xl flex items-center gap-4 pr-3 backdrop-blur-xl border ${isDark ? 'bg-zinc-900/90 border-zinc-700' : 'bg-white/90 border-zinc-200'}`}>
@@ -797,7 +745,7 @@ ${T.zap.wait}
          </div>
       )}
 
-      {/* MODAL DE AVALIAÇÕES */}
+      {/* MODAL REVIEWS */}
       <Modal isOpen={reviewsOpen} onClose={()=>setReviewsOpen(false)} title={T.reviews_title} isDark={isDark}>
          <div className="space-y-3">
             {DATA.reviews.map((r,i)=>(
@@ -809,7 +757,7 @@ ${T.zap.wait}
          </div>
       </Modal>
 
-      {/* MODAL DE REGRAS (TERMOS) */}
+      {/* MODAL TERMOS */}
       <Modal isOpen={termsOpen} onClose={()=>setTermsOpen(false)} title={T.terms_title} isDark={isDark}>
          <div className="space-y-4">
             {T.terms_body.map((t,i)=><p key={i} className="text-sm opacity-80 border-l-2 border-blue-500 pl-3">{t}</p>)}
@@ -817,27 +765,30 @@ ${T.zap.wait}
          </div>
       </Modal>
 
-      {/* GRADIENTES VISUAIS */}
       <div className={`fixed top-0 left-0 w-full h-8 z-10 pointer-events-none bg-gradient-to-b ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}/>
       <div className={`fixed bottom-0 left-0 w-full h-24 z-10 pointer-events-none bg-gradient-to-t ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}/>
 
-      {/* POPUPS DE RECOMPENSA */}
+      {/* POPUP DE BOAS VINDAS (CUPOM) - ATIVADO AO INICIAR */}
       {welcomePopup && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in" onClick={()=>setWelcomePopup(false)}></div>
             <div className={`relative p-8 rounded-[2rem] text-center max-w-sm w-full animate-scale-in shadow-2xl ${isDark ? 'bg-zinc-900 border border-zinc-800 text-white' : 'bg-white text-zinc-900'}`}>
-                <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
+                <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30 animate-bounce">
                     <Gift size={40} className="text-white" />
                 </div>
-                <h2 className="text-2xl font-black mb-2">{T.popup_welcome_title}</h2>
-                <p className="opacity-70 text-base leading-relaxed mb-8">{T.popup_welcome_msg}</p>
+                <h2 className="text-2xl font-black mb-2">{T.notify_coupon_title}</h2>
+                <p className="opacity-70 text-base leading-relaxed mb-4">{T.notify_coupon_msg}</p>
+                <div className="bg-blue-500/10 p-4 rounded-xl border border-blue-500/50 mb-8">
+                     <span className="text-2xl font-black text-blue-500">{T.notify_coupon_val}</span>
+                </div>
                 <button onClick={()=>{setWelcomePopup(false); setUser(u=>({...u, hasSeenWelcome: true}));}} className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl text-base hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
-                    <Bell size={18}/> {T.terms_btn}
+                    <Ticket size={18}/> {T.notify_btn}
                 </button>
             </div>
         </div>
       )}
 
+      {/* POPUP LEVEL UP */}
       {levelUpPopup && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in" onClick={()=>setLevelUpPopup(false)}></div>
