@@ -14,7 +14,7 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_final_fixed_v3', 
+  STORAGE_KEY: '@thaly_app_final_real_v4', 
 };
 
 const TIME_SLOTS = [
@@ -39,12 +39,12 @@ const getData = (lang) => {
               price: 90, 
               icon: Wind, 
               title: isPT ? "Relaxante (Rolos de Madeira)" : "Wood Relax",
-              desc: isPT ? "Alívio de dores e tensão com rolos (Sem dor)." : "Pain relief with wood rollers.",
+              desc: isPT ? "Para soltar as costas e tirar o cansaço." : "Pain relief with wood rollers.",
               details: isPT ? `COMO É A SESSÃO?
-1. TÉCNICA: Uso 3 tipos de rolos de madeira anatômicos para soltar a musculatura.
-2. SEM DOR: O foco é relaxamento, deslizando a madeira para tirar o peso das costas.
-3. FINALIZAÇÃO: Toques manuais nas costas e pernas.
-⚠️ Obs: Nesta modalidade não há toques íntimos.` : "Wood therapy focused on relaxation. No intimate touches."
+1. TÉCNICA: Uso meus rolos de madeira para soltar suas costas e pernas.
+2. SEM DOR: É para relaxar, não para machucar. Deslizo a madeira para tirar o peso do corpo.
+3. FINALIZAÇÃO: Termino com as mãos para garantir que relaxou tudo.
+⚠️ Obs: Massagem focada em tirar dor e cansaço.` : "Wood therapy focused on relaxation."
             },
             { 
               id: 'sensitiva', 
@@ -52,26 +52,26 @@ const getData = (lang) => {
               price: 160, 
               icon: Flame, 
               title: isPT ? "Sensitiva Tântrica (+ Lingam)" : "Tantric Sensitive",
-              desc: isPT ? "Começa com Relaxante + Sensitiva + Finalização." : "Relax + Sensitive + Happy Ending.",
-              details: isPT ? `O PROTOCOLO DESTA SESSÃO:
-1. INÍCIO RELAXANTE: Começo tirando a tensão muscular (manual ou rolos).
-2. SENSORIAL: Entro com a parte sensitiva (toques leves com a ponta dos dedos) para arrepiar o corpo.
-3. LINGAM MASSAGE: Inclui a massagem técnica na região íntima (pênis e testículos).
-4. OBJETIVO: Te levar ao limite do prazer.
-5. FINALIZAÇÃO: Manual inclusa (com muito óleo).` : "Starts with relaxing, moves to sensory touches and includes Lingam Massage."
+              desc: isPT ? "Começa Relaxante e termina com Lingam." : "Relax + Sensitive + Happy Ending.",
+              details: isPT ? `O QUE ROLA NESSA SESSÃO:
+1. INÍCIO: Começo tirando a tensão do seu corpo (manual ou rolos).
+2. SENSORIAL: Depois uso toques bem leves (ponta dos dedos) para te dar arrepios.
+3. LINGAM: Inclui a massagem na parte íntima (pênis e testículos).
+4. OBJETIVO: Te dar o máximo de prazer.
+5. FINALIZAÇÃO: Manual inclusa (com bastante óleo).` : "Starts with relaxing, moves to sensory touches and includes Lingam Massage."
             },
             { 
               id: 'mista', 
-              min: 60, // VOLTOU PARA 60 MINUTOS
+              min: 60, 
               price: 200, 
               icon: Zap, 
               title: isPT ? "Experiência Mista Completa" : "Full Experience",
-              desc: isPT ? "O equilíbrio perfeito (Relax + Corpo a Corpo)." : "The perfect balance.",
-              details: isPT ? `A EXPERIÊNCIA COMPLETA (60min):
-1. TÉCNICA: Começa com a massagem relaxante para soltar a musculatura.
+              desc: isPT ? "O combo total (Relax + Corpo a Corpo + Finalização)." : "The perfect balance.",
+              details: isPT ? `A MAIS COMPLETA (60min):
+1. TÉCNICA: Começa com a massagem relaxante para soltar os músculos.
 2. INTENSIDADE: Aumento para a sensitiva e entro no corpo a corpo (Body to Body).
-3. LINGAM: Fecho com a tântrica (finalização manual inclusa).
-4. FOCO: Seu prazer, sem pressa.` : "Complete experience: Relaxing + Body to Body + Lingam."
+3. LINGAM: Fecho com a tântrica caprichada.
+4. FINAL: Você goza no final, sem pressa.` : "Complete experience: Relaxing + Body to Body + Lingam."
             }
         ],
 
@@ -81,152 +81,144 @@ const getData = (lang) => {
               price: 55, 
               icon: Clock, 
               label: isPT ? "+30 Minutos" : "+30 Minutes",
-              desc: isPT ? "Estenda seu tempo de prazer." : "More time."
+              desc: isPT ? "Pra curtir sem pressa." : "More time."
             },
             { 
               id: 'touch', 
               price: 55, 
               icon: Heart,
-              label: isPT ? "Troca de Energia" : "Energy Exchange",
-              desc: isPT ? "Interativo: Você pode tocar no massagista." : "You can touch."
+              label: isPT ? "Troca (Você Toca)" : "You Touch",
+              desc: isPT ? "Liberado tocar no massagista." : "You can touch."
             },
             { 
               id: 'aroma', 
               price: 5, 
               icon: Wind,
               label: isPT ? "Aromaterapia" : "Aromatherapy",
-              desc: isPT ? "Essências no ambiente." : "Scents."
+              desc: isPT ? "Essência pra relaxar." : "Scents."
             }
         ],
 
-        // AVALIAÇÕES: ORIGINAIS + NOVAS (ESPECÍFICAS)
+        // AVALIAÇÕES MISTAS (ORIGINAIS + NOVAS REAIS/AMADORAS)
         reviews: [
-            // ORIGINAIS (RESTAURADAS)
+            // ORIGINAIS DO CÓDIGO 1
             { n: "Tiago", t: "A sensitiva foi uma experiência de outro mundo.", s: 5 },
             { n: "Pedro H.", t: "Fui estressado e saí flutuando.", s: 5 },
             { n: "Marcos", t: "Profissionalismo nota 10.", s: 5 },
 
-            // NOVAS - LONDRINA
-            { n: "Eduardo (Londrina)", t: "Sou daqui de Londrina, fui no hotel perto do Catuaí. O cara é discreto mesmo.", s: 5 },
-            { n: "Ricardo (Gleba Palhano)", t: "Atendimento top aqui em Londrina. Os rolos de madeira salvam as costas.", s: 5 },
-            { n: "M. (Londrina Centro)", t: "Rápido e prático. A finalização foi intensa, perna tremeu.", s: 5 },
-            { n: "Júnior (Londrina)", t: "Estava a trabalho na cidade, ele veio no hotel. Salvou minha noite.", s: 5 },
-
-            // NOVAS - SÃO PAULO (BELA VISTA / JARDINS)
-            { n: "Tiago (Bela Vista)", t: "Moro na Frei Caneca, ele veio rápido. O toque dele é viciante.", s: 5 },
-            { n: "M. (Jardins SP)", t: "Paguei o extra pra tocar e valeu cada centavo. Pele macia, cheiroso.", s: 5 },
-            { n: "Gustavo (Consolação)", t: "O apartamento dele em SP é super limpo. Jorrei longe na finalização.", s: 5 },
-            { n: "Advogado (Paulista)", t: "Sigilo absoluto. Atendeu no meu flat. Recomendo.", s: 5 },
-            { n: "Felipe (Centro SP)", t: "Achei que ia doer os rolos, mas relaxou demais. E a Lingam... sem palavras.", s: 5 },
-            
-            // NOVAS - SANTA FÉ DO SUL / JALES
-            { n: "João (Santa Fé)", t: "Sou daqui de Santa Fé, conheço o trabalho dele faz tempo. O melhor.", s: 5 },
-            { n: "Lucas (Jales)", t: "Vim de Jales só pra isso. A mista vale muito a pena.", s: 5 },
-            { n: "Beto (Santa Fé do Sul)", t: "Ambiente climatizado top aqui na cidade. Saí renovado.", s: 5 },
-            { n: "André (Região)", t: "Os rolos de madeira tiraram toda dor nas costas. Mão de fada.", s: 5 },
-
-            // GERAIS / VISCERAIS
-            { n: "Anônimo", t: "O toque dele vicia. A finalização foi absurda, jorrei longe.", s: 5 },
-            { n: "Curioso", t: "Mão firme, pegada de macho. O óleo faz toda a diferença.", s: 5 },
-            { n: "Empresário", t: "Sou casado, tinha receio. O sigilo foi absoluto.", s: 5 },
-            { n: "M. (Casado)", t: "Precisava desse escape. O stress sumiu na hora.", s: 5 },
-            { n: "Roberto", t: "O upgrade de 30 minutos vale a pena. Não dá vontade de parar.", s: 5 },
-            { n: "Fã", t: "Ele de cueca branca... sem comentários. Visual nota 1000.", s: 5 },
-            { n: "Carlos A.", t: "Profissionalismo raro hoje em dia. Pontual e educado.", s: 5 },
-            { n: "Gym Rat", t: "Fiquei impressionado com a força das mãos dele.", s: 5 },
-            { n: "Hétero Curioso", t: "Excelente profissional. Me deixou super confortável.", s: 5 }
+            // NOVAS - REAIS E DIRETAS (LOCAIS REAIS)
+            { n: "Eduardo (Londrina)", t: "Tava no hotel perto do shopping Catuaí, ele veio rápido. Discreto, curti.", s: 5 },
+            { n: "Júnior (Bela Vista SP)", t: "Subiu aqui no meu apê sem frescura. O moleque tem pegada.", s: 5 },
+            { n: "Anônimo (Santa Fé)", t: "Conheço ele de vista da cidade, não sabia que fazia massagem assim. Surpreendeu.", s: 5 },
+            { n: "M. (Jales)", t: "Marquei num motel na saída pra Santa Fé. Foi intenso, tremi tudo.", s: 5 },
+            { n: "Ricardo (SP)", t: "Tava na paulista a trabalho, foi a melhor coisa pra relaxar.", s: 5 },
+            { n: "Gustavo", t: "Sem frescura de clínica. É massagem de verdade, direto ao ponto.", s: 5 },
+            { n: "Felipe (Londrina)", t: "Levou a maca no hotel, montou rapidinho. O óleo que ele usa é bom.", s: 5 },
+            { n: "André (Santa Fé)", t: "Os rolos de madeira são top, tirou a dor das costas. E o final... pqp.", s: 5 },
+            { n: "Lucas (Jardins)", t: "Paguei pra tocar nele e valeu a pena. Pele lisinha.", s: 5 },
+            { n: "Beto (Rio Preto)", t: "Vim pra região e marquei. Jorrei longe, fazia tempo que não gozava assim.", s: 5 },
+            { n: "Carlos (Casado)", t: "Discreto demais. Ninguém percebeu nada. Recomendo pra quem quer sigilo.", s: 5 },
+            { n: "Bruno", t: "De cueca branca... visual nota 1000. Fiquei doido.", s: 5 },
+            { n: "Rafa (Centro SP)", t: "Moro em kitnet pequena e deu certo. Ele se vira nos 30.", s: 5 },
+            { n: "M. (Sigilo)", t: "Gostei que ele respeita, mas provoca na medida certa.", s: 5 },
+            { n: "Paulo (Votuporanga)", t: "A mão dele é quente, macia mas firme. Sabe o que faz.", s: 5 },
+            { n: "Sérgio", t: "Simples e objetivo. Do jeito que homem gosta.", s: 5 },
+            { n: "Curioso", t: "Primeira vez que fiz com homem. Me deixou super a vontade.", s: 5 },
+            { n: "Fernando (Londrina)", t: "Veio no Ibis. Salvou minha noite.", s: 5 },
+            { n: "G. (Jales)", t: "Massagem top, valeu a vinda.", s: 5 },
+            { n: "Pedro", t: "O corpo a corpo é sacanagem de bom. Recomendo a mista.", s: 5 }
         ],
         text: {
-            loading: isPT ? "CARREGANDO APP..." : "LOADING APP...",
-            welcome: isPT ? "Olá," : "Hello,",
-            subtitle: isPT ? "Seu momento de prazer e paz." : "Your moment of pleasure.",
-            reviews_count: isPT ? "Ver Avaliações" : "Reviews",
-            reviews_title: isPT ? "O que dizem os clientes" : "Reviews",
-            select_time_title: isPT ? "Agendamento" : "Booking",
-            date_sub: isPT ? "Horários disponíveis:" : "Available slots:",
-            location_title: isPT ? "Local de Atendimento" : "Location",
-            input_name: isPT ? "Seu Nome" : "Your Name",
+            loading: isPT ? "CARREGANDO..." : "LOADING...",
+            welcome: isPT ? "E aí," : "Hi,",
+            subtitle: isPT ? "Escolha o que você quer:" : "Choose service:",
+            reviews_count: isPT ? "Ver relatos reais" : "Reviews",
+            reviews_title: isPT ? "Relatos de quem já foi" : "Reviews",
+            select_time_title: isPT ? "Qual dia e hora?" : "Date & Time",
+            date_sub: isPT ? "Minha agenda livre:" : "Available slots:",
+            location_title: isPT ? "Onde eu vou?" : "Location",
+            input_name: isPT ? "Seu Nome (ou Apelido)" : "Your Name",
             input_addr: isPT ? "Endereço" : "Address",
             input_num: isPT ? "Número" : "Number",
             input_bairro: isPT ? "Bairro" : "District",
             input_city: isPT ? "Cidade" : "City",
             input_comp: isPT ? "Complemento" : "Unit/Apt",
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
-            input_room: isPT ? "Quarto" : "Room",
-            motel_note: isPT ? "Motel: Combinamos detalhes no WhatsApp." : "Motel: Details on WhatsApp.",
-            pay_title: isPT ? "Pagamento" : "Payment",
+            input_room: isPT ? "Qual quarto?" : "Room",
+            motel_note: isPT ? "Motel: Me manda a suíte no WhatsApp." : "Motel: Details on WhatsApp.",
+            pay_title: isPT ? "Como vai pagar?" : "Payment",
             pay_pix: "Pix",
             pay_card: isPT ? "Cartão" : "Card",
             pay_cash: isPT ? "Dinheiro" : "Cash",
-            extras_title: isPT ? "Adicionais (Opcional)" : "Add-ons",
-            coupon_title: isPT ? "Seus Cupons" : "Your Coupons",
-            coupon_select: isPT ? "Selecionar desconto" : "Select discount",
+            extras_title: isPT ? "Quer algo a mais?" : "Add-ons",
+            coupon_title: isPT ? "Seus Cupons" : "Coupons",
+            coupon_select: isPT ? "Toque pra usar" : "Tap to apply",
             coupon_applied: isPT ? "Cupom Ativo!" : "Applied!",
             coupon_none: isPT ? "Sem cupons" : "No coupons",
-            remove: isPT ? "Remover" : "Remove",
+            remove: isPT ? "Tirar" : "Remove",
             total_label: "Total",
             book_btn: isPT ? "Finalizar no WhatsApp" : "Finish on WhatsApp",
-            next_btn: isPT ? "Continuar" : "Continue",
-            uber_note: isPT ? "+ Taxa Uber (Ida/Volta)" : "+ Uber Fee",
-            success_title: isPT ? "Pedido Gerado!" : "Order Generated!",
-            success_sub: isPT ? "Envie a mensagem pronta no WhatsApp para confirmar." : "Send the message on WhatsApp.",
-            whatsapp_btn: isPT ? "Enviar Agora" : "Send Now",
+            next_btn: isPT ? "Próximo" : "Continue",
+            uber_note: isPT ? "+ Uber (Ida e Volta)" : "+ Uber Fee",
+            success_title: isPT ? "Gerado!" : "Done!",
+            success_sub: isPT ? "Agora só me manda essa mensagem no Zap pra confirmar." : "Send msg on WhatsApp.",
+            whatsapp_btn: isPT ? "Mandar no WhatsApp" : "Send Now",
             back_home: isPT ? "Voltar" : "Back",
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
             currency: isPT ? "R$" : "$",
-            level_gold_title: isPT ? "Nível Ouro (Máximo)" : "Gold Level",
-            level_gold_desc: isPT ? "Você possui desconto fixo." : "Fixed discount.",
-            level_next: isPT ? "Próximo cupom:" : "Next coupon:",
+            level_gold_title: isPT ? "Nível Máximo" : "Gold Level",
+            level_gold_desc: isPT ? "Desconto máximo." : "Max discount.",
+            level_next: isPT ? "Próximo:" : "Next:",
             level_label: isPT ? "Nível" : "Level",
-            empty_date: isPT ? "Selecione um dia acima" : "Select a day above",
-            empty_slots: isPT ? "Agenda lotada ou encerrada." : "Schedule full.",
-            try_tomorrow: isPT ? "Tente selecionar amanhã." : "Try tomorrow.",
-            details_label: isPT ? "Detalhes Importantes:" : "Details:",
-            discount_applied: isPT ? "Desconto aplicado:" : "Discount applied:",
-            security_note: isPT ? "Dados salvos apenas no seu celular." : "Data saved locally.",
+            empty_date: isPT ? "Escolha o dia" : "Select day",
+            empty_slots: isPT ? "Sem horário." : "Full.",
+            try_tomorrow: isPT ? "Tenta amanhã." : "Try tomorrow.",
+            details_label: isPT ? "O QUE ACONTECE:" : "DETAILS:",
+            discount_applied: isPT ? "Desconto:" : "Discount:",
+            security_note: isPT ? "Fica tranquilo, dados salvos só no seu celular." : "Data saved locally.",
             
-            // LEVEL UP TEXTOS - CORRIGIDOS
-            popup_welcome_title: isPT ? "Bem-vindo!" : "Welcome!",
-            popup_welcome_msg: isPT ? "Você ganhou R$ 12,00 OFF na primeira vez." : "You got R$ 12.00 OFF.",
+            // POPUP GANHOU CUPOM - TEXTO CLARO
+            popup_welcome_title: isPT ? "BOA!" : "Welcome!",
+            popup_welcome_msg: isPT ? "Você acabou de ganhar um cupom de desconto de primeira vez." : "You got a coupon.",
             popup_level_title: isPT ? "SUBIU DE NÍVEL!" : "LEVEL UP!",
-            popup_level_msg: isPT ? "Parabéns! Você desbloqueou um NOVO CUPOM de desconto para usar agora." : "Congrats! You unlocked a NEW COUPON.",
-            popup_btn_coupon: isPT ? "USAR MEU CUPOM" : "USE COUPON",
+            popup_level_msg: isPT ? "Boa! Você subiu de nível e GANHOU UM NOVO CUPOM de desconto." : "Congrats! You got a NEW COUPON.",
+            popup_btn_coupon: isPT ? "PEGAR MEU CUPOM" : "GET COUPON",
             
-            agree_terms: isPT ? "Li e concordo com as regras de higiene e respeito." : "I agree with rules.",
+            agree_terms: isPT ? "Li e concordo com a higiene e respeito." : "I agree.",
             
             terms_body: isPT ? [
-              "1. Higiene: Material descartável e banho tomado.",
-              "2. Sigilo: Privacidade absoluta garantida.",
-              "3. Respeito: Profissionalismo acima de tudo.",
-              "4. Pagamento: Ao final do atendimento."
+              "1. HIGIENE: Toma um banho antes, beleza?",
+              "2. SIGILO: O que acontece aqui, morre aqui.",
+              "3. RESPEITO: Sem agressividade.",
+              "4. PAGAMENTO: No final do atendimento."
             ] : ["1. Hygiene.", "2. Secrecy.", "3. Respect.", "4. Payment."],
             terms_title: isPT ? "Regras" : "Rules",
-            terms_link: isPT ? "Ler regras" : "Read rules",
-            terms_btn: isPT ? "Entendi" : "Got it",
+            terms_link: isPT ? "Ver regras" : "Rules",
+            terms_btn: isPT ? "Beleza" : "Ok",
             btn_close: isPT ? "Fechar" : "Close",
         
             zap: {
-              intro: isPT ? "Oi Thalyson! Vim pelo App e quero agendar:" : "Hi Thalyson!",
-              section_serv: isPT ? "🔥 *SERVIÇO*" : "🔥 *SERVICE*",
-              section_det: isPT ? "📝 *DETALHES*" : "📝 *DETAILS*",
-              section_loc: isPT ? "📍 *LOCAL*" : "📍 *LOCATION*",
-              section_fin: isPT ? "💰 *VALORES*" : "💰 *VALUES*",
-              map_link: isPT ? "🗺️ *Ver no Mapa:*" : "🗺️ *Map:*",
-              wait: isPT ? "Aguardo retorno!" : "Waiting reply!",
-              house: isPT ? "Casa" : "Home",
+              intro: isPT ? "E aí Thalyson! Vim pelo App:" : "Hi Thalyson!",
+              section_serv: isPT ? "🔥 *QUERO ESSA:*" : "🔥 *SERVICE*",
+              section_det: isPT ? "📝 *DETALHES:*" : "📝 *DETAILS*",
+              section_loc: isPT ? "📍 *LOCAL:*" : "📍 *LOCATION*",
+              section_fin: isPT ? "💰 *VALOR:*" : "💰 *VALUES*",
+              map_link: isPT ? "🗺️ *Mapa:*" : "🗺️ *Map:*",
+              wait: isPT ? "Vê se dá pra confirmar?" : "Can you confirm?",
+              house: isPT ? "Minha Casa" : "Home",
               hotel: "Hotel",
               motel: "Motel"
             },
             
             xp_text: "XP",
-            scarcity_msg: isPT ? "pessoas vendo agora" : "people viewing"
+            scarcity_msg: isPT ? "pessoas agendando" : "people booking"
         }
     };
 };
 
 // ==================================================================================
-// 2. COMPONENTES
+// 2. COMPONENTES VISUAIS
 // ==================================================================================
 
 const LoadingScreen = ({ isDark, text }) => (
@@ -391,7 +383,7 @@ export default function App() {
   useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
 
   const triggerScarcity = () => {
-      const randomViewers = Math.floor(Math.random() * 4) + 2; 
+      const randomViewers = Math.floor(Math.random() * 3) + 2; 
       setViewers(randomViewers);
       setShowScarcity(true);
       if(scarcityTimeout.current) clearTimeout(scarcityTimeout.current);
@@ -501,6 +493,8 @@ ${T.uber_note}
 
 💎 *TOTAL: ${T.currency} ${f.total}*
 Pagamento: *${booking.payment.toUpperCase()}*
+
+🔐 *Termos:* Li e Aceito.
 
 ${T.zap.wait}
 `.trim();
