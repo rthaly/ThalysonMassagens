@@ -11,13 +11,13 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v16.0 - FULL INTERNATIONALIZATION (i18n) FIXED
+ * THALYSON APP OS v16.1 - STABILITY FIXES
  * ==================================================================================
- * CORREÇÕES REALIZADAS:
- * 1. [i18n] Todas as strings hardcoded foram movidas para o dicionário de dados.
- * 2. [LOGIC] Mensagens de erro (Toasts) agora respeitam o idioma selecionado.
- * 3. [DATA] As 50+ avaliações agora possuem versão PT e EN.
- * 4. [UI] Barra de XP e textos de nível totalmente traduzidos.
+ * AJUSTES TÉCNICOS:
+ * 1. [CRASH FIX] Proteção contra leitura de propriedades undefined no LocalStorage.
+ * 2. [SAFETY] Verificação de existência de 'extras' antes de calcular preço (evita tela branca).
+ * 3. [SYNTAX] Correção na string do Google Maps no gerador de Link.
+ * 4. [RENDER] Adicionado optional chaining (?. ) em acessos profundos de objetos.
  */
 
 const CONFIG = {
@@ -381,14 +381,21 @@ export default function App() {
         const s = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (s) {
             const parsed = JSON.parse(s);
-            setUser(parsed);
+            // MERGE STATE TO AVOID CRASHES WITH OLD DATA
+            setUser(prev => ({
+                ...prev,
+                ...parsed,
+                coupons: Array.isArray(parsed.coupons) ? parsed.coupons : []
+            }));
             if(parsed.savedAddress) {
                 setBooking(b => ({...b, address: parsed.savedAddress}));
             }
         } else {
             setUser(p => ({...p, coupons: [{ id: 'WELCOME10', val: 10, title: '🎁 Presente de Boas-Vindas', code: 'WELCOME10' }]}));
         }
-    } catch (e) {}
+    } catch (e) {
+        console.error("Storage error", e);
+    }
   }, []);
 
   useEffect(() => {
@@ -429,7 +436,10 @@ export default function App() {
       if (!booking.date) return [];
       const slots = ['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00', '21:00'];
       const now = new Date();
+      // Safe check for valid date object
       const selectedDate = new Date(booking.date);
+      if (isNaN(selectedDate)) return [];
+      
       const isToday = selectedDate.getDate() === now.getDate() && selectedDate.getMonth() === now.getMonth();
 
       if (isToday) {
@@ -447,8 +457,11 @@ export default function App() {
     let sub = booking.item.price;
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
-            const exPrice = DATA.extras.find(e=>e.id===k).price;
-            sub += exPrice; 
+            // SAFETY CHECK: Ensure extra exists in data before accessing price
+            const extData = DATA.extras.find(e=>e.id===k);
+            if(extData) {
+                sub += extData.price; 
+            }
         }
     });
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
@@ -459,7 +472,7 @@ export default function App() {
   // GERADOR WHATSAPP - TEXTO ACONCHEGANTE E DIRETO
   const generateWhatsAppLink = () => {
     const f = financials;
-    const dateStr = booking.date ? booking.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
+    const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
     let locTxt = "";
     let mapQuery = "";
     
@@ -477,8 +490,8 @@ export default function App() {
     
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => {
         const ext = DATA.extras.find(e=>e.id===k);
-        return `✅ + ${ext.label}`;
-    }).join('\n');
+        return ext ? `✅ + ${ext.label}` : '';
+    }).filter(Boolean).join('\n');
     
     const header = booking.type === 'pack' || booking.type === 'subscription' ? T.zap.section_plan : T.zap.section_serv;
     
@@ -491,9 +504,9 @@ ${header} ${booking.item?.title}
 
 ${extrasList ? `${T.zap.extra_title} \n${extrasList}\n` : ''}
 ${locTxt}
-${mapQuery ? `\n${T.zap.map_link} https://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
+${mapQuery ? `\n${T.zap.map_link} https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}` : ''}
 
-${T.zap.section_fin} ${T.currency} ${f.total},00
+${T.zap.section_fin} ${T.currency || 'R$'} ${f.total},00
 ${T.zap.pay_method} ${booking.payment}
 ${T.zap.uber_label} ${T.zap.uber_text}
 
@@ -557,7 +570,7 @@ ${T.zap.wait}
   };
 
   const finishBooking = () => {
-    let updatedCoupons = [...user.coupons];
+    let updatedCoupons = Array.isArray(user.coupons) ? [...user.coupons] : [];
     if (booking.appliedCoupon && booking.appliedCoupon.id.includes('WELCOME')) {
         updatedCoupons = updatedCoupons.filter(c => c.id !== booking.appliedCoupon.id);
     }
@@ -609,7 +622,7 @@ ${T.zap.wait}
       <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
         <div className="relative"><div className="w-20 h-20 rounded-full bg-amber-500/80 flex items-center justify-center animate-pulse shadow-2xl shadow-amber-500/30"><span className="text-2xl font-black text-black">TM</span></div></div>
         <h1 className="mt-8 text-xl font-bold tracking-tight animate-pulse text-amber-500">Thalyson Massagens</h1>
-        <div className="mt-4 flex items-center gap-2 text-xs opacity-50 font-mono"><Loader2 size={14} className="animate-spin"/>{T.loading}</div>
+        <div className="mt-4 flex items-center gap-2 text-xs opacity-50 font-mono"><Loader2 size={14} className="animate-spin"/>{T.text?.loading || "LOADING..."}</div>
       </div>
   );
   
@@ -705,7 +718,7 @@ ${T.zap.wait}
                       <Card key={s.id} isDark={isDark} active={booking.item?.id === s.id} onClick={() => handleSelectItem('single', s)}>
                           <div className="flex justify-between items-start mb-4">
                             <div className={`p-3.5 rounded-2xl transition-colors ${booking.item?.id === s.id ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/30' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={26}/></div>
-                            <div className="text-right"><span className="block text-2xl font-black tracking-tight">{T.currency} {s.price}</span><span className="text-[10px] uppercase font-bold opacity-50 flex items-center justify-end gap-1"><Clock size={10}/> {s.min} min</span></div>
+                            <div className="text-right"><span className="block text-2xl font-black tracking-tight">{T.currency || 'R$'} {s.price}</span><span className="text-[10px] uppercase font-bold opacity-50 flex items-center justify-end gap-1"><Clock size={10}/> {s.min} min</span></div>
                           </div>
                           <div className="mb-2">{s.tag && <span className="inline-block px-2 py-0.5 rounded-md bg-zinc-800 border border-zinc-700 text-[9px] font-bold text-zinc-300 mb-2 uppercase tracking-wider">{s.tag}</span>}<h3 className="font-bold text-lg leading-tight">{s.title}</h3></div>
                           <p className={`text-sm leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{s.desc}</p>
@@ -726,9 +739,9 @@ ${T.zap.wait}
                               </div>
                               <p className={`text-sm mb-5 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{plan.details}</p>
                               <div className="flex items-end gap-3 p-3 rounded-xl bg-black/20 border border-white/5">
-                                  <span className="text-2xl font-black text-amber-500">{T.currency} {plan.price}</span>
-                                  <span className="text-sm line-through opacity-40 mb-1 decoration-red-500">{T.currency} {plan.fullPrice}</span>
-                                  <span className="text-xs text-green-500 font-bold mb-1 ml-auto bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">{isPT ? 'Economia' : 'Save'} {T.currency}{plan.savings}</span>
+                                  <span className="text-2xl font-black text-amber-500">{T.currency || 'R$'} {plan.price}</span>
+                                  <span className="text-sm line-through opacity-40 mb-1 decoration-red-500">{T.currency || 'R$'} {plan.fullPrice}</span>
+                                  <span className="text-xs text-green-500 font-bold mb-1 ml-auto bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">{lang === 'pt' ? 'Economia' : 'Save'} {T.currency || 'R$'}{plan.savings}</span>
                               </div>
                           </Card>
                       ))}
@@ -747,7 +760,8 @@ ${T.zap.wait}
               <div className="flex gap-3 overflow-x-auto pb-6 scrollbar-hide -mx-6 px-6 mb-4">
                 {[...Array(14)].map((_, i) => { 
                   const d = new Date(); d.setDate(d.getDate() + i);
-                  const isSel = booking.date?.toDateString() === d.toDateString();
+                  // Safe date check
+                  const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
                   let lbl = d.toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN, {weekday:'short'}).slice(0,3);
                   if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
                   return (
@@ -767,7 +781,7 @@ ${T.zap.wait}
                    ))}
                 </div>
               )}
-              {booking.date && generateTimeSlots.length === 0 && (<div className="text-center py-10 opacity-50 bg-zinc-900/50 rounded-2xl border border-zinc-800"><p className="text-sm font-bold">{T.empty_slots}</p><p className="text-xs mt-1">{isPT ? 'Tente amanhã' : 'Try tomorrow'}</p></div>)}
+              {booking.date && generateTimeSlots.length === 0 && (<div className="text-center py-10 opacity-50 bg-zinc-900/50 rounded-2xl border border-zinc-800"><p className="text-sm font-bold">{T.empty_slots}</p><p className="text-xs mt-1">{lang === 'pt' ? 'Tente amanhã' : 'Try tomorrow'}</p></div>)}
             </div>
           )}
 
@@ -783,25 +797,25 @@ ${T.zap.wait}
                  ))}
               </div>
               <div className="space-y-5">
-                 <InputField label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} isDark={isDark} placeholder={isPT ? "Nome" : "Name"} />
+                 <InputField label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} isDark={isDark} placeholder={lang === 'pt' ? "Nome" : "Name"} />
                  {booking.locationType === 'home' && (
                      <div className="space-y-4 animate-fade-in">
                         <div className="grid grid-cols-[1fr_90px] gap-3">
-                           <InputField label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} isDark={isDark} icon={MapPin} placeholder={isPT ? "Rua/Av" : "Street"} />
+                           <InputField label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} isDark={isDark} icon={MapPin} placeholder={lang === 'pt' ? "Rua/Av" : "Street"} />
                            <InputField label={T.input_num} value={booking.address.number} type="tel" onChange={e=>setBooking(b=>({...b, address: {...b.address, number: e.target.value}}))} isDark={isDark} placeholder="123" />
                         </div>
-                        <InputField label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} isDark={isDark} placeholder={isPT ? "Bairro" : "District"} />
+                        <InputField label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} isDark={isDark} placeholder={lang === 'pt' ? "Bairro" : "District"} />
                         <div className="grid grid-cols-2 gap-3">
-                             <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} isDark={isDark} placeholder={isPT ? "Cidade" : "City"} />
-                             <InputField label={T.input_comp} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} placeholder={isPT ? "Apt" : "Unit"} />
+                             <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} isDark={isDark} placeholder={lang === 'pt' ? "Cidade" : "City"} />
+                             <InputField label={T.input_comp} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} placeholder={lang === 'pt' ? "Apt" : "Unit"} />
                         </div>
                      </div>
                  )}
                  {booking.locationType === 'hotel' && (
                     <div className="space-y-4 animate-fade-in">
-                        <InputField label={T.input_hotel} value={booking.address.placeName} onChange={e=>setBooking(b=>({...b, address: {...b.address, placeName: e.target.value}}))} isDark={isDark} icon={Building} placeholder={isPT ? "Nome do Hotel" : "Hotel Name"} />
-                        <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} isDark={isDark} placeholder={isPT ? "Cidade" : "City"} />
-                        <InputField label={T.input_room} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} icon={Lock} placeholder={isPT ? "Quarto" : "Room"} />
+                        <InputField label={T.input_hotel} value={booking.address.placeName} onChange={e=>setBooking(b=>({...b, address: {...b.address, placeName: e.target.value}}))} isDark={isDark} icon={Building} placeholder={lang === 'pt' ? "Nome do Hotel" : "Hotel Name"} />
+                        <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} isDark={isDark} placeholder={lang === 'pt' ? "Cidade" : "City"} />
+                        <InputField label={T.input_room} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} isDark={isDark} icon={Lock} placeholder={lang === 'pt' ? "Quarto" : "Room"} />
                     </div>
                  )}
                  {booking.locationType === 'motel' && (
@@ -818,11 +832,11 @@ ${T.zap.wait}
                      <div className="space-y-3">
                         {DATA.extras.map(ex => (
                            <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all active:scale-[0.99] duration-200 ${booking.extras[ex.id] ? 'bg-amber-500/10 border-amber-500/50' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`}>
-                              <div className="flex items-center gap-4">
+                             <div className="flex items-center gap-4">
                                  <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[ex.id] ? 'bg-amber-500 text-black' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><ex.icon size={18}/></div>
                                  <div><p className="text-sm font-bold">{ex.label}</p><p className="text-[10px] opacity-60">{ex.desc}</p></div>
-                              </div>
-                              <span className={`text-xs font-bold ${booking.extras[ex.id] ? 'text-amber-500' : 'opacity-30'}`}>+ {T.currency} {ex.price}</span>
+                             </div>
+                             <span className={`text-xs font-bold ${booking.extras[ex.id] ? 'text-amber-500' : 'opacity-30'}`}>+ {T.currency || 'R$'} {ex.price}</span>
                            </div>
                         ))}
                      </div>
@@ -839,19 +853,22 @@ ${T.zap.wait}
                       <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-600"></div>
                       <div className="flex justify-between items-start mb-6 mt-2">
                           <div>
-                              <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded mb-2 inline-block ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>{booking.type === 'pack' ? (isPT?'Pacote':'Pack') : (booking.type === 'subscription' ? (isPT?'Assinatura':'Subscription') : (isPT?'Sessão Individual':'Single Session'))}</span>
+                              <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded mb-2 inline-block ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>{booking.type === 'pack' ? (lang === 'pt'?'Pacote':'Pack') : (booking.type === 'subscription' ? (lang === 'pt'?'Assinatura':'Subscription') : (lang === 'pt'?'Sessão Individual':'Single Session'))}</span>
                               <h2 className="font-black text-2xl leading-tight text-amber-500">{booking.item.title}</h2>
-                              <p className="text-xs opacity-60 mt-1">{booking.date?.toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN)} {isPT ? 'às' : 'at'} {booking.time}</p>
+                              <p className="text-xs opacity-60 mt-1">{booking.date ? new Date(booking.date).toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN) : ''} {lang === 'pt' ? 'às' : 'at'} {booking.time}</p>
                           </div>
                       </div>
                       <div className="space-y-3 border-b border-dashed border-zinc-700/50 pb-6 mb-6">
-                          <div className="flex justify-between text-sm"><span>{isPT?'Valor Base':'Base Price'}</span><span>{T.currency} {booking.item.price}</span></div>
-                          {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>(<div key={k} className="flex justify-between text-sm opacity-60"><span>+ {DATA.extras.find(e=>e.id===k).label}</span><span>{DATA.extras.find(e=>e.id===k).price}</span></div>))}
-                          {booking.appliedCoupon && (<div className="flex justify-between text-sm text-green-500 font-bold bg-green-500/5 p-2 rounded-lg"><span>{isPT?'Cupom':'Coupon'} ({booking.appliedCoupon.code})</span><span>- {T.currency} {booking.appliedCoupon.val}</span></div>)}
+                          <div className="flex justify-between text-sm"><span>{lang === 'pt'?'Valor Base':'Base Price'}</span><span>{T.currency || 'R$'} {booking.item.price}</span></div>
+                          {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>{
+                              const extraItem = DATA.extras.find(e=>e.id===k);
+                              return extraItem ? (<div key={k} className="flex justify-between text-sm opacity-60"><span>+ {extraItem.label}</span><span>{extraItem.price}</span></div>) : null;
+                          })}
+                          {booking.appliedCoupon && (<div className="flex justify-between text-sm text-green-500 font-bold bg-green-500/5 p-2 rounded-lg"><span>{lang === 'pt'?'Cupom':'Coupon'} ({booking.appliedCoupon.code})</span><span>- {T.currency || 'R$'} {booking.appliedCoupon.val}</span></div>)}
                       </div>
                       <div className="flex justify-between items-end">
                           <div><span className="text-[10px] font-bold uppercase opacity-50 block mb-1">{T.total_label}</span><span className="text-[10px] font-medium bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20">{T.uber_warning}</span></div>
-                          <span className="text-4xl font-black tracking-tighter text-white">{T.currency} {financials.total}</span>
+                          <span className="text-4xl font-black tracking-tighter text-white">{T.currency || 'R$'} {financials.total}</span>
                       </div>
                    </div>
                    <div className="h-4 w-full bg-repeat-x bg-[length:20px_20px] opacity-10" style={{backgroundImage: `linear-gradient(45deg, transparent 33.333%, ${isDark?'#fff':'#000'} 33.333%, ${isDark?'#fff':'#000'} 66.667%, transparent 66.667%), linear-gradient(-45deg, transparent 33.333%, ${isDark?'#fff':'#000'} 33.333%, ${isDark?'#fff':'#000'} 66.667%, transparent 66.667%)`, backgroundSize: '20px 40px', backgroundPosition: '0 -20px'}}></div>
@@ -863,7 +880,7 @@ ${T.zap.wait}
                    </div>
                    <Button onClick={handleApplyCoupon} variant="secondary" size="md">{T.coupon_btn}</Button>
                </div>
-               {user.coupons.length > 0 && (
+               {user.coupons && user.coupons.length > 0 && (
                    <div className="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                        {user.coupons.map(c => {
                            const isApplied = booking.appliedCoupon?.id === c.id;
@@ -874,7 +891,7 @@ ${T.zap.wait}
                <div className="mt-8">
                    <h3 className="text-xs font-bold uppercase opacity-50 mb-3 ml-1">{T.pay_title}</h3>
                    <div className="grid grid-cols-1 gap-3">
-                       {[{id:'pix', l:T.pay_pix, i:QrCode, sub: isPT?'Preferido':'Preferred'}, {id:'card', l:T.pay_card, i:CreditCard, sub:''}, {id:'money', l:T.pay_cash, i:Banknote, sub:''}].map(p => (
+                       {[{id:'pix', l:T.pay_pix, i:QrCode, sub: lang === 'pt'?'Preferido':'Preferred'}, {id:'card', l:T.pay_card, i:CreditCard, sub:''}, {id:'money', l:T.pay_cash, i:Banknote, sub:''}].map(p => (
                            <button key={p.id} onClick={()=>setBooking(b=>({...b, payment: p.id}))} className={`px-5 py-4 rounded-2xl border flex items-center gap-4 transition-all active:scale-[0.98] duration-200 ${booking.payment === p.id ? 'bg-amber-500 text-black border-amber-500 shadow-lg shadow-amber-500/20' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:bg-zinc-800' : 'bg-white border-slate-200 hover:bg-slate-50')}`}>
                                <div className={`p-2 rounded-full ${booking.payment === p.id ? 'bg-black/20' : 'bg-zinc-800'}`}><p.i size={20}/></div>
                                <div className="text-left"><span className="font-bold text-sm block">{p.l}</span>{p.sub && <span className="text-[10px] opacity-60 block uppercase tracking-widest">{p.sub}</span>}</div>
@@ -917,7 +934,7 @@ ${T.zap.wait}
             <div className="pointer-events-auto max-w-md mx-auto">
                 <div className={`p-2 rounded-[2rem] shadow-2xl flex items-center gap-4 pr-3 backdrop-blur-xl border transition-colors duration-500 ${isDark ? 'bg-zinc-900/90 border-zinc-700' : 'bg-white/90 border-zinc-200'}`}>
                     {step > 0 && (<button onClick={()=>setStep(step-1)} className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform border ${isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-slate-100 border-slate-200'}`}><ChevronLeft size={24}/></button>)}
-                    {step < 3 && booking.item && (<div className="flex-1 pl-2 animate-fade-in"><span className="block text-[9px] font-bold uppercase opacity-50 tracking-wider mb-0.5">{T.total_label}</span><span className="block text-2xl font-black tracking-tight text-amber-500">{T.currency} {financials.total}</span></div>)}
+                    {step < 3 && booking.item && (<div className="flex-1 pl-2 animate-fade-in"><span className="block text-[9px] font-bold uppercase opacity-50 tracking-wider mb-0.5">{T.total_label}</span><span className="block text-2xl font-black tracking-tight text-amber-500">{T.currency || 'R$'} {financials.total}</span></div>)}
                     <button onClick={handleNextStep} className={`h-14 px-8 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg ${step < 3 ? 'ml-auto' : 'w-full'} bg-amber-500 text-black shadow-amber-500/30 hover:bg-amber-400 hover:scale-[1.02] active:scale-95`}>
                         {step === 3 ? T.book_btn : T.next_btn} {step !== 3 && <ArrowRight size={18} strokeWidth={3}/>}
                     </button>
@@ -930,7 +947,7 @@ ${T.zap.wait}
       <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-300 pointer-events-none ${reviewsOpen ? 'opacity-100' : 'opacity-0'}`}>
          <div className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity ${reviewsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setReviewsOpen(false)}></div>
          <div className={`relative w-full max-w-md rounded-[2rem] p-6 max-h-[85vh] overflow-y-auto transform transition-transform duration-300 ${reviewsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-900'}`}>
-            <div className="flex justify-between items-center mb-6"><h3 className="text-xl font-bold">{T.reviews_title}</h3><button onClick={()=>setReviewsOpen(false)} className="p-2 bg-black/10 rounded-full"><X size={20}/></button></div>
+            <div className="flex justify-between items-center mb-6"><h3 className="text-xl font-bold">{T.reviews_title || "Avaliações"}</h3><button onClick={()=>setReviewsOpen(false)} className="p-2 bg-black/10 rounded-full"><X size={20}/></button></div>
             <div className="space-y-4">
                 {DATA.reviews.map((r,i)=>(
                    <div key={i} className={`p-5 rounded-2xl border relative transition-colors ${isDark ? 'bg-zinc-800/30 border-zinc-800 hover:bg-zinc-800/50' : 'bg-slate-50 border-slate-100'}`}>
