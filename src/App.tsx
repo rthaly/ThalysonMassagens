@@ -11,20 +11,25 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v22.0 - FINAL STABLE (Z FLIP 5 OPTIMIZED)
+ * THALYSON APP OS v23.0 - COUPON LOGIC FIXED + Z FLIP OPTIMIZED
  * ==================================================================================
+ * CORREÇÕES DE CUPOM:
+ * 1. Adicionado array 'usedCoupons' no user state para memória de uso.
+ * 2. handleApplyCoupon verifica se o código já está em 'usedCoupons'.
+ * 3. finishBooking adiciona o cupom usado em 'usedCoupons' e remove da lista.
+ * 4. Adicionados códigos manuais (VIP15, PROMO30, SUPER50) para teste.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v22_stable', 
+  STORAGE_KEY: '@thaly_app_v23_fixed', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (MOBILE FIRST & ROBUST)
+// 2. DESIGN SYSTEM (MOBILE FIRST)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
@@ -352,6 +357,7 @@ const getData = (lang) => {
             toast_accept_terms: isPT ? "Aceite os combinados." : "Accept terms.",
             toast_coupon_success: isPT ? "Convite aceito!" : "Code accepted!",
             toast_coupon_error: isPT ? "Código não encontrado." : "Code not found.",
+            toast_coupon_used: isPT ? "Cupom já utilizado!" : "Coupon already used!",
 
             zap: {
               intro: isPT ? "Oi Thalyson, tudo bem?" : "Hi Thalyson, how are you?",
@@ -437,7 +443,7 @@ export default function App() {
   };
 
   const [user, setUser] = useState({ 
-      name: '', xp: 0, coupons: [], 
+      name: '', xp: 0, coupons: [], usedCoupons: [], // NEW: usedCoupons
       savedAddress: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, 
       hasSeenWelcome: false,
       ordersCount: 0
@@ -457,14 +463,16 @@ export default function App() {
         const s = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (s) {
             const parsed = JSON.parse(s);
+            // GARANTIR QUE CUPONS SEJAM ARRAY
             setUser(prev => ({ 
                 ...prev, 
                 ...parsed, 
-                coupons: Array.isArray(parsed.coupons) ? parsed.coupons : [] 
+                coupons: Array.isArray(parsed.coupons) ? parsed.coupons : [],
+                usedCoupons: Array.isArray(parsed.usedCoupons) ? parsed.usedCoupons : [] 
             }));
             if(parsed.savedAddress) { setBooking(b => ({...b, address: parsed.savedAddress})); }
         } else {
-            setUser(p => ({...p, coupons: [] })); 
+            setUser(p => ({...p, coupons: [], usedCoupons: [] })); 
         }
     } catch (e) { console.error(e); }
   }, []);
@@ -628,10 +636,31 @@ ${T.zap.wait}
 
   const handleApplyCoupon = () => {
       if(!couponInput) return;
-      const code = couponInput.toUpperCase();
-      if(code === 'THALYSON10' || code === 'VIP20' || code === 'WELCOME10') {
-          const val = code === 'VIP20' ? 20 : 10;
-          const newCoupon = { id: code, val, title: `🎟️ ${code}`, code };
+      const code = couponInput.toUpperCase().trim();
+
+      // Check history
+      if (user.usedCoupons.includes(code)) {
+          addToast(T.toast_coupon_used, "error");
+          return;
+      }
+
+      // Valid manual codes
+      const validManualCodes = {
+          'WELCOME10': 10,
+          'THALYSON10': 10,
+          'VIP15': 15,
+          'PROMO30': 30,
+          'SUPER50': 50
+      };
+
+      const inventoryCoupon = user.coupons.find(c => c.code === code);
+
+      if (inventoryCoupon) {
+          setBooking(b => ({...b, appliedCoupon: inventoryCoupon}));
+          addToast(T.toast_coupon_success, "success");
+          setCouponInput('');
+      } else if (validManualCodes[code]) {
+          const newCoupon = { id: code, val: validManualCodes[code], title: `🎟️ ${code}`, code: code };
           setBooking(b => ({...b, appliedCoupon: newCoupon}));
           addToast(T.toast_coupon_success, "success");
           setCouponInput('');
@@ -642,9 +671,15 @@ ${T.zap.wait}
 
   const finishBooking = () => {
     let updatedCoupons = Array.isArray(user.coupons) ? [...user.coupons] : [];
+    let updatedHistory = Array.isArray(user.usedCoupons) ? [...user.usedCoupons] : [];
     
-    // Remove o cupom que foi usado nesta sessão
+    // Process Coupon
     if (booking.appliedCoupon) { 
+        // Add to history
+        if(!updatedHistory.includes(booking.appliedCoupon.code)) {
+            updatedHistory.push(booking.appliedCoupon.code);
+        }
+        // Remove from inventory if it exists there
         updatedCoupons = updatedCoupons.filter(c => c.code !== booking.appliedCoupon.code); 
     }
     
@@ -669,8 +704,15 @@ ${T.zap.wait}
     
     if (leveledUp) setLevelUpPopup(true);
     
-    // ATUALIZA O ESTADO COM OS NOVOS CUPONS
-    setUser(prev => ({ ...prev, xp: newXP, coupons: updatedCoupons, ordersCount: prev.ordersCount + 1 }));
+    // ATUALIZA O ESTADO COM OS NOVOS CUPONS E HISTÓRICO
+    setUser(prev => ({ 
+        ...prev, 
+        xp: newXP, 
+        coupons: updatedCoupons,
+        usedCoupons: updatedHistory,
+        ordersCount: prev.ordersCount + 1 
+    }));
+    
     setShowConfetti(true);
     if (typeof window !== 'undefined') { window.open(generateWhatsAppLink(), '_blank'); }
     setStep(4);
@@ -976,8 +1018,7 @@ ${T.zap.wait}
                    <Button onClick={handleApplyCoupon} variant="secondary" size="md">{T.coupon_btn}</Button>
                </div>
 
-               {/* LISTA DE CUPONS COM SCROLL HORIZONTAL */}
-               {user.coupons && user.coupons.length > 0 && (
+                {user.coupons && user.coupons.length > 0 && (
                    <div className="w-full overflow-x-auto pb-2 pt-1 scrollbar-hide">
                        <div className="flex gap-2">
                            {user.coupons.map(c => {
