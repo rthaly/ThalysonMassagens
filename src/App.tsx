@@ -6,30 +6,29 @@ import {
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, Bell,
   ChevronLeft, Loader2, ShieldCheck, AlertTriangle, Tag, Sparkles, 
   MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
-  Lock, User, Quote, Coffee
+  Lock, User, Quote, Share2, Copy
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v19.5 - Z FLIP 5 OPTIMIZED + CUPONS FIXED
+ * THALYSON APP OS v20.0 - FINAL COZY EDITION (Z FLIP OPTIMIZED)
  * ==================================================================================
- * CORREÇÕES:
- * 1. UI: Fontes e quebras de linha ajustadas para telas estreitas (Flip/Fold).
- * 2. LOGIC: Lista de cupons do usuário visível no Checkout (Horizontal Scroll).
- * 3. COPY: Descrição da Mista ajustada (Lingam final, clímax opcional).
- * 4. LAYOUT: Mais "respiro" (whitespace) entre elementos.
+ * - Header: Apenas Texto + Share Button + Theme/Lang Toggle.
+ * - Reviews: Carrossel automático com interação manual (Touch/Click para pausar).
+ * - Conteúdo: Avaliações humanizadas com cidades específicas.
+ * - Lógica: Sistema de Cupons e Level Up preservados.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v19_5_fixed', 
+  STORAGE_KEY: '@thaly_app_v20_final', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (RESPONSIVE & LUXURY)
+// 2. DESIGN SYSTEM (LUXURY GLASS)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
@@ -40,22 +39,22 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
     secondary: "bg-white/5 backdrop-blur-md border border-white/10 text-zinc-200 hover:bg-white/10 hover:border-white/20",
     whatsapp: "bg-[#25D366] text-white shadow-lg shadow-green-500/20 hover:bg-[#20bd5a]",
     outline: "bg-transparent border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500",
-    icon: "bg-white/5 backdrop-blur-md border border-white/10 text-white hover:bg-white/10"
+    icon: "bg-white/5 backdrop-blur-md border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10"
   };
   
   const sizes = { 
     sm: "h-10 text-[10px] px-3", 
     md: "h-12 text-xs px-5", 
     lg: "h-14 text-sm px-6", 
-    xl: "h-14 text-xs font-bold uppercase tracking-widest", // Ajustado altura p/ mobile
-    icon: "h-12 w-12 p-0 flex-shrink-0 rounded-full"
+    xl: "h-14 text-xs font-bold uppercase tracking-widest",
+    icon: "h-10 w-10 p-0 flex-shrink-0 rounded-full"
   };
 
   return (
     <button onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
       {loading ? <Loader2 size={18} className="animate-spin text-current"/> : (
         <>
-          {Icon && <Icon size={18} className={children ? "mr-2 opacity-90" : ""} strokeWidth={2.5} />}
+          {Icon && <Icon size={18} className={children ? "mr-2 opacity-90" : ""} strokeWidth={2} />}
           <span className="truncate">{children}</span>
         </>
       )}
@@ -95,37 +94,63 @@ const Card = ({ children, className = '', onClick, active = false }) => (
   </div>
 );
 
-const MarqueeReviews = ({ reviews }) => {
+// CARROSSEL HÍBRIDO (AUTO-SCROLL + MANUAL INTERACTION)
+const AutoScrollReviews = ({ reviews }) => {
+  const scrollRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+
+    let animationFrameId;
+    const scroll = () => {
+      if (!isPaused) {
+        if (scrollContainer.scrollLeft >= (scrollContainer.scrollWidth / 2)) {
+          scrollContainer.scrollLeft = 0;
+        } else {
+          scrollContainer.scrollLeft += 0.8; // Velocidade suave
+        }
+      }
+      animationFrameId = requestAnimationFrame(scroll);
+    };
+    animationFrameId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isPaused]);
+
+  // Duplicar reviews para loop infinito visual
+  const loopReviews = [...reviews, ...reviews, ...reviews];
+
   return (
-    <div className="w-full overflow-hidden py-4 border-y border-white/5 mb-8 bg-zinc-950/30 backdrop-blur-sm">
-      <div className="relative w-full flex">
-        <div className="flex animate-marquee min-w-full gap-4 px-4">
-          {[...reviews, ...reviews].map((r, i) => ( 
-             <div key={i} className="flex-shrink-0 w-64 bg-zinc-900/60 border border-white/5 p-4 rounded-2xl hover:border-white/10 transition-colors">
-                <div className="flex justify-between items-start mb-2">
-                   <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[9px] font-bold text-zinc-400">{r.n.charAt(0)}</div>
-                      <div>
-                        <span className="text-[11px] font-bold text-zinc-300 block leading-none">{r.n}</span>
-                        <span className="text-[9px] text-zinc-600 uppercase font-medium">{r.loc}</span>
-                      </div>
-                   </div>
-                   <div className="flex gap-0.5">
-                     {[...Array(5)].map((_, k) => (
-                       <Star key={k} size={8} fill={k < r.s ? "#d4d4d8" : "none"} className={k < r.s ? "text-zinc-300" : "text-zinc-800"} />
-                     ))}
-                   </div>
-                </div>
-                <p className="text-[11px] text-zinc-400 leading-relaxed line-clamp-3">"{r.t}"</p>
-             </div>
-          ))}
-        </div>
+    <div className="w-full overflow-hidden py-6 border-y border-white/5 mb-8 bg-zinc-950/30 backdrop-blur-sm">
+      <div 
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto scrollbar-hide px-4"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setTimeout(() => setIsPaused(false), 2000)}
+      >
+        {loopReviews.map((r, i) => (
+           <div key={i} className="flex-shrink-0 w-72 bg-zinc-900/80 border border-white/5 p-5 rounded-2xl transition-colors hover:border-amber-500/30 select-none">
+              <div className="flex justify-between items-start mb-3">
+                 <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-300 border border-white/5">{r.n.charAt(0)}</div>
+                    <div>
+                      <span className="text-xs font-bold text-zinc-200 block leading-none mb-0.5">{r.n}</span>
+                      <span className="text-[9px] text-amber-500 uppercase font-bold tracking-wider">{r.loc}</span>
+                    </div>
+                 </div>
+                 <div className="flex gap-0.5">
+                   {[...Array(5)].map((_, k) => (
+                     <Star key={k} size={10} fill={k < r.s ? "#fbbf24" : "none"} className={k < r.s ? "text-amber-400" : "text-zinc-700"} />
+                   ))}
+                 </div>
+              </div>
+              <p className="text-xs text-zinc-400 leading-relaxed font-light italic">"{r.t}"</p>
+           </div>
+        ))}
       </div>
-      <style>{`
-        .animate-marquee { animation: marquee 80s linear infinite; }
-        .animate-marquee:hover { animation-play-state: paused; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-      `}</style>
     </div>
   );
 };
@@ -193,7 +218,7 @@ const getData = (lang) => {
               details: `O FOCO É O ALÍVIO:
 • TÉCNICA: Movimentos firmes e fluidos (Mãos e Madeira).
 • OBJETIVO: Destravar musculatura e tirar dores.
-• IDEAL PARA: Cansaço físico extremo.`
+• IDEAL PARA: Quem precisa descarregar o estresse.`
             },
             { 
               id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: "SENSORIAL",
@@ -202,7 +227,7 @@ const getData = (lang) => {
               details: `CONEXÃO E SENSIBILIDADE:
 • TOQUE: Leve, sutil e elétrico (Ponta dos dedos).
 • EXPERIÊNCIA: Massagem Lingam inclusa na terapia.
-• OBJETIVO: Explorar o prazer natural do corpo.`
+• OBJETIVO: Explorar o prazer natural do corpo sem pressa.`
             },
             { 
               id: 'mista', min: 60, price: 205, icon: Zap, tag: "COMPLETA",
@@ -212,7 +237,7 @@ const getData = (lang) => {
 • INÍCIO: Massagem relaxante para soltar o corpo.
 • MEIO: Evolui para sensitiva e Body to Body (com óleo).
 • FINAL: Lingam Massagem inclusa.
-• CLÍMAX: Você pode gozar ou não. É opcional e sem pressão.`
+• CLÍMAX: Você pode gozar ou não. É opcional, nada é forçado.`
             }
         ],
         plans: [
@@ -238,28 +263,28 @@ const getData = (lang) => {
             { id: 'aroma', price: 5, icon: Wind, label: "Óleo Premium", desc: "Aromas importados." }
         ],
         reviews: [
-            { n: "Ricardo", loc: "Rio Preto", t: "Mão firme. Tirou um nó das costas que tava me matando.", s: 5 },
+            { n: "Ricardo M.", loc: "Rio Preto", t: "Mão firme. Tirou um nó das costas que tava me matando.", s: 5 },
             { n: "André L.", loc: "SP - Bela Vista", t: "O toque dele vicia. A finalização foi absurda de boa.", s: 5 },
-            { n: "Felipe", loc: "Londrina", t: "Fiquei meio assim por ser em casa, mas ele deixa a gente super à vontade.", s: 5 },
+            { n: "Felipe", loc: "Londrina", t: "Fiquei meio assim por ser em casa e não ter maca, mas foi na cama mesmo e foi ótimo.", s: 5 },
             { n: "Gustavo", loc: "Santa Fé do Sul", t: "Curti muito a massagem, só o horário que atrasou uns 10 min.", s: 4 },
-            { n: "M. (Sigilo)", loc: "SP - Jardins", t: "Gozada intensa, perdi as forças da perna. O cara é bom.", s: 5 },
-            { n: "Bruno", loc: "Jales", t: "Atendimento no meu hotel, foi rápido e discreto. Salvou a viagem.", s: 5 },
+            { n: "Bruno", loc: "Jales", t: "Atendimento no meu hotel, foi rápido e discreto. Salvou a viagem de negócios.", s: 5 },
             { n: "Carlos", loc: "Londrina", t: "Massagem top, pena que o ar do meu quarto tava quebrado, passamos calor kk.", s: 4 },
-            { n: "Pedro", loc: "Rio Preto", t: "O corpo a corpo é quente de verdade. Fiquei duro a sessão inteira.", s: 5 },
+            { n: "Pedro", loc: "Rio Preto", t: "O corpo a corpo é quente de verdade. Energia surreal.", s: 5 },
             { n: "Lucas", loc: "Santa Fé do Sul", t: "Achei difícil estacionar perto do local que marquei, mas a massagem compensou.", s: 4 },
-            { n: "Renato", loc: "SP - Centro", t: "A sensitiva me deu arrepios que eu nem sabia que sentia.", s: 5 },
-            { n: "Vitor", loc: "Jales", t: "Gostei, mas queria que tivesse durado mais tempo.", s: 4 },
-            { n: "Marcelo", loc: "SP - Jardins", t: "Higiene nota 10. O Thalyson é muito profissional.", s: 5 },
-            { n: "Eduardo", loc: "Londrina", t: "Fiz na minha cama mesmo e foi incrível. Ele se adapta bem.", s: 5 },
-            { n: "Caio", loc: "Rio Preto", t: "Pagaria o dobro só pela finalização.", s: 5 },
-            { n: "Breno", loc: "SP - Bela Vista", t: "Relaxou e gozou. O combo perfeito. Recomendo.", s: 5 },
-            { n: "Sérgio", loc: "Santa Fé do Sul", t: "Massagem nos pés foi um bônus que eu não esperava. Gente fina.", s: 5 },
-            { n: "Anônimo", loc: "Jales", t: "Achei que ia ser estranho, mas foi natural. Voltarei.", s: 5 },
+            { n: "Renato", loc: "SP - Centro", t: "A sensitiva me deu arrepios que eu nem sabia que sentia. Respeitoso.", s: 5 },
+            { n: "Vitor", loc: "Jales", t: "Gostei, mas queria que tivesse durado mais tempo. Passou voando.", s: 4 },
+            { n: "Marcelo", loc: "SP - Jardins", t: "Higiene nota 10. O Thalyson é muito profissional com os lençóis e óleos.", s: 5 },
+            { n: "Eduardo", loc: "Londrina", t: "Ele se adapta bem ao espaço. Fizemos no sofá cama e foi incrível.", s: 5 },
+            { n: "Caio", loc: "Rio Preto", t: "Pagaria o dobro só pela atenção que ele dá.", s: 5 },
+            { n: "Breno", loc: "SP - Bela Vista", t: "Relaxou e gozou. O combo perfeito pra quem vive na correria de SP.", s: 5 },
+            { n: "Sérgio", loc: "Santa Fé do Sul", t: "Massagem nos pés foi um bônus que eu não esperava.", s: 5 },
+            { n: "Anônimo", loc: "Jales", t: "Achei que ia ser estranho receber homem, mas foi natural.", s: 5 },
             { n: "Matheus", loc: "Londrina", t: "Demorou um pouco pra responder o zap, mas pessoalmente é 10.", s: 4 },
             { n: "Roberto", loc: "SP - Augusta", t: "Pedi a completa com troca. Poder tocar nele foi a cereja do bolo.", s: 5 },
             { n: "Fabio", loc: "Rio Preto", t: "Saiu leite até da alma. Recomendo pra quem ta estressado.", s: 5 },
             { n: "Junior", loc: "SP - Moema", t: "Me senti renovado. Energia boa demais.", s: 5 },
-            { n: "Paulo", loc: "Votuporanga", t: "Top demais, só achei o valor do Uber meio salgado pra vir aqui.", s: 4 }
+            { n: "Paulo", loc: "Votuporanga", t: "Top demais, só achei o valor do Uber meio salgado pra vir aqui.", s: 4 },
+            { n: "M. (Sigilo)", loc: "SP - Jardins", t: "Gozada intensa, perdi as forças da perna. O cara é bom.", s: 5 }
         ],
         text: {
             loading: "PREPARANDO...",
@@ -267,7 +292,7 @@ const getData = (lang) => {
             subtitle: "Um momento de pausa e conexão.",
             tab_single: "Sessões Individuais",
             tab_packs: "Ciclos de Cuidado",
-            reviews_btn: "Ver Experiências",
+            reviews_btn: "Ler Avaliações",
             select_time_title: "Agenda",
             date_sub: "Qual o melhor dia para você?",
             location_title: "Localização",
@@ -359,6 +384,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0); 
   const [lang, setLang] = useState('pt');
+  const [isDark, setIsDark] = useState(true);
   const [activeTab, setActiveTab] = useState('single');
   
   const [reviewsOpen, setReviewsOpen] = useState(false);
@@ -391,6 +417,23 @@ export default function App() {
     const id = Date.now();
     setToasts(prev => [...prev, { id, msg, type }]);
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Thalyson Massagens',
+          text: 'Agende seu momento de relaxamento.',
+          url: window.location.href,
+        });
+      } catch (err) {
+        // Ignorar erro de cancelamento
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      addToast("Link copiado!", "success");
+    }
   };
 
   const [user, setUser] = useState({ 
@@ -647,28 +690,28 @@ ${T.zap.wait}
   const nextLevelInfo = getNextLevelInfo(user.xp);
 
   if (loading) return (
-      <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-zinc-950 text-white">
+      <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
         <div className="relative mb-8">
-            <div className="absolute inset-0 bg-amber-500 blur-3xl opacity-20 rounded-full animate-pulse"></div>
-            <div className="w-24 h-24 rounded-[1.5rem] bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center font-bold text-3xl text-black shadow-2xl shadow-amber-500/20 relative z-10">TM</div>
+            <div className={`absolute inset-0 blur-3xl opacity-20 rounded-full animate-pulse ${isDark ? 'bg-amber-500' : 'bg-amber-400'}`}></div>
+            <div className={`w-24 h-24 rounded-[1.5rem] flex items-center justify-center font-bold text-3xl shadow-2xl relative z-10 ${isDark ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-amber-500/20' : 'bg-white text-amber-500 shadow-slate-200'}`}>TM</div>
         </div>
-        <div className="flex items-center gap-3 text-xs font-bold tracking-[0.25em] text-zinc-500 uppercase"><Loader2 size={14} className="animate-spin text-amber-500"/>{T.text?.loading}</div>
+        <div className="flex items-center gap-3 text-xs font-bold tracking-[0.25em] opacity-50 uppercase"><Loader2 size={14} className="animate-spin text-amber-500"/>{T.text?.loading}</div>
       </div>
   );
   
   if (!isClient) return <div className="bg-zinc-950 h-screen w-full" />;
 
   return (
-    <div className="h-[100dvh] w-full font-sans flex flex-col overflow-hidden bg-zinc-950 text-zinc-100 selection:bg-amber-500/30 selection:text-amber-500">
+    <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100 selection:bg-amber-500/30 selection:text-amber-500' : 'bg-slate-50 text-slate-800 selection:bg-amber-200 selection:text-amber-800'}`}>
       
       <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute top-[-20%] left-[-20%] w-[70%] h-[70%] bg-amber-500/5 blur-[150px] rounded-full"></div>
-          <div className="absolute bottom-[-20%] right-[-20%] w-[70%] h-[70%] bg-amber-600/5 blur-[150px] rounded-full"></div>
+          <div className={`absolute top-[-20%] left-[-20%] w-[70%] h-[70%] blur-[150px] rounded-full ${isDark ? 'bg-amber-500/5' : 'bg-amber-200/40'}`}></div>
+          <div className={`absolute bottom-[-20%] right-[-20%] w-[70%] h-[70%] blur-[150px] rounded-full ${isDark ? 'bg-amber-600/5' : 'bg-orange-200/40'}`}></div>
       </div>
 
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-3 w-full max-w-xs pointer-events-none">
         {toasts.map(t => (
-          <div key={t.id} className={`pointer-events-auto flex items-center gap-4 p-5 rounded-2xl border backdrop-blur-xl shadow-2xl animate-slide-down ${t.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+          <div key={t.id} className={`pointer-events-auto flex items-center gap-4 p-5 rounded-2xl border backdrop-blur-xl shadow-2xl animate-slide-down ${t.type === 'success' ? (isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-100 border-emerald-200 text-emerald-700') : (isDark ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-red-100 border-red-200 text-red-700')}`}>
             {t.type === 'success' ? <Check size={20} /> : <AlertTriangle size={20} />}
             <span className="text-sm font-medium leading-tight">{t.msg}</span>
           </div>
@@ -678,22 +721,20 @@ ${T.zap.wait}
       <Confetti active={showConfetti} />
 
       <header className="h-24 px-6 flex items-center justify-between z-20 shrink-0 bg-transparent relative">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center font-bold text-base text-black shadow-lg shadow-amber-500/10">TM</div>
-          <div className="leading-tight">
-            <span className="font-bold text-base tracking-wide block text-white">Thalyson</span>
+        <div className="flex flex-col justify-center">
+            <span className={`font-bold text-lg tracking-wide block ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson</span>
             <span className="text-[10px] uppercase font-bold text-amber-500 tracking-[0.2em]">Massagens</span>
-          </div>
         </div>
-        <div className="flex gap-3">
-            <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all"><Globe size={20}/></button>
-            <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-tr from-purple-500/10 to-pink-500/10 border border-pink-500/20 text-pink-400 hover:text-pink-300 hover:border-pink-500/40 transition-all"><Instagram size={20}/></a>
+        <div className="flex gap-2">
+            <button onClick={handleShare} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-600 shadow-sm'}`}><Share2 size={18}/></button>
+            <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-600 shadow-sm'}`}><Globe size={18}/></button>
+            <button onClick={() => setIsDark(!isDark)} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-amber-500 hover:text-amber-600 shadow-sm'}`}>{isDark ? <Moon size={18}/> : <Sun size={18}/>}</button>
         </div>
       </header>
 
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-40 scroll-smooth relative z-10">
         
-        {step < 3 && <MarqueeReviews reviews={DATA.reviews} />}
+        {step < 3 && <AutoScrollReviews reviews={DATA.reviews} />}
 
         <div className="max-w-md mx-auto px-5 space-y-8 pt-2">
 
@@ -702,71 +743,71 @@ ${T.zap.wait}
             <div className="animate-fade-in space-y-8">
               <div>
                 <div className="flex items-end gap-2 mb-3">
-                    <h1 className="text-3xl font-light tracking-tight text-white">{T.welcome} <span className="font-bold text-amber-500">{user.name ? user.name.split(' ')[0] : (lang==='pt'?'Visitante':'Visitor')}</span></h1>
+                    <h1 className={`text-3xl font-light tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome} <span className="font-bold text-amber-500">{user.name ? user.name.split(' ')[0] : (lang==='pt'?'Visitante':'Visitor')}</span></h1>
                 </div>
-                <p className="text-sm text-zinc-400 font-light leading-relaxed">{T.subtitle}</p>
+                <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.subtitle}</p>
                 
-                <div className="relative mt-8 overflow-hidden rounded-[2rem] p-6 border border-white/10 bg-zinc-900/40 backdrop-blur-2xl group hover:border-amber-500/30 transition-all duration-700">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/10 blur-[60px] rounded-full pointer-events-none group-hover:bg-amber-500/20 transition-all duration-700"></div>
+                <div className={`relative mt-8 overflow-hidden rounded-[2rem] p-6 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-amber-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-amber-500/30'}`}>
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/10 blur-[60px] rounded-full pointer-events-none transition-all duration-700"></div>
                     
                     <div className="flex justify-between items-start mb-8 relative z-10">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-lg shadow-amber-500/20">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${isDark ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-amber-500/20' : 'bg-amber-500 text-white shadow-amber-200'}`}>
                                 <Trophy size={24} />
                             </div>
                             <div>
-                                <span className="text-[10px] uppercase font-bold tracking-[0.15em] text-zinc-500">{T.level_label}</span>
-                                <h3 className="font-bold text-xl text-white mt-1">
+                                <span className={`text-[10px] uppercase font-bold tracking-[0.15em] ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.level_label}</span>
+                                <h3 className={`font-bold text-xl mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                     {user.xp >= 800 ? "VIP Master Elite" : (DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title)}
                                 </h3>
                             </div>
                         </div>
                         <div className="text-right">
-                            <span className="text-2xl font-bold text-white block">{user.xp}</span>
+                            <span className={`text-2xl font-bold block ${isDark ? 'text-white' : 'text-slate-900'}`}>{user.xp}</span>
                             <span className="text-[10px] font-bold uppercase text-amber-500 tracking-wider">XP</span>
                         </div>
                     </div>
                     
                     <div className="relative z-10">
-                        <div className="flex justify-between text-[10px] font-medium text-zinc-500 mb-3 uppercase tracking-wide">
+                        <div className={`flex justify-between text-[10px] font-medium mb-3 uppercase tracking-wide ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                             <span>Progresso</span>
                             <span className="text-amber-500">{Math.floor(getCurrentLevelProgress())}%</span>
                         </div>
-                        <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                        <div className={`h-1.5 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-200'}`}>
                             <div className="h-full bg-gradient-to-r from-amber-600 to-amber-400 shadow-[0_0_15px_#f59e0b]" style={{width: `${getCurrentLevelProgress()}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'}}></div>
                         </div>
-                         <p className="text-[10px] text-zinc-500 mt-4 text-center font-medium">
+                         <p className={`text-[10px] mt-4 text-center font-medium ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                              {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : "Ciclo Elite: +R$50 a cada 500 XP"}
                         </p>
                     </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 p-1.5 rounded-3xl bg-zinc-900/50 border border-white/5 relative">
-                  <button onClick={()=>setActiveTab('single')} className={`relative z-10 py-4 text-[11px] font-bold uppercase tracking-wider rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='single' ? 'bg-zinc-800 text-white shadow-xl shadow-black/20' : 'text-zinc-500 hover:text-zinc-300'}`}><LayoutList size={14}/> {T.tab_single}</button>
-                  <button onClick={()=>setActiveTab('packs')} className={`relative z-10 py-4 text-[11px] font-bold uppercase tracking-wider rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='packs' ? 'bg-zinc-800 text-white shadow-xl shadow-black/20' : 'text-zinc-500 hover:text-zinc-300'}`}><Package size={14}/> {T.tab_packs}</button>
+              <div className={`grid grid-cols-2 p-1.5 rounded-3xl border relative ${isDark ? 'bg-zinc-900/50 border-white/5' : 'bg-slate-100 border-slate-200'}`}>
+                  <button onClick={()=>setActiveTab('single')} className={`relative z-10 py-4 text-[11px] font-bold uppercase tracking-wider rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='single' ? (isDark ? 'bg-zinc-800 text-white shadow-xl shadow-black/20' : 'bg-white text-slate-900 shadow-sm') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}`}><LayoutList size={14}/> {T.tab_single}</button>
+                  <button onClick={()=>setActiveTab('packs')} className={`relative z-10 py-4 text-[11px] font-bold uppercase tracking-wider rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='packs' ? (isDark ? 'bg-zinc-800 text-white shadow-xl shadow-black/20' : 'bg-white text-slate-900 shadow-sm') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}`}><Package size={14}/> {T.tab_packs}</button>
               </div>
 
               {activeTab === 'single' && (
                   <div className="space-y-6 animate-slide-in">
                     {DATA.services.map(s => (
-                      <Card key={s.id} active={booking.item?.id === s.id} onClick={() => handleSelectItem('single', s)}>
+                      <Card key={s.id} active={booking.item?.id === s.id} onClick={() => handleSelectItem('single', s)} className={!isDark ? 'bg-white shadow-lg border-slate-100' : ''}>
                           <div className="flex justify-between items-start mb-6">
-                            <div className={`p-3.5 rounded-2xl transition-all duration-300 ${booking.item?.id === s.id ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-lg shadow-amber-500/20' : 'bg-zinc-800 text-zinc-400'}`}><s.icon size={24}/></div>
+                            <div className={`p-3.5 rounded-2xl transition-all duration-300 ${booking.item?.id === s.id ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-lg shadow-amber-500/20' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-400')}`}><s.icon size={24}/></div>
                             <div className="text-right">
-                                <span className="block text-2xl font-bold text-white tracking-tight">{T.currency || 'R$'} {s.price}</span>
-                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider flex items-center justify-end gap-1.5"><Clock size={12}/> {s.min} min</span>
+                                <span className={`block text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.currency || 'R$'} {s.price}</span>
+                                <span className={`text-[10px] font-bold uppercase tracking-wider flex items-center justify-end gap-1.5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Clock size={12}/> {s.min} min</span>
                             </div>
                           </div>
                           <div className="mb-4">
                               {s.tag && <span className="inline-block px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[9px] font-bold text-amber-500 mb-3 uppercase tracking-widest">{s.tag}</span>}
-                              <h3 className="font-bold text-lg text-white leading-tight">{s.title}</h3>
+                              <h3 className={`font-bold text-lg leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{s.title}</h3>
                           </div>
-                          <p className="text-xs text-zinc-400 leading-loose font-light">{s.desc}</p>
+                          <p className={`text-xs leading-loose font-light ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{s.desc}</p>
                           
                           <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === s.id ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
                               <div className="overflow-hidden">
-                                  <div className="p-5 rounded-2xl bg-zinc-950/50 border border-white/5 text-[11px] text-zinc-300 leading-loose font-light">
+                                  <div className={`p-5 rounded-2xl border text-[11px] leading-loose font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
                                       <div className="flex items-center gap-2 font-bold mb-3 text-amber-500 uppercase tracking-wider text-[10px]"><Info size={12}/> {T.details_label}</div>
                                       <p className="whitespace-pre-line">{s.details}</p>
                                   </div>
@@ -780,17 +821,17 @@ ${T.zap.wait}
               {activeTab === 'packs' && (
                   <div className="space-y-6 animate-slide-in">
                       {DATA.plans.map(plan => (
-                          <Card key={plan.id} active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)}>
+                          <Card key={plan.id} active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} className={!isDark ? 'bg-white shadow-lg border-slate-100' : ''}>
                               {plan.tag && (<div className="absolute top-0 right-0 bg-gradient-to-bl from-amber-500 to-amber-600 text-black text-[9px] font-bold px-3 py-2 rounded-bl-2xl shadow-lg shadow-amber-500/20">{plan.tag}</div>)}
                               <div className="flex items-center gap-4 mb-6">
-                                  <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-500'}`}><plan.icon size={28}/></div>
-                                  <div><h3 className="font-bold text-lg text-white leading-none mb-1.5">{plan.title}</h3><p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">{plan.type === 'pack' ? 'Pacote' : 'Assinatura'}</p></div>
+                                  <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-amber-500 text-black' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-400')}`}><plan.icon size={28}/></div>
+                                  <div><h3 className={`font-bold text-lg leading-none mb-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3><p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{plan.type === 'pack' ? 'Pacote' : 'Assinatura'}</p></div>
                               </div>
-                              <p className="text-xs text-zinc-400 mb-6 font-light leading-relaxed">{plan.details}</p>
-                              <div className="flex items-end gap-3 p-4 rounded-2xl bg-black/20 border border-white/5">
+                              <p className={`text-xs mb-6 font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{plan.details}</p>
+                              <div className={`flex items-end gap-3 p-4 rounded-2xl border ${isDark ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
                                   <span className="text-2xl font-bold text-amber-500">{T.currency || 'R$'} {plan.price}</span>
-                                  <span className="text-xs line-through text-zinc-600 decoration-zinc-600">{T.currency || 'R$'} {plan.fullPrice}</span>
-                                  <span className="text-[9px] text-emerald-400 font-bold mb-1 ml-auto bg-emerald-500/10 px-2 py-1 rounded-lg border border-emerald-500/20">-{T.currency || 'R$'}{plan.savings}</span>
+                                  <span className={`text-xs line-through decoration-zinc-600 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{T.currency || 'R$'} {plan.fullPrice}</span>
+                                  <span className="text-[9px] text-emerald-500 font-bold mb-1 ml-auto bg-emerald-500/10 px-2 py-1 rounded-lg border border-emerald-500/20">-{T.currency || 'R$'}{plan.savings}</span>
                               </div>
                           </Card>
                       ))}
@@ -803,8 +844,8 @@ ${T.zap.wait}
           {step === 1 && (
             <div className="animate-slide-in space-y-8">
               <div className="text-center mb-8">
-                 <h2 className="text-2xl font-light text-white mb-2">{T.select_time_title}</h2>
-                 <p className="text-[10px] uppercase tracking-[0.25em] font-bold text-zinc-500">{T.date_sub}</p>
+                 <h2 className={`text-2xl font-light mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.select_time_title}</h2>
+                 <p className={`text-[10px] uppercase tracking-[0.25em] font-bold ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.date_sub}</p>
               </div>
               <div className="flex gap-3 overflow-x-auto pb-8 scrollbar-hide -mx-6 px-6">
                 {[...Array(14)].map((_, i) => { 
@@ -813,7 +854,7 @@ ${T.zap.wait}
                   let lbl = d.toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN, {weekday:'short'}).slice(0,3);
                   if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
                   return (
-                    <button key={i} onClick={() => setBooking(b => ({ ...b, date: d, time: null }))} className={`min-w-[70px] h-24 rounded-2xl flex flex-col items-center justify-center gap-1.5 border transition-all flex-shrink-0 active:scale-95 duration-300 ${isSel ? 'bg-amber-500 border-amber-500 text-black shadow-lg shadow-amber-500/20' : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300'}`}>
+                    <button key={i} onClick={() => setBooking(b => ({ ...b, date: d, time: null }))} className={`min-w-[70px] h-24 rounded-2xl flex flex-col items-center justify-center gap-1.5 border transition-all flex-shrink-0 active:scale-95 duration-300 ${isSel ? 'bg-amber-500 border-amber-500 text-black shadow-lg shadow-amber-500/20' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300' : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300 hover:text-slate-600')}`}>
                       <span className="text-[9px] font-bold uppercase tracking-wider opacity-80">{lbl}</span>
                       <span className="text-2xl font-bold">{d.getDate()}</span>
                       {isSel && <span className="w-1.5 h-1.5 rounded-full bg-black mt-1"></span>}
@@ -822,28 +863,28 @@ ${T.zap.wait}
                 })}
               </div>
               
-              {!booking.date && (<div className="text-center py-16 opacity-30 border border-dashed border-zinc-700 rounded-[2rem] mx-2"><Calendar size={36} className="mx-auto mb-4 text-zinc-500"/><p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{T.empty_date}</p></div>)}
+              {!booking.date && (<div className={`text-center py-16 opacity-30 border border-dashed rounded-[2rem] mx-2 ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-slate-300 text-slate-400'}`}><Calendar size={36} className="mx-auto mb-4"/><p className="text-[10px] font-bold uppercase tracking-wider">{T.empty_date}</p></div>)}
               
               {booking.date && generateTimeSlots.length > 0 && (
                 <div className="grid grid-cols-3 gap-3 animate-fade-in">
                    {generateTimeSlots.map(t => (
-                       <button key={t} onClick={() => { setBooking(b => ({...b, time: t})); }} className={`py-3.5 rounded-xl text-xs font-medium border transition-all active:scale-95 duration-200 relative overflow-hidden group ${booking.time === t ? 'bg-zinc-100 text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'}`}>
+                       <button key={t} onClick={() => { setBooking(b => ({...b, time: t})); }} className={`py-3.5 rounded-xl text-xs font-medium border transition-all active:scale-95 duration-200 relative overflow-hidden group ${booking.time === t ? (isDark ? 'bg-zinc-100 text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'bg-slate-900 text-white border-slate-900 shadow-xl') : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800')}`}>
                            {t}
                        </button>
                    ))}
                 </div>
               )}
-              {booking.date && generateTimeSlots.length === 0 && (<div className="text-center py-10 bg-zinc-900/50 rounded-2xl border border-zinc-800"><p className="text-xs font-medium text-zinc-400">{T.empty_slots}</p></div>)}
+              {booking.date && generateTimeSlots.length === 0 && (<div className={`text-center py-10 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-slate-100 border-slate-200 text-slate-500'}`}><p className="text-xs font-medium">{T.empty_slots}</p></div>)}
             </div>
           )}
 
           {/* LOCATION */}
           {step === 2 && (
             <div className="animate-slide-in space-y-8">
-              <h2 className="text-2xl font-light text-white text-center mb-8">{T.location_title}</h2>
+              <h2 className={`text-2xl font-light text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
               <div className="grid grid-cols-3 gap-3 mb-8">
                  {[{id:'home', l:T.zap.house, i:Home}, {id:'motel', l:T.zap.motel, i:BedDouble}, {id:'hotel', l:T.zap.hotel, i:Building}].map(x => (
-                    <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`py-4 rounded-2xl text-[9px] font-bold uppercase tracking-wide flex flex-col items-center justify-center gap-2 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_20px_-5px_rgba(245,158,11,0.3)]' : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300'}`}>
+                    <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`py-4 rounded-2xl text-[9px] font-bold uppercase tracking-wide flex flex-col items-center justify-center gap-2 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_20px_-5px_rgba(245,158,11,0.3)]' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600')}`}>
                         <x.i size={20} strokeWidth={2}/> {x.l}
                     </button>
                  ))}
@@ -871,25 +912,25 @@ ${T.zap.wait}
                     </div>
                  )}
                  {booking.locationType === 'motel' && (
-                    <div className="p-6 rounded-2xl border border-dashed border-zinc-700 bg-zinc-900/30 text-center">
-                        <Smartphone size={24} className="mx-auto mb-3 text-zinc-600"/>
-                        <p className="text-[11px] text-zinc-400 leading-relaxed font-light">{T.motel_note}</p>
+                    <div className={`p-6 rounded-2xl border border-dashed text-center ${isDark ? 'border-zinc-700 bg-zinc-900/30' : 'border-slate-300 bg-slate-50'}`}>
+                        <Smartphone size={24} className={`mx-auto mb-3 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}/>
+                        <p className={`text-[11px] leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.motel_note}</p>
                     </div>
                  )}
               </div>
               
               {/* EXTRAS */}
               {booking.type === 'single' && (
-                  <div className="pt-8 border-t border-white/5 mt-8">
-                     <h3 className="text-[10px] font-bold uppercase mb-4 tracking-widest text-zinc-500">{T.extras_title}</h3>
+                  <div className={`pt-8 border-t mt-8 ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+                     <h3 className={`text-[10px] font-bold uppercase mb-4 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.extras_title}</h3>
                      <div className="space-y-3">
                         {DATA.extras.map(ex => (
-                           <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 ${booking.extras[ex.id] ? 'bg-amber-500/10 border-amber-500/40 shadow-[0_0_20px_-5px_rgba(245,158,11,0.2)]' : 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'}`}>
+                           <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 ${booking.extras[ex.id] ? 'bg-amber-500/10 border-amber-500/40 shadow-[0_0_20px_-5px_rgba(245,158,11,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`}>
                              <div className="flex items-center gap-4">
-                                 <div className={`p-2 rounded-xl transition-colors ${booking.extras[ex.id] ? 'text-amber-500' : 'text-zinc-600'}`}><ex.icon size={20}/></div>
-                                 <div><p className={`text-sm font-bold transition-colors ${booking.extras[ex.id] ? 'text-amber-500' : 'text-zinc-300'}`}>{ex.label}</p><p className="text-[10px] text-zinc-500 font-medium pt-0.5">{ex.desc}</p></div>
+                                 <div className={`p-2 rounded-xl transition-colors ${booking.extras[ex.id] ? 'text-amber-500' : (isDark ? 'text-zinc-600' : 'text-slate-400')}`}><ex.icon size={20}/></div>
+                                 <div><p className={`text-sm font-bold transition-colors ${booking.extras[ex.id] ? 'text-amber-500' : (isDark ? 'text-zinc-300' : 'text-slate-700')}`}>{ex.label}</p><p className={`text-[10px] font-medium pt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{ex.desc}</p></div>
                              </div>
-                             <span className={`text-[10px] font-bold whitespace-nowrap px-2 py-1 rounded-lg ${booking.extras[ex.id] ? 'bg-amber-500/20 text-amber-500' : 'text-zinc-600 bg-zinc-800'}`}>+ {T.currency || 'R$'} {ex.price}</span>
+                             <span className={`text-[10px] font-bold whitespace-nowrap px-2 py-1 rounded-lg ${booking.extras[ex.id] ? 'bg-amber-500/20 text-amber-500' : (isDark ? 'text-zinc-600 bg-zinc-800' : 'text-slate-400 bg-slate-100')}`}>+ {T.currency || 'R$'} {ex.price}</span>
                            </div>
                         ))}
                      </div>
@@ -902,25 +943,25 @@ ${T.zap.wait}
           {step === 3 && (
             <div className="animate-slide-in pb-12 space-y-8">
                <div className="relative">
-                   <div className="p-6 rounded-[2rem] border border-white/10 bg-zinc-900/80 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+                   <div className={`p-6 rounded-[2rem] border backdrop-blur-2xl shadow-2xl relative overflow-hidden ${isDark ? 'border-white/10 bg-zinc-900/80' : 'border-slate-200 bg-white/90'}`}>
                       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-amber-700 shadow-[0_0_20px_#f59e0b]"></div>
                       <div className="mb-6 pt-2">
-                          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mb-2 block">{booking.type === 'pack' ? (lang === 'pt'?'Pacote':'Pack') : (booking.type === 'subscription' ? (lang === 'pt'?'Assinatura':'Subscription') : (lang === 'pt'?'Sessão Individual':'Single Session'))}</span>
-                          <h2 className="font-bold text-2xl text-white leading-tight mb-2">{booking.item.title}</h2>
+                          <span className={`text-[9px] font-bold uppercase tracking-widest mb-2 block ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{booking.type === 'pack' ? (lang === 'pt'?'Pacote':'Pack') : (booking.type === 'subscription' ? (lang === 'pt'?'Assinatura':'Subscription') : (lang === 'pt'?'Sessão Individual':'Single Session'))}</span>
+                          <h2 className={`font-bold text-2xl leading-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{booking.item.title}</h2>
                           <p className="text-[11px] text-amber-500 font-medium flex items-center gap-2 bg-amber-500/10 px-2 py-1 rounded-full w-fit border border-amber-500/10"><Calendar size={10}/> {booking.date ? new Date(booking.date).toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN) : ''} • {booking.time}</p>
                       </div>
-                      <div className="space-y-3 border-b border-dashed border-white/10 pb-6 mb-6">
-                          <div className="flex justify-between text-xs text-zinc-300"><span>Valor Base</span><span className="font-medium text-white">{T.currency || 'R$'} {booking.item.price}</span></div>
+                      <div className={`space-y-3 border-b border-dashed pb-6 mb-6 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+                          <div className={`flex justify-between text-xs ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}><span>Valor Base</span><span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.currency || 'R$'} {booking.item.price}</span></div>
                           {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>{
                               const extraItem = DATA.extras.find(e=>e.id===k);
-                              return extraItem ? (<div key={k} className="flex justify-between text-xs text-zinc-500"><span>+ {extraItem.label}</span><span>{extraItem.price}</span></div>) : null;
+                              return extraItem ? (<div key={k} className={`flex justify-between text-xs ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}><span>+ {extraItem.label}</span><span>{extraItem.price}</span></div>) : null;
                           })}
-                          {booking.appliedCoupon && (<div className="flex justify-between text-xs text-emerald-400 bg-emerald-500/5 p-2 rounded-lg border border-emerald-500/10"><span>Cupom ({booking.appliedCoupon.code})</span><span>- {T.currency || 'R$'} {booking.appliedCoupon.val}</span></div>)}
+                          {booking.appliedCoupon && (<div className="flex justify-between text-xs text-emerald-500 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20 font-bold"><span>Cupom ({booking.appliedCoupon.code})</span><span>- {T.currency || 'R$'} {booking.appliedCoupon.val}</span></div>)}
                       </div>
                       <div className="flex justify-between items-end">
-                          <div><span className="text-[9px] font-bold uppercase text-zinc-600 block mb-1">{T.total_label}</span><span className="text-[9px] font-medium text-amber-500/80 bg-amber-500/5 px-2 py-0.5 rounded-full border border-amber-500/10">{T.uber_warning}</span></div>
+                          <div><span className={`text-[9px] font-bold uppercase block mb-1 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{T.total_label}</span><span className="text-[9px] font-medium text-amber-500/80 bg-amber-500/5 px-2 py-0.5 rounded-full border border-amber-500/10">{T.uber_warning}</span></div>
                           <div className="text-right">
-                              <span className="block text-4xl font-light text-white tracking-tighter">{T.currency || 'R$'} {financials.total}</span>
+                              <span className={`block text-4xl font-light tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.currency || 'R$'} {financials.total}</span>
                               <span className="text-[10px] font-bold text-amber-500 flex items-center justify-end gap-1.5 mt-1"><Sparkles size={10}/> +{estimatedXP} XP</span>
                           </div>
                       </div>
@@ -929,13 +970,12 @@ ${T.zap.wait}
                
                <div className="flex gap-2">
                    <div className="relative flex-1">
-                       <input value={couponInput} onChange={e=>setCouponInput(e.target.value)} placeholder={T.coupon_placeholder} className="w-full pl-4 pr-8 py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-sm font-bold uppercase tracking-widest text-white placeholder:text-zinc-700 outline-none focus:border-amber-500/50 transition-colors"/>
-                       <Tag size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-700 pointer-events-none"/>
+                       <input value={couponInput} onChange={e=>setCouponInput(e.target.value)} placeholder={T.coupon_placeholder} className={`w-full pl-4 pr-8 py-3.5 rounded-xl border text-sm font-bold uppercase tracking-widest outline-none focus:border-amber-500/50 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-700' : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-300'}`}/>
+                       <Tag size={16} className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${isDark ? 'text-zinc-700' : 'text-slate-300'}`}/>
                    </div>
                    <Button onClick={handleApplyCoupon} variant="secondary" size="md">{T.coupon_btn}</Button>
                </div>
 
-                {/* --- LÓGICA DE CUPONS RESTAURADA AQUI --- */}
                 {user.coupons && user.coupons.length > 0 && (
                    <div className="w-full overflow-x-auto pb-2 pt-1 scrollbar-hide">
                        <div className="flex gap-2">
@@ -945,7 +985,7 @@ ${T.zap.wait}
                                    <button 
                                        key={c.id} 
                                        onClick={() => setBooking(b => ({...b, appliedCoupon: isApplied ? null : c}))} 
-                                       className={`flex-shrink-0 px-3 py-2 rounded-xl border text-[10px] font-bold uppercase transition-all whitespace-nowrap active:scale-95 ${isApplied ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500'}`}
+                                       className={`flex-shrink-0 px-3 py-2 rounded-xl border text-[10px] font-bold uppercase transition-all whitespace-nowrap active:scale-95 ${isApplied ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500' : (isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300')}`}
                                    >
                                        {c.title}
                                    </button>
@@ -954,27 +994,26 @@ ${T.zap.wait}
                        </div>
                    </div>
                )}
-               {/* ------------------------------------------ */}
 
                <div>
-                   <h3 className="text-[10px] font-bold uppercase text-zinc-500 mb-4 ml-1 tracking-widest">{T.pay_title}</h3>
+                   <h3 className={`text-[10px] font-bold uppercase mb-4 ml-1 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.pay_title}</h3>
                    <div className="grid grid-cols-1 gap-3">
                        {[{id:'pix', l:T.pay_pix, i:QrCode, sub:''}, {id:'card', l:T.pay_card, i:CreditCard, sub:''}, {id:'money', l:T.pay_cash, i:Banknote, sub:''}].map(p => (
-                           <button key={p.id} onClick={()=>setBooking(b=>({...b, payment: p.id}))} className={`px-5 py-4 rounded-xl border flex items-center gap-4 transition-all duration-300 ${booking.payment === p.id ? 'bg-zinc-800 border-amber-500/50 shadow-[0_0_20px_-5px_rgba(245,158,11,0.2)]' : 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800'}`}>
-                               <div className={`p-2 rounded-full ${booking.payment === p.id ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-500'}`}><p.i size={18}/></div>
-                               <div className="text-left"><span className={`font-bold text-xs block ${booking.payment === p.id ? 'text-white' : 'text-zinc-400'}`}>{p.l}</span></div>
+                           <button key={p.id} onClick={()=>setBooking(b=>({...b, payment: p.id}))} className={`px-5 py-4 rounded-xl border flex items-center gap-4 transition-all duration-300 ${booking.payment === p.id ? 'bg-zinc-800 border-amber-500/50 shadow-[0_0_20px_-5px_rgba(245,158,11,0.2)]' : (isDark ? 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800' : 'bg-white border-slate-200 hover:bg-slate-50')}`}>
+                               <div className={`p-2 rounded-full ${booking.payment === p.id ? 'bg-amber-500 text-black' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-400')}`}><p.i size={18}/></div>
+                               <div className="text-left"><span className={`font-bold text-xs block ${booking.payment === p.id ? (isDark ? 'text-white' : 'text-slate-900') : (isDark ? 'text-zinc-400' : 'text-slate-500')}`}>{p.l}</span></div>
                                {booking.payment === p.id && <Check size={18} className="ml-auto text-amber-500" strokeWidth={3}/>}
                            </button>
                        ))}
                    </div>
                </div>
 
-               <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/30">
+               <div className={`p-4 rounded-xl border ${isDark ? 'border-zinc-800 bg-zinc-900/30' : 'border-slate-200 bg-slate-50'}`}>
                     <div className="flex items-start gap-3 mb-2">
-                         <ShieldCheck className="text-zinc-600 shrink-0 mt-0.5" size={18}/>
-                         <div><h4 className="text-xs font-bold text-zinc-400 mb-1">{T.terms_title}</h4><p className="text-[10px] text-zinc-500 cursor-pointer hover:text-amber-500 transition-colors underline" onClick={() => setTermsOpen(true)}>{T.terms_link}</p></div>
+                         <ShieldCheck className={`${isDark ? 'text-zinc-600' : 'text-slate-400'} shrink-0 mt-0.5`} size={18}/>
+                         <div><h4 className={`text-xs font-bold mb-1 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.terms_title}</h4><p className={`text-[10px] cursor-pointer hover:text-amber-500 transition-colors underline ${isDark ? 'text-zinc-500' : 'text-slate-400'}`} onClick={() => setTermsOpen(true)}>{T.terms_link}</p></div>
                     </div>
-                    <label className="flex items-center gap-3 p-3 rounded-lg bg-zinc-950/50 border border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors select-none"><input type="checkbox" checked={booking.termsAccepted} onChange={e=>setBooking(b=>({...b, termsAccepted: e.target.checked}))} className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 accent-amber-500 cursor-pointer"/><span className="text-[10px] font-bold uppercase text-zinc-300">{T.agree_terms}</span></label>
+                    <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer hover:border-zinc-500 transition-colors select-none ${isDark ? 'bg-zinc-950/50 border-zinc-800' : 'bg-white border-slate-200'}`}><input type="checkbox" checked={booking.termsAccepted} onChange={e=>setBooking(b=>({...b, termsAccepted: e.target.checked}))} className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 accent-amber-500 cursor-pointer"/><span className={`text-[10px] font-bold uppercase ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.agree_terms}</span></label>
                </div>
             </div>
           )}
@@ -988,10 +1027,10 @@ ${T.zap.wait}
                          <Check size={40} className="text-white" strokeWidth={3}/>
                      </div>
                  </div>
-                 <h1 className="text-2xl font-light text-white mb-3">{T.success_title}</h1>
-                 <p className="text-zinc-400 text-xs leading-relaxed max-w-xs mx-auto mb-10">{T.success_sub}</p>
+                 <h1 className={`text-2xl font-light mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h1>
+                 <p className={`text-xs leading-relaxed max-w-xs mx-auto mb-10 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.success_sub}</p>
                  <Button variant="whatsapp" full size="xl" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon={MessageCircle}>{T.whatsapp_btn}</Button>
-                 <button onClick={()=>{setStep(0); setBooking({...booking, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false}); setShowConfetti(false);}} className="mt-8 text-[10px] font-bold uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors py-4">{T.back_home}</button>
+                 <button onClick={()=>{setStep(0); setBooking({...booking, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false}); setShowConfetti(false);}} className={`mt-8 text-[10px] font-bold uppercase tracking-widest transition-colors py-4 ${isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-slate-400 hover:text-slate-600'}`}>{T.back_home}</button>
              </div>
           )}
         </div>
@@ -1000,7 +1039,7 @@ ${T.zap.wait}
       {/* FOOTER */}
       {step < 4 && (
          <div className="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-safe">
-            <div className="w-full p-4 bg-zinc-950/90 backdrop-blur-xl border-t border-white/5">
+            <div className={`w-full p-4 backdrop-blur-xl border-t ${isDark ? 'bg-zinc-950/90 border-white/5' : 'bg-white/90 border-slate-200'}`}>
                 <div className="pointer-events-auto max-w-md mx-auto flex items-center gap-3">
                     {step > 0 && (
                       <div className="flex gap-2">
@@ -1030,23 +1069,23 @@ ${T.zap.wait}
       {/* MODALS */}
       <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${reviewsOpen ? 'opacity-100' : 'opacity-0'}`}>
          <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${reviewsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setReviewsOpen(false)}></div>
-         <div className={`relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6 max-h-[80vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${reviewsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'}`}>
-            <div className="flex justify-between items-center mb-6 sticky top-0 bg-zinc-900 z-10 py-2 border-b border-white/5"><h3 className="text-lg font-light text-white">{T.reviews_title || "Experiências"}</h3><button onClick={()=>setReviewsOpen(false)} className="p-2 bg-zinc-800 rounded-full text-zinc-400 hover:text-white"><X size={18}/></button></div>
+         <div className={`relative w-full max-w-md border rounded-[2.5rem] p-6 max-h-[80vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${reviewsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className={`flex justify-between items-center mb-6 sticky top-0 z-10 py-2 border-b ${isDark ? 'bg-zinc-900 border-white/5' : 'bg-white border-slate-100'}`}><h3 className={`text-lg font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title || "Experiências"}</h3><button onClick={()=>setReviewsOpen(false)} className={`p-2 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={18}/></button></div>
             <div className="space-y-4">
                 {DATA.reviews.map((r,i)=>(
-                   <div key={i} className="p-5 rounded-2xl bg-zinc-800/30 border border-white/5 relative">
-                       <Quote size={20} className="absolute top-4 right-4 text-zinc-700" />
+                   <div key={i} className={`p-5 rounded-2xl border relative ${isDark ? 'bg-zinc-800/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
+                       <Quote size={20} className={`absolute top-4 right-4 ${isDark ? 'text-zinc-700' : 'text-slate-300'}`} />
                        <div className="flex justify-between mb-2">
-                           <span className="font-bold text-sm text-zinc-200 flex items-center gap-3">
-                               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/20 flex items-center justify-center text-[10px] text-amber-500 font-black border border-amber-500/20">{r.n.charAt(0)}</div>
+                           <span className={`font-bold text-sm flex items-center gap-3 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border ${isDark ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/20 text-amber-500 border-amber-500/20' : 'bg-amber-100 text-amber-600 border-amber-200'}`}>{r.n.charAt(0)}</div>
                                <div>
                                  <span className="block leading-tight text-xs">{r.n}</span>
-                                 <span className="text-[9px] text-zinc-500 font-normal uppercase">{r.loc}</span>
+                                 <span className={`text-[9px] font-normal uppercase ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{r.loc}</span>
                                </div>
                            </span>
                        </div>
-                       <div className="flex text-amber-500 gap-0.5 mb-2">{[...Array(5)].map((_,k)=><Star key={k} size={10} fill={k < r.s ? "currentColor" : "none"} className={k < r.s ? "text-amber-500" : "text-zinc-700"} />)}</div>
-                       <p className="text-xs text-zinc-400 leading-relaxed italic">"{r.t}"</p>
+                       <div className="flex gap-0.5 mb-2">{[...Array(5)].map((_,k)=><Star key={k} size={10} fill={k < r.s ? "#fbbf24" : "none"} className={k < r.s ? "text-amber-400" : (isDark ? "text-zinc-700" : "text-slate-300")} />)}</div>
+                       <p className={`text-xs leading-relaxed italic ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>"{r.t}"</p>
                    </div>
                 ))}
             </div>
@@ -1055,10 +1094,10 @@ ${T.zap.wait}
 
       <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${termsOpen ? 'opacity-100' : 'opacity-0'}`}>
          <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${termsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setTermsOpen(false)}></div>
-         <div className={`relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-[2rem] p-6 max-h-[80vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${termsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'}`}>
-            <div className="flex justify-between items-center mb-6"><h3 className="text-lg font-light text-white">{T.terms_title}</h3><button onClick={()=>setTermsOpen(false)} className="p-2 bg-zinc-800 rounded-full text-zinc-400 hover:text-white"><X size={18}/></button></div>
+         <div className={`relative w-full max-w-md border rounded-[2rem] p-6 max-h-[80vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${termsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className="flex justify-between items-center mb-6"><h3 className={`text-lg font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</h3><button onClick={()=>setTermsOpen(false)} className={`p-2 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={18}/></button></div>
             <div className="space-y-4">
-                {T.terms_body.map((t,i)=>(<div key={i} className="flex gap-4 p-4 rounded-xl bg-zinc-950/50 border border-white/5"><span className="font-bold text-amber-500 text-xl opacity-50">{i+1}</span><p className="text-xs text-zinc-400 leading-relaxed pt-1 font-light">{t.substring(3)}</p></div>))}
+                {T.terms_body.map((t,i)=>(<div key={i} className={`flex gap-4 p-4 rounded-xl border ${isDark ? 'bg-zinc-950/50 border-white/5' : 'bg-slate-50 border-slate-200'}`}><span className="font-bold text-amber-500 text-xl opacity-50">{i+1}</span><p className={`text-xs leading-relaxed pt-1 font-light ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{t.substring(3)}</p></div>))}
                 <Button full onClick={()=>setTermsOpen(false)} variant="primary">{T.terms_btn}</Button>
             </div>
          </div>
