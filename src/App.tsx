@@ -11,19 +11,18 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v24.0 - SENIOR UX/UI REFINEMENT + WARM COPYWRITING
+ * THALYSON APP OS v25.0 - REAL REVIEWS + SMART EXTRAS + COZY UI
  * ==================================================================================
- * UPDATE LOG:
- * 1. FIX: Adicionadas vírgulas faltantes no array de avaliações (Reviews).
- * 2. UX WRITING: Tom de voz alterado de "Vendedor" para "Acolhedor/Anfitrião".
- * 3. REALIDADE: Textos ajustados para deixar claro a ausência de maca/estúdio (foco na experiência).
- * 4. UI: Otimização de contrastes para leitura noturna (Dark Mode).
+ * 1. REVIEWS REAIS: Restauradas as avaliações originais (Bruno, Alan, Tiago).
+ * 2. COPYWRITING: Removido "não uso maca". Foco em "Atendimento no seu conforto".
+ * 3. EXTRAS INTELIGENTES: Agora disponíveis também nos Planos/Pacotes.
+ * 4. LÓGICA DE DESCONTO: Se selecionar Plano, o Extra tem 20% OFF.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v24_cozy', 
+  STORAGE_KEY: '@thaly_app_v25_final', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
@@ -216,10 +215,10 @@ const getData = (lang) => {
               desc: isPT ? "Um respiro necessário. Seu momento de desligar do mundo lá fora." : "A necessary breath. Your moment to disconnect from the outside world.",
               details: isPT ? `O SEU MOMENTO DE PAZ:
 • COMO É: Movimentos fluidos para acalmar a mente.
-• O ESPAÇO: Atendimento adaptado no conforto da cama ou sofá (não uso maca).
+• O ESPAÇO: Atendimento domiciliar no conforto da sua cama ou sofá.
 • PARA VOCÊ: Que precisa silenciar o barulho do dia a dia.` : `YOUR MOMENT OF PEACE:
 • HOW IT IS: Fluid movements to calm the mind.
-• THE SPACE: Service adapted to bed or sofa comfort (no table used).
+• THE SPACE: Home service at the comfort of your bed or sofa.
 • FOR YOU: Who needs to silence the daily noise.`
             },
             { 
@@ -270,9 +269,12 @@ const getData = (lang) => {
             { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Essência para o ambiente." : "Scent for the room." }
         ],
         reviews: [
+            { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito." : "Thalyson, I want to say that your massage was very well performed. You first get to know the body in order to carry out the procedure very carefully and safely. I highly recommend it.", s: 5 },
+            { n: "Tiago", loc: "SP - Bela Vista", t: isPT ? "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida." : "Thalyson has an incredible energy. The massage was perfect, the best of my life.", s: 5 },
+            { n: "Alan", loc: "SP - Bela Vista", t: isPT ? "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve. Da pra ver que ele manda bem no que faz. Obrigado!" : "Liked Thalyson's massage a lot, felt very relaxed afterwards, left lighter. You can see he's good at what he does. Thanks!", s: 5 },
+            { n: "Felipe", loc: "Londrina", t: isPT ? "Fiquei na dúvida por ser no sofá, mas foi surpreendentemente confortável." : "Was doubtful about sofa, but was surprisingly comfortable.", s: 5 },
             { n: "Ricardo M.", loc: "Rio Preto", t: isPT ? "Mão firme. Consegui relaxar de verdade, coisa que não fazia há tempos." : "Firm hands. Managed to truly relax, something I haven't done in ages.", s: 5 },
             { n: "André L.", loc: "SP - Bela Vista", t: isPT ? "O toque dele é diferente. Me senti muito à vontade." : "His touch is different. Felt very comfortable.", s: 5 },
-            { n: "Felipe", loc: "Londrina", t: isPT ? "Fiquei na dúvida por não ter maca, mas no sofá foi surpreendentemente confortável." : "Was doubtful about no table, but sofa was surprisingly comfortable.", s: 5 },
             { n: "Gustavo", loc: "Santa Fé do Sul", t: isPT ? "Gostei muito da energia, pessoa do bem. Recomendo." : "Liked the energy a lot, good person. Recommend.", s: 4 },
             { n: "Bruno", loc: "Jales", t: isPT ? "Veio até meu hotel, foi super discreto e educado. Salvou minha semana." : "Came to my hotel, super discreet and polite. Saved my week.", s: 5 },
             { n: "Carlos", loc: "Londrina", t: isPT ? "Massagem ótima, pena que estava muito quente no dia." : "Great massage, pity it was too hot that day.", s: 4 },
@@ -280,7 +282,6 @@ const getData = (lang) => {
             { n: "Lucas", loc: "Santa Fé do Sul", t: isPT ? "Foi um pouco difícil achar vaga, mas a sessão compensou o estresse." : "Hard to park, but session made up for stress.", s: 4 },
             { n: "Renato", loc: "SP - Centro", t: isPT ? "Muito respeitoso e profissional. A sensitiva é uma experiência única." : "Very respectful and professional. Sensitive is a unique experience.", s: 5 },
             { n: "Vitor", loc: "Jales", t: isPT ? "Gostei, passou rápido demais. Na próxima pego mais tempo." : "Liked it, went too fast. Next time I'll take more time.", s: 4 },
-            { n: "Tiago", loc: "SP - Bela Vista", t: isPT ? "O Thalyson tem uma energia muito boa. Me senti acolhido." : "Thalyson has very good energy. Felt welcomed.", s: 5 },
             { n: "Eduardo", loc: "Londrina", t: isPT ? "Ele se adapta bem. Fizemos na cama e foi super tranquilo." : "Adapts well. Did it on bed and was super chill.", s: 5 },
             { n: "Caio", loc: "Rio Preto", t: isPT ? "A atenção que ele dá faz valer a pena." : "The attention he gives makes it worth it.", s: 5 },
             { n: "Breno", loc: "SP - Bela Vista", t: isPT ? "Relaxei e me diverti. Ótimo pra esquecer os problemas de SP." : "Relaxed and had fun. Great to forget SP problems.", s: 5 },
@@ -289,10 +290,8 @@ const getData = (lang) => {
             { n: "Roberto", loc: "SP - Augusta", t: isPT ? "Pedi com interação. Foi uma troca muito gostosa." : "Asked for interaction. Was a very nice exchange.", s: 5 },
             { n: "Fabio", loc: "Rio Preto", t: isPT ? "Saiu todo o peso das costas. Recomendo pra quem busca paz." : "Back weight gone. Recommend for those seeking peace.", s: 5 },
             { n: "Junior", loc: "SP - Moema", t: isPT ? "Me senti leve. Energia ótima." : "Felt light. Great energy.", s: 5 },
-            { n: "Alan", loc: "SP - Bela Vista", t: isPT ? "Saí mais leve. Dá pra ver que ele gosta do que faz. Obrigado!" : "Left lighter. Can tell he likes what he does. Thanks!", s: 5 },
             { n: "Paulo", loc: "Votuporanga", t: isPT ? "Muito bom, só o Uber que ficou caro pra vir." : "Very good, just Uber was expensive.", s: 4 },
-            { n: "M. (Sigilo)", loc: "SP - Jardins", t: isPT ? "Finalização intensa, perdi as forças. O cara é bom." : "Intense finish. Guy is good.", s: 5 },
-            { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Massagem muito bem executada. Cuidado e segurança no procedimento. Recomendo muito." : "Massage well executed. Care and safety in procedure. Highly recommend.", s: 5 }
+            { n: "M. (Sigilo)", loc: "SP - Jardins", t: isPT ? "Finalização intensa, perdi as forças. O cara é bom." : "Intense finish. Guy is good.", s: 5 }
         ],
         text: {
             loading: isPT ? "PREPARANDO AMBIENTE..." : "PREPARING...",
@@ -340,7 +339,7 @@ const getData = (lang) => {
             popup_level_msg: isPT ? "Sua presença constante desbloqueou novos carinhos." : "Loyalty unlocked new privileges.",
             popup_btn_coupon: isPT ? "Resgatar Presente" : "Get Now",
             agree_terms: isPT ? "Estou ciente de como funciona." : "Read the terms.",
-            terms_body: isPT ? ["1. HIGIENE: Um banho prévio ajuda no nosso conforto.", "2. SIGILO: Sua privacidade é absoluta comigo.", "3. AMBIENTE: Como não uso maca, adapto o atendimento para ser confortável na cama ou sofá.", "4. RESPEITO: Um espaço livre de julgamentos.", "5. SAÚDE: Estou bem fisicamente para lhe atender."] : ["1. HYGIENE: Shower helps comfort.", "2. SECRECY: Stays in the session.", "3. ENVIRONMENT: No table used, adapted to bed/sofa.", "4. RESPECT: Judgment free.", "5. HEALTH: Physically fit."],
+            terms_body: isPT ? ["1. HIGIENE: Um banho prévio ajuda no nosso conforto.", "2. SIGILO: Sua privacidade é absoluta comigo.", "3. AMBIENTE: Adapto o atendimento ao seu espaço (Cama/Sofá) para seu total relaxamento.", "4. RESPEITO: Um espaço livre de julgamentos.", "5. SAÚDE: Estou bem fisicamente para lhe atender."] : ["1. HYGIENE: Shower helps comfort.", "2. SECRECY: Stays in the session.", "3. ENVIRONMENT: Adapted to bed/sofa for comfort.", "4. RESPECT: Judgment free.", "5. HEALTH: Physically fit."],
             terms_title: isPT ? "Alguns Combinados" : "Terms",
             terms_link: isPT ? "Ler combinados importantes" : "Read terms",
             terms_btn: isPT ? "Entendido" : "Agreed",
@@ -377,7 +376,7 @@ const getData = (lang) => {
               house: isPT ? "Em Domicílio (Casa/Apt)" : "Home",
               hotel: "Hotel",
               motel: "Motel",
-              extra_title: isPT ? "✨ *Adicionais:*" : "✨ *Extras:*",
+              extra_title: isPT ? "✨ *Adicionais (com desconto):*" : "✨ *Extras:*",
               uber_label: isPT ? "🚗 *Deslocamento:*" : "🚗 *Uber:*",
               uber_text: isPT ? "A combinar no chat" : "TBD"
             }
@@ -514,16 +513,22 @@ export default function App() {
   const financials = useMemo(() => {
     if (!booking.item) return { total: 0, sub: 0, disc: 0 };
     let sub = booking.item.price;
+    
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
             const extData = DATA.extras.find(e=>e.id===k);
-            if(extData) sub += extData.price; 
+            if(extData) {
+                // DISCOUNT LOGIC FOR PACKS: 20% OFF EXTRAS
+                const extraPrice = booking.type !== 'single' ? Math.floor(extData.price * 0.8) : extData.price;
+                sub += extraPrice; 
+            }
         }
     });
+    
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
     const total = Math.max(0, sub - disc);
     return { sub, disc, total };
-  }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras]);
+  }, [booking.item, booking.extras, booking.appliedCoupon, booking.type, DATA.extras]);
 
   const estimatedXP = useMemo(() => {
       const baseXP = financials.total;
@@ -565,7 +570,9 @@ export default function App() {
     
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => {
         const ext = DATA.extras.find(e=>e.id===k);
-        return ext ? `✅ ${ext.label} (+ R$ ${ext.price})` : '';
+        if(!ext) return '';
+        const price = booking.type !== 'single' ? Math.floor(ext.price * 0.8) : ext.price;
+        return `✅ ${ext.label} (+ R$ ${price})`;
     }).filter(Boolean).join('\n');
     
     const xpStatusMsg = nextInfo ? `${T.zap.xp_next} ${nextInfo.needed} XP` : "Nível Máximo! ⚜️";
@@ -960,23 +967,31 @@ ${T.zap.wait}
                  )}
               </div>
               
-              {/* EXTRAS */}
-              {booking.type === 'single' && (
-                  <div className={`pt-8 border-t mt-8 ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-                     <h3 className={`text-[10px] font-bold uppercase mb-4 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.extras_title}</h3>
-                     <div className="space-y-3">
-                        {DATA.extras.map(ex => (
+              {/* EXTRAS (ALWAYS VISIBLE, WITH DISCOUNTS FOR PACKS) */}
+              <div className={`pt-8 border-t mt-8 ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+                 <h3 className={`text-[10px] font-bold uppercase mb-4 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                    {booking.type !== 'single' ? T.extras_title.replace('Extras:', 'Adicionais (20% OFF):') : T.extras_title}
+                 </h3>
+                 <div className="space-y-3">
+                    {DATA.extras.map(ex => {
+                        const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
+                        return (
                            <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 ${booking.extras[ex.id] ? 'bg-amber-500/10 border-amber-500/40 shadow-[0_0_20px_-5px_rgba(245,158,11,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`}>
                              <div className="flex items-center gap-4">
                                  <div className={`p-2 rounded-xl transition-colors ${booking.extras[ex.id] ? 'text-amber-500' : (isDark ? 'text-zinc-600' : 'text-slate-400')}`}><ex.icon size={20}/></div>
                                  <div><p className={`text-sm font-bold transition-colors ${booking.extras[ex.id] ? 'text-amber-500' : (isDark ? 'text-zinc-300' : 'text-slate-700')}`}>{ex.label}</p><p className={`text-[10px] font-medium pt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{ex.desc}</p></div>
                              </div>
-                             <span className={`text-[10px] font-bold whitespace-nowrap px-2 py-1 rounded-lg ${booking.extras[ex.id] ? 'bg-amber-500/20 text-amber-500' : (isDark ? 'text-zinc-600 bg-zinc-800' : 'text-slate-400 bg-slate-100')}`}>+ {T.currency || 'R$'} {ex.price}</span>
+                             <div className="text-right">
+                                {booking.type !== 'single' && (
+                                    <span className={`text-[9px] line-through block ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>R$ {ex.price}</span>
+                                )}
+                                <span className={`text-[10px] font-bold whitespace-nowrap px-2 py-1 rounded-lg inline-block ${booking.extras[ex.id] ? 'bg-amber-500/20 text-amber-500' : (isDark ? 'text-zinc-600 bg-zinc-800' : 'text-slate-400 bg-slate-100')}`}>+ {T.currency || 'R$'} {price}</span>
+                             </div>
                            </div>
-                        ))}
-                     </div>
-                  </div>
-              )}
+                        )
+                    })}
+                 </div>
+              </div>
             </div>
           )}
 
@@ -995,7 +1010,9 @@ ${T.zap.wait}
                           <div className={`flex justify-between text-xs ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}><span>{lang === 'pt' ? 'Valor Base' : 'Base Price'}</span><span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.currency || 'R$'} {booking.item.price}</span></div>
                           {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>{
                               const extraItem = DATA.extras.find(e=>e.id===k);
-                              return extraItem ? (<div key={k} className={`flex justify-between text-xs ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}><span>+ {extraItem.label}</span><span>{extraItem.price}</span></div>) : null;
+                              if(!extraItem) return null;
+                              const price = booking.type !== 'single' ? Math.floor(extraItem.price * 0.8) : extraItem.price;
+                              return (<div key={k} className={`flex justify-between text-xs ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}><span>+ {extraItem.label} {booking.type!=='single' && '(Promo)'}</span><span>{price}</span></div>);
                           })}
                           {booking.appliedCoupon && (<div className="flex justify-between text-xs text-emerald-500 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20 font-bold"><span>{lang === 'pt' ? 'Cupom' : 'Coupon'} ({booking.appliedCoupon.code})</span><span>- {T.currency || 'R$'} {booking.appliedCoupon.val}</span></div>)}
                       </div>
@@ -1091,7 +1108,7 @@ ${T.zap.wait}
                     
                     <button 
                       onClick={handleNextStep} 
-                      className={`flex-1 min-h-[3.5rem] rounded-2xl flex flex-col items-center justify-center px-4 transition-all duration-300 shadow-xl active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-amber-500/20 hover:shadow-amber-500/30' : 'bg-[#25D366] text-white shadow-green-500/20 hover:bg-[#20bd5a]'}`}
+                      className={`flex-1 min-h-[3.5rem] rounded-2xl flex flex-col items-center justify-center px-4 transition-all duration-300 shadow-xl active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-amber-500/20 hover:shadow-amber-500/30' : 'bg--[#25D366] text-white shadow-green-500/20 hover:bg-[#20bd5a]'}`}
                     >
                       <div className="flex items-center justify-center w-full">
                           <span className="text-xs font-bold uppercase tracking-widest mr-2">{step === 3 ? T.book_btn : T.next_btn}</span>
