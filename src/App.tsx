@@ -12,18 +12,17 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v17.6 - SENIOR UX/UI FIXES
+ * THALYSON APP OS v17.7 - FINAL + HEALTH CHECK
  * ==================================================================================
- * FIX LIST:
- * 1. [PRICING] Adicionado whitespace-nowrap e flex-shrink-0 para impedir quebra de linha nos preços.
- * 2. [BROWSER] Adicionado script 'Browser Escape' para tentar forçar navegador externo no Android.
- * 3. [VIEWPORT] Correção de altura (dvh) para evitar cortes no navegador do Instagram.
+ * UPDATE LOG:
+ * 1. [TERMOS] Adicionado item 5: Declaração de Saúde e Aptidão Física.
+ * 2. [UX] Mantido alinhamento de preços e lógica de navegador externo (Android).
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v17_5_mobile_ui', 
+  STORAGE_KEY: '@thaly_app_v17_7_mobile_ui', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
@@ -309,7 +308,7 @@ const getData = (lang) => {
             popup_level_msg: isPT ? "Sua fidelidade é reconhecida. Você alcançou um novo nível de benefícios." : "Your loyalty is recognized. You've reached a new level of benefits.",
             popup_btn_coupon: isPT ? "USAR MEU PRESENTE" : "USE MY GIFT",
             agree_terms: isPT ? "Estou de acordo com o protocolo de atendimento." : "I agree with the service protocol.",
-            terms_body: isPT ? ["1. HIGIENE: Um banho antes da sessão é essencial para o nosso conforto.", "2. SIGILO: Sua privacidade é absoluta. O que acontece aqui, fica aqui.", "3. RESPEITO: O ambiente é de relaxamento e respeito mútuo.", "4. PAGAMENTO: Realizado ao final, conforme combinado."] : ["1. HYGIENE: A shower before the session is essential for our comfort.", "2. SECRECY: Your privacy is absolute. What happens here, stays here.", "3. RESPECT: The environment is for relaxation and mutual respect.", "4. PAYMENT: Made at the end, as agreed."],
+            terms_body: isPT ? ["1. HIGIENE: Um banho antes da sessão é essencial para o nosso conforto.", "2. SIGILO: Sua privacidade é absoluta. O que acontece aqui, fica aqui.", "3. RESPEITO: O ambiente é de relaxamento e respeito mútuo.", "4. PAGAMENTO: Realizado ao final, conforme combinado.", "5. SAÚDE: Declaro estar em boas condições físicas e apto para receber a massagem, sem contraindicações."] : ["1. HYGIENE: A shower before the session is essential for our comfort.", "2. SECRECY: Your privacy is absolute. What happens here, stays here.", "3. RESPECT: The environment is for relaxation and mutual respect.", "4. PAYMENT: Made at the end, as agreed.", "5. HEALTH: I declare I am in good physical condition and fit to receive the massage, without contraindications."],
             terms_title: isPT ? "Protocolo de Atendimento" : "Service Protocol",
             terms_link: isPT ? "Ler protocolo" : "Read protocol",
             terms_btn: isPT ? "Combinado" : "Agreed",
