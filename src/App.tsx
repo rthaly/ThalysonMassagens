@@ -11,20 +11,20 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v21.0 - Z FLIP 5 PERFECTED + FULL LOCALIZATION
+ * THALYSON APP OS v22.0 - FINAL STABLE (Z FLIP 5 OPTIMIZED)
  * ==================================================================================
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v21_final', 
+  STORAGE_KEY: '@thaly_app_v22_stable', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (LUXURY GLASS - MOBILE FIRST)
+// 2. DESIGN SYSTEM (MOBILE FIRST & ROBUST)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
@@ -42,7 +42,7 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
     sm: "h-10 text-[10px] px-3", 
     md: "h-12 text-xs px-5", 
     lg: "h-14 text-sm px-6", 
-    xl: "min-h-[3.5rem] py-3 text-xs font-bold uppercase tracking-widest", // Altura flexível para não quebrar
+    xl: "h-14 text-xs font-bold uppercase tracking-widest", 
     icon: "h-10 w-10 p-0 flex-shrink-0 rounded-full"
   };
 
@@ -90,7 +90,6 @@ const Card = ({ children, className = '', onClick, active = false }) => (
   </div>
 );
 
-// REVIEWS
 const AutoScrollReviews = ({ reviews }) => {
   const scrollRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
@@ -104,7 +103,7 @@ const AutoScrollReviews = ({ reviews }) => {
         if (scrollContainer.scrollLeft >= (scrollContainer.scrollWidth / 2)) {
           scrollContainer.scrollLeft = 0;
         } else {
-          scrollContainer.scrollLeft += 0.5; // Mais lento para ler melhor
+          scrollContainer.scrollLeft += 0.5; 
         }
       }
       animationFrameId = requestAnimationFrame(scroll);
@@ -267,28 +266,27 @@ const getData = (lang) => {
             { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Óleo Premium" : "Premium Oil", desc: isPT ? "Aromas importados." : "Imported scents." }
         ],
         reviews: [
-            { n: "Ricardo M.", loc: "Rio Preto", t: "Mão firme. Tirou um nó das costas que tava me matando.", s: 5 },
-            { n: "André L.", loc: "SP - Bela Vista", t: "O toque dele vicia. A finalização foi absurda de boa.", s: 5 },
-            { n: "Felipe", loc: "Londrina", t: "Fiquei meio assim por ser em casa e não ter maca, mas foi na cama mesmo e foi ótimo.", s: 5 },
-            { n: "Gustavo", loc: "Santa Fé do Sul", t: "Curti muito a massagem, só o horário que atrasou uns 10 min.", s: 4 },
-            { n: "Bruno", loc: "Jales", t: "Atendimento no meu hotel, foi rápido e discreto. Salvou a viagem de negócios.", s: 5 },
-            { n: "Carlos", loc: "Londrina", t: "Massagem top, pena que o ar do meu quarto tava quebrado, passamos calor kk.", s: 4 },
-            { n: "Pedro", loc: "Rio Preto", t: "O corpo a corpo é quente de verdade. Energia surreal.", s: 5 },
-            { n: "Lucas", loc: "Santa Fé do Sul", t: "Achei difícil estacionar perto do local que marquei, mas a massagem compensou.", s: 4 },
-            { n: "Renato", loc: "SP - Centro", t: "A sensitiva me deu arrepios que eu nem sabia que sentia. Respeitoso.", s: 5 },
-            { n: "Vitor", loc: "Jales", t: "Gostei, mas queria que tivesse durado mais tempo. Passou voando.", s: 4 },
-            { n: "Marcelo", loc: "SP - Jardins", t: "Higiene nota 10. O Thalyson é muito profissional com os lençóis e óleos.", s: 5 },
-            { n: "Eduardo", loc: "Londrina", t: "Ele se adapta bem ao espaço. Fizemos no sofá cama e foi incrível.", s: 5 },
-            { n: "Caio", loc: "Rio Preto", t: "Pagaria o dobro só pela atenção que ele dá.", s: 5 },
-            { n: "Breno", loc: "SP - Bela Vista", t: "Relaxou e gozou. O combo perfeito pra quem vive na correria de SP.", s: 5 },
-            { n: "Sérgio", loc: "Santa Fé do Sul", t: "Massagem nos pés foi um bônus que eu não esperava.", s: 5 },
-            { n: "Anônimo", loc: "Jales", t: "Achei que ia ser estranho receber homem, mas foi natural.", s: 5 },
-            { n: "Matheus", loc: "Londrina", t: "Demorou um pouco pra responder o zap, mas pessoalmente é 10.", s: 4 },
-            { n: "Roberto", loc: "SP - Augusta", t: "Pedi a completa com troca. Poder tocar nele foi a cereja do bolo.", s: 5 },
-            { n: "Fabio", loc: "Rio Preto", t: "Saiu leite até da alma. Recomendo pra quem ta estressado.", s: 5 },
-            { n: "Junior", loc: "SP - Moema", t: "Me senti renovado. Energia boa demais.", s: 5 },
-            { n: "Paulo", loc: "Votuporanga", t: "Top demais, só achei o valor do Uber meio salgado pra vir aqui.", s: 4 },
-            { n: "M. (Sigilo)", loc: "SP - Jardins", t: "Gozada intensa, perdi as forças da perna. O cara é bom.", s: 5 }
+            { n: "Ricardo M.", loc: "Rio Preto", t: isPT ? "Mão firme. Tirou um nó das costas que tava me matando." : "Firm hands. Removed a knot from my back that was killing me.", s: 5 },
+            { n: "André L.", loc: "SP - Bela Vista", t: isPT ? "O toque dele vicia. A finalização foi absurda de boa." : "Addictive touch. The ending was absurdly good.", s: 5 },
+            { n: "Felipe", loc: "Londrina", t: isPT ? "Fiquei meio assim por ser em casa e não ter maca, mas foi na cama mesmo e foi ótimo." : "Was unsure about doing it at home without a table, but bed worked great.", s: 5 },
+            { n: "Gustavo", loc: "Santa Fé do Sul", t: isPT ? "Curti muito a massagem, só o horário que atrasou uns 10 min." : "Loved the massage, just ran 10 mins late.", s: 4 },
+            { n: "Bruno", loc: "Jales", t: isPT ? "Atendimento no meu hotel, foi rápido e discreto. Salvou a viagem de negócios." : "Service at my hotel, fast and discreet. Saved the business trip.", s: 5 },
+            { n: "Carlos", loc: "Londrina", t: isPT ? "Massagem top, pena que o ar do meu quarto tava quebrado, passamos calor kk." : "Top massage, pity my AC was broken, we sweat lol.", s: 4 },
+            { n: "Pedro", loc: "Rio Preto", t: isPT ? "O corpo a corpo é quente de verdade. Energia surreal." : "Body to body is truly hot. Surreal energy.", s: 5 },
+            { n: "Lucas", loc: "Santa Fé do Sul", t: isPT ? "Achei difícil estacionar perto do local que marquei, mas a massagem compensou." : "Hard to park nearby, but massage made up for it.", s: 4 },
+            { n: "Renato", loc: "SP - Centro", t: isPT ? "A sensitiva me deu arrepios que eu nem sabia que sentia. Respeitoso." : "Sensitive gave me chills I didn't know I had. Respectful.", s: 5 },
+            { n: "Vitor", loc: "Jales", t: isPT ? "Gostei, mas queria que tivesse durado mais tempo. Passou voando." : "Liked it, but wished it lasted longer. Time flew.", s: 4 },
+            { n: "Marcelo", loc: "SP - Jardins", t: isPT ? "Higiene nota 10. O Thalyson é muito profissional com os lençóis e óleos." : "Hygiene 10/10. Thalyson is very professional with sheets and oils.", s: 5 },
+            { n: "Eduardo", loc: "Londrina", t: isPT ? "Ele se adapta bem ao espaço. Fizemos no sofá cama e foi incrível." : "Adapts well to space. Did it on sofa bed and was amazing.", s: 5 },
+            { n: "Caio", loc: "Rio Preto", t: isPT ? "Pagaria o dobro só pela atenção que ele dá." : "Would pay double just for the attention.", s: 5 },
+            { n: "Breno", loc: "SP - Bela Vista", t: isPT ? "Relaxou e gozou. O combo perfeito pra quem vive na correria de SP." : "Relaxed and came. Perfect combo for SP rush.", s: 5 },
+            { n: "Sérgio", loc: "Santa Fé do Sul", t: isPT ? "Massagem nos pés foi um bônus que eu não esperava." : "Foot massage was an unexpected bonus.", s: 5 },
+            { n: "Matheus", loc: "Londrina", t: isPT ? "Demorou um pouco pra responder o zap, mas pessoalmente é 10." : "Took a bit to reply on whatsapp, but in person is 10/10.", s: 4 },
+            { n: "Roberto", loc: "SP - Augusta", t: isPT ? "Pedi a completa com troca. Poder tocar nele foi a cereja do bolo." : "Asked for complete with switch. Touching him was the cherry on top.", s: 5 },
+            { n: "Fabio", loc: "Rio Preto", t: isPT ? "Saiu leite até da alma. Recomendo pra quem ta estressado." : "Milked my soul. Recommend for stressed people.", s: 5 },
+            { n: "Junior", loc: "SP - Moema", t: isPT ? "Me senti renovado. Energia boa demais." : "Felt renewed. Too good energy.", s: 5 },
+            { n: "Paulo", loc: "Votuporanga", t: isPT ? "Top demais, só achei o valor do Uber meio salgado pra vir aqui." : "Too top, but Uber price was a bit salty to come here.", s: 4 },
+            { n: "M. (Sigilo)", loc: "SP - Jardins", t: isPT ? "Gozada intensa, perdi as forças da perna. O cara é bom." : "Intense finish, lost leg strength. Guy is good.", s: 5 }
         ],
         text: {
             loading: isPT ? "PREPARANDO..." : "PREPARING...",
@@ -323,7 +321,7 @@ const getData = (lang) => {
             uber_warning: isPT ? "*Uber calculado no chat" : "*Uber calculated in chat",
             success_title: isPT ? "Tudo certo!" : "All set!",
             success_sub: isPT ? "Já recebi sua intenção. Agora é só me dar um oi no WhatsApp para confirmarmos." : "Intent received. Just say hi on WhatsApp to confirm.",
-            whatsapp_btn: isPT ? "CHAMAR NO WHATSAPP" : "CALL ON WHATSAPP",
+            whatsapp_btn: isPT ? "CHAMAR NO WHATSAPP" : "OPEN WHATSAPP",
             back_home: isPT ? "Voltar" : "Back",
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
@@ -428,7 +426,7 @@ export default function App() {
       try {
         await navigator.share({
           title: 'Thalyson Massagens',
-          text: 'Agende seu momento de relaxamento.',
+          text: lang === 'pt' ? 'Agende seu momento de relaxamento.' : 'Book your relaxation moment.',
           url: window.location.href,
         });
       } catch (err) {}
@@ -459,7 +457,6 @@ export default function App() {
         const s = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (s) {
             const parsed = JSON.parse(s);
-            // GARANTIR QUE CUPONS SEJAM ARRAY
             setUser(prev => ({ 
                 ...prev, 
                 ...parsed, 
@@ -657,7 +654,7 @@ ${T.zap.wait}
     DATA.levels.forEach(lvl => {
         if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
             leveledUp = true;
-            updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, title: `🏆 Prêmio ${lvl.title}`, code: `LVLUP${lvl.level}` });
+            updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, title: `🏆 ${lvl.title}`, code: `LVLUP${lvl.level}` });
         }
     });
     
@@ -666,7 +663,7 @@ ${T.zap.wait}
         const newCycle = Math.floor((newXP - 800) / 500);
         if (newCycle > oldCycle && newCycle >= 0) {
               leveledUp = true;
-              updatedCoupons.push({ id: `PRESTIGE_${Date.now()}`, val: 50, title: `🏆 Bônus Elite`, code: `VIPMASTER` });
+              updatedCoupons.push({ id: `PRESTIGE_${Date.now()}`, val: 50, title: `🏆 Elite`, code: `VIPMASTER` });
         }
     }
     
@@ -828,7 +825,7 @@ ${T.zap.wait}
                               {plan.tag && (<div className="absolute top-0 right-0 bg-gradient-to-bl from-amber-500 to-amber-600 text-black text-[9px] font-bold px-3 py-2 rounded-bl-2xl shadow-lg shadow-amber-500/20">{plan.tag}</div>)}
                               <div className="flex items-center gap-4 mb-6">
                                   <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-amber-500 text-black' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-400')}`}><plan.icon size={28}/></div>
-                                  <div><h3 className={`font-bold text-lg leading-none mb-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3><p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{plan.type === 'pack' ? (isPT ? 'Pacote' : 'Pack') : (isPT ? 'Assinatura' : 'Subscription')}</p></div>
+                                  <div><h3 className={`font-bold text-lg leading-none mb-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3><p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{plan.type === 'pack' ? (lang === 'pt' ? 'Pacote' : 'Pack') : (lang === 'pt' ? 'Assinatura' : 'Subscription')}</p></div>
                               </div>
                               <p className={`text-xs mb-6 font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{plan.details}</p>
                               <div className={`flex items-end gap-3 p-4 rounded-2xl border ${isDark ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
@@ -949,17 +946,17 @@ ${T.zap.wait}
                    <div className={`p-6 rounded-[2rem] border backdrop-blur-2xl shadow-2xl relative overflow-hidden ${isDark ? 'border-white/10 bg-zinc-900/80' : 'border-slate-200 bg-white/90'}`}>
                       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-amber-700 shadow-[0_0_20px_#f59e0b]"></div>
                       <div className="mb-6 pt-2">
-                          <span className={`text-[9px] font-bold uppercase tracking-widest mb-2 block ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{booking.type === 'pack' ? (isPT ? 'Pacote' : 'Pack') : (booking.type === 'subscription' ? (isPT ? 'Assinatura' : 'Subscription') : (isPT ? 'Sessão Individual' : 'Single Session'))}</span>
+                          <span className={`text-[9px] font-bold uppercase tracking-widest mb-2 block ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{booking.type === 'pack' ? (lang === 'pt'?'Pacote':'Pack') : (booking.type === 'subscription' ? (lang === 'pt'?'Assinatura':'Subscription') : (lang === 'pt'?'Sessão Individual':'Single Session'))}</span>
                           <h2 className={`font-bold text-2xl leading-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{booking.item.title}</h2>
                           <p className="text-[11px] text-amber-500 font-medium flex items-center gap-2 bg-amber-500/10 px-2 py-1 rounded-full w-fit border border-amber-500/10"><Calendar size={10}/> {booking.date ? new Date(booking.date).toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN) : ''} • {booking.time}</p>
                       </div>
                       <div className={`space-y-3 border-b border-dashed pb-6 mb-6 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-                          <div className={`flex justify-between text-xs ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}><span>{isPT ? 'Valor Base' : 'Base Price'}</span><span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.currency || 'R$'} {booking.item.price}</span></div>
+                          <div className={`flex justify-between text-xs ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}><span>{lang === 'pt' ? 'Valor Base' : 'Base Price'}</span><span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.currency || 'R$'} {booking.item.price}</span></div>
                           {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>{
                               const extraItem = DATA.extras.find(e=>e.id===k);
                               return extraItem ? (<div key={k} className={`flex justify-between text-xs ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}><span>+ {extraItem.label}</span><span>{extraItem.price}</span></div>) : null;
                           })}
-                          {booking.appliedCoupon && (<div className="flex justify-between text-xs text-emerald-500 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20 font-bold"><span>{isPT ? 'Cupom' : 'Coupon'} ({booking.appliedCoupon.code})</span><span>- {T.currency || 'R$'} {booking.appliedCoupon.val}</span></div>)}
+                          {booking.appliedCoupon && (<div className="flex justify-between text-xs text-emerald-500 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20 font-bold"><span>{lang === 'pt' ? 'Cupom' : 'Coupon'} ({booking.appliedCoupon.code})</span><span>- {T.currency || 'R$'} {booking.appliedCoupon.val}</span></div>)}
                       </div>
                       <div className="flex justify-between items-end">
                           <div><span className={`text-[9px] font-bold uppercase block mb-1 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{T.total_label}</span><span className="text-[9px] font-medium text-amber-500/80 bg-amber-500/5 px-2 py-0.5 rounded-full border border-amber-500/10">{T.uber_warning}</span></div>
@@ -979,7 +976,8 @@ ${T.zap.wait}
                    <Button onClick={handleApplyCoupon} variant="secondary" size="md">{T.coupon_btn}</Button>
                </div>
 
-                {user.coupons && user.coupons.length > 0 && (
+               {/* LISTA DE CUPONS COM SCROLL HORIZONTAL */}
+               {user.coupons && user.coupons.length > 0 && (
                    <div className="w-full overflow-x-auto pb-2 pt-1 scrollbar-hide">
                        <div className="flex gap-2">
                            {user.coupons.map(c => {
@@ -1051,25 +1049,20 @@ ${T.zap.wait}
                       </div>
                     )}
                     
+                    {/* Botão Avançar: Coluna para evitar quebra no Z Flip */}
                     <button 
                       onClick={handleNextStep} 
-                      className={`flex-1 h-14 rounded-2xl font-bold text-xs flex items-center justify-between px-6 transition-all duration-300 shadow-xl active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-amber-500/20 hover:shadow-amber-500/30' : 'bg-[#25D366] text-white shadow-green-500/20 hover:bg-[#20bd5a]'}`}
+                      className={`flex-1 min-h-[3.5rem] rounded-2xl flex flex-col items-center justify-center px-4 transition-all duration-300 shadow-xl active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-amber-500/20 hover:shadow-amber-500/30' : 'bg-[#25D366] text-white shadow-green-500/20 hover:bg-[#20bd5a]'}`}
                     >
-                      {step === 4 ? (
-                          <div className="flex flex-col items-center justify-center leading-none">
-                              <span>{T.whatsapp_btn}</span>
-                          </div>
-                      ) : (
-                          <>
-                            <span className="uppercase tracking-widest">{step === 3 ? T.book_btn : T.next_btn}</span>
-                            {booking.item && (
-                                <div className="flex flex-col items-end leading-none opacity-90 ml-2">
-                                <span className="text-[9px] font-medium uppercase mb-0.5 opacity-70">{T.total_label}</span>
-                                <span className="text-sm font-black whitespace-nowrap">{T.currency || 'R$'} {financials.total}</span>
-                                </div>
-                            )}
-                            {!booking.item && <ArrowRight size={18} strokeWidth={2.5}/>}
-                          </>
+                      <div className="flex items-center justify-center w-full">
+                          <span className="text-xs font-bold uppercase tracking-widest mr-2">{step === 3 ? T.book_btn : T.next_btn}</span>
+                          {!booking.item && <ArrowRight size={16} strokeWidth={2.5}/>}
+                      </div>
+                      
+                      {booking.item && (
+                        <div className="flex flex-col items-center leading-none opacity-90 mt-0.5">
+                          <span className="text-[10px] font-black whitespace-nowrap">{T.currency || 'R$'} {financials.total}</span>
+                        </div>
                       )}
                     </button>
                 </div>
@@ -1078,7 +1071,72 @@ ${T.zap.wait}
       )}
 
       {/* MODALS */}
-      {/* ... (Modais mantidos com a lógica de tradução) ... */}
+      <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${reviewsOpen ? 'opacity-100' : 'opacity-0'}`}>
+         <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${reviewsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setReviewsOpen(false)}></div>
+         <div className={`relative w-full max-w-md border rounded-[2.5rem] p-6 max-h-[80vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${reviewsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className={`flex justify-between items-center mb-6 sticky top-0 z-10 py-2 border-b ${isDark ? 'bg-zinc-900 border-white/5' : 'bg-white border-slate-100'}`}><h3 className={`text-lg font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title || "Experiências"}</h3><button onClick={()=>setReviewsOpen(false)} className={`p-2 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={18}/></button></div>
+            <div className="space-y-4">
+                {DATA.reviews.map((r,i)=>(
+                   <div key={i} className={`p-5 rounded-2xl border relative ${isDark ? 'bg-zinc-800/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
+                       <Quote size={20} className={`absolute top-4 right-4 ${isDark ? 'text-zinc-700' : 'text-slate-300'}`} />
+                       <div className="flex justify-between mb-2">
+                           <span className={`font-bold text-sm flex items-center gap-3 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border ${isDark ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/20 text-amber-500 border-amber-500/20' : 'bg-amber-100 text-amber-600 border-amber-200'}`}>{r.n.charAt(0)}</div>
+                               <div>
+                                 <span className="block leading-tight text-xs">{r.n}</span>
+                                 <span className={`text-[9px] font-normal uppercase ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{r.loc}</span>
+                               </div>
+                           </span>
+                       </div>
+                       <div className="flex gap-0.5 mb-2">{[...Array(5)].map((_,k)=><Star key={k} size={10} fill={k < r.s ? "#fbbf24" : "none"} className={k < r.s ? "text-amber-400" : (isDark ? "text-zinc-700" : "text-slate-300")} />)}</div>
+                       <p className={`text-xs leading-relaxed italic ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>"{r.t}"</p>
+                   </div>
+                ))}
+            </div>
+         </div>
+      </div>
+
+      <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${termsOpen ? 'opacity-100' : 'opacity-0'}`}>
+         <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${termsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setTermsOpen(false)}></div>
+         <div className={`relative w-full max-w-md border rounded-[2rem] p-6 max-h-[80vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${termsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className="flex justify-between items-center mb-6"><h3 className={`text-lg font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</h3><button onClick={()=>setTermsOpen(false)} className={`p-2 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={18}/></button></div>
+            <div className="space-y-4">
+                {T.terms_body.map((t,i)=>(<div key={i} className={`flex gap-4 p-4 rounded-xl border ${isDark ? 'bg-zinc-950/50 border-white/5' : 'bg-slate-50 border-slate-200'}`}><span className="font-bold text-amber-500 text-xl opacity-50">{i+1}</span><p className={`text-xs leading-relaxed pt-1 font-light ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{t.substring(3)}</p></div>))}
+                <Button full onClick={()=>setTermsOpen(false)} variant="primary">{T.terms_btn}</Button>
+            </div>
+         </div>
+      </div>
+
+      {levelUpPopup && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={()=>setLevelUpPopup(false)}></div>
+            <div className="relative p-8 rounded-[2.5rem] text-center max-w-sm w-full animate-scale-in shadow-2xl border border-amber-500/20 bg-zinc-900">
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[2.5rem] pointer-events-none"><div className="absolute -top-20 -left-20 w-40 h-40 bg-amber-500 blur-[80px] opacity-20"></div></div>
+                <div className="w-20 h-20 bg-gradient-to-tr from-amber-400 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-amber-500/30 animate-bounce-slow"><Trophy size={32} className="text-black" /></div>
+                <h2 className="text-2xl font-light text-white mb-2">{T.popup_level_title}</h2><p className="text-zinc-400 text-xs leading-relaxed mb-8">{T.popup_level_msg}</p>
+                <Button full size="lg" onClick={()=>setLevelUpPopup(false)} icon={Ticket}>{T.popup_btn_coupon}</Button>
+            </div>
+        </div>
+      )}
+
+      {welcomePopup && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={()=>setWelcomePopup(false)}></div>
+            <div className="relative p-8 rounded-[2.5rem] text-center max-w-sm w-full animate-scale-in shadow-2xl border border-white/10 bg-zinc-900">
+                <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl border border-white/5 rotate-3"><Gift size={32} className="text-amber-500" /></div>
+                <h2 className="text-xl font-light text-white mb-2">{T.popup_welcome_title}</h2><p className="text-zinc-400 text-xs leading-relaxed mb-6">{T.popup_welcome_msg}</p>
+                <div className="bg-zinc-950 p-4 rounded-xl border border-dashed border-zinc-800 mb-6"><p className="text-[10px] uppercase font-bold text-zinc-600 mb-1">Seu Código:</p><p className="text-xl font-mono font-bold text-amber-500 tracking-widest">WELCOME10</p></div>
+                <Button full variant="primary" onClick={()=>{
+                    setWelcomePopup(false); 
+                    setUser(u=>({...u, hasSeenWelcome: true}));
+                    const welcomeCoupon = { id: 'WELCOME10', val: 10, title: '🎁 Welcome', code: 'WELCOME10' };
+                    setBooking(b => ({...b, appliedCoupon: welcomeCoupon}));
+                    addToast(T.toast_coupon_success, "success");
+                }}>{T.popup_btn_coupon}</Button>
+            </div>
+        </div>
+      )}
+
       <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.8s ease-out}.animate-slide-in{animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1)}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1)}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.4s ease-out}.pb-safe{padding-bottom:env(safe-area-inset-bottom,32px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}@keyframes slideDown{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
     </div>
   );
