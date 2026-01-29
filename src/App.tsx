@@ -12,12 +12,12 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v17.5 - FINAL UX MOBILE POLISH
+ * THALYSON APP OS v17.6 - SENIOR UX/UI FIXES
  * ==================================================================================
- * 1. [UI FOOTER] Botões de navegação compactos (ícones) para caber em qualquer tela.
- * 2. [TYPOGRAPHY] Textos dos botões reduzidos e estilizados para evitar quebra.
- * 3. [UX] Botão "Avançar" agora integra o valor total de forma limpa.
- * 4. [SYSTEM] Toda lógica de Preço, XP Infinito e Motel mantida intacta.
+ * FIX LIST:
+ * 1. [PRICING] Adicionado whitespace-nowrap e flex-shrink-0 para impedir quebra de linha nos preços.
+ * 2. [BROWSER] Adicionado script 'Browser Escape' para tentar forçar navegador externo no Android.
+ * 3. [VIEWPORT] Correção de altura (dvh) para evitar cortes no navegador do Instagram.
  */
 
 const CONFIG = {
@@ -40,16 +40,15 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
     secondary: "bg-zinc-800 text-zinc-200 border border-zinc-700 active:bg-zinc-700",
     whatsapp: "bg-[#25D366] active:bg-[#20bd5a] text-white shadow-lg shadow-green-500/20 border border-green-500/20",
     outline: "bg-transparent border border-zinc-700 text-zinc-400 active:text-white active:border-zinc-500",
-    icon: "bg-zinc-800/80 backdrop-blur-md border border-zinc-700 text-white hover:bg-zinc-700" // New variant for nav buttons
+    icon: "bg-zinc-800/80 backdrop-blur-md border border-zinc-700 text-white hover:bg-zinc-700"
   };
   
-  // Adjusted sizes for better mobile fit
   const sizes = { 
     sm: "h-10 text-[10px] px-3", 
     md: "h-12 text-xs px-4", 
     lg: "h-14 text-sm px-6", 
     xl: "h-14 text-sm px-6",
-    icon: "h-12 w-12 p-0 flex-shrink-0" // New size for icon buttons
+    icon: "h-12 w-12 p-0 flex-shrink-0"
   };
 
   return (
@@ -383,6 +382,22 @@ export default function App() {
   
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
+
+  // BROWSER ESCAPE & IN-APP BROWSER DETECTION
+  useEffect(() => {
+    // Detecta se é navegador in-app (Instagram, FB, etc)
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    const isInApp = (ua.indexOf("Instagram") > -1) || (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1);
+
+    if (isInApp && /android/i.test(ua)) {
+      // Tenta forçar abertura no Chrome apenas no Android (iOS bloqueia isso)
+      const url = window.location.href;
+      // Intent scheme para Android
+      const intentUrl = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
+      // Pequeno timeout para não quebrar a carga inicial
+      setTimeout(() => { window.location.href = intentUrl; }, 500);
+    }
+  }, []);
 
   const addToast = (msg, type = 'success') => {
     const id = Date.now();
@@ -798,9 +813,12 @@ ${T.zap.wait}
                   <div className="space-y-4 animate-slide-in">
                     {DATA.services.map(s => (
                       <Card key={s.id} isDark={isDark} active={booking.item?.id === s.id} onClick={() => handleSelectItem('single', s)}>
-                          <div className="flex justify-between items-start mb-4">
+                          <div className="flex justify-between items-start mb-4 w-full">
                             <div className={`p-3.5 rounded-2xl transition-colors ${booking.item?.id === s.id ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/30' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={26}/></div>
-                            <div className="text-right"><span className="block text-2xl font-black tracking-tight">{T.currency || 'R$'} {s.price}</span><span className="text-[10px] uppercase font-bold opacity-50 flex items-center justify-end gap-1"><Clock size={10}/> {s.min} min</span></div>
+                            <div className="text-right flex-shrink-0 ml-4">
+                                <span className="block text-2xl font-black tracking-tight whitespace-nowrap">{T.currency || 'R$'} {s.price}</span>
+                                <span className="text-[10px] uppercase font-bold opacity-50 flex items-center justify-end gap-1"><Clock size={10}/> {s.min} min</span>
+                            </div>
                           </div>
                           <div className="mb-2">{s.tag && <span className="inline-block px-2 py-0.5 rounded-md bg-zinc-800 border border-zinc-700 text-[9px] font-bold text-zinc-300 mb-2 uppercase tracking-wider">{s.tag}</span>}<h3 className="font-bold text-lg leading-tight">{s.title}</h3></div>
                           <p className={`text-sm leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{s.desc}</p>
@@ -821,9 +839,9 @@ ${T.zap.wait}
                               </div>
                               <p className={`text-sm mb-5 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{plan.details}</p>
                               <div className="flex items-end gap-3 p-3 rounded-xl bg-black/20 border border-white/5">
-                                  <span className="text-2xl font-black text-amber-500">{T.currency || 'R$'} {plan.price}</span>
-                                  <span className="text-sm line-through opacity-40 mb-1 decoration-red-500">{T.currency || 'R$'} {plan.fullPrice}</span>
-                                  <span className="text-xs text-green-500 font-bold mb-1 ml-auto bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">{lang === 'pt' ? 'Economia' : 'Save'} {T.currency || 'R$'}{plan.savings}</span>
+                                  <span className="text-2xl font-black text-amber-500 whitespace-nowrap">{T.currency || 'R$'} {plan.price}</span>
+                                  <span className="text-sm line-through opacity-40 mb-1 decoration-red-500 whitespace-nowrap">{T.currency || 'R$'} {plan.fullPrice}</span>
+                                  <span className="text-xs text-green-500 font-bold mb-1 ml-auto bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20 whitespace-nowrap">{lang === 'pt' ? 'Economia' : 'Save'} {T.currency || 'R$'}{plan.savings}</span>
                               </div>
                           </Card>
                       ))}
@@ -918,7 +936,7 @@ ${T.zap.wait}
                                  <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[ex.id] ? 'bg-amber-500 text-black' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><ex.icon size={18}/></div>
                                  <div><p className="text-sm font-bold">{ex.label}</p><p className="text-[10px] opacity-60">{ex.desc}</p></div>
                              </div>
-                             <span className={`text-xs font-bold ${booking.extras[ex.id] ? 'text-amber-500' : 'opacity-30'}`}>+ {T.currency || 'R$'} {ex.price}</span>
+                             <span className={`text-xs font-bold whitespace-nowrap ${booking.extras[ex.id] ? 'text-amber-500' : 'opacity-30'}`}>+ {T.currency || 'R$'} {ex.price}</span>
                            </div>
                         ))}
                      </div>
@@ -941,17 +959,17 @@ ${T.zap.wait}
                           </div>
                       </div>
                       <div className="space-y-3 border-b border-dashed border-zinc-700/50 pb-6 mb-6">
-                          <div className="flex justify-between text-sm"><span>{lang === 'pt'?'Valor Base':'Base Price'}</span><span>{T.currency || 'R$'} {booking.item.price}</span></div>
+                          <div className="flex justify-between text-sm"><span>{lang === 'pt'?'Valor Base':'Base Price'}</span><span className="whitespace-nowrap">{T.currency || 'R$'} {booking.item.price}</span></div>
                           {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>{
                               const extraItem = DATA.extras.find(e=>e.id===k);
-                              return extraItem ? (<div key={k} className="flex justify-between text-sm opacity-60"><span>+ {extraItem.label}</span><span>{extraItem.price}</span></div>) : null;
+                              return extraItem ? (<div key={k} className="flex justify-between text-sm opacity-60"><span>+ {extraItem.label}</span><span className="whitespace-nowrap">{extraItem.price}</span></div>) : null;
                           })}
-                          {booking.appliedCoupon && (<div className="flex justify-between text-sm text-green-500 font-bold bg-green-500/5 p-2 rounded-lg"><span>{lang === 'pt'?'Cupom':'Coupon'} ({booking.appliedCoupon.code})</span><span>- {T.currency || 'R$'} {booking.appliedCoupon.val}</span></div>)}
+                          {booking.appliedCoupon && (<div className="flex justify-between text-sm text-green-500 font-bold bg-green-500/5 p-2 rounded-lg"><span>{lang === 'pt'?'Cupom':'Coupon'} ({booking.appliedCoupon.code})</span><span className="whitespace-nowrap">- {T.currency || 'R$'} {booking.appliedCoupon.val}</span></div>)}
                       </div>
                       <div className="flex justify-between items-end">
                           <div><span className="text-[10px] font-bold uppercase opacity-50 block mb-1">{T.total_label}</span><span className="text-[10px] font-medium bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20">{T.uber_warning}</span></div>
-                          <div className="text-right">
-                              <span className="block text-4xl font-black tracking-tighter text-white">{T.currency || 'R$'} {financials.total}</span>
+                          <div className="text-right flex-shrink-0 ml-4">
+                              <span className="block text-4xl font-black tracking-tighter text-white whitespace-nowrap">{T.currency || 'R$'} {financials.total}</span>
                               {/* VISUALIZAÇÃO DE XP GANHO */}
                               <span className="text-[10px] font-bold text-amber-500 flex items-center justify-end gap-1 mt-1 opacity-80"><Sparkles size={10}/> +{estimatedXP} XP</span>
                           </div>
@@ -1035,7 +1053,7 @@ ${T.zap.wait}
                       {booking.item && (
                         <div className="flex flex-col items-end leading-none">
                           <span className="text-[10px] opacity-60 font-medium">TOTAL</span>
-                          <span className="text-sm font-black">{T.currency || 'R$'} {financials.total}</span>
+                          <span className="text-sm font-black whitespace-nowrap">{T.currency || 'R$'} {financials.total}</span>
                         </div>
                       )}
                       {!booking.item && <ArrowRight size={18} strokeWidth={2.5}/>}
