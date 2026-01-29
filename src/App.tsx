@@ -268,7 +268,7 @@ const getData = (lang) => {
         extras: [
             { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
             { id: 'touch', price: 55, icon: Heart, label: isPT ? "Troca (Interativo)" : "Switch (Interactive)", desc: isPT ? "Você toca também." : "You touch too." },
-            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Óleo Premium" : "Premium Oil", desc: isPT ? "Aromas importados." : "Imported scents." }
+            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Cheiro no Ar" : "Smell in the Air", desc: isPT ? "Aromas importados." : "Imported scents." }
         ],
         reviews: [
             { n: "Ricardo M.", loc: "Rio Preto", t: isPT ? "Mão firme. Tirou um nó das costas que tava me matando." : "Firm hands. Removed a knot from my back that was killing me.", s: 5 },
@@ -281,7 +281,7 @@ const getData = (lang) => {
             { n: "Lucas", loc: "Santa Fé do Sul", t: isPT ? "Achei difícil estacionar perto do local que marquei, mas a massagem compensou." : "Hard to park nearby, but massage made up for it.", s: 4 },
             { n: "Renato", loc: "SP - Centro", t: isPT ? "A sensitiva me deu arrepios que eu nem sabia que sentia. Respeitoso." : "Sensitive gave me chills I didn't know I had. Respectful.", s: 5 },
             { n: "Vitor", loc: "Jales", t: isPT ? "Gostei, mas queria que tivesse durado mais tempo. Passou voando." : "Liked it, but wished it lasted longer. Time flew.", s: 4 },
-            { n: "Marcelo", loc: "SP - Jardins", t: isPT ? "Higiene nota 10. O Thalyson é muito profissional com os lençóis e óleos." : "Hygiene 10/10. Thalyson is very professional with sheets and oils.", s: 5 },
+            { n: "Tiago", loc: "SP - Bela Vista", t: isPT ? "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida." : "Thalyson has an incredible energy. The massage was perfect, the best of my life.", s: 5 },
             { n: "Eduardo", loc: "Londrina", t: isPT ? "Ele se adapta bem ao espaço. Fizemos no sofá cama e foi incrível." : "Adapts well to space. Did it on sofa bed and was amazing.", s: 5 },
             { n: "Caio", loc: "Rio Preto", t: isPT ? "Pagaria o dobro só pela atenção que ele dá." : "Would pay double just for the attention.", s: 5 },
             { n: "Breno", loc: "SP - Bela Vista", t: isPT ? "Relaxou e gozou. O combo perfeito pra quem vive na correria de SP." : "Relaxed and came. Perfect combo for SP rush.", s: 5 },
