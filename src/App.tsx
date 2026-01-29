@@ -11,24 +11,24 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v25.0 - REAL REVIEWS + SMART EXTRAS + COZY UI
+ * THALYSON APP OS v26.0 - FINAL STABLE VERSION
  * ==================================================================================
- * 1. REVIEWS REAIS: Restauradas as avaliações originais (Bruno, Alan, Tiago).
- * 2. COPYWRITING: Removido "não uso maca". Foco em "Atendimento no seu conforto".
- * 3. EXTRAS INTELIGENTES: Agora disponíveis também nos Planos/Pacotes.
- * 4. LÓGICA DE DESCONTO: Se selecionar Plano, o Extra tem 20% OFF.
+ * 1. PREÇOS: 125 (Relax), 155 (Sensitiva), 195 (Mista/Completa).
+ * 2. DESCRIÇÃO: Clareza sobre "Sem íntimo" vs "Pode gozar".
+ * 3. TERMOS: Foco na saúde do CLIENTE.
+ * 4. UX: Ajuste de label "Casa / Apt" e correção de Data/Hora.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v25_final', 
+  STORAGE_KEY: '@thaly_app_v26_final', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (MOBILE FIRST)
+// 2. DESIGN SYSTEM
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
@@ -116,7 +116,6 @@ const AutoScrollReviews = ({ reviews }) => {
     return () => cancelAnimationFrame(animationFrameId);
   }, [isPaused]);
 
-  // Triplicar para garantir scroll infinito suave
   const loopReviews = [...reviews, ...reviews, ...reviews];
 
   return (
@@ -210,63 +209,63 @@ const getData = (lang) => {
         ],
         services: [
             { 
-              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "PAUSA" : "RELAX",
-              title: isPT ? "Sessão Descompressão" : "Relaxing Session",
-              desc: isPT ? "Um respiro necessário. Seu momento de desligar do mundo lá fora." : "A necessary breath. Your moment to disconnect from the outside world.",
-              details: isPT ? `O SEU MOMENTO DE PAZ:
-• COMO É: Movimentos fluidos para acalmar a mente.
-• O ESPAÇO: Atendimento domiciliar no conforto da sua cama ou sofá.
-• PARA VOCÊ: Que precisa silenciar o barulho do dia a dia.` : `YOUR MOMENT OF PEACE:
-• HOW IT IS: Fluid movements to calm the mind.
-• THE SPACE: Home service at the comfort of your bed or sofa.
-• FOR YOU: Who needs to silence the daily noise.`
+              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "TERAPÊUTICA" : "RELAX",
+              title: isPT ? "Sessão Relaxante" : "Relaxing Session",
+              desc: isPT ? "Alívio muscular e mental." : "Muscle and mental relief.",
+              details: isPT ? `FOCO NO ALÍVIO:
+• COMO É: Massagem profunda para tirar tensão e dores do corpo.
+• LIMITE: **Não possui toques íntimos.** Apenas relaxamento muscular.
+• IDEAL PARA: Quem está travado, cansado ou estressado.` : `FOCUS ON RELIEF:
+• HOW IT IS: Deep massage to remove tension.
+• LIMIT: **No intimate touches.** Just muscle relaxation.
+• IDEAL FOR: Tired or stressed body.`
             },
             { 
               id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
-              title: isPT ? "Terapia do Toque" : "Touch Therapy",
-              desc: isPT ? "Redescubra a sensibilidade da sua pele. Leveza e conexão." : "Rediscover your skin's sensitivity. Lightness and connection.",
+              title: isPT ? "Terapia Sensitiva" : "Sensitive Therapy",
+              desc: isPT ? "Um despertar suave do corpo." : "A soft awakening of the body.",
               details: isPT ? `CONEXÃO SUTIL:
-• O TOQUE: Feito com as pontas dos dedos, percorrendo todo o corpo.
-• A TROCA: Inclui a massagem Lingam como parte natural da terapia.
-• SEM PRESSA: Um ambiente seguro para você apenas sentir.` : `SUBTLE CONNECTION:
-• THE TOUCH: Done with fingertips, covering the whole body.
-• THE EXCHANGE: Includes Lingam massage as a natural part.
-• NO RUSH: A safe environment for you to just feel.`
+• INÍCIO: Começamos sempre com a relaxante para soltar o corpo.
+• EVOLUÇÃO: Toques leves (ponta dos dedos) percorrendo a pele.
+• FINAL: A massagem íntima faz parte. O gozar é permitido e natural.` : `SUBTLE CONNECTION:
+• START: Always starts with relaxing massage.
+• EVOLUTION: Light touches (fingertips) over the skin.
+• END: Intimate massage included. Climax is allowed.`
             },
             { 
-              id: 'mista', min: 60, price: 205, icon: Zap, tag: isPT ? "INTENSA" : "COMPLETE",
-              title: isPT ? "Experiência Integração" : "Mixed Experience",
-              desc: isPT ? "A fusão perfeita entre relaxar a mente e despertar o corpo." : "The perfect fusion between relaxing the mind and awakening the body.",
+              id: 'mista', min: 60, price: 195, icon: Zap, tag: isPT ? "COMPLETA" : "COMPLETE",
+              title: isPT ? "Experiência Mista" : "Mixed Experience",
+              desc: isPT ? "A fusão do relaxamento com o intenso." : "Fusion of relaxation and intensity.",
               details: isPT ? `A ESCOLHA FAVORITA:
-• A JORNADA: Começa suave para relaxar e evolui para um contato corpo a corpo (com óleo).
-• O FINAL: Lingam Massagem inclusa no processo.
-• LIBERDADE: O clímax é bem-vindo, mas opcional. Tudo acontece no seu tempo e limite.` : `FAVORITE CHOICE:
-• THE JOURNEY: Starts soft to relax and evolves to body-to-body contact (with oil).
-• THE END: Lingam Massage included.
-• FREEDOM: Climax is welcome but optional. Everything happens at your pace.`
+• INÍCIO: Relaxante muscular completa.
+• MEIO: Evolui para sensitiva e contato corpo a corpo (Body).
+• FINAL: Liberdade total. O clímax (gozar) é bem-vindo e faz parte do alívio.` : `FAVORITE CHOICE:
+• START: Full muscle relaxation.
+• MIDDLE: Evolves to sensitive and Body-to-Body.
+• END: Total freedom. Climax is welcome.`
             }
         ],
         plans: [
             { 
-              id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo de Cuidado (4x)" : "Care Cycle (4x)", 
+              id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Relax (4x)" : "Relax Cycle (4x)", 
               price: 440, fullPrice: 500, savings: 60, 
-              details: isPT ? "Para manter o bem-estar em dia." : "To keep well-being up to date.", tag: isPT ? "ECONOMIA" : "SAVINGS", icon: Package 
+              details: isPT ? "Manutenção do bem-estar." : "Well-being maintenance.", tag: isPT ? "ECONOMIA" : "SAVINGS", icon: Package 
             },
             { 
-              id: 'pack_mista', type: 'pack', title: isPT ? "Jornada Completa (3x)" : "Full Journey (3x)", 
-              price: 550, fullPrice: 615, savings: 65, 
+              id: 'pack_mista', type: 'pack', title: isPT ? "Ciclo Completo (3x)" : "Full Cycle (3x)", 
+              price: 525, fullPrice: 585, savings: 60, 
               details: isPT ? "A rotina que você merece." : "The routine you deserve.", tag: isPT ? "PREFERIDO" : "PREFERRED", icon: Zap 
             },
             { 
               id: 'vip_club', type: 'subscription', title: isPT ? "Clube Mensal" : "Monthly Club", 
-              price: 360, fullPrice: 460, savings: 100, 
-              details: isPT ? "2 Sessões Completas + Prioridade na agenda." : "2 Full Sessions + Priority.", tag: "VIP", icon: Crown 
+              price: 350, fullPrice: 390, savings: 40, 
+              details: isPT ? "2 Sessões Mistas + Prioridade." : "2 Mixed Sessions + Priority.", tag: "VIP", icon: Crown 
             }
         ],
         extras: [
-            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para não ter pressa de ir." : "No rush to leave." },
-            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Interatividade" : "Interactivity", desc: isPT ? "Permita-se tocar também." : "Allow yourself to touch too." },
-            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Essência para o ambiente." : "Scent for the room." }
+            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para não ter pressa." : "No rush." },
+            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Interatividade" : "Interactivity", desc: isPT ? "Você toca também." : "You touch too." },
+            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Essência no ar." : "Scent in air." }
         ],
         reviews: [
             { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito." : "Thalyson, I want to say that your massage was very well performed. You first get to know the body in order to carry out the procedure very carefully and safely. I highly recommend it.", s: 5 },
@@ -339,7 +338,7 @@ const getData = (lang) => {
             popup_level_msg: isPT ? "Sua presença constante desbloqueou novos carinhos." : "Loyalty unlocked new privileges.",
             popup_btn_coupon: isPT ? "Resgatar Presente" : "Get Now",
             agree_terms: isPT ? "Estou ciente de como funciona." : "Read the terms.",
-            terms_body: isPT ? ["1. HIGIENE: Um banho prévio ajuda no nosso conforto.", "2. SIGILO: Sua privacidade é absoluta comigo.", "3. AMBIENTE: Adapto o atendimento ao seu espaço (Cama/Sofá) para seu total relaxamento.", "4. RESPEITO: Um espaço livre de julgamentos.", "5. SAÚDE: Estou bem fisicamente para lhe atender."] : ["1. HYGIENE: Shower helps comfort.", "2. SECRECY: Stays in the session.", "3. ENVIRONMENT: Adapted to bed/sofa for comfort.", "4. RESPECT: Judgment free.", "5. HEALTH: Physically fit."],
+            terms_body: isPT ? ["1. HIGIENE: Um banho prévio ajuda no nosso conforto.", "2. SIGILO: Sua privacidade é absoluta comigo.", "3. AMBIENTE: Adapto o atendimento ao seu espaço (Cama/Sofá) para seu total relaxamento.", "4. RESPEITO: Um espaço livre de julgamentos.", "5. SAÚDE: Confirmo que estou saudável e sem sintomas para receber a massagem."] : ["1. HYGIENE: Shower helps comfort.", "2. SECRECY: Stays in the session.", "3. ENVIRONMENT: Adapted to bed/sofa for comfort.", "4. RESPECT: Judgment free.", "5. HEALTH: I confirm I am healthy to receive massage."],
             terms_title: isPT ? "Alguns Combinados" : "Terms",
             terms_link: isPT ? "Ler combinados importantes" : "Read terms",
             terms_btn: isPT ? "Entendido" : "Agreed",
@@ -373,7 +372,7 @@ const getData = (lang) => {
               xp_level: isPT ? "Status:" : "Level:",
               xp_next: isPT ? "Próximo:" : "Next:",
               wait: isPT ? "Podemos confirmar o horário?" : "Can we confirm?",
-              house: isPT ? "Em Domicílio (Casa/Apt)" : "Home",
+              house: isPT ? "Casa / Apt" : "Home",
               hotel: "Hotel",
               motel: "Motel",
               extra_title: isPT ? "✨ *Adicionais (com desconto):*" : "✨ *Extras:*",
@@ -498,8 +497,13 @@ export default function App() {
       const slots = ['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00', '21:00'];
       const now = new Date();
       const selectedDate = new Date(booking.date);
-      if (isNaN(selectedDate)) return [];
-      const isToday = selectedDate.getDate() === now.getDate() && selectedDate.getMonth() === now.getMonth();
+      
+      if (isNaN(selectedDate.getTime())) return [];
+      
+      const isToday = selectedDate.getDate() === now.getDate() && 
+                      selectedDate.getMonth() === now.getMonth() && 
+                      selectedDate.getFullYear() === now.getFullYear();
+                      
       if (isToday) {
           const currentHour = now.getHours();
           return slots.filter(time => {
@@ -1108,7 +1112,7 @@ ${T.zap.wait}
                     
                     <button 
                       onClick={handleNextStep} 
-                      className={`flex-1 min-h-[3.5rem] rounded-2xl flex flex-col items-center justify-center px-4 transition-all duration-300 shadow-xl active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-amber-500/20 hover:shadow-amber-500/30' : 'bg--[#25D366] text-white shadow-green-500/20 hover:bg-[#20bd5a]'}`}
+                      className={`flex-1 min-h-[3.5rem] rounded-2xl flex flex-col items-center justify-center px-4 transition-all duration-300 shadow-xl active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-amber-500/20 hover:shadow-amber-500/30' : 'bg-[#25D366] text-white shadow-green-500/20 hover:bg-[#20bd5a]'}`}
                     >
                       <div className="flex items-center justify-center w-full">
                           <span className="text-xs font-bold uppercase tracking-widest mr-2">{step === 3 ? T.book_btn : T.next_btn}</span>
