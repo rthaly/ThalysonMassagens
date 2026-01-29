@@ -12,36 +12,28 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v18.0 - ULTIMATE EXPERIENCE
+ * THALYSON APP - VERSÃO ÚNICA (FINAL)
+ * ARQUIVO: App.tsx / App.jsx
  * ==================================================================================
- * ENGINEERING NOTES:
- * - Architecture: Single File Component (SFC) optimized for Vercel/Simple Hosting.
- * - State Management: React Hooks (useState, useReducer pattern via setters).
- * - Styling: Tailwind CSS w/ Mobile-First approach.
- * - Persistence: LocalStorage with error boundary protection.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v18_ultimate', 
-  LOCALE_PT: 'pt-BR',
-  LOCALE_EN: 'en-US'
+  STORAGE_KEY: '@thaly_app_final_v1'
 };
 
 // ==================================================================================
-// 1. UI COMPONENT LIBRARY (ATOMIC DESIGN)
+// 1. COMPONENTES VISUAIS (Botoes, Cards, Inputs)
 // ==================================================================================
 
-// Botão com feedback tátil visual e estados de carregamento
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
   const baseStyle = "relative flex items-center justify-center font-bold transition-all duration-300 active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden";
   
   const variants = {
     primary: "bg-gradient-to-r from-amber-500 to-amber-400 hover:to-amber-300 text-black shadow-lg shadow-amber-500/25 border border-amber-400/50",
     secondary: "bg-zinc-800 text-zinc-200 border border-zinc-700 active:bg-zinc-700 hover:border-zinc-500",
-    whatsapp: "bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-green-500/30 border border-green-400/20 animate-pulse-slow",
-    outline: "bg-transparent border border-zinc-700 text-zinc-400 active:text-white active:border-zinc-500",
+    whatsapp: "bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-green-500/30 border border-green-400/20",
     icon: "bg-zinc-800/80 backdrop-blur-md border border-zinc-700 text-white hover:bg-zinc-700 active:bg-zinc-600"
   };
   
@@ -49,7 +41,7 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
     sm: "h-10 text-[10px] px-3", 
     md: "h-12 text-xs px-4", 
     lg: "h-14 text-sm px-6", 
-    xl: "h-16 text-base px-8", // Maior para CTAs principais
+    xl: "h-16 text-base px-8",
     icon: "h-12 w-12 p-0 flex-shrink-0"
   };
 
@@ -65,10 +57,9 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
   );
 };
 
-// Input com Label Flutuante e Validação Visual
 const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "text", error, isDark, ...props }) => (
   <div className="space-y-1.5 w-full relative">
-    <div className={`relative group transition-all duration-300 ${error ? 'animate-shake' : ''}`}>
+    <div className={`relative group transition-all duration-300`}>
       <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${isDark ? 'text-zinc-500 group-focus-within:text-amber-500' : 'text-slate-400 group-focus-within:text-amber-500'}`}>
         {Icon && <Icon size={20} strokeWidth={2} />}
       </div>
@@ -76,7 +67,7 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
         type={type} 
         value={value} 
         onChange={onChange} 
-        placeholder=" " // Truque para label flutuante se necessário, mas mantemos design clean
+        placeholder=" " 
         className={`w-full pl-12 pr-4 py-4 rounded-2xl border outline-none text-base font-medium transition-all duration-300 
           ${error 
             ? 'border-red-500/50 focus:border-red-500 bg-red-500/5 text-red-100 placeholder-red-300' 
@@ -85,7 +76,6 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
                 : 'bg-white border-slate-200 text-slate-900 focus:border-amber-500 focus:shadow-md')}`} 
         {...props}
       />
-      {/* Label simulado como placeholder flutuante ou fixo */}
       {!value && <span className={`absolute left-12 top-1/2 -translate-y-1/2 text-sm pointer-events-none transition-all ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{placeholder}</span>}
     </div>
     {(label || error) && (
@@ -97,7 +87,6 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
   </div>
 );
 
-// Card Glassmorphism
 const Card = ({ children, isDark, className = '', onClick, active = false }) => (
   <div onClick={onClick} className={`relative p-5 rounded-[1.5rem] transition-all duration-300 overflow-hidden 
     ${onClick ? 'cursor-pointer active:scale-[0.98] touch-manipulation' : ''} 
@@ -110,7 +99,6 @@ const Card = ({ children, isDark, className = '', onClick, active = false }) => 
   </div>
 );
 
-// Confetti Otimizado (Clean up automático)
 const Confetti = React.memo(({ active }) => {
   const canvasRef = useRef(null);
   useEffect(() => {
@@ -156,13 +144,11 @@ const Confetti = React.memo(({ active }) => {
 });
 
 // ==================================================================================
-// 2. CORE DATA & COPYWRITING (THE "HOT" & PROFESSIONAL MIX)
+// 2. DADOS E TEXTOS
 // ==================================================================================
 
 const getData = (lang) => {
     const isPT = lang === 'pt';
-    const currency = isPT ? 'R$' : '$';
-    
     return {
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor", color: "text-zinc-400" },
@@ -175,43 +161,19 @@ const getData = (lang) => {
               id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "CLÁSSICA" : "CLASSIC",
               title: isPT ? "Deep Release (Relaxante)" : "Deep Release",
               desc: isPT ? "Alívio profundo. O reset que seu corpo implora." : "Deep relief. The reset your body craves.",
-              details: isPT ? `DETALHES DA SESSÃO:
-• TÉCNICA: Fusão de manobras manuais e Bamboo/Wood Therapy.
-• FOCO: Dissolver nódulos de tensão, stress e cansaço físico.
-• SENSAGEM: Leveza imediata e reequilíbrio energético.
-• PERFEITO PARA: Quem teve uma semana pesada.` : `SESSION DETAILS:
-• TECHNIQUE: Fusion of manual moves and Bamboo/Wood Therapy.
-• FOCUS: Dissolve tension knots, stress, and physical fatigue.
-• FEELING: Immediate lightness and energetic balance.
-• PERFECT FOR: Those who had a heavy week.`
+              details: isPT ? `DETALHES DA SESSÃO:\n• TÉCNICA: Fusão de manobras manuais e Bamboo/Wood Therapy.\n• FOCO: Dissolver nódulos de tensão, stress e cansaço físico.\n• SENSAGEM: Leveza imediata e reequilíbrio energético.` : `SESSION DETAILS:\n• TECHNIQUE: Fusion of manual moves and Bamboo/Wood Therapy.\n• FOCUS: Dissolve tension knots, stress, and physical fatigue.`
             },
             { 
               id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: isPT ? "SENSORIAL HOT" : "SENSORY HOT",
               title: isPT ? "Tântrica Sensitive (+ Lingam)" : "Tantric Sensitive (+ Lingam)",
               desc: isPT ? "Conexão total. Toques sutis que despertam cada nervo." : "Total connection. Subtle touches that wake up every nerve.",
-              details: isPT ? `A EXPERIÊNCIA SENSORIAL:
-• O TOQUE: Plumagem e toques sutis que causam arrepios.
-• O CLÍMAX: Massagem Lingam (íntima) dedicada e respeitosa.
-• O OBJETIVO: Maximizar sua energia vital e prazer.
-• A VIBE: Música envolvente, óleos aquecidos e entrega total.` : `THE SENSORY EXPERIENCE:
-• THE TOUCH: Feathering and subtle touches causing chills.
-• THE CLIMAX: Dedicated and respectful Lingam (intimate) massage.
-• THE GOAL: Maximize your vital energy and pleasure.
-• THE VIBE: Engaging music, warm oils, and total surrender.`
+              details: isPT ? `A EXPERIÊNCIA SENSORIAL:\n• O TOQUE: Plumagem e toques sutis que causam arrepios.\n• O CLÍMAX: Massagem Lingam (íntima) dedicada e respeitosa.\n• O OBJETIVO: Maximizar sua energia vital e prazer.` : `THE SENSORY EXPERIENCE:\n• THE TOUCH: Feathering and subtle touches causing chills.\n• THE CLIMAX: Dedicated and respectful Lingam (intimate) massage.`
             },
             { 
               id: 'mista', min: 60, price: 205, icon: Zap, tag: isPT ? "A MAIS VENDIDA" : "BEST SELLER",
               title: isPT ? "Fusion Premium (Mista)" : "Premium Fusion",
               desc: isPT ? "O melhor dos dois mundos. Relaxamento + Prazer Intenso." : "Best of both worlds. Relaxation + Intense Pleasure.",
-              details: isPT ? `PROTOCOLO COMPLETO (60 MIN):
-• 1ª PARTE: Relaxamento muscular profundo para te "desarmar".
-• 2ª PARTE: Transição para a sensitiva com Body-to-Body (Nuru).
-• FINALIZAÇÃO: Tântrica completa com finalização garantida.
-• DIFERENCIAL: Variação de intensidade e contato pele com pele.` : `FULL PROTOCOL (60 MIN):
-• PART 1: Deep muscle relaxation to "disarm" you.
-• PART 2: Transition to sensitive with Body-to-Body (Nuru).
-• FINISH: Full tantric with guaranteed finish.
-• DIFFERENTIAL: Intensity variation and skin-to-skin contact.`
+              details: isPT ? `PROTOCOLO COMPLETO (60 MIN):\n• 1ª PARTE: Relaxamento muscular profundo para te "desarmar".\n• 2ª PARTE: Transição para a sensitiva com Body-to-Body (Nuru).\n• FINALIZAÇÃO: Tântrica completa com finalização garantida.` : `FULL PROTOCOL (60 MIN):\n• PART 1: Deep muscle relaxation to "disarm" you.\n• PART 2: Transition to sensitive with Body-to-Body (Nuru).\n• FINISH: Full tantric with guaranteed finish.`
             }
         ],
         plans: [
@@ -297,7 +259,6 @@ const getData = (lang) => {
             level_label: isPT ? "Status" : "Status",
             missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP para ganhar R$ ${reward},00` : `${needed} XP to win $ ${reward}.00`,
             
-            // TOASTS
             toast_error_item: isPT ? "Escolha uma experiência primeiro." : "Choose an experience first.",
             toast_error_date: isPT ? "Defina o dia e a hora." : "Set day and time.",
             toast_error_name: isPT ? "Preciso do seu nome." : "I need your name.",
@@ -306,7 +267,6 @@ const getData = (lang) => {
             toast_success_coupon: isPT ? "Desconto aplicado!" : "Discount applied!",
             toast_error_coupon: isPT ? "Cupom inválido." : "Invalid coupon.",
 
-            // TERMS BODY WITH HEALTH CHECK (ITEM 5)
             terms_body: [
                 "1. HIGIENE: Banho prévio é indispensável. O atendimento preza pela limpeza extrema.",
                 "2. SIGILO: Tudo que acontece na sessão, fica na sessão. Discrição absoluta garantida.",
@@ -333,7 +293,7 @@ const getData = (lang) => {
 };
 
 // ==================================================================================
-// 3. MAIN APPLICATION LOGIC
+// 3. APLICAÇÃO PRINCIPAL
 // ==================================================================================
 
 export default function App() {
@@ -343,7 +303,7 @@ export default function App() {
   const [isDark, setIsDark] = useState(true);
   const [activeTab, setActiveTab] = useState('single');
   
-  // Marketing & Gamification State
+  // Marketing & Gamification
   const [viewers, setViewers] = useState(3);
   const [showScarcity, setShowScarcity] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
@@ -360,7 +320,7 @@ export default function App() {
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
 
-  // USER & BOOKING STATE
+  // Estado do Usuário e Agendamento
   const [user, setUser] = useState({ 
       name: '', xp: 0, coupons: [], 
       savedAddress: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, 
@@ -374,12 +334,11 @@ export default function App() {
     payment: '', appliedCoupon: null, termsAccepted: false
   });
 
-  // ANDROID BROWSER FIX & INITIALIZATION
+  // Inicialização (Simula carregamento e recupera dados)
   useEffect(() => {
     setIsClient(true);
-    setTimeout(() => setLoading(false), 1800); // Fake loading for branding
+    setTimeout(() => setLoading(false), 1500); 
     
-    // Attempt to recover state
     try {
         const s = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (s) {
@@ -387,24 +346,17 @@ export default function App() {
             setUser(prev => ({ ...prev, ...parsed, coupons: Array.isArray(parsed.coupons) ? parsed.coupons : [] }));
             if(parsed.savedAddress) setBooking(b => ({...b, address: parsed.savedAddress}));
         }
-    } catch (e) { console.error("Storage load error", e); }
-
-    // Android Intent Fix
-    const ua = navigator.userAgent || navigator.vendor || window.opera;
-    if ((ua.indexOf("Instagram") > -1 || ua.indexOf("FBAN") > -1) && /android/i.test(ua)) {
-      const url = window.location.href;
-      setTimeout(() => { window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`; }, 500);
-    }
+    } catch (e) { console.error("Storage error", e); }
   }, []);
 
-  // PERSISTENCE
+  // Persistência Automática
   useEffect(() => { 
       if(isClient && !loading) {
           try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); } catch(e) {}
       }
   }, [user, isClient, loading]);
 
-  // WELCOME POPUP LOGIC
+  // Popup de Boas Vindas
   useEffect(() => {
      if(!loading && isClient && !user.hasSeenWelcome) {
          const timer = setTimeout(() => setWelcomePopup(true), 2500);
@@ -412,10 +364,10 @@ export default function App() {
      }
   }, [loading, isClient, user.hasSeenWelcome]);
 
-  // SCROLL RESET
+  // Reset do Scroll ao mudar de passo
   useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo({top: 0, behavior: 'smooth'}); }, [step]);
 
-  // SCARCITY TRIGGER (Fake "X people viewing")
+  // Gatilho de Escassez (Fake)
   const triggerScarcity = () => {
       const randomViewers = Math.floor(Math.random() * 5) + 2; 
       setViewers(randomViewers);
@@ -429,7 +381,7 @@ export default function App() {
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
   };
 
-  // FINANCIALS ENGINE
+  // Lógica Financeira
   const financials = useMemo(() => {
     if (!booking.item) return { total: 0, sub: 0, disc: 0 };
     let sub = booking.item.price;
@@ -444,15 +396,15 @@ export default function App() {
     return { sub, disc, total };
   }, [booking.item, booking.extras, booking.appliedCoupon, DATA.extras]);
 
-  // XP CALCULATION (Gamification)
+  // Cálculo de XP
   const estimatedXP = useMemo(() => {
       const baseXP = financials.total;
       const isPack = booking.type === 'pack' || booking.type === 'subscription';
       const multiplier = isPack ? 1.5 : 1.0; 
-      return Math.floor(baseXP * 0.2 * multiplier); // 20% do valor em XP
+      return Math.floor(baseXP * 0.2 * multiplier); 
   }, [financials.total, booking.type]);
 
-  // INFINITE LEVEL LOGIC
+  // Próximo Nível
   const getNextLevelInfo = (currentXP) => {
       if (currentXP >= 800) {
           const cycleXP = currentXP - 800;
@@ -463,7 +415,7 @@ export default function App() {
       return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
   };
 
-  // WHATSAPP GENERATOR
+  // Gerador de Link WhatsApp
   const generateWhatsAppLink = () => {
     const f = financials;
     const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US') : '';
@@ -494,7 +446,7 @@ ${extrasList ? `${extrasList}\n` : ''}
 ${T.zap.location}
 ${locTxt}
 ────────────────
-${T.zap.value} *${T.currency || 'R$'} ${f.total},00*
+${T.zap.value} *R$ ${f.total},00*
 ${T.zap.payment} ${booking.payment.toUpperCase()}
 
 ${T.zap.health_check}
@@ -505,7 +457,7 @@ ${T.zap.wait}
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`;
   };
 
-  // VALIDATION
+  // Validação
   const validateStep = () => {
       if (step === 0) {
           if(!booking.item) { addToast(T.toast_error_item, "error"); return false; }
@@ -561,7 +513,6 @@ ${T.zap.wait}
     const newXP = Math.floor(user.xp + estimatedXP);
     let leveledUp = false;
     
-    // Level Up Check
     DATA.levels.forEach(lvl => {
         if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
             leveledUp = true;
@@ -582,7 +533,6 @@ ${T.zap.wait}
     setStep(4);
   };
 
-  // RENDER HELPERS
   const generateTimeSlots = useMemo(() => {
       if (!booking.date) return [];
       const slots = ['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'];
@@ -594,7 +544,7 @@ ${T.zap.wait}
       return slots;
   }, [booking.date]);
 
-  // Loading Screen
+  // Tela de Carregamento
   if (loading) return (
       <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center ${isDark ? 'bg-zinc-950' : 'bg-slate-50'}`}>
         <div className="relative">
@@ -615,7 +565,6 @@ ${T.zap.wait}
   return (
     <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100 selection:bg-amber-500/30' : 'bg-slate-50 text-slate-900 selection:bg-amber-200'}`}>
       
-      {/* GLOBAL OVERLAYS */}
       <Confetti active={showConfetti} />
       
       {/* TOASTS */}
@@ -626,14 +575,6 @@ ${T.zap.wait}
             <span className="text-xs font-bold shadow-black/10 drop-shadow-md">{t.msg}</span>
           </div>
         ))}
-      </div>
-
-      {/* SCARCITY POPUP */}
-      <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[90] pointer-events-none transition-all duration-500 transform ${showScarcity ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-           <div className="bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border border-white/10 ring-1 ring-white/5">
-               <Eye size={12} className="text-green-400" />
-               <span className="text-[10px] font-bold tracking-wide uppercase">{viewers} {T.scarcity_msg}</span>
-           </div>
       </div>
 
       {/* HEADER */}
@@ -649,25 +590,22 @@ ${T.zap.wait}
         </div>
       </header>
 
-      {/* MAIN CONTENT AREA */}
+      {/* CONTEÚDO */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-6 pb-40 scroll-smooth relative">
         <div className={`fixed top-16 left-0 w-full h-8 z-10 pointer-events-none bg-gradient-to-b ${isDark ? 'from-zinc-950' : 'from-slate-50'} to-transparent`}></div>
         <div className="max-w-md mx-auto space-y-6 pt-2">
 
-          {/* STEP 0: CATALOG & HOME */}
+          {/* CATALOGO */}
           {step === 0 && (
             <div className="animate-fade-in space-y-8">
-              {/* WELCOME HEADER */}
               <div>
                 <h1 className="text-3xl font-black tracking-tight mb-2">{T.welcome} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{user.name ? user.name.split(' ')[0] : (lang==='pt'?'Visitante':'Visitor')}</span></h1>
                 <p className={`text-sm font-medium leading-relaxed opacity-80 max-w-[80%]`}>{T.subtitle}</p>
               </div>
 
-              {/* GAMIFICATION HUD (XP CARD) */}
+              {/* XP CARD */}
               <div className={`relative overflow-hidden rounded-[2rem] p-6 border shadow-2xl group ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-100'}`}>
-                   {/* Background Glow */}
                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-[50px] rounded-full pointer-events-none"></div>
-                   
                    <div className="flex justify-between items-start mb-4 relative z-10">
                         <div className="flex items-center gap-4">
                             <div className="relative">
@@ -702,7 +640,6 @@ ${T.zap.wait}
                         </div>
                    </div>
                    
-                   {/* Reviews Trigger */}
                    <div className="mt-5 pt-4 border-t border-dashed border-zinc-800">
                         <button onClick={() => setReviewsOpen(true)} className="w-full flex items-center justify-between text-xs font-bold opacity-60 hover:opacity-100 transition-opacity">
                             <span className="flex items-center gap-1"><Star size={12} className="text-amber-500 fill-amber-500"/> 5.0 (50+ Reviews)</span>
@@ -711,13 +648,13 @@ ${T.zap.wait}
                    </div>
               </div>
 
-              {/* TABS (Segmented Control) */}
+              {/* TABS */}
               <div className={`grid grid-cols-2 p-1.5 rounded-2xl relative ${isDark ? 'bg-zinc-900' : 'bg-slate-200'}`}>
                   <button onClick={()=>setActiveTab('single')} className={`relative z-10 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='single' ? (isDark?'bg-zinc-800 text-white shadow-lg ring-1 ring-white/5':'bg-white text-black shadow-lg') : 'opacity-50 hover:opacity-100'}`}><LayoutList size={14}/> {T.tab_single}</button>
                   <button onClick={()=>setActiveTab('packs')} className={`relative z-10 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='packs' ? (isDark?'bg-zinc-800 text-white shadow-lg ring-1 ring-white/5':'bg-white text-black shadow-lg') : 'opacity-50 hover:opacity-100'}`}><Package size={14}/> {T.tab_packs}</button>
               </div>
 
-              {/* SERVICES LIST */}
+              {/* LISTA DE SERVIÇOS */}
               <div className="space-y-4 min-h-[300px]">
                 {(activeTab === 'single' ? DATA.services : DATA.plans).map(item => (
                    <Card key={item.id} isDark={isDark} active={booking.item?.id === item.id} onClick={() => { handleNext(); setBooking(b => ({...b, type: activeTab === 'single' ? 'single' : item.type, item, extras: {}})); }} className="group">
@@ -735,9 +672,9 @@ ${T.zap.wait}
 
                        <div className="mt-5 flex items-end justify-between border-t border-dashed border-zinc-700/50 pt-4">
                            <div className="flex flex-col">
-                               {item.fullPrice && <span className="text-xs line-through opacity-40 decoration-red-500/50">{T.currency} {item.fullPrice}</span>}
+                               {item.fullPrice && <span className="text-xs line-through opacity-40 decoration-red-500/50">R$ {item.fullPrice}</span>}
                                <div className="flex items-baseline gap-1">
-                                   <span className="text-sm font-medium opacity-60">{T.currency}</span>
+                                   <span className="text-sm font-medium opacity-60">R$</span>
                                    <span className={`text-2xl font-black tracking-tight ${booking.item?.id === item.id ? 'text-amber-500' : ''}`}>{item.price}</span>
                                </div>
                            </div>
@@ -746,7 +683,6 @@ ${T.zap.wait}
                            </Button>
                        </div>
                        
-                       {/* Expandable Details */}
                        {booking.item?.id === item.id && (
                            <div className="mt-4 pt-4 border-t border-zinc-800 animate-slide-down">
                                <div className="p-4 rounded-xl bg-black/20 text-xs leading-relaxed opacity-90 font-medium whitespace-pre-line border border-white/5">
@@ -761,7 +697,7 @@ ${T.zap.wait}
             </div>
           )}
 
-          {/* STEP 1: DATE & TIME */}
+          {/* STEP 1: DATA */}
           {step === 1 && (
             <div className="animate-slide-in">
                  <div className="text-center mb-8">
@@ -769,7 +705,6 @@ ${T.zap.wait}
                      <p className="text-xs font-bold uppercase tracking-widest opacity-50">{T.date_sub}</p>
                  </div>
                  
-                 {/* Calendar Strip */}
                  <div className="flex gap-2.5 overflow-x-auto pb-6 scrollbar-hide -mx-6 px-6 mb-2 snap-x">
                     {[...Array(14)].map((_, i) => { 
                          const d = new Date(); d.setDate(d.getDate() + i);
@@ -785,7 +720,6 @@ ${T.zap.wait}
                     })}
                  </div>
 
-                 {/* Time Slots Grid */}
                  {!booking.date ? (
                      <div className="flex flex-col items-center justify-center py-16 opacity-30 border-2 border-dashed border-zinc-700 rounded-3xl">
                          <Calendar size={48} className="mb-4 text-zinc-500"/>
@@ -811,12 +745,11 @@ ${T.zap.wait}
             </div>
           )}
 
-          {/* STEP 2: LOCATION & EXTRAS */}
+          {/* STEP 2: LOCAL E EXTRAS */}
           {step === 2 && (
             <div className="animate-slide-in space-y-8">
                  <h2 className="text-2xl font-black text-center">{T.location_title}</h2>
                  
-                 {/* Location Type Selector */}
                  <div className={`grid grid-cols-3 gap-3 p-2 rounded-2xl ${isDark ? 'bg-zinc-900' : 'bg-slate-100'}`}>
                       {[{id:'home', l:T.zap.house, i:Home}, {id:'motel', l:T.zap.motel, i:BedDouble}, {id:'hotel', l:T.zap.hotel, i:Building}].map(x => (
                           <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`py-4 rounded-xl text-[10px] font-bold uppercase tracking-wide flex flex-col items-center justify-center gap-2 transition-all duration-300 ${booking.locationType === x.id ? (isDark ? 'bg-zinc-800 text-white shadow-lg' : 'bg-white text-black shadow-lg') : 'opacity-40 hover:opacity-100'}`}>
@@ -825,7 +758,6 @@ ${T.zap.wait}
                       ))}
                  </div>
 
-                 {/* Forms */}
                  <div className="space-y-5">
                       <InputField label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} isDark={isDark} placeholder={lang === 'pt' ? "Seu Nome" : "Your Name"} />
                       
@@ -841,15 +773,8 @@ ${T.zap.wait}
                               </div>
                           </div>
                       )}
-                      {booking.locationType === 'motel' && (
-                          <div className={`p-6 rounded-3xl border text-center text-sm ${isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-white border-slate-200 text-slate-500'}`}>
-                               <Smartphone className="mx-auto mb-3 opacity-50" size={24}/>
-                               {T.motel_note}
-                          </div>
-                      )}
                  </div>
 
-                 {/* Upsell / Extras */}
                  {booking.type === 'single' && (
                     <div className="pt-8 border-t border-dashed border-zinc-800/50">
                         <h3 className={`text-[10px] font-black uppercase mb-4 tracking-widest flex items-center gap-2 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Sparkles size={12}/> {T.extras_title}</h3>
@@ -860,7 +785,7 @@ ${T.zap.wait}
                                        <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[ex.id] ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-500'}`}><ex.icon size={18}/></div>
                                        <div><p className="text-sm font-bold">{ex.label}</p><p className="text-[10px] opacity-60">{ex.desc}</p></div>
                                    </div>
-                                   <span className={`text-xs font-bold ${booking.extras[ex.id] ? 'text-amber-500' : 'opacity-30'}`}>+ {T.currency}{ex.price}</span>
+                                   <span className={`text-xs font-bold ${booking.extras[ex.id] ? 'text-amber-500' : 'opacity-30'}`}>+ R${ex.price}</span>
                               </div>
                            ))}
                         </div>
@@ -869,41 +794,36 @@ ${T.zap.wait}
             </div>
           )}
 
-          {/* STEP 3: CHECKOUT & TERMS */}
+          {/* STEP 3: CHECKOUT */}
           {step === 3 && (
             <div className="animate-slide-in pb-8">
-                 {/* Receipt Card */}
                  <div className="relative mb-8 group">
                       <div className={`p-8 rounded-[2rem] border relative overflow-hidden shadow-2xl ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}>
-                           {/* Decorative Elements */}
                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-amber-500/50 rounded-b-full"></div>
                            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
                            <div className="text-center mb-6">
-                               <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3 inline-block border ${isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-500' : 'bg-slate-50 border-slate-200'}`}>{booking.type === 'pack' ? 'Package' : 'Personal Session'}</span>
+                               <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3 inline-block border ${isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-500' : 'bg-slate-50 border-slate-200'}`}>{booking.type === 'pack' ? 'Pacote' : 'Sessão Individual'}</span>
                                <h2 className="font-black text-2xl leading-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-400 mb-1">{booking.item.title}</h2>
                                <p className="text-xs opacity-60 font-mono">{new Date(booking.date).toLocaleDateString()} • {booking.time}</p>
                            </div>
 
                            <div className="space-y-3 border-y border-dashed border-zinc-800 py-6 mb-6 text-sm">
-                               <div className="flex justify-between opacity-80"><span>Subtotal</span><span>{T.currency} {booking.item.price}</span></div>
+                               <div className="flex justify-between opacity-80"><span>Subtotal</span><span>R$ {booking.item.price}</span></div>
                                {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>(<div key={k} className="flex justify-between text-amber-500/80 text-xs"><span>+ {DATA.extras.find(e=>e.id===k).label}</span><span>{DATA.extras.find(e=>e.id===k).price}</span></div>))}
-                               {booking.appliedCoupon && (<div className="flex justify-between text-green-500 font-bold"><span>Discount ({booking.appliedCoupon.code})</span><span>- {T.currency} {booking.appliedCoupon.val}</span></div>)}
+                               {booking.appliedCoupon && (<div className="flex justify-between text-green-500 font-bold"><span>Desconto ({booking.appliedCoupon.code})</span><span>- R$ {booking.appliedCoupon.val}</span></div>)}
                            </div>
 
                            <div className="flex justify-between items-end">
                                <div className="flex flex-col"><span className="text-[10px] uppercase font-bold opacity-40">{T.total_label}</span><span className="text-[9px] text-amber-500/80">{T.uber_warning}</span></div>
                                <div className="text-right">
-                                   <span className="block text-4xl font-black tracking-tighter text-amber-500">{T.currency} {financials.total}</span>
+                                   <span className="block text-4xl font-black tracking-tighter text-amber-500">R$ {financials.total}</span>
                                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[9px] font-bold text-amber-500 mt-1"><Sparkles size={8}/> +{estimatedXP} XP</div>
                                </div>
                            </div>
                       </div>
-                      {/* Serrated Edge Effect */}
-                      <div className="absolute -bottom-1 left-4 right-4 h-2 bg-black/50 blur-md rounded-[100%] z-[-1]"></div>
                  </div>
 
-                 {/* Coupon Field */}
                  <div className="flex gap-2 mb-6">
                       <div className="relative flex-1">
                           <input value={couponInput} onChange={e=>setCouponInput(e.target.value)} placeholder={T.coupon_placeholder} className={`w-full pl-4 pr-10 py-3 rounded-xl border outline-none text-xs font-bold uppercase tracking-widest ${isDark ? 'bg-zinc-900 border-zinc-800 focus:border-amber-500' : 'bg-white border-slate-200'}`}/>
@@ -912,18 +832,6 @@ ${T.zap.wait}
                       <Button onClick={handleApplyCoupon} variant="secondary" size="md">{T.coupon_btn}</Button>
                  </div>
 
-                 {/* Available Coupons */}
-                 {user.coupons.length > 0 && (
-                     <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide mb-6">
-                         {user.coupons.map(c => (
-                             <button key={c.id} onClick={() => setBooking(b => ({...b, appliedCoupon: booking.appliedCoupon?.id === c.id ? null : c}))} className={`whitespace-nowrap px-3 py-2 rounded-lg border text-[10px] font-bold uppercase tracking-wider transition-all ${booking.appliedCoupon?.id === c.id ? 'border-green-500 bg-green-500/10 text-green-500' : 'border-zinc-800 bg-zinc-900 text-zinc-400'}`}>
-                                 {c.title}
-                             </button>
-                         ))}
-                     </div>
-                 )}
-
-                 {/* Payment Methods */}
                  <div className="mb-8">
                      <h3 className="text-xs font-bold uppercase opacity-50 mb-3">{T.pay_title}</h3>
                      <div className="grid grid-cols-1 gap-2">
@@ -937,7 +845,6 @@ ${T.zap.wait}
                      </div>
                  </div>
 
-                 {/* HEALTH CHECK & TERMS (CRITICAL) */}
                  <div className={`p-4 rounded-2xl border transition-colors duration-300 ${booking.termsAccepted ? 'border-green-500/30 bg-green-500/5' : (isDark ? 'bg-zinc-900/50 border-red-500/30' : 'bg-amber-50 border-amber-200')}`}>
                       <div className="flex items-start gap-3 mb-3">
                            <Activity className={booking.termsAccepted ? "text-green-500" : "text-red-500"} size={20} />
@@ -954,7 +861,7 @@ ${T.zap.wait}
             </div>
           )}
 
-          {/* STEP 4: SUCCESS */}
+          {/* STEP 4: SUCESSO */}
           {step === 4 && (
             <div className="flex flex-col items-center justify-center pt-10 text-center animate-scale-in">
                  <div className="relative mb-8">
@@ -997,7 +904,7 @@ ${T.zap.wait}
                       {booking.item && (
                         <div className="flex flex-col items-end leading-none">
                           <span className="text-[9px] opacity-60 font-medium mb-0.5">TOTAL</span>
-                          <span className="text-base font-black whitespace-nowrap">{T.currency} {financials.total}</span>
+                          <span className="text-base font-black whitespace-nowrap">R$ {financials.total}</span>
                         </div>
                       )}
                       {!booking.item && <ArrowRight size={20} strokeWidth={3} className="group-hover:translate-x-1 transition-transform"/>}
@@ -1027,7 +934,7 @@ ${T.zap.wait}
          </div>
       </div>
 
-      {/* MODAL: TERMS & HEALTH CHECK */}
+      {/* MODAL: TERMS */}
       <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-300 pointer-events-none ${termsOpen ? 'opacity-100' : 'opacity-0'}`}>
          <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${termsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setTermsOpen(false)}></div>
          <div className={`relative w-full max-w-md rounded-[2.5rem] p-8 max-h-[80vh] overflow-y-auto transform transition-transform duration-300 ${termsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-900'}`}>
