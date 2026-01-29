@@ -290,8 +290,10 @@ const getData = (lang) => {
             { n: "Roberto", loc: "SP - Augusta", t: isPT ? "Pedi a completa com troca. Poder tocar nele foi a cereja do bolo." : "Asked for complete with switch. Touching him was the cherry on top.", s: 5 },
             { n: "Fabio", loc: "Rio Preto", t: isPT ? "Saiu leite até da alma. Recomendo pra quem ta estressado." : "Milked my soul. Recommend for stressed people.", s: 5 },
             { n: "Junior", loc: "SP - Moema", t: isPT ? "Me senti renovado. Energia boa demais." : "Felt renewed. Too good energy.", s: 5 },
+            { n: "Alan", loc: "SP - Bela Vista", t: isPT ? "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve. Da pra ver que ele manda bem no que faz. Obriagdo!" : "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve. Da pra ver que ele manda bem no que faz. Obriagdo!", s: 5 }
             { n: "Paulo", loc: "Votuporanga", t: isPT ? "Top demais, só achei o valor do Uber meio salgado pra vir aqui." : "Too top, but Uber price was a bit salty to come here.", s: 4 },
             { n: "M. (Sigilo)", loc: "SP - Jardins", t: isPT ? "Gozada intensa, perdi as forças da perna. O cara é bom." : "Intense finish, lost leg strength. Guy is good.", s: 5 }
+            { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito." : "Thalyson, I want to say that your massage was very well performed. You first get to know the body in order to carry out the procedure very carefully and safely. I highly recommend it.", s: 5 }
         ],
         text: {
             loading: isPT ? "PREPARANDO..." : "PREPARING...",
