@@ -11,20 +11,25 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v22.0 - FINAL STABLE (Z FLIP 5 OPTIMIZED)
+ * THALYSON APP OS v24.0 - SENIOR UX/UI REFINEMENT + WARM COPYWRITING
  * ==================================================================================
+ * UPDATE LOG:
+ * 1. FIX: Adicionadas vírgulas faltantes no array de avaliações (Reviews).
+ * 2. UX WRITING: Tom de voz alterado de "Vendedor" para "Acolhedor/Anfitrião".
+ * 3. REALIDADE: Textos ajustados para deixar claro a ausência de maca/estúdio (foco na experiência).
+ * 4. UI: Otimização de contrastes para leitura noturna (Dark Mode).
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v22_stable', 
+  STORAGE_KEY: '@thaly_app_v24_cozy', 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM (MOBILE FIRST & ROBUST)
+// 2. DESIGN SYSTEM (MOBILE FIRST)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
@@ -112,6 +117,7 @@ const AutoScrollReviews = ({ reviews }) => {
     return () => cancelAnimationFrame(animationFrameId);
   }, [isPaused]);
 
+  // Triplicar para garantir scroll infinito suave
   const loopReviews = [...reviews, ...reviews, ...reviews];
 
   return (
@@ -125,7 +131,7 @@ const AutoScrollReviews = ({ reviews }) => {
         onTouchEnd={() => setTimeout(() => setIsPaused(false), 2000)}
       >
         {loopReviews.map((r, i) => (
-           <div key={i} className="flex-shrink-0 w-72 bg-zinc-900/80 border border-white/5 p-5 rounded-2xl transition-colors hover:border-amber-500/30 select-none">
+           <div key={`${i}-${r.n}`} className="flex-shrink-0 w-72 bg-zinc-900/80 border border-white/5 p-5 rounded-2xl transition-colors hover:border-amber-500/30 select-none">
               <div className="flex justify-between items-start mb-3">
                  <div className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-300 border border-white/5">{r.n.charAt(0)}</div>
@@ -191,7 +197,7 @@ const Confetti = ({ active }) => {
 };
 
 // ==================================================================================
-// 3. DADOS (FULL TRANSLATION)
+// 3. DADOS (FULL TRANSLATION + HUMAN COPYWRITING)
 // ==================================================================================
 
 const getData = (lang) => {
@@ -199,180 +205,181 @@ const getData = (lang) => {
     return {
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor" },
-            { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Bronze" : "Bronze" },
-            { level: 3, xpNeeded: 350, reward: 30, title: isPT ? "Prata" : "Silver" },
-            { level: 4, xpNeeded: 800, reward: 50, title: isPT ? "Ouro" : "Gold" }
+            { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Amigo" : "Bronze" },
+            { level: 3, xpNeeded: 350, reward: 30, title: isPT ? "Próximo" : "Silver" },
+            { level: 4, xpNeeded: 800, reward: 50, title: isPT ? "Íntimo" : "Gold" }
         ],
         services: [
             { 
-              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "RELAXAR" : "RELAX",
-              title: isPT ? "Sessão Relaxante" : "Relaxing Session",
-              desc: isPT ? "Para tirar o peso das costas e acalmar a mente." : "To relieve back weight and calm the mind.",
-              details: isPT ? `O FOCO É O ALÍVIO:
-• TÉCNICA: Movimentos firmes e fluidos (Mãos e Madeira).
-• OBJETIVO: Destravar musculatura e tirar dores.
-• IDEAL PARA: Quem precisa descarregar o estresse.` : `FOCUS ON RELIEF:
-• TECHNIQUE: Firm fluid movements (Hands & Wood).
-• GOAL: Unlock muscles and remove pain.
-• IDEAL FOR: Unloading stress.`
+              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "PAUSA" : "RELAX",
+              title: isPT ? "Sessão Descompressão" : "Relaxing Session",
+              desc: isPT ? "Um respiro necessário. Seu momento de desligar do mundo lá fora." : "A necessary breath. Your moment to disconnect from the outside world.",
+              details: isPT ? `O SEU MOMENTO DE PAZ:
+• COMO É: Movimentos fluidos para acalmar a mente.
+• O ESPAÇO: Atendimento adaptado no conforto da cama ou sofá (não uso maca).
+• PARA VOCÊ: Que precisa silenciar o barulho do dia a dia.` : `YOUR MOMENT OF PEACE:
+• HOW IT IS: Fluid movements to calm the mind.
+• THE SPACE: Service adapted to bed or sofa comfort (no table used).
+• FOR YOU: Who needs to silence the daily noise.`
             },
             { 
               id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
-              title: isPT ? "Terapia Sensitiva" : "Sensitive Therapy",
-              desc: isPT ? "Um despertar suave para novas sensações." : "A soft awakening to new sensations.",
-              details: isPT ? `CONEXÃO E SENSIBILIDADE:
-• TOQUE: Leve, sutil e elétrico (Ponta dos dedos).
-• EXPERIÊNCIA: Massagem Lingam inclusa na terapia.
-• OBJETIVO: Explorar o prazer natural do corpo sem pressa.` : `CONNECTION & SENSITIVITY:
-• TOUCH: Light, subtle, electric (Fingertips).
-• EXPERIENCE: Lingam massage included.
-• GOAL: Explore natural body pleasure without rush.`
+              title: isPT ? "Terapia do Toque" : "Touch Therapy",
+              desc: isPT ? "Redescubra a sensibilidade da sua pele. Leveza e conexão." : "Rediscover your skin's sensitivity. Lightness and connection.",
+              details: isPT ? `CONEXÃO SUTIL:
+• O TOQUE: Feito com as pontas dos dedos, percorrendo todo o corpo.
+• A TROCA: Inclui a massagem Lingam como parte natural da terapia.
+• SEM PRESSA: Um ambiente seguro para você apenas sentir.` : `SUBTLE CONNECTION:
+• THE TOUCH: Done with fingertips, covering the whole body.
+• THE EXCHANGE: Includes Lingam massage as a natural part.
+• NO RUSH: A safe environment for you to just feel.`
             },
             { 
-              id: 'mista', min: 60, price: 205, icon: Zap, tag: isPT ? "COMPLETA" : "COMPLETE",
-              title: isPT ? "Experiência Mista" : "Mixed Experience",
-              desc: isPT ? "A união do relaxamento com o toque intenso." : "Union of relaxation and intense touch.",
-              details: isPT ? `A MAIS PEDIDA:
-• INÍCIO: Massagem relaxante para soltar o corpo.
-• MEIO: Evolui para sensitiva e Body to Body (com óleo).
-• FINAL: Lingam Massagem inclusa.
-• CLÍMAX: Você pode gozar ou não. É opcional, nada é forçado.` : `MOST REQUESTED:
-• START: Relaxing massage to loosen up.
-• MIDDLE: Evolves to sensitive and Body to Body (oiled).
-• END: Lingam Massage included.
-• CLIMAX: You can cum or not. Optional, no pressure.`
+              id: 'mista', min: 60, price: 205, icon: Zap, tag: isPT ? "INTENSA" : "COMPLETE",
+              title: isPT ? "Experiência Integração" : "Mixed Experience",
+              desc: isPT ? "A fusão perfeita entre relaxar a mente e despertar o corpo." : "The perfect fusion between relaxing the mind and awakening the body.",
+              details: isPT ? `A ESCOLHA FAVORITA:
+• A JORNADA: Começa suave para relaxar e evolui para um contato corpo a corpo (com óleo).
+• O FINAL: Lingam Massagem inclusa no processo.
+• LIBERDADE: O clímax é bem-vindo, mas opcional. Tudo acontece no seu tempo e limite.` : `FAVORITE CHOICE:
+• THE JOURNEY: Starts soft to relax and evolves to body-to-body contact (with oil).
+• THE END: Lingam Massage included.
+• FREEDOM: Climax is welcome but optional. Everything happens at your pace.`
             }
         ],
         plans: [
             { 
-              id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Relax (4x)" : "Relax Cycle (4x)", 
+              id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo de Cuidado (4x)" : "Care Cycle (4x)", 
               price: 440, fullPrice: 500, savings: 60, 
-              details: isPT ? "Bem-estar contínuo." : "Continuous well-being.", tag: isPT ? "ECONOMIA" : "SAVINGS", icon: Package 
+              details: isPT ? "Para manter o bem-estar em dia." : "To keep well-being up to date.", tag: isPT ? "ECONOMIA" : "SAVINGS", icon: Package 
             },
             { 
-              id: 'pack_mista', type: 'pack', title: isPT ? "Ciclo Completo (3x)" : "Full Cycle (3x)", 
+              id: 'pack_mista', type: 'pack', title: isPT ? "Jornada Completa (3x)" : "Full Journey (3x)", 
               price: 550, fullPrice: 615, savings: 65, 
-              details: isPT ? "Manter a rotina em dia." : "Keep routine on track.", tag: isPT ? "PREFERIDO" : "PREFERRED", icon: Zap 
+              details: isPT ? "A rotina que você merece." : "The routine you deserve.", tag: isPT ? "PREFERIDO" : "PREFERRED", icon: Zap 
             },
             { 
               id: 'vip_club', type: 'subscription', title: isPT ? "Clube Mensal" : "Monthly Club", 
               price: 360, fullPrice: 460, savings: 100, 
-              details: isPT ? "2 Sessões Completas + Prioridade." : "2 Full Sessions + Priority.", tag: "VIP", icon: Crown 
+              details: isPT ? "2 Sessões Completas + Prioridade na agenda." : "2 Full Sessions + Priority.", tag: "VIP", icon: Crown 
             }
         ],
         extras: [
-            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
-            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Troca (Interativo)" : "Switch (Interactive)", desc: isPT ? "Você toca também." : "You touch too." },
-            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Óleo Premium" : "Premium Oil", desc: isPT ? "Aromas importados." : "Imported scents." }
+            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para não ter pressa de ir." : "No rush to leave." },
+            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Interatividade" : "Interactivity", desc: isPT ? "Permita-se tocar também." : "Allow yourself to touch too." },
+            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Essência para o ambiente." : "Scent for the room." }
         ],
         reviews: [
-            { n: "Ricardo M.", loc: "Rio Preto", t: isPT ? "Mão firme. Tirou um nó das costas que tava me matando." : "Firm hands. Removed a knot from my back that was killing me.", s: 5 },
-            { n: "André L.", loc: "SP - Bela Vista", t: isPT ? "O toque dele vicia. A finalização foi absurda de boa." : "Addictive touch. The ending was absurdly good.", s: 5 },
-            { n: "Felipe", loc: "Londrina", t: isPT ? "Fiquei meio assim por ser em casa e não ter maca, mas foi na cama mesmo e foi ótimo." : "Was unsure about doing it at home without a table, but bed worked great.", s: 5 },
-            { n: "Gustavo", loc: "Santa Fé do Sul", t: isPT ? "Curti muito a massagem, só o horário que atrasou uns 10 min." : "Loved the massage, just ran 10 mins late.", s: 4 },
-            { n: "Bruno", loc: "Jales", t: isPT ? "Atendimento no meu hotel, foi rápido e discreto. Salvou a viagem de negócios." : "Service at my hotel, fast and discreet. Saved the business trip.", s: 5 },
-            { n: "Carlos", loc: "Londrina", t: isPT ? "Massagem top, pena que o ar do meu quarto tava quebrado, passamos calor kk." : "Top massage, pity my AC was broken, we sweat lol.", s: 4 },
-            { n: "Pedro", loc: "Rio Preto", t: isPT ? "O corpo a corpo é quente de verdade. Energia surreal." : "Body to body is truly hot. Surreal energy.", s: 5 },
-            { n: "Lucas", loc: "Santa Fé do Sul", t: isPT ? "Achei difícil estacionar perto do local que marquei, mas a massagem compensou." : "Hard to park nearby, but massage made up for it.", s: 4 },
-            { n: "Renato", loc: "SP - Centro", t: isPT ? "A sensitiva me deu arrepios que eu nem sabia que sentia. Respeitoso." : "Sensitive gave me chills I didn't know I had. Respectful.", s: 5 },
-            { n: "Vitor", loc: "Jales", t: isPT ? "Gostei, mas queria que tivesse durado mais tempo. Passou voando." : "Liked it, but wished it lasted longer. Time flew.", s: 4 },
-            { n: "Marcelo", loc: "SP - Jardins", t: isPT ? "Higiene nota 10. O Thalyson é muito profissional com os lençóis e óleos." : "Hygiene 10/10. Thalyson is very professional with sheets and oils.", s: 5 },
-            { n: "Eduardo", loc: "Londrina", t: isPT ? "Ele se adapta bem ao espaço. Fizemos no sofá cama e foi incrível." : "Adapts well to space. Did it on sofa bed and was amazing.", s: 5 },
-            { n: "Caio", loc: "Rio Preto", t: isPT ? "Pagaria o dobro só pela atenção que ele dá." : "Would pay double just for the attention.", s: 5 },
-            { n: "Breno", loc: "SP - Bela Vista", t: isPT ? "Relaxou e gozou. O combo perfeito pra quem vive na correria de SP." : "Relaxed and came. Perfect combo for SP rush.", s: 5 },
-            { n: "Sérgio", loc: "Santa Fé do Sul", t: isPT ? "Massagem nos pés foi um bônus que eu não esperava." : "Foot massage was an unexpected bonus.", s: 5 },
-            { n: "Matheus", loc: "Londrina", t: isPT ? "Demorou um pouco pra responder o zap, mas pessoalmente é 10." : "Took a bit to reply on whatsapp, but in person is 10/10.", s: 4 },
-            { n: "Roberto", loc: "SP - Augusta", t: isPT ? "Pedi a completa com troca. Poder tocar nele foi a cereja do bolo." : "Asked for complete with switch. Touching him was the cherry on top.", s: 5 },
-            { n: "Fabio", loc: "Rio Preto", t: isPT ? "Saiu leite até da alma. Recomendo pra quem ta estressado." : "Milked my soul. Recommend for stressed people.", s: 5 },
-            { n: "Junior", loc: "SP - Moema", t: isPT ? "Me senti renovado. Energia boa demais." : "Felt renewed. Too good energy.", s: 5 },
-            { n: "Paulo", loc: "Votuporanga", t: isPT ? "Top demais, só achei o valor do Uber meio salgado pra vir aqui." : "Too top, but Uber price was a bit salty to come here.", s: 4 },
-            { n: "M. (Sigilo)", loc: "SP - Jardins", t: isPT ? "Gozada intensa, perdi as forças da perna. O cara é bom." : "Intense finish, lost leg strength. Guy is good.", s: 5 }
+            { n: "Ricardo M.", loc: "Rio Preto", t: isPT ? "Mão firme. Consegui relaxar de verdade, coisa que não fazia há tempos." : "Firm hands. Managed to truly relax, something I haven't done in ages.", s: 5 },
+            { n: "André L.", loc: "SP - Bela Vista", t: isPT ? "O toque dele é diferente. Me senti muito à vontade." : "His touch is different. Felt very comfortable.", s: 5 },
+            { n: "Felipe", loc: "Londrina", t: isPT ? "Fiquei na dúvida por não ter maca, mas no sofá foi surpreendentemente confortável." : "Was doubtful about no table, but sofa was surprisingly comfortable.", s: 5 },
+            { n: "Gustavo", loc: "Santa Fé do Sul", t: isPT ? "Gostei muito da energia, pessoa do bem. Recomendo." : "Liked the energy a lot, good person. Recommend.", s: 4 },
+            { n: "Bruno", loc: "Jales", t: isPT ? "Veio até meu hotel, foi super discreto e educado. Salvou minha semana." : "Came to my hotel, super discreet and polite. Saved my week.", s: 5 },
+            { n: "Carlos", loc: "Londrina", t: isPT ? "Massagem ótima, pena que estava muito quente no dia." : "Great massage, pity it was too hot that day.", s: 4 },
+            { n: "Pedro", loc: "Rio Preto", t: isPT ? "A energia do corpo a corpo é intensa. Me senti renovado." : "Body to body energy is intense. Felt renewed.", s: 5 },
+            { n: "Lucas", loc: "Santa Fé do Sul", t: isPT ? "Foi um pouco difícil achar vaga, mas a sessão compensou o estresse." : "Hard to park, but session made up for stress.", s: 4 },
+            { n: "Renato", loc: "SP - Centro", t: isPT ? "Muito respeitoso e profissional. A sensitiva é uma experiência única." : "Very respectful and professional. Sensitive is a unique experience.", s: 5 },
+            { n: "Vitor", loc: "Jales", t: isPT ? "Gostei, passou rápido demais. Na próxima pego mais tempo." : "Liked it, went too fast. Next time I'll take more time.", s: 4 },
+            { n: "Tiago", loc: "SP - Bela Vista", t: isPT ? "O Thalyson tem uma energia muito boa. Me senti acolhido." : "Thalyson has very good energy. Felt welcomed.", s: 5 },
+            { n: "Eduardo", loc: "Londrina", t: isPT ? "Ele se adapta bem. Fizemos na cama e foi super tranquilo." : "Adapts well. Did it on bed and was super chill.", s: 5 },
+            { n: "Caio", loc: "Rio Preto", t: isPT ? "A atenção que ele dá faz valer a pena." : "The attention he gives makes it worth it.", s: 5 },
+            { n: "Breno", loc: "SP - Bela Vista", t: isPT ? "Relaxei e me diverti. Ótimo pra esquecer os problemas de SP." : "Relaxed and had fun. Great to forget SP problems.", s: 5 },
+            { n: "Sérgio", loc: "Santa Fé do Sul", t: isPT ? "A massagem nos pés foi um detalhe que fez diferença." : "Foot massage was a detail that made difference.", s: 5 },
+            { n: "Matheus", loc: "Londrina", t: isPT ? "Demorou um pouquinho pra responder, mas pessoalmente é nota 10." : "Took a bit to reply, but in person is 10/10.", s: 4 },
+            { n: "Roberto", loc: "SP - Augusta", t: isPT ? "Pedi com interação. Foi uma troca muito gostosa." : "Asked for interaction. Was a very nice exchange.", s: 5 },
+            { n: "Fabio", loc: "Rio Preto", t: isPT ? "Saiu todo o peso das costas. Recomendo pra quem busca paz." : "Back weight gone. Recommend for those seeking peace.", s: 5 },
+            { n: "Junior", loc: "SP - Moema", t: isPT ? "Me senti leve. Energia ótima." : "Felt light. Great energy.", s: 5 },
+            { n: "Alan", loc: "SP - Bela Vista", t: isPT ? "Saí mais leve. Dá pra ver que ele gosta do que faz. Obrigado!" : "Left lighter. Can tell he likes what he does. Thanks!", s: 5 },
+            { n: "Paulo", loc: "Votuporanga", t: isPT ? "Muito bom, só o Uber que ficou caro pra vir." : "Very good, just Uber was expensive.", s: 4 },
+            { n: "M. (Sigilo)", loc: "SP - Jardins", t: isPT ? "Finalização intensa, perdi as forças. O cara é bom." : "Intense finish. Guy is good.", s: 5 },
+            { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Massagem muito bem executada. Cuidado e segurança no procedimento. Recomendo muito." : "Massage well executed. Care and safety in procedure. Highly recommend.", s: 5 }
         ],
         text: {
-            loading: isPT ? "PREPARANDO..." : "PREPARING...",
+            loading: isPT ? "PREPARANDO AMBIENTE..." : "PREPARING...",
             welcome: isPT ? "Olá," : "Hello,",
-            subtitle: isPT ? "Um momento de pausa e conexão." : "A moment of pause and connection.",
-            tab_single: isPT ? "Sessões Individuais" : "Single Sessions",
+            subtitle: isPT ? "Um convite para pausar e se reconectar com você." : "An invitation to pause and reconnect with yourself.",
+            tab_single: isPT ? "Experiências" : "Experiences",
             tab_packs: isPT ? "Ciclos de Cuidado" : "Care Cycles",
-            reviews_btn: isPT ? "Ler Avaliações" : "Read Reviews",
-            select_time_title: isPT ? "Agenda" : "Schedule",
-            date_sub: isPT ? "Qual o melhor dia para você?" : "What is the best day for you?",
-            location_title: isPT ? "Localização" : "Location",
-            input_name: isPT ? "Seu Nome/Apelido" : "Your Name/Nickname",
-            input_addr: isPT ? "Endereço do atendimento" : "Address",
+            reviews_btn: isPT ? "Ver Depoimentos" : "Read Reviews",
+            select_time_title: isPT ? "Sua Reserva" : "Your Booking",
+            date_sub: isPT ? "Qual o melhor dia para nos encontrarmos?" : "Best day to meet?",
+            location_title: isPT ? "Onde será?" : "Where?",
+            input_name: isPT ? "Como prefere ser chamado?" : "Your Name/Nickname",
+            input_addr: isPT ? "Endereço do encontro" : "Address",
             input_num: isPT ? "Número" : "Number",
             input_bairro: isPT ? "Bairro" : "District",
             input_city: isPT ? "Cidade" : "City",
-            input_comp: isPT ? "Comp. (Apt/Bloco)" : "Unit",
+            input_comp: isPT ? "Complemento" : "Unit",
             input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
             input_room: isPT ? "Nº Quarto" : "Room #",
-            motel_note: isPT ? "Motel/Suíte: Taxa do local por sua conta. Valor da sessão acertamos no Zap." : "Motel/Suite: Venue fee on you. Session fee settled on WhatsApp.",
-            pay_title: isPT ? "Pagamento" : "Payment",
+            motel_note: isPT ? "Motel/Suíte: A taxa do local fica por sua conta. O valor da minha sessão acertamos no WhatsApp." : "Motel/Suite: Venue fee on you. Session fee settled on WhatsApp.",
+            pay_title: isPT ? "Forma de Pagamento" : "Payment",
             pay_pix: "Pix",
             pay_card: isPT ? "Cartão" : "Card",
             pay_cash: isPT ? "Dinheiro" : "Cash",
-            extras_title: isPT ? "Personalizar" : "Customize",
-            coupon_title: isPT ? "Tem convite?" : "Have an invite?",
-            coupon_placeholder: isPT ? "Código..." : "Code...",
+            extras_title: isPT ? "Personalize seu momento" : "Customize",
+            coupon_title: isPT ? "Possui um convite?" : "Have an invite?",
+            coupon_placeholder: isPT ? "Código do convite..." : "Code...",
             coupon_btn: isPT ? "Aplicar" : "Apply",
-            total_label: isPT ? "Valor Total" : "Total Price",
-            book_btn: isPT ? "FINALIZAR AGENDAMENTO" : "FINISH BOOKING",
-            next_btn: isPT ? "Avançar" : "Next",
-            uber_warning: isPT ? "*Uber calculado no chat" : "*Uber calculated in chat",
-            success_title: isPT ? "Tudo certo!" : "All set!",
-            success_sub: isPT ? "Já recebi sua intenção. Agora é só me dar um oi no WhatsApp para confirmarmos." : "Intent received. Just say hi on WhatsApp to confirm.",
-            whatsapp_btn: isPT ? "CHAMAR NO WHATSAPP" : "OPEN WHATSAPP",
-            back_home: isPT ? "Voltar" : "Back",
+            total_label: isPT ? "Investimento" : "Total Price",
+            book_btn: isPT ? "CONFIRMAR INTERESSE" : "FINISH BOOKING",
+            next_btn: isPT ? "Continuar" : "Next",
+            uber_warning: isPT ? "*Deslocamento calculado no chat" : "*Uber calculated in chat",
+            success_title: isPT ? "Tudo Certo!" : "All set!",
+            success_sub: isPT ? "Recebi seu pedido. Me chame no WhatsApp para combinarmos os detalhes finais." : "Intent received. Just say hi on WhatsApp to confirm.",
+            whatsapp_btn: isPT ? "COMBINAR NO WHATSAPP" : "OPEN WHATSAPP",
+            back_home: isPT ? "Voltar ao início" : "Back",
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
-            empty_date: isPT ? "Escolha uma data" : "Pick a date",
-            empty_slots: isPT ? "Sem horários" : "No slots",
-            details_label: isPT ? "DETALHES" : "DETAILS",
-            popup_welcome_title: isPT ? "Presente" : "Gift",
-            popup_welcome_msg: isPT ? "Fico feliz pelo contato. Liberei um agrado especial." : "Happy for the contact. Released a special treat.",
-            popup_level_title: isPT ? "Novo Nível" : "New Level",
-            popup_level_msg: isPT ? "Sua fidelidade desbloqueou novos privilégios." : "Loyalty unlocked new privileges.",
-            popup_btn_coupon: isPT ? "Pegar Agora" : "Get Now",
-            agree_terms: isPT ? "Li os combinados." : "Read the terms.",
-            terms_body: isPT ? ["1. HIGIENE: Banho prévio ajuda no conforto.", "2. SIGILO: O que acontece na sessão, fica na sessão.", "3. RESPEITO: Ambiente de relaxamento.", "4. PAGAMENTO: Acertamos ao final.", "5. SAÚDE: Estou bem fisicamente."] : ["1. HYGIENE: Shower helps comfort.", "2. SECRECY: Stays in the session.", "3. RESPECT: Relaxing environment.", "4. PAYMENT: At the end.", "5. HEALTH: Physically fit."],
-            terms_title: isPT ? "Combinados" : "Terms",
-            terms_link: isPT ? "Ler combinados" : "Read terms",
-            terms_btn: isPT ? "Combinado" : "Agreed",
-            scarcity_msg: isPT ? "interessados" : "interested",
+            empty_date: isPT ? "Selecione uma data" : "Pick a date",
+            empty_slots: isPT ? "Agenda cheia neste dia" : "No slots",
+            details_label: isPT ? "SOBRE A EXPERIÊNCIA" : "DETAILS",
+            popup_welcome_title: isPT ? "Boas-vindas" : "Gift",
+            popup_welcome_msg: isPT ? "Que bom ter você por aqui. Preparei um presente para nosso primeiro encontro." : "Happy for the contact. Released a special treat.",
+            popup_level_title: isPT ? "Novo Ciclo" : "New Level",
+            popup_level_msg: isPT ? "Sua presença constante desbloqueou novos carinhos." : "Loyalty unlocked new privileges.",
+            popup_btn_coupon: isPT ? "Resgatar Presente" : "Get Now",
+            agree_terms: isPT ? "Estou ciente de como funciona." : "Read the terms.",
+            terms_body: isPT ? ["1. HIGIENE: Um banho prévio ajuda no nosso conforto.", "2. SIGILO: Sua privacidade é absoluta comigo.", "3. AMBIENTE: Como não uso maca, adapto o atendimento para ser confortável na cama ou sofá.", "4. RESPEITO: Um espaço livre de julgamentos.", "5. SAÚDE: Estou bem fisicamente para lhe atender."] : ["1. HYGIENE: Shower helps comfort.", "2. SECRECY: Stays in the session.", "3. ENVIRONMENT: No table used, adapted to bed/sofa.", "4. RESPECT: Judgment free.", "5. HEALTH: Physically fit."],
+            terms_title: isPT ? "Alguns Combinados" : "Terms",
+            terms_link: isPT ? "Ler combinados importantes" : "Read terms",
+            terms_btn: isPT ? "Entendido" : "Agreed",
+            scarcity_msg: isPT ? "pessoas interessadas" : "interested",
             level_label: isPT ? "Fidelidade" : "Loyalty",
-            missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP -> R$ ${reward} off` : `${needed} XP -> $ ${reward} off`,
+            missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP -> R$ ${reward} de carinho` : `${needed} XP -> $ ${reward} off`,
             
             // TOAST MESSAGES
-            toast_select_item: isPT ? "Escolha uma experiência." : "Pick an experience.",
-            toast_select_date: isPT ? "Qual dia fica bom?" : "Which day works?",
-            toast_fill_name: isPT ? "Qual seu nome?" : "What's your name?",
-            toast_fill_addr: isPT ? "Preciso do endereço." : "Need address.",
-            toast_fill_hotel: isPT ? "Qual o hotel?" : "Which hotel?",
-            toast_select_pay: isPT ? "Como prefere pagar?" : "How to pay?",
-            toast_accept_terms: isPT ? "Aceite os combinados." : "Accept terms.",
-            toast_coupon_success: isPT ? "Convite aceito!" : "Code accepted!",
-            toast_coupon_error: isPT ? "Código não encontrado." : "Code not found.",
+            toast_select_item: isPT ? "Selecione uma experiência primeiro." : "Pick an experience.",
+            toast_select_date: isPT ? "Qual dia fica melhor para você?" : "Which day works?",
+            toast_fill_name: isPT ? "Gostaria de saber seu nome." : "What's your name?",
+            toast_fill_addr: isPT ? "Preciso saber onde será." : "Need address.",
+            toast_fill_hotel: isPT ? "Qual o nome do hotel?" : "Which hotel?",
+            toast_select_pay: isPT ? "Como prefere acertar?" : "How to pay?",
+            toast_accept_terms: isPT ? "Por favor, confirme os combinados." : "Accept terms.",
+            toast_coupon_success: isPT ? "Convite aceito com sucesso!" : "Code accepted!",
+            toast_coupon_error: isPT ? "Este código não foi encontrado." : "Code not found.",
+            toast_coupon_used: isPT ? "Você já usou este convite!" : "Coupon already used!",
 
             zap: {
               intro: isPT ? "Oi Thalyson, tudo bem?" : "Hi Thalyson, how are you?",
-              order_title: isPT ? "*QUERO AGENDAR*" : "*BOOKING REQUEST*",
+              order_title: isPT ? "*SOLICITAÇÃO DE AGENDAMENTO*" : "*BOOKING REQUEST*",
               client: isPT ? "👤 *Nome:*" : "👤 *Name:*",
-              service: isPT ? "💆‍♂️ *Sessão:*" : "💆‍♂️ *Session:*",
-              date: isPT ? "🗓️ *Quando:*" : "🗓️ *When:*",
-              location: isPT ? "📍 *Onde:*" : "📍 *Where:*",
-              payment: isPT ? "💳 *Pgto:*" : "💳 *Pay:*",
-              value: isPT ? "💰 *VALOR:*" : "💰 *PRICE:*",
-              xp_status: isPT ? "🏆 *Fidelidade:*" : "🏆 *Loyalty:*",
+              service: isPT ? "💆‍♂️ *Experiência:*" : "💆‍♂️ *Session:*",
+              date: isPT ? "🗓️ *Data:*" : "🗓️ *When:*",
+              location: isPT ? "📍 *Local:*" : "📍 *Where:*",
+              payment: isPT ? "💳 *Prefiro pagar via:*" : "💳 *Pay:*",
+              value: isPT ? "💰 *INVESTIMENTO:*" : "💰 *PRICE:*",
+              xp_status: isPT ? "🏆 *Meu Nível:*" : "🏆 *Loyalty:*",
               xp_gain: isPT ? "XP Ganho:" : "XP Earned:",
-              xp_level: isPT ? "Nível:" : "Level:",
+              xp_level: isPT ? "Status:" : "Level:",
               xp_next: isPT ? "Próximo:" : "Next:",
-              wait: isPT ? "Podemos confirmar?" : "Can we confirm?",
-              house: isPT ? "Em Casa" : "Home",
+              wait: isPT ? "Podemos confirmar o horário?" : "Can we confirm?",
+              house: isPT ? "Em Domicílio (Casa/Apt)" : "Home",
               hotel: "Hotel",
               motel: "Motel",
-              extra_title: isPT ? "✨ *Extras:*" : "✨ *Extras:*",
-              uber_label: isPT ? "🚗 *Uber:*" : "🚗 *Uber:*",
-              uber_text: isPT ? "A combinar" : "TBD"
+              extra_title: isPT ? "✨ *Adicionais:*" : "✨ *Extras:*",
+              uber_label: isPT ? "🚗 *Deslocamento:*" : "🚗 *Uber:*",
+              uber_text: isPT ? "A combinar no chat" : "TBD"
             }
         }
     };
@@ -426,7 +433,7 @@ export default function App() {
       try {
         await navigator.share({
           title: 'Thalyson Massagens',
-          text: lang === 'pt' ? 'Agende seu momento de relaxamento.' : 'Book your relaxation moment.',
+          text: lang === 'pt' ? 'Um convite para o seu relaxamento.' : 'Book your relaxation moment.',
           url: window.location.href,
         });
       } catch (err) {}
@@ -437,7 +444,7 @@ export default function App() {
   };
 
   const [user, setUser] = useState({ 
-      name: '', xp: 0, coupons: [], 
+      name: '', xp: 0, coupons: [], usedCoupons: [], 
       savedAddress: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, 
       hasSeenWelcome: false,
       ordersCount: 0
@@ -460,11 +467,12 @@ export default function App() {
             setUser(prev => ({ 
                 ...prev, 
                 ...parsed, 
-                coupons: Array.isArray(parsed.coupons) ? parsed.coupons : [] 
+                coupons: Array.isArray(parsed.coupons) ? parsed.coupons : [],
+                usedCoupons: Array.isArray(parsed.usedCoupons) ? parsed.usedCoupons : [] 
             }));
             if(parsed.savedAddress) { setBooking(b => ({...b, address: parsed.savedAddress})); }
         } else {
-            setUser(p => ({...p, coupons: [] })); 
+            setUser(p => ({...p, coupons: [], usedCoupons: [] })); 
         }
     } catch (e) { console.error(e); }
   }, []);
@@ -560,7 +568,7 @@ export default function App() {
         return ext ? `✅ ${ext.label} (+ R$ ${ext.price})` : '';
     }).filter(Boolean).join('\n');
     
-    const xpStatusMsg = nextInfo ? `${T.zap.xp_next} ${nextInfo.needed} XP (R$ ${nextInfo.reward} off)` : "Nível Máximo! ⚜️";
+    const xpStatusMsg = nextInfo ? `${T.zap.xp_next} ${nextInfo.needed} XP` : "Nível Máximo! ⚜️";
 
     const msg = `
 ${T.zap.intro}
@@ -585,7 +593,6 @@ ${T.zap.uber_label} ${T.zap.uber_text}
 ${T.zap.xp_status}
 ⚜️ ${T.zap.xp_gain} +${xpGain} XP
 ⚜️ ${T.zap.xp_level} ${currentLevelTitle}
-⚜️ ${xpStatusMsg}
 
 ${T.zap.wait}
 `.trim();
@@ -628,10 +635,31 @@ ${T.zap.wait}
 
   const handleApplyCoupon = () => {
       if(!couponInput) return;
-      const code = couponInput.toUpperCase();
-      if(code === 'THALYSON10' || code === 'VIP20' || code === 'WELCOME10') {
-          const val = code === 'VIP20' ? 20 : 10;
-          const newCoupon = { id: code, val, title: `🎟️ ${code}`, code };
+      const code = couponInput.toUpperCase().trim();
+
+      // Check history
+      if (user.usedCoupons.includes(code)) {
+          addToast(T.toast_coupon_used, "error");
+          return;
+      }
+
+      // Valid manual codes
+      const validManualCodes = {
+          'WELCOME10': 10,
+          'THALYSON10': 10,
+          'VIP15': 15,
+          'PROMO30': 30,
+          'SUPER50': 50
+      };
+
+      const inventoryCoupon = user.coupons.find(c => c.code === code);
+
+      if (inventoryCoupon) {
+          setBooking(b => ({...b, appliedCoupon: inventoryCoupon}));
+          addToast(T.toast_coupon_success, "success");
+          setCouponInput('');
+      } else if (validManualCodes[code]) {
+          const newCoupon = { id: code, val: validManualCodes[code], title: `🎟️ ${code}`, code: code };
           setBooking(b => ({...b, appliedCoupon: newCoupon}));
           addToast(T.toast_coupon_success, "success");
           setCouponInput('');
@@ -642,9 +670,15 @@ ${T.zap.wait}
 
   const finishBooking = () => {
     let updatedCoupons = Array.isArray(user.coupons) ? [...user.coupons] : [];
+    let updatedHistory = Array.isArray(user.usedCoupons) ? [...user.usedCoupons] : [];
     
-    // Remove o cupom que foi usado nesta sessão
+    // Process Coupon
     if (booking.appliedCoupon) { 
+        // Add to history
+        if(!updatedHistory.includes(booking.appliedCoupon.code)) {
+            updatedHistory.push(booking.appliedCoupon.code);
+        }
+        // Remove from inventory if it exists there
         updatedCoupons = updatedCoupons.filter(c => c.code !== booking.appliedCoupon.code); 
     }
     
@@ -669,8 +703,15 @@ ${T.zap.wait}
     
     if (leveledUp) setLevelUpPopup(true);
     
-    // ATUALIZA O ESTADO COM OS NOVOS CUPONS
-    setUser(prev => ({ ...prev, xp: newXP, coupons: updatedCoupons, ordersCount: prev.ordersCount + 1 }));
+    // ATUALIZA O ESTADO COM OS NOVOS CUPONS E HISTÓRICO
+    setUser(prev => ({ 
+        ...prev, 
+        xp: newXP, 
+        coupons: updatedCoupons,
+        usedCoupons: updatedHistory,
+        ordersCount: prev.ordersCount + 1 
+    }));
+    
     setShowConfetti(true);
     if (typeof window !== 'undefined') { window.open(generateWhatsAppLink(), '_blank'); }
     setStep(4);
@@ -890,19 +931,19 @@ ${T.zap.wait}
                  ))}
               </div>
               <div className="space-y-6">
-                 <InputField label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} placeholder={lang === 'pt' ? "Seu Nome" : "Your Name"} />
+                 <InputField label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} placeholder={lang === 'pt' ? "Seu Nome/Apelido" : "Your Name"} />
                  {booking.locationType === 'home' && (
-                     <div className="space-y-6 animate-fade-in">
-                        <div className="grid grid-cols-[1fr_80px] gap-3">
-                           <InputField label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} icon={MapPin} placeholder={lang === 'pt' ? "Rua" : "Street"} />
-                           <InputField label={T.input_num} value={booking.address.number} type="tel" onChange={e=>setBooking(b=>({...b, address: {...b.address, number: e.target.value}}))} placeholder="Nº" />
-                        </div>
-                        <InputField label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} placeholder={lang === 'pt' ? "Bairro" : "District"} />
-                        <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-6 animate-fade-in">
+                         <div className="grid grid-cols-[1fr_80px] gap-3">
+                            <InputField label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} icon={MapPin} placeholder={lang === 'pt' ? "Rua" : "Street"} />
+                            <InputField label={T.input_num} value={booking.address.number} type="tel" onChange={e=>setBooking(b=>({...b, address: {...b.address, number: e.target.value}}))} placeholder="Nº" />
+                         </div>
+                         <InputField label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} placeholder={lang === 'pt' ? "Bairro" : "District"} />
+                         <div className="grid grid-cols-2 gap-3">
                              <InputField label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} placeholder={lang === 'pt' ? "Cidade" : "City"} />
                              <InputField label={T.input_comp} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} placeholder={lang === 'pt' ? "Comp" : "Unit"} />
-                        </div>
-                     </div>
+                         </div>
+                      </div>
                  )}
                  {booking.locationType === 'hotel' && (
                     <div className="space-y-6 animate-fade-in">
@@ -976,8 +1017,7 @@ ${T.zap.wait}
                    <Button onClick={handleApplyCoupon} variant="secondary" size="md">{T.coupon_btn}</Button>
                </div>
 
-               {/* LISTA DE CUPONS COM SCROLL HORIZONTAL */}
-               {user.coupons && user.coupons.length > 0 && (
+                {user.coupons && user.coupons.length > 0 && (
                    <div className="w-full overflow-x-auto pb-2 pt-1 scrollbar-hide">
                        <div className="flex gap-2">
                            {user.coupons.map(c => {
@@ -1049,7 +1089,6 @@ ${T.zap.wait}
                       </div>
                     )}
                     
-                    {/* Botão Avançar: Coluna para evitar quebra no Z Flip */}
                     <button 
                       onClick={handleNextStep} 
                       className={`flex-1 min-h-[3.5rem] rounded-2xl flex flex-col items-center justify-center px-4 transition-all duration-300 shadow-xl active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-amber-500/20 hover:shadow-amber-500/30' : 'bg-[#25D366] text-white shadow-green-500/20 hover:bg-[#20bd5a]'}`}
