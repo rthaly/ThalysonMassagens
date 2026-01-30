@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Camera, ArrowRight, Calendar, Clock, MapPin, User, Instagram, 
-  Check, X, ChevronDown, MessageCircle, Play, Star, Image as ImageIcon,
-  ShieldCheck, Sparkles, Loader2, Aperture, Menu, Trophy, Crown,
-  Heart, Zap, Film, Monitor, Quote, MousePointer2, ChevronLeft, ChevronRight,
-  Maximize2
+  Camera, ArrowRight, Calendar, Clock, User, Instagram, 
+  Check, X, MessageCircle, Play, Star,
+  ShieldCheck, Sparkles, Loader2, Aperture, Menu, Crown,
+  Zap, Film, Monitor, Quote, MousePointer2, Maximize2
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * LUMINA CINEMATIC OS v6.0 - ULTIMATE EDITION
+ * LUMINA CINEMATIC OS v7.0 - FINAL PRODUCTION
  * ==================================================================================
- * Status: Production Ready
- * Features: Lightbox Gallery, Desktop Grid Calendar, WhatsApp Checkout
+ * Status: Stable
+ * Assets: Verified High-Res Videos & Images
+ * UX: Mobile-First, One Page Scroll, Booking Engine
  */
 
-// --- 1. CONFIGURATION & MOCK DATA ---
+// --- 1. CONFIGURATION & ASSETS ---
 
 const CONFIG = {
   PHONE: "5517991360413", 
@@ -25,15 +25,17 @@ const CONFIG = {
 };
 
 const DATA = {
-  // Vídeo de alta qualidade (Fashion/Editorial)
-  heroVideo: "https://videos.pexels.com/video-files/5709664/5709664-uhd_2560_1440_25fps.mp4", 
-  
+  // VÍDEO HERO: Backstage de moda, alta qualidade, loop suave.
+  heroVideo: "https://videos.pexels.com/video-files/3205914/3205914-hd_1920_1080_25fps.mp4",
+  heroPoster: "https://images.pexels.com/videos/3205914/free-video-3205914.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+
+  // Imagem do Fotógrafo/Sobre
   aboutImage: "https://images.unsplash.com/photo-1554048612-387768052bf7?auto=format&fit=crop&w=1200&q=90",
 
   stats: [
-    { label: "Histórias Registradas", value: "850+" },
+    { label: "Ensaios Realizados", value: "850+" },
     { label: "Prêmios Internacionais", value: "14" },
-    { label: "Anos de Experiência", value: "8" }
+    { label: "Anos de Mercado", value: "8" }
   ],
 
   services: [
@@ -78,7 +80,7 @@ const DATA = {
     { id: 'makeup', label: "Make & Hair Extra", price: 300, desc: "Produção adicional no set", icon: User }
   ],
 
-  // Portfólio com imagens de alta resolução para o Lightbox
+  // Portfólio Rico e Completo
   portfolio: [
     { id: 1, cat: "Editorial", src: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&q=90" },
     { id: 2, cat: "Love", src: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=1200&q=90" },
@@ -101,7 +103,7 @@ const DATA = {
   ]
 };
 
-// --- 2. COMPONENTS ---
+// --- 2. UI COMPONENTS ---
 
 const Button = ({ children, variant = 'primary', size = 'md', full = false, icon: Icon, onClick, className = '', disabled, loading }: any) => {
   const base = "relative flex items-center justify-center font-bold tracking-wider transition-all duration-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] overflow-hidden group";
@@ -174,11 +176,13 @@ export default function App() {
     time: null as string | null,
     extras: {} as Record<string, boolean>,
     client: { name: '', instagram: '' },
-    xp: 2200
+    xp: 2200 // Mock XP para gamificação
   });
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 2500);
+    // Intro animada
+    setTimeout(() => setLoading(false), 2000);
+
     const handleScroll = () => {
       const sections = ['home', 'about', 'portfolio', 'services', 'booking'];
       const current = sections.find(section => {
@@ -192,7 +196,7 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // LOGIC
+  // CALCULOS
   const selectedService = DATA.services.find(s => s.id === booking.serviceId);
   const total = useMemo(() => {
     let val = selectedService ? selectedService.price : 0;
@@ -302,10 +306,17 @@ ${extrasList || 'Nenhum'}
         ))}
       </div>
 
-      {/* --- HERO --- */}
+      {/* --- HERO SECTION --- */}
       <section id="home" className="relative min-h-screen flex items-end pb-24 px-6 md:px-12 pt-32 overflow-hidden">
         <div className="absolute inset-0 z-0 scale-[1.02]">
-          <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-60"><source src={DATA.heroVideo} type="video/mp4" /></video>
+          {/* VIDEO FIXED: Plays inline, muted, loop for movement */}
+          <video 
+            autoPlay loop muted playsInline 
+            poster={DATA.heroPoster}
+            className="w-full h-full object-cover opacity-60"
+          >
+            <source src={DATA.heroVideo} type="video/mp4" />
+          </video>
           <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/30 to-transparent"></div>
         </div>
         
@@ -316,7 +327,7 @@ ${extrasList || 'Nenhum'}
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
-              Agenda 2026 Aberta
+              Agenda 2026 Disponível
             </div>
             
             <h1 className="text-6xl md:text-8xl lg:text-9xl font-light leading-[0.9] tracking-tighter drop-shadow-2xl">
@@ -492,32 +503,6 @@ ${extrasList || 'Nenhum'}
         </div>
       </section>
 
-      {/* --- SOCIAL PROOF --- */}
-      <section className="py-24 border-y border-white/5 bg-zinc-900/30">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-             {DATA.reviews.map((r, i) => (
-               <div key={i} className="p-8 rounded-2xl bg-black border border-white/10 relative hover:border-white/30 transition-colors">
-                 <div className="absolute -top-3 -left-3 bg-white text-black p-2 rounded-lg">
-                   <Quote size={16}/>
-                 </div>
-                 <div className="flex gap-1 text-amber-400 mb-6">
-                   {[...Array(r.stars)].map((_,k)=><Star key={k} size={14} fill="currentColor"/>)}
-                 </div>
-                 <p className="text-sm text-white/80 italic mb-8 leading-relaxed">"{r.txt}"</p>
-                 <div className="flex items-center gap-4">
-                   <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-bold text-xs">{r.name[0]}</div>
-                   <div>
-                     <p className="font-bold text-sm">{r.name}</p>
-                     <p className="text-[10px] text-white/40 uppercase tracking-widest">{r.role}</p>
-                   </div>
-                 </div>
-               </div>
-             ))}
-           </div>
-        </div>
-      </section>
-
       {/* --- BOOKING ENGINE (DESKTOP OPTIMIZED) --- */}
       <section id="booking" className="py-32 px-6 md:px-12 max-w-6xl mx-auto relative">
         <SectionTitle sub="Agendamento" title="Sua Jornada Começa Aqui" desc="Finalize os detalhes. Seus dados estão seguros." />
@@ -551,8 +536,8 @@ ${extrasList || 'Nenhum'}
                 <div>
                    <h3 className="text-xs font-bold uppercase tracking-widest mb-6 flex items-center gap-2"><Calendar size={16} className="text-white/50"/> Selecione a Data</h3>
                    
-                   {/* Desktop Grid / Mobile Scroll */}
-                   <div className="grid grid-flow-col auto-cols-[80px] md:grid-cols-7 gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                   {/* FIXED GRID FOR DESKTOP */}
+                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3">
                      {Array.from({length:14}).map((_, i) => {
                        const d = new Date(); d.setDate(d.getDate() + i + 1);
                        const isSelected = booking.date?.toDateString() === d.toDateString();
@@ -560,7 +545,7 @@ ${extrasList || 'Nenhum'}
                          <button 
                             key={i} 
                             onClick={()=>setBooking(b=>({...b, date: d, time: null}))} 
-                            className={`min-w-[80px] h-24 rounded-2xl border flex flex-col items-center justify-center gap-1 transition-all duration-300
+                            className={`h-24 rounded-2xl border flex flex-col items-center justify-center gap-1 transition-all duration-300
                             ${isSelected ? 'bg-white text-black border-white scale-105 shadow-lg' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                          >
                            <span className="text-[10px] font-bold uppercase tracking-wider">{d.toLocaleDateString(CONFIG.LOCALE, {weekday:'short'})}</span>
