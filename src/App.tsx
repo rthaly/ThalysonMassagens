@@ -1,37 +1,39 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Camera, ArrowRight, Calendar, Clock, MapPin, User, Instagram, 
   Check, X, ChevronDown, MessageCircle, Play, Star, Image as ImageIcon,
   ShieldCheck, Sparkles, Loader2, Aperture, Menu, Trophy, Crown,
-  Heart, Zap, Film, Monitor, Quote, MousePointer2
+  Heart, Zap, Film, Monitor, Quote, MousePointer2, ChevronLeft, ChevronRight,
+  Maximize2
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * LUMINA CINEMATIC OS v5.0 (GOLD MASTER)
+ * LUMINA CINEMATIC OS v6.0 - ULTIMATE EDITION
  * ==================================================================================
- * Stack: React + Tailwind CSS
- * Concept: "The Apple of Photography Booking Sites"
- * Audience: High-Ticket Photography Clients
+ * Status: Production Ready
+ * Features: Lightbox Gallery, Desktop Grid Calendar, WhatsApp Checkout
  */
 
 // --- 1. CONFIGURATION & MOCK DATA ---
 
 const CONFIG = {
-  PHONE: "5517991360413", // Seu WhatsApp
+  PHONE: "5517991360413", 
   CURRENCY: 'R$',
   LOCALE: 'pt-BR',
-  PHOTOGRAPHER: "Lumina Studio"
+  BRAND: "Lumina Studio"
 };
 
 const DATA = {
-  // Cinematic Fashion Video for Hero Background
+  // Vídeo de alta qualidade (Fashion/Editorial)
   heroVideo: "https://videos.pexels.com/video-files/5709664/5709664-uhd_2560_1440_25fps.mp4", 
   
+  aboutImage: "https://images.unsplash.com/photo-1554048612-387768052bf7?auto=format&fit=crop&w=1200&q=90",
+
   stats: [
-    { label: "Histórias Contadas", value: "850+" },
-    { label: "Prêmios Internacionais", value: "12" },
-    { label: "Anos de Legado", value: "8" }
+    { label: "Histórias Registradas", value: "850+" },
+    { label: "Prêmios Internacionais", value: "14" },
+    { label: "Anos de Experiência", value: "8" }
   ],
 
   services: [
@@ -41,9 +43,9 @@ const DATA = {
       price: 490,
       oldPrice: 650,
       duration: "1h",
-      desc: "Sua imagem é sua marca. Um ensaio focado em autoridade, elegância e essência. Ideal para LinkedIn, Branding Pessoal e Posicionamento.",
+      desc: "Sua imagem pessoal elevada ao nível de arte. Ideal para branding pessoal, LinkedIn e posicionamento de autoridade.",
       img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
-      features: ["10 Fotos High-End (Tratamento Pele)", "1 Look Completo", "Guia de Poses e Expressão", "Galeria Online Vitalícia"],
+      features: ["10 Fotos High-End", "1 Look Completo", "Direção de Poses", "Galeria Vitalícia"],
       tag: "POPULAR"
     },
     {
@@ -54,7 +56,7 @@ const DATA = {
       duration: "2h",
       desc: "Sinta-se em uma capa de revista. Produção artística completa, luz cinematográfica e direção de moda.",
       img: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80",
-      features: ["30 Fotos Editadas (Fine Art)", "3 Trocas de Look", "Fashion Film (Reels 15s)", "Consultoria de Estilo Prévia"],
+      features: ["30 Fotos Fine Art", "3 Trocas de Look", "Fashion Film (15s)", "Guia de Estilo"],
       tag: "BEST SELLER"
     },
     {
@@ -63,65 +65,61 @@ const DATA = {
       price: 1890,
       oldPrice: 2500,
       duration: "4h",
-      desc: "Um banco de imagens estratégico para 3 meses de conteúdo. Pare de se preocupar com o que postar.",
+      desc: "Banco de imagens estratégico para 3 meses de conteúdo. Pare de se preocupar com o que postar.",
       img: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80",
-      features: ["50 Fotos + Guia de Uso", "Looks Ilimitados", "Make & Hair Profissional Incluso", "Planejamento de Feed"],
+      features: ["50 Fotos + Guia", "Looks Ilimitados", "Make & Hair Incluso", "Planejamento Feed"],
       tag: "BUSINESS"
     }
   ],
 
   extras: [
-    { id: 'video', label: "Cinematic Teaser (4K)", price: 400, desc: "Vídeo horizontal e vertical de 45s", icon: Film },
-    { id: 'express', label: "Rush Delivery (24h)", price: 200, desc: "Receba as prévias no dia seguinte", icon: Zap },
-    { id: 'makeup', label: "Make & Hair Extra", price: 300, desc: "Retoque ou mudança de visual", icon: User }
+    { id: 'video', label: "Cinematic Teaser 4K", price: 400, desc: "Vídeo vertical (Reels) de 45s", icon: Film },
+    { id: 'express', label: "Rush Delivery (24h)", price: 200, desc: "Fotos entregues no dia seguinte", icon: Zap },
+    { id: 'makeup', label: "Make & Hair Extra", price: 300, desc: "Produção adicional no set", icon: User }
   ],
 
+  // Portfólio com imagens de alta resolução para o Lightbox
   portfolio: [
-    { src: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80", cat: "Editorial" },
-    { src: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&q=80", cat: "Love" },
-    { src: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80", cat: "Portrait" },
-    { src: "https://images.unsplash.com/photo-1519744531242-c10a2295d8be?w=600&q=80", cat: "Dark" },
-    { src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80", cat: "Urban" },
-    { src: "https://images.unsplash.com/photo-1505932794465-14a6192049d4?w=600&q=80", cat: "Studio" }
+    { id: 1, cat: "Editorial", src: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&q=90" },
+    { id: 2, cat: "Love", src: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=1200&q=90" },
+    { id: 3, cat: "Portrait", src: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1200&q=90" },
+    { id: 4, cat: "Urban", src: "https://images.unsplash.com/photo-1519744531242-c10a2295d8be?w=1200&q=90" },
+    { id: 5, cat: "Studio", src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1200&q=90" },
+    { id: 6, cat: "Fashion", src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1200&q=90" }
   ],
 
   reviews: [
-    { name: "Isabela F.", role: "Arquiteta", txt: "Eu sempre travei na frente das câmeras. O Lumina me fez sentir poderosa. As fotos mudaram a percepção dos meus clientes.", stars: 5 },
-    { name: "Lucas M.", role: "Empresário", txt: "Não é só foto, é estratégia. O retorno que tive com o Branding pagou o ensaio em uma semana.", stars: 5 },
-    { name: "Camila R.", role: "Influencer", txt: "A entrega Express salvou meu lançamento. Qualidade surreal e agilidade.", stars: 5 }
+    { name: "Julia M.", role: "CEO", txt: "O resultado superou todas as expectativas. Minha marca pessoal subiu de nível instantaneamente.", stars: 5 },
+    { name: "Lucas F.", role: "Modelo", txt: "Direção impecável. Ele sabe exatamente como extrair o melhor ângulo.", stars: 5 },
+    { name: "Agência V.", role: "Parceiro", txt: "Nosso fotógrafo de confiança. Entrega rápida e qualidade surreal.", stars: 5 }
   ],
 
   levels: [
-    { level: 1, title: "Member", min: 0, color: "text-zinc-400", benefits: "Acesso à agenda" },
-    { level: 2, title: "VIP Client", min: 1500, color: "text-amber-400", benefits: "5% OFF + Prioridade" },
-    { level: 3, title: "Lumina Gold", min: 3000, color: "text-purple-400", benefits: "10% OFF + Gifts Exclusivos" }
+    { level: 1, title: "Member", min: 0, color: "text-zinc-400" },
+    { level: 2, title: "VIP", min: 1500, color: "text-amber-400" },
+    { level: 3, title: "Gold", min: 3000, color: "text-purple-400" }
   ]
 };
 
-// --- 2. DESIGN SYSTEM COMPONENTS ---
+// --- 2. COMPONENTS ---
 
 const Button = ({ children, variant = 'primary', size = 'md', full = false, icon: Icon, onClick, className = '', disabled, loading }: any) => {
   const base = "relative flex items-center justify-center font-bold tracking-wider transition-all duration-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] overflow-hidden group";
-  
   const variants: any = {
     primary: "bg-white text-black hover:bg-zinc-200 shadow-[0_0_30px_-5px_rgba(255,255,255,0.4)]",
     secondary: "bg-white/10 text-white border border-white/10 hover:bg-white/20 backdrop-blur-md",
     whatsapp: "bg-[#25D366] text-white hover:bg-[#20bd5a] shadow-lg shadow-green-900/20 border border-green-500/20",
     outline: "border border-white/30 text-white hover:border-white hover:bg-white/5"
   };
-  
   const sizes: any = {
     sm: "h-10 text-[10px] px-4 uppercase",
     md: "h-12 text-xs px-6 uppercase",
     lg: "h-14 text-sm px-8 uppercase",
     xl: "h-16 text-base px-8 uppercase tracking-[0.2em]"
   };
-
   return (
     <button onClick={onClick} disabled={disabled || loading} className={`${base} ${variants[variant]} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
-      {/* Shine Effect */}
       <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-10"></div>
-      
       {loading ? <Loader2 className="animate-spin" size={20}/> : (
         <div className="flex items-center gap-2 relative z-20">
           {Icon && <Icon size={18} strokeWidth={2.5} />}
@@ -134,24 +132,39 @@ const Button = ({ children, variant = 'primary', size = 'md', full = false, icon
 
 const SectionTitle = ({ sub, title, desc, align = 'center' }: any) => (
   <div className={`mb-16 ${align === 'center' ? 'text-center' : 'text-left'} animate-on-scroll`}>
-    <span className="inline-flex items-center gap-2 py-1 px-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-[0.25em] text-white/60 mb-6 backdrop-blur-md hover:bg-white/10 transition-colors cursor-default">
+    <span className="inline-flex items-center gap-2 py-1 px-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-[0.25em] text-white/60 mb-6 backdrop-blur-md">
       <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
       {sub}
     </span>
-    <h2 className="text-4xl md:text-6xl font-extralight text-white leading-[1.1] mb-6">
-      {title.split(' ').map((word: string, i: number) => (
-        <span key={i} className={i % 2 !== 0 ? "font-serif italic text-white/90 font-normal" : "text-white"}>{word} </span>
-      ))}
+    <h2 className="text-4xl md:text-6xl font-light text-white leading-[1.1] mb-6">
+      {title}
     </h2>
     {desc && <p className={`text-white/50 text-sm md:text-base leading-relaxed max-w-2xl ${align === 'center' ? 'mx-auto' : ''}`}>{desc}</p>}
   </div>
 );
 
-// --- 3. MAIN APPLICATION ---
+// --- 3. LIGHTBOX COMPONENT ---
+const Lightbox = ({ image, onClose }: { image: any, onClose: () => void }) => {
+  if (!image) return null;
+  return (
+    <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 animate-fade-in">
+      <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-50">
+        <X size={24} className="text-white"/>
+      </button>
+      <img src={image.src} alt={image.cat} className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-scale-in"/>
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/80 text-sm font-bold uppercase tracking-widest bg-black/50 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md">
+        {image.cat} Collection
+      </div>
+    </div>
+  );
+};
+
+// --- 4. MAIN APP ---
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<any>(null);
   const [activeSection, setActiveSection] = useState('home');
   
   // BOOKING STATE
@@ -160,23 +173,17 @@ export default function App() {
     date: null as Date | null,
     time: null as string | null,
     extras: {} as Record<string, boolean>,
-    client: { name: '', instagram: '', email: '' },
-    xp: 2200 // Mock XP for demo
+    client: { name: '', instagram: '' },
+    xp: 2200
   });
 
-  // INITIALIZATION
   useEffect(() => {
-    // Cinematic Loading Sequence
     setTimeout(() => setLoading(false), 2500);
-
     const handleScroll = () => {
       const sections = ['home', 'about', 'portfolio', 'services', 'booking'];
       const current = sections.find(section => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top >= -300 && rect.top <= 300;
-        }
+        const el = document.getElementById(section);
+        if (el) { const rect = el.getBoundingClientRect(); return rect.top >= -300 && rect.top <= 300; }
         return false;
       });
       if (current) setActiveSection(current);
@@ -202,114 +209,104 @@ export default function App() {
 
   const handleCheckout = () => {
     if(!selectedService || !booking.date || !booking.time || !booking.client.name) return;
-    
     const dateStr = booking.date.toLocaleDateString(CONFIG.LOCALE, { weekday: 'long', day: 'numeric', month: 'long' });
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => `+ ${DATA.extras.find(e=>e.id===k)?.label}`).join('\n');
     
     const msg = `
-✨ *PEDIDO DE AGENDAMENTO VIP* ✨
+✨ *NOVA RESERVA VIP* ✨
 ──────────────────────
 👤 *CLIENTE*
 Nome: *${booking.client.name}*
-Insta: ${booking.client.instagram}
+Insta: ${booking.client.instagram || 'N/A'}
 
-📸 *EXPERIÊNCIA ESCOLHIDA*
+📸 *EXPERIÊNCIA*
 Serviço: *${selectedService.title.toUpperCase()}*
-Incluso: ${selectedService.duration} • ${selectedService.features[0]}
+Duração: ${selectedService.duration}
 
-🗓 *DATA RESERVADA*
+🗓 *AGENDA*
 ${dateStr} às ${booking.time}
 
 ⭐ *ADICIONAIS*
 ${extrasList || 'Nenhum'}
-
 ──────────────────────
 💎 *INVESTIMENTO: ${CONFIG.CURRENCY} ${total},00*
-💳 *Status:* Aguardando Link de Pagamento
+💳 *Status:* Aguardando Link
 
-*ID do Cliente:* #${Math.floor(Math.random()*10000)}
+*ID:* #${Math.floor(Math.random()*9999)}
 `.trim();
-    
     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
   };
 
-  // GAMIFICATION LOGIC
   const currentLevel = [...DATA.levels].reverse().find(l => booking.xp >= l.min) || DATA.levels[0];
   const nextLevel = DATA.levels.find(l => l.min > booking.xp);
   const progress = nextLevel ? ((booking.xp - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100 : 100;
 
-  // RENDER LOADING SCREEN
   if (loading) return (
-    <div className="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+    <div className="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center">
       <div className="relative mb-12">
         <div className="absolute inset-0 bg-white/10 blur-[60px] rounded-full animate-pulse"></div>
-        {/* Shutter Animation */}
         <div className="relative w-24 h-24 rounded-full border-2 border-white/20 flex items-center justify-center animate-[spin_10s_linear_infinite]">
             <Aperture size={64} className="text-white relative z-10 animate-[pulse_2s_infinite]" strokeWidth={0.5}/>
         </div>
       </div>
-      <div className="h-[2px] w-48 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-[1px] w-48 bg-white/10 overflow-hidden">
         <div className="h-full bg-white animate-[progress_2s_ease-in-out_infinite]"></div>
       </div>
-      <p className="mt-6 text-[10px] font-bold tracking-[0.5em] text-white/50 uppercase">Carregando Experiência</p>
+      <p className="mt-6 text-[10px] font-bold tracking-[0.5em] text-white/50 uppercase">Carregando Estúdio</p>
     </div>
   );
 
   return (
-    <div className="bg-black text-white font-sans selection:bg-white/30 overflow-x-hidden">
+    <div className="bg-[#050505] text-white font-sans selection:bg-white/30 overflow-x-hidden relative">
       
-      {/* --- AMBIENT LAYERS --- */}
+      {/* BACKGROUND EFFECTS */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`}}></div>
-        <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-indigo-900/10 blur-[150px] rounded-full mix-blend-screen animate-pulse-slow"></div>
-        <div className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] bg-amber-900/10 blur-[150px] rounded-full mix-blend-screen animate-pulse-slow delay-1000"></div>
+        <div className="absolute inset-0 opacity-[0.03]" style={{backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`}}></div>
+        <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-indigo-900/10 blur-[150px] rounded-full opacity-40"></div>
+        <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-purple-900/10 blur-[150px] rounded-full opacity-40"></div>
       </div>
+
+      <Lightbox image={lightboxImage} onClose={() => setLightboxImage(null)} />
 
       {/* --- NAVIGATION --- */}
       <nav className={`fixed top-0 left-0 w-full h-24 px-6 md:px-12 flex items-center justify-between z-50 transition-all duration-500 ${activeSection !== 'home' ? 'bg-black/80 backdrop-blur-xl border-b border-white/5' : 'bg-transparent'}`}>
         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.scrollTo(0,0)}>
-          <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-180 duration-700">
+          <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center transition-transform group-hover:rotate-180 duration-700">
             <Aperture size={20} strokeWidth={2}/>
           </div>
-          <div>
-            <span className="text-xl font-light tracking-tighter block leading-none">Lumina<span className="font-bold">.OS</span></span>
-            <span className="text-[8px] uppercase tracking-[0.3em] text-white/50 block">Cinematic Studio</span>
-          </div>
+          <span className="text-xl font-light tracking-tighter">Lumina<span className="font-bold">.OS</span></span>
         </div>
 
-        {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8 bg-white/5 px-8 py-3 rounded-full border border-white/5 backdrop-blur-md">
-          {['Home', 'Portfolio', 'Serviços', 'Sobre'].map((item) => (
-            <button key={item} onClick={() => document.getElementById(item.toLowerCase() === 'sobre' ? 'about' : item.toLowerCase())?.scrollIntoView({behavior:'smooth'})} className={`text-xs uppercase font-bold tracking-widest hover:text-white transition-all hover:scale-105 ${activeSection === item.toLowerCase() ? 'text-white' : 'text-white/40'}`}>
+          {['Home', 'Portfolio', 'Serviços', 'Booking'].map((item) => (
+            <button key={item} onClick={() => document.getElementById(item.toLowerCase())?.scrollIntoView({behavior:'smooth'})} className={`text-xs uppercase font-bold tracking-widest hover:text-white transition-all ${activeSection === item.toLowerCase() ? 'text-white' : 'text-white/40'}`}>
               {item}
             </button>
           ))}
         </div>
         
         <div className="flex items-center gap-4">
-          <Button size="sm" variant="primary" onClick={() => document.getElementById('booking')?.scrollIntoView({behavior:'smooth'})} className="hidden md:flex">Agendar</Button>
+          <Button size="sm" variant="secondary" onClick={() => document.getElementById('booking')?.scrollIntoView({behavior:'smooth'})} className="hidden md:flex">Agendar</Button>
           <button className="md:hidden w-10 h-10 flex items-center justify-center text-white bg-white/10 rounded-full backdrop-blur-md" onClick={() => setMenuOpen(!menuOpen)}>
              {menuOpen ? <X size={20}/> : <Menu size={20}/>}
           </button>
         </div>
       </nav>
 
-      {/* --- MOBILE MENU OVERLAY --- */}
+      {/* MOBILE MENU */}
       <div className={`fixed inset-0 z-40 bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8 transition-all duration-500 ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
          {['Home', 'Portfolio', 'Serviços', 'Booking'].map((item, i) => (
-          <button key={item} style={{transitionDelay: `${i * 100}ms`}} onClick={() => { document.getElementById(item.toLowerCase())?.scrollIntoView({behavior:'smooth'}); setMenuOpen(false); }} className={`text-4xl font-light text-white hover:text-white/50 transition-all ${menuOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+          <button key={item} style={{transitionDelay: `${i * 100}ms`}} onClick={() => { document.getElementById(item.toLowerCase())?.scrollIntoView({behavior:'smooth'}); setMenuOpen(false); }} className={`text-4xl font-light text-white ${menuOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'} transition-all duration-700`}>
             {item}
           </button>
         ))}
       </div>
 
-      {/* --- HERO SECTION --- */}
+      {/* --- HERO --- */}
       <section id="home" className="relative min-h-screen flex items-end pb-24 px-6 md:px-12 pt-32 overflow-hidden">
-        {/* Video Background */}
-        <div className="absolute inset-0 z-0 scale-105">
+        <div className="absolute inset-0 z-0 scale-[1.02]">
           <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-60"><source src={DATA.heroVideo} type="video/mp4" /></video>
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/20"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/30 to-transparent"></div>
         </div>
         
         <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
@@ -319,24 +316,24 @@ ${extrasList || 'Nenhum'}
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
-              Agenda 2026 Disponível
+              Agenda 2026 Aberta
             </div>
             
-            <h1 className="text-6xl md:text-9xl font-light leading-[0.85] tracking-tighter drop-shadow-2xl">
-              Eternize <br/>
-              <span className="font-serif italic font-medium bg-gradient-to-r from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">Sua Essência.</span>
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-light leading-[0.9] tracking-tighter drop-shadow-2xl">
+              Arte em <br/>
+              <span className="font-serif italic font-medium bg-gradient-to-r from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">Movimento.</span>
             </h1>
             
             <p className="text-base md:text-lg text-white/80 max-w-lg leading-relaxed font-light backdrop-blur-sm p-4 rounded-xl border-l-2 border-white/20 bg-black/20">
-              Não é apenas fotografia. É uma experiência de autoconhecimento, luxo e posicionamento de imagem.
+              Não é apenas uma foto. É o seu legado visual. Fotografia high-end focada em branding, moda e posicionamento.
             </p>
             
             <div className="flex flex-wrap gap-4 pt-4">
               <Button size="xl" onClick={() => document.getElementById('services')?.scrollIntoView({behavior:'smooth'})}>
-                Ver Experiências <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform"/>
+                Explorar Planos <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform"/>
               </Button>
               <Button size="xl" variant="secondary" icon={Play} onClick={() => window.open(DATA.heroVideo, '_blank')}>
-                Ver Bastidores
+                Showreel
               </Button>
             </div>
           </div>
@@ -345,7 +342,7 @@ ${extrasList || 'Nenhum'}
              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl w-64 hover:bg-white/10 transition-colors cursor-default">
                 <div className="flex justify-between items-start mb-4">
                    <div className="p-2 bg-amber-500/20 rounded-lg text-amber-500"><Crown size={20}/></div>
-                   <span className="text-[10px] uppercase font-bold tracking-widest text-white/40">Loyalty</span>
+                   <span className="text-[10px] uppercase font-bold tracking-widest text-white/40">Nível Atual</span>
                 </div>
                 <div className="space-y-2">
                    <div className="flex justify-between text-xs font-bold">
@@ -375,56 +372,68 @@ ${extrasList || 'Nenhum'}
         </div>
       </section>
 
-      {/* --- ABOUT SECTION (THE EMOTIONAL HOOK) --- */}
-      <section id="about" className="py-32 px-6 md:px-12 relative">
+      {/* --- BIO SECTION (PARALLAX EFFECT) --- */}
+      <section id="about" className="py-32 px-6 md:px-12 relative overflow-hidden">
          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <div className="relative">
-               <div className="absolute inset-0 bg-white/5 rotate-3 rounded-[2rem]"></div>
-               <img src="https://images.unsplash.com/photo-1554048612-387768052bf7?auto=format&fit=crop&w=800&q=80" alt="Photographer" className="relative rounded-[2rem] shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 rotate-[-3deg] hover:rotate-0"/>
-               <div className="absolute -bottom-6 -right-6 bg-white text-black p-6 rounded-2xl shadow-xl max-w-xs">
-                  <Quote size={24} className="mb-2 opacity-50"/>
-                  <p className="text-xs font-serif italic leading-relaxed">
-                     "Minha missão não é apenas tirar fotos, é revelar a versão mais poderosa que já existe dentro de você."
-                  </p>
+            <div className="relative group">
+               <div className="absolute inset-0 bg-white/5 rotate-3 rounded-[2rem] group-hover:rotate-6 transition-transform duration-700"></div>
+               <div className="relative rounded-[2rem] overflow-hidden aspect-[3/4]">
+                 <img src={DATA.aboutImage} alt="Photographer" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"/>
                </div>
             </div>
             <div className="space-y-8">
                <SectionTitle align="left" sub="O Artista" title="Muito Além do Clique" desc="Com 8 anos de experiência em editoriais de moda e branding internacional, trago o olhar da alta costura para o seu posicionamento pessoal." />
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                  <div className="space-y-3">
-                     <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center border border-white/10"><Eye size={20}/></div>
-                     <h4 className="text-lg font-light">Direção Completa</h4>
-                     <p className="text-sm text-white/50">Você não precisa saber posar. Eu guio cada movimento, olhar e ângulo.</p>
+               
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
+                     <Monitor size={24} className="mb-4 text-white/70"/>
+                     <h4 className="text-lg font-light mb-2">Pós-Produção High-End</h4>
+                     <p className="text-sm text-white/50">Tratamento de pele e cor nível editorial, mantendo a textura e a realidade.</p>
                   </div>
-                  <div className="space-y-3">
-                     <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center border border-white/10"><Sun size={20}/></div>
-                     <h4 className="text-lg font-light">Luz Cinematográfica</h4>
-                     <p className="text-sm text-white/50">Equipamento de cinema para criar a atmosfera perfeita para sua história.</p>
+                  <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
+                     <User size={24} className="mb-4 text-white/70"/>
+                     <h4 className="text-lg font-light mb-2">Direção de Poses</h4>
+                     <p className="text-sm text-white/50">Você não precisa ser modelo. Eu te guio em cada movimento e expressão.</p>
                   </div>
                </div>
-               <Button variant="outline" className="mt-8">Conheça Minha História</Button>
+               
+               <div className="pt-6 border-t border-white/10">
+                 <div className="flex items-center gap-4">
+                   <img src={DATA.aboutImage} className="w-12 h-12 rounded-full object-cover border border-white/20"/>
+                   <div>
+                     <p className="text-sm font-bold">Thalyson Designer</p>
+                     <p className="text-xs text-white/40 uppercase tracking-widest">Fotógrafo Principal</p>
+                   </div>
+                 </div>
+               </div>
             </div>
          </div>
       </section>
 
-      {/* --- PORTFOLIO GRID (MASONRY STYLE) --- */}
+      {/* --- PORTFOLIO (LIGHTBOX ACTIVATED) --- */}
       <section id="portfolio" className="py-32 px-6 md:px-12 bg-white/5 relative border-y border-white/5">
-        <SectionTitle sub="Portfólio" title="Galeria de Arte" desc="Uma curadoria dos nossos melhores momentos." />
+        <SectionTitle sub="Galeria" title="Acervo Visual" desc="Uma curadoria dos nossos melhores momentos." />
         
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[300px]">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[350px]">
           {DATA.portfolio.map((item, i) => (
-            <div key={i} className={`group relative overflow-hidden rounded-2xl cursor-pointer ${i === 0 || i === 3 ? 'md:col-span-2' : ''}`}>
+            <div 
+              key={i} 
+              onClick={() => setLightboxImage(item)}
+              className={`group relative overflow-hidden rounded-2xl cursor-pointer ${i === 0 || i === 3 ? 'md:col-span-2' : ''}`}
+            >
               <img src={item.src} alt="" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"/>
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center gap-4">
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center gap-4">
                 <span className="text-[10px] uppercase font-bold tracking-[0.3em] translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">{item.cat}</span>
-                <Button variant="secondary" size="sm" className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-200">Ver Projeto</Button>
+                <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-200">
+                  <Maximize2 size={20}/>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* --- SERVICES (PRICING) --- */}
+      {/* --- PRICING --- */}
       <section id="services" className="py-32 px-6 md:px-12 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-indigo-900/10 blur-[150px] rounded-full pointer-events-none"></div>
         
@@ -439,7 +448,7 @@ ${extrasList || 'Nenhum'}
               ${booking.serviceId === s.id ? 'bg-gradient-to-b from-white via-white/50 to-transparent shadow-[0_0_50px_rgba(255,255,255,0.1)]' : 'bg-white/10 hover:bg-white/20'}`}
             >
               <div className="bg-[#050505] h-full rounded-[1.9rem] p-8 relative overflow-hidden flex flex-col border border-white/5">
-                {/* Background Glow */}
+                {/* Glow */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[80px] rounded-full group-hover:bg-white/10 transition-colors"></div>
                 
                 {s.tag && (
@@ -475,7 +484,7 @@ ${extrasList || 'Nenhum'}
                 </ul>
 
                 <Button full variant={booking.serviceId === s.id ? 'primary' : 'secondary'} className={booking.serviceId === s.id ? 'animate-pulse' : ''}>
-                  {booking.serviceId === s.id ? 'Experiência Selecionada' : 'Selecionar Experiência'}
+                  {booking.serviceId === s.id ? 'Experiência Selecionada' : 'Selecionar'}
                 </Button>
               </div>
             </div>
@@ -497,7 +506,7 @@ ${extrasList || 'Nenhum'}
                  </div>
                  <p className="text-sm text-white/80 italic mb-8 leading-relaxed">"{r.txt}"</p>
                  <div className="flex items-center gap-4">
-                   <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-bold">{r.name[0]}</div>
+                   <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-bold text-xs">{r.name[0]}</div>
                    <div>
                      <p className="font-bold text-sm">{r.name}</p>
                      <p className="text-[10px] text-white/40 uppercase tracking-widest">{r.role}</p>
@@ -509,16 +518,15 @@ ${extrasList || 'Nenhum'}
         </div>
       </section>
 
-      {/* --- BOOKING ENGINE (THE CONVERSION CORE) --- */}
-      <section id="booking" className="py-32 px-6 md:px-12 max-w-5xl mx-auto relative">
-        <SectionTitle sub="Agendamento" title="Comece Sua Jornada" desc="Finalize os detalhes abaixo. Entraremos em contato via WhatsApp para confirmar." />
+      {/* --- BOOKING ENGINE (DESKTOP OPTIMIZED) --- */}
+      <section id="booking" className="py-32 px-6 md:px-12 max-w-6xl mx-auto relative">
+        <SectionTitle sub="Agendamento" title="Sua Jornada Começa Aqui" desc="Finalize os detalhes. Seus dados estão seguros." />
         
         <div className="bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] p-6 md:p-12 shadow-2xl relative overflow-hidden">
-          {/* Decorative Glow */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-20"></div>
 
-          {/* Service Selection Summary */}
-          <div className="mb-12 p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all hover:bg-white/10">
+          {/* Status Selection */}
+          <div className="mb-12 p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
              <div className="flex items-center gap-6">
                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transition-all ${selectedService ? 'bg-white text-black scale-100' : 'bg-white/5 text-white/20 scale-95'}`}>
                  {selectedService ? <Check size={32}/> : <Aperture size={32} className="animate-spin-slow"/>}
@@ -538,11 +546,13 @@ ${extrasList || 'Nenhum'}
           {selectedService ? (
             <div className="space-y-12 animate-fade-in-up">
               
-              {/* 1. Date & Time Selection */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-b border-white/5 pb-12">
+              {/* 1. Date Selection (Responsive Grid/Scroll) */}
+              <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-12 border-b border-white/5 pb-12">
                 <div>
-                   <h3 className="text-xs font-bold uppercase tracking-widest mb-6 flex items-center gap-2"><Calendar size={16} className="text-white/50"/> Data Preferida</h3>
-                   <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mask-fade-right">
+                   <h3 className="text-xs font-bold uppercase tracking-widest mb-6 flex items-center gap-2"><Calendar size={16} className="text-white/50"/> Selecione a Data</h3>
+                   
+                   {/* Desktop Grid / Mobile Scroll */}
+                   <div className="grid grid-flow-col auto-cols-[80px] md:grid-cols-7 gap-3 overflow-x-auto pb-4 scrollbar-hide">
                      {Array.from({length:14}).map((_, i) => {
                        const d = new Date(); d.setDate(d.getDate() + i + 1);
                        const isSelected = booking.date?.toDateString() === d.toDateString();
@@ -560,6 +570,7 @@ ${extrasList || 'Nenhum'}
                      })}
                    </div>
                 </div>
+                
                 <div>
                   <h3 className="text-xs font-bold uppercase tracking-widest mb-6 flex items-center gap-2"><Clock size={16} className="text-white/50"/> Horário</h3>
                   <div className="grid grid-cols-3 gap-3">
@@ -580,13 +591,13 @@ ${extrasList || 'Nenhum'}
 
               {/* 2. Extras */}
               <div className="border-b border-white/5 pb-12">
-                <h3 className="text-xs font-bold uppercase tracking-widest mb-6 flex items-center gap-2"><Sparkles size={16} className="text-white/50"/> Customize sua Experiência</h3>
+                <h3 className="text-xs font-bold uppercase tracking-widest mb-6 flex items-center gap-2"><Sparkles size={16} className="text-white/50"/> Upgrades de Sessão</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {DATA.extras.map(ex => (
                     <div 
                         key={ex.id} 
                         onClick={()=>setBooking(b=>({...b, extras: {...b.extras, [ex.id]: !b.extras[ex.id]}}))} 
-                        className={`p-5 rounded-2xl border cursor-pointer transition-all duration-300 relative overflow-hidden group
+                        className={`p-5 rounded-2xl border cursor-pointer transition-all duration-300 relative overflow-hidden group hover:scale-[1.02]
                         ${booking.extras[ex.id] ? 'bg-white/10 border-white' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                     >
                        <div className="flex items-start justify-between mb-2">
@@ -634,14 +645,14 @@ ${extrasList || 'Nenhum'}
               {/* 4. Final CTA */}
               <div className="space-y-4 pt-4">
                   <Button full size="xl" variant="whatsapp" onClick={handleCheckout} disabled={!booking.date || !booking.time || !booking.client.name}>
-                    <div className="flex justify-between w-full items-center px-2">
-                       <span className="flex items-center gap-3"><MessageCircle size={24}/> Confirmar Agendamento</span>
+                    <div className="flex justify-between w-full items-center px-4">
+                       <span className="flex items-center gap-3"><MessageCircle size={24}/> Enviar Solicitação</span>
                        <span className="text-lg opacity-90">{CONFIG.CURRENCY} {total}</span>
                     </div>
                   </Button>
                   
                   <div className="flex items-center justify-center gap-2 text-[10px] text-white/30 uppercase tracking-widest">
-                      <ShieldCheck size={12}/> Pagamento Seguro via WhatsApp
+                      <ShieldCheck size={12}/> Pagamento Seguro e Verificado
                   </div>
               </div>
 
@@ -667,30 +678,25 @@ ${extrasList || 'Nenhum'}
            <a href="#" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white hover:text-black transition-all"><Instagram size={20}/></a>
            <a href="#" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white hover:text-black transition-all"><MessageCircle size={20}/></a>
          </div>
-         <p className="text-[10px] text-white/30 uppercase tracking-[0.2em]">&copy; 2026 {CONFIG.PHOTOGRAPHER}. All Rights Reserved.</p>
+         <p className="text-[10px] text-white/30 uppercase tracking-[0.2em]">&copy; 2026 {CONFIG.BRAND}. All Rights Reserved.</p>
       </footer>
 
-      {/* --- EXTRA ICONS FOR IMPORTS --- */}
-      <div className="hidden"><Eye/><Sun/></div>
-
-      {/* --- CSS INJECTION (ANIMATIONS) --- */}
+      {/* --- CSS STYLES --- */}
       <style>{`
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .mask-fade-right { -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%); }
         .animate-pulse-slow { animation: pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         .animate-spin-slow { animation: spin 8s linear infinite; }
         .animate-fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .delay-100 { animation-delay: 100ms; }
         .delay-200 { animation-delay: 200ms; }
         
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes shimmer { 100% { transform: translateX(100%); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         @keyframes progress { 0% { width: 0% } 50% { width: 70% } 100% { width: 100% } }
       `}</style>
     </div>
   );
 }
-
-// Helper icons just for this file context
-const Eye = (props:any) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>;
-const Sun = (props:any) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>;
