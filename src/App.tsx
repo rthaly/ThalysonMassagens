@@ -1,33 +1,35 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Camera, Calendar, Clock, User, Instagram, 
-  Check, X, MessageCircle, Play, Star,
-  ShieldCheck, Sparkles, Loader2, Menu, Crown,
-  Zap, Film, ChevronDown, ArrowRight, Maximize2, Aperture, Monitor
+  Check, X, MessageCircle, Play, Sparkles, 
+  Menu, Crown, Zap, Film, ArrowRight, 
+  Maximize2, Aperture, Monitor, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * LUMINA CINEMATIC OS - ULTIMATE GLASS EDITION
+ * LUMINA CINEMATIC OS - VERSÃO DEFINITIVA (CORRIGIDA & OTIMIZADA)
  * ==================================================================================
- * VISUAL: Apple Glass 2026 (Blur, Transparência, Glow)
- * FUNCIONALIDADES: Completas (XP, Bio, Lightbox, Video Maker, Fotografia)
+ * - Galeria Carrossel Automático + Manual
+ * - Agendamento Simplificado (Horizontal Scroll)
+ * - 100% Português
+ * - Imagens corrigidas
  */
 
-// --- 1. CONFIGURAÇÃO & DADOS COMPLETOS ---
+// --- 1. CONFIGURAÇÃO & DADOS ---
 
 const CONFIG = {
-  PHONE: "5517991360413", 
+  PHONE: "5517991360413", // Seu número
   CURRENCY: 'R$',
   BRAND: "Lumina Studio"
 };
 
 const DATA = {
-  // VÍDEO HERO: Loop de alta qualidade
-  heroVideo: "https://videos.pexels.com/video-files/5309381/5309381-hd_1920_1080_25fps.mp4",
+  // VÍDEO HERO: Fundo em loop
+  heroVideo: "https://videos.pexels.com/video-files/3205914/3205914-hd_1920_1080_25fps.mp4",
   
-  // FOTO DO FOTÓGRAFO (BIO)
-  aboutImage: "https://images.unsplash.com/photo-1554048612-387768052bf7?auto=format&fit=crop&w=1200&q=90",
+  // IMAGEM DE PERFIL (CORRIGIDA - Link estável)
+  aboutImage: "https://images.unsplash.com/photo-1554048612-387768052bf7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
 
   stats: [
     { label: "Produções", value: "850+" },
@@ -35,16 +37,15 @@ const DATA = {
     { label: "Anos de Mercado", value: "8" }
   ],
 
-  // NÍVEIS DE FIDELIDADE (VOLTOU!)
   levels: [
-    { level: 1, title: "Member", min: 0, color: "text-zinc-400" },
-    { level: 2, title: "VIP Client", min: 1500, color: "text-amber-400" },
-    { level: 3, title: "Gold Partner", min: 3000, color: "text-purple-400" }
+    { level: 1, title: "Membro", min: 0, color: "text-zinc-400" },
+    { level: 2, title: "Cliente VIP", min: 1500, color: "text-amber-400" },
+    { level: 3, title: "Parceiro Gold", min: 3000, color: "text-purple-400" }
   ],
 
   categories: [
     { id: 'foto', label: 'Fotografia', icon: Camera },
-    { id: 'video', label: 'Cinema & Vídeo', icon: Film }
+    { id: 'video', label: 'Vídeo & Cinema', icon: Film }
   ],
 
   services: [
@@ -52,72 +53,72 @@ const DATA = {
     {
       id: 'foto-pessoal',
       catId: 'foto',
-      title: "Signature Portrait",
+      title: "Retrato Signature",
       price: 490,
       oldPrice: 650,
       duration: "1h",
-      desc: "Sua imagem pessoal elevada ao nível de arte. Ideal para branding e LinkedIn.",
-      features: ["10 Fotos High-End", "1 Look Completo", "Direção de Poses", "Galeria Vitalícia"],
+      desc: "Sua imagem pessoal elevada ao nível de arte. Ideal para LinkedIn e posicionamento.",
+      features: ["10 Fotos Editadas", "1 Look Completo", "Direção de Poses", "Galeria Online"],
       tag: "POPULAR"
     },
     {
       id: 'foto-editorial',
       catId: 'foto',
-      title: "Vogue Experience",
+      title: "Experiência Vogue",
       price: 990,
       oldPrice: 1400,
       duration: "2h",
-      desc: "Sinta-se em uma capa de revista. Produção artística e luz cinematográfica.",
-      features: ["30 Fotos Fine Art", "3 Trocas de Look", "Fashion Film (15s)", "Guia de Estilo"],
-      tag: "BEST SELLER"
+      desc: "Sinta-se em uma capa de revista. Produção artística e luz de cinema.",
+      features: ["30 Fotos Fine Art", "3 Trocas de Look", "Vídeo Bastidores (15s)", "Guia de Estilo"],
+      tag: "MAIS VENDIDO"
     },
-    // VÍDEO / CINEMA
+    // VÍDEO
     {
       id: 'video-reels',
       catId: 'video',
-      title: "Viral Reels Maker",
+      title: "Reels Viral Maker",
       price: 590,
       oldPrice: 800,
       duration: "1.5h",
-      desc: "Conteúdo vertical dinâmico para explodir seu alcance (TikTok/Reels).",
-      features: ["3 Vídeos Verticais", "Edição Rítmica", "Captação 4K", "Roteiro Incluso"],
-      tag: "TRENDING"
+      desc: "Vídeos verticais dinâmicos para TikTok e Reels. Edição rápida incluída.",
+      features: ["3 Vídeos Verticais", "Edição com Música", "Qualidade 4K", "Roteiro Incluso"],
+      tag: "TENDÊNCIA"
     },
     {
       id: 'video-brand',
       catId: 'video',
-      title: "Brand Cinema",
+      title: "Cinema para Marcas",
       price: 2200,
       oldPrice: 3000,
       duration: "4h",
-      desc: "Um manifesto visual da sua marca. Narrativa completa para lançamentos.",
-      features: ["Filme Hero (60s)", "Drone Incluso", "Sound Design", "Entrevistas"],
+      desc: "Comercial completo para sua empresa. Narrativa visual de alto impacto.",
+      features: ["Filme Completo (60s)", "Imagens de Drone", "Sound Design", "Entrevistas"],
       tag: "PREMIUM"
     }
   ],
 
-  // EXTRAS (VOLTOU!)
   extras: [
-    { id: 'video_teaser', label: "Teaser Vertical 4K", price: 400, desc: "Vídeo extra para Stories.", icon: Film },
-    { id: 'rush', label: "Entrega Express (24h)", price: 200, desc: "Fure a fila da edição.", icon: Zap },
-    { id: 'makeup', label: "Make & Hair", price: 300, desc: "Produção profissional no set.", icon: User }
+    { id: 'video_teaser', label: "Teaser Extra (Stories)", price: 400, desc: "Vídeo curto vertical.", icon: Film },
+    { id: 'rush', label: "Entrega em 24h", price: 200, desc: "Receba as fotos amanhã.", icon: Zap },
+    { id: 'makeup', label: "Maquiagem Profissional", price: 300, desc: "Profissional no estúdio.", icon: User }
   ],
 
+  // PORTFÓLIO PARA CARROSSEL
   portfolio: [
-    { id: 1, cat: "Editorial", src: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&q=90" },
-    { id: 2, cat: "Cinema", src: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=1200&q=90" },
-    { id: 3, cat: "Retrato", src: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1200&q=90" },
-    { id: 4, cat: "Urbano", src: "https://images.unsplash.com/photo-1519744531242-c10a2295d8be?w=1200&q=90" },
-    { id: 5, cat: "Estúdio", src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1200&q=90" },
-    { id: 6, cat: "Moda", src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1200&q=90" }
+    { id: 1, cat: "Editorial", src: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80" },
+    { id: 2, cat: "Cinema", src: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=800&q=80" },
+    { id: 3, cat: "Retrato", src: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80" },
+    { id: 4, cat: "Urbano", src: "https://images.unsplash.com/photo-1519744531242-c10a2295d8be?w=800&q=80" },
+    { id: 5, cat: "Estúdio", src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80" },
+    { id: 6, cat: "Moda", src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80" }
   ]
 };
 
-// --- 2. COMPONENTES VISUAIS (DESIGN SYSTEM GLASS) ---
+// --- 2. COMPONENTES VISUAIS (DESIGN SYSTEM) ---
 
 const GlassCard = ({ children, className = "", hoverEffect = false, onClick }: any) => (
   <div onClick={onClick} className={`
-    relative overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl
+    relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl
     bg-white/5 backdrop-blur-xl transition-all duration-500
     ${hoverEffect ? 'hover:bg-white/10 hover:border-white/20 hover:scale-[1.01] cursor-pointer' : ''}
     ${className}
@@ -130,12 +131,16 @@ const GlassCard = ({ children, className = "", hoverEffect = false, onClick }: a
 const Button = ({ children, variant = 'primary', size = 'md', full, onClick, disabled, icon: Icon }: any) => {
   const base = "rounded-xl font-bold tracking-wide transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
   const styles: any = {
-    primary: "bg-white text-black hover:bg-zinc-200 shadow-[0_0_30px_rgba(255,255,255,0.2)]",
+    primary: "bg-white text-black hover:bg-zinc-200 shadow-[0_0_25px_rgba(255,255,255,0.3)]",
     glass: "bg-white/10 text-white border border-white/10 hover:bg-white/20 backdrop-blur-md",
-    whatsapp: "bg-[#25D366] text-white hover:bg-[#1ebc57] shadow-[0_0_30px_rgba(37,211,102,0.3)]",
-    gold: "bg-gradient-to-r from-amber-400 to-amber-600 text-black hover:brightness-110 shadow-[0_0_30px_rgba(245,158,11,0.4)]"
+    whatsapp: "bg-[#25D366] text-white hover:bg-[#1ebc57] shadow-[0_0_25px_rgba(37,211,102,0.4)]",
+    gold: "bg-gradient-to-r from-amber-400 to-amber-600 text-black hover:brightness-110 shadow-[0_0_25px_rgba(245,158,11,0.5)]"
   };
-  const sizes: any = { md: "h-12 px-6 text-xs uppercase", lg: "h-16 px-10 text-sm uppercase tracking-widest" };
+  const sizes: any = { 
+    sm: "h-10 px-4 text-[10px] uppercase",
+    md: "h-12 px-6 text-xs uppercase", 
+    lg: "h-14 px-8 text-sm uppercase tracking-widest" 
+  };
 
   return (
     <button onClick={onClick} disabled={disabled} className={`${base} ${styles[variant]} ${sizes[size]} ${full ? 'w-full' : ''}`}>
@@ -145,23 +150,85 @@ const Button = ({ children, variant = 'primary', size = 'md', full, onClick, dis
   );
 };
 
-// --- LIGHTBOX (VOLTOU!) ---
-const Lightbox = ({ image, onClose }: any) => {
-  if (!image) return null;
+// --- COMPONENTE CARROSSEL (AUTO + MANUAL) ---
+const Carousel = ({ items, onItemClick }: any) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Rolagem Automática
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isPaused && scrollRef.current) {
+        if (scrollRef.current.scrollLeft + scrollRef.current.clientWidth >= scrollRef.current.scrollWidth) {
+          scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+        }
+      }
+    }, 3000); // Passa a cada 3 segundos
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const amount = direction === 'left' ? -350 : 350;
+      scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-6 animate-fade-in">
-      <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-50">
-        <X size={24} className="text-white"/>
+    <div className="relative group" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
+      {/* Botões Manuais */}
+      <button onClick={() => scroll('left')} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center border border-white/10 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:text-black">
+        <ChevronLeft size={24}/>
       </button>
-      <img src={image.src} alt={image.cat} className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-scale-in"/>
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/80 text-xs font-bold uppercase tracking-widest bg-black/50 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md">
-        Coleção: {image.cat}
+      <button onClick={() => scroll('right')} className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center border border-white/10 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:text-black">
+        <ChevronRight size={24}/>
+      </button>
+
+      {/* Container Scroll */}
+      <div 
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory px-4 md:px-0"
+        style={{ scrollBehavior: 'smooth' }}
+      >
+        {items.map((item: any, i: number) => (
+          <div 
+            key={i} 
+            onClick={() => onItemClick(item)}
+            className="snap-center shrink-0 w-[280px] h-[350px] md:w-[350px] md:h-[450px] relative rounded-2xl overflow-hidden cursor-pointer border border-white/10 group/card"
+          >
+            <img src={item.src} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110 grayscale group-hover/card:grayscale-0"/>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity flex flex-col justify-end p-6">
+              <p className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-1">{item.cat}</p>
+              <div className="flex items-center gap-2 text-white text-xs">
+                <Maximize2 size={14}/> Ampliar
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-// --- 3. APP PRINCIPAL ---
+// --- LIGHTBOX ---
+const Lightbox = ({ image, onClose }: any) => {
+  if (!image) return null;
+  return (
+    <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 animate-fade-in">
+      <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-50">
+        <X size={24} className="text-white"/>
+      </button>
+      <img src={image.src} alt={image.cat} className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl animate-scale-in"/>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/80 text-xs font-bold uppercase tracking-widest bg-black/50 px-6 py-3 rounded-full border border-white/10 backdrop-blur-md">
+        Galeria: {image.cat}
+      </div>
+    </div>
+  );
+};
+
+// --- APP PRINCIPAL ---
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -175,13 +242,13 @@ export default function App() {
     time: null as string | null,
     extras: {} as Record<string, boolean>,
     client: { name: '', instagram: '' },
-    xp: 2200 // Mock XP do usuário
+    xp: 2200
   });
 
   useEffect(() => setTimeout(() => setLoading(false), 2000), []);
 
-  // CÁLCULOS
   const selectedService = DATA.services.find(s => s.id === booking.serviceId);
+  
   const total = useMemo(() => {
     let val = selectedService ? selectedService.price : 0;
     Object.keys(booking.extras).forEach(k => {
@@ -190,231 +257,210 @@ export default function App() {
     return val;
   }, [booking.serviceId, booking.extras]);
 
+  // Nível de XP
   const currentLevel = [...DATA.levels].reverse().find(l => booking.xp >= l.min) || DATA.levels[0];
   const nextLevel = DATA.levels.find(l => l.min > booking.xp);
   const progress = nextLevel ? ((booking.xp - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100 : 100;
 
   const handleCheckout = () => {
     if(!selectedService || !booking.date || !booking.time || !booking.client.name) return;
-    const dateStr = booking.date.toLocaleDateString(CONFIG.LOCALE, { weekday: 'long', day: 'numeric', month: 'long' });
+    const dateStr = booking.date.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => `+ ${DATA.extras.find(e=>e.id===k)?.label}`).join('\n');
     
     const msg = `
-🎬 *SOLICITAÇÃO DE PRODUÇÃO*
+🎬 *NOVA RESERVA - LUMINA STUDIO*
 ──────────────────────
 👤 *CLIENTE*
 Nome: *${booking.client.name}*
 Insta: ${booking.client.instagram}
 
-🎥 *PROJETO*
+🎥 *PROJETO ESCOLHIDO*
 Serviço: *${selectedService.title.toUpperCase()}*
-Tipo: ${selectedService.catId === 'foto' ? 'Fotografia' : 'Vídeo Maker'}
-Data: ${dateStr} às ${booking.time}
+Tipo: ${selectedService.catId === 'foto' ? 'Fotografia' : 'Produção de Vídeo'}
+Data: ${dateStr}
+Horário: ${booking.time}
 
-✨ *ADICIONAIS*
+✨ *EXTRAS*
 ${extrasList || 'Nenhum'}
 ──────────────────────
-💎 *TOTAL ESTIMADO: ${CONFIG.CURRENCY} ${total},00*
+💎 *VALOR FINAL: ${CONFIG.CURRENCY} ${total},00*
 `.trim();
     window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   if (loading) return (
     <div className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center">
-      <div className="w-24 h-24 rounded-full border border-white/10 flex items-center justify-center animate-spin-slow mb-4 relative">
-        <div className="absolute inset-0 border-t border-white rounded-full animate-spin"></div>
-        <Aperture size={32} className="text-white"/>
+      <div className="w-20 h-20 rounded-full border border-white/20 flex items-center justify-center mb-4 relative animate-spin">
+        <div className="absolute top-0 left-0 w-full h-full border-t-2 border-amber-400 rounded-full"></div>
       </div>
-      <p className="text-white/50 text-xs uppercase tracking-[0.5em] animate-pulse">Carregando Estúdio</p>
+      <p className="text-white/50 text-xs uppercase tracking-[0.5em] animate-pulse">Carregando Studio</p>
     </div>
   );
 
   return (
-    <div className="bg-[#030303] text-white font-sans selection:bg-white/30 min-h-screen relative overflow-x-hidden">
+    <div className="bg-[#050505] text-white font-sans selection:bg-amber-500/30 min-h-screen relative overflow-x-hidden">
       
-      {/* BACKGROUND EFFECTS */}
+      {/* FUNDO AMBIENTE */}
       <div className="fixed inset-0 pointer-events-none z-0">
-         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-purple-900/10 rounded-full blur-[150px] animate-blob"></div>
-         <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-blue-900/10 rounded-full blur-[150px] animate-blob animation-delay-2000"></div>
-         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
+         <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-purple-900/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+         <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-amber-900/5 rounded-full blur-[120px]"></div>
+         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
       </div>
 
       <Lightbox image={lightboxImage} onClose={() => setLightboxImage(null)} />
 
-      {/* --- MENU FLUTUANTE (GLASS) --- */}
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl">
-        <GlassCard className="flex items-center justify-between px-6 py-4 !rounded-full bg-black/40 backdrop-blur-2xl border-white/10">
-          <div className="flex items-center gap-2">
-            <Aperture size={20}/>
-            <span className="font-bold tracking-tight">Lumina<span className="font-light text-white/50">.OS</span></span>
+      {/* --- MENU FLUTUANTE --- */}
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-5xl">
+        <GlassCard className="flex items-center justify-between px-6 py-3 !rounded-full bg-black/60 backdrop-blur-2xl border-white/10">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo(0,0)}>
+            <Aperture size={20} className="text-amber-400"/>
+            <span className="font-bold tracking-tight text-sm">Lumina<span className="font-light text-white/50">.Studio</span></span>
           </div>
-          <div className="hidden md:flex items-center gap-8">
-            {['Home', 'Sobre', 'Portfolio', 'Serviços', 'Agendar'].map(item => (
+          <div className="hidden md:flex items-center gap-6">
+            {['Início', 'Sobre', 'Portfolio', 'Agendar'].map(item => (
               <button 
                 key={item} 
-                onClick={() => document.getElementById(item.toLowerCase() === 'home' ? 'hero' : item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' })}
-                className="text-xs font-medium text-white/60 hover:text-white transition-colors uppercase tracking-widest"
+                onClick={() => document.getElementById(item === 'Início' ? 'hero' : item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' })}
+                className="text-xs font-bold text-white/60 hover:text-white transition-colors uppercase tracking-widest"
               >
                 {item}
               </button>
             ))}
           </div>
-          <Button size="sm" variant="glass" className="hidden md:flex">Login VIP</Button>
-          <button className="md:hidden text-white"><Menu size={20}/></button>
+          <div className="flex items-center gap-3">
+             <div className="hidden md:flex flex-col items-end mr-2">
+                <span className="text-[9px] uppercase font-bold text-amber-400">{currentLevel.title}</span>
+                <span className="text-[9px] text-white/50">{booking.xp} XP</span>
+             </div>
+             <button className="md:hidden text-white"><Menu size={20}/></button>
+          </div>
         </GlassCard>
       </nav>
 
-      {/* --- HERO SECTION (VÍDEO + XP WIDGET) --- */}
+      {/* --- HERO SECTION --- */}
       <section id="hero" className="relative h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
-        {/* VÍDEO HERO */}
         <div className="absolute inset-0 z-0">
           <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-50 scale-105">
             <source src={DATA.heroVideo} type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-[#030303]/40 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent"></div>
         </div>
 
-        <div className="relative z-10 w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-end pb-12">
-           {/* LEFT: TEXTO */}
-           <div className="space-y-8 animate-fade-in-up">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-[10px] font-bold uppercase tracking-widest">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Agenda 2026 Aberta
-              </div>
-              <h1 className="text-5xl md:text-8xl font-bold tracking-tight leading-[0.9]">
-                Visual <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">Legacies.</span>
-              </h1>
-              <p className="text-lg text-white/70 max-w-md leading-relaxed">
-                Fotografia e Produção Audiovisual. Transformamos sua imagem pessoal e de marca em cinema.
-              </p>
-              <div className="flex gap-4">
-                <Button size="lg" onClick={() => document.getElementById('serviços')?.scrollIntoView({behavior:'smooth'})}>
-                   Começar Projeto
-                </Button>
-                <Button size="lg" variant="glass" icon={Play} onClick={() => window.open(DATA.heroVideo, '_blank')}>
-                   Showreel
-                </Button>
-              </div>
+        <div className="relative z-10 w-full max-w-5xl text-center space-y-8 animate-fade-in-up">
+           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-[10px] font-bold uppercase tracking-widest mx-auto">
+             <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Disponível para 2026
            </div>
+           
+           <h1 className="text-5xl md:text-8xl font-bold tracking-tight leading-[0.9]">
+             Eternize seu <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">Legado Visual.</span>
+           </h1>
+           
+           <p className="text-lg text-white/70 max-w-xl mx-auto leading-relaxed font-light">
+             Fotografia High-End e Cinema. Elevamos sua autoridade digital com produções que narram a sua história.
+           </p>
 
-           {/* RIGHT: XP WIDGET (VOLTOU!) */}
-           <div className="hidden lg:flex justify-end animate-fade-in-up delay-200">
-             <GlassCard className="w-72 p-6 bg-black/40">
-               <div className="flex justify-between items-start mb-4">
-                 <div>
-                   <p className="text-[10px] uppercase font-bold text-white/40 mb-1">Status Atual</p>
-                   <p className={`text-lg font-bold flex items-center gap-2 ${currentLevel.color}`}>
-                     <Crown size={18}/> {currentLevel.title}
-                   </p>
-                 </div>
-                 <div className="text-right">
-                   <p className="text-[10px] uppercase font-bold text-white/40 mb-1">XP Total</p>
-                   <p className="text-lg font-bold">{booking.xp}</p>
-                 </div>
-               </div>
-               <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden mb-2">
-                  <div className={`h-full ${currentLevel.color.replace('text', 'bg')} shadow-[0_0_10px_currentColor]`} style={{width: `${progress}%`}}></div>
-               </div>
-               <p className="text-[10px] text-white/40 text-right">Próximo: {nextLevel?.title}</p>
-             </GlassCard>
+           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+             <Button size="lg" onClick={() => document.getElementById('services')?.scrollIntoView({behavior:'smooth'})}>
+                Ver Projetos
+             </Button>
+             <Button size="lg" variant="glass" icon={Play} onClick={() => window.open(DATA.heroVideo, '_blank')}>
+                Ver Vídeo
+             </Button>
            </div>
         </div>
       </section>
 
-      {/* --- STATS STRIP --- */}
+      {/* --- ESTATÍSTICAS --- */}
       <section className="border-y border-white/5 bg-white/[0.02] backdrop-blur-sm relative z-10">
-        <div className="max-w-7xl mx-auto grid grid-cols-3 divide-x divide-white/5">
+        <div className="max-w-6xl mx-auto grid grid-cols-3 divide-x divide-white/5">
           {DATA.stats.map((s, i) => (
-            <div key={i} className="py-8 text-center">
-              <p className="text-3xl md:text-4xl font-bold text-white mb-1">{s.value}</p>
+            <div key={i} className="py-8 text-center group hover:bg-white/5 transition-colors">
+              <p className="text-2xl md:text-4xl font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">{s.value}</p>
               <p className="text-[10px] uppercase tracking-widest text-white/40">{s.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* --- SOBRE (PARALLAX + GLASS) --- */}
+      {/* --- SOBRE (CORRIGIDO) --- */}
       <section id="sobre" className="py-32 px-6 relative z-10">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          <div className="relative group">
-             <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-[2.5rem] rotate-3 group-hover:rotate-6 transition-transform duration-700 blur-xl"></div>
-             <div className="relative rounded-[2.5rem] overflow-hidden aspect-[3/4] border border-white/10">
-               <img src={DATA.aboutImage} alt="Profile" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"/>
-             </div>
+          <div className="relative">
+             <div className="absolute inset-0 bg-amber-500/20 rounded-[2rem] rotate-3 blur-2xl"></div>
+             {/* Imagem garantida */}
+             <GlassCard className="aspect-[3/4] relative p-0 overflow-hidden">
+               <img src={DATA.aboutImage} alt="Fotógrafo" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"/>
+               <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black to-transparent p-6">
+                 <p className="text-white font-bold">Thalyson Designer</p>
+                 <p className="text-amber-400 text-xs uppercase tracking-widest">Diretor Criativo</p>
+               </div>
+             </GlassCard>
           </div>
-          <div>
-            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-4 block">O Artista</span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-8">Muito Além do <br/>Clique.</h2>
-            <div className="space-y-6 text-white/60 leading-relaxed">
-              <p>
-                Com 8 anos de experiência em sets internacionais, trago a estética do cinema para o seu posicionamento.
-                Não é apenas sobre tirar uma foto, é sobre <strong>dirigir a sua melhor versão</strong>.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-                 <GlassCard className="p-4 flex items-center gap-4">
-                   <Monitor className="text-white/50"/>
-                   <div>
-                     <p className="font-bold text-sm text-white">Pós-Produção</p>
-                     <p className="text-[10px] text-white/40">Retouch High-End</p>
-                   </div>
-                 </GlassCard>
-                 <GlassCard className="p-4 flex items-center gap-4">
-                   <User className="text-white/50"/>
-                   <div>
-                     <p className="font-bold text-sm text-white">Direção</p>
-                     <p className="text-[10px] text-white/40">Guia de Poses</p>
-                   </div>
-                 </GlassCard>
+          <div className="space-y-8">
+            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest">O Artista</span>
+            <h2 className="text-4xl md:text-5xl font-bold leading-tight">Direção Cinematográfica <br/>para Pessoas Reais.</h2>
+            <p className="text-white/60 leading-relaxed text-lg">
+              Com 8 anos de experiência, meu foco não é apenas "tirar fotos", mas dirigir cenas. 
+              Trago técnicas de cinema e iluminação de moda para criar uma imagem que posiciona você como autoridade no seu nicho.
+            </p>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-2">
+                <Monitor className="text-amber-400"/>
+                <span className="font-bold text-sm">Pós-Produção Premium</span>
+                <span className="text-xs text-white/40">Edição de pele natural e cores de cinema.</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-2">
+                <User className="text-amber-400"/>
+                <span className="font-bold text-sm">Direção de Poses</span>
+                <span className="text-xs text-white/40">Eu guio cada movimento seu.</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- SERVIÇOS (TABS + CARDS) --- */}
-      <section id="serviços" className="py-32 px-6 relative z-10">
+      {/* --- SERVIÇOS --- */}
+      <section id="services" className="py-32 px-6 bg-[#080808] relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-             <h2 className="text-4xl font-bold mb-4">Experiências</h2>
-             <p className="text-white/50">Selecione a categoria ideal para seu momento.</p>
+             <h2 className="text-4xl font-bold mb-4">Experiências Disponíveis</h2>
+             <p className="text-white/50">Escolha o formato ideal para sua necessidade.</p>
           </div>
 
-          {/* CATEGORY TABS */}
-          <div className="flex justify-center gap-4 mb-16">
+          <div className="flex justify-center gap-4 mb-12">
             {DATA.categories.map(cat => (
               <button 
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`flex items-center gap-2 px-8 py-4 rounded-full border transition-all duration-300 text-xs font-bold uppercase tracking-widest
-                ${activeCategory === cat.id ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'bg-transparent text-white/40 border-white/10 hover:border-white/40'}`}
+                className={`flex items-center gap-2 px-8 py-3 rounded-full border transition-all duration-300 text-xs font-bold uppercase tracking-widest
+                ${activeCategory === cat.id ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-transparent text-white/40 border-white/10 hover:border-white/40'}`}
               >
                 <cat.icon size={16}/> {cat.label}
               </button>
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {DATA.services.filter(s => s.catId === activeCategory).map(s => (
-              <GlassCard key={s.id} hoverEffect className="p-8 md:p-12 flex flex-col group">
-                 <div className="flex justify-between items-start mb-6">
-                   {s.tag && <span className="px-3 py-1 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-full">{s.tag}</span>}
-                   <div className="text-right">
-                     <p className="text-3xl font-bold">{CONFIG.CURRENCY} {s.price}</p>
-                     <p className="text-xs text-white/30 line-through">{CONFIG.CURRENCY} {s.oldPrice}</p>
-                   </div>
+              <GlassCard key={s.id} hoverEffect className="p-8 md:p-10 flex flex-col relative group border-white/5">
+                 {/* Destaque */}
+                 {s.tag && <div className="absolute top-6 right-6 px-3 py-1 bg-white/10 border border-white/10 rounded-full text-[10px] font-bold uppercase text-amber-400">{s.tag}</div>}
+                 
+                 <h3 className="text-2xl font-bold mb-2 group-hover:text-amber-400 transition-colors">{s.title}</h3>
+                 <p className="text-white/60 text-sm mb-6 h-10">{s.desc}</p>
+
+                 <div className="flex items-baseline gap-2 mb-8 border-b border-white/5 pb-6">
+                   <span className="text-3xl font-bold">{CONFIG.CURRENCY} {s.price}</span>
+                   <span className="text-xs text-white/30 line-through">{CONFIG.CURRENCY} {s.oldPrice}</span>
                  </div>
 
-                 <h3 className="text-2xl font-bold mb-2 group-hover:text-amber-400 transition-colors">{s.title}</h3>
-                 <p className="text-white/60 text-sm mb-8 leading-relaxed h-10">{s.desc}</p>
-
-                 <div className="space-y-4 mb-10 flex-1">
+                 <div className="space-y-3 mb-8 flex-1">
                    {s.features.map((f, i) => (
                      <div key={i} className="flex items-center gap-3 text-sm text-white/80">
-                       <Check size={14} className="text-green-400"/> {f}
+                       <Check size={14} className="text-amber-400 shrink-0"/> {f}
                      </div>
                    ))}
-                   <div className="flex items-center gap-3 text-sm text-white/50 pt-2 border-t border-white/5">
-                      <Clock size={14}/> Duração: {s.duration}
-                   </div>
                  </div>
 
                  <Button 
@@ -425,7 +471,7 @@ ${extrasList || 'Nenhum'}
                      document.getElementById('agendar')?.scrollIntoView({behavior:'smooth'});
                    }}
                  >
-                   {booking.serviceId === s.id ? 'Selecionado' : 'Reservar Data'}
+                   {booking.serviceId === s.id ? 'Selecionado' : 'Agendar Data'}
                  </Button>
               </GlassCard>
             ))}
@@ -433,201 +479,161 @@ ${extrasList || 'Nenhum'}
         </div>
       </section>
 
-      {/* --- PORTFOLIO GRID --- */}
-      <section id="portfolio" className="py-20 px-6 border-t border-white/5">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-12">
-            <h2 className="text-3xl font-bold">Galeria Recente</h2>
-            <span className="text-xs uppercase tracking-widest text-white/50">Explore o Acervo</span>
+      {/* --- CARROSSEL PORTFÓLIO (NOVO) --- */}
+      <section id="portfolio" className="py-20 bg-[#050505] border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 mb-10 flex justify-between items-end">
+          <div>
+            <h2 className="text-3xl font-bold mb-2">Galeria Visual</h2>
+            <p className="text-white/50 text-sm">Arraste para o lado ou use as setas.</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 auto-rows-[250px] md:auto-rows-[350px]">
-            {DATA.portfolio.map((item, i) => (
-              <div 
-                key={i} 
-                onClick={() => setLightboxImage(item)}
-                className={`relative group overflow-hidden rounded-2xl cursor-pointer ${i === 0 || i === 3 ? 'col-span-2' : ''}`}
-              >
-                <img src={item.src} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" alt=""/>
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
-                   <Maximize2 className="text-white"/>
-                   <span className="text-xs font-bold uppercase">{item.cat}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <Button variant="glass" size="sm" onClick={() => window.open(DATA.heroVideo)}>Ver Showreel</Button>
         </div>
+        
+        {/* Componente Carrossel */}
+        <Carousel items={DATA.portfolio} onItemClick={setLightboxImage} />
       </section>
 
-      {/* --- AGENDAMENTO COMPLETO (GLASS ENGINE) --- */}
-      <section id="agendar" className="py-32 px-6 relative z-10">
-        <div className="max-w-5xl mx-auto">
-           <GlassCard className="p-8 md:p-12 bg-black/60 overflow-hidden">
-             {/* HEADER */}
-             <div className="flex items-center gap-6 mb-12 border-b border-white/10 pb-8">
-               <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors ${selectedService ? 'bg-white text-black' : 'bg-white/5 text-white/20'}`}>
-                 {selectedService ? (selectedService.catId === 'foto' ? <Camera/> : <Film/>) : <Aperture/>}
-               </div>
-               <div>
-                 <p className="text-xs uppercase font-bold text-white/40 mb-1">Você está agendando</p>
-                 <h2 className="text-2xl font-bold">{selectedService ? selectedService.title : 'Selecione uma experiência acima'}</h2>
-               </div>
-               <div className="ml-auto text-right hidden md:block">
-                 <p className="text-xs uppercase font-bold text-white/40 mb-1">Investimento Total</p>
-                 <p className="text-3xl font-bold text-amber-400">{CONFIG.CURRENCY} {total}</p>
-               </div>
+      {/* --- AGENDAMENTO SIMPLIFICADO (UX MELHORADA) --- */}
+      <section id="agendar" className="py-32 px-6 relative z-10 bg-[#080808]">
+        <div className="max-w-4xl mx-auto">
+           <GlassCard className="p-8 md:p-12 bg-black/40 backdrop-blur-2xl border-white/10">
+             
+             <div className="text-center mb-12">
+               <h2 className="text-3xl font-bold mb-2">Finalizar Agendamento</h2>
+               <p className="text-white/50">Selecione data e hora para garantir sua produção.</p>
+             </div>
+
+             {/* RESUMO DO SERVIÇO SELECIONADO */}
+             <div className="mb-10 p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${selectedService ? 'bg-amber-400 text-black' : 'bg-white/10 text-white/20'}`}>
+                    {selectedService ? (selectedService.catId === 'foto' ? <Camera size={20}/> : <Film size={20}/>) : <ArrowRight size={20}/>}
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-bold text-white/40">Serviço Escolhido</p>
+                    <p className="font-bold text-lg">{selectedService ? selectedService.title : 'Nenhum selecionado'}</p>
+                  </div>
+                </div>
+                <div className="text-right hidden sm:block">
+                   <p className="text-[10px] uppercase font-bold text-white/40">Valor</p>
+                   <p className="font-bold text-xl text-amber-400">{CONFIG.CURRENCY} {total}</p>
+                </div>
              </div>
 
              {selectedService ? (
-               <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-12 animate-fade-in-up">
-                 {/* ESQUERDA: SELEÇÕES */}
-                 <div className="space-y-10">
-                    {/* 1. DATA */}
-                    <div>
-                       <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 mb-4">
-                         <Calendar size={14} className="text-amber-400"/> 1. Data
-                       </label>
-                       <div className="grid grid-cols-5 md:grid-cols-7 gap-2">
-                         {Array.from({length: 14}).map((_, i) => {
-                           const d = new Date(); d.setDate(d.getDate() + i + 1);
-                           const isSel = booking.date?.toDateString() === d.toDateString();
-                           return (
-                             <button 
-                               key={i} 
-                               onClick={() => setBooking(prev => ({...prev, date: d, time: null}))}
-                               className={`h-20 rounded-xl border flex flex-col items-center justify-center transition-all
-                               ${isSel ? 'bg-white text-black border-white scale-105 shadow-lg' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
-                             >
-                               <span className="text-[10px] uppercase font-bold">{d.toLocaleDateString(CONFIG.LOCALE, {weekday: 'short'}).slice(0,3)}</span>
-                               <span className="text-xl font-light">{d.getDate()}</span>
-                             </button>
-                           )
-                         })}
-                       </div>
-                    </div>
-
-                    {/* 2. HORÁRIO */}
-                    <div className={!booking.date ? 'opacity-30 pointer-events-none' : ''}>
-                       <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 mb-4">
-                         <Clock size={14} className="text-amber-400"/> 2. Horário
-                       </label>
-                       <div className="grid grid-cols-4 gap-3">
-                         {['09:00', '11:00', '14:00', '16:00', '17:30', '19:00', '20:30'].map(t => (
+               <div className="space-y-10 animate-fade-in-up">
+                  
+                  {/* 1. SELEÇÃO DE DATA HORIZONTAL (SCROLL) */}
+                  <div>
+                    <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 mb-4">
+                      <Calendar size={14} className="text-amber-400"/> 1. Escolha o Dia
+                    </label>
+                    <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x">
+                       {Array.from({length: 15}).map((_, i) => {
+                         const d = new Date(); d.setDate(d.getDate() + i + 1);
+                         const isSelected = booking.date?.toDateString() === d.toDateString();
+                         return (
                            <button 
-                             key={t}
-                             onClick={() => setBooking(prev => ({...prev, time: t}))}
-                             className={`py-3 rounded-xl text-xs font-bold border transition-all ${booking.time === t ? 'bg-white text-black border-white' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                             key={i}
+                             onClick={() => setBooking(prev => ({...prev, date: d, time: null}))}
+                             className={`flex-shrink-0 snap-start w-20 h-24 rounded-2xl border flex flex-col items-center justify-center gap-1 transition-all
+                             ${isSelected ? 'bg-white text-black border-white scale-105 shadow-lg' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                            >
-                             {t}
+                             <span className="text-[10px] uppercase font-bold">{d.toLocaleDateString('pt-BR', {weekday: 'short'}).replace('.', '')}</span>
+                             <span className="text-2xl font-light">{d.getDate()}</span>
                            </button>
-                         ))}
-                       </div>
+                         )
+                       })}
                     </div>
+                  </div>
 
-                    {/* 3. EXTRAS (VOLTOU!) */}
+                  {/* 2. SELEÇÃO DE HORÁRIO (GRID LIMPO) */}
+                  <div className={!booking.date ? 'opacity-30 pointer-events-none' : ''}>
+                    <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 mb-4">
+                      <Clock size={14} className="text-amber-400"/> 2. Escolha o Horário
+                    </label>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                      {['09:00', '10:30', '14:00', '16:00', '19:00'].map(t => (
+                        <button 
+                          key={t}
+                          onClick={() => setBooking(prev => ({...prev, time: t}))}
+                          className={`py-4 rounded-xl text-sm font-bold border transition-all
+                          ${booking.time === t ? 'bg-white text-black border-white shadow-lg' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 3. DADOS FINAIS */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/10">
                     <div>
-                       <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 mb-4">
-                         <Sparkles size={14} className="text-amber-400"/> 3. Upgrades
-                       </label>
-                       <div className="space-y-3">
-                         {DATA.extras.map(ex => (
-                           <div 
-                             key={ex.id} 
-                             onClick={() => setBooking(b => ({...b, extras: {...b.extras, [ex.id]: !b.extras[ex.id]}}))}
-                             className={`p-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all
-                             ${booking.extras[ex.id] ? 'bg-white/10 border-amber-400/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
-                           >
-                             <div className="flex items-center gap-4">
-                               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${booking.extras[ex.id] ? 'bg-amber-400 text-black' : 'bg-white/10 text-white/30'}`}>
-                                 <ex.icon size={14}/>
-                               </div>
-                               <div>
-                                 <p className="text-sm font-bold">{ex.label}</p>
-                                 <p className="text-[10px] text-white/50">{ex.desc}</p>
-                               </div>
-                             </div>
-                             <span className="text-xs font-bold text-amber-400">+ {CONFIG.CURRENCY} {ex.price}</span>
-                           </div>
-                         ))}
-                       </div>
+                      <label className="text-[10px] uppercase font-bold text-white/40 ml-1">Seu Nome</label>
+                      <input 
+                        value={booking.client.name}
+                        onChange={e => setBooking(b => ({...b, client: {...b.client, name: e.target.value}}))}
+                        className="w-full mt-2 bg-black/40 border border-white/10 rounded-xl px-4 py-4 focus:border-white/50 outline-none transition-colors"
+                        placeholder="Nome Completo"
+                      />
                     </div>
-                 </div>
-
-                 {/* DIREITA: DADOS E CONFIRMAÇÃO */}
-                 <div className="bg-white/5 rounded-3xl p-6 border border-white/5 h-fit sticky top-24">
-                    <h3 className="text-lg font-bold mb-6">Seus Dados</h3>
-                    <div className="space-y-4 mb-8">
-                      <div>
-                        <label className="text-[10px] uppercase font-bold text-white/40 ml-2">Nome Completo</label>
-                        <input 
-                           value={booking.client.name}
-                           onChange={e => setBooking(b => ({...b, client: {...b.client, name: e.target.value}}))}
-                           className="w-full mt-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/50 outline-none transition-colors"
-                           placeholder="Ex: João Silva"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] uppercase font-bold text-white/40 ml-2">Instagram</label>
-                        <input 
-                           value={booking.client.instagram}
-                           onChange={e => setBooking(b => ({...b, client: {...b.client, instagram: e.target.value}}))}
-                           className="w-full mt-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/50 outline-none transition-colors"
-                           placeholder="@seu.perfil"
-                        />
-                      </div>
+                    <div>
+                      <label className="text-[10px] uppercase font-bold text-white/40 ml-1">Instagram (Opcional)</label>
+                      <input 
+                        value={booking.client.instagram}
+                        onChange={e => setBooking(b => ({...b, client: {...b.client, instagram: e.target.value}}))}
+                        className="w-full mt-2 bg-black/40 border border-white/10 rounded-xl px-4 py-4 focus:border-white/50 outline-none transition-colors"
+                        placeholder="@seu.perfil"
+                      />
                     </div>
+                  </div>
 
-                    <div className="border-t border-white/10 pt-6 mb-6">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-white/60">Total Estimado</span>
-                        <span className="text-2xl font-bold">{CONFIG.CURRENCY} {total}</span>
-                      </div>
-                      <p className="text-[10px] text-white/30 text-right">Pagamento seguro via link após confirmação</p>
-                    </div>
+                  {/* EXTRAS CHECKBOX */}
+                  <div className="flex flex-wrap gap-3">
+                    {DATA.extras.map(ex => (
+                      <button 
+                        key={ex.id}
+                        onClick={() => setBooking(b => ({...b, extras: {...b.extras, [ex.id]: !b.extras[ex.id]}}))}
+                        className={`px-4 py-2 rounded-full border text-xs font-bold flex items-center gap-2 transition-all
+                        ${booking.extras[ex.id] ? 'bg-amber-400 text-black border-amber-400' : 'bg-transparent text-white/50 border-white/10'}`}
+                      >
+                        {booking.extras[ex.id] ? <Check size={12}/> : <Sparkles size={12}/>}
+                        {ex.label} (+R${ex.price})
+                      </button>
+                    ))}
+                  </div>
 
-                    <Button full size="lg" variant="whatsapp" onClick={handleCheckout} disabled={!booking.date || !booking.time || !booking.client.name}>
-                       <MessageCircle size={18}/> Enviar Solicitação
-                    </Button>
-                 </div>
+                  <Button full size="lg" variant="whatsapp" onClick={handleCheckout} disabled={!booking.date || !booking.time || !booking.client.name}>
+                    <MessageCircle size={20}/> Confirmar Agendamento
+                  </Button>
+
                </div>
              ) : (
-               <div className="text-center py-12 text-white/30">
-                 <ArrowRight size={32} className="-rotate-90 mx-auto mb-4"/>
-                 <p>Por favor, selecione uma experiência na seção anterior.</p>
+               <div className="py-12 text-center border-2 border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
+                 <p className="text-white/40 mb-4">Escolha uma experiência acima para desbloquear a agenda.</p>
+                 <Button variant="glass" size="sm" onClick={() => document.getElementById('services')?.scrollIntoView({behavior:'smooth'})}>Ver Experiências</Button>
                </div>
              )}
            </GlassCard>
         </div>
       </section>
 
-      {/* --- FOOTER --- */}
-      <footer className="py-20 border-t border-white/5 bg-black text-center relative z-10">
-         <p className="text-2xl font-bold tracking-tight mb-2">Lumina<span className="font-light text-white/50">.OS</span></p>
-         <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 mb-8">Cinema & Fotografia • Est. 2018</p>
-         <div className="flex justify-center gap-4">
-           <Button variant="glass" size="md" icon={Instagram}>Instagram</Button>
-           <Button variant="glass" size="md" icon={MessageCircle}>WhatsApp</Button>
-         </div>
+      {/* --- RODAPÉ --- */}
+      <footer className="py-20 bg-black text-center border-t border-white/5 relative z-10">
+        <p className="text-2xl font-bold tracking-tight mb-2">Lumina<span className="text-amber-400">.Studio</span></p>
+        <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 mb-8">© 2026 Todos os direitos reservados</p>
       </footer>
 
-      {/* STYLES */}
+      {/* STYLES GLOBAIS */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
         
-        .animate-blob { animation: blob 15s infinite; }
-        .animation-delay-2000 { animation-delay: 5s; }
-        .animate-fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-spin-slow { animation: spin 3s linear infinite; }
-        .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        body { font-family: 'Inter', sans-serif; background: #050505; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+        .animate-pulse-slow { animation: pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
     </div>
   );
