@@ -11,18 +11,14 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v27.0 - HIGH CONTRAST & EXPLICIT PACKS
+ * THALYSON APP OS v27.1 - FIXED PERSISTENCE & UI
  * ==================================================================================
- * 1. UI: Ajuste de contraste no Modo Claro (textos mais escuros para leitura).
- * 2. PACOTES: Descrição explícita do conteúdo (ex: "4x Sessões Relaxantes").
- * 3. WHATSAPP: Mensagem automática detalha o conteúdo do pacote escolhido.
- * 4. UX: Inputs e bordas mais visíveis no fundo branco.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v27_final', 
+  STORAGE_KEY: '@thaly_app_v27_fixed', // Key atualizada para garantir versão limpa
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US'
 };
@@ -399,6 +395,7 @@ const getData = (lang) => {
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false); // Flag para garantir que carregou do storage
   const [step, setStep] = useState(0); 
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
@@ -464,14 +461,15 @@ export default function App() {
     payment: '', appliedCoupon: null, termsAccepted: false
   });
 
-  // CARREGAMENTO E INICIALIZAÇÃO DE DADOS
+  // CORREÇÃO DO CARREGAMENTO DE DADOS E PERSISTÊNCIA
   useEffect(() => {
     setIsClient(true);
-    setTimeout(() => setLoading(false), 2000);
+    // Recupera dados do localStorage
     try {
         const s = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (s) {
             const parsed = JSON.parse(s);
+            // Garante que arrays não sejam null
             setUser(prev => ({ 
                 ...prev, 
                 ...parsed, 
@@ -479,22 +477,29 @@ export default function App() {
                 usedCoupons: Array.isArray(parsed.usedCoupons) ? parsed.usedCoupons : [] 
             }));
             if(parsed.savedAddress) { setBooking(b => ({...b, address: parsed.savedAddress})); }
-        } else {
-            setUser(p => ({...p, coupons: [], usedCoupons: [] })); 
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Erro ao ler dados", e); }
+    
+    // Marca como carregado e remove spinner
+    setDataLoaded(true);
+    setTimeout(() => setLoading(false), 2000);
   }, []);
 
   useEffect(() => {
-     if(!loading && isClient && !user.hasSeenWelcome) {
+     if(!loading && isClient && !user.hasSeenWelcome && dataLoaded) {
          const timer = setTimeout(() => setWelcomePopup(true), 2500);
          return () => clearTimeout(timer);
      }
-  }, [loading, isClient, user.hasSeenWelcome]);
+  }, [loading, isClient, user.hasSeenWelcome, dataLoaded]);
 
+  // CORREÇÃO: SÓ SALVA SE JÁ TIVER CARREGADO (EVITA SOBRESCREVER COM ZEROS)
   useEffect(() => { 
-      if(isClient && !loading) { try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); } catch(e) {} }
-  }, [user, isClient, loading]);
+      if(isClient && dataLoaded) { 
+          try { 
+              localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(user)); 
+          } catch(e) {} 
+      }
+  }, [user, isClient, dataLoaded]);
 
   useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo(0,0); }, [step]);
 
@@ -566,7 +571,6 @@ export default function App() {
     const xpGain = estimatedXP;
     const currentLevelTitle = DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title;
     
-    // CUSTOMIZAR A MENSAGEM SE FOR PACOTE
     let serviceTitle = booking.item?.title;
     if (booking.type !== 'single' && booking.item?.desc) {
        serviceTitle += `\n📦 *Inclui:* ${booking.item.desc.replace('Contém: ', '')}`;
@@ -605,7 +609,7 @@ ${T.zap.date} ${dateStr} - ${booking.time}
 ${extrasList ? `${T.zap.extra_title}\n${extrasList}\n` : ''}
 ${T.zap.location}
 ${locTxt}
-${mapQuery ? `\n🔗 *Mapa:* http://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
+${mapQuery ? `\n🔗 *Mapa:* http://maps.google.com/?q=$?q=${encodeURIComponent(mapQuery)}` : ''}
 ──────────────────────
 
 ${T.zap.value}
@@ -691,6 +695,7 @@ ${T.zap.wait}
   };
 
   const finishBooking = () => {
+    // Garante que são arrays antes de manipular
     let updatedCoupons = Array.isArray(user.coupons) ? [...user.coupons] : [];
     let updatedHistory = Array.isArray(user.usedCoupons) ? [...user.usedCoupons] : [];
     
@@ -969,15 +974,15 @@ ${T.zap.wait}
                  <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} placeholder={lang === 'pt' ? "Seu Nome/Apelido" : "Your Name"} />
                  {booking.locationType === 'home' && (
                       <div className="space-y-6 animate-fade-in">
-                         <div className="grid grid-cols-[1fr_80px] gap-3">
-                            <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} icon={MapPin} placeholder={lang === 'pt' ? "Rua" : "Street"} />
-                            <InputField isDark={isDark} label={T.input_num} value={booking.address.number} type="tel" onChange={e=>setBooking(b=>({...b, address: {...b.address, number: e.target.value}}))} placeholder="Nº" />
-                         </div>
-                         <InputField isDark={isDark} label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} placeholder={lang === 'pt' ? "Bairro" : "District"} />
-                         <div className="grid grid-cols-2 gap-3">
+                          <div className="grid grid-cols-[1fr_80px] gap-3">
+                             <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} icon={MapPin} placeholder={lang === 'pt' ? "Rua" : "Street"} />
+                             <InputField isDark={isDark} label={T.input_num} value={booking.address.number} type="tel" onChange={e=>setBooking(b=>({...b, address: {...b.address, number: e.target.value}}))} placeholder="Nº" />
+                          </div>
+                          <InputField isDark={isDark} label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} placeholder={lang === 'pt' ? "Bairro" : "District"} />
+                          <div className="grid grid-cols-2 gap-3">
                              <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} placeholder={lang === 'pt' ? "Cidade" : "City"} />
                              <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} placeholder={lang === 'pt' ? "Comp" : "Unit"} />
-                         </div>
+                          </div>
                       </div>
                  )}
                  {booking.locationType === 'hotel' && (
