@@ -11,18 +11,18 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v55.0 - GLOBAL CURRENCY EDITION
+ * THALYSON APP OS v56.0 - STABLE & ROBUST EDITION
  * ==================================================================================
- * 1. MULTI-CURRENCY: R$ (BRL) e $ (USD) automáticos ao trocar idioma.
- * 2. PREÇOS: Ajustados para 125/155/195 (BRL).
- * 3. REVIEWS: Lista completa restaurada e posicionada ABAIXO dos serviços.
- * 4. UX: Layout robusto v51 mantido.
+ * 1. FIX CRÍTICO: Estrutura de dados de 'Extras' normalizada (Array) para corrigir crash.
+ * 2. CÂMBIO: Lógica de R$ (BRL) e $ (USD) aplicada em todo o sistema.
+ * 3. REVIEWS: Lista completa restaurada e posicionada corretamente.
+ * 4. PREÇOS: 125 / 155 / 195.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v55_global', 
+  STORAGE_KEY: '@thaly_app_v56_stable', // Nova chave para limpar cache quebrado
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -189,7 +189,7 @@ const FAQItem = ({ q, a, isDark }) => {
 };
 
 // ==================================================================================
-// 2. DADOS (MULTI-CURRENCY)
+// 2. DADOS (PREÇOS EM MOEDA DINÂMICA)
 // ==================================================================================
 
 const getData = (lang) => {
@@ -197,15 +197,29 @@ const getData = (lang) => {
     const currency = isPT ? 'R$' : '$';
     
     // DEFINIÇÃO DE PREÇOS (BRL vs USD)
-    const prices = {
+    const p = {
         relax: isPT ? 125 : 35,
         sens: isPT ? 155 : 45,
         titan: isPT ? 195 : 60,
         // Pacotes (BRL / USD)
-        packRelax: isPT ? { p: 397, f: 500, s: 103 } : { p: 120, f: 140, s: 20 },
-        packTri: isPT ? { p: 487, f: 585, s: 98 } : { p: 150, f: 180, s: 30 },
-        packPass: isPT ? { p: 780, f: 975, s: 195 } : { p: 240, f: 300, s: 60 },
-        extras: isPT ? { t: 55, i: 55, a: 5 } : { t: 15, i: 15, a: 5 }
+        // Relax 4x
+        packRelax: { 
+            v: isPT ? 397 : 120, 
+            full: isPT ? 500 : 140, 
+            save: isPT ? 103 : 20 
+        },
+        // Mista 3x
+        packTri: { 
+            v: isPT ? 487 : 150, 
+            full: isPT ? 585 : 180, 
+            save: isPT ? 98 : 30 
+        },
+        // Titan 5x
+        packPass: { 
+            v: isPT ? 780 : 240, 
+            full: isPT ? 975 : 300, 
+            save: isPT ? 195 : 60 
+        }
     };
 
     return {
@@ -217,7 +231,7 @@ const getData = (lang) => {
         ],
         services: [
             { 
-              id: 'relaxante', min: 60, price: prices.relax, icon: Wind, tag: isPT ? "100% FÍSICO" : "PHYSICAL",
+              id: 'relaxante', min: 60, price: p.relax, icon: Wind, tag: isPT ? "100% FÍSICO" : "PHYSICAL",
               title: isPT ? "Massagem Clássica" : "Classic Relax",
               desc: isPT ? "Para tirar a dor. Foco exclusivo muscular. Sem toque íntimo." : "For pain. Muscle focus only. No intimate touch.",
               details: isPT ? `O ALÍVIO QUE VOCÊ PRECISA:
@@ -232,7 +246,7 @@ const getData = (lang) => {
 • NOTE: Purely therapeutic.`
             },
             { 
-              id: 'sensitiva', min: 60, price: prices.sens, icon: Flame, tag: isPT ? "SENSORIAL + LINGAM" : "SENSORY",
+              id: 'sensitiva', min: 60, price: p.sens, icon: Flame, tag: isPT ? "SENSORIAL + LINGAM" : "SENSORY",
               title: isPT ? "Tântrica Sensorial" : "Tantric Sensory",
               desc: isPT ? "Relaxamento + Toque Sutil + Finalização. Atendo de cueca." : "Relax + Subtle Touch + Finish. Underwear service.",
               details: isPT ? `A EVOLUÇÃO DO TOQUE:
@@ -247,7 +261,7 @@ const getData = (lang) => {
 • PEAK: Includes **Lingam Massage** for pleasure.`
             },
             { 
-              id: 'mista', min: 60, price: prices.titan, icon: Zap, tag: isPT ? "FUSÃO COMPLETA" : "FULL FUSION",
+              id: 'mista', min: 60, price: p.titan, icon: Zap, tag: isPT ? "FUSÃO COMPLETA" : "FULL FUSION",
               title: isPT ? "Experiência Fusion" : "Fusion Experience",
               desc: isPT ? "Tudo em um: Muscular + Corpo a Corpo + Lingam Intenso." : "All in one: Muscle + Body-to-Body + Intense Lingam.",
               details: isPT ? `PARA QUEM QUER TUDO:
@@ -262,8 +276,14 @@ const getData = (lang) => {
 • RESULT: No pain, light mind.`
             }
         ],
+        // DADOS DE EXTRAS COMO ARRAY PARA FACILITAR MAP (CORREÇÃO DE BUG ANTERIOR)
+        extras: [
+            { id: 'more_time', price: isPT ? 55 : 15, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
+            { id: 'touch', price: isPT ? 55 : 15, icon: Heart, label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você toca também." : "You touch too." },
+            { id: 'aroma', price: isPT ? 5 : 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Imersão total." : "Total immersion." }
+        ],
         faq: [
-            { q: "Qual a diferença real entre as sessões?", a: "Clássica (R$125) = Só tira dor (sem sexo/lingam). Tântrica (R$155) = Tira dor + Toque leve + Lingam (de cueca). Fusion (R$195) = Tira dor + Corpo a Corpo + Lingam Intenso (a mais completa)." },
+            { q: "Qual a diferença real entre as sessões?", a: "Clássica = Só tira dor (sem sexo/lingam). Tântrica = Tira dor + Toque leve + Lingam (de cueca). Fusion = Tira dor + Corpo a Corpo + Lingam Intenso (a mais completa)." },
             { q: "Você tem local próprio?", a: "Não. Meu atendimento é 100% Delivery (Vou até você). Atendo em domicílio, hotéis ou motéis com total discrição e segurança." },
             { q: "Onde você atende?", a: "São Paulo Capital e região. O valor do transporte (Uber) é calculado à parte no momento do agendamento." },
             { q: "Pode 'gozar' na massagem?", a: "Sim! Nas experiências Tântrica e Fusion, o clímax é bem-vindo e faz parte do alívio terapêutico." },
@@ -272,7 +292,7 @@ const getData = (lang) => {
         plans: [
             { 
               id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Anti-Stress" : "Anti-Stress Cycle", 
-              price: prices.packRelax.p, fullPrice: prices.packRelax.f, savings: prices.packRelax.s,
+              price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save,
               desc: isPT ? "4 Sessões de Massagem Clássica." : "4 Classic Massage Sessions.",
               details: isPT ? "MANUTENÇÃO CONTRA DOR:\n• 4 sessões focadas 100% em tirar tensão muscular.\n• Não inclui parte íntima." 
                             : "PAIN MAINTENANCE:\n• 4 sessions focused on muscle tension.\n• No intimate part.", 
@@ -280,7 +300,7 @@ const getData = (lang) => {
             },
             { 
               id: 'pack_mista', type: 'pack', title: isPT ? "Trilogia do Êxtase" : "Ecstasy Trilogy", 
-              price: prices.packTri.p, fullPrice: prices.packTri.f, savings: prices.packTri.s,
+              price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save,
               desc: isPT ? "3 Sessões da Experiência Fusion." : "3 Fusion Sessions.",
               details: isPT ? "INTENSIDADE GARANTIDA:\n• 3 encontros da massagem mais completa (Fusion).\n• Ideal para quem quer viver o ápice do prazer repetidas vezes."
                             : "GUARANTEED INTENSITY:\n• 3 meetings of the fullest massage.\n• Ideal for repeated pleasure.", 
@@ -288,17 +308,12 @@ const getData = (lang) => {
             },
             { 
               id: 'titan_passport', type: 'pack', title: isPT ? "Passaporte Titan (5x)" : "Titan Passport (5x)", 
-              price: prices.packPass.p, fullPrice: prices.packPass.f, savings: prices.packPass.s,
+              price: p.packPass.v, fullPrice: p.packPass.full, savings: p.packPass.save,
               desc: isPT ? "Compre 4, Leve 5 (Fusion)." : "Buy 4, Get 5 (Fusion).",
               details: isPT ? "A OFERTA IRRECUSÁVEL:\n• Você garante 5 sessões Fusion completas.\n• Paga 4 e a 5ª é por minha conta.\n• Validade estendida para usar quando quiser."
                             : "IRRESISTIBLE OFFER:\n• 5 full Fusion sessions.\n• Pay 4, get 5th free.\n• Extended validity.", 
               tag: isPT ? "1 SESSÃO GRÁTIS" : "1 FREE SESSION", icon: Crown 
             }
-        ],
-        extras: [
-            { id: 'more_time', price: prices.extras.t, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
-            { id: 'touch', price: prices.extras.i, icon: Heart, label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você toca também." : "You touch too." },
-            { id: 'aroma', price: prices.extras.a, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Imersão total." : "Total immersion." }
         ],
         reviews: [
             { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito.", s: 5 },
@@ -515,16 +530,11 @@ export default function App() {
     let sub = booking.item.price;
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
-            const extData = DATA.extras[k] ? { price: DATA.extras[k] } : null; // Simplificação para pegar preço do objeto
-             // Correção: DATA.extras é objeto {t:55, i:55...}, a lógica antiga esperava array. 
-             // Ajuste na lógica abaixo para pegar do objeto correto.
-            let extraPrice = 0;
-             if(k === 'more_time') extraPrice = DATA.extras.t;
-             if(k === 'touch') extraPrice = DATA.extras.i;
-             if(k === 'aroma') extraPrice = DATA.extras.a;
-
-            if(booking.type !== 'single') extraPrice = Math.floor(extraPrice * 0.8);
-            sub += extraPrice;
+            const extData = DATA.extras.find(e=>e.id===k);
+            if(extData) {
+                const extraPrice = booking.type !== 'single' ? Math.floor(extData.price * 0.8) : extData.price;
+                sub += extraPrice; 
+            }
         }
     });
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
@@ -582,16 +592,11 @@ export default function App() {
         mapQuery = fullAddr;
     }
     
-    // Ajuste extras list para pegar nomes corretos
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => {
-         let label = '';
-         let price = 0;
-         if(k === 'more_time') { label = '+30 Min'; price = DATA.extras.t; }
-         if(k === 'touch') { label = 'Troca'; price = DATA.extras.i; }
-         if(k === 'aroma') { label = 'Aroma'; price = DATA.extras.a; }
-         
-         if(booking.type !== 'single') price = Math.floor(price * 0.8);
-        return `✅ ${label} (+ ${DATA.currency} ${price})`;
+        const ext = DATA.extras.find(e=>e.id===k);
+        if(!ext) return '';
+        const price = booking.type !== 'single' ? Math.floor(ext.price * 0.8) : ext.price;
+        return `✅ ${ext.label} (+ ${DATA.currency} ${price})`;
     }).filter(Boolean).join('\n');
     
     const msg = `
@@ -716,7 +721,6 @@ ${T.zap.wait}
         usedCoupons: updatedHistory,
         ordersCount: prev.ordersCount + 1 
     }));
-    // REMOVIDO: setShowConfetti(true);
     if (typeof window !== 'undefined') { window.open(generateWhatsAppLink(), '_blank'); }
     setBooking(b => ({...b, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false})); 
     localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({ user: {...user, xp: newXP}, bookingDraft: null, step: 0 }));
@@ -969,350 +973,3 @@ ${T.zap.wait}
 
             </div>
           )}
-
-          {/* DATE (STEP 1) */}
-          {step === 1 && (
-            <div className="animate-slide-in space-y-12">
-              <div className="text-center mb-8">
-                 <h2 className={`text-3xl font-light mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.select_time_title}</h2>
-                 <p className={`text-[10px] uppercase tracking-[0.25em] font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.date_sub}</p>
-              </div>
-              
-              <div className="relative group">
-                  <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all hover:scale-110 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-md'}`}><ChevronLeft size={20} /></button>
-                  
-                  <div className="overflow-hidden">
-                      <div ref={dateScrollRef} className="flex gap-4 overflow-x-auto pb-8 scrollbar-hide px-2 snap-x snap-mandatory">
-                        {daysArray.map((d, i) => { 
-                          const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
-                          let lbl = d.toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN, {weekday:'short'}).slice(0,3);
-                          const monthName = d.toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN, {month:'short'}).replace('.','');
-                          if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
-                          const showMonth = d.getDate() === 1 || i === 0;
-
-                          return (
-                            <div key={i} className="flex flex-col gap-2">
-                                {showMonth && <span className={`text-[10px] font-bold uppercase tracking-widest pl-1 ${isDark ? 'text-zinc-400' : 'text-slate-400'}`}>{monthName}</span>}
-                                <button onClick={() => setBooking(b => ({ ...b, date: d, time: null }))} className={`snap-start min-w-[90px] h-28 rounded-2xl flex flex-col items-center justify-center gap-1.5 border transition-all flex-shrink-0 active:scale-95 duration-300 ${isSel ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20 scale-105' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 shadow-sm')} ${!showMonth ? 'mt-6' : ''}`}>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">{lbl}</span>
-                                    <span className="text-3xl font-bold">{d.getDate()}</span>
-                                    {isSel && <span className="w-1.5 h-1.5 rounded-full bg-white mt-1"></span>}
-                                </button>
-                            </div>
-                          )
-                        })}
-                      </div>
-                  </div>
-
-                  <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all hover:scale-110 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-md'}`}><ChevronRight size={20} /></button>
-              </div>
-              
-              {!booking.date && (<div className={`text-center py-16 opacity-30 border border-dashed rounded-[2rem] mx-2 ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-slate-300 text-slate-400'}`}><Calendar size={40} className="mx-auto mb-4"/><p className="text-xs font-bold uppercase tracking-wider">{T.empty_date}</p></div>)}
-              
-              {booking.date && generateTimeSlots.length > 0 && (
-                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 animate-fade-in">
-                   {generateTimeSlots.map((t, idx) => {
-                       const isLastSpot = idx === generateTimeSlots.length - 1 || idx === 2;
-                       return (
-                           <button key={t} onClick={() => { setBooking(b => ({...b, time: t})); }} className={`py-4 rounded-xl text-sm font-semibold border transition-all active:scale-95 duration-200 relative overflow-hidden group animate-scale-in ${booking.time === t ? (isDark ? 'bg-zinc-100 text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'bg-slate-900 text-white border-slate-900 shadow-xl') : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800')}`} style={{animationDelay: `${idx * 50}ms`}}>
-                               {t}
-                               {isLastSpot && <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-bl-lg">🔥</span>}
-                           </button>
-                       )
-                   })}
-                </div>
-              )}
-              {booking.date && generateTimeSlots.length === 0 && (<div className={`text-center py-12 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-slate-100 border-slate-200 text-slate-500'}`}><p className="text-sm font-medium">{T.empty_slots}</p></div>)}
-            </div>
-          )}
-
-          {step === 2 && (
-             <div className="animate-slide-in space-y-12">
-               <h2 className={`text-3xl font-light text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
-               <div className="grid grid-cols-3 gap-4 mb-8 max-w-lg mx-auto">
-                  {[{id:'home', l:T.zap.house, i:Home}, {id:'motel', l:T.zap.motel, i:BedDouble}, {id:'hotel', l:T.zap.hotel, i:Building}].map(x => (
-                      <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`py-6 rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-wide flex flex-col items-center justify-center gap-3 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600/10 border-blue-500/50 text-blue-500 shadow-[0_0_20px_-5px_rgba(37,99,235,0.3)] scale-105' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-700')}`}>
-                          <x.i size={24} strokeWidth={2}/> {x.l}
-                      </button>
-                  ))}
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                   <div className="space-y-6">
-                      <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} placeholder={lang === 'pt' ? "Seu Nome/Apelido" : "Your Name/Nickname"} />
-                      {booking.locationType === 'home' && (
-                          <div className="space-y-6 animate-fade-in">
-                              <div className="grid grid-cols-[1fr_120px] gap-4">
-                                 <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} icon={MapPin} placeholder={lang === 'pt' ? "Rua" : "Street"} />
-                                 <InputField isDark={isDark} label={T.input_num} value={booking.address.number} type="tel" onChange={e=>setBooking(b=>({...b, address: {...b.address, number: e.target.value}}))} placeholder={lang === 'pt' ? "Nº" : "No."} />
-                              </div>
-                              <InputField isDark={isDark} label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} placeholder={lang === 'pt' ? "Bairro" : "District"} />
-                              <div className="grid grid-cols-2 gap-4">
-                                 <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} placeholder={lang === 'pt' ? "Cidade" : "City"} />
-                                 <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} placeholder={lang === 'pt' ? "Comp" : "Unit/Apt"} />
-                              </div>
-                          </div>
-                      )}
-                      {booking.locationType === 'hotel' && (
-                          <div className="space-y-6 animate-fade-in">
-                             <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={e=>setBooking(b=>({...b, address: {...b.address, placeName: e.target.value}}))} icon={Building} placeholder={lang === 'pt' ? "Nome do Hotel" : "Hotel Name"} />
-                             <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} placeholder={lang === 'pt' ? "Cidade" : "City"} />
-                             <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} icon={Lock} placeholder={lang === 'pt' ? "Quarto" : "Room"} />
-                          </div>
-                      )}
-                      {booking.locationType === 'motel' && (
-                          <div className={`p-8 rounded-2xl border border-dashed text-center ${isDark ? 'border-zinc-700 bg-zinc-900/30' : 'border-slate-300 bg-slate-50'}`}>
-                             <Smartphone size={28} className={`mx-auto mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}/>
-                             <p className={`text-xs leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.motel_note}</p>
-                          </div>
-                      )}
-                   </div>
-                   <div className={`pt-0 md:pl-10 md:border-l ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-                      <h3 className={`text-xs font-bold uppercase mb-6 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{booking.type !== 'single' ? T.extras_title.replace('Extras:', 'Adicionais (20% OFF):') : T.extras_title}</h3>
-                      <div className="space-y-4">
-                         {Object.entries(DATA.extras).map(([key, val], idx) => {
-                             // Correção da renderização de extras com preços dinâmicos
-                            let label = '';
-                            let icon = null;
-                            if(key === 't') { label = '+30 Minutos'; icon = Clock; }
-                            if(key === 'i') { label = 'Troca (Interativo)'; icon = Heart; }
-                            if(key === 'a') { label = 'Aromaterapia'; icon = Wind; }
-                            
-                            const id = key === 't' ? 'more_time' : (key === 'i' ? 'touch' : 'aroma');
-                            const price = booking.type !== 'single' ? Math.floor(val * 0.8) : val;
-
-                            return (
-                               <div key={id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [id]: !b.extras[id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 animate-slide-in ${booking.extras[id] ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_20px_-5px_rgba(37,99,235,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`} style={{animationDelay: `${idx * 100}ms`}}>
-                                 <div className="flex items-center gap-4">
-                                     <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[id] ? 'text-blue-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}>{icon && React.createElement(icon, {size: 20})}</div>
-                                     <div><p className={`text-sm font-bold transition-colors ${booking.extras[id] ? 'text-blue-500' : (isDark ? 'text-zinc-200' : 'text-slate-700')}`}>{label}</p></div>
-                                 </div>
-                                 <div className="text-right">
-                                    {booking.type !== 'single' && (<span className={`text-[10px] line-through block ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{DATA.currency} {val}</span>)}
-                                    <span className={`text-xs font-bold whitespace-nowrap px-3 py-1.5 rounded-xl inline-block ${booking.extras[id] ? 'bg-blue-500/20 text-blue-500' : (isDark ? 'text-zinc-500 bg-zinc-800' : 'text-slate-500 bg-slate-100')}`}>+ {DATA.currency} {price}</span>
-                                 </div>
-                               </div>
-                            )
-                         })}
-                      </div>
-                   </div>
-               </div>
-             </div>
-          )}
-
-          {step === 3 && (
-             <div className="animate-slide-in pb-16 space-y-10">
-                <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-10">
-                    <div className="relative">
-                        <div className={`p-8 rounded-[2.5rem] border backdrop-blur-2xl shadow-2xl relative overflow-hidden ${isDark ? 'border-white/10 bg-zinc-900/80' : 'border-slate-200 bg-white/90'}`}>
-                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_20px_#2563eb]"></div>
-                          <div className="mb-8 pt-2">
-                              <span className={`text-[10px] font-bold uppercase tracking-widest mb-3 block ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{booking.type === 'pack' ? (lang === 'pt' ? "Pacote" : "Pack") : (booking.type === 'subscription' ? (lang === 'pt' ? "Assinatura" : "Subscription") : (lang === 'pt' ? "Sessão Individual" : "Single Session"))}</span>
-                              <h2 className={`font-bold text-4xl leading-tight mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{booking.item.title}</h2>
-                              <p className="text-xs text-blue-500 font-medium flex items-center gap-3 bg-blue-500/10 px-4 py-2 rounded-full w-fit border border-blue-500/10"><Calendar size={14}/> {booking.date ? new Date(booking.date).toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN) : ''} • {booking.time}</p>
-                          </div>
-                          <div className={`space-y-5 border-b border-dashed pb-8 mb-8 ${isDark ? 'border-white/10' : 'border-slate-300'}`}>
-                              <div className={`flex justify-between text-sm ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}><span>{lang === 'pt' ? "Valor Base" : "Base Price"}</span><span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{DATA.currency} {booking.item.price}</span></div>
-                              {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>{
-                                  let price = 0;
-                                  let label = '';
-                                  if(k === 'more_time') { price = DATA.extras.t; label = "+30 Min"; }
-                                  if(k === 'touch') { price = DATA.extras.i; label = "Troca"; }
-                                  if(k === 'aroma') { price = DATA.extras.a; label = "Aroma"; }
-                                  
-                                  if(booking.type !== 'single') price = Math.floor(price * 0.8);
-                                  return (<div key={k} className={`flex justify-between text-sm ${isDark ? 'text-zinc-500' : 'text-slate-600'}`}><span>+ {label} {booking.type!=='single' && '(Promo)'}</span><span>{DATA.currency} {price}</span></div>);
-                              })}
-                              {booking.appliedCoupon && (<div className="flex justify-between text-sm text-emerald-500 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 font-bold"><span>{lang === 'pt' ? "Cupom" : "Coupon"} ({booking.appliedCoupon.code})</span><span>- {DATA.currency} {booking.appliedCoupon.val}</span></div>)}
-                          </div>
-                          <div className="flex justify-between items-end">
-                              <div><span className={`text-[10px] font-bold uppercase block mb-1 ${isDark ? 'text-zinc-600' : 'text-slate-500'}`}>{T.total_label}</span><span className="text-xs font-medium text-blue-500/80 bg-blue-500/5 px-3 py-1 rounded-full border border-blue-500/10">{T.uber_warning}</span></div>
-                              <div className="text-right">
-                                  <span className={`block text-5xl font-light tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>{DATA.currency} {financials.total}</span>
-                                  <span className="text-xs font-bold text-blue-500 flex items-center justify-end gap-2 mt-2"><Sparkles size={14}/> +{estimatedXP} XP</span>
-                              </div>
-                          </div>
-                        </div>
-                    </div>
-                    
-                    <div className="space-y-8">
-                        <SmartTimer isDark={isDark} />
-
-                        <div className="flex gap-3">
-                            <div className="relative flex-1">
-                                <input value={couponInput} onChange={e=>setCouponInput(e.target.value)} placeholder={T.coupon_placeholder} className={`w-full pl-5 pr-10 h-12 rounded-xl border text-sm font-bold uppercase tracking-widest outline-none focus:border-blue-500/50 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-600' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'}`}/>
-                                <Tag size={16} className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}/>
-                            </div>
-                            <Button onClick={handleApplyCoupon} variant="secondary" size="md">{T.coupon_btn}</Button>
-                        </div>
-
-                         {user.coupons && user.coupons.length > 0 && (
-                            <div className="w-full overflow-x-auto pb-4 pt-2 scrollbar-hide">
-                                <div className="flex gap-3">
-                                    {user.coupons.map(c => {
-                                        const isApplied = booking.appliedCoupon?.id === c.id;
-                                        return (
-                                            <button 
-                                                key={c.id} 
-                                                onClick={() => setBooking(b => ({...b, appliedCoupon: isApplied ? null : c}))} 
-                                                className={`flex-shrink-0 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase transition-all whitespace-nowrap active:scale-95 ${isApplied ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500' : (isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300')}`}
-                                            >
-                                                {c.title}
-                                            </button>
-                                        )
-                                    })}
-                                </div>
-                            </div>
-                        )}
-
-                        <div>
-                            <h3 className={`text-xs font-bold uppercase mb-4 ml-1 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.pay_title}</h3>
-                            <div className="grid grid-cols-1 gap-3">
-                                {[{id:'pix', l:T.pay_pix, i:QrCode, sub:''}, {id:'card', l:T.pay_card, i:CreditCard, sub:''}, {id:'money', l:T.pay_cash, i:Banknote, sub:''}].map((p, idx) => (
-                                    <button key={p.id} onClick={()=>setBooking(b=>({...b, payment: p.id}))} className={`animate-slide-in px-6 py-4 rounded-xl border flex items-center gap-4 transition-all duration-300 ${booking.payment === p.id ? 'bg-zinc-800 border-blue-500/50 shadow-[0_0_20px_-5px_rgba(37,99,235,0.2)]' : (isDark ? 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800' : 'bg-white border-slate-200 hover:bg-slate-50')}`} style={{animationDelay: `${idx * 100}ms`}}>
-                                            <div className={`p-2 rounded-full ${booking.payment === p.id ? 'bg-blue-600 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><p.i size={18}/></div>
-                                            <div className="text-left"><span className={`font-bold text-sm block ${booking.payment === p.id ? (isDark ? 'text-white' : 'text-slate-900') : (isDark ? 'text-zinc-400' : 'text-slate-600')}`}>{p.l}</span></div>
-                                            {booking.payment === p.id && <Check size={20} className="ml-auto text-blue-500" strokeWidth={3}/>}
-                                    </button>
-                                ))}
-                            </div>
-                            
-                            {/* PIX COPY PASTE */}
-                            {booking.payment === 'pix' && (
-                                <div className={`mt-5 p-6 rounded-2xl border border-dashed ${isDark ? 'border-zinc-700 bg-zinc-900/50' : 'border-slate-300 bg-slate-50'} animate-fade-in`}>
-                                    <p className={`text-[10px] uppercase font-bold text-center mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Chave Pix (Copia e Cola)</p>
-                                    <div className="flex gap-3">
-                                        <input readOnly value={CONFIG.PIX_KEY} className={`w-full text-sm font-mono text-center rounded-xl border px-3 py-3 ${isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-300' : 'bg-white border-slate-200 text-slate-600'}`} />
-                                        <button onClick={()=>{navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success")}} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}><Copy size={20}/></button>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className={`p-5 rounded-2xl border ${isDark ? 'border-zinc-800 bg-zinc-900/30' : 'border-slate-200 bg-slate-50'}`}>
-                             <div className="flex items-start gap-3 mb-3">
-                                  <ShieldCheck className={`${isDark ? 'text-zinc-500' : 'text-slate-500'} shrink-0 mt-0.5`} size={20}/>
-                                  <div><h4 className={`text-sm font-bold mb-1 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.terms_title}</h4><p className={`text-xs cursor-pointer hover:text-blue-500 transition-colors underline ${isDark ? 'text-zinc-500' : 'text-slate-500'}`} onClick={() => setTermsOpen(true)}>{T.terms_link}</p></div>
-                             </div>
-                             <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer hover:border-zinc-500 transition-colors select-none ${isDark ? 'bg-zinc-950/50 border-zinc-800' : 'bg-white border-slate-200'}`}><input type="checkbox" checked={booking.termsAccepted} onChange={e=>setBooking(b=>({...b, termsAccepted: e.target.checked}))} className="w-5 h-5 rounded border-zinc-600 bg-zinc-800 accent-blue-500 cursor-pointer"/><span className={`text-xs font-bold uppercase ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.agree_terms}</span></label>
-                        </div>
-                    </div>
-                </div>
-             </div>
-          )}
-
-          {/* SUCCESS (STEP 4) */}
-          {step === 4 && (
-             <div className="flex flex-col items-center justify-center pt-20 text-center animate-scale-in">
-                 <div className="relative mb-12 group">
-                     <div className="absolute inset-0 bg-emerald-500 blur-[100px] opacity-30 rounded-full animate-pulse"></div>
-                     <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-emerald-500 to-emerald-700 flex items-center justify-center shadow-2xl shadow-emerald-500/30 relative z-10 border border-emerald-400/20">
-                         <Check size={56} className="text-white" strokeWidth={3}/>
-                     </div>
-                 </div>
-                 <h1 className={`text-3xl font-light mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h1>
-                 <p className={`text-sm leading-relaxed max-w-sm mx-auto mb-10 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
-                 
-                 <div className="w-full max-w-sm space-y-4">
-                     <div className="flex gap-4 justify-center mb-2">
-                         <Button variant="secondary" size="icon" onClick={() => { navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success"); }} icon={Copy} />
-                         <Button variant="instagram" size="icon" onClick={() => window.open(CONFIG.INSTAGRAM_URL, '_blank')} icon={Instagram} />
-                     </div>
-                     <Button variant="whatsapp" full size="lg" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon={MessageCircle}>{T.whatsapp_btn}</Button>
-                 </div>
-
-                 <button onClick={()=>{setStep(0); setBooking({...booking, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false}); setShowConfetti(false);}} className={`mt-12 text-xs font-bold uppercase tracking-widest transition-colors py-4 ${isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-slate-400 hover:text-slate-600'}`}>{T.back_home}</button>
-             </div>
-          )}
-        </div>
-      </main>
-
-      {/* FOOTER NAV - FLOATING GLASS BAR */}
-      {step < 4 && (
-         <div className="fixed bottom-6 left-0 w-full z-50 pointer-events-none px-4">
-            <div className={`max-w-xl mx-auto p-3 rounded-[2rem] backdrop-blur-2xl shadow-2xl border pointer-events-auto transition-all duration-500 ${isDark ? 'bg-zinc-950/80 border-white/10 shadow-black/50' : 'bg-white/80 border-slate-200 shadow-slate-200/50'}`}>
-                <div className="flex items-center gap-3">
-                    {step > 0 && (
-                      <div className="flex gap-2">
-                        <button onClick={() => setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><Home size={20}/></button>
-                        <button onClick={() => setStep(step - 1)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><ChevronLeft size={20}/></button>
-                      </div>
-                    )}
-                    <button 
-                      onClick={handleNextStep} 
-                      className={`flex-1 h-14 rounded-3xl flex items-center justify-center px-6 transition-all duration-300 shadow-lg active:scale-[0.98] ${step < 3 ? 'bg-blue-600 text-white shadow-blue-600/30 hover:shadow-blue-600/50' : 'bg-[#25D366] text-white shadow-green-500/30 hover:bg-[#20bd5a]'}`}
-                    >
-                      <div className="flex items-center gap-3">
-                          <span className="text-sm font-bold uppercase tracking-widest">{step === 3 ? T.book_btn : T.next_btn}</span>
-                          {booking.item && <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-black">{DATA.currency} {financials.total}</span>}
-                          {!booking.item && <ArrowRight size={20} strokeWidth={2.5}/>}
-                      </div>
-                    </button>
-                </div>
-            </div>
-         </div>
-      )}
-
-      {/* --- MODALS --- */}
-
-      <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${settingsOpen ? 'opacity-100' : 'opacity-0'}`}>
-         <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${settingsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setSettingsOpen(false)}></div>
-         <div className={`relative w-full max-w-sm border rounded-[2rem] p-8 transform transition-transform duration-500 shadow-2xl ${settingsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
-            <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4"><Download size={32} className="text-blue-500"/></div>
-                <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.install_app}</h3>
-                <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.install_desc}</p>
-            </div>
-            <div className={`p-4 rounded-xl text-xs mb-6 leading-relaxed ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>
-                1. Toque no ícone de compartilhamento do navegador.<br/>
-                2. Selecione "Adicionar à Tela de Início".
-            </div>
-            <Button full onClick={()=>setSettingsOpen(false)}>Ok</Button>
-         </div>
-      </div>
-
-      <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${termsOpen ? 'opacity-100' : 'opacity-0'}`}>
-         <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${termsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setTermsOpen(false)}></div>
-         <div className={`relative w-full max-w-lg border rounded-[2rem] p-8 max-h-[85vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${termsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
-            <div className="flex justify-between items-center mb-8"><h3 className={`text-xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</h3><button onClick={()=>setTermsOpen(false)} className={`p-3 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={20}/></button></div>
-            <div className="space-y-5">
-                {T.terms_body.map((t,i)=>(<div key={i} className={`flex gap-5 p-5 rounded-2xl border ${isDark ? 'bg-zinc-950/50 border-white/5' : 'bg-slate-50 border-slate-200'}`}><span className="font-bold text-blue-500 text-2xl opacity-50">{i+1}</span><p className={`text-sm leading-relaxed pt-1.5 font-light ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{t.substring(3)}</p></div>))}
-                <Button full onClick={()=>setTermsOpen(false)} variant="primary">{T.terms_btn}</Button>
-            </div>
-         </div>
-      </div>
-
-      {levelUpPopup && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
-            <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={()=>setLevelUpPopup(false)}></div>
-            <div className="relative p-10 rounded-[2.5rem] text-center max-w-sm w-full animate-scale-in shadow-2xl border border-blue-500/20 bg-zinc-900">
-                <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[2.5rem] pointer-events-none"><div className="absolute -top-20 -left-20 w-40 h-40 bg-blue-500 blur-[80px] opacity-20"></div></div>
-                <div className="w-24 h-24 bg-gradient-to-tr from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-blue-500/30 animate-bounce-slow"><Trophy size={40} className="text-white" /></div>
-                <h2 className="text-3xl font-light text-white mb-3">{T.popup_level_title}</h2><p className="text-zinc-400 text-sm leading-relaxed mb-10">{T.popup_level_msg}</p>
-                <Button full size="lg" onClick={()=>setLevelUpPopup(false)} icon={Ticket}>{T.popup_btn_coupon}</Button>
-            </div>
-        </div>
-      )}
-
-      {welcomePopup && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
-            <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={()=>setWelcomePopup(false)}></div>
-            <div className="relative p-10 rounded-[2.5rem] text-center max-w-md w-full animate-scale-in shadow-2xl border border-white/10 bg-zinc-900">
-                <div className="w-24 h-24 bg-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/5 rotate-3"><Gift size={40} className="text-blue-500" /></div>
-                <h2 className="text-2xl font-light text-white mb-4">{T.popup_welcome_title}</h2><p className="text-zinc-400 text-sm leading-relaxed mb-8">{T.popup_welcome_msg}</p>
-                <div className="bg-zinc-950 p-5 rounded-2xl border border-dashed border-zinc-800 mb-8"><p className="text-xs uppercase font-bold text-zinc-500 mb-2">Seu Código:</p><p className="text-2xl font-mono font-bold text-blue-500 tracking-widest">WELCOME10</p></div>
-                <Button full variant="primary" onClick={()=>{
-                    setWelcomePopup(false); 
-                    setUser(u=>({...u, hasSeenWelcome: true}));
-                    const welcomeCoupon = { id: 'WELCOME10', val: 10, title: '🎁 Welcome', code: 'WELCOME10' };
-                    setBooking(b => ({...b, appliedCoupon: welcomeCoupon}));
-                    addToast(T.toast_coupon_success, "success");
-                }}>{T.popup_btn_coupon}</Button>
-            </div>
-        </div>
-      )}
-
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.8s ease-out}.animate-slide-in{animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-slide-up{animation:slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;opacity:0}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.4s ease-out}.animate-pulse-slow{animation:pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite}.animate-spin-slow{animation:spin 3s linear infinite}.pb-safe{padding-bottom:env(safe-area-inset-bottom,32px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}@keyframes slideDown{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
-    </div>
-  );
-}
