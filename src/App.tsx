@@ -11,18 +11,19 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v49.0 - HUMAN CONNECTION EDITION
+ * THALYSON APP OS v50.0 - REALITY & FLOW EDITION
  * ==================================================================================
- * 1. COPYWRITING: Foco em Acolhimento, Autoestima e Conexão Humana.
- * 2. SENSITIVA: Agora inclui Lingam (Foco no Afeto/Carência).
- * 3. TITAN: Diferencial "Corpo a Corpo" + "Tirar a Dor" (Cuidado Completo).
- * 4. UX: Layout mantido e otimizado.
+ * 1. REVIEWS: Restaurados (Bruno, Tiago, Alan originais).
+ * 2. LOCAL: Removido "Meu Espaço". Foco 100% Delivery.
+ * 3. SERVIÇOS: Novos nomes (Clássica, Tântrica, Fusion) e Preços (175/240).
+ * 4. LAYOUT: Cards com mais respiro (Gap maior, altura automática).
+ * 5. FLUXO: Explicação clara que tudo começa com massagem muscular.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v49_human', 
+  STORAGE_KEY: '@thaly_app_v50_reality', 
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -91,7 +92,7 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
 const Card = ({ children, className = '', onClick, active = false, isDark = true }) => (
   <div 
     onClick={onClick} 
-    className={`relative p-6 md:p-8 rounded-[2rem] transition-all duration-300 overflow-hidden h-full flex flex-col group font-['Poppins']
+    className={`relative p-6 md:p-8 rounded-[2rem] transition-all duration-300 flex flex-col group font-['Poppins'] h-auto min-h-[420px]
     ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-1' : ''} 
     ${active 
         ? 'bg-blue-600/10 border border-blue-500/50 shadow-[0_0_30px_-10px_rgba(37,99,235,0.3)]' 
@@ -135,7 +136,7 @@ const ReviewsCarousel = ({ reviews, isDark }) => {
   const scroll = (direction) => {
     if (scrollRef.current) {
         const { current } = scrollRef;
-        const scrollAmount = 300; 
+        const scrollAmount = 320; 
         if (direction === 'left') {
             current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
         } else {
@@ -147,13 +148,13 @@ const ReviewsCarousel = ({ reviews, isDark }) => {
     <div className={`w-full overflow-hidden py-12 border-t mt-16 relative group/reviews ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
       <div className="text-center mb-10">
           <h3 className={`text-2xl font-light mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>O que dizem sobre mim</h3>
-          <p className={`text-xs uppercase tracking-[0.2em] font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Histórias de quem já veio</p>
+          <p className={`text-xs uppercase tracking-[0.2em] font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Experiências Reais</p>
       </div>
       <button onClick={() => scroll('left')} className={`hidden md:flex absolute left-4 top-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}><ChevronLeft size={20} /></button>
       <button onClick={() => scroll('right')} className={`hidden md:flex absolute right-4 top-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}><ChevronRight size={20} /></button>
       <div ref={scrollRef} className="flex gap-5 overflow-x-auto scrollbar-hide px-6 md:px-12 snap-x snap-mandatory font-['Poppins']">
         {reviews.map((r, i) => (
-            <div key={`${i}-${r.n}`} className={`snap-center flex-shrink-0 w-72 sm:w-80 border p-6 rounded-[1.5rem] transition-all duration-300 hover:scale-[1.01] select-none ${isDark ? 'bg-zinc-900/80 border-white/10 hover:border-blue-500/20' : 'bg-white border-slate-200 shadow-sm hover:border-blue-400'}`}>
+            <div key={`${i}-${r.n}`} className={`snap-center flex-shrink-0 w-80 border p-6 rounded-[1.5rem] transition-all duration-300 hover:scale-[1.01] select-none ${isDark ? 'bg-zinc-900/80 border-white/10 hover:border-blue-500/20' : 'bg-white border-slate-200 shadow-sm hover:border-blue-400'}`}>
               <div className="flex justify-between items-start mb-4">
                  <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border ${isDark ? 'bg-zinc-800 text-zinc-300 border-white/5' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>{r.n.charAt(0)}</div>
@@ -186,7 +187,7 @@ const FAQItem = ({ q, a, isDark }) => {
 };
 
 // ==================================================================================
-// 2. DADOS (HUMAN CONNECTION COPY)
+// 2. DADOS (REALITY & FLOW)
 // ==================================================================================
 
 const getData = (lang) => {
@@ -200,103 +201,105 @@ const getData = (lang) => {
         ],
         services: [
             { 
-              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "PARA O CANSAÇO" : "TIREDNESS",
-              title: isPT ? "Sessão Relaxante" : "Relaxing Session",
-              desc: isPT ? "Seu refúgio de paz. Um momento para desligar a mente e soltar o corpo." : "Your peace refuge. Disconnect mind and body.",
-              details: isPT ? `QUANDO O CORPO PEDE SOCORRO:
-• COMO É: Um abraço em forma de massagem. Manobras firmes para tirar o peso das costas e o estresse do dia a dia.
-• O AMBIENTE: Música suave, cheiro bom e um espaço onde você não precisa ser forte o tempo todo.
-• NOTA: Foco 100% no alívio físico e mental (sem toque íntimo). É para você respirar de novo.` 
-              : `BODY SOS:
-• WHAT IS IT: A massage hug. Firm moves to remove back weight.
-• VIBE: Soft music, good scent, safe space.
-• NOTE: 100% physical relief (no intimate touch). Breathe again.`
+              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "100% FÍSICO" : "PHYSICAL",
+              title: isPT ? "Massagem Clássica" : "Classic Relax",
+              desc: isPT ? "Para tirar a dor. Foco exclusivo muscular. Sem toque íntimo." : "For pain. Muscle focus only. No intimate touch.",
+              details: isPT ? `O ALÍVIO QUE VOCÊ PRECISA:
+• COMO FUNCIONA: Iniciamos com manobras firmes e profundas para soltar toda a musculatura das costas e pernas.
+• FOCO: Tirar "nós", tensão e cansaço físico.
+• TRAJE: O terapeuta usa roupa padrão.
+• NOTA: Esta sessão é puramente terapêutica/muscular.` 
+              : `THE RELIEF YOU NEED:
+• HOW IT WORKS: Firm maneuvers to release back/leg muscles.
+• FOCUS: Remove knots and fatigue.
+• ATTIRE: Standard clothing.
+• NOTE: Purely therapeutic.`
             },
             { 
-              id: 'sensitiva', min: 60, price: 155, icon: Heart, tag: isPT ? "AFETO & CONEXÃO" : "AFFECTION",
-              title: isPT ? "Terapia Sensitiva" : "Sensitive Therapy",
-              desc: isPT ? "Para quem se sente sozinho e precisa de um toque de carinho real." : "For the lonely who need real affection.",
-              details: isPT ? `VOCÊ MERECE SER TOCADO:
-• ACOLHIMENTO: Vivemos num mundo frio. Aqui, trago o calor humano de volta com toques sutis e carinhosos.
-• CONEXÃO: **Atendo de cueca** para quebrar o gelo e criar intimidade. Sinta-se à vontade.
-• O PLUS: Inclui a **Massagem Lingam** (toque íntimo) como forma de afeto e celebração do seu corpo. O final feliz faz parte do cuidado.`
-              : `YOU DESERVE TOUCH:
-• WELCOMING: Bringing human warmth back with subtle touches.
-• CONNECTION: **I wear underwear** to break the ice. Feel free.
-• THE PLUS: Includes **Lingam Massage** as affection. Happy ending is part of the care.`
+              id: 'sensitiva', min: 60, price: 175, icon: Flame, tag: isPT ? "SENSORIAL + LINGAM" : "SENSORY",
+              title: isPT ? "Tântrica Sensorial" : "Tantric Sensory",
+              desc: isPT ? "Relaxamento + Toque Sutil + Finalização. Atendo de cueca." : "Relax + Subtle Touch + Finish. Underwear service.",
+              details: isPT ? `A EVOLUÇÃO DO TOQUE:
+• O INÍCIO: Começamos SEMPRE soltando a musculatura (Relaxante) para você se entregar.
+• A CONEXÃO: O toque fica sutil (ponta dos dedos) percorrendo o corpo todo para despertar a pele.
+• TRAJE: **Atendo de cueca** para criar um ambiente de maior intimidade e conforto.
+• O ÁPICE: Inclui a **Massagem Lingam** (toque íntimo) com foco em prazer e acolhimento.`
+              : `TOUCH EVOLUTION:
+• START: Muscle relaxation first.
+• CONNECTION: Subtle touches to awaken skin.
+• ATTIRE: **I wear underwear** for intimacy.
+• PEAK: Includes **Lingam Massage** for pleasure.`
             },
             { 
-              id: 'mista', min: 60, price: 195, icon: Zap, tag: isPT ? "CUIDADO COMPLETO" : "COMPLETE CARE",
-              title: isPT ? "Experiência Titan" : "Titan Experience",
-              desc: isPT ? "Eu cuido de tudo: da sua dor nas costas ao seu prazer mais intenso." : "I take care of everything: from back pain to intense pleasure.",
-              details: isPT ? `O MELHOR DOS DOIS MUNDOS:
-• A ENTREGA: Começo tirando toda a dor e tensão muscular (Relaxante) e termino te levando ao céu (Tântrica).
-• CORPO A CORPO: Uma troca de energia intensa e revigorante.
-• LINGAM ESPECIAL: Dedico tempo e técnica para elevar sua autoestima e prazer genital ao máximo.
-• RESULTADO: Você sai leve, cuidado e com a energia renovada.`
-              : `BEST OF BOTH WORLDS:
-• THE SURRENDER: Muscle relief first, then heaven (Tantric).
-• BODY TO BODY: Intense energy exchange.
-• SPECIAL LINGAM: Dedication to maximize your pleasure.
-• RESULT: Leave light, cared for, and renewed.`
+              id: 'mista', min: 60, price: 240, icon: Zap, tag: isPT ? "FUSÃO COMPLETA" : "FULL FUSION",
+              title: isPT ? "Experiência Fusion" : "Fusion Experience",
+              desc: isPT ? "Tudo em um: Muscular + Corpo a Corpo + Lingam Intenso." : "All in one: Muscle + Body-to-Body + Intense Lingam.",
+              details: isPT ? `PARA QUEM QUER TUDO:
+• A JORNADA: Começa tirando a dor (Muscular), evolui para o contato pele com pele (Body-to-Body) e termina no êxtase.
+• LINGAM PREMIUM: Dedico mais tempo e técnica na região íntima para uma descarga de energia potente.
+• TRAJE: Atendo de cueca para permitir o deslizamento corporal.
+• RESULTADO: Você sai sem dor nas costas e com a mente leve.`
+              : `FOR WHO WANTS IT ALL:
+• JOURNEY: Muscle relief -> Body-to-Body -> Ecstasy.
+• PREMIUM LINGAM: More time/technique on intimate area.
+• ATTIRE: Underwear.
+• RESULT: No pain, light mind.`
             }
         ],
         faq: [
-            { q: "Sou tímido/inseguro, posso ir?", a: "Deve! Meu espaço é livre de julgamentos. Atendo homens de todos os corpos, idades e jeitos. Aqui você não precisa performar, só receber. Se sentir vergonha, vamos no seu tempo." },
-            { q: "O que é a Massagem Lingam?", a: "É um toque de adoração ao seu órgão masculino. Diferente de algo rápido ou mecânico, é um carinho demorado, técnico e feito para você se sentir potente e cuidado." },
-            { q: "Onde é o atendimento?", a: "Eu vou até o seu refúgio. Pode ser na sua casa (onde você se sente mais seguro), num hotel ou motel. Levo tudo para transformar o ambiente. Sua privacidade é sagrada." },
-            { q: "Pode 'gozar' na massagem?", a: "Com certeza. O gozo é saúde, é vida, é alívio. Na Sensitiva e na Titan, eu quero que você coloque isso para fora. Não precisa se segurar. É um presente para você." },
-            { q: "Qual a diferença das sessões?", a: "Relaxante = Tira dor (sem sexo). Sensitiva = Dá carinho e prazer (com Lingam). Titan = Tira a dor E dá muito prazer (Completa)." }
+            { q: "Qual a diferença real entre as sessões?", a: "Clássica (R$125) = Só tira dor (sem sexo/lingam). Tântrica (R$175) = Tira dor + Toque leve + Lingam (de cueca). Fusion (R$240) = Tira dor + Corpo a Corpo + Lingam Intenso (a mais completa)." },
+            { q: "Você tem local próprio?", a: "Não. Meu atendimento é 100% Delivery (Vou até você). Atendo em domicílio, hotéis ou motéis com total discrição e segurança." },
+            { q: "Onde você atende?", a: "São Paulo Capital e região. O valor do transporte (Uber) é calculado à parte no momento do agendamento." },
+            { q: "Pode 'gozar' na massagem?", a: "Sim! Nas experiências Tântrica e Fusion, o clímax é bem-vindo e faz parte do alívio terapêutico." },
+            { q: "Aceita cartão?", a: "Sim, aceito Pix e Cartão de Crédito (via link seguro)." }
         ],
         plans: [
             { 
-              id: 'pack_relax', type: 'pack', title: isPT ? "Protocolo Zero Dor" : "No Pain Protocol", 
+              id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Anti-Stress" : "Anti-Stress Cycle", 
               price: 397, fullPrice: 500, savings: 103,
               desc: isPT ? "4 Sessões de Massagem Clássica." : "4 Classic Massage Sessions.",
-              details: isPT ? "IDEAL PARA O HOMEM CANSADO:\n• Se seu corpo grita de cansaço, esse é o remédio.\n• 4 encontros para zerar sua tensão muscular.\n• Foco total em saúde física." 
-                            : "FOR THE TIRED MAN:\n• If your body screams, this is the cure.\n• 4 meetings to reset muscle tension.\n• Physical health focus.", 
-              tag: isPT ? "ALÍVIO" : "RELIEF", icon: Package 
+              details: isPT ? "MANUTENÇÃO CONTRA DOR:\n• 4 sessões focadas 100% em tirar tensão muscular.\n• Não inclui parte íntima." 
+                            : "PAIN MAINTENANCE:\n• 4 sessions focused on muscle tension.\n• No intimate part.", 
+              tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: Package 
             },
             { 
               id: 'pack_mista', type: 'pack', title: isPT ? "Trilogia do Êxtase" : "Ecstasy Trilogy", 
-              price: 487, fullPrice: 585, savings: 98,
-              desc: isPT ? "3 Sessões da Experiência Titan." : "3 Titan Experience Sessions.",
-              details: isPT ? "PARA QUEM QUER SE SENTIR VIVO:\n• 3 oportunidades de viver a experiência completa.\n• Perfeito para manter sua autoestima e prazer em dia.\n• O melhor custo-benefício para ser cuidado por mim."
-                            : "TO FEEL ALIVE:\n• 3 chances to live the full experience.\n• Perfect for self-esteem.\n• Best value to be cared for by me.", 
+              price: 600, fullPrice: 720, savings: 120,
+              desc: isPT ? "3 Sessões da Experiência Fusion." : "3 Fusion Sessions.",
+              details: isPT ? "INTENSIDADE GARANTIDA:\n• 3 encontros da massagem mais completa (Fusion).\n• Ideal para quem quer viver o ápice do prazer repetidas vezes."
+                            : "GUARANTEED INTENSITY:\n• 3 meetings of the fullest massage.\n• Ideal for repeated pleasure.", 
               tag: isPT ? "MAIS VENDIDO" : "BEST SELLER", icon: Zap 
             },
             { 
               id: 'titan_passport', type: 'pack', title: isPT ? "Passaporte Titan (5x)" : "Titan Passport (5x)", 
-              price: 780, fullPrice: 975, savings: 195,
-              desc: isPT ? "Compre 4, Leve 5 Sessões." : "Buy 4, Get 5 Sessions.",
-              details: isPT ? "O PRESENTE MÁXIMO:\n• Você garante 5 encontros comigo.\n• Paga 4 e a 5ª é meu presente para você.\n• Ideal para criar um vínculo real e duradouro."
-                            : "ULTIMATE GIFT:\n• Guarantee 5 meetings.\n• Pay 4, get 5th free.\n• Ideal for real bonding.", 
+              price: 960, fullPrice: 1200, savings: 240,
+              desc: isPT ? "Compre 4, Leve 5 (Fusion)." : "Buy 4, Get 5 (Fusion).",
+              details: isPT ? "A OFERTA IRRECUSÁVEL:\n• Você garante 5 sessões Fusion completas.\n• Paga 4 e a 5ª é por minha conta.\n• Validade estendida para usar quando quiser."
+                            : "IRRESISTIBLE OFFER:\n• 5 full Fusion sessions.\n• Pay 4, get 5th free.\n• Extended validity.", 
               tag: isPT ? "1 SESSÃO GRÁTIS" : "1 FREE SESSION", icon: Crown 
             }
         ],
         extras: [
-            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para nossa conexão durar mais." : "To last longer." },
-            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Sinta minha pele também. Toque de volta." : "Feel my skin too. Touch back." },
-            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Cheiro que acalma a alma." : "Scent that calms." }
+            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
+            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você toca também." : "You touch too." },
+            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Imersão total." : "Total immersion." }
         ],
         reviews: [
-            { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Eu estava muito carente, precisava desse toque. O Thalyson me fez sentir homem de novo. Obrigado." : "Was very needy, needed this touch. Thalyson made me feel like a man again. Thanks.", s: 5 },
-            { n: "Tiago", loc: "SP - Jardins", t: isPT ? "Nunca imaginei que poderia relaxar tanto e ter tanto prazer na mesma sessão. A Titan é incrível." : "Never thought I could relax so much and have such pleasure in the same session. Titan is amazing.", s: 5 },
-            { n: "Alan", loc: "SP - Centro", t: isPT ? "O cuidado dele com o Lingam é diferente. Não é só 'bater uma', é um carinho que eu não recebia há anos." : "His care with Lingam is different. It's an affection I hadn't received in years.", s: 5 },
-            { n: "Ricardo", loc: "Rio Preto", t: isPT ? "Fechei o Passaporte. Vale a pena ter esse momento garantido na semana. Me sinto renovado." : "Bought the Passport. Worth having this guaranteed moment weekly. Feel renewed.", s: 5 },
-            { n: "Pedro", loc: "Jales", t: isPT ? "Ele te deixa muito à vontade. A vergonha some no primeiro minuto. Recomendo pra quem é tímido." : "He makes you very comfortable. Shame disappears in minute one. Recommend for shy guys.", s: 5 }
+            { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito.", s: 5 },
+            { n: "Tiago", loc: "SP - Bela Vista", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", s: 5 },
+            { n: "Alan", loc: "SP - Bela Vista", t: "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve. Da pra ver que ele manda bem no que faz. Obrigado!", s: 5 }
         ],
         text: {
             loading: isPT ? "CARREGANDO..." : "LOADING...",
-            welcome: isPT ? "Bem-vindo," : "Welcome,",
-            subtitle: isPT ? "Um espaço seguro para você relaxar, sentir prazer e ser cuidado sem julgamentos." : "A safe space to relax, feel pleasure and be cared for without judgment.",
+            welcome: isPT ? "Olá," : "Hello,",
+            subtitle: isPT ? "Seu momento de pausa. Massagem Delivery em São Paulo." : "Your pause moment. Massage Delivery in São Paulo.",
             tab_single: isPT ? "Para Hoje" : "For Today",
             tab_packs: isPT ? "Jornadas" : "Journeys",
             select_time_title: isPT ? "Data & Horário" : "Date & Time",
             date_sub: isPT ? "Qual o melhor momento para você?" : "Best moment for you?",
-            location_title: isPT ? "Onde nos encontramos?" : "Where do we meet?",
+            location_title: isPT ? "Onde eu vou te encontrar?" : "Where do we meet?",
             input_name: isPT ? "Como prefere ser chamado?" : "How would you like to be called?",
-            input_addr: isPT ? "Endereço do seu refúgio" : "Meeting address",
+            input_addr: isPT ? "Endereço do encontro" : "Meeting address",
             input_num: isPT ? "Número" : "Number",
             input_bairro: isPT ? "Bairro" : "District",
             input_city: isPT ? "Cidade" : "City",
@@ -316,7 +319,7 @@ const getData = (lang) => {
             total_label: isPT ? "Investimento em Você" : "Investment in You",
             book_btn: isPT ? "QUERO ESSE CUIDADO" : "I WANT THIS CARE",
             next_btn: isPT ? "Continuar" : "Next",
-            uber_warning: isPT ? "*Deslocamento calculado no chat" : "*Uber calculated in chat",
+            uber_warning: isPT ? "*Deslocamento (Uber) calculado no chat" : "*Uber calculated in chat",
             success_title: isPT ? "Pedido Recebido!" : "Request Received!",
             success_sub: isPT ? "Já estou ansioso para cuidar de você. Me chame no WhatsApp para combinarmos os detalhes finais." 
                               : "Anxious to care for you. Please msg me on WhatsApp to finalize details.",
@@ -332,15 +335,15 @@ const getData = (lang) => {
             empty_date: isPT ? "Selecione uma data" : "Select a date",
             empty_slots: isPT ? "Agenda cheia neste dia" : "Full schedule this day",
             details_label: isPT ? "SOBRE A EXPERIÊNCIA" : "ABOUT THE EXPERIENCE",
-            popup_welcome_title: isPT ? "Um Presente para Você" : "A Gift for You",
-            popup_welcome_msg: isPT ? "Fico feliz que você chegou até aqui. Quero te dar um motivo a mais para cuidar de si mesmo hoje." 
-                                    : "Glad you made it here. I want to give you one more reason to take care of yourself today.",
+            popup_welcome_title: isPT ? "Boas-vindas" : "Welcome",
+            popup_welcome_msg: isPT ? "Que bom ter você por aqui. Preparei um presente para nosso primeiro encontro." 
+                                    : "Glad to have you here. I prepared a gift for our first meeting.",
             popup_level_title: isPT ? "Novo Ciclo" : "New Cycle",
             popup_level_msg: isPT ? "Sua presença constante desbloqueou novos carinhos." : "Your loyalty unlocked new treats.",
             popup_btn_coupon: isPT ? "Resgatar Presente" : "Redeem Gift",
             agree_terms: isPT ? "Estou ciente de como funciona." : "I am aware of how it works.",
-            terms_body: isPT ? ["1. HIGIENE: Um banho prévio ajuda no nosso conforto.", "2. SIGILO: Sua privacidade é absoluta comigo.", "3. AMBIENTE: Adapto o atendimento ao seu espaço (Cama/Sofá) para seu total relaxamento.", "4. RESPEITO: Um espaço livre de julgamentos.", "5. SAÚDE: Confirmo que estou saudável e sem sintomas para receber a massagem."] 
-                             : ["1. HYGIENE: A shower beforehand helps our comfort.", "2. PRIVACY: Your privacy is absolute with me.", "3. ENVIRONMENT: I adapt to your space (Bed/Sofa) for total relaxation.", "4. RESPECT: A judgment-free space.", "5. HEALTH: I confirm I am healthy and symptom-free to receive the massage."],
+            terms_body: isPT ? ["1. HIGIENE: Um banho prévio ajuda no nosso conforto.", "2. SIGILO: Sua privacidade é absoluta comigo.", "3. AMBIENTE: Atendimento delivery. Levo tudo necessário.", "4. RESPEITO: Um espaço livre de julgamentos.", "5. SAÚDE: Confirmo que estou saudável e sem sintomas."] 
+                             : ["1. HYGIENE: A shower beforehand helps our comfort.", "2. PRIVACY: Your privacy is absolute with me.", "3. ENVIRONMENT: Delivery service.", "4. RESPECT: A judgment-free space.", "5. HEALTH: I confirm I am healthy."],
             terms_title: isPT ? "Alguns Combinados" : "Some Agreements",
             terms_link: isPT ? "Ler combinados importantes" : "Read important terms",
             terms_btn: isPT ? "Entendido" : "Understood",
@@ -887,7 +890,6 @@ ${T.zap.wait}
                         <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`}>
                             <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_15px_#2563eb]" style={{width: `${getCurrentLevelProgress()}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'}}></div>
                         </div>
-                        {/* GATILHO: FIDELIDADE CLARA */}
                         <p className={`text-xs mt-4 text-center font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                              {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : "Ciclo Elite: +R$50 a cada 500 XP"}
                         </p>
@@ -923,7 +925,6 @@ ${T.zap.wait}
                         <div className={`h-1.5 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`}>
                             <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_15px_#2563eb]" style={{width: `${getCurrentLevelProgress()}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'}}></div>
                         </div>
-                          {/* GATILHO: FIDELIDADE CLARA */}
                           <p className={`text-[10px] mt-3 text-center font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                              {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : "Ciclo Elite: +R$50 a cada 500 XP"}
                         </p>
@@ -941,27 +942,31 @@ ${T.zap.wait}
               </div>
 
               {/* Products Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-in delay-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-slide-in delay-300">
                   {activeTab === 'single' && DATA.services.map((s, idx) => (
                       <div key={s.id} className="animate-scale-in" style={{animationDelay: `${idx * 100}ms`}}>
                         <Card active={booking.item?.id === s.id} onClick={() => handleSelectItem('single', s)} isDark={isDark}>
-                            <div className="flex justify-between items-start mb-6">
-                                <div className={`p-4 rounded-2xl transition-all duration-300 ${booking.item?.id === s.id ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-500/20' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={28}/></div>
-                                <div className="text-right">
-                                    <span className={`block text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>R$ {s.price}</span>
-                                    <span className={`text-xs font-bold uppercase tracking-wider flex items-center justify-end gap-1.5 mt-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}><Clock size={14}/> {s.min} min</span>
+                            <div className="flex flex-col h-full justify-between">
+                                <div>
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div className={`p-4 rounded-2xl transition-all duration-300 ${booking.item?.id === s.id ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-500/20' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={28}/></div>
+                                        <div className="text-right">
+                                            <span className={`block text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>R$ {s.price}</span>
+                                            <span className={`text-xs font-bold uppercase tracking-wider flex items-center justify-end gap-1.5 mt-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}><Clock size={14}/> {s.min} min</span>
+                                        </div>
+                                    </div>
+                                    <div className="mb-4">
+                                        {s.tag && <span className="inline-block px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-500 mb-3 uppercase tracking-widest">{s.tag}</span>}
+                                        <h3 className={`font-bold text-xl leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{s.title}</h3>
+                                        <p className={`text-sm leading-relaxed font-light mt-2 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{s.desc}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="mb-4 flex-1">
-                                {s.tag && <span className="inline-block px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-500 mb-3 uppercase tracking-widest">{s.tag}</span>}
-                                <h3 className={`font-bold text-xl leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{s.title}</h3>
-                                <p className={`text-sm leading-relaxed font-light mt-2 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{s.desc}</p>
-                            </div>
-                            <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === s.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
-                                <div className="overflow-hidden">
-                                    <div className={`p-6 rounded-2xl border text-sm leading-relaxed font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                                        <div className="flex items-center gap-2 font-bold mb-3 text-blue-500 uppercase tracking-wider text-[10px]"><Info size={14}/> {T.details_label}</div>
-                                        <p className="whitespace-pre-line text-sm">{s.details}</p>
+                                <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === s.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
+                                    <div className="overflow-hidden">
+                                        <div className={`p-6 rounded-2xl border text-sm leading-relaxed font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                                            <div className="flex items-center gap-2 font-bold mb-3 text-blue-500 uppercase tracking-wider text-[10px]"><Info size={14}/> {T.details_label}</div>
+                                            <p className="whitespace-pre-line text-sm">{s.details}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -972,28 +977,31 @@ ${T.zap.wait}
                   {activeTab === 'packs' && DATA.plans.map((plan, idx) => (
                       <div key={plan.id} className="animate-scale-in" style={{animationDelay: `${idx * 100}ms`}}>
                         <Card active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} isDark={isDark} className="border-blue-500/20">
-                            {/* GATILHO: ANCORAGEM DE PREÇO VISUAL */}
                             {plan.tag && (<div className="absolute top-0 right-0 bg-gradient-to-bl from-blue-500 to-blue-700 text-white text-[10px] font-bold px-4 py-2 rounded-bl-2xl shadow-lg shadow-blue-500/20 z-10">{plan.tag}</div>)}
-                            <div className="flex items-center gap-5 mb-6">
-                                <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-blue-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={32}/></div>
+                            <div className="flex flex-col h-full justify-between">
                                 <div>
-                                    <h3 className={`font-bold text-lg leading-none mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3>
-                                    <p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{plan.type === 'pack' ? (lang === 'pt' ? "Pacote" : "Pack") : (lang === 'pt' ? "Passaporte" : "Passport")}</p>
+                                    <div className="flex items-center gap-5 mb-6">
+                                        <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-blue-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={32}/></div>
+                                        <div>
+                                            <h3 className={`font-bold text-lg leading-none mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3>
+                                            <p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{plan.type === 'pack' ? (lang === 'pt' ? "Pacote" : "Pack") : (lang === 'pt' ? "Passaporte" : "Passport")}</p>
+                                        </div>
+                                    </div>
+                                    <div className={`mb-6 p-4 rounded-2xl border ${isDark ? 'bg-zinc-950/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
+                                        <p className={`text-sm font-medium leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{plan.desc}</p>
+                                    </div>
+                                    <div className={`flex items-end gap-3 p-4 rounded-2xl border ${isDark ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
+                                        <span className="text-3xl font-bold text-blue-500">R$ {plan.price}</span>
+                                        <span className={`text-xs line-through decoration-zinc-600 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>R$ {plan.fullPrice}</span>
+                                        <span className="text-[10px] text-emerald-500 font-bold mb-1 ml-auto bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">-R${plan.savings}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className={`mb-6 p-4 rounded-2xl border flex-1 ${isDark ? 'bg-zinc-950/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
-                                <p className={`text-sm font-medium leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{plan.desc}</p>
-                            </div>
-                            <div className={`flex items-end gap-3 p-4 rounded-2xl border ${isDark ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
-                                <span className="text-3xl font-bold text-blue-500">R$ {plan.price}</span>
-                                <span className={`text-xs line-through decoration-zinc-600 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>R$ {plan.fullPrice}</span>
-                                <span className="text-[10px] text-emerald-500 font-bold mb-1 ml-auto bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">-R${plan.savings}</span>
-                            </div>
-                            <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === plan.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
-                                <div className="overflow-hidden">
-                                    <div className={`p-6 rounded-2xl border text-sm leading-relaxed font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                                        <div className="flex items-center gap-2 font-bold mb-3 text-blue-500 uppercase tracking-wider text-[10px]"><Info size={14}/> {T.details_label}</div>
-                                        <p className="whitespace-pre-line text-sm">{plan.details}</p>
+                                <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === plan.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
+                                    <div className="overflow-hidden">
+                                        <div className={`p-6 rounded-2xl border text-sm leading-relaxed font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                                            <div className="flex items-center gap-2 font-bold mb-3 text-blue-500 uppercase tracking-wider text-[10px]"><Info size={14}/> {T.details_label}</div>
+                                            <p className="whitespace-pre-line text-sm">{plan.details}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1262,7 +1270,7 @@ ${T.zap.wait}
         </div>
       </main>
 
-      {/* FOOTER NAV */}
+      {/* FOOTER NAV - FLOATING GLASS BAR */}
       {step < 4 && (
          <div className="fixed bottom-6 left-0 w-full z-50 pointer-events-none px-4">
             <div className={`max-w-xl mx-auto p-3 rounded-[2rem] backdrop-blur-2xl shadow-2xl border pointer-events-auto transition-all duration-500 ${isDark ? 'bg-zinc-950/80 border-white/10 shadow-black/50' : 'bg-white/80 border-slate-200 shadow-slate-200/50'}`}>
