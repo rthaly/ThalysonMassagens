@@ -1,34 +1,94 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import {
-  Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
-  Clock, Zap, X, Globe, Building, BedDouble, 
-  Heart, Instagram, Moon, Sun, Home, 
-  CreditCard, Banknote, QrCode, Trophy, Info, Gift, 
-  ChevronLeft, ChevronRight, Loader2, ShieldCheck, AlertTriangle, Tag, Sparkles, 
-  MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
-  Lock, User, Quote, Share2, ExternalLink, Copy, Hourglass, Settings, Download, HelpCircle, ChevronDown
-} from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v61.0 - VERSÃO FINAL CORRIGIDA
+ * THALYSON APP OS vFINAL - ZERO DEPENDENCIES (NATIVE SVG)
  * ==================================================================================
- * 1. DATAS: 30 dias corridos visíveis.
- * 2. CUPONS: Apenas seleção visual (sem digitação). Código BEMVINDO10.
- * 3. PIX: Desconto de 5% automático.
- * 4. REVIEWS: Novo visual Glass.
+ * CÓDIGO AUTOSSUFICIENTE. NÃO REQUER INSTALAÇÃO DE PACOTES.
  */
 
 const CONFIG = {
-  PHONE: "5517991360413", 
-  INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v61_final', 
-  PIX_KEY: "62.922.530/0001-14", 
-  LOCALE_PT: 'pt-BR', 
+  PHONE: "5517991360413",
+  INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
+  STORAGE_KEY: '@thaly_app_final_v63',
+  PIX_KEY: "62.922.530/0001-14",
+  LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
-  SECRET_TOKEN: 'THALY_2026_SECURE',
+  SECRET_TOKEN: 'THALY_SECURE',
   START_HOUR: 9,
   END_HOUR: 20
+};
+
+// ==================================================================================
+// 1. ICON SYSTEM (SVG NATIVO - SEM INSTALAÇÃO)
+// ==================================================================================
+const Icon = ({ name, size = 24, className = "" }) => {
+  const icons = {
+    Check: <polyline points="20 6 9 17 4 12" />,
+    Star: <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />,
+    ArrowRight: <><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></>,
+    MessageCircle: <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />,
+    Ticket: <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />,
+    Flame: <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.246-5.318-1-1 4.41-4.41 6 3 6 6 0 2.21-1.79 4-4 4s-4-1.79-4-4a2 2 0 0 1 4 0Z" />, // Simplified
+    Wind: <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" />, // Simplified
+    Clock: <><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></>,
+    Zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />,
+    X: <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>,
+    Globe: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>,
+    Building: <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />,
+    BedDouble: <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" />, // Simplified
+    Heart: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />,
+    Instagram: <><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></>,
+    Moon: <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />,
+    Sun: <><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></>,
+    Home: <><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></>,
+    CreditCard: <><rect x="1" y="4" width="22" height="16" rx="2" ry="2" /><line x1="1" y1="10" x2="23" y2="10" /></>,
+    Banknote: <rect x="2" y="6" width="20" height="12" rx="2" />,
+    QrCode: <rect x="3" y="3" width="7" height="7" />, // Simplified
+    Trophy: <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />, // Simplified
+    Info: <><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></>,
+    Gift: <><polyline points="20 12 20 22 4 22 4 12" /><rect x="2" y="7" width="20" height="5" /><line x1="12" y1="22" x2="12" y2="7" /><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" /></>,
+    ChevronLeft: <polyline points="15 18 9 12 15 6" />,
+    ChevronRight: <polyline points="9 18 15 12 9 6" />,
+    ChevronDown: <polyline points="6 9 12 15 18 9" />,
+    Loader2: <path d="M21 12a9 9 0 1 1-6.219-8.56" />,
+    ShieldCheck: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
+    AlertTriangle: <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />,
+    Tag: <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />,
+    Sparkles: <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z" />,
+    MapPin: <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />,
+    Calendar: <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />,
+    Smartphone: <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />,
+    Crown: <path d="m5 18 14-4.2L22 18 19 9l-4 4.5L12 5l-3 8.5L5 9l-3 9Z" />, // Simplified
+    LayoutList: <rect x="3" y="14" width="7" height="7" />,
+    Package: <path d="m16.5 9.4-9-5.19" />, // Simplified
+    Lock: <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />,
+    User: <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />,
+    Quote: <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />,
+    Share2: <circle cx="18" cy="5" r="3" />,
+    ExternalLink: <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />,
+    Copy: <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />,
+    Hourglass: <path d="M4.5 3h15" />,
+    Settings: <circle cx="12" cy="12" r="3" />,
+    Download: <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+  };
+
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      {icons[name] || <circle cx="12" cy="12" r="10" />}
+    </svg>
+  );
 };
 
 // ==================================================================================
@@ -214,10 +274,10 @@ const TEXTS = {
 };
 
 // ==================================================================================
-// 1. DESIGN SYSTEM
+// 2. COMPONENTES (DESIGN SYSTEM)
 // ==================================================================================
 
-const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
+const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: IconName, className = '', loading = false }) => {
   const baseStyle = "relative flex items-center justify-center font-bold tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.98] hover:brightness-110 shadow-lg font-['Poppins']";
   
   const variants = {
@@ -240,9 +300,9 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
 
   return (
     <button type="button" onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
-      {loading ? <Loader2 size={22} className="animate-spin text-current"/> : (
+      {loading ? <Icon name="Loader2" size={22} className="animate-spin text-current"/> : (
         <>
-          {Icon && <Icon size={22} className={children ? "mr-3 opacity-90 flex-shrink-0" : ""} strokeWidth={2.5} />}
+          {IconName && <Icon name={IconName} size={22} className={children ? "mr-3 opacity-90 flex-shrink-0" : ""} />}
           <span className="truncate">{children}</span>
         </>
       )}
@@ -250,11 +310,11 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
   );
 };
 
-const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "text", error, isDark }) => (
+const InputField = ({ label, value, onChange, placeholder, icon: IconName, type = "text", error, isDark }) => (
   <div className="space-y-2.5 w-full group font-['Poppins']">
     {label && <label className={`text-sm font-bold uppercase tracking-widest ml-1 transition-colors ${isDark ? 'text-zinc-400 group-focus-within:text-blue-500' : 'text-slate-600 group-focus-within:text-blue-600'}`}>{label}</label>}
     <div className="relative">
-      <div className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors z-10 ${isDark ? 'text-zinc-500 group-focus-within:text-blue-500' : 'text-slate-400 group-focus-within:text-blue-600'}`}>{Icon && <Icon size={22} />}</div>
+      <div className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors z-10 ${isDark ? 'text-zinc-500 group-focus-within:text-blue-500' : 'text-slate-400 group-focus-within:text-blue-600'}`}>{IconName && <Icon name={IconName} size={22} />}</div>
       <input 
         type={type} 
         value={value} 
@@ -304,7 +364,7 @@ const SmartTimer = ({ isDark }) => {
   };
   return (
     <div className={`flex items-center justify-center gap-3 p-4 rounded-2xl mb-8 border-2 transition-colors duration-500 ${time < 60 ? 'bg-red-500/10 border-red-500/30 text-red-400' : (isDark ? 'bg-blue-500/5 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-600')}`}>
-        <Hourglass size={20} className={time < 60 ? "animate-spin" : "animate-pulse"}/>
+        <Icon name="Hourglass" size={20} className={time < 60 ? "animate-spin" : "animate-pulse"}/>
         <span className="text-sm font-bold uppercase tracking-wider">
             {time < 60 ? "Expira em breve: " : "Segurando vaga: "} 
             <span className="font-mono text-base ml-1">{format(time)}</span>
@@ -313,7 +373,6 @@ const SmartTimer = ({ isDark }) => {
   );
 };
 
-// --- CARROSSEL DE AVALIAÇÕES APRIMORADO ---
 const ReviewsCarousel = ({ reviews, isDark, title }) => {
   const scrollRef = useRef(null);
   const scroll = (direction) => {
@@ -335,8 +394,8 @@ const ReviewsCarousel = ({ reviews, isDark, title }) => {
               <p className={`text-xs uppercase tracking-[0.25em] font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{title}</p>
           </div>
           <div className="flex gap-2">
-             <button onClick={() => scroll('left')} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`}><ChevronLeft size={20} /></button>
-             <button onClick={() => scroll('right')} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`}><ChevronRight size={20} /></button>
+             <button onClick={() => scroll('left')} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`}><Icon name="ChevronLeft" size={20} /></button>
+             <button onClick={() => scroll('right')} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`}><Icon name="ChevronRight" size={20} /></button>
           </div>
       </div>
       
@@ -348,10 +407,10 @@ const ReviewsCarousel = ({ reviews, isDark, title }) => {
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold border ${isDark ? 'bg-blue-600/20 text-blue-500 border-blue-500/20' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>{r.n.charAt(0)}</div>
                     <div><span className={`text-base font-bold block leading-none mb-1 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{r.n}</span><span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">{r.loc}</span></div>
                  </div>
-                 <div className={`px-2 py-1 rounded-lg border flex gap-1 ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-slate-50 border-slate-100'}`}>{[...Array(5)].map((_, k) => (<Star key={k} size={10} fill={k < r.s ? "#3b82f6" : "none"} className={k < r.s ? "text-blue-500" : (isDark ? "text-zinc-800" : "text-slate-300")} />))}</div>
+                 <div className={`px-2 py-1 rounded-lg border flex gap-1 ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-slate-50 border-slate-100'}`}>{[...Array(5)].map((_, k) => (<Icon key={k} name="Star" size={10} className={k < r.s ? "text-blue-500 fill-blue-500" : (isDark ? "text-zinc-800" : "text-slate-300")} />))}</div>
               </div>
               <div className="relative">
-                  <Quote size={24} className={`absolute -top-2 -left-1 opacity-10 ${isDark ? 'text-white' : 'text-black'}`} />
+                  <div className={`absolute -top-2 -left-1 opacity-10 ${isDark ? 'text-white' : 'text-black'}`}><Icon name="Quote" size={24}/></div>
                   <p className={`text-sm leading-relaxed font-light italic relative z-10 pl-4 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{r.t}"</p>
               </div>
             </div>
@@ -368,7 +427,7 @@ const FAQItem = ({ q, a, isDark }) => {
         <div className={`border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
             <button onClick={() => setIsOpen(!isOpen)} className="w-full py-6 flex items-center justify-between text-left group">
                 <span className={`text-base font-semibold transition-colors ${isDark ? 'text-zinc-200 group-hover:text-blue-400' : 'text-slate-700 group-hover:text-blue-600'}`}>{q}</span>
-                <ChevronDown size={20} className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-500' : (isDark ? 'text-zinc-500' : 'text-slate-400')}`} />
+                <Icon name="ChevronDown" size={20} className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-500' : (isDark ? 'text-zinc-500' : 'text-slate-400')}`} />
             </button>
             <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 pb-6' : 'max-h-0 opacity-0'}`}>
                 <p className={`text-sm leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
@@ -378,14 +437,12 @@ const FAQItem = ({ q, a, isDark }) => {
 };
 
 // ==================================================================================
-// 2. DADOS (PREÇOS EM MOEDA DINÂMICA)
+// 3. DADOS
 // ==================================================================================
 
 const getData = (lang) => {
     const isPT = lang === 'pt';
     const currency = isPT ? 'R$' : '$';
-    
-    // DEFINIÇÃO DE PREÇOS (BRL vs USD)
     const p = {
         relax: isPT ? 125 : 35,
         sens: isPT ? 155 : 45,
@@ -404,28 +461,28 @@ const getData = (lang) => {
         ],
         services: [
             { 
-              id: 'relaxante', min: 60, price: p.relax, icon: Wind, tag: isPT ? "100% FÍSICO" : "PHYSICAL",
+              id: 'relaxante', min: 60, price: p.relax, icon: 'Wind', tag: isPT ? "100% FÍSICO" : "PHYSICAL",
               title: isPT ? "Massagem Clássica" : "Classic Relax",
               desc: isPT ? "Para tirar a dor. Foco exclusivo muscular. Sem toque íntimo." : "For pain. Muscle focus only. No intimate touch.",
               details: isPT ? `O ALÍVIO QUE VOCÊ PRECISA:\n• COMO FUNCIONA: Iniciamos com manobras firmes e profundas.\n• FOCO: Tirar "nós", tensão e cansaço físico.\n• TRAJE: O terapeuta usa roupa padrão.` : `BODY RESET:\n• HOW IT WORKS: Firm maneuvers.\n• FOCUS: Remove knots and fatigue.`
             },
             { 
-              id: 'sensitiva', min: 60, price: p.sens, icon: Flame, tag: isPT ? "SENSORIAL + LINGAM" : "SENSORY",
+              id: 'sensitiva', min: 60, price: p.sens, icon: 'Flame', tag: isPT ? "SENSORIAL + LINGAM" : "SENSORY",
               title: isPT ? "Tântrica Sensorial" : "Tantric Sensory",
               desc: isPT ? "Relaxamento + Toque Sutil + Finalização. Atendo de cueca." : "Relax + Subtle Touch + Finish. Underwear service.",
               details: isPT ? `A EVOLUÇÃO DO TOQUE:\n• O INÍCIO: Relaxante muscular.\n• A CONEXÃO: Toque sutil em todo o corpo.\n• TRAJE: **Atendo de cueca**.\n• O ÁPICE: Inclui Massagem Lingam.` : `TOUCH EVOLUTION:\n• START: Muscle relaxation.\n• ATTIRE: **Underwear**.\n• PEAK: Includes Lingam Massage.`
             },
             { 
-              id: 'mista', min: 60, price: p.titan, icon: Zap, tag: isPT ? "FUSÃO COMPLETA" : "FULL FUSION",
+              id: 'mista', min: 60, price: p.titan, icon: 'Zap', tag: isPT ? "FUSÃO COMPLETA" : "FULL FUSION",
               title: isPT ? "Experiência Fusion" : "Fusion Experience",
               desc: isPT ? "Tudo em um: Muscular + Corpo a Corpo + Lingam Intenso." : "All in one: Muscle + Body-to-Body + Intense Lingam.",
               details: isPT ? `PARA QUEM QUER TUDO:\n• A JORNADA: Muscular -> Corpo a Corpo -> Êxtase.\n• LINGAM PREMIUM: Mais tempo e técnica.\n• TRAJE: Atendo de cueca.` : `FOR WHO WANTS IT ALL:\n• JOURNEY: Muscle -> Body-to-Body -> Ecstasy.\n• ATTIRE: Underwear.`
             }
         ],
         extras: [
-            { id: 'more_time', price: isPT ? 55 : 15, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
-            { id: 'touch', price: isPT ? 55 : 15, icon: Heart, label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você toca também." : "You touch too." },
-            { id: 'aroma', price: isPT ? 5 : 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Imersão total." : "Total immersion." }
+            { id: 'more_time', price: isPT ? 55 : 15, icon: 'Clock', label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
+            { id: 'touch', price: isPT ? 55 : 15, icon: 'Heart', label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você toca também." : "You touch too." },
+            { id: 'aroma', price: isPT ? 5 : 5, icon: 'Wind', label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Imersão total." : "Total immersion." }
         ],
         faq: [
             { q: "Qual a diferença real entre as sessões?", a: "Clássica (R$125) = Só tira dor. Tântrica (R$155) = Toque leve + Lingam. Fusion (R$195) = Corpo a Corpo + Lingam Intenso." },
@@ -438,21 +495,21 @@ const getData = (lang) => {
               price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save,
               desc: isPT ? "4 Sessões de Massagem Clássica." : "4 Classic Massage Sessions.",
               details: isPT ? "MANUTENÇÃO CONTRA DOR:\n• 4 sessões focadas 100% em tirar tensão muscular." : "PAIN MAINTENANCE:\n• 4 sessions focused on muscle tension.", 
-              tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: Package 
+              tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: 'Package' 
             },
             { 
               id: 'pack_mista', type: 'pack', title: isPT ? "Trilogia do Êxtase" : "Ecstasy Trilogy", 
               price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save,
               desc: isPT ? "3 Sessões da Experiência Fusion." : "3 Fusion Sessions.",
               details: isPT ? "INTENSIDADE GARANTIDA:\n• 3 encontros da massagem mais completa (Fusion)." : "GUARANTEED INTENSITY:\n• 3 meetings of the fullest massage.", 
-              tag: isPT ? "MAIS VENDIDO" : "BEST SELLER", icon: Zap 
+              tag: isPT ? "MAIS VENDIDO" : "BEST SELLER", icon: 'Zap' 
             },
             { 
               id: 'titan_passport', type: 'pack', title: isPT ? "Passaporte Titan (5x)" : "Titan Passport (5x)", 
               price: p.packPass.v, fullPrice: p.packPass.full, savings: p.packPass.save,
               desc: isPT ? "Compre 4, Leve 5 (Fusion)." : "Buy 4, Get 5 (Fusion).",
               details: isPT ? "A OFERTA IRRECUSÁVEL:\n• Você garante 5 sessões Fusion completas. Paga 4 e ganha 1." : "IRRESISTIBLE OFFER:\n• 5 full Fusion sessions. Pay 4, get 1 free.", 
-              tag: isPT ? "1 SESSÃO GRÁTIS" : "1 FREE SESSION", icon: Crown 
+              tag: isPT ? "1 SESSÃO GRÁTIS" : "1 FREE SESSION", icon: 'Crown' 
             }
         ],
         reviews: [
@@ -478,7 +535,7 @@ const getData = (lang) => {
 };
 
 // ==================================================================================
-// 3. APLICAÇÃO PRINCIPAL
+// 4. APLICAÇÃO PRINCIPAL
 // ==================================================================================
 
 export default function App() {
@@ -500,7 +557,7 @@ export default function App() {
   const dateScrollRef = useRef(null); 
   
   const DATA = useMemo(() => getData(lang), [lang]);
-  const T = DATA.text;
+  const T = TEXTS[lang];
 
   const [user, setUser] = useState({ 
       name: '', xp: 0, coupons: [], usedCoupons: [], 
@@ -848,15 +905,32 @@ ${T.zap.wait}
 
   const nextLevelInfo = getNextLevelInfo(user.xp);
 
-  // --- RENDER GUARDS ---
-  
+  const handleSelectItem = (type, item) => {
+      setBooking(b => ({...b, type, item, extras: {}}));
+      addToast(item.title, "success");
+  };
+
+  const handleShare = () => {
+      if (navigator.share) {
+          navigator.share({ title: 'Thalyson Massagens', url: window.location.href });
+      } else {
+          navigator.clipboard.writeText(window.location.href);
+          addToast("Link copiado!", "success");
+      }
+  };
+
+  const scrollDates = (dir) => {
+      if (dateScrollRef.current) {
+          const amt = dir === 'left' ? -200 : 200;
+          dateScrollRef.current.scrollBy({ left: amt, behavior: 'smooth' });
+      }
+  };
+
   if (!isClient) return <div className="min-h-screen w-full bg-zinc-950 font-['Poppins']" />;
 
-  // --- ANIMAÇÃO INICIAL ---
   if (loading) return (
       <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center transition-all duration-700 font-['Poppins'] ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
         <div className="relative mb-12">
-            <div className={`absolute inset-0 blur-3xl opacity-30 rounded-full animate-pulse-slow ${isDark ? 'bg-blue-600' : 'bg-blue-400'}`}></div>
             <div className="w-28 h-28 rounded-[2rem] flex items-center justify-center font-black text-4xl shadow-2xl relative z-10 bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-blue-500/30 animate-bounce-slow">TM</div>
         </div>
         <div className="flex flex-col items-center gap-4">
@@ -869,71 +943,58 @@ ${T.zap.wait}
         </div>
       </div>
   );
-  
-  // --- LAYOUT PRINCIPAL ---
 
   return (
     <div className={`h-[100dvh] w-full font-['Poppins'] flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100 selection:bg-blue-500/30 selection:text-blue-500' : 'bg-slate-50 text-slate-800 selection:bg-blue-200 selection:text-blue-800'}`}>
       
-      {/* Background Ambience */}
       <div className="fixed inset-0 pointer-events-none">
           <div className={`absolute top-[-20%] left-[-20%] w-[70%] h-[70%] blur-[120px] rounded-full animate-pulse-slow ${isDark ? 'bg-blue-600/5' : 'bg-blue-200/40'}`}></div>
           <div className={`absolute bottom-[-20%] right-[-20%] w-[70%] h-[70%] blur-[120px] rounded-full animate-pulse-slow ${isDark ? 'bg-indigo-600/5' : 'bg-indigo-200/40'}`}></div>
       </div>
 
-      {/* Toasts */}
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-3 w-full max-w-xs pointer-events-none px-4">
         {toasts.map(t => (
           <div key={t.id} className={`pointer-events-auto flex items-center gap-4 p-4 rounded-2xl border backdrop-blur-xl shadow-2xl animate-slide-down ${t.type === 'success' ? (isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-100 border-emerald-200 text-emerald-800') : (isDark ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-red-100 border-red-200 text-red-700')}`}>
-            {t.type === 'success' ? <Check size={20} /> : <AlertTriangle size={20} />}
+            {t.type === 'success' ? <Icon name="Check" size={20} /> : <Icon name="AlertTriangle" size={20} />}
             <span className="text-sm font-medium leading-tight">{t.msg}</span>
           </div>
         ))}
       </div>
 
-      {/* Header */}
       <header className="h-20 px-6 md:px-12 flex items-center justify-between z-20 shrink-0 bg-transparent relative max-w-5xl mx-auto w-full">
         <div className="flex flex-col justify-center">
             <span className={`font-bold text-xl tracking-wide block leading-none ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson</span>
-            <span className="text-[9px] uppercase font-bold text-blue-500 tracking-[0.1em] mt-1 flex items-center gap-1"><Star size={10} fill="#2563eb"/> +59 Clientes Atendidos</span>
+            <span className="text-[9px] uppercase font-bold text-blue-500 tracking-[0.1em] mt-1 flex items-center gap-1"><Icon name="Star" size={10} className="fill-[#2563eb] text-[#2563eb]"/> +59 Clientes Atendidos</span>
         </div>
         <div className="flex gap-2">
-            <button onClick={()=>setSettingsOpen(true)} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Settings size={18}/></button>
-            <button onClick={handleShare} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Share2 size={18}/></button>
-            <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Globe size={18}/></button>
-            <button onClick={() => setIsDark(!isDark)} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-blue-500 hover:text-blue-600 shadow-sm'}`}>{isDark ? <Moon size={18}/> : <Sun size={18}/>}</button>
+            <button onClick={()=>setSettingsOpen(true)} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="Settings" size={18}/></button>
+            <button onClick={handleShare} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="Share2" size={18}/></button>
+            <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="Globe" size={18}/></button>
+            <button onClick={() => setIsDark(!isDark)} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-blue-500 hover:text-blue-600 shadow-sm'}`}>{isDark ? <Icon name="Moon" size={18}/> : <Icon name="Sun" size={18}/>}</button>
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-32 pt-6 scroll-smooth relative z-10 px-6 md:px-12">
-        
         <div className="max-w-5xl mx-auto space-y-12">
-
-          {/* CATALOG (STEP 0) */}
           {step === 0 && (
             <div className="animate-fade-in space-y-12">
-              
               <div className="md:grid md:grid-cols-2 md:gap-12 items-center">
                 <div className="animate-slide-up delay-100">
                     <div className="flex items-end gap-3 mb-4">
                         <h1 className={`text-4xl md:text-5xl font-light tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome} <span className="font-bold text-blue-500">{user.name ? user.name.split(' ')[0] : (lang === 'pt' ? "Visitante" : "Visitor")}</span></h1>
                     </div>
                     <p className={`text-base font-light leading-relaxed max-w-lg ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.subtitle}</p>
-                    
                     <div className="mt-6 flex items-center gap-2 p-3 rounded-xl border border-blue-500/20 bg-blue-500/5 text-blue-500 text-xs font-medium w-fit">
-                        <ExternalLink size={14} />
+                        <Icon name="ExternalLink" size={14} />
                         <span>{T.zap.browser_warn}</span>
                     </div>
                 </div>
-                
-                {/* Level Card */}
                 <div className={`hidden md:block animate-slide-up delay-200 relative overflow-hidden rounded-[2.5rem] p-10 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-blue-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-blue-500/30'}`}>
                     <div className="absolute top-0 right-0 w-60 h-60 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none transition-all duration-700"></div>
                     <div className="flex justify-between items-start mb-8 relative z-10">
                         <div className="flex items-center gap-5">
                             <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg ${isDark ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-blue-500/20' : 'bg-blue-500 text-white shadow-blue-200'}`}>
-                                <Trophy size={32} />
+                                <Icon name="Trophy" size={32} />
                             </div>
                             <div>
                                 <span className={`text-xs uppercase font-bold tracking-[0.15em] ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.level_label}</span>
@@ -962,13 +1023,12 @@ ${T.zap.wait}
                 </div>
               </div>
 
-              {/* Mobile Level Card */}
               <div className={`md:hidden animate-slide-up delay-200 relative mt-4 overflow-hidden rounded-[2rem] p-6 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-blue-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-blue-500/30'}`}>
                     <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 blur-[60px] rounded-full pointer-events-none transition-all duration-700"></div>
                     <div className="flex justify-between items-start mb-6 relative z-10">
                         <div className="flex items-center gap-4">
                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${isDark ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-blue-500/20' : 'bg-blue-500 text-white shadow-blue-200'}`}>
-                                <Trophy size={24} />
+                                <Icon name="Trophy" size={24} />
                             </div>
                             <div>
                                 <span className={`text-[10px] uppercase font-bold tracking-[0.15em] ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.level_label}</span>
@@ -988,125 +1048,102 @@ ${T.zap.wait}
                             <span className="text-blue-500">{Math.floor(getCurrentLevelProgress())}%</span>
                         </div>
                         <div className={`h-1.5 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`}>
-                            <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_15px_#2563eb]" style={{width: `${getCurrentLevelProgress()}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'}}></div>
+                            <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400" style={{width: `${getCurrentLevelProgress()}%`}}></div>
                         </div>
-                          <p className={`text-[10px] mt-3 text-center font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                             {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : "Ciclo Elite: +R$50 a cada 500 XP"}
-                        </p>
                     </div>
               </div>
 
-              {/* Tabs */}
-              <div className={`animate-slide-up delay-300 grid grid-cols-2 p-1.5 rounded-2xl border relative max-w-sm mx-auto md:mx-0 ${isDark ? 'bg-zinc-900/50 border-white/5' : 'bg-white border-slate-200 shadow-sm'}`}>
-                  <button onClick={()=>setActiveTab('packs')} className={`relative z-10 py-4 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='packs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}`}>
-                      <Package size={16} className={activeTab === 'packs' ? 'animate-pulse' : ''}/> {T.tab_packs}
+              <div className="flex p-1.5 rounded-2xl bg-zinc-900/50 border border-white/5 max-w-md mx-auto">
+                  <button onClick={() => setActiveTab('packs')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'packs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                      <Icon name="Package" size={16} className={activeTab === 'packs' ? 'animate-pulse' : ''}/> {T.tab_packs}
                   </button>
-                  <button onClick={()=>setActiveTab('single')} className={`relative z-10 py-4 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='single' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}`}>
-                      <LayoutList size={16}/> {T.tab_single}
+                  <button onClick={() => setActiveTab('single')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'single' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                      <Icon name="LayoutList" size={16}/> {T.tab_single}
                   </button>
               </div>
 
-              {/* Products Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-in delay-300">
-                  {activeTab === 'single' && DATA.services.map((s, idx) => (
-                      <div key={s.id} className="animate-scale-in" style={{animationDelay: `${idx * 100}ms`}}>
-                        <Card active={booking.item?.id === s.id} onClick={() => handleSelectItem('single', s)} isDark={isDark}>
-                            <div className="flex justify-between items-start mb-6">
-                                <div className={`p-4 rounded-2xl transition-all duration-300 ${booking.item?.id === s.id ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-500/20' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={28}/></div>
-                                <div className="text-right">
-                                    <span className={`block text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{DATA.currency} {s.price}</span>
-                                    <span className={`text-xs font-bold uppercase tracking-wider flex items-center justify-end gap-1.5 mt-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}><Clock size={14}/> {s.min} min</span>
-                                </div>
-                            </div>
-                            <div className="mb-4 flex-1">
-                                {s.tag && <span className="inline-block px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-500 mb-3 uppercase tracking-widest">{s.tag}</span>}
-                                <h3 className={`font-bold text-xl leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{s.title}</h3>
-                                <p className={`text-sm leading-relaxed font-light mt-2 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{s.desc}</p>
-                            </div>
-                            <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === s.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
-                                <div className="overflow-hidden">
-                                    <div className={`p-6 rounded-2xl border text-sm leading-relaxed font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                                        <div className="flex items-center gap-2 font-bold mb-3 text-blue-500 uppercase tracking-wider text-[10px]"><Info size={14}/> {T.details_label}</div>
-                                        <p className="whitespace-pre-line text-sm">{s.details}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {activeTab === 'single' ? DATA.services.map((s, idx) => (
+                    <div key={s.id} className="animate-slide-up" style={{animationDelay: `${idx * 100}ms`}}>
+                         <Card active={booking.item?.id === s.id} onClick={() => handleSelectItem('single', s)} isDark={isDark}>
+                            <div>
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${isDark ? 'bg-zinc-800 text-blue-500' : 'bg-blue-50 text-blue-600'}`}><Icon name={s.icon} size={28} /></div>
+                                    <div className="text-right">
+                                        <span className="text-blue-500 font-black text-3xl block">{DATA.currency} {s.price}</span>
+                                        <span className={`text-xs font-bold uppercase tracking-wider flex items-center justify-end gap-1.5 mt-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}><Icon name="Clock" size={14}/> {s.min} min</span>
                                     </div>
                                 </div>
-                            </div>
-                        </Card>
-                      </div>
-                  ))}
-
-                  {activeTab === 'packs' && DATA.plans.map((plan, idx) => (
-                      <div key={plan.id} className="animate-scale-in" style={{animationDelay: `${idx * 100}ms`}}>
-                        <Card active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} isDark={isDark} className="border-blue-500/20">
-                            {plan.tag && (<div className="absolute top-0 right-0 bg-gradient-to-bl from-blue-500 to-blue-700 text-white text-[10px] font-bold px-4 py-2 rounded-bl-2xl shadow-lg shadow-blue-500/20 z-10">{plan.tag}</div>)}
-                            <div className="flex items-center gap-5 mb-6">
-                                <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-blue-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={32}/></div>
-                                <div>
-                                    <h3 className={`font-bold text-lg leading-none mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3>
-                                    <p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{plan.type === 'pack' ? (lang === 'pt' ? "Pacote" : "Pack") : (lang === 'pt' ? "Passaporte" : "Passport")}</p>
+                                <div className="mb-8">
+                                    <span className="bg-blue-500/10 text-blue-500 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-blue-500/20">{s.tag}</span>
+                                    <h3 className={`text-2xl font-bold mt-4 mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{s.title}</h3>
+                                    <p className={`text-sm leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{s.desc}</p>
                                 </div>
                             </div>
-                            <div className={`mb-6 p-4 rounded-2xl border flex-1 ${isDark ? 'bg-zinc-950/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
-                                <p className={`text-sm font-medium leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{plan.desc}</p>
+                            <div className={`pt-6 border-t ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
+                                <div className="flex items-center gap-2 font-bold mb-3 text-blue-500 uppercase tracking-wider text-[10px]"><Icon name="Info" size={14}/> {T.details_label}</div>
+                                <div className={`text-xs leading-relaxed space-y-1 font-light ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+                                    {s.details.split('\n').map((line, i) => <p key={i}>{line}</p>)}
+                                </div>
                             </div>
-                            <div className={`flex items-end gap-3 p-4 rounded-2xl border ${isDark ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
-                                <span className="text-3xl font-bold text-blue-500">{DATA.currency} {plan.price}</span>
-                                <span className={`text-xs line-through decoration-zinc-600 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{DATA.currency} {plan.fullPrice}</span>
-                                <span className="text-[10px] text-emerald-500 font-bold mb-1 ml-auto bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">-{DATA.currency}{plan.savings}</span>
-                            </div>
-                            <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === plan.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
-                                <div className="overflow-hidden">
-                                    <div className={`p-6 rounded-2xl border text-sm leading-relaxed font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                                        <div className="flex items-center gap-2 font-bold mb-3 text-blue-500 uppercase tracking-wider text-[10px]"><Info size={14}/> {T.details_label}</div>
-                                        <p className="whitespace-pre-line text-sm">{plan.details}</p>
+                         </Card>
+                    </div>
+                )) : DATA.plans.map((plan, idx) => (
+                    <div key={plan.id} className="animate-slide-up" style={{animationDelay: `${idx * 100}ms`}}>
+                         <Card active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} isDark={isDark} className="border-blue-500/20">
+                            <div>
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${isDark ? 'bg-blue-500/10 text-blue-500' : 'bg-blue-50 text-white'}`}><Icon name={plan.icon} size={28} /></div>
+                                    <div className="text-right">
+                                        <span className={`text-xs line-through block opacity-50 ${isDark ? 'text-zinc-400' : 'text-slate-400'}`}>{DATA.currency} {plan.fullPrice}</span>
+                                        <span className="text-blue-500 font-black text-3xl block">{DATA.currency} {plan.price}</span>
+                                        <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Economize {DATA.currency} {plan.savings}</span>
                                     </div>
                                 </div>
+                                <div className="mb-8">
+                                    <span className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-blue-600/20">{plan.tag}</span>
+                                    <h3 className={`text-2xl font-bold mt-4 mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3>
+                                    <p className={`text-sm leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{plan.desc}</p>
+                                </div>
                             </div>
-                        </Card>
-                      </div>
-                  ))}
+                            <div className={`pt-6 border-t ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
+                                <div className="flex items-center gap-2 font-bold mb-3 text-blue-500 uppercase tracking-wider text-[10px]"><Icon name="Info" size={14}/> {T.details_label}</div>
+                                <div className={`text-xs leading-relaxed space-y-1 font-light ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+                                    {plan.details.split('\n').map((line, i) => <p key={i}>{line}</p>)}
+                                </div>
+                            </div>
+                         </Card>
+                    </div>
+                ))}
               </div>
 
-              {/* REVIEWS MOVED HERE (PROVA SOCIAL APÓS SERVIÇOS) */}
               <ReviewsCarousel reviews={DATA.reviews} isDark={isDark} title={DATA.reviews_title} />
 
-              {/* FAQ SECTION (NOVA) */}
-              <div className="space-y-6">
-                  <h3 className={`text-2xl font-light text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.faq_title}</h3>
-                  <div className={`rounded-2xl border p-2 ${isDark ? 'bg-zinc-900/50 border-white/5' : 'bg-white border-slate-200'}`}>
+              <div className="max-w-3xl mx-auto py-20">
+                  <h3 className={`text-3xl font-light text-center mb-12 ${isDark ? 'text-white' : 'text-slate-900'}`}>Dúvidas Frequentes</h3>
+                  <div className={`border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                       {DATA.faq.map((item, idx) => (
                           <FAQItem key={idx} q={item.q} a={item.a} isDark={isDark} />
                       ))}
                   </div>
               </div>
-
             </div>
           )}
 
-          {/* DATE (STEP 1) */}
           {step === 1 && (
             <div className="animate-slide-in space-y-12">
-              <div className="text-center mb-8">
-                 <h2 className={`text-3xl font-light mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.select_time_title}</h2>
-                 <p className={`text-[10px] uppercase tracking-[0.25em] font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.date_sub}</p>
-              </div>
-              
-              <div className="relative group">
-                  <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all hover:scale-110 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-md'}`}><ChevronLeft size={20} /></button>
-                  
-                  <div className="overflow-hidden">
-                      <div ref={dateScrollRef} className="flex gap-4 overflow-x-auto pb-8 scrollbar-hide px-2 snap-x snap-mandatory">
-                        {daysArray.map((d, i) => { 
+              <h2 className={`text-3xl font-light text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>Quando será sua sessão?</h2>
+              <div className="relative">
+                  <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all hover:scale-110 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-md'}`}><Icon name="ChevronLeft" size={20} /></button>
+                  <div ref={dateScrollRef} className="flex gap-4 overflow-x-auto scrollbar-hide px-2 py-4 snap-x">
+                        {daysArray.map((d, idx) => { 
                           const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
                           let lbl = d.toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN, {weekday:'short'}).slice(0,3);
                           const monthName = d.toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN, {month:'short'}).replace('.','');
-                          if(i===0) lbl=T.today; if(i===1) lbl=T.tomorrow;
-                          const showMonth = d.getDate() === 1 || i === 0;
-
                           return (
-                            <div key={i} className="flex flex-col gap-2">
-                                {showMonth && <span className={`text-[10px] font-bold uppercase tracking-widest pl-1 ${isDark ? 'text-zinc-400' : 'text-slate-400'}`}>{monthName}</span>}
-                                <button onClick={() => setBooking(b => ({ ...b, date: d, time: null }))} className={`snap-start min-w-[90px] h-28 rounded-2xl flex flex-col items-center justify-center gap-1.5 border transition-all flex-shrink-0 active:scale-95 duration-300 ${isSel ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20 scale-105' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 shadow-sm')} ${!showMonth ? 'mt-6' : ''}`}>
+                            <div key={idx} className="snap-center">
+                                <button onClick={() => setBooking(b => ({...b, date: d.toISOString(), time: null}))} className={`w-24 h-32 rounded-3xl flex flex-col items-center justify-center gap-1 transition-all duration-300 border-2 ${isSel ? 'bg-blue-600 border-blue-500 text-white shadow-xl shadow-blue-600/30 scale-110' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300')}`}>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">{monthName}</span>
                                     <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">{lbl}</span>
                                     <span className="text-3xl font-bold">{d.getDate()}</span>
                                     {isSel && <span className="w-1.5 h-1.5 rounded-full bg-white mt-1"></span>}
@@ -1114,14 +1151,10 @@ ${T.zap.wait}
                             </div>
                           )
                         })}
-                      </div>
                   </div>
-
-                  <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all hover:scale-110 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-md'}`}><ChevronRight size={20} /></button>
+                  <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all hover:scale-110 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-md'}`}><Icon name="ChevronRight" size={20} /></button>
               </div>
-              
-              {!booking.date && (<div className={`text-center py-16 opacity-30 border border-dashed rounded-[2rem] mx-2 ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-slate-300 text-slate-400'}`}><Calendar size={40} className="mx-auto mb-4"/><p className="text-xs font-bold uppercase tracking-wider">{T.empty_date}</p></div>)}
-              
+              {!booking.date && (<div className={`text-center py-16 opacity-30 border border-dashed rounded-[2rem] mx-2 ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-slate-300 text-slate-400'}`}><Icon name="Calendar" size={40} className="mx-auto mb-4"/><p className="text-xs font-bold uppercase tracking-wider">{T.empty_date}</p></div>)}
               {booking.date && generateTimeSlots.length > 0 && (
                 <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 animate-fade-in">
                    {generateTimeSlots.map((t, idx) => {
@@ -1143,20 +1176,20 @@ ${T.zap.wait}
              <div className="animate-slide-in space-y-12">
                <h2 className={`text-3xl font-light text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
                <div className="grid grid-cols-3 gap-4 mb-8 max-w-lg mx-auto">
-                  {[{id:'home', l:T.zap.house, i:Home}, {id:'motel', l:T.zap.motel, i:BedDouble}, {id:'hotel', l:T.zap.hotel, i:Building}].map(x => (
+                  {[{id:'home', l:T.zap.house, i:'Home'}, {id:'motel', l:T.zap.motel, i:'BedDouble'}, {id:'hotel', l:T.zap.hotel, i:'Building'}].map(x => (
                       <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`py-6 rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-wide flex flex-col items-center justify-center gap-3 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600/10 border-blue-500/50 text-blue-500 shadow-[0_0_20px_-5px_rgba(37,99,235,0.3)] scale-105' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-700')}`}>
-                          <x.i size={24} strokeWidth={2}/> {x.l}
+                          <Icon name={x.i} size={24} /> {x.l}
                       </button>
                   ))}
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                    <div className="space-y-6">
-                      <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} placeholder={lang === 'pt' ? "Seu Nome/Apelido" : "Your Name/Nickname"} />
+                      <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon="User" placeholder={lang === 'pt' ? "Seu Nome/Apelido" : "Your Name/Nickname"} />
                       {booking.locationType === 'home' && (
                           <div className="space-y-6 animate-fade-in">
                               <div className="grid grid-cols-[1fr_120px] gap-4">
-                                 <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} icon={MapPin} placeholder={lang === 'pt' ? "Rua" : "Street"} />
+                                 <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} icon="MapPin" placeholder={lang === 'pt' ? "Rua" : "Street"} />
                                  <InputField isDark={isDark} label={T.input_num} value={booking.address.number} type="tel" onChange={e=>setBooking(b=>({...b, address: {...b.address, number: e.target.value}}))} placeholder={lang === 'pt' ? "Nº" : "No."} />
                               </div>
                               <InputField isDark={isDark} label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} placeholder={lang === 'pt' ? "Bairro" : "District"} />
@@ -1168,14 +1201,14 @@ ${T.zap.wait}
                       )}
                       {booking.locationType === 'hotel' && (
                           <div className="space-y-6 animate-fade-in">
-                             <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={e=>setBooking(b=>({...b, address: {...b.address, placeName: e.target.value}}))} icon={Building} placeholder={lang === 'pt' ? "Nome do Hotel" : "Hotel Name"} />
+                             <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={e=>setBooking(b=>({...b, address: {...b.address, placeName: e.target.value}}))} icon="Building" placeholder={lang === 'pt' ? "Nome do Hotel" : "Hotel Name"} />
                              <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} placeholder={lang === 'pt' ? "Cidade" : "City"} />
-                             <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} icon={Lock} placeholder={lang === 'pt' ? "Quarto" : "Room"} />
+                             <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} icon="Lock" placeholder={lang === 'pt' ? "Quarto" : "Room"} />
                           </div>
                       )}
                       {booking.locationType === 'motel' && (
                           <div className={`p-8 rounded-2xl border border-dashed text-center ${isDark ? 'border-zinc-700 bg-zinc-900/30' : 'border-slate-300 bg-slate-50'}`}>
-                             <Smartphone size={28} className={`mx-auto mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}/>
+                             <Icon name="Smartphone" size={28} className={`mx-auto mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}/>
                              <p className={`text-xs leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.motel_note}</p>
                           </div>
                       )}
@@ -1188,7 +1221,7 @@ ${T.zap.wait}
                            return (
                               <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 animate-slide-in ${booking.extras[ex.id] ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_20px_-5px_rgba(37,99,235,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`} style={{animationDelay: `${idx * 100}ms`}}>
                                 <div className="flex items-center gap-4">
-                                    <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}><ex.icon size={20}/></div>
+                                    <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}><Icon name={ex.icon} size={20}/></div>
                                     <div><p className={`text-sm font-bold transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-200' : 'text-slate-700')}`}>{ex.label}</p><p className={`text-xs font-medium pt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p></div>
                                 </div>
                                 <div className="text-right">
@@ -1215,7 +1248,7 @@ ${T.zap.wait}
                                   <div>
                                       <p className={`text-[10px] uppercase font-bold tracking-widest mb-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Serviço Selecionado</p>
                                       <h4 className={`text-lg font-bold ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{booking.item?.title}</h4>
-                                      <p className="text-xs text-blue-500 font-medium flex items-center gap-3 bg-blue-500/10 px-4 py-2 rounded-full w-fit border border-blue-500/10 mt-3"><Calendar size={14}/> {booking.date ? new Date(booking.date).toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN) : ''} • {booking.time}</p>
+                                      <p className="text-xs text-blue-500 font-medium flex items-center gap-3 bg-blue-500/10 px-4 py-2 rounded-full w-fit border border-blue-500/10 mt-3"><Icon name="Calendar" size={14}/> {booking.date ? new Date(booking.date).toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN) : ''} • {booking.time}</p>
                                   </div>
                                   <span className="text-xl font-bold text-blue-500">{DATA.currency} {booking.item?.price}</span>
                               </div>
@@ -1247,11 +1280,17 @@ ${T.zap.wait}
                                           <span className="text-sm font-bold">- {DATA.currency} {financials.disc}</span>
                                       </div>
                                   )}
+                                  {financials.pixDisc > 0 && (
+                                      <div className="flex justify-between items-center mb-2 text-blue-400">
+                                          <span className="text-sm">Desconto Pix (5%)</span>
+                                          <span className="text-sm font-bold">- {DATA.currency} {financials.pixDisc}</span>
+                                      </div>
+                                  )}
                                   <div className="flex justify-between items-center pt-4">
                                       <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Total</span>
                                       <div className="text-right">
                                           <span className="text-3xl font-black text-blue-500">{DATA.currency} {financials.total},00</span>
-                                          <span className="text-xs font-bold text-blue-500 flex items-center justify-end gap-2 mt-2"><Sparkles size={14}/> +{estimatedXP} XP</span>
+                                          <span className="text-xs font-bold text-blue-500 flex items-center justify-end gap-2 mt-2"><Icon name="Sparkles" size={14}/> +{estimatedXP} XP</span>
                                       </div>
                                   </div>
                               </div>
@@ -1289,11 +1328,11 @@ ${T.zap.wait}
                         <div className={`p-8 rounded-[2.5rem] border ${isDark ? 'bg-zinc-900/50 border-white/5' : 'bg-white border-slate-200 shadow-xl'}`}>
                             <h3 className={`text-xl font-light mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>Pagamento</h3>
                             <div className="grid grid-cols-1 gap-3">
-                                {[{id:'pix', l:'Pix (Imediato)', i:QrCode}, {id:'card', l:'Cartão de Crédito', i:CreditCard}].map(p => (
+                                {[{id:'pix', l:'Pix (Imediato)', i:'QrCode'}, {id:'card', l:'Cartão de Crédito', i:'CreditCard'}, {id:'money', l:'Dinheiro', i:'Banknote'}].map(p => (
                                     <button key={p.id} onClick={()=>setBooking(b=>({...b, payment: p.id}))} className={`flex items-center gap-4 p-5 rounded-2xl border-2 transition-all ${booking.payment === p.id ? 'bg-blue-600/10 border-blue-500 text-blue-500' : (isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-500 hover:border-zinc-700' : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300')}`}>
-                                            <p.i size={24} />
+                                            <Icon name={p.i} size={24} />
                                             <span className="text-sm font-bold uppercase tracking-wider">{p.l}</span>
-                                            {booking.payment === p.id && <Check size={20} className="ml-auto text-blue-500" strokeWidth={3}/>}
+                                            {booking.payment === p.id && <Icon name="Check" size={20} className="ml-auto text-blue-500" />}
                                     </button>
                                 ))}
                             </div>
@@ -1302,17 +1341,17 @@ ${T.zap.wait}
                                     <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-3 text-center">Chave Pix para Cópia</p>
                                     <div className="flex gap-2">
                                         <input readOnly value={CONFIG.PIX_KEY} className={`w-full text-sm font-mono text-center rounded-xl border px-3 py-3 ${isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-300' : 'bg-white border-slate-200 text-slate-600'}`} />
-                                        <button onClick={()=>{navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success")}} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}><Copy size={20}/></button>
+                                        <button onClick={()=>{navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success")}} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}><Icon name="Copy" size={20}/></button>
                                     </div>
                                 </div>
                             )}
                         </div>
                         <div className="flex items-start gap-4 px-4">
                             <div onClick={()=>setBooking(b=>({...b, termsAccepted: !b.termsAccepted}))} className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center cursor-pointer transition-all shrink-0 ${booking.termsAccepted ? 'bg-blue-600 border-blue-600 text-white' : (isDark ? 'border-zinc-700' : 'border-slate-300')}`}>
-                                {booking.termsAccepted && <Check size={14} strokeWidth={4}/>}
+                                {booking.termsAccepted && <Icon name="Check" size={14} />}
                             </div>
                             <div className="flex items-center gap-2">
-                                <ShieldCheck className={`${isDark ? 'text-zinc-500' : 'text-slate-500'} shrink-0 mt-0.5`} size={20}/>
+                                <Icon name="ShieldCheck" className={`${isDark ? 'text-zinc-500' : 'text-slate-500'} shrink-0 mt-0.5`} size={20}/>
                                 <div><h4 className={`text-sm font-bold mb-1 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.terms_title}</h4><p className={`text-xs cursor-pointer hover:text-blue-500 transition-colors underline ${isDark ? 'text-zinc-500' : 'text-slate-500'}`} onClick={() => setTermsOpen(true)}>{T.terms_link}</p></div>
                             </div>
                         </div>
@@ -1325,7 +1364,7 @@ ${T.zap.wait}
              <div className="animate-scale-in flex flex-col items-center justify-center py-20 text-center space-y-8">
                 <div className="relative">
                     <div className="w-32 h-32 bg-blue-600 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-blue-600/40 animate-bounce-slow relative z-10">
-                        <Check size={56} className="text-white" strokeWidth={3}/>
+                        <Icon name="Check" size={56} className="text-white" />
                     </div>
                     <div className="absolute inset-0 bg-blue-500 blur-[60px] opacity-20 animate-pulse"></div>
                 </div>
@@ -1335,11 +1374,11 @@ ${T.zap.wait}
                 </div>
                 <div className="flex flex-col gap-4 w-full max-w-xs">
                     <div className="flex gap-3">
-                        <Button variant="secondary" size="icon" onClick={() => { navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success"); }} icon={Copy} />
-                        <Button variant="instagram" size="icon" onClick={() => window.open(CONFIG.INSTAGRAM_URL, '_blank')} icon={Instagram} />
-                        <Button variant="outline" full onClick={() => setStep(0)} icon={Home}>Início</Button>
+                        <Button variant="secondary" size="icon" onClick={() => { navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success"); }} icon="Copy" />
+                        <Button variant="instagram" size="icon" onClick={() => window.open(CONFIG.INSTAGRAM_URL, '_blank')} icon="Instagram" />
+                        <Button variant="outline" full onClick={() => setStep(0)} icon="Home">Início</Button>
                     </div>
-                    <Button variant="whatsapp" full size="lg" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon={MessageCircle}>{T.whatsapp_btn}</Button>
+                    <Button variant="whatsapp" full size="lg" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon="MessageCircle">{T.whatsapp_btn}</Button>
                 </div>
              </div>
           )}
@@ -1351,15 +1390,15 @@ ${T.zap.wait}
              <div className="flex gap-3">
                  {step > 0 && step < 4 && (
                      <>
-                         <button onClick={() => setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><Home size={20}/></button>
-                         <button onClick={() => setStep(step - 1)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><ChevronLeft size={20}/></button>
+                         <button onClick={() => setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><Icon name="Home" size={20}/></button>
+                         <button onClick={() => setStep(step - 1)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><Icon name="ChevronLeft" size={20}/></button>
                      </>
                  )}
              </div>
              {step < 4 && (
                  <button onClick={handleNextStep} className={`h-20 px-10 rounded-[2rem] bg-blue-600 text-white font-bold text-lg flex items-center gap-4 shadow-2xl shadow-blue-600/40 transition-all active:scale-95 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed`}>
                      {step === 3 ? 'Finalizar' : 'Próximo'}
-                     {!booking.item && <ArrowRight size={20} strokeWidth={2.5}/>}
+                     {!booking.item && <Icon name="ArrowRight" size={20} />}
                  </button>
              )}
          </div>
@@ -1369,7 +1408,7 @@ ${T.zap.wait}
          <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${settingsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setSettingsOpen(false)}></div>
          <div className={`relative w-full max-w-sm border rounded-[2rem] p-8 transform transition-transform duration-500 shadow-2xl ${settingsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
             <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4"><Download size={32} className="text-blue-500"/></div>
+                <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4"><Icon name="Download" size={32} className="text-blue-500"/></div>
                 <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.install_app}</h3>
                 <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.install_desc}</p>
             </div>
@@ -1384,7 +1423,7 @@ ${T.zap.wait}
       <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${termsOpen ? 'opacity-100' : 'opacity-0'}`}>
          <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${termsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setTermsOpen(false)}></div>
          <div className={`relative w-full max-w-lg border rounded-[2rem] p-8 max-h-[85vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${termsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
-            <div className="flex justify-between items-center mb-8"><h3 className={`text-xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</h3><button onClick={()=>setTermsOpen(false)} className={`p-3 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={20}/></button></div>
+            <div className="flex justify-between items-center mb-8"><h3 className={`text-xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</h3><button onClick={()=>setTermsOpen(false)} className={`p-3 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><Icon name="X" size={20}/></button></div>
             <div className="space-y-5">
                 {T.terms_body.map((t,i)=>(<div key={i} className={`flex gap-5 p-5 rounded-2xl border ${isDark ? 'bg-zinc-950/50 border-white/5' : 'bg-slate-50 border-slate-200'}`}><span className="font-bold text-blue-500 text-2xl opacity-50">{i+1}</span><p className={`text-sm leading-relaxed pt-1.5 font-light ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{t.substring(3)}</p></div>))}
                 <Button full onClick={()=>setTermsOpen(false)} variant="primary">{T.terms_btn}</Button>
@@ -1397,9 +1436,9 @@ ${T.zap.wait}
             <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={()=>setLevelUpPopup(false)}></div>
             <div className="relative p-10 rounded-[2.5rem] text-center max-w-sm w-full animate-scale-in shadow-2xl border border-blue-500/20 bg-zinc-900">
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[2.5rem] pointer-events-none"><div className="absolute -top-20 -left-20 w-40 h-40 bg-blue-500 blur-[80px] opacity-20"></div></div>
-                <div className="w-24 h-24 bg-gradient-to-tr from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-blue-500/30 animate-bounce-slow"><Trophy size={40} className="text-white" /></div>
+                <div className="w-24 h-24 bg-gradient-to-tr from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-blue-500/30 animate-bounce-slow"><Icon name="Trophy" size={40} className="text-white" /></div>
                 <h2 className="text-3xl font-light text-white mb-3">{T.popup_level_title}</h2><p className="text-zinc-400 text-sm leading-relaxed mb-10">{T.popup_level_msg}</p>
-                <Button full size="lg" onClick={()=>setLevelUpPopup(false)} icon={Ticket}>{T.popup_btn_coupon}</Button>
+                <Button full size="lg" onClick={()=>setLevelUpPopup(false)} icon="Ticket">{T.popup_btn_coupon}</Button>
             </div>
         </div>
       )}
@@ -1408,7 +1447,7 @@ ${T.zap.wait}
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={()=>setWelcomePopup(false)}></div>
             <div className="relative p-10 rounded-[2.5rem] text-center max-w-md w-full animate-scale-in shadow-2xl border border-white/10 bg-zinc-900">
-                <div className="w-24 h-24 bg-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/5 rotate-3"><Gift size={40} className="text-blue-500" /></div>
+                <div className="w-24 h-24 bg-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/5 rotate-3"><Icon name="Gift" size={40} className="text-blue-500" /></div>
                 <h2 className="text-2xl font-light text-white mb-4">{T.popup_welcome_title}</h2><p className="text-zinc-400 text-sm leading-relaxed mb-8">{T.popup_welcome_msg}</p>
                 <div className="bg-zinc-950 p-5 rounded-2xl border border-dashed border-zinc-800 mb-8"><p className="text-xs uppercase font-bold text-zinc-500 mb-2">Seu Código:</p><p className="text-2xl font-mono font-bold text-blue-500 tracking-widest">BEMVINDO10</p></div>
                 <Button full variant="primary" onClick={()=>{
