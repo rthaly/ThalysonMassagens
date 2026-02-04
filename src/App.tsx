@@ -2,18 +2,18 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS vFINAL - ZERO DEPENDENCIES (SVG NATIVO)
+ * THALYSON APP OS vFINAL - CORREÇÃO TOTAL (ÍCONES, PREÇOS, UI)
  * ==================================================================================
- * 1. DATAS: 30 dias corridos.
- * 2. CUPONS: Apenas seleção visual (sem input manual).
- * 3. PIX: Desconto de 5% calculado automaticamente.
- * 4. ÍCONES: SVGs nativos incluídos (não precisa de npm install).
+ * 1. ÍCONES: SVGs nativos mapeados corretamente (sem dependências).
+ * 2. PREÇOS: Conversão BRL/USD ajustada.
+ * 3. UI: Botão 'Próximo' alinhado com o footer.
+ * 4. FUNCIONAL: Pix 5%, Datas 30 dias, Cupons visuais.
  */
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_final_prod_v65',
+  STORAGE_KEY: '@thaly_app_prod_v67',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -23,63 +23,70 @@ const CONFIG = {
 };
 
 // ==================================================================================
-// 1. SISTEMA DE ÍCONES (SVG NATIVO - SEM INSTALAÇÃO)
+// 1. SISTEMA DE ÍCONES NATIVO (SVG PURO)
 // ==================================================================================
-// Componente genérico de ícone para substituir o lucide-react
-const Icon = ({ name, size = 24, className = "" }: { name: string, size?: number, className?: string }) => {
-  const paths: any = {
+// Isso garante que funcione no Vercel/Github sem instalar nada.
+const Icon = ({ name, size = 24, className = "" }) => {
+  const icons = {
+    // Serviços
+    Wind: <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2" />, 
+    Flame: <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.246-5.318-1-1 4.41-4.41 6 3 6 6 0 2.21-1.79 4-4 4s-4-1.79-4-4a2 2 0 0 1 4 0Z" />, 
+    Zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />, 
+    
+    // Lugares
+    Home: <><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></>,
+    Building: <><rect width="16" height="20" x="4" y="2" rx="2" ry="2" /><path d="M9 22v-4h6v4" /><path d="M8 6h.01" /><path d="M16 6h.01" /><path d="M12 6h.01" /><path d="M12 10h.01" /><path d="M12 14h.01" /><path d="M16 10h.01" /><path d="M16 14h.01" /><path d="M8 10h.01" /><path d="M8 14h.01" /></>,
+    BedDouble: <><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" /><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4" /><path d="M12 4v6" /><path d="M2 18h20" /></>,
+    
+    // Extras & UI
+    Clock: <><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></>,
+    Heart: <path d="M19 14c1.49-1.28 3.6-2.34 4.58-2.74-1.05-5.5-7.5-5.5-8.58 0-.84 4.34-2.71 5.07-3 5.18V8.5a2.5 2.5 0 0 0-5 0v3.18c-.73-.83-3.44-3.11-3.44-5.18 0-3 3.32-3.8 6-1.63" />, 
+    Package: <><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></>,
+    Crown: <path d="m2 4 3 12h14l3-12-6 7-4-9-4 9-6-7z" />,
+    
+    // Pagamento
+    QrCode: <><rect width="5" height="5" x="3" y="3" rx="1" /><rect width="5" height="5" x="16" y="3" rx="1" /><rect width="5" height="5" x="3" y="16" rx="1" /><path d="M21 16h-3a2 2 0 0 0-2 2v3" /><path d="M21 21v.01" /><path d="M12 7v3a2 2 0 0 1-2 2H7" /><path d="M3 12h.01" /><path d="M12 3h.01" /><path d="M12 16v.01" /><path d="M16 12h1" /><path d="M21 12v.01" /><path d="M12 21v-1" /></>,
+    CreditCard: <><rect width="22" height="16" x="1" y="4" rx="2" ry="2" /><line x1="1" x2="23" y1="10" y2="10" /></>,
+    Banknote: <><rect width="20" height="12" x="2" y="6" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" /></>,
+    
+    // Navegação e Ações
     Check: <polyline points="20 6 9 17 4 12" />,
     X: <path d="M18 6 6 18M6 6l12 12" />,
-    Star: <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />,
-    ArrowRight: <path d="M5 12h14M12 5l7 7-7 7" />,
-    MessageCircle: <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />,
-    Ticket: <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />,
-    Flame: <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.246-5.318-1-1 4.41-4.41 6 3 6 6 0 2.21-1.79 4-4 4s-4-1.79-4-4a2 2 0 0 1 4 0Z" />,
-    Wind: <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" />,
-    Clock: <><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></>,
-    Zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />,
-    Globe: <circle cx="12" cy="12" r="10" />,
-    Building: <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />,
-    BedDouble: <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" />,
-    Heart: <path d="M19 14c1.49-1.28 3.6-2.34 4.58-2.74-1.05-5.5-7.5-5.5-8.58 0-.84 4.34-2.71 5.07-3 5.18V8.5a2.5 2.5 0 0 0-5 0v3.18c-.73-.83-3.44-3.11-3.44-5.18 0-3 3.32-3.8 6-1.63" />,
-    Instagram: <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />,
-    Moon: <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />,
-    Sun: <circle cx="12" cy="12" r="4" />,
-    Home: <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />,
-    CreditCard: <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />,
-    Banknote: <rect x="2" y="6" width="20" height="12" rx="2" />,
-    QrCode: <rect x="3" y="3" width="7" height="7" />,
-    Trophy: <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />,
-    Info: <circle cx="12" cy="12" r="10" />,
-    Gift: <rect x="3" y="8" width="18" height="4" rx="1" />,
     ChevronLeft: <path d="m15 18-6-6 6-6" />,
     ChevronRight: <path d="m9 18 6-6-6-6" />,
     ChevronDown: <path d="m6 9 6 6 6-6" />,
-    Loader2: <path d="M21 12a9 9 0 1 1-6.219-8.56" />,
-    ShieldCheck: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />,
-    AlertTriangle: <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />,
-    Tag: <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />,
+    ArrowRight: <path d="M5 12h14M12 5l7 7-7 7" />,
+    Star: <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />,
+    Settings: <><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.39a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></>,
+    Share2: <><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /><line x1="15.41" x2="8.59" y1="6.51" y2="10.49" /></>,
+    Globe: <><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></>,
+    Moon: <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />,
+    Sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></>,
+    ExternalLink: <><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" x2="21" y1="14" y2="3" /></>,
+    Trophy: <><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /></>,
+    LayoutList: <><rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" /><path d="M14 4h7" /><path d="M14 9h7" /><path d="M14 15h7" /><path d="M14 20h7" /></>,
+    Info: <><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></>,
+    Calendar: <><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></>,
+    User: <><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>,
+    MapPin: <><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></>,
+    Smartphone: <><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" /></>,
+    Lock: <><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>,
+    Tag: <><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" /><path d="M7 7h.01" /></>,
+    ShieldCheck: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /><path d="m9 12 2 2 4-4" /></>,
+    Copy: <><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></>,
+    Instagram: <><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></>,
+    MessageCircle: <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />,
+    Download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></>,
+    Ticket: <><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" /></>,
+    Gift: <><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13" /><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></>,
+    Quote: <><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" /><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" /></>,
     Sparkles: <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z" />,
-    MapPin: <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />,
-    Calendar: <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />,
-    Smartphone: <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />,
-    Crown: <path d="m2 4 3 12h14l3-12-6 7-4-9-4 9-6-7z" />,
-    LayoutList: <rect x="3" y="14" width="7" height="7" />,
-    Package: <path d="m7.5 4.27 9 5.15" />,
-    Lock: <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />,
-    User: <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />,
-    Quote: <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />,
-    ExternalLink: <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />,
-    Copy: <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />,
-    Hourglass: <path d="M5 22h14" />,
-    Settings: <circle cx="12" cy="12" r="3" />,
-    Download: <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />,
-    HelpCircle: <circle cx="12" cy="12" r="10" />
+    Hourglass: <><path d="M5 22h14" /><path d="M5 2h14" /><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></>,
   };
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {paths[name] || <circle cx="12" cy="12" r="10" />}
+      {icons[name] || <circle cx="12" cy="12" r="10" />}
     </svg>
   );
 };
@@ -87,362 +94,18 @@ const Icon = ({ name, size = 24, className = "" }: { name: string, size?: number
 // ==================================================================================
 // 0. DADOS E TEXTOS
 // ==================================================================================
-const TEXTS: any = {
-  pt: {
-    loading: "Carregando...",
-    welcome: "Olá,",
-    subtitle: "Escolha a experiência ideal para o seu relaxamento.",
-    level_label: "Nível Atual",
-    missing_xp_msg: (needed: number, reward: number) => `Faltam ${needed} XP para o próximo nível (+R$${reward} de bônus)`,
-    tab_packs: "Pacotes",
-    tab_single: "Avulso",
-    details_label: "Detalhes",
-    faq_title: "Perguntas Frequentes",
-    select_time_title: "Data e Hora",
-    date_sub: "Escolha o melhor momento",
-    today: "Hoje",
-    tomorrow: "Amanhã",
-    empty_date: "Selecione uma data acima",
-    empty_slots: "Sem horários disponíveis para este dia.",
-    location_title: "Local do Atendimento",
-    motel_note: "Em motéis, o valor da suíte é pago diretamente ao estabelecimento pelo cliente. Chegue 15min antes.",
-    input_name: "Seu Nome",
-    input_addr: "Endereço",
-    input_num: "Número",
-    input_bairro: "Bairro",
-    input_city: "Cidade",
-    input_comp: "Complemento",
-    input_hotel: "Nome do Hotel",
-    input_room: "Número do Quarto",
-    extras_title: "Extras para sua sessão:",
-    total_label: "Valor Total",
-    uber_warning: "+ Taxa de Deslocamento (Uber)",
-    coupon_section_title: "Seus Cupons Disponíveis",
-    no_coupons: "Você não possui cupons no momento.",
-    pay_title: "Forma de Pagamento",
-    pay_pix: "Pix (5% de Desconto)",
-    pay_card: "Cartão de Crédito",
-    pay_cash: "Dinheiro / Espécie",
-    terms_title: "Termos e Condições",
-    terms_link: "Ler termos completos",
-    agree_terms: "Li e concordo com os termos de segurança e higiene.",
-    terms_body: [
-      "1. Higiene: Banho prévio é obrigatório.",
-      "2. Respeito: Qualquer conduta inadequada encerrará a sessão imediatamente.",
-      "3. Pagamento: Deve ser realizado antes ou logo após o serviço.",
-      "4. Cancelamento: Avisar com 2 horas de antecedência."
-    ],
-    terms_btn: "Entendi e Concordo",
-    success_title: "Agendamento Confirmado!",
-    success_sub: "Envie o comprovante no WhatsApp para finalizar sua reserva.",
-    whatsapp_btn: "Finalizar no WhatsApp",
-    back_home: "Voltar ao Início",
-    book_btn: "Agendar",
-    next_btn: "Continuar",
-    install_app: "Instalar App",
-    install_desc: "Tenha acesso rápido e fácil.",
-    popup_level_title: "Nível Subiu!",
-    popup_level_msg: "Parabéns! Você alcançou um novo nível de fidelidade e ganhou um desconto exclusivo.",
-    popup_btn_coupon: "Resgatar Recompensa",
-    popup_welcome_title: "Bem-vindo!",
-    popup_welcome_msg: "Como é sua primeira vez, preparamos um presente especial para você.",
-    toast_select_item: "Selecione um serviço para continuar",
-    toast_select_date: "Escolha dia e horário",
-    toast_fill_name: "Preencha seu nome corretamente",
-    toast_fill_addr: "Preencha o endereço completo",
-    toast_fill_hotel: "Preencha os dados do hotel",
-    toast_select_pay: "Selecione a forma de pagamento",
-    toast_accept_terms: "Você precisa aceitar os termos",
-    toast_coupon_success: "Cupom aplicado com sucesso!",
-    zap: {
-      browser_warn: "Use Chrome/Safari para melhor experiência",
-      house: "Atendimento Residencial",
-      motel: "Atendimento em Motel",
-      hotel: "Atendimento em Hotel",
-      intro: "Olá Thalyson, gostaria de confirmar meu agendamento:",
-      order_title: "🛎️ *NOVA RESERVA*",
-      client: "👤 *Cliente:*",
-      service: "💆‍♂️ *Serviço:*",
-      date: "📅 *Data:*",
-      extra_title: "➕ *Adicionais:*",
-      location: "📍 *Localização:*",
-      value: "💲 *Valor Final:*",
-      payment: "💳 *Pagamento:*",
-      uber_label: "🚗 *Deslocamento:*",
-      uber_text: "A calcular (Uber)",
-      xp_status: "📈 *Status Fidelidade:*",
-      xp_gain: "Ganho:",
-      xp_level: "Nível:",
-      wait: "Aguardo a confirmação. Obrigado!"
-    }
-  },
-  en: {
-    loading: "Loading...",
-    welcome: "Hello,",
-    subtitle: "Choose the ideal experience for your relaxation.",
-    level_label: "Current Level",
-    missing_xp_msg: (needed: number, reward: number) => `${needed} XP needed for next level (+$${reward} bonus)`,
-    tab_packs: "Packages",
-    tab_single: "Single",
-    details_label: "Details",
-    faq_title: "FAQ",
-    select_time_title: "Date & Time",
-    date_sub: "Choose the best moment",
-    today: "Today",
-    tomorrow: "Tomorrow",
-    empty_date: "Select a date above",
-    empty_slots: "No slots available for this day.",
-    location_title: "Service Location",
-    motel_note: "In motels, the suite fee is paid directly to the establishment by the client. Please arrive 15min early.",
-    input_name: "Your Name",
-    input_addr: "Address",
-    input_num: "Number",
-    input_bairro: "Neighborhood",
-    input_city: "City",
-    input_comp: "Unit/Apt",
-    input_hotel: "Hotel Name",
-    input_room: "Room Number",
-    extras_title: "Extras for your session:",
-    total_label: "Total Value",
-    uber_warning: "+ Transport Fee (Uber)",
-    coupon_section_title: "Your Coupons",
-    no_coupons: "You have no coupons yet.",
-    pay_title: "Payment Method",
-    pay_pix: "Pix (5% OFF)",
-    pay_card: "Credit Card",
-    pay_cash: "Cash",
-    terms_title: "Terms & Conditions",
-    terms_link: "Read full terms",
-    agree_terms: "I read and agree to safety and hygiene terms.",
-    terms_body: [
-      "1. Hygiene: Prior shower is mandatory.",
-      "2. Respect: Any inappropriate conduct will end the session immediately.",
-      "3. Payment: Must be done before or right after service.",
-      "4. Cancellation: Notify 2 hours in advance."
-    ],
-    terms_btn: "I Understand & Agree",
-    success_title: "Booking Confirmed!",
-    success_sub: "Send the receipt on WhatsApp to finalize your reservation.",
-    whatsapp_btn: "Finalize on WhatsApp",
-    back_home: "Back to Home",
-    book_btn: "Book Now",
-    next_btn: "Continue",
-    install_app: "Install App",
-    install_desc: "Quick and easy access.",
-    popup_level_title: "Level Up!",
-    popup_level_msg: "Congrats! You reached a new loyalty level and earned an exclusive discount.",
-    popup_btn_coupon: "Redeem Reward",
-    popup_welcome_title: "Welcome!",
-    popup_welcome_msg: "Since it's your first time, we prepared a special gift for you.",
-    toast_select_item: "Select a service to continue",
-    toast_select_date: "Choose day and time",
-    toast_fill_name: "Fill your name correctly",
-    toast_fill_addr: "Fill full address",
-    toast_fill_hotel: "Fill hotel details",
-    toast_select_pay: "Select payment method",
-    toast_accept_terms: "You must accept the terms",
-    toast_coupon_success: "Coupon applied successfully!",
-    zap: {
-      browser_warn: "Use Chrome/Safari for best experience",
-      house: "Residential Service",
-      motel: "Motel Service",
-      hotel: "Hotel Service",
-      intro: "Hello Thalyson, I would like to confirm my booking:",
-      order_title: "🛎️ *NEW BOOKING*",
-      client: "👤 *Client:*",
-      service: "💆‍♂️ *Service:*",
-      date: "📅 *Date:*",
-      extra_title: "➕ *Extras:*",
-      location: "📍 *Location:*",
-      value: "💲 *Final Value:*",
-      payment: "💳 *Payment:*",
-      uber_label: "🚗 *Transport:*",
-      uber_text: "To be calculated (Uber)",
-      xp_status: "📈 *Loyalty Status:*",
-      xp_gain: "Gain:",
-      xp_level: "Level:",
-      wait: "Waiting for confirmation. Thanks!"
-    }
-  }
-};
-
-// ==================================================================================
-// 2. COMPONENTES VISUAIS
-// ==================================================================================
-
-const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: IconName, className = '', loading = false }: any) => {
-  const baseStyle = "relative flex items-center justify-center font-bold tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.98] hover:brightness-110 shadow-lg font-['Poppins']";
-  
-  const variants: any = {
-    primary: "bg-blue-600 text-white border border-blue-500/20 shadow-blue-600/30",
-    secondary: "bg-zinc-800 border border-zinc-700 text-zinc-100 hover:bg-zinc-700",
-    whatsapp: "bg-[#25D366] text-white border border-green-400/20 shadow-green-500/20",
-    instagram: "bg-gradient-to-tr from-purple-600 to-pink-600 text-white border border-pink-400/20",
-    outline: "bg-transparent border-2 border-zinc-600 text-zinc-300 hover:text-white hover:border-zinc-300",
-    ghost: "bg-transparent text-zinc-400 hover:text-white hover:bg-white/5",
-    icon: "bg-zinc-800 border border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-700"
-  };
-  
-  const sizes: any = { 
-    sm: "h-10 text-xs px-4", 
-    md: "h-14 text-sm px-6", 
-    lg: "h-16 text-base px-8", 
-    xl: "h-16 text-base font-bold uppercase tracking-widest", 
-    icon: "h-12 w-12 p-0 flex-shrink-0 rounded-full" 
-  };
-
-  return (
-    <button type="button" onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
-      {loading ? <Icon name="Loader2" size={22} className="animate-spin text-current"/> : (
-        <>
-          {IconName && <Icon name={IconName} size={22} className={children ? "mr-3 opacity-90 flex-shrink-0" : ""} />}
-          <span className="truncate">{children}</span>
-        </>
-      )}
-    </button>
-  );
-};
-
-const InputField = ({ label, value, onChange, placeholder, icon: IconName, type = "text", error, isDark }: any) => (
-  <div className="space-y-2.5 w-full group font-['Poppins']">
-    {label && <label className={`text-sm font-bold uppercase tracking-widest ml-1 transition-colors ${isDark ? 'text-zinc-400 group-focus-within:text-blue-500' : 'text-slate-600 group-focus-within:text-blue-600'}`}>{label}</label>}
-    <div className="relative">
-      <div className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors z-10 ${isDark ? 'text-zinc-500 group-focus-within:text-blue-500' : 'text-slate-400 group-focus-within:text-blue-600'}`}>{IconName && <Icon name={IconName} size={22} />}</div>
-      <input 
-        type={type} 
-        value={value} 
-        onChange={onChange} 
-        placeholder={placeholder} 
-        className={`w-full pl-14 pr-5 h-16 rounded-2xl outline-none text-base font-medium transition-all duration-300 
-        ${isDark 
-            ? 'bg-zinc-900 border-2 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:bg-zinc-950 focus:border-blue-500' 
-            : 'bg-white border-2 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-blue-500 focus:shadow-md'} 
-        focus:shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)] ${error ? 'border-red-500/50 text-red-500' : ''}`} 
-      />
-    </div>
-    {error && <p className="text-red-500 text-xs ml-2 font-bold animate-pulse">{error}</p>}
-  </div>
-);
-
-const Card = ({ children, className = '', onClick, active = false, isDark = true }: any) => (
-  <div 
-    onClick={onClick} 
-    className={`relative p-8 rounded-[2.5rem] transition-all duration-300 flex flex-col justify-between h-full group font-['Poppins'] min-h-[480px]
-    ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-2' : ''} 
-    ${active 
-        ? 'bg-blue-900/10 border-2 border-blue-500 shadow-[0_0_50px_-10px_rgba(37,99,235,0.4)]' 
-        : (isDark ? 'bg-zinc-900/80 backdrop-blur-2xl border border-white/10 hover:border-blue-500/50 hover:bg-zinc-800' : 'bg-white border border-slate-200 shadow-xl shadow-slate-200/50 hover:border-blue-500/30')} 
-    ${className}`}
-  >
-    {active && <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent pointer-events-none rounded-[2.5rem]" />}
-    {children}
-  </div>
-);
-
-const SmartTimer = ({ isDark }: any) => {
-  const [time, setTime] = useState(600); 
-  useEffect(() => {
-    const interval = setInterval(() => {
-        setTime(prev => {
-            if (prev <= 0) return 600; 
-            return prev - 1;
-        });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-  const format = (t: number) => {
-    const m = Math.floor(t / 60);
-    const s = t % 60;
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
-  };
-  return (
-    <div className={`flex items-center justify-center gap-3 p-4 rounded-2xl mb-8 border-2 transition-colors duration-500 ${time < 60 ? 'bg-red-500/10 border-red-500/30 text-red-400' : (isDark ? 'bg-blue-500/5 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-600')}`}>
-        <Icon name="Hourglass" size={20} className={time < 60 ? "animate-spin" : "animate-pulse"}/>
-        <span className="text-sm font-bold uppercase tracking-wider">
-            {time < 60 ? "Expira em breve: " : "Segurando vaga: "} 
-            <span className="font-mono text-base ml-1">{format(time)}</span>
-        </span>
-    </div>
-  );
-};
-
-const ReviewsCarousel = ({ reviews, isDark, title }: any) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const scroll = (direction: string) => {
-    if (scrollRef.current) {
-        const { current } = scrollRef;
-        const scrollAmount = 360; 
-        if (direction === 'left') {
-            current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-        } else {
-            current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        }
-    }
-  };
-  return (
-    <div className={`w-full overflow-hidden py-16 border-t mt-12 relative group/reviews ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-      <div className="flex flex-col md:flex-row justify-between items-end px-6 md:px-12 mb-10 gap-6">
-          <div>
-              <h3 className={`text-3xl font-light mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>O que dizem sobre mim</h3>
-              <p className={`text-xs uppercase tracking-[0.25em] font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{title}</p>
-          </div>
-          <div className="flex gap-2">
-             <button onClick={() => scroll('left')} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`}><Icon name="ChevronLeft" size={20} /></button>
-             <button onClick={() => scroll('right')} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`}><Icon name="ChevronRight" size={20} /></button>
-          </div>
-      </div>
-      
-      <div ref={scrollRef} className="flex gap-6 overflow-x-auto scrollbar-hide px-6 md:px-12 snap-x snap-mandatory font-['Poppins'] pb-8">
-        {reviews.map((r: any, i: number) => (
-            <div key={`${i}-${r.n}`} className={`snap-center flex-shrink-0 w-80 md:w-96 p-8 rounded-[2rem] transition-all duration-300 hover:-translate-y-1 select-none border backdrop-blur-xl ${isDark ? 'bg-zinc-900/60 border-white/10 shadow-black/20' : 'bg-white border-slate-200 shadow-xl shadow-slate-200/40'}`}>
-              <div className="flex justify-between items-start mb-6">
-                 <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold border ${isDark ? 'bg-blue-600/20 text-blue-500 border-blue-500/20' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>{r.n.charAt(0)}</div>
-                    <div><span className={`text-base font-bold block leading-none mb-1 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{r.n}</span><span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">{r.loc}</span></div>
-                 </div>
-                 <div className={`px-2 py-1 rounded-lg border flex gap-1 ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-slate-50 border-slate-100'}`}>{[...Array(5)].map((_, k) => (<Icon key={k} name="Star" size={10} className={k < r.s ? "text-blue-500 fill-blue-500" : (isDark ? "text-zinc-800" : "text-slate-300")} />))}</div>
-              </div>
-              <div className="relative">
-                  <div className={`absolute -top-2 -left-1 opacity-10 ${isDark ? 'text-white' : 'text-black'}`}><Icon name="Quote" size={24}/></div>
-                  <p className={`text-sm leading-relaxed font-light italic relative z-10 pl-4 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{r.t}"</p>
-              </div>
-            </div>
-        ))}
-        <div className="w-6 shrink-0"></div>
-      </div>
-    </div>
-  );
-};
-
-const FAQItem = ({ q, a, isDark }: any) => {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-        <div className={`border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-            <button onClick={() => setIsOpen(!isOpen)} className="w-full py-6 flex items-center justify-between text-left group">
-                <span className={`text-base font-semibold transition-colors ${isDark ? 'text-zinc-200 group-hover:text-blue-400' : 'text-slate-700 group-hover:text-blue-600'}`}>{q}</span>
-                <Icon name="ChevronDown" size={20} className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-500' : (isDark ? 'text-zinc-500' : 'text-slate-400')}`} />
-            </button>
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 pb-6' : 'max-h-0 opacity-0'}`}>
-                <p className={`text-sm leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
-            </div>
-        </div>
-    );
-};
-
-// ==================================================================================
-// 3. DADOS
-// ==================================================================================
-
-const getData = (lang: string) => {
+const getData = (lang) => {
     const isPT = lang === 'pt';
     const currency = isPT ? 'R$' : '$';
+    
+    // DEFINIÇÃO DE PREÇOS CORRIGIDA (BRL / USD Aproximado)
     const p = {
-        relax: isPT ? 125 : 35,
-        sens: isPT ? 155 : 45,
-        titan: isPT ? 195 : 60,
-        packRelax: { v: isPT ? 397 : 120, full: isPT ? 500 : 140, save: isPT ? 103 : 20 },
-        packTri: { v: isPT ? 487 : 150, full: isPT ? 585 : 180, save: isPT ? 98 : 30 },
-        packPass: { v: isPT ? 780 : 240, full: isPT ? 975 : 300, save: isPT ? 195 : 60 }
+        relax: isPT ? 125 : 25,
+        sens: isPT ? 155 : 30,
+        titan: isPT ? 195 : 40,
+        packRelax: { v: isPT ? 397 : 80, full: isPT ? 500 : 100, save: isPT ? 103 : 20 },
+        packTri: { v: isPT ? 487 : 95, full: isPT ? 585 : 120, save: isPT ? 98 : 25 },
+        packPass: { v: isPT ? 780 : 150, full: isPT ? 975 : 200, save: isPT ? 195 : 50 }
     };
 
     return {
@@ -523,8 +186,255 @@ const getData = (lang: string) => {
             { n: "M. (Sigilo)", loc: "SP - Jardins", t: "Finalização intensa, perdi as forças. O cara é bom.", s: 5 }
         ],
         reviews_title: isPT ? "+50 Avaliações 5 Estrelas" : "+50 5-Star Reviews",
-        currency: currency
+        currency: currency,
+        text: {
+            welcome: isPT ? "Olá," : "Hello,",
+            subtitle: isPT ? "Escolha a experiência ideal para o seu relaxamento." : "Choose the ideal experience for your relaxation.",
+            loading: isPT ? "Carregando..." : "Loading...",
+            level_label: isPT ? "Nível de Fidelidade" : "Loyalty Level",
+            missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP para o próximo nível (+R$${reward} de bônus)` : `${needed} XP needed for next level (+$${reward} bonus)`,
+            tab_packs: isPT ? "Pacotes" : "Packages",
+            tab_single: isPT ? "Avulso" : "Single",
+            details_label: isPT ? "Detalhes" : "Details",
+            faq_title: "Perguntas Frequentes",
+            select_time_title: "Data e Hora",
+            date_sub: "Escolha o melhor momento",
+            today: isPT ? "Hoje" : "Today",
+            tomorrow: isPT ? "Amanhã" : "Tomorrow",
+            empty_date: isPT ? "Selecione uma data acima" : "Select a date above",
+            empty_slots: isPT ? "Sem horários disponíveis." : "No slots available.",
+            location_title: isPT ? "Local do Atendimento" : "Service Location",
+            motel_note: isPT ? "Em motéis, o valor da suíte é pago diretamente ao estabelecimento pelo cliente." : "In motels, the suite fee is paid directly to the establishment.",
+            input_name: isPT ? "Seu Nome" : "Your Name",
+            input_addr: isPT ? "Endereço" : "Address",
+            input_num: isPT ? "Número" : "Number",
+            input_bairro: isPT ? "Bairro" : "Neighborhood",
+            input_city: isPT ? "Cidade" : "City",
+            input_comp: isPT ? "Complemento" : "Unit/Apt",
+            input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
+            input_room: isPT ? "Número do Quarto" : "Room Number",
+            extras_title: isPT ? "Extras para sua sessão:" : "Extras for your session:",
+            total_label: "Valor Total",
+            uber_warning: isPT ? "+ Taxa de Deslocamento (Uber)" : "+ Transport Fee (Uber)",
+            coupon_section_title: isPT ? "Seus Cupons Disponíveis" : "Your Coupons",
+            no_coupons: isPT ? "Você não possui cupons no momento." : "No coupons available.",
+            coupon_btn: isPT ? "Aplicar" : "Apply",
+            pay_title: isPT ? "Forma de Pagamento" : "Payment Method",
+            pay_pix: isPT ? "Pix (5% de Desconto)" : "Pix (5% OFF)",
+            pay_card: isPT ? "Cartão de Crédito" : "Credit Card",
+            pay_cash: isPT ? "Dinheiro / Espécie" : "Cash",
+            terms_title: isPT ? "Termos e Condições" : "Terms & Conditions",
+            terms_link: isPT ? "Ler termos completos" : "Read full terms",
+            agree_terms: isPT ? "Li e concordo com os termos." : "I read and agree to terms.",
+            terms_body: isPT ? ["1. Higiene: Banho prévio obrigatório.", "2. Respeito: Conduta inadequada encerra a sessão.", "3. Pagamento: Antes ou logo após o serviço.", "4. Cancelamento: 2h de antecedência."] : ["1. Hygiene mandatory.", "2. Respect required.", "3. Payment upfront.", "4. Cancellation 2h notice."],
+            terms_btn: isPT ? "Entendi e Concordo" : "I Understand & Agree",
+            success_title: isPT ? "Agendamento Confirmado!" : "Booking Confirmed!",
+            success_sub: isPT ? "Envie o comprovante no WhatsApp para finalizar." : "Send receipt on WhatsApp to finalize.",
+            whatsapp_btn: isPT ? "Finalizar no WhatsApp" : "Finalize on WhatsApp",
+            back_home: isPT ? "Voltar ao Início" : "Back to Home",
+            book_btn: isPT ? "Agendar" : "Book Now",
+            next_btn: isPT ? "Continuar" : "Continue",
+            install_app: isPT ? "Instalar App" : "Install App",
+            install_desc: isPT ? "Tenha acesso rápido e fácil." : "Quick and easy access.",
+            popup_level_title: isPT ? "Nível Subiu!" : "Level Up!",
+            popup_level_msg: isPT ? "Parabéns! Você alcançou um novo nível." : "Congrats! You reached a new level.",
+            popup_btn_coupon: isPT ? "Resgatar Recompensa" : "Redeem Reward",
+            popup_welcome_title: isPT ? "Bem-vindo!" : "Welcome!",
+            popup_welcome_msg: isPT ? "Preparamos um presente especial para você." : "We prepared a special gift for you.",
+            toast_select_item: isPT ? "Selecione um serviço" : "Select a service",
+            toast_select_date: isPT ? "Escolha dia e horário" : "Choose day and time",
+            toast_fill_name: isPT ? "Preencha seu nome" : "Fill your name",
+            toast_fill_addr: isPT ? "Preencha o endereço" : "Fill address",
+            toast_fill_hotel: isPT ? "Preencha dados do hotel" : "Fill hotel details",
+            toast_select_pay: isPT ? "Selecione pagamento" : "Select payment",
+            toast_accept_terms: isPT ? "Aceite os termos" : "Accept terms",
+            toast_coupon_success: isPT ? "Cupom aplicado!" : "Coupon applied!",
+            zap: {
+                browser_warn: isPT ? "Use Chrome/Safari" : "Use Chrome/Safari",
+                house: isPT ? "Atendimento Residencial" : "Residential Service",
+                motel: isPT ? "Atendimento em Motel" : "Motel Service",
+                hotel: isPT ? "Atendimento em Hotel" : "Hotel Service",
+                intro: isPT ? "Olá Thalyson, gostaria de confirmar meu agendamento:" : "Hello Thalyson, confirming my booking:",
+                order_title: "🛎️ *NOVA RESERVA*",
+                client: "👤 *Cliente:*",
+                service: "💆‍♂️ *Serviço:*",
+                date: "📅 *Data:*",
+                extra_title: "➕ *Adicionais:*",
+                location: "📍 *Localização:*",
+                value: "💲 *Valor Final:*",
+                payment: "💳 *Pagamento:*",
+                uber_label: "🚗 *Deslocamento:*",
+                uber_text: "A calcular (Uber)",
+                xp_status: "📈 *Status Fidelidade:*",
+                xp_gain: "Ganho:",
+                xp_level: "Nível:",
+                wait: "Aguardo a confirmação. Obrigado!"
+            }
+        }
     };
+};
+
+// ==================================================================================
+// 2. COMPONENTES VISUAIS
+// ==================================================================================
+
+const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: IconName, className = '', loading = false }) => {
+  const baseStyle = "relative flex items-center justify-center font-bold tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.98] hover:brightness-110 shadow-lg font-['Poppins']";
+  
+  const variants = {
+    primary: "bg-blue-600 text-white border border-blue-500/20 shadow-blue-600/30",
+    secondary: "bg-zinc-800 border border-zinc-700 text-zinc-100 hover:bg-zinc-700",
+    whatsapp: "bg-[#25D366] text-white border border-green-400/20 shadow-green-500/20",
+    instagram: "bg-gradient-to-tr from-purple-600 to-pink-600 text-white border border-pink-400/20",
+    outline: "bg-transparent border-2 border-zinc-600 text-zinc-300 hover:text-white hover:border-zinc-300",
+    ghost: "bg-transparent text-zinc-400 hover:text-white hover:bg-white/5",
+    icon: "bg-zinc-800 border border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-700"
+  };
+  
+  const sizes = { 
+    sm: "h-10 text-xs px-4", 
+    md: "h-14 text-sm px-6", 
+    lg: "h-16 text-base px-8", 
+    xl: "h-16 text-base font-bold uppercase tracking-widest", 
+    icon: "h-12 w-12 p-0 flex-shrink-0 rounded-full" 
+  };
+
+  return (
+    <button type="button" onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
+      {loading ? <Icon name="Loader2" size={22} className="animate-spin text-current"/> : (
+        <>
+          {IconName && <Icon name={IconName} size={22} className={children ? "mr-3 opacity-90 flex-shrink-0" : ""} />}
+          <span className="truncate">{children}</span>
+        </>
+      )}
+    </button>
+  );
+};
+
+const InputField = ({ label, value, onChange, placeholder, icon: IconName, type = "text", error, isDark }) => (
+  <div className="space-y-2.5 w-full group font-['Poppins']">
+    {label && <label className={`text-sm font-bold uppercase tracking-widest ml-1 transition-colors ${isDark ? 'text-zinc-400 group-focus-within:text-blue-500' : 'text-slate-600 group-focus-within:text-blue-600'}`}>{label}</label>}
+    <div className="relative">
+      <div className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors z-10 ${isDark ? 'text-zinc-500 group-focus-within:text-blue-500' : 'text-slate-400 group-focus-within:text-blue-600'}`}>{IconName && <Icon name={IconName} size={22} />}</div>
+      <input 
+        type={type} 
+        value={value} 
+        onChange={onChange} 
+        placeholder={placeholder} 
+        className={`w-full pl-14 pr-5 h-16 rounded-2xl outline-none text-base font-medium transition-all duration-300 
+        ${isDark 
+            ? 'bg-zinc-900 border-2 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:bg-zinc-950 focus:border-blue-500' 
+            : 'bg-white border-2 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-blue-500 focus:shadow-md'} 
+        focus:shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)] ${error ? 'border-red-500/50 text-red-500' : ''}`} 
+      />
+    </div>
+    {error && <p className="text-red-500 text-xs ml-2 font-bold animate-pulse">{error}</p>}
+  </div>
+);
+
+const Card = ({ children, className = '', onClick, active = false, isDark = true }) => (
+  <div 
+    onClick={onClick} 
+    className={`relative p-8 rounded-[2.5rem] transition-all duration-300 flex flex-col justify-between h-full group font-['Poppins'] min-h-[480px]
+    ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-2' : ''} 
+    ${active 
+        ? 'bg-blue-900/10 border-2 border-blue-500 shadow-[0_0_50px_-10px_rgba(37,99,235,0.4)]' 
+        : (isDark ? 'bg-zinc-900/80 backdrop-blur-2xl border border-white/10 hover:border-blue-500/50 hover:bg-zinc-800' : 'bg-white border border-slate-200 shadow-xl shadow-slate-200/50 hover:border-blue-500/30')} 
+    ${className}`}
+  >
+    {active && <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent pointer-events-none rounded-[2.5rem]" />}
+    {children}
+  </div>
+);
+
+const SmartTimer = ({ isDark }) => {
+  const [time, setTime] = useState(600); 
+  useEffect(() => {
+    const interval = setInterval(() => {
+        setTime(prev => {
+            if (prev <= 0) return 600; 
+            return prev - 1;
+        });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+  const format = (t) => {
+    const m = Math.floor(t / 60);
+    const s = t % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+  return (
+    <div className={`flex items-center justify-center gap-3 p-4 rounded-2xl mb-8 border-2 transition-colors duration-500 ${time < 60 ? 'bg-red-500/10 border-red-500/30 text-red-400' : (isDark ? 'bg-blue-500/5 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-600')}`}>
+        <Icon name="Hourglass" size={20} className={time < 60 ? "animate-spin" : "animate-pulse"}/>
+        <span className="text-sm font-bold uppercase tracking-wider">
+            {time < 60 ? "Expira em breve: " : "Segurando vaga: "} 
+            <span className="font-mono text-base ml-1">{format(time)}</span>
+        </span>
+    </div>
+  );
+};
+
+const ReviewsCarousel = ({ reviews, isDark, title }) => {
+  const scrollRef = useRef(null);
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+        const { current } = scrollRef;
+        const scrollAmount = 360; 
+        if (direction === 'left') {
+            current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        } else {
+            current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    }
+  };
+  return (
+    <div className={`w-full overflow-hidden py-16 border-t mt-12 relative group/reviews ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+      <div className="flex flex-col md:flex-row justify-between items-end px-6 md:px-12 mb-10 gap-6">
+          <div>
+              <h3 className={`text-3xl font-light mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>O que dizem sobre mim</h3>
+              <p className={`text-xs uppercase tracking-[0.25em] font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{title}</p>
+          </div>
+          <div className="flex gap-2">
+             <button onClick={() => scroll('left')} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`}><Icon name="ChevronLeft" size={20} /></button>
+             <button onClick={() => scroll('right')} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`}><Icon name="ChevronRight" size={20} /></button>
+          </div>
+      </div>
+      
+      <div ref={scrollRef} className="flex gap-6 overflow-x-auto scrollbar-hide px-6 md:px-12 snap-x snap-mandatory font-['Poppins'] pb-8">
+        {reviews.map((r, i) => (
+            <div key={`${i}-${r.n}`} className={`snap-center flex-shrink-0 w-80 md:w-96 p-8 rounded-[2rem] transition-all duration-300 hover:-translate-y-1 select-none border backdrop-blur-xl ${isDark ? 'bg-zinc-900/60 border-white/10 shadow-black/20' : 'bg-white border-slate-200 shadow-xl shadow-slate-200/40'}`}>
+              <div className="flex justify-between items-start mb-6">
+                 <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold border ${isDark ? 'bg-blue-600/20 text-blue-500 border-blue-500/20' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>{r.n.charAt(0)}</div>
+                    <div><span className={`text-base font-bold block leading-none mb-1 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{r.n}</span><span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">{r.loc}</span></div>
+                 </div>
+                 <div className={`px-2 py-1 rounded-lg border flex gap-1 ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-slate-50 border-slate-100'}`}>{[...Array(5)].map((_, k) => (<Icon key={k} name="Star" size={10} className={k < r.s ? "text-blue-500 fill-blue-500" : (isDark ? "text-zinc-800" : "text-slate-300")} />))}</div>
+              </div>
+              <div className="relative">
+                  <div className={`absolute -top-2 -left-1 opacity-10 ${isDark ? 'text-white' : 'text-black'}`}><Icon name="Quote" size={24}/></div>
+                  <p className={`text-sm leading-relaxed font-light italic relative z-10 pl-4 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{r.t}"</p>
+              </div>
+            </div>
+        ))}
+        <div className="w-6 shrink-0"></div>
+      </div>
+    </div>
+  );
+};
+
+const FAQItem = ({ q, a, isDark }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className={`border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+            <button onClick={() => setIsOpen(!isOpen)} className="w-full py-6 flex items-center justify-between text-left group">
+                <span className={`text-base font-semibold transition-colors ${isDark ? 'text-zinc-200 group-hover:text-blue-400' : 'text-slate-700 group-hover:text-blue-600'}`}>{q}</span>
+                <Icon name="ChevronDown" size={20} className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-500' : (isDark ? 'text-zinc-500' : 'text-slate-400')}`} />
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 pb-6' : 'max-h-0 opacity-0'}`}>
+                <p className={`text-sm leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
+            </div>
+        </div>
+    );
 };
 
 // ==================================================================================
@@ -544,22 +454,22 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
-  const [toasts, setToasts] = useState<any[]>([]);
+  const [toasts, setToasts] = useState([]);
   
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const dateScrollRef = useRef<HTMLDivElement>(null); 
+  const scrollRef = useRef(null);
+  const dateScrollRef = useRef(null); 
   
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = TEXTS[lang];
 
-  const [user, setUser] = useState<any>({ 
+  const [user, setUser] = useState({ 
       name: '', xp: 0, coupons: [], usedCoupons: [], 
       savedAddress: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, 
       hasSeenWelcome: false,
       ordersCount: 0
   });
 
-  const [booking, setBooking] = useState<any>({
+  const [booking, setBooking] = useState({
     type: 'single', item: null, extras: {}, date: null, time: null, locationType: 'home', 
     address: { city: '', district: '', street: '', number: '', comp: '', placeName: '' },
     payment: '', appliedCoupon: null, termsAccepted: false
@@ -578,7 +488,7 @@ export default function App() {
         if (s) {
             const parsed = JSON.parse(s);
             if(parsed.user) {
-                setUser((prev: any) => ({ ...prev, ...parsed.user, coupons: parsed.user.coupons || [], usedCoupons: parsed.user.usedCoupons || [] }));
+                setUser(prev => ({ ...prev, ...parsed.user, coupons: parsed.user.coupons || [], usedCoupons: parsed.user.usedCoupons || [] }));
             }
             if(parsed.bookingDraft && parsed.bookingDraft.item) {
                 const draftDate = new Date(parsed.bookingDraft.date);
@@ -629,19 +539,19 @@ export default function App() {
       }
   };
 
-  const scrollDates = (dir: string) => {
+  const scrollDates = (dir) => {
       if (dateScrollRef.current) {
           const amt = dir === 'left' ? -200 : 200;
           dateScrollRef.current.scrollBy({ left: amt, behavior: 'smooth' });
       }
   };
 
-  const handleSelectItem = (type: string, item: any) => {
-      setBooking((prev: any) => ({ ...prev, type: type, item: item, extras: {}, payment: '', termsAccepted: false }));
+  const handleSelectItem = (type, item) => {
+      setBooking(prev => ({ ...prev, type: type, item: item, extras: {}, payment: '', termsAccepted: false }));
       addToast(item.title, "success");
   };
 
-  const addToast = (msg: string, type = "success") => {
+  const addToast = (msg, type = "success") => {
       const id = Date.now();
       setToasts(prev => [...prev, { id, msg, type }]);
       setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3000);
@@ -715,7 +625,7 @@ export default function App() {
       return Math.floor(baseXP * percentage);
   }, [financials.total, booking.type]);
 
-  const getNextLevelInfo = (currentXP: number) => {
+  const getNextLevelInfo = (currentXP) => {
       if (currentXP >= 800) {
           const cycleXP = currentXP - 800;
           const nextRewardAt = 500 - (cycleXP % 500); 
@@ -725,7 +635,7 @@ export default function App() {
       return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
   };
 
-  const generateSecurityHash = (price: number, date: string, itemName: string) => {
+  const generateSecurityHash = (price, date, itemName) => {
     const raw = `${price}-${date}-${itemName}-${CONFIG.SECRET_TOKEN}`;
     return btoa(raw).substring(0, 8).toUpperCase();
   };
@@ -831,7 +741,7 @@ ${T.zap.wait}
 
   const handleNextStep = () => {
       if(validateStep()) {
-          if (step === 2) { setUser((prev: any) => ({...prev, savedAddress: booking.address})); }
+          if (step === 2) { setUser(prev => ({...prev, savedAddress: booking.address})); }
           if (step === 3) { finishBooking(); } else { setStep(s => s + 1); }
       }
   };
@@ -862,7 +772,7 @@ ${T.zap.wait}
         }
     }
     if (leveledUp) setLevelUpPopup(true);
-    setUser((prev: any) => ({ 
+    setUser(prev => ({ 
         ...prev, 
         xp: newXP, 
         coupons: updatedCoupons,
@@ -870,7 +780,7 @@ ${T.zap.wait}
         ordersCount: prev.ordersCount + 1 
     }));
     if (typeof window !== 'undefined') { window.open(generateWhatsAppLink(), '_blank'); }
-    setBooking((b: any) => ({...b, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false})); 
+    setBooking(b => ({...b, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false})); 
     localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({ user: {...user, xp: newXP}, bookingDraft: null, step: 0 }));
     setStep(4);
   };
@@ -1357,9 +1267,9 @@ ${T.zap.wait}
                  )}
              </div>
              {step < 4 && (
-                 <button onClick={handleNextStep} className={`h-20 px-10 rounded-[2rem] bg-blue-600 text-white font-bold text-lg flex items-center gap-4 shadow-2xl shadow-blue-600/40 transition-all active:scale-95 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed`}>
+                 <button onClick={handleNextStep} className={`h-14 px-8 rounded-[2rem] bg-blue-600 text-white font-bold text-sm uppercase tracking-widest flex items-center gap-3 shadow-xl shadow-blue-600/30 transition-all active:scale-95 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed`}>
                      {step === 3 ? 'Finalizar' : 'Próximo'}
-                     {!booking.item && <Icon name="ArrowRight" size={20} />}
+                     {!booking.item && <Icon name="ArrowRight" size={18} />}
                  </button>
              )}
          </div>
