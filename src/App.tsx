@@ -13,7 +13,10 @@ import {
  * ==================================================================================
  * THALYSON APP OS v57.0 - FINAL COMPLETE FIXED
  * ==================================================================================
- * CÓDIGO COMPLETO. SEM CORTES.
+ * CORREÇÕES APLICADAS:
+ * 1. Objeto TEXTS adicionado (resolvendo a tela branca).
+ * 2. Correção de variáveis não definidas (setShowConfetti).
+ * 3. Limpeza de sintaxe.
  */
 
 const CONFIG = {
@@ -26,6 +29,192 @@ const CONFIG = {
   SECRET_TOKEN: 'THALY_2026_SECURE',
   START_HOUR: 9,
   END_HOUR: 20
+};
+
+// ==================================================================================
+// 0. DICIONÁRIO DE TEXTOS (CORREÇÃO DA TELA BRANCA)
+// ==================================================================================
+const TEXTS = {
+  pt: {
+    loading: "Carregando...",
+    welcome: "Olá,",
+    subtitle: "Escolha a experiência ideal para o seu relaxamento.",
+    level_label: "Nível Atual",
+    missing_xp_msg: (needed, reward) => `Faltam ${needed} XP para o próximo nível (+R$${reward} de bônus)`,
+    tab_packs: "Pacotes",
+    tab_single: "Avulso",
+    details_label: "Detalhes",
+    faq_title: "Perguntas Frequentes",
+    select_time_title: "Data e Hora",
+    date_sub: "Escolha o melhor momento",
+    today: "Hoje",
+    tomorrow: "Amanhã",
+    empty_date: "Selecione uma data acima",
+    empty_slots: "Sem horários disponíveis para este dia.",
+    location_title: "Local do Atendimento",
+    motel_note: "Em motéis, o valor da suíte é pago diretamente ao estabelecimento pelo cliente. Chegue 15min antes.",
+    input_name: "Seu Nome",
+    input_addr: "Endereço",
+    input_num: "Número",
+    input_bairro: "Bairro",
+    input_city: "Cidade",
+    input_comp: "Complemento",
+    input_hotel: "Nome do Hotel",
+    input_room: "Número do Quarto",
+    extras_title: "Extras para sua sessão:",
+    total_label: "Valor Total",
+    uber_warning: "+ Taxa de Deslocamento (Uber)",
+    coupon_placeholder: "Código do Cupom",
+    coupon_btn: "Aplicar",
+    pay_title: "Forma de Pagamento",
+    pay_pix: "Pix (5% OFF)",
+    pay_card: "Cartão de Crédito",
+    pay_cash: "Dinheiro / Espécie",
+    terms_title: "Termos e Condições",
+    terms_link: "Ler termos completos",
+    agree_terms: "Li e concordo com os termos de segurança e higiene.",
+    terms_body: [
+      "1. Higiene: Banho prévio é obrigatório.",
+      "2. Respeito: Qualquer conduta inadequada encerrará a sessão imediatamente.",
+      "3. Pagamento: Deve ser realizado antes ou logo após o serviço.",
+      "4. Cancelamento: Avisar com 2 horas de antecedência."
+    ],
+    terms_btn: "Entendi e Concordo",
+    success_title: "Agendamento Confirmado!",
+    success_sub: "Envie o comprovante no WhatsApp para finalizar sua reserva.",
+    whatsapp_btn: "Finalizar no WhatsApp",
+    back_home: "Voltar ao Início",
+    book_btn: "Agendar",
+    next_btn: "Continuar",
+    install_app: "Instalar App",
+    install_desc: "Tenha acesso rápido e fácil.",
+    popup_level_title: "Nível Subiu!",
+    popup_level_msg: "Parabéns! Você alcançou um novo nível de fidelidade e ganhou um desconto exclusivo.",
+    popup_btn_coupon: "Resgatar Recompensa",
+    popup_welcome_title: "Bem-vindo!",
+    popup_welcome_msg: "Como é sua primeira vez, preparamos um presente especial para você.",
+    toast_select_item: "Selecione um serviço para continuar",
+    toast_select_date: "Escolha dia e horário",
+    toast_fill_name: "Preencha seu nome corretamente",
+    toast_fill_addr: "Preencha o endereço completo",
+    toast_fill_hotel: "Preencha os dados do hotel",
+    toast_select_pay: "Selecione a forma de pagamento",
+    toast_accept_terms: "Você precisa aceitar os termos",
+    toast_coupon_used: "Este cupom já foi utilizado",
+    toast_coupon_success: "Cupom aplicado com sucesso!",
+    toast_coupon_error: "Cupom inválido",
+    zap: {
+      browser_warn: "Use Chrome/Safari para melhor experiência",
+      house: "Atendimento Residencial",
+      motel: "Atendimento em Motel",
+      hotel: "Atendimento em Hotel",
+      intro: "Olá Thalyson, gostaria de confirmar meu agendamento:",
+      order_title: "🛎️ *NOVA RESERVA*",
+      client: "👤 *Cliente:*",
+      service: "💆‍♂️ *Serviço:*",
+      date: "📅 *Data:*",
+      extra_title: "➕ *Adicionais:*",
+      location: "📍 *Localização:*",
+      value: "💲 *Valor:*",
+      payment: "💳 *Pagamento:*",
+      uber_label: "🚗 *Deslocamento:*",
+      uber_text: "A calcular (Uber)",
+      xp_status: "📈 *Status Fidelidade:*",
+      xp_gain: "Ganho:",
+      xp_level: "Nível:",
+      wait: "Aguardo a confirmação. Obrigado!"
+    }
+  },
+  en: {
+    loading: "Loading...",
+    welcome: "Hello,",
+    subtitle: "Choose the ideal experience for your relaxation.",
+    level_label: "Current Level",
+    missing_xp_msg: (needed, reward) => `${needed} XP needed for next level (+$${reward} bonus)`,
+    tab_packs: "Packages",
+    tab_single: "Single",
+    details_label: "Details",
+    faq_title: "FAQ",
+    select_time_title: "Date & Time",
+    date_sub: "Choose the best moment",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    empty_date: "Select a date above",
+    empty_slots: "No slots available for this day.",
+    location_title: "Service Location",
+    motel_note: "In motels, the suite fee is paid directly to the establishment by the client. Please arrive 15min early.",
+    input_name: "Your Name",
+    input_addr: "Address",
+    input_num: "Number",
+    input_bairro: "Neighborhood",
+    input_city: "City",
+    input_comp: "Unit/Apt",
+    input_hotel: "Hotel Name",
+    input_room: "Room Number",
+    extras_title: "Extras for your session:",
+    total_label: "Total Value",
+    uber_warning: "+ Transport Fee (Uber)",
+    coupon_placeholder: "Coupon Code",
+    coupon_btn: "Apply",
+    pay_title: "Payment Method",
+    pay_pix: "Pix (Instant)",
+    pay_card: "Credit Card",
+    pay_cash: "Cash",
+    terms_title: "Terms & Conditions",
+    terms_link: "Read full terms",
+    agree_terms: "I read and agree to safety and hygiene terms.",
+    terms_body: [
+      "1. Hygiene: Prior shower is mandatory.",
+      "2. Respect: Any inappropriate conduct will end the session immediately.",
+      "3. Payment: Must be done before or right after service.",
+      "4. Cancellation: Notify 2 hours in advance."
+    ],
+    terms_btn: "I Understand & Agree",
+    success_title: "Booking Confirmed!",
+    success_sub: "Send the receipt on WhatsApp to finalize your reservation.",
+    whatsapp_btn: "Finalize on WhatsApp",
+    back_home: "Back to Home",
+    book_btn: "Book Now",
+    next_btn: "Continue",
+    install_app: "Install App",
+    install_desc: "Quick and easy access.",
+    popup_level_title: "Level Up!",
+    popup_level_msg: "Congrats! You reached a new loyalty level and earned an exclusive discount.",
+    popup_btn_coupon: "Redeem Reward",
+    popup_welcome_title: "Welcome!",
+    popup_welcome_msg: "Since it's your first time, we prepared a special gift for you.",
+    toast_select_item: "Select a service to continue",
+    toast_select_date: "Choose day and time",
+    toast_fill_name: "Fill your name correctly",
+    toast_fill_addr: "Fill full address",
+    toast_fill_hotel: "Fill hotel details",
+    toast_select_pay: "Select payment method",
+    toast_accept_terms: "You must accept the terms",
+    toast_coupon_used: "This coupon was already used",
+    toast_coupon_success: "Coupon applied successfully!",
+    toast_coupon_error: "Invalid coupon",
+    zap: {
+      browser_warn: "Use Chrome/Safari for best experience",
+      house: "Residential Service",
+      motel: "Motel Service",
+      hotel: "Hotel Service",
+      intro: "Hello Thalyson, I would like to confirm my booking:",
+      order_title: "🛎️ *NEW BOOKING*",
+      client: "👤 *Client:*",
+      service: "💆‍♂️ *Service:*",
+      date: "📅 *Date:*",
+      extra_title: "➕ *Extras:*",
+      location: "📍 *Location:*",
+      value: "💲 *Value:*",
+      payment: "💳 *Payment:*",
+      uber_label: "🚗 *Transport:*",
+      uber_text: "To be calculated (Uber)",
+      xp_status: "📈 *Loyalty Status:*",
+      xp_gain: "Gain:",
+      xp_level: "Level:",
+      wait: "Waiting for confirmation. Thanks!"
+    }
+  }
 };
 
 // ==================================================================================
@@ -354,6 +543,7 @@ export default function App() {
   const [isDark, setIsDark] = useState(true);
   const [activeTab, setActiveTab] = useState('packs');
   const [isClient, setIsClient] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false); // Estado adicionado para evitar erro
   
   // MODAIS & UI
   const [termsOpen, setTermsOpen] = useState(false);
@@ -369,7 +559,9 @@ export default function App() {
   
   // MEMOIZED DADOS
   const DATA = useMemo(() => getData(lang), [lang]);
-  const T = DATA.text;
+  
+  // *** CORREÇÃO: Usando o objeto TEXTS diretamente ***
+  const T = TEXTS[lang];
 
   // ESTADO DO USUÁRIO
   const [user, setUser] = useState({ 
@@ -1076,20 +1268,20 @@ ${T.zap.wait}
                       <h3 className={`text-xs font-bold uppercase mb-6 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{booking.type !== 'single' ? T.extras_title.replace('Extras:', 'Adicionais (20% OFF):') : T.extras_title}</h3>
                       <div className="space-y-4">
                          {DATA.extras.map((ex, idx) => {
-                            // Câmbio para extras
-                            const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
-                            return (
-                               <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 animate-slide-in ${booking.extras[ex.id] ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_20px_-5px_rgba(37,99,235,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`} style={{animationDelay: `${idx * 100}ms`}}>
-                                 <div className="flex items-center gap-4">
-                                     <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}><ex.icon size={20}/></div>
-                                     <div><p className={`text-sm font-bold transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-200' : 'text-slate-700')}`}>{ex.label}</p><p className={`text-xs font-medium pt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p></div>
-                                 </div>
-                                 <div className="text-right">
-                                    {booking.type !== 'single' && (<span className={`text-[10px] line-through block ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{DATA.currency} {ex.price}</span>)}
-                                    <span className={`text-xs font-bold whitespace-nowrap px-3 py-1.5 rounded-xl inline-block ${booking.extras[ex.id] ? 'bg-blue-500/20 text-blue-500' : (isDark ? 'text-zinc-500 bg-zinc-800' : 'text-slate-500 bg-slate-100')}`}>+ {DATA.currency} {price}</span>
-                                 </div>
-                               </div>
-                            )
+                           // Câmbio para extras
+                           const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
+                           return (
+                              <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 animate-slide-in ${booking.extras[ex.id] ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_20px_-5px_rgba(37,99,235,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`} style={{animationDelay: `${idx * 100}ms`}}>
+                                <div className="flex items-center gap-4">
+                                    <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}><ex.icon size={20}/></div>
+                                    <div><p className={`text-sm font-bold transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-200' : 'text-slate-700')}`}>{ex.label}</p><p className={`text-xs font-medium pt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p></div>
+                                </div>
+                                <div className="text-right">
+                                   {booking.type !== 'single' && (<span className={`text-[10px] line-through block ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{DATA.currency} {ex.price}</span>)}
+                                   <span className={`text-xs font-bold whitespace-nowrap px-3 py-1.5 rounded-xl inline-block ${booking.extras[ex.id] ? 'bg-blue-500/20 text-blue-500' : (isDark ? 'text-zinc-500 bg-zinc-800' : 'text-slate-500 bg-slate-100')}`}>+ {DATA.currency} {price}</span>
+                                </div>
+                              </div>
+                           )
                          })}
                       </div>
                    </div>
