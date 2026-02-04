@@ -11,18 +11,18 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v47.0 - MARKETING STRATEGY EDITION
+ * THALYSON APP OS v48.0 - THE GOLDEN TICKET EDITION
  * ==================================================================================
- * 1. ESTRATÉGIA: Diferença clara entre Físico (Relax) vs Sensorial (Sensitiva) vs Genital (Titan).
- * 2. PACOTES: "Protocolo Zero Dor" e "Imersão 2h" (Substituindo Clube).
- * 3. COPY: Educativa sobre Lingam e Traje (Cueca).
- * 4. UX: Layout mantido e otimizado.
+ * 1. NOVO PACOTE "HIGH TICKET": Passaporte Titan (Compre 4, Leve 5).
+ * 2. ESTRATÉGIA: Foco em LTV (Lifetime Value) e recorrência garantida.
+ * 3. COPY: Ajustada para "1 Sessão Grátis" (Gatilho forte).
+ * 4. UI: Mantido o padrão Titan Blue V47.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v47_mkt', 
+  STORAGE_KEY: '@thaly_app_v48_golden', 
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -245,10 +245,10 @@ const getData = (lang) => {
         ],
         faq: [
             { q: "Qual a diferença real entre as sessões?", a: "Simples: A Relaxante é 100% muscular (dor). A Sensitiva é sensorial (pele e arrepios). A Titan é a completa: une o alívio da dor com o prazer intenso da massagem genital (Lingam)." },
-            { q: "O que é a Massagem Lingam?", a: "É uma técnica tântrica focada na região genital masculina. O objetivo é honrar o corpo, prolongar o prazer e gerar uma descarga de energia terapêutica muito superior a uma finalização comum." },
+            { q: "O que é a Massagem Lingam?", a: "É uma técnica tântrica focada na região genital masculina. O objetivo não é apenas a 'finalização', mas sim honrar o corpo, distribuir a energia sexual e proporcionar um prazer profundo e terapêutico." },
             { q: "Onde você atende?", a: "Vou até você! Atendo em domicílio, hotéis ou motéis em São Paulo. Levo tudo o que é necessário. Sua única preocupação é relaxar." },
             { q: "Pode 'gozar' na massagem?", a: "Sim! Nas terapias Sensitiva e Titan, o clímax é encarado como saúde e alívio. É um espaço seguro e sem julgamentos para você liberar seu estresse." },
-            { q: "É seguro e discreto?", a: "Absolutamente. Prezo pelo sigilo total e profissionalismo. Sou um terapeuta homem atendendo outros homens, entendendo exatamente suas necessidades." }
+            { q: "Aceita cartão?", a: "Sim, aceito Pix (preferencial com desconto) e Cartão de Crédito (link de pagamento seguro)." }
         ],
         plans: [
             { 
@@ -267,13 +267,14 @@ const getData = (lang) => {
                             : "BEST VALUE:\n• 3 sessions of the most complete massage.\n• Keep your pleasure routine up to date.\n• Includes Lingam.", 
               tag: isPT ? "DESEJO" : "DESIRE", icon: Zap 
             },
+            // NOVO PACOTE "GOLDEN TICKET" - BUY 4 GET 5
             { 
-              id: 'double_session', type: 'subscription', title: isPT ? "Imersão Tântrica (2h)" : "Tantric Immersion (2h)", 
-              price: 350, fullPrice: 390, savings: 40,
-              desc: isPT ? "Uma Sessão Única de 2 Horas." : "Single 2-Hour Session.",
-              details: isPT ? "O PRODUTO PREMIUM:\n• O dobro do tempo para uma conexão profunda.\n• Permite um relaxamento muito maior antes do prazer.\n• Sem pressa. Você comanda o ritmo."
-                            : "PREMIUM PRODUCT:\n• Double the time.\n• Deep connection.\n• No rush.", 
-              tag: "IMERSÃO", icon: Crown 
+              id: 'titan_passport', type: 'pack', title: isPT ? "Passaporte Titan (5x)" : "Titan Passport (5x)", 
+              price: 780, fullPrice: 975, savings: 195,
+              desc: isPT ? "Compre 4, Leve 5 Sessões." : "Buy 4, Get 5 Sessions.",
+              details: isPT ? "A OFERTA IRRECUSÁVEL:\n• Você paga 4 sessões Titan e GANHA a 5ª totalmente de graça.\n• Ideal para garantir seu bem-estar por meses.\n• O menor valor por sessão da tabela (R$ 156/sessão)."
+                            : "IRRESISTIBLE OFFER:\n• Pay for 4 Titan sessions, get the 5th FREE.\n• Lowest price per session.", 
+              tag: isPT ? "1 SESSÃO GRÁTIS" : "1 FREE SESSION", icon: Crown 
             }
         ],
         extras: [
@@ -977,7 +978,7 @@ ${T.zap.wait}
                                 <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-blue-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={32}/></div>
                                 <div>
                                     <h3 className={`font-bold text-lg leading-none mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3>
-                                    <p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{plan.type === 'pack' ? (lang === 'pt' ? "Pacote" : "Pack") : (lang === 'pt' ? "Assinatura" : "Subscription")}</p>
+                                    <p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{plan.type === 'pack' ? (lang === 'pt' ? "Pacote" : "Pack") : (lang === 'pt' ? "Passaporte" : "Passport")}</p>
                                 </div>
                             </div>
                             <div className={`mb-6 p-4 rounded-2xl border flex-1 ${isDark ? 'bg-zinc-950/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
@@ -1261,7 +1262,7 @@ ${T.zap.wait}
         </div>
       </main>
 
-      {/* FOOTER NAV */}
+      {/* FOOTER NAV - FLOATING GLASS BAR */}
       {step < 4 && (
          <div className="fixed bottom-6 left-0 w-full z-50 pointer-events-none px-4">
             <div className={`max-w-xl mx-auto p-3 rounded-[2rem] backdrop-blur-2xl shadow-2xl border pointer-events-auto transition-all duration-500 ${isDark ? 'bg-zinc-950/80 border-white/10 shadow-black/50' : 'bg-white/80 border-slate-200 shadow-slate-200/50'}`}>
