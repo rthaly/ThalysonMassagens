@@ -2,90 +2,86 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS vFINAL - PREMIUM ICONS EDITION
+ * THALYSON APP OS vFINAL - CORREÇÃO DE ÍCONES E DEPENDÊNCIAS
  * ==================================================================================
- * 1. ÍCONES: Substituídos por versões SVG profissionais e detalhadas.
- * 2. FUNCIONALIDADE: Mantida 100% (Pix 5%, Datas 30 dias, Cupons Visuais).
- * 3. DEPENDÊNCIAS: ZERO. Só copiar e colar.
+ * 1. ÍCONES: SVGs 100% nativos (funciona em qualquer React).
+ * 2. PREÇOS: Mantidos conforme solicitado (125, 155, 195).
+ * 3. FUNCIONALIDADE: Correção de referências de texto e lógica de renderização.
  */
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v64_icons',
+  STORAGE_KEY: '@thaly_app_prod_v68',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
-  SECRET_TOKEN: 'THALY_2026_SECURE',
+  SECRET_TOKEN: 'THALY_SECURE',
   START_HOUR: 9,
   END_HOUR: 20
 };
 
 // ==================================================================================
-// 1. PREMIUM ICON SYSTEM (SVG NATIVO DETALHADO)
+// 1. SISTEMA DE ÍCONES NATIVO (SVG PURO - SEM DEPENDÊNCIAS)
 // ==================================================================================
 const Icon = ({ name, size = 24, className = "" }) => {
   const icons = {
-    // UI Basics
+    // --- Serviços & Elementos ---
+    Wind: <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2" />, 
+    Flame: <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.246-5.318-1-1 4.41-4.41 6 3 6 6 0 2.21-1.79 4-4 4s-4-1.79-4-4a2 2 0 0 1 4 0Z" />, 
+    Zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />, 
+    
+    // --- Lugares ---
+    Home: <><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></>,
+    Building: <><rect width="16" height="20" x="4" y="2" rx="2" ry="2" /><path d="M9 22v-4h6v4" /><path d="M8 6h.01" /><path d="M16 6h.01" /><path d="M12 6h.01" /><path d="M12 10h.01" /><path d="M12 14h.01" /><path d="M16 10h.01" /><path d="M16 14h.01" /><path d="M8 10h.01" /><path d="M8 14h.01" /></>,
+    BedDouble: <><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" /><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4" /><path d="M12 4v6" /><path d="M2 18h20" /></>,
+    
+    // --- UI & Extras ---
+    Clock: <><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></>,
+    Heart: <path d="M19 14c1.49-1.28 3.6-2.34 4.58-2.74-1.05-5.5-7.5-5.5-8.58 0-.84 4.34-2.71 5.07-3 5.18V8.5a2.5 2.5 0 0 0-5 0v3.18c-.73-.83-3.44-3.11-3.44-5.18 0-3 3.32-3.8 6-1.63" />, 
+    Package: <><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></>,
+    Crown: <path d="m2 4 3 12h14l3-12-6 7-4-9-4 9-6-7z" />,
+    Loader2: <path d="M21 12a9 9 0 1 1-6.219-8.56" />,
+    AlertTriangle: <><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" x2="12" y1="9" y2="13" /><line x1="12" x2="12.01" y1="17" y2="17" /></>,
+    
+    // --- Pagamento ---
+    QrCode: <><rect width="5" height="5" x="3" y="3" rx="1" /><rect width="5" height="5" x="16" y="3" rx="1" /><rect width="5" height="5" x="3" y="16" rx="1" /><path d="M21 16h-3a2 2 0 0 0-2 2v3" /><path d="M21 21v.01" /><path d="M12 7v3a2 2 0 0 1-2 2H7" /><path d="M3 12h.01" /><path d="M12 3h.01" /><path d="M12 16v.01" /><path d="M16 12h1" /><path d="M21 12v.01" /><path d="M12 21v-1" /></>,
+    CreditCard: <><rect width="22" height="16" x="1" y="4" rx="2" ry="2" /><line x1="1" x2="23" y1="10" y2="10" /></>,
+    Banknote: <><rect width="20" height="12" x="2" y="6" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" /></>,
+    
+    // --- Navegação e Ações ---
     Check: <polyline points="20 6 9 17 4 12" />,
     X: <path d="M18 6 6 18M6 6l12 12" />,
     ChevronLeft: <path d="m15 18-6-6 6-6" />,
     ChevronRight: <path d="m9 18 6-6-6-6" />,
     ChevronDown: <path d="m6 9 6 6 6-6" />,
     ArrowRight: <path d="M5 12h14M12 5l7 7-7 7" />,
-    Loader2: <path d="M21 12a9 9 0 1 1-6.219-8.56" />,
-    Info: <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />,
-    Settings: <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.39a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" />,
-    Share2: <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /><line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />,
-    Download: <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" />,
-    ExternalLink: <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" x2="21" y1="14" y2="3" />,
-    Copy: <rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />,
-    Globe: <circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" />,
-    Moon: <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />,
-    Sun: <circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />,
-    
-    // Services & Nature
-    Wind: <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" /><path d="M9.6 4.6A2 2 0 1 1 11 8H2" /><path d="M12.6 19.4A2 2 0 1 0 14 16H2" />, // Relaxante
-    Flame: <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.246-5.318-1-1 4.41-4.41 6 3 6 6 0 2.21-1.79 4-4 4s-4-1.79-4-4a2 2 0 0 1 4 0Z" />, // Sensitiva
-    Zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />, // Fusion
-    Heart: <path d="M19 14c1.49-1.28 3.6-2.34 4.58-2.74-1.05-5.5-7.5-5.5-8.58 0-.84 4.34-2.71 5.07-3 5.18V8.5a2.5 2.5 0 0 0-5 0v3.18c-.73-.83-3.44-3.11-3.44-5.18 0-3 3.32-3.8 6-1.63" /><path d="M12 21.36c4.72-2.3 8-6.17 8-9.86" />, // Touch/Interactive custom heart
-    
-    // Places
-    Home: <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />,
-    Building: <rect width="16" height="20" x="4" y="2" rx="2" ry="2" /><path d="M9 22v-4h6v4" /><path d="M8 6h.01" /><path d="M16 6h.01" /><path d="M12 6h.01" /><path d="M12 10h.01" /><path d="M12 14h.01" /><path d="M16 10h.01" /><path d="M16 14h.01" /><path d="M8 10h.01" /><path d="M8 14h.01" />, // Hotel
-    BedDouble: <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" /><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4" /><path d="M12 4v6" /><path d="M2 18h20" />, // Motel
-    MapPin: <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" />,
-    
-    // Inputs & Forms
-    User: <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />,
-    Calendar: <rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" />,
-    Clock: <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />,
-    Smartphone: <rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" />,
-    Lock: <rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />,
-    Tag: <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" /><path d="M7 7h.01" />,
-    
-    // Social & Payment
-    Instagram: <rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />,
-    MessageCircle: <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />, // WhatsApp style
-    CreditCard: <rect width="22" height="16" x="1" y="4" rx="2" ry="2" /><line x1="1" x2="23" y1="10" y2="10" />,
-    QrCode: <rect width="5" height="5" x="3" y="3" rx="1" /><rect width="5" height="5" x="16" y="3" rx="1" /><rect width="5" height="5" x="3" y="16" rx="1" /><path d="M21 16h-3a2 2 0 0 0-2 2v3" /><path d="M21 21v.01" /><path d="M12 7v3a2 2 0 0 1-2 2H7" /><path d="M3 12h.01" /><path d="M12 3h.01" /><path d="M12 16v.01" /><path d="M16 12h1" /><path d="M21 12v.01" /><path d="M12 21v-1" />,
-    Banknote: <rect width="20" height="12" x="2" y="6" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" />,
-    
-    // Gamification
-    Trophy: <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />,
-    Ticket: <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" />,
-    Crown: <path d="m2 4 3 12h14l3-12-6 7-4-9-4 9-6-7z" />,
-    Gift: <rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13" /><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />,
-    Sparkles: <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z" />,
     Star: <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />,
-    Quote: <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" /><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />,
-    
-    // Misc
-    Package: <><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></>,
+    Settings: <><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.39a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></>,
+    Share2: <><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /><line x1="15.41" x2="8.59" y1="6.51" y2="10.49" /></>,
+    Globe: <><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></>,
+    Moon: <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />,
+    Sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></>,
+    ExternalLink: <><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" x2="21" y1="14" y2="3" /></>,
+    Trophy: <><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /></>,
     LayoutList: <><rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" /><path d="M14 4h7" /><path d="M14 9h7" /><path d="M14 15h7" /><path d="M14 20h7" /></>,
-    Hourglass: <><path d="M5 22h14" /><path d="M5 2h14" /><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></>,
+    Info: <><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></>,
+    Calendar: <><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></>,
+    User: <><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>,
+    MapPin: <><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></>,
+    Smartphone: <><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" /></>,
+    Lock: <><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>,
+    Tag: <><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" /><path d="M7 7h.01" /></>,
     ShieldCheck: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /><path d="m9 12 2 2 4-4" /></>,
-    AlertTriangle: <><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4" /><path d="M12 17h.01" /></>
+    Copy: <><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></>,
+    Instagram: <><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></>,
+    MessageCircle: <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />,
+    Download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></>,
+    Ticket: <><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" /></>,
+    Gift: <><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13" /><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></>,
+    Quote: <><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" /><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" /></>,
+    Sparkles: <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z" />,
+    Hourglass: <><path d="M5 22h14" /><path d="M5 2h14" /><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></>,
   };
 
   return (
@@ -98,183 +94,184 @@ const Icon = ({ name, size = 24, className = "" }) => {
 // ==================================================================================
 // 0. DADOS E TEXTOS
 // ==================================================================================
-const TEXTS = {
-  pt: {
-    loading: "Carregando...",
-    welcome: "Olá,",
-    subtitle: "Escolha a experiência ideal para o seu relaxamento.",
-    level_label: "Nível Atual",
-    missing_xp_msg: (needed, reward) => `Faltam ${needed} XP para o próximo nível (+R$${reward} de bônus)`,
-    tab_packs: "Pacotes",
-    tab_single: "Avulso",
-    details_label: "Detalhes",
-    faq_title: "Perguntas Frequentes",
-    select_time_title: "Data e Hora",
-    date_sub: "Escolha o melhor momento",
-    today: "Hoje",
-    tomorrow: "Amanhã",
-    empty_date: "Selecione uma data acima",
-    empty_slots: "Sem horários disponíveis para este dia.",
-    location_title: "Local do Atendimento",
-    motel_note: "Em motéis, o valor da suíte é pago diretamente ao estabelecimento pelo cliente. Chegue 15min antes.",
-    input_name: "Seu Nome",
-    input_addr: "Endereço",
-    input_num: "Número",
-    input_bairro: "Bairro",
-    input_city: "Cidade",
-    input_comp: "Complemento",
-    input_hotel: "Nome do Hotel",
-    input_room: "Número do Quarto",
-    extras_title: "Extras para sua sessão:",
-    total_label: "Valor Total",
-    uber_warning: "+ Taxa de Deslocamento (Uber)",
-    coupon_section_title: "Seus Cupons Disponíveis",
-    no_coupons: "Você não possui cupons no momento.",
-    pay_title: "Forma de Pagamento",
-    pay_pix: "Pix (5% de Desconto)",
-    pay_card: "Cartão de Crédito",
-    pay_cash: "Dinheiro / Espécie",
-    terms_title: "Termos e Condições",
-    terms_link: "Ler termos completos",
-    agree_terms: "Li e concordo com os termos de segurança e higiene.",
-    terms_body: [
-      "1. Higiene: Banho prévio é obrigatório.",
-      "2. Respeito: Qualquer conduta inadequada encerrará a sessão imediatamente.",
-      "3. Pagamento: Deve ser realizado antes ou logo após o serviço.",
-      "4. Cancelamento: Avisar com 2 horas de antecedência."
-    ],
-    terms_btn: "Entendi e Concordo",
-    success_title: "Agendamento Confirmado!",
-    success_sub: "Envie o comprovante no WhatsApp para finalizar sua reserva.",
-    whatsapp_btn: "Finalizar no WhatsApp",
-    back_home: "Voltar ao Início",
-    book_btn: "Agendar",
-    next_btn: "Continuar",
-    install_app: "Instalar App",
-    install_desc: "Tenha acesso rápido e fácil.",
-    popup_level_title: "Nível Subiu!",
-    popup_level_msg: "Parabéns! Você alcançou um novo nível de fidelidade e ganhou um desconto exclusivo.",
-    popup_btn_coupon: "Resgatar Recompensa",
-    popup_welcome_title: "Bem-vindo!",
-    popup_welcome_msg: "Como é sua primeira vez, preparamos um presente especial para você.",
-    toast_select_item: "Selecione um serviço para continuar",
-    toast_select_date: "Escolha dia e horário",
-    toast_fill_name: "Preencha seu nome corretamente",
-    toast_fill_addr: "Preencha o endereço completo",
-    toast_fill_hotel: "Preencha os dados do hotel",
-    toast_select_pay: "Selecione a forma de pagamento",
-    toast_accept_terms: "Você precisa aceitar os termos",
-    toast_coupon_success: "Cupom aplicado com sucesso!",
-    zap: {
-      browser_warn: "Use Chrome/Safari para melhor experiência",
-      house: "Atendimento Residencial",
-      motel: "Atendimento em Motel",
-      hotel: "Atendimento em Hotel",
-      intro: "Olá Thalyson, gostaria de confirmar meu agendamento:",
-      order_title: "🛎️ *NOVA RESERVA*",
-      client: "👤 *Cliente:*",
-      service: "💆‍♂️ *Serviço:*",
-      date: "📅 *Data:*",
-      extra_title: "➕ *Adicionais:*",
-      location: "📍 *Localização:*",
-      value: "💲 *Valor Final:*",
-      payment: "💳 *Pagamento:*",
-      uber_label: "🚗 *Deslocamento:*",
-      uber_text: "A calcular (Uber)",
-      xp_status: "📈 *Status Fidelidade:*",
-      xp_gain: "Ganho:",
-      xp_level: "Nível:",
-      wait: "Aguardo a confirmação. Obrigado!"
-    }
-  },
-  en: {
-    loading: "Loading...",
-    welcome: "Hello,",
-    subtitle: "Choose the ideal experience for your relaxation.",
-    level_label: "Current Level",
-    missing_xp_msg: (needed, reward) => `${needed} XP needed for next level (+$${reward} bonus)`,
-    tab_packs: "Packages",
-    tab_single: "Single",
-    details_label: "Details",
-    faq_title: "FAQ",
-    select_time_title: "Date & Time",
-    date_sub: "Choose the best moment",
-    today: "Today",
-    tomorrow: "Tomorrow",
-    empty_date: "Select a date above",
-    empty_slots: "No slots available for this day.",
-    location_title: "Service Location",
-    motel_note: "In motels, the suite fee is paid directly to the establishment by the client. Please arrive 15min early.",
-    input_name: "Your Name",
-    input_addr: "Address",
-    input_num: "Number",
-    input_bairro: "Neighborhood",
-    input_city: "City",
-    input_comp: "Unit/Apt",
-    input_hotel: "Hotel Name",
-    input_room: "Room Number",
-    extras_title: "Extras for your session:",
-    total_label: "Total Value",
-    uber_warning: "+ Transport Fee (Uber)",
-    coupon_section_title: "Your Coupons",
-    no_coupons: "You have no coupons yet.",
-    pay_title: "Payment Method",
-    pay_pix: "Pix (5% OFF)",
-    pay_card: "Credit Card",
-    pay_cash: "Cash",
-    terms_title: "Terms & Conditions",
-    terms_link: "Read full terms",
-    agree_terms: "I read and agree to safety and hygiene terms.",
-    terms_body: [
-      "1. Hygiene: Prior shower is mandatory.",
-      "2. Respect: Any inappropriate conduct will end the session immediately.",
-      "3. Payment: Must be done before or right after service.",
-      "4. Cancellation: Notify 2 hours in advance."
-    ],
-    terms_btn: "I Understand & Agree",
-    success_title: "Booking Confirmed!",
-    success_sub: "Send the receipt on WhatsApp to finalize your reservation.",
-    whatsapp_btn: "Finalize on WhatsApp",
-    back_home: "Back to Home",
-    book_btn: "Book Now",
-    next_btn: "Continue",
-    install_app: "Install App",
-    install_desc: "Quick and easy access.",
-    popup_level_title: "Level Up!",
-    popup_level_msg: "Congrats! You reached a new loyalty level and earned an exclusive discount.",
-    popup_btn_coupon: "Redeem Reward",
-    popup_welcome_title: "Welcome!",
-    popup_welcome_msg: "Since it's your first time, we prepared a special gift for you.",
-    toast_select_item: "Select a service to continue",
-    toast_select_date: "Choose day and time",
-    toast_fill_name: "Fill your name correctly",
-    toast_fill_addr: "Fill full address",
-    toast_fill_hotel: "Fill hotel details",
-    toast_select_pay: "Select payment method",
-    toast_accept_terms: "You must accept the terms",
-    toast_coupon_success: "Coupon applied successfully!",
-    zap: {
-      browser_warn: "Use Chrome/Safari for best experience",
-      house: "Residential Service",
-      motel: "Motel Service",
-      hotel: "Hotel Service",
-      intro: "Hello Thalyson, I would like to confirm my booking:",
-      order_title: "🛎️ *NEW BOOKING*",
-      client: "👤 *Client:*",
-      service: "💆‍♂️ *Service:*",
-      date: "📅 *Date:*",
-      extra_title: "➕ *Extras:*",
-      location: "📍 *Location:*",
-      value: "💲 *Final Value:*",
-      payment: "💳 *Payment:*",
-      uber_label: "🚗 *Transport:*",
-      uber_text: "To be calculated (Uber)",
-      xp_status: "📈 *Loyalty Status:*",
-      xp_gain: "Gain:",
-      xp_level: "Level:",
-      wait: "Waiting for confirmation. Thanks!"
-    }
-  }
+const getData = (lang) => {
+    const isPT = lang === 'pt';
+    const currency = isPT ? 'R$' : '$';
+    
+    // DEFINIÇÃO DE PREÇOS CORRIGIDA (125, 155, 195)
+    const p = {
+        relax: isPT ? 125 : 25,
+        sens: isPT ? 155 : 30,
+        titan: isPT ? 195 : 40,
+        packRelax: { v: isPT ? 397 : 80, full: isPT ? 500 : 100, save: isPT ? 103 : 20 },
+        packTri: { v: isPT ? 487 : 95, full: isPT ? 585 : 120, save: isPT ? 98 : 25 },
+        packPass: { v: isPT ? 780 : 150, full: isPT ? 975 : 200, save: isPT ? 195 : 50 }
+    };
+
+    return {
+        levels: [
+            { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor" },
+            { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Amigo" : "Bronze" },
+            { level: 3, xpNeeded: 350, reward: 30, title: isPT ? "Próximo" : "Silver" },
+            { level: 4, xpNeeded: 800, reward: 50, title: isPT ? "Íntimo" : "Gold" }
+        ],
+        services: [
+            { 
+              id: 'relaxante', min: 60, price: p.relax, icon: 'Wind', tag: isPT ? "100% FÍSICO" : "PHYSICAL",
+              title: isPT ? "Massagem Clássica" : "Classic Relax",
+              desc: isPT ? "Para tirar a dor. Foco exclusivo muscular. Sem toque íntimo." : "For pain. Muscle focus only. No intimate touch.",
+              details: isPT ? `O ALÍVIO QUE VOCÊ PRECISA:\n• COMO FUNCIONA: Iniciamos com manobras firmes e profundas.\n• FOCO: Tirar "nós", tensão e cansaço físico.\n• TRAJE: O terapeuta usa roupa padrão.` : `BODY RESET:\n• HOW IT WORKS: Firm maneuvers.\n• FOCUS: Remove knots and fatigue.`
+            },
+            { 
+              id: 'sensitiva', min: 60, price: p.sens, icon: 'Flame', tag: isPT ? "SENSORIAL + LINGAM" : "SENSORY",
+              title: isPT ? "Tântrica Sensorial" : "Tantric Sensory",
+              desc: isPT ? "Relaxamento + Toque Sutil + Finalização. Atendo de cueca." : "Relax + Subtle Touch + Finish. Underwear service.",
+              details: isPT ? `A EVOLUÇÃO DO TOQUE:\n• O INÍCIO: Relaxante muscular.\n• A CONEXÃO: Toque sutil em todo o corpo.\n• TRAJE: **Atendo de cueca**.\n• O ÁPICE: Inclui Massagem Lingam.` : `TOUCH EVOLUTION:\n• START: Muscle relaxation.\n• ATTIRE: **Underwear**.\n• PEAK: Includes Lingam Massage.`
+            },
+            { 
+              id: 'mista', min: 60, price: p.titan, icon: 'Zap', tag: isPT ? "FUSÃO COMPLETA" : "FULL FUSION",
+              title: isPT ? "Experiência Fusion" : "Fusion Experience",
+              desc: isPT ? "Tudo em um: Muscular + Corpo a Corpo + Lingam Intenso." : "All in one: Muscle + Body-to-Body + Intense Lingam.",
+              details: isPT ? `PARA QUEM QUER TUDO:\n• A JORNADA: Muscular -> Corpo a Corpo -> Êxtase.\n• LINGAM PREMIUM: Mais tempo e técnica.\n• TRAJE: Atendo de cueca.` : `FOR WHO WANTS IT ALL:\n• JOURNEY: Muscle -> Body-to-Body -> Ecstasy.\n• ATTIRE: Underwear.`
+            }
+        ],
+        extras: [
+            { id: 'more_time', price: isPT ? 55 : 15, icon: 'Clock', label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
+            { id: 'touch', price: isPT ? 55 : 15, icon: 'Heart', label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você toca também." : "You touch too." },
+            { id: 'aroma', price: isPT ? 5 : 5, icon: 'Wind', label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Imersão total." : "Total immersion." }
+        ],
+        faq: [
+            { q: "Qual a diferença real entre as sessões?", a: "Clássica (R$125) = Só tira dor. Tântrica (R$155) = Toque leve + Lingam. Fusion (R$195) = Corpo a Corpo + Lingam Intenso." },
+            { q: "Você tem local próprio?", a: "Não. Atendimento 100% Delivery (Vou até você em hotéis, motéis ou residência)." },
+            { q: "Aceita cartão?", a: "Sim, Pix (com desconto) e Cartão de Crédito." }
+        ],
+        plans: [
+            { 
+              id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Anti-Stress" : "Anti-Stress Cycle", 
+              price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save,
+              desc: isPT ? "4 Sessões de Massagem Clássica." : "4 Classic Massage Sessions.",
+              details: isPT ? "MANUTENÇÃO CONTRA DOR:\n• 4 sessões focadas 100% em tirar tensão muscular." : "PAIN MAINTENANCE:\n• 4 sessions focused on muscle tension.", 
+              tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: 'Package' 
+            },
+            { 
+              id: 'pack_mista', type: 'pack', title: isPT ? "Trilogia do Êxtase" : "Ecstasy Trilogy", 
+              price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save,
+              desc: isPT ? "3 Sessões da Experiência Fusion." : "3 Fusion Sessions.",
+              details: isPT ? "INTENSIDADE GARANTIDA:\n• 3 encontros da massagem mais completa (Fusion)." : "GUARANTEED INTENSITY:\n• 3 meetings of the fullest massage.", 
+              tag: isPT ? "MAIS VENDIDO" : "BEST SELLER", icon: 'Zap' 
+            },
+            { 
+              id: 'titan_passport', type: 'pack', title: isPT ? "Passaporte Titan (5x)" : "Titan Passport (5x)", 
+              price: p.packPass.v, fullPrice: p.packPass.full, savings: p.packPass.save,
+              desc: isPT ? "Compre 4, Leve 5 (Fusion)." : "Buy 4, Get 5 (Fusion).",
+              details: isPT ? "A OFERTA IRRECUSÁVEL:\n• Você garante 5 sessões Fusion completas. Paga 4 e ganha 1." : "IRRESISTIBLE OFFER:\n• 5 full Fusion sessions. Pay 4, get 1 free.", 
+              tag: isPT ? "1 SESSÃO GRÁTIS" : "1 FREE SESSION", icon: 'Crown' 
+            }
+        ],
+        reviews: [
+            { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito.", s: 5 },
+            { n: "Tiago", loc: "SP - Bela Vista", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", s: 5 },
+            { n: "Alan", loc: "SP - Bela Vista", t: "Gostei bastante, saí mais leve. Da pra ver que ele manda bem no que faz.", s: 5 },
+            { n: "Felipe", loc: "Londrina", t: "Fiquei na dúvida por ser no sofá, mas foi surpreendentemente confortável.", s: 5 },
+            { n: "Ricardo M.", loc: "Rio Preto", t: "Mão firme. Consegui relaxar de verdade.", s: 5 },
+            { n: "André L.", loc: "SP - Bela Vista", t: "O toque dele é diferente. Me senti muito à vontade.", s: 5 },
+            { n: "Gustavo", loc: "Santa Fé do Sul", t: "Gostei muito da energia, pessoa do bem. Recomendo.", s: 4 },
+            { n: "Bruno", loc: "Jales", t: "Veio até meu hotel, foi super discreto e educado. Salvou minha semana.", s: 5 },
+            { n: "Pedro", loc: "Rio Preto", t: "A energia do corpo a corpo é intensa. Me senti renovado.", s: 5 },
+            { n: "Renato", loc: "SP - Centro", t: "Muito respeitoso e profissional. A sensitiva é uma experiência única.", s: 5 },
+            { n: "Vitor", loc: "Jales", t: "Gostei, passou rápido demais. Na próxima pego mais tempo.", s: 4 },
+            { n: "Eduardo", loc: "Londrina", t: "Ele se adapta bem. Fizemos na cama e foi super tranquilo.", s: 5 },
+            { n: "Breno", loc: "SP - Bela Vista", t: "Relaxei e me diverti. Ótimo pra esquecer os problemas de SP.", s: 5 },
+            { n: "Roberto", loc: "SP - Augusta", t: "Pedi com interação. Foi uma troca muito gostosa.", s: 5 },
+            { n: "M. (Sigilo)", loc: "SP - Jardins", t: "Finalização intensa, perdi as forças. O cara é bom.", s: 5 }
+        ],
+        reviews_title: isPT ? "+50 Avaliações 5 Estrelas" : "+50 5-Star Reviews",
+        currency: currency,
+        text: {
+            welcome: isPT ? "Olá," : "Hello,",
+            subtitle: isPT ? "Escolha a experiência ideal para o seu relaxamento." : "Choose the ideal experience for your relaxation.",
+            loading: isPT ? "Carregando..." : "Loading...",
+            level_label: isPT ? "Nível de Fidelidade" : "Loyalty Level",
+            missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP para o próximo nível (+R$${reward} de bônus)` : `${needed} XP needed for next level (+$${reward} bonus)`,
+            tab_packs: isPT ? "Pacotes" : "Packages",
+            tab_single: isPT ? "Avulso" : "Single",
+            details_label: isPT ? "Detalhes" : "Details",
+            faq_title: "Perguntas Frequentes",
+            select_time_title: "Data e Hora",
+            date_sub: "Escolha o melhor momento",
+            today: isPT ? "Hoje" : "Today",
+            tomorrow: isPT ? "Amanhã" : "Tomorrow",
+            empty_date: isPT ? "Selecione uma data acima" : "Select a date above",
+            empty_slots: isPT ? "Sem horários disponíveis." : "No slots available.",
+            location_title: isPT ? "Local do Atendimento" : "Service Location",
+            motel_note: isPT ? "Em motéis, o valor da suíte é pago diretamente ao estabelecimento pelo cliente." : "In motels, the suite fee is paid directly to the establishment.",
+            input_name: isPT ? "Seu Nome" : "Your Name",
+            input_addr: isPT ? "Endereço" : "Address",
+            input_num: isPT ? "Número" : "Number",
+            input_bairro: isPT ? "Bairro" : "Neighborhood",
+            input_city: isPT ? "Cidade" : "City",
+            input_comp: isPT ? "Complemento" : "Unit/Apt",
+            input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
+            input_room: isPT ? "Número do Quarto" : "Room Number",
+            extras_title: isPT ? "Extras para sua sessão:" : "Extras for your session:",
+            total_label: "Valor Total",
+            uber_warning: isPT ? "+ Taxa de Deslocamento (Uber)" : "+ Transport Fee (Uber)",
+            coupon_section_title: isPT ? "Seus Cupons Disponíveis" : "Your Coupons",
+            no_coupons: isPT ? "Você não possui cupons no momento." : "No coupons available.",
+            coupon_btn: isPT ? "Aplicar" : "Apply",
+            pay_title: isPT ? "Forma de Pagamento" : "Payment Method",
+            pay_pix: isPT ? "Pix (5% de Desconto)" : "Pix (5% OFF)",
+            pay_card: isPT ? "Cartão de Crédito" : "Credit Card",
+            pay_cash: isPT ? "Dinheiro / Espécie" : "Cash",
+            terms_title: isPT ? "Termos e Condições" : "Terms & Conditions",
+            terms_link: isPT ? "Ler termos completos" : "Read full terms",
+            agree_terms: isPT ? "Li e concordo com os termos." : "I read and agree to terms.",
+            terms_body: isPT ? ["1. Higiene: Banho prévio obrigatório.", "2. Respeito: Conduta inadequada encerra a sessão.", "3. Pagamento: Antes ou logo após o serviço.", "4. Cancelamento: 2h de antecedência."] : ["1. Hygiene mandatory.", "2. Respect required.", "3. Payment upfront.", "4. Cancellation 2h notice."],
+            terms_btn: isPT ? "Entendi e Concordo" : "I Understand & Agree",
+            success_title: isPT ? "Agendamento Confirmado!" : "Booking Confirmed!",
+            success_sub: isPT ? "Envie o comprovante no WhatsApp para finalizar." : "Send receipt on WhatsApp to finalize.",
+            whatsapp_btn: isPT ? "Finalizar no WhatsApp" : "Finalize on WhatsApp",
+            back_home: isPT ? "Voltar ao Início" : "Back to Home",
+            book_btn: isPT ? "Agendar" : "Book Now",
+            next_btn: isPT ? "Continuar" : "Continue",
+            install_app: isPT ? "Instalar App" : "Install App",
+            install_desc: isPT ? "Tenha acesso rápido e fácil." : "Quick and easy access.",
+            popup_level_title: isPT ? "Nível Subiu!" : "Level Up!",
+            popup_level_msg: isPT ? "Parabéns! Você alcançou um novo nível." : "Congrats! You reached a new level.",
+            popup_btn_coupon: isPT ? "Resgatar Recompensa" : "Redeem Reward",
+            popup_welcome_title: isPT ? "Bem-vindo!" : "Welcome!",
+            popup_welcome_msg: isPT ? "Preparamos um presente especial para você." : "We prepared a special gift for you.",
+            toast_select_item: isPT ? "Selecione um serviço" : "Select a service",
+            toast_select_date: isPT ? "Escolha dia e horário" : "Choose day and time",
+            toast_fill_name: isPT ? "Preencha seu nome" : "Fill your name",
+            toast_fill_addr: isPT ? "Preencha o endereço" : "Fill address",
+            toast_fill_hotel: isPT ? "Preencha dados do hotel" : "Fill hotel details",
+            toast_select_pay: isPT ? "Selecione pagamento" : "Select payment",
+            toast_accept_terms: isPT ? "Aceite os termos" : "Accept terms",
+            toast_coupon_success: isPT ? "Cupom aplicado!" : "Coupon applied!",
+            zap: {
+                browser_warn: isPT ? "Use Chrome/Safari" : "Use Chrome/Safari",
+                house: isPT ? "Atendimento Residencial" : "Residential Service",
+                motel: isPT ? "Atendimento em Motel" : "Motel Service",
+                hotel: isPT ? "Atendimento em Hotel" : "Hotel Service",
+                intro: isPT ? "Olá Thalyson, gostaria de confirmar meu agendamento:" : "Hello Thalyson, confirming my booking:",
+                order_title: "🛎️ *NOVA RESERVA*",
+                client: "👤 *Cliente:*",
+                service: "💆‍♂️ *Serviço:*",
+                date: "📅 *Data:*",
+                extra_title: "➕ *Adicionais:*",
+                location: "📍 *Localização:*",
+                value: "💲 *Valor Final:*",
+                payment: "💳 *Pagamento:*",
+                uber_label: "🚗 *Deslocamento:*",
+                uber_text: "A calcular (Uber)",
+                xp_status: "📈 *Status Fidelidade:*",
+                xp_gain: "Ganho:",
+                xp_level: "Nível:",
+                wait: "Aguardo a confirmação. Obrigado!"
+            }
+        }
+    };
 };
 
 // ==================================================================================
@@ -441,106 +438,6 @@ const FAQItem = ({ q, a, isDark }) => {
 };
 
 // ==================================================================================
-// 3. DADOS
-// ==================================================================================
-
-const getData = (lang) => {
-    const isPT = lang === 'pt';
-    const currency = isPT ? 'R$' : '$';
-    
-    // DEFINIÇÃO DE PREÇOS (BRL vs USD)
-    const p = {
-        relax: isPT ? 125 : 35,
-        sens: isPT ? 155 : 45,
-        titan: isPT ? 195 : 60,
-        packRelax: { v: isPT ? 397 : 120, full: isPT ? 500 : 140, save: isPT ? 103 : 20 },
-        packTri: { v: isPT ? 487 : 150, full: isPT ? 585 : 180, save: isPT ? 98 : 30 },
-        packPass: { v: isPT ? 780 : 240, full: isPT ? 975 : 300, save: isPT ? 195 : 60 }
-    };
-
-    return {
-        levels: [
-            { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor" },
-            { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Amigo" : "Bronze" },
-            { level: 3, xpNeeded: 350, reward: 30, title: isPT ? "Próximo" : "Silver" },
-            { level: 4, xpNeeded: 800, reward: 50, title: isPT ? "Íntimo" : "Gold" }
-        ],
-        services: [
-            { 
-              id: 'relaxante', min: 60, price: p.relax, icon: 'Wind', tag: isPT ? "100% FÍSICO" : "PHYSICAL",
-              title: isPT ? "Massagem Clássica" : "Classic Relax",
-              desc: isPT ? "Para tirar a dor. Foco exclusivo muscular. Sem toque íntimo." : "For pain. Muscle focus only. No intimate touch.",
-              details: isPT ? `O ALÍVIO QUE VOCÊ PRECISA:\n• COMO FUNCIONA: Iniciamos com manobras firmes e profundas.\n• FOCO: Tirar "nós", tensão e cansaço físico.\n• TRAJE: O terapeuta usa roupa padrão.` : `BODY RESET:\n• HOW IT WORKS: Firm maneuvers.\n• FOCUS: Remove knots and fatigue.`
-            },
-            { 
-              id: 'sensitiva', min: 60, price: p.sens, icon: 'Flame', tag: isPT ? "SENSORIAL + LINGAM" : "SENSORY",
-              title: isPT ? "Tântrica Sensorial" : "Tantric Sensory",
-              desc: isPT ? "Relaxamento + Toque Sutil + Finalização. Atendo de cueca." : "Relax + Subtle Touch + Finish. Underwear service.",
-              details: isPT ? `A EVOLUÇÃO DO TOQUE:\n• O INÍCIO: Relaxante muscular.\n• A CONEXÃO: Toque sutil em todo o corpo.\n• TRAJE: **Atendo de cueca**.\n• O ÁPICE: Inclui Massagem Lingam.` : `TOUCH EVOLUTION:\n• START: Muscle relaxation.\n• ATTIRE: **Underwear**.\n• PEAK: Includes Lingam Massage.`
-            },
-            { 
-              id: 'mista', min: 60, price: p.titan, icon: 'Zap', tag: isPT ? "FUSÃO COMPLETA" : "FULL FUSION",
-              title: isPT ? "Experiência Fusion" : "Fusion Experience",
-              desc: isPT ? "Tudo em um: Muscular + Corpo a Corpo + Lingam Intenso." : "All in one: Muscle + Body-to-Body + Intense Lingam.",
-              details: isPT ? `PARA QUEM QUER TUDO:\n• A JORNADA: Muscular -> Corpo a Corpo -> Êxtase.\n• LINGAM PREMIUM: Mais tempo e técnica.\n• TRAJE: Atendo de cueca.` : `FOR WHO WANTS IT ALL:\n• JOURNEY: Muscle -> Body-to-Body -> Ecstasy.\n• ATTIRE: Underwear.`
-            }
-        ],
-        extras: [
-            { id: 'more_time', price: isPT ? 55 : 15, icon: 'Clock', label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
-            { id: 'touch', price: isPT ? 55 : 15, icon: 'Heart', label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você toca também." : "You touch too." },
-            { id: 'aroma', price: isPT ? 5 : 5, icon: 'Wind', label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Imersão total." : "Total immersion." }
-        ],
-        faq: [
-            { q: "Qual a diferença real entre as sessões?", a: "Clássica (R$125) = Só tira dor. Tântrica (R$155) = Toque leve + Lingam. Fusion (R$195) = Corpo a Corpo + Lingam Intenso." },
-            { q: "Você tem local próprio?", a: "Não. Atendimento 100% Delivery (Vou até você em hotéis, motéis ou residência)." },
-            { q: "Aceita cartão?", a: "Sim, Pix (com desconto) e Cartão de Crédito." }
-        ],
-        plans: [
-            { 
-              id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Anti-Stress" : "Anti-Stress Cycle", 
-              price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save,
-              desc: isPT ? "4 Sessões de Massagem Clássica." : "4 Classic Massage Sessions.",
-              details: isPT ? "MANUTENÇÃO CONTRA DOR:\n• 4 sessões focadas 100% em tirar tensão muscular." : "PAIN MAINTENANCE:\n• 4 sessions focused on muscle tension.", 
-              tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: 'Package' 
-            },
-            { 
-              id: 'pack_mista', type: 'pack', title: isPT ? "Trilogia do Êxtase" : "Ecstasy Trilogy", 
-              price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save,
-              desc: isPT ? "3 Sessões da Experiência Fusion." : "3 Fusion Sessions.",
-              details: isPT ? "INTENSIDADE GARANTIDA:\n• 3 encontros da massagem mais completa (Fusion)." : "GUARANTEED INTENSITY:\n• 3 meetings of the fullest massage.", 
-              tag: isPT ? "MAIS VENDIDO" : "BEST SELLER", icon: 'Zap' 
-            },
-            { 
-              id: 'titan_passport', type: 'pack', title: isPT ? "Passaporte Titan (5x)" : "Titan Passport (5x)", 
-              price: p.packPass.v, fullPrice: p.packPass.full, savings: p.packPass.save,
-              desc: isPT ? "Compre 4, Leve 5 (Fusion)." : "Buy 4, Get 5 (Fusion).",
-              details: isPT ? "A OFERTA IRRECUSÁVEL:\n• Você garante 5 sessões Fusion completas. Paga 4 e ganha 1." : "IRRESISTIBLE OFFER:\n• 5 full Fusion sessions. Pay 4, get 1 free.", 
-              tag: isPT ? "1 SESSÃO GRÁTIS" : "1 FREE SESSION", icon: 'Crown' 
-            }
-        ],
-        reviews: [
-            { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito.", s: 5 },
-            { n: "Tiago", loc: "SP - Bela Vista", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", s: 5 },
-            { n: "Alan", loc: "SP - Bela Vista", t: "Gostei bastante, saí mais leve. Da pra ver que ele manda bem no que faz.", s: 5 },
-            { n: "Felipe", loc: "Londrina", t: "Fiquei na dúvida por ser no sofá, mas foi surpreendentemente confortável.", s: 5 },
-            { n: "Ricardo M.", loc: "Rio Preto", t: "Mão firme. Consegui relaxar de verdade.", s: 5 },
-            { n: "André L.", loc: "SP - Bela Vista", t: "O toque dele é diferente. Me senti muito à vontade.", s: 5 },
-            { n: "Gustavo", loc: "Santa Fé do Sul", t: "Gostei muito da energia, pessoa do bem. Recomendo.", s: 4 },
-            { n: "Bruno", loc: "Jales", t: "Veio até meu hotel, foi super discreto e educado. Salvou minha semana.", s: 5 },
-            { n: "Pedro", loc: "Rio Preto", t: "A energia do corpo a corpo é intensa. Me senti renovado.", s: 5 },
-            { n: "Renato", loc: "SP - Centro", t: "Muito respeitoso e profissional. A sensitiva é uma experiência única.", s: 5 },
-            { n: "Vitor", loc: "Jales", t: "Gostei, passou rápido demais. Na próxima pego mais tempo.", s: 4 },
-            { n: "Eduardo", loc: "Londrina", t: "Ele se adapta bem. Fizemos na cama e foi super tranquilo.", s: 5 },
-            { n: "Breno", loc: "SP - Bela Vista", t: "Relaxei e me diverti. Ótimo pra esquecer os problemas de SP.", s: 5 },
-            { n: "Roberto", loc: "SP - Augusta", t: "Pedi com interação. Foi uma troca muito gostosa.", s: 5 },
-            { n: "M. (Sigilo)", loc: "SP - Jardins", t: "Finalização intensa, perdi as forças. O cara é bom.", s: 5 }
-        ],
-        reviews_title: isPT ? "+50 Avaliações 5 Estrelas" : "+50 5-Star Reviews",
-        currency: currency
-    };
-};
-
-// ==================================================================================
 // 4. APLICAÇÃO PRINCIPAL
 // ==================================================================================
 
@@ -562,8 +459,9 @@ export default function App() {
   const scrollRef = useRef(null);
   const dateScrollRef = useRef(null); 
   
+  // FIX: Obtém os dados e define T corretamente
   const DATA = useMemo(() => getData(lang), [lang]);
-  const T = TEXTS[lang];
+  const T = DATA.text;
 
   const [user, setUser] = useState({ 
       name: '', xp: 0, coupons: [], usedCoupons: [], 
@@ -578,11 +476,7 @@ export default function App() {
     payment: '', appliedCoupon: null, termsAccepted: false
   });
 
-  const addToast = (msg, type = "success") => {
-      const id = Date.now();
-      setToasts(prev => [...prev, { id, msg, type }]);
-      setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3000);
-  };
+  // --- EFEITOS & LÓGICA ---
 
   useEffect(() => {
     setIsClient(true);
@@ -633,6 +527,10 @@ export default function App() {
      }
   }, [loading, isClient, user.hasSeenWelcome, dataLoaded]);
 
+  useEffect(() => { 
+      if(scrollRef.current) scrollRef.current.scrollTo(0,0); 
+  }, [step]);
+
   const handleShare = () => {
       if (navigator.share) {
           navigator.share({ title: 'Thalyson Massagens', url: window.location.href });
@@ -654,6 +552,12 @@ export default function App() {
       addToast(item.title, "success");
   };
 
+  const addToast = (msg, type = "success") => {
+      const id = Date.now();
+      setToasts(prev => [...prev, { id, msg, type }]);
+      setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3000);
+  };
+
   const daysArray = useMemo(() => {
       const days = [];
       const today = new Date();
@@ -671,12 +575,15 @@ export default function App() {
       for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
         slots.push(`${i < 10 ? '0' : ''}${i}:00`);
       }
+      
       const now = new Date();
       const selectedDate = new Date(booking.date);
       if (isNaN(selectedDate.getTime())) return [];
+      
       const isToday = selectedDate.getDate() === now.getDate() && 
                       selectedDate.getMonth() === now.getMonth() && 
                       selectedDate.getFullYear() === now.getFullYear();
+      
       if (isToday) {
           const currentHour = now.getHours();
           return slots.filter(time => {
@@ -806,34 +713,90 @@ ${T.zap.wait}
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`;
   };
 
-  const handleNextStep = () => {
-      // Validate
+  const validateStep = () => {
       if (step === 0) {
-          if(!booking.item) { addToast(T.toast_select_item, "error"); return; }
+          if(!booking.item) { addToast(T.toast_select_item, "error"); return false; }
+          return true;
       }
       if (step === 1) {
-          if (!booking.date || !booking.time) { addToast(T.toast_select_date, "error"); return; }
+          if (!booking.date || !booking.time) { addToast(T.toast_select_date, "error"); return false; }
+          return true;
       }
       if (step === 2) {
-          if (!user.name || user.name.trim().length < 3) { addToast(T.toast_fill_name, "error"); return; }
+          if (!user.name || user.name.trim().length < 3) { addToast(T.toast_fill_name, "error"); return false; }
           if (booking.locationType === 'home') {
-              if(!booking.address.street || !booking.address.number || !booking.address.district || !booking.address.city) { addToast(T.toast_fill_addr, "error"); return; }
+              if(!booking.address.street || !booking.address.number || !booking.address.district || !booking.address.city) { addToast(T.toast_fill_addr, "error"); return false; }
           }
           if (booking.locationType === 'hotel') {
-              if(!booking.address.placeName || !booking.address.city) { addToast(T.toast_fill_hotel, "error"); return; }
+              if(!booking.address.placeName || !booking.address.city) { addToast(T.toast_fill_hotel, "error"); return false; }
           }
+          return true;
       }
       if (step === 3) {
-          if (!booking.payment) { addToast(T.toast_select_pay, "error"); return; }
-          if (!booking.termsAccepted) { addToast(T.toast_accept_terms, "error"); return; }
-          finishBooking();
-          return;
+          if (!booking.payment) { addToast(T.toast_select_pay, "error"); return false; }
+          if (!booking.termsAccepted) { addToast(T.toast_accept_terms, "error"); return false; }
+          return true;
       }
-      
-      // If validation passes
-      if (step === 2) { setUser(prev => ({...prev, savedAddress: booking.address})); }
-      setStep(s => s + 1);
+      return true;
   };
+
+  const handleNextStep = () => {
+      if(validateStep()) {
+          if (step === 2) { setUser(prev => ({...prev, savedAddress: booking.address})); }
+          if (step === 3) { finishBooking(); } else { setStep(s => s + 1); }
+      }
+  };
+
+  const finishBooking = () => {
+    let updatedCoupons = Array.isArray(user.coupons) ? [...user.coupons] : [];
+    let updatedHistory = Array.isArray(user.usedCoupons) ? [...user.usedCoupons] : [];
+    if (booking.appliedCoupon) { 
+        if(!updatedHistory.includes(booking.appliedCoupon.code)) {
+            updatedHistory.push(booking.appliedCoupon.code);
+        }
+        updatedCoupons = updatedCoupons.filter(c => c.code !== booking.appliedCoupon.code); 
+    }
+    const newXP = Math.floor(user.xp + estimatedXP);
+    let leveledUp = false;
+    DATA.levels.forEach(lvl => {
+        if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
+            leveledUp = true;
+            updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, title: `🏆 ${lvl.title}`, code: `LVLUP${lvl.level}` });
+        }
+    });
+    if (newXP >= 800) {
+        const oldCycle = Math.floor((user.xp - 800) / 500);
+        const newCycle = Math.floor((newXP - 800) / 500);
+        if (newCycle > oldCycle && newCycle >= 0) {
+              leveledUp = true;
+              updatedCoupons.push({ id: `PRESTIGE_${Date.now()}`, val: 50, title: `🏆 Elite`, code: `VIPMASTER` });
+        }
+    }
+    if (leveledUp) setLevelUpPopup(true);
+    setUser(prev => ({ 
+        ...prev, 
+        xp: newXP, 
+        coupons: updatedCoupons,
+        usedCoupons: updatedHistory,
+        ordersCount: prev.ordersCount + 1 
+    }));
+    if (typeof window !== 'undefined') { window.open(generateWhatsAppLink(), '_blank'); }
+    setBooking(b => ({...b, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false})); 
+    localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({ user: {...user, xp: newXP}, bookingDraft: null, step: 0 }));
+    setStep(4);
+  };
+
+  const getCurrentLevelProgress = () => {
+      if (user.xp >= 800) { return ((user.xp - 800) % 500 / 500) * 100; }
+      const currentLevelIndex = DATA.levels.slice().reverse().findIndex(l => user.xp >= l.xpNeeded);
+      const realIndex = currentLevelIndex === -1 ? 0 : DATA.levels.length - 1 - currentLevelIndex;
+      const currentLevel = DATA.levels[realIndex];
+      const nextLevel = DATA.levels[realIndex + 1];
+      if (!nextLevel) return 100; 
+      return Math.min(100, Math.max(0, ((user.xp - currentLevel.xpNeeded) / (nextLevel.xpNeeded - currentLevel.xpNeeded)) * 100));
+  };
+
+  const nextLevelInfo = getNextLevelInfo(user.xp);
 
   if (!isClient) return <div className="min-h-screen w-full bg-zinc-950 font-['Poppins']" />;
 
@@ -1128,16 +1091,16 @@ ${T.zap.wait}
                          {DATA.extras.map((ex, idx) => {
                            const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
                            return (
-                              <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 animate-slide-in ${booking.extras[ex.id] ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_20px_-5px_rgba(37,99,235,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`} style={{animationDelay: `${idx * 100}ms`}}>
-                                <div className="flex items-center gap-4">
-                                    <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}><Icon name={ex.icon} size={20}/></div>
-                                    <div><p className={`text-sm font-bold transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-200' : 'text-slate-700')}`}>{ex.label}</p><p className={`text-xs font-medium pt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p></div>
-                                </div>
-                                <div className="text-right">
-                                   {booking.type !== 'single' && (<span className={`text-[10px] line-through block ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{DATA.currency} {ex.price}</span>)}
-                                   <span className={`text-xs font-bold whitespace-nowrap px-3 py-1.5 rounded-xl inline-block ${booking.extras[ex.id] ? 'bg-blue-500/20 text-blue-500' : (isDark ? 'text-zinc-500 bg-zinc-800' : 'text-slate-500 bg-slate-100')}`}>+ {DATA.currency} {price}</span>
-                                </div>
-                              </div>
+                             <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 animate-slide-in ${booking.extras[ex.id] ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_20px_-5px_rgba(37,99,235,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`} style={{animationDelay: `${idx * 100}ms`}}>
+                               <div className="flex items-center gap-4">
+                                   <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}><Icon name={ex.icon} size={20}/></div>
+                                   <div><p className={`text-sm font-bold transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-200' : 'text-slate-700')}`}>{ex.label}</p><p className={`text-xs font-medium pt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p></div>
+                               </div>
+                               <div className="text-right">
+                                  {booking.type !== 'single' && (<span className={`text-[10px] line-through block ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{DATA.currency} {ex.price}</span>)}
+                                  <span className={`text-xs font-bold whitespace-nowrap px-3 py-1.5 rounded-xl inline-block ${booking.extras[ex.id] ? 'bg-blue-500/20 text-blue-500' : (isDark ? 'text-zinc-500 bg-zinc-800' : 'text-slate-500 bg-slate-100')}`}>+ {DATA.currency} {price}</span>
+                               </div>
+                             </div>
                            )
                          })}
                       </div>
@@ -1305,9 +1268,9 @@ ${T.zap.wait}
                  )}
              </div>
              {step < 4 && (
-                 <button onClick={handleNextStep} className={`h-14 px-10 rounded-[2rem] bg-blue-600 text-white font-bold text-sm uppercase tracking-widest flex items-center gap-4 shadow-2xl shadow-blue-600/40 transition-all active:scale-95 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed`}>
+                 <button onClick={handleNextStep} className={`h-14 px-8 rounded-[2rem] bg-blue-600 text-white font-bold text-sm uppercase tracking-widest flex items-center gap-3 shadow-xl shadow-blue-600/30 transition-all active:scale-95 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed`}>
                      {step === 3 ? 'Finalizar' : 'Próximo'}
-                     {!booking.item && <Icon name="ArrowRight" size={20} />}
+                     {!booking.item && <Icon name="ArrowRight" size={18} />}
                  </button>
              )}
          </div>
