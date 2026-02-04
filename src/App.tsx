@@ -2,14 +2,14 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS vFINAL - REFINAMENTO UI/UX + AVALIAÇÕES REALISTAS
+ * THALYSON APP OS vFINAL - CORREÇÃO DE CONTRASTE NO MODO CLARO
  * ==================================================================================
  */
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_prod_v71_final_glass',
+  STORAGE_KEY: '@thaly_app_prod_v72_contrast',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -87,7 +87,6 @@ const getData = (lang) => {
     const isPT = lang === 'pt';
     const currency = isPT ? 'R$' : '$';
     
-    // DEFINIÇÃO DE PREÇOS
     const p = {
         relax: isPT ? 125 : 25,
         sens: isPT ? 155 : 30,
@@ -287,7 +286,7 @@ const getData = (lang) => {
 };
 
 // ==================================================================================
-// 2. COMPONENTES VISUAIS
+// 2. COMPONENTES VISUAIS (CONTRASTE E ESTILO REFINADO)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: IconName, className = '', loading = false }) => {
