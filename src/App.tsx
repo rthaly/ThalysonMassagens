@@ -11,18 +11,18 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v41.0 - HARMONY & PRECISION EDITION
+ * THALYSON APP OS v42.0 - FINAL HARMONY EDITION
  * ==================================================================================
- * 1. FONTE: Base 14px (text-sm) p/ leitura perfeita.
- * 2. PREÇOS: Reajustados para não quebrar o layout.
- * 3. ESPAÇAMENTO: Padding e Gaps equilibrados (Harmonia).
- * 4. UX: Fluxo visual limpo e hierarquia clara.
+ * 1. REVIEWS: Apenas na Home (Step 0). Setas ocultas no Mobile.
+ * 2. FOOTER: Botão com preço grande e legível (Layout Row).
+ * 3. UX: Foco total na conversão nos passos seguintes.
+ * 4. UI: Mantendo a elegância e contraste da v41.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v41_harmony', 
+  STORAGE_KEY: '@thaly_app_v42_final', 
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -32,11 +32,10 @@ const CONFIG = {
 };
 
 // ==================================================================================
-// 1. DESIGN SYSTEM (REFINADO & EQUILIBRADO)
+// 1. DESIGN SYSTEM
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
-  // Ajuste: Bordas arredondadas suaves (rounded-2xl) e sombra sutil
   const baseStyle = "relative flex items-center justify-center font-semibold tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.98] hover:brightness-110 shadow-md hover:shadow-lg font-['Poppins']";
   
   const variants = {
@@ -48,10 +47,9 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
     icon: "bg-white/5 backdrop-blur-md border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10"
   };
   
-  // Tamanhos normalizados para 14px base
   const sizes = { 
     sm: "h-10 text-xs px-4", 
-    md: "h-12 text-sm px-6", // Padrão confortável
+    md: "h-12 text-sm px-6", 
     lg: "h-14 text-base px-8", 
     xl: "h-14 text-sm font-bold uppercase tracking-widest", 
     icon: "h-10 w-10 p-0 flex-shrink-0 rounded-full" 
@@ -79,7 +77,6 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
         value={value} 
         onChange={onChange} 
         placeholder={placeholder} 
-        // Altura h-12 para touch, text-sm (14px) para leitura
         className={`w-full pl-12 pr-4 h-12 rounded-xl outline-none text-sm font-medium transition-all duration-300 
         ${isDark 
             ? 'bg-zinc-900/50 border border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:bg-zinc-900 focus:border-sky-500/50' 
@@ -101,7 +98,7 @@ const Card = ({ children, className = '', onClick, active = false, isDark = true
         : (isDark ? 'bg-zinc-900/60 backdrop-blur-xl border border-white/10 hover:border-sky-500/30 hover:bg-zinc-900' : 'bg-white border border-slate-200 shadow-lg shadow-slate-200/50 hover:border-blue-500/30')} 
     ${className}`}
   >
-    {active && <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/5 to-transparent pointer-events-none" />}
+    {active && <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/10 to-transparent pointer-events-none" />}
     {children}
   </div>
 );
@@ -165,10 +162,12 @@ const ReviewsCarousel = ({ reviews, isDark }) => {
 
   return (
     <div className={`w-full overflow-hidden py-8 border-y mb-12 backdrop-blur-md relative group/reviews ${isDark ? 'bg-zinc-950/40 border-white/5' : 'bg-slate-50/80 border-slate-200'}`}>
-      <button onClick={() => scroll('left')} className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}>
+      
+      {/* Botões SÓ no Desktop (hidden no mobile) */}
+      <button onClick={() => scroll('left')} className={`hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}>
         <ChevronLeft size={20} />
       </button>
-      <button onClick={() => scroll('right')} className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}>
+      <button onClick={() => scroll('right')} className={`hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}>
         <ChevronRight size={20} />
       </button>
 
@@ -861,7 +860,8 @@ ${T.zap.wait}
       {/* Main Content Area */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-32 pt-6 scroll-smooth relative z-10 px-6 md:px-12">
         
-        {step < 3 && <ReviewsCarousel reviews={DATA.reviews} isDark={isDark} />}
+        {/* REVIEWS SÓ NA HOME (Step 0) */}
+        {step === 0 && <ReviewsCarousel reviews={DATA.reviews} isDark={isDark} />}
 
         <div className="max-w-5xl mx-auto space-y-12">
 
@@ -1273,17 +1273,13 @@ ${T.zap.wait}
                     )}
                     <button 
                       onClick={handleNextStep} 
-                      className={`flex-1 h-14 rounded-3xl flex flex-col items-center justify-center px-6 transition-all duration-300 shadow-lg active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sky-500/30 hover:shadow-sky-500/50' : 'bg-[#25D366] text-white shadow-green-500/30 hover:bg-[#20bd5a]'}`}
+                      className={`flex-1 h-14 rounded-3xl flex items-center justify-center px-6 transition-all duration-300 shadow-lg active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sky-500/30 hover:shadow-sky-500/50' : 'bg-[#25D366] text-white shadow-green-500/30 hover:bg-[#20bd5a]'}`}
                     >
-                      <div className="flex items-center justify-center w-full">
-                          <span className="text-sm font-bold uppercase tracking-widest mr-2">{step === 3 ? T.book_btn : T.next_btn}</span>
+                      <div className="flex items-center gap-3">
+                          <span className="text-sm font-bold uppercase tracking-widest">{step === 3 ? T.book_btn : T.next_btn}</span>
+                          {booking.item && <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-black">R$ {financials.total}</span>}
                           {!booking.item && <ArrowRight size={20} strokeWidth={2.5}/>}
                       </div>
-                      {booking.item && (
-                        <div className="flex flex-col items-center leading-none opacity-90 mt-0.5">
-                          <span className="text-[10px] font-black whitespace-nowrap">R$ {financials.total}</span>
-                        </div>
-                      )}
                     </button>
                 </div>
             </div>
