@@ -2,25 +2,29 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS vFINAL - ZERO DEPENDENCIES (NATIVE SVG)
+ * THALYSON APP OS v63.0 - BUILD FIXED (NO DUPLICATES)
  * ==================================================================================
- * CÓDIGO AUTOSSUFICIENTE. NÃO REQUER INSTALAÇÃO DE PACOTES.
+ * CORREÇÃO CRÍTICA: Remoção de funções duplicadas que causavam erro no build.
+ * 1. handleSelectItem (Declarado apenas uma vez)
+ * 2. handleShare (Declarado apenas uma vez)
+ * 3. scrollDates (Declarado apenas uma vez)
+ * 4. Ícones nativos (Sem necessidade de instalar lucide-react)
  */
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_final_v63',
+  STORAGE_KEY: '@thaly_app_v63_build_fixed',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
-  SECRET_TOKEN: 'THALY_SECURE',
+  SECRET_TOKEN: 'THALY_2026_SECURE',
   START_HOUR: 9,
   END_HOUR: 20
 };
 
 // ==================================================================================
-// 1. ICON SYSTEM (SVG NATIVO - SEM INSTALAÇÃO)
+// 1. ICON SYSTEM (SVG NATIVO - ZERO DEPENDÊNCIAS)
 // ==================================================================================
 const Icon = ({ name, size = 24, className = "" }) => {
   const icons = {
@@ -29,14 +33,14 @@ const Icon = ({ name, size = 24, className = "" }) => {
     ArrowRight: <><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></>,
     MessageCircle: <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />,
     Ticket: <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />,
-    Flame: <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.246-5.318-1-1 4.41-4.41 6 3 6 6 0 2.21-1.79 4-4 4s-4-1.79-4-4a2 2 0 0 1 4 0Z" />, // Simplified
-    Wind: <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" />, // Simplified
+    Flame: <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.246-5.318-1-1 4.41-4.41 6 3 6 6 0 2.21-1.79 4-4 4s-4-1.79-4-4a2 2 0 0 1 4 0Z" />,
+    Wind: <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" />,
     Clock: <><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></>,
     Zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />,
     X: <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>,
     Globe: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>,
     Building: <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />,
-    BedDouble: <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" />, // Simplified
+    BedDouble: <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" />,
     Heart: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />,
     Instagram: <><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></>,
     Moon: <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />,
@@ -44,8 +48,8 @@ const Icon = ({ name, size = 24, className = "" }) => {
     Home: <><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></>,
     CreditCard: <><rect x="1" y="4" width="22" height="16" rx="2" ry="2" /><line x1="1" y1="10" x2="23" y2="10" /></>,
     Banknote: <rect x="2" y="6" width="20" height="12" rx="2" />,
-    QrCode: <rect x="3" y="3" width="7" height="7" />, // Simplified
-    Trophy: <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />, // Simplified
+    QrCode: <rect x="3" y="3" width="7" height="7" />, 
+    Trophy: <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />, 
     Info: <><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></>,
     Gift: <><polyline points="20 12 20 22 4 22 4 12" /><rect x="2" y="7" width="20" height="5" /><line x1="12" y1="22" x2="12" y2="7" /><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" /></>,
     ChevronLeft: <polyline points="15 18 9 12 15 6" />,
@@ -59,9 +63,9 @@ const Icon = ({ name, size = 24, className = "" }) => {
     MapPin: <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />,
     Calendar: <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />,
     Smartphone: <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />,
-    Crown: <path d="m5 18 14-4.2L22 18 19 9l-4 4.5L12 5l-3 8.5L5 9l-3 9Z" />, // Simplified
+    Crown: <path d="m5 18 14-4.2L22 18 19 9l-4 4.5L12 5l-3 8.5L5 9l-3 9Z" />, 
     LayoutList: <rect x="3" y="14" width="7" height="7" />,
-    Package: <path d="m16.5 9.4-9-5.19" />, // Simplified
+    Package: <path d="m16.5 9.4-9-5.19" />, 
     Lock: <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />,
     User: <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />,
     Quote: <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />,
@@ -572,7 +576,11 @@ export default function App() {
     payment: '', appliedCoupon: null, termsAccepted: false
   });
 
-  // --- EFEITOS & LÓGICA ---
+  const addToast = (msg, type = "success") => {
+      const id = Date.now();
+      setToasts(prev => [...prev, { id, msg, type }]);
+      setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3000);
+  };
 
   useEffect(() => {
     setIsClient(true);
@@ -627,42 +635,27 @@ export default function App() {
       if(scrollRef.current) scrollRef.current.scrollTo(0,0); 
   }, [step]);
 
-
-  // --- FUNÇÕES AUXILIARES ---
-
-  const addToast = (msg, type = 'success') => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, msg, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+  const handleShare = () => {
+      if (navigator.share) {
+          navigator.share({ title: 'Thalyson Massagens', url: window.location.href });
+      } else {
+          navigator.clipboard.writeText(window.location.href);
+          addToast("Link copiado!", "success");
+      }
   };
 
-  const handleShare = async () => {
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Thalyson Massagens',
-          text: lang === 'pt' ? 'Um convite para o seu relaxamento.' : 'An invitation to your relaxation.',
-          url: window.location.href,
-        });
-      } catch (err) {}
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      addToast(lang === 'pt' ? "Link copiado!" : "Link copied!", "success");
-    }
-  };
-
-  const scrollDates = (direction) => {
-      if(dateScrollRef.current) {
-          const scrollAmount = direction === 'left' ? -200 : 200;
-          dateScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  const scrollDates = (dir) => {
+      if (dateScrollRef.current) {
+          const amt = dir === 'left' ? -200 : 200;
+          dateScrollRef.current.scrollBy({ left: amt, behavior: 'smooth' });
       }
   };
 
   const handleSelectItem = (type, item) => {
       setBooking(prev => ({ ...prev, type: type, item: item, extras: {}, payment: '', termsAccepted: false }));
+      addToast(item.title, "success");
   };
 
-  // --- DATA ATUALIZADA: 30 DIAS ---
   const daysArray = useMemo(() => {
       const days = [];
       const today = new Date();
@@ -699,7 +692,6 @@ export default function App() {
       return slots;
   }, [booking.date]);
 
-  // --- CÁLCULO FINANCEIRO COM DESCONTO PIX ---
   const financials = useMemo(() => {
     if (!booking.item) return { total: 0, sub: 0, disc: 0, pixDisc: 0 };
     let sub = booking.item.price;
@@ -715,10 +707,9 @@ export default function App() {
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
     let totalAfterCoupon = Math.max(0, sub - disc);
     
-    // Cálculo do Pix
     let pixDisc = 0;
     if (booking.payment === 'pix') {
-        pixDisc = Math.ceil(totalAfterCoupon * 0.05); // 5% de desconto
+        pixDisc = Math.ceil(totalAfterCoupon * 0.05); 
     }
     
     const finalTotal = Math.max(0, totalAfterCoupon - pixDisc);
@@ -904,27 +895,6 @@ ${T.zap.wait}
   };
 
   const nextLevelInfo = getNextLevelInfo(user.xp);
-
-  const handleSelectItem = (type, item) => {
-      setBooking(b => ({...b, type, item, extras: {}}));
-      addToast(item.title, "success");
-  };
-
-  const handleShare = () => {
-      if (navigator.share) {
-          navigator.share({ title: 'Thalyson Massagens', url: window.location.href });
-      } else {
-          navigator.clipboard.writeText(window.location.href);
-          addToast("Link copiado!", "success");
-      }
-  };
-
-  const scrollDates = (dir) => {
-      if (dateScrollRef.current) {
-          const amt = dir === 'left' ? -200 : 200;
-          dateScrollRef.current.scrollBy({ left: amt, behavior: 'smooth' });
-      }
-  };
 
   if (!isClient) return <div className="min-h-screen w-full bg-zinc-950 font-['Poppins']" />;
 
