@@ -1114,4 +1114,197 @@ ${T.zap.wait}
                                   const extraItem = DATA.extras.find(e=>e.id===k);
                                   if(!extraItem) return null;
                                   const price = booking.type !== 'single' ? Math.floor(extraItem.price * 0.8) : extraItem.price;
-                                  return (<div key={k} className={`flex justify-between text-sm ${isDark ? 'text-zinc-500' : 'text-slate-600'}`}><span>+ {extraItem.label} {booking.type!=='single' && '(Promo)'}</span><span>{DATA.
+                                  return (<div key={k} className={`flex justify-between text-sm ${isDark ? 'text-zinc-500' : 'text-slate-600'}`}><span>+ {extraItem.label} {booking.type!=='single' && '(Promo)'}</span><span>{DATA.currency} {price}</span></div>);
+                              })}
+                              {booking.appliedCoupon && (<div className="flex justify-between text-sm text-emerald-500 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 font-bold"><span>{lang === 'pt' ? "Cupom" : "Coupon"} ({booking.appliedCoupon.code})</span><span>- {DATA.currency} {booking.appliedCoupon.val}</span></div>)}
+                          </div>
+                          <div className="flex justify-between items-end">
+                              <div><span className={`text-[10px] font-bold uppercase block mb-1 ${isDark ? 'text-zinc-600' : 'text-slate-500'}`}>{T.total_label}</span><span className="text-xs font-medium text-blue-500/80 bg-blue-500/5 px-3 py-1 rounded-full border border-blue-500/10">{T.uber_warning}</span></div>
+                              <div className="text-right">
+                                  <span className={`block text-5xl font-light tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>{DATA.currency} {financials.total}</span>
+                                  <span className="text-xs font-bold text-blue-500 flex items-center justify-end gap-2 mt-2"><Sparkles size={14}/> +{estimatedXP} XP</span>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-8">
+                        <SmartTimer isDark={isDark} />
+
+                        <div className="flex gap-3">
+                            <div className="relative flex-1">
+                                <input value={couponInput} onChange={e=>setCouponInput(e.target.value)} placeholder={T.coupon_placeholder} className={`w-full pl-5 pr-10 h-12 rounded-xl border text-sm font-bold uppercase tracking-widest outline-none focus:border-blue-500/50 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-600' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'}`}/>
+                                <Tag size={16} className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}/>
+                            </div>
+                            <Button onClick={handleApplyCoupon} variant="secondary" size="md">{T.coupon_btn}</Button>
+                        </div>
+
+                         {user.coupons && user.coupons.length > 0 && (
+                            <div className="w-full overflow-x-auto pb-4 pt-2 scrollbar-hide">
+                                <div className="flex gap-3">
+                                    {user.coupons.map(c => {
+                                        const isApplied = booking.appliedCoupon?.id === c.id;
+                                        return (
+                                            <button 
+                                                key={c.id} 
+                                                onClick={() => setBooking(b => ({...b, appliedCoupon: isApplied ? null : c}))} 
+                                                className={`flex-shrink-0 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase transition-all whitespace-nowrap active:scale-95 ${isApplied ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500' : (isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300')}`}
+                                            >
+                                                {c.title}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        <div>
+                            <h3 className={`text-xs font-bold uppercase mb-4 ml-1 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.pay_title}</h3>
+                            <div className="grid grid-cols-1 gap-3">
+                                {[{id:'pix', l:T.pay_pix, i:QrCode, sub:''}, {id:'card', l:T.pay_card, i:CreditCard, sub:''}, {id:'money', l:T.pay_cash, i:Banknote, sub:''}].map((p, idx) => (
+                                    <button key={p.id} onClick={()=>setBooking(b=>({...b, payment: p.id}))} className={`animate-slide-in px-6 py-4 rounded-xl border flex items-center gap-4 transition-all duration-300 ${booking.payment === p.id ? 'bg-zinc-800 border-blue-500/50 shadow-[0_0_20px_-5px_rgba(37,99,235,0.2)]' : (isDark ? 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800' : 'bg-white border-slate-200 hover:bg-slate-50')}`} style={{animationDelay: `${idx * 100}ms`}}>
+                                            <div className={`p-2 rounded-full ${booking.payment === p.id ? 'bg-blue-600 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><p.i size={18}/></div>
+                                            <div className="text-left"><span className={`font-bold text-sm block ${booking.payment === p.id ? (isDark ? 'text-white' : 'text-slate-900') : (isDark ? 'text-zinc-400' : 'text-slate-600')}`}>{p.l}</span></div>
+                                            {booking.payment === p.id && <Check size={20} className="ml-auto text-blue-500" strokeWidth={3}/>}
+                                    </button>
+                                ))}
+                            </div>
+                            
+                            {booking.payment === 'pix' && (
+                                <div className={`mt-5 p-6 rounded-2xl border border-dashed ${isDark ? 'border-zinc-700 bg-zinc-900/50' : 'border-slate-300 bg-slate-50'} animate-fade-in`}>
+                                    <p className={`text-[10px] uppercase font-bold text-center mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Chave Pix (Copia e Cola)</p>
+                                    <div className="flex gap-3">
+                                        <input readOnly value={CONFIG.PIX_KEY} className={`w-full text-sm font-mono text-center rounded-xl border px-3 py-3 ${isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-300' : 'bg-white border-slate-200 text-slate-600'}`} />
+                                        <button onClick={()=>{navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success")}} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}><Copy size={20}/></button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className={`p-5 rounded-2xl border ${isDark ? 'border-zinc-800 bg-zinc-900/30' : 'border-slate-200 bg-slate-50'}`}>
+                             <div className="flex items-start gap-3 mb-3">
+                                  <ShieldCheck className={`${isDark ? 'text-zinc-500' : 'text-slate-500'} shrink-0 mt-0.5`} size={20}/>
+                                  <div><h4 className={`text-sm font-bold mb-1 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.terms_title}</h4><p className={`text-xs cursor-pointer hover:text-blue-500 transition-colors underline ${isDark ? 'text-zinc-500' : 'text-slate-500'}`} onClick={() => setTermsOpen(true)}>{T.terms_link}</p></div>
+                             </div>
+                             <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer hover:border-zinc-500 transition-colors select-none ${isDark ? 'bg-zinc-950/50 border-zinc-800' : 'bg-white border-slate-200'}`}><input type="checkbox" checked={booking.termsAccepted} onChange={e=>setBooking(b=>({...b, termsAccepted: e.target.checked}))} className="w-5 h-5 rounded border-zinc-600 bg-zinc-800 accent-blue-500 cursor-pointer"/><span className={`text-xs font-bold uppercase ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.agree_terms}</span></label>
+                        </div>
+                    </div>
+                </div>
+             </div>
+          )}
+
+          {/* SUCCESS (STEP 4) */}
+          {step === 4 && (
+             <div className="flex flex-col items-center justify-center pt-20 text-center animate-scale-in">
+                 <div className="relative mb-12 group">
+                     <div className="absolute inset-0 bg-emerald-500 blur-[100px] opacity-30 rounded-full animate-pulse"></div>
+                     <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-emerald-500 to-emerald-700 flex items-center justify-center shadow-2xl shadow-emerald-500/30 relative z-10 border border-emerald-400/20">
+                         <Check size={56} className="text-white" strokeWidth={3}/>
+                     </div>
+                 </div>
+                 <h1 className={`text-3xl font-light mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h1>
+                 <p className={`text-sm leading-relaxed max-w-sm mx-auto mb-10 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
+                 
+                 <div className="w-full max-w-sm space-y-4">
+                     <div className="flex gap-4 justify-center mb-2">
+                         <Button variant="secondary" size="icon" onClick={() => { navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success"); }} icon={Copy} />
+                         <Button variant="instagram" size="icon" onClick={() => window.open(CONFIG.INSTAGRAM_URL, '_blank')} icon={Instagram} />
+                     </div>
+                     <Button variant="whatsapp" full size="lg" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon={MessageCircle}>{T.whatsapp_btn}</Button>
+                 </div>
+
+                 <button onClick={()=>{setStep(0); setBooking({...booking, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false}); setShowConfetti(false);}} className={`mt-12 text-xs font-bold uppercase tracking-widest transition-colors py-4 ${isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-slate-400 hover:text-slate-600'}`}>{T.back_home}</button>
+             </div>
+          )}
+        </div>
+      </main>
+
+      {/* FOOTER NAV - FLOATING GLASS BAR */}
+      {step < 4 && (
+         <div className="fixed bottom-6 left-0 w-full z-50 pointer-events-none px-4">
+            <div className={`max-w-xl mx-auto p-3 rounded-[2rem] backdrop-blur-2xl shadow-2xl border pointer-events-auto transition-all duration-500 ${isDark ? 'bg-zinc-950/80 border-white/10 shadow-black/50' : 'bg-white/80 border-slate-200 shadow-slate-200/50'}`}>
+                <div className="flex items-center gap-3">
+                    {step > 0 && (
+                      <div className="flex gap-2">
+                        <button onClick={() => setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><Home size={20}/></button>
+                        <button onClick={() => setStep(step - 1)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><ChevronLeft size={20}/></button>
+                      </div>
+                    )}
+                    <button 
+                      onClick={handleNextStep} 
+                      className={`flex-1 h-14 rounded-3xl flex items-center justify-center px-6 transition-all duration-300 shadow-lg active:scale-[0.98] ${step < 3 ? 'bg-blue-600 text-white shadow-blue-600/30 hover:shadow-blue-600/50' : 'bg-[#25D366] text-white shadow-green-500/30 hover:bg-[#20bd5a]'}`}
+                    >
+                      <div className="flex items-center gap-3">
+                          <span className="text-sm font-bold uppercase tracking-widest">{step === 3 ? T.book_btn : T.next_btn}</span>
+                          {booking.item && <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-black">{DATA.currency} {financials.total}</span>}
+                          {!booking.item && <ArrowRight size={20} strokeWidth={2.5}/>}
+                      </div>
+                    </button>
+                </div>
+            </div>
+         </div>
+      )}
+
+      {/* --- MODALS --- */}
+
+      <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${settingsOpen ? 'opacity-100' : 'opacity-0'}`}>
+         <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${settingsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setSettingsOpen(false)}></div>
+         <div className={`relative w-full max-w-sm border rounded-[2rem] p-8 transform transition-transform duration-500 shadow-2xl ${settingsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4"><Download size={32} className="text-blue-500"/></div>
+                <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.install_app}</h3>
+                <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.install_desc}</p>
+            </div>
+            <div className={`p-4 rounded-xl text-xs mb-6 leading-relaxed ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>
+                1. Toque no ícone de compartilhamento do navegador.<br/>
+                2. Selecione "Adicionar à Tela de Início".
+            </div>
+            <Button full onClick={()=>setSettingsOpen(false)}>Ok</Button>
+         </div>
+      </div>
+
+      <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${termsOpen ? 'opacity-100' : 'opacity-0'}`}>
+         <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${termsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setTermsOpen(false)}></div>
+         <div className={`relative w-full max-w-lg border rounded-[2rem] p-8 max-h-[85vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${termsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className="flex justify-between items-center mb-8"><h3 className={`text-xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</h3><button onClick={()=>setTermsOpen(false)} className={`p-3 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={20}/></button></div>
+            <div className="space-y-5">
+                {T.terms_body.map((t,i)=>(<div key={i} className={`flex gap-5 p-5 rounded-2xl border ${isDark ? 'bg-zinc-950/50 border-white/5' : 'bg-slate-50 border-slate-200'}`}><span className="font-bold text-blue-500 text-2xl opacity-50">{i+1}</span><p className={`text-sm leading-relaxed pt-1.5 font-light ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{t.substring(3)}</p></div>))}
+                <Button full onClick={()=>setTermsOpen(false)} variant="primary">{T.terms_btn}</Button>
+            </div>
+         </div>
+      </div>
+
+      {levelUpPopup && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={()=>setLevelUpPopup(false)}></div>
+            <div className="relative p-10 rounded-[2.5rem] text-center max-w-sm w-full animate-scale-in shadow-2xl border border-blue-500/20 bg-zinc-900">
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[2.5rem] pointer-events-none"><div className="absolute -top-20 -left-20 w-40 h-40 bg-blue-500 blur-[80px] opacity-20"></div></div>
+                <div className="w-24 h-24 bg-gradient-to-tr from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-blue-500/30 animate-bounce-slow"><Trophy size={40} className="text-white" /></div>
+                <h2 className="text-3xl font-light text-white mb-3">{T.popup_level_title}</h2><p className="text-zinc-400 text-sm leading-relaxed mb-10">{T.popup_level_msg}</p>
+                <Button full size="lg" onClick={()=>setLevelUpPopup(false)} icon={Ticket}>{T.popup_btn_coupon}</Button>
+            </div>
+        </div>
+      )}
+
+      {welcomePopup && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={()=>setWelcomePopup(false)}></div>
+            <div className="relative p-10 rounded-[2.5rem] text-center max-w-md w-full animate-scale-in shadow-2xl border border-white/10 bg-zinc-900">
+                <div className="w-24 h-24 bg-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/5 rotate-3"><Gift size={40} className="text-blue-500" /></div>
+                <h2 className="text-2xl font-light text-white mb-4">{T.popup_welcome_title}</h2><p className="text-zinc-400 text-sm leading-relaxed mb-8">{T.popup_welcome_msg}</p>
+                <div className="bg-zinc-950 p-5 rounded-2xl border border-dashed border-zinc-800 mb-8"><p className="text-xs uppercase font-bold text-zinc-500 mb-2">Seu Código:</p><p className="text-2xl font-mono font-bold text-blue-500 tracking-widest">WELCOME10</p></div>
+                <Button full variant="primary" onClick={()=>{
+                    setWelcomePopup(false); 
+                    setUser(u=>({...u, hasSeenWelcome: true}));
+                    const welcomeCoupon = { id: 'WELCOME10', val: 10, title: '🎁 Welcome', code: 'WELCOME10' };
+                    setBooking(b => ({...b, appliedCoupon: welcomeCoupon}));
+                    addToast(T.toast_coupon_success, "success");
+                }}>{T.popup_btn_coupon}</Button>
+            </div>
+        </div>
+      )}
+
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.8s ease-out}.animate-slide-in{animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-slide-up{animation:slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;opacity:0}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.4s ease-out}.animate-pulse-slow{animation:pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite}.animate-spin-slow{animation:spin 3s linear infinite}.pb-safe{padding-bottom:env(safe-area-inset-bottom,32px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}@keyframes slideDown{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
+    </div>
+  );
+}
