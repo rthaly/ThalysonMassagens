@@ -11,89 +11,87 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v39.0 - VERTICAL GLASS FLOW (POPPINS EDITION)
+ * THALYSON APP OS v40.0 - ULTIMATE BLUE (FULL STACK FRONTEND)
  * ==================================================================================
- * 1. FONTE: Poppins (Google Fonts) para máxima legibilidade.
- * 2. UX: Mobile First, Botões Grandes, Alto Contraste.
- * 3. VISUAL: Glassmorphism (Gaussiano) e fluxo vertical limpo.
- * 4. DADOS: CNPJ PIX Atualizado e Lógica de Horário Mantida.
+ * 1. VISUAL: Fonte Poppins, Tema Azul Safira, Glassmorphism, Mobile First.
+ * 2. FUNCIONAL: Gamificação (XP), Reviews, Confetti, Tostas, Cupom.
+ * 3. LOGICA: Fast Track (11:55 -> 12:00), Persistência Local, Hash Segurança.
+ * 4. PAGAMENTO: CNPJ Pix Copia e Cola.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v39_glass', 
-  PIX_KEY: "62922530000144", // CNPJ ATUALIZADO
-  PIX_DISPLAY: "62.922.530/0001-44", // Formato visual
-  SECRET_TOKEN: 'THALY_GLASS_2026',
+  STORAGE_KEY: '@thaly_app_v40_ultimate', 
+  PIX_KEY: "62922530000144", // SEU CNPJ
+  PIX_DISPLAY: "62.922.530/0001-44",
+  SECRET_TOKEN: 'ULTIMATE_BLUE_2026',
   START_HOUR: 9,
   END_HOUR: 20
 };
 
 // ==================================================================================
-// 1. STYLE INJECTION (POPPINS FONT)
+// 1. ESTILOS E FONTES (POPPINS)
 // ==================================================================================
-// Injetamos a fonte diretamente para garantir que carregue
-const FontStyles = () => (
+const GlobalStyles = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
     
     body, button, input { font-family: 'Poppins', sans-serif; }
     
     .glass-panel {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
     
-    .glass-input {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-    .glass-input:focus {
-      border-color: #38bdf8;
-      background: rgba(0, 0, 0, 0.5);
+    .glass-card {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
 
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     
-    /* Animação Vertical Suave */
-    @keyframes slideUpFade {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-enter { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    .animate-enter { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    .animate-pop { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
   `}</style>
 );
 
 // ==================================================================================
-// 2. COMPONENTS (HIGH CONTRAST & BIG TOUCH TARGETS)
+// 2. COMPONENTES VISUAIS (RICH UI)
 // ==================================================================================
 
-const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '' }) => {
-  // Botões mais altos e robustos para o dedo (Mobile First)
-  const baseStyle = "relative flex items-center justify-center font-semibold tracking-wide transition-all duration-200 active:scale-[0.98] rounded-xl shadow-lg";
+const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
+  const baseStyle = "relative flex items-center justify-center font-semibold tracking-wide transition-all duration-200 active:scale-[0.96] rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    primary: "bg-sky-500 text-white shadow-sky-500/25 hover:bg-sky-400",
+    primary: "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sky-500/20 hover:brightness-110",
     secondary: "bg-slate-800 border border-slate-700 text-slate-200 hover:bg-slate-700",
-    whatsapp: "bg-[#25D366] text-white shadow-green-500/20",
-    outline: "bg-transparent border-2 border-slate-600 text-slate-300",
+    whatsapp: "bg-[#25D366] text-white shadow-green-500/20 hover:brightness-105",
+    outline: "bg-transparent border-2 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white",
   };
   
   const sizes = { 
     sm: "h-10 text-xs px-4", 
-    md: "h-14 text-sm px-6", // Altura aumentada para 56px (Padrão Mobile)
+    md: "h-14 text-sm px-6", // Mobile Friendly Height
     lg: "h-16 text-base px-8", 
     icon: "h-12 w-12 p-0 rounded-full"
   };
 
   return (
-    <button onClick={onClick} disabled={disabled} className={`${baseStyle} ${variants[variant]} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
-      {Icon && <Icon size={20} className={children ? "mr-3" : ""} strokeWidth={2.5} />}
-      <span>{children}</span>
+    <button onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant]} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
+      {loading ? <Loader2 size={20} className="animate-spin"/> : (
+        <>
+          {Icon && <Icon size={20} className={children ? "mr-2.5" : ""} strokeWidth={2.5} />}
+          <span>{children}</span>
+        </>
+      )}
     </button>
   );
 };
@@ -104,18 +102,17 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
         if (mask) val = mask(val);
         onChange(val);
     };
-
     return (
-      <div className="w-full space-y-2">
-        {label && <label className="text-xs font-bold uppercase tracking-wider text-sky-400 ml-1">{label}</label>}
-        <div className="relative">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">{Icon && <Icon size={20} />}</div>
+      <div className="w-full space-y-1.5">
+        {label && <label className="text-[10px] font-bold uppercase tracking-wider text-sky-500 ml-1">{label}</label>}
+        <div className="relative group">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors">{Icon && <Icon size={20} />}</div>
           <input 
             type={type} 
             value={value} 
             onChange={handleChange} 
             placeholder={placeholder} 
-            className="w-full pl-12 pr-4 h-16 rounded-2xl outline-none text-base font-medium transition-all glass-input placeholder:text-slate-600" 
+            className="w-full pl-12 pr-4 h-14 rounded-xl outline-none text-sm font-medium transition-all bg-slate-900/50 border border-slate-800 text-slate-100 focus:border-sky-500/50 focus:bg-slate-900 placeholder:text-slate-600" 
           />
         </div>
       </div>
@@ -125,118 +122,211 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
 const Card = ({ children, onClick, active = false, className = "" }) => (
   <div 
     onClick={onClick} 
-    className={`relative p-6 rounded-3xl transition-all duration-300 overflow-hidden group cursor-pointer border-2
+    className={`relative p-5 rounded-3xl transition-all duration-300 overflow-hidden cursor-pointer border
     ${active 
-        ? 'bg-sky-500/10 border-sky-500 shadow-[0_0_30px_-10px_rgba(14,165,233,0.3)]' 
-        : 'bg-slate-900/60 border-slate-800 hover:border-slate-600 hover:bg-slate-800/60'} 
+        ? 'bg-sky-500/10 border-sky-500 shadow-[0_0_20px_-5px_rgba(14,165,233,0.25)]' 
+        : 'glass-card border-slate-800 hover:border-slate-600'} 
     ${className}`}
   >
+    {active && <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/5 to-transparent pointer-events-none" />}
     {children}
   </div>
 );
 
+const Confetti = ({ active }) => {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    if (!active || typeof window === 'undefined') return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const particles = Array.from({ length: 100 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 5 + 2,
+      h: Math.random() * 8 + 4,
+      color: ['#0ea5e9', '#3b82f6', '#6366f1', '#ffffff'][Math.floor(Math.random() * 4)],
+      speed: Math.random() * 6 + 3,
+      angle: Math.random() * 360,
+      spin: Math.random() * 8 - 4
+    }));
+    let ani;
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle * Math.PI / 180);
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+        p.y += p.speed;
+        p.angle += p.spin;
+      });
+      ani = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => cancelAnimationFrame(ani);
+  }, [active]);
+  if (!active) return null;
+  return <canvas ref={canvasRef} className="fixed inset-0 z-[100] pointer-events-none" />;
+};
+
+const AutoScrollReviews = ({ reviews }) => {
+  return (
+    <div className="w-full overflow-hidden py-6 border-y border-white/5 bg-slate-900/30 mb-8">
+      <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar px-4 snap-x">
+        {[...reviews, ...reviews].map((r, i) => (
+            <div key={i} className="min-w-[280px] bg-slate-900 p-5 rounded-2xl border border-slate-800 snap-center shrink-0">
+              <div className="flex justify-between items-start mb-3">
+                 <div className="flex gap-0.5 text-sky-500">
+                   {[...Array(5)].map((_,k)=><Star key={k} size={12} fill={k<r.s?"currentColor":"none"} className={k<r.s?"":"text-slate-700"}/>)}
+                 </div>
+                 <div className="text-[10px] font-bold text-slate-500 uppercase bg-slate-800 px-2 py-1 rounded-md">{r.loc}</div>
+              </div>
+              <p className="text-xs text-slate-300 italic mb-3 leading-relaxed">"{r.t}"</p>
+              <p className="text-xs font-bold text-white">{r.n}</p>
+            </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ==================================================================================
-// 3. LOGIC & DATA
+// 3. DADOS COMPLETOS (RESTORED FULL DATA)
 // ==================================================================================
 
 const getData = () => {
     return {
-        // Dados mantidos, apenas visual ajustado
+        // Serviços Detalhados
         services: [
             { 
-              id: 'relaxante', min: 60, price: 125, icon: Wind,
-              title: "Relaxante", desc: "Alívio muscular profundo.",
-              details: "Foco total em tirar dores e tensão. Sem toques íntimos." 
+              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: "RELAX",
+              title: "Sessão Relaxante", desc: "Alívio muscular e mental.",
+              details: "• Foco em tirar dores e tensão.\n• Massagem profunda.\n• Sem toques íntimos." 
             },
             { 
-              id: 'sensitiva', min: 60, price: 155, icon: Flame,
-              title: "Sensitiva", desc: "Toque leve e despertar.",
-              details: "Começa relaxante e evolui para toques sensoriais na pele."
+              id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: "SENSORIAL",
+              title: "Terapia Sensitiva", desc: "Toque leve e despertar.",
+              details: "• Início relaxante muscular.\n• Evolui para toques leves (ponta dos dedos).\n• Massagem tântrica inclusa."
             },
             { 
-              id: 'mista', min: 60, price: 195, icon: Zap, tag: "POPULAR",
-              title: "Mista (Completa)", desc: "A fusão perfeita.",
-              details: "Relaxante muscular + Sensitiva + Corpo a Corpo (Body). Finalização livre."
+              id: 'mista', min: 60, price: 195, icon: Zap, tag: "TOP 1",
+              title: "Experiência Mista", desc: "A fusão completa.",
+              details: "• O melhor de dois mundos.\n• Relaxante + Sensitiva + Body-to-Body.\n• Finalização livre."
             }
         ],
+        // Planos com Descontos Reais
         plans: [
             { 
               id: 'pack_relax', type: 'pack', title: "Ciclo Relax (4x)", 
               price: 397, fullPrice: 500, savings: 103, 
-              desc: "4 Sessões Relaxantes.", tag: "MELHOR PREÇO", icon: Package 
+              desc: "4 Sessões Relaxantes.", details: "Ideal para tratamento de estresse crônico.", 
+              tag: "ECONOMIA", icon: Package 
             },
             { 
               id: 'pack_mista', type: 'pack', title: "Ciclo Completo (3x)", 
               price: 487, fullPrice: 585, savings: 98, 
-              desc: "3 Sessões Mistas.", tag: "RECOMENDADO", icon: Zap 
+              desc: "3 Sessões Mistas.", details: "Uma sessão completa a cada 10 dias. Rotina perfeita.", 
+              tag: "POPULAR", icon: Zap 
             },
             { 
               id: 'vip_club', type: 'subscription', title: "Clube VIP Mensal", 
               price: 297, fullPrice: 390, savings: 93, 
-              desc: "2 Sessões Mistas/Mês.", tag: "VIP", icon: Crown 
+              desc: "2 Sessões Mistas/Mês.", details: "Acesso prioritário à agenda e brindes exclusivos.", 
+              tag: "VIP", icon: Crown 
             }
         ],
         extras: [
-            { id: 'more_time', price: 55, icon: Clock, label: "+30 Minutos" },
-            { id: 'touch', price: 55, icon: Heart, label: "Interatividade" },
-            { id: 'aroma', price: 5, icon: Wind, label: "Aromaterapia" }
+            { id: 'more_time', price: 55, icon: Clock, label: "+30 Minutos", desc: "Sem pressa." },
+            { id: 'touch', price: 55, icon: Heart, label: "Interatividade", desc: "Troca." },
+            { id: 'aroma', price: 5, icon: Wind, label: "Aromaterapia", desc: "Essência." }
         ],
+        // Reviews Reais
         reviews: [
-            { n: "Bruno", t: "Profissional impecável. Técnica muito boa.", s: 5 },
-            { n: "Ricardo", t: "Sai renovado. Recomendo a Mista.", s: 5 },
-            { n: "Felipe", t: "Local discreto e seguro. Gostei.", s: 5 }
+            { n: "Bruno", loc: "Bela Vista", t: "Thalyson é extremamente profissional. Mãos firmes e técnica apurada.", s: 5 },
+            { n: "Tiago", loc: "SP", t: "Melhor massagem da vida. Energia surreal.", s: 5 },
+            { n: "Ricardo", loc: "Rio Preto", t: "Sai de lá renovado. Recomendo a Mista.", s: 5 },
+            { n: "André", loc: "Jardins", t: "Muito respeitoso e o local é ótimo.", s: 5 },
+            { n: "Felipe", loc: "Londrina", t: "Atendimento rápido e direto. Gostei.", s: 4 }
+        ],
+        levels: [
+            { lvl: 1, xp: 0, title: "Visitante" },
+            { lvl: 2, xp: 100, title: "Bronze" },
+            { lvl: 3, xp: 350, title: "Prata" },
+            { lvl: 4, xp: 800, title: "Ouro" }
         ]
     };
 };
 
 // ==================================================================================
-// 4. MAIN APP
+// 4. APLICAÇÃO PRINCIPAL
 // ==================================================================================
 
 export default function App() {
+  // Estados
+  const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0); 
   const [activeTab, setActiveTab] = useState('packs');
   const [isClient, setIsClient] = useState(false);
-  const scrollRef = useRef(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [welcomePopup, setWelcomePopup] = useState(false);
+  const [toasts, setToasts] = useState([]);
   
+  const scrollRef = useRef(null);
   const DATA = useMemo(() => getData(), []);
 
-  // User State
-  const [user, setUser] = useState({ name: '', savedAddress: {} });
+  // Dados do Usuário e Agendamento
+  const [user, setUser] = useState({ name: '', xp: 0, hasSeenWelcome: false });
   const [booking, setBooking] = useState({
     type: 'single', item: null, extras: {}, date: null, time: null, locationType: 'home', 
-    address: { street: '', number: '', district: '', city: '' },
+    address: { street: '', number: '', district: '', city: '', comp: '', placeName: '' },
     payment: '', termsAccepted: false
   });
 
-  // Init
+  // --- LÓGICA DE INICIALIZAÇÃO ---
   useEffect(() => {
     setIsClient(true);
+    // Persistência
     const s = localStorage.getItem(CONFIG.STORAGE_KEY);
     if (s) {
         try {
             const p = JSON.parse(s);
             if(p.user) setUser(p.user);
-            // Recupera draft apenas se data for futura
             if(p.draft && new Date(p.draft.date) >= new Date().setHours(0,0,0,0)) {
                 setBooking(p.draft);
                 if(p.step) setStep(p.step);
             }
         } catch(e) {}
     }
+    setTimeout(() => setLoading(false), 1500);
   }, []);
 
-  // Auto Save
+  // Salvar Automático
   useEffect(() => { 
-      if(isClient) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({ user, draft: booking, step })); 
-  }, [user, booking, step, isClient]);
+      if(isClient && !loading) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({ user, draft: booking, step })); 
+  }, [user, booking, step, isClient, loading]);
 
-  // Scroll to Top on Step Change
+  // Popup de Boas Vindas
+  useEffect(() => {
+      if(!loading && isClient && !user.hasSeenWelcome) setTimeout(() => setWelcomePopup(true), 2000);
+  }, [loading, isClient]);
+
+  // Scroll to Top
   useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTo({top:0, behavior:'smooth'}); }, [step]);
 
-  // --- HELPERS ---
+  // --- FUNÇÕES AUXILIARES ---
   const vibrate = () => { if (navigator.vibrate) navigator.vibrate(10); };
   
+  const addToast = (msg, type = 'error') => {
+      vibrate();
+      const id = Date.now();
+      setToasts(p => [...p, {id, msg, type}]);
+      setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 4000);
+  };
+
   const daysArray = useMemo(() => {
       const days = [];
       const today = new Date();
@@ -248,6 +338,7 @@ export default function App() {
       return days;
   }, []);
 
+  // Lógica Fast Track (11:55 -> 12:00 liberado)
   const generateTimeSlots = useMemo(() => {
       if (!booking.date) return [];
       const slots = [];
@@ -255,16 +346,16 @@ export default function App() {
       
       const now = new Date();
       const selectedDate = new Date(booking.date);
-      if (selectedDate.getDate() === now.getDate()) {
+      
+      if (selectedDate.getDate() === now.getDate() && selectedDate.getMonth() === now.getMonth()) {
           const currentHour = now.getHours();
-          // Lógica: Se hora do slot > hora atual, mostra. (11:55 mostra 12:00)
           return slots.filter(time => parseInt(time) > currentHour);
       }
       return slots;
   }, [booking.date]);
 
-  const totalValue = useMemo(() => {
-    if (!booking.item) return 0;
+  const financials = useMemo(() => {
+    if (!booking.item) return { total: 0, savings: 0 };
     let total = booking.item.price;
     Object.keys(booking.extras).forEach(k => {
         if(booking.extras[k]) {
@@ -272,25 +363,56 @@ export default function App() {
             if(ex) total += (booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price);
         }
     });
-    return total;
+    return { total, savings: booking.item.savings || 0 };
   }, [booking]);
 
   const generateWhatsApp = () => {
       const dateStr = booking.date ? new Date(booking.date).toLocaleDateString('pt-BR') : '';
-      const hash = btoa(`${totalValue}-${dateStr}-${CONFIG.SECRET_TOKEN}`).substring(0,6).toUpperCase();
+      const hash = btoa(`${financials.total}-${dateStr}-${CONFIG.SECRET_TOKEN}`).substring(0,6).toUpperCase();
       let loc = booking.locationType === 'home' ? `Casa` : (booking.locationType === 'hotel' ? `Hotel` : `Motel`);
       
-      const msg = `*NOVO AGENDAMENTO* #${hash}\n\n👤 *${user.name}*\n💆‍♂️ *${booking.item?.title}*\n🗓️ *${dateStr} às ${booking.time}*\n📍 *${loc}*\n💰 *R$ ${totalValue},00*\n\nAguardo confirmação!`;
+      const msg = `*NOVO AGENDAMENTO* 🔐 #${hash}\n\n👤 *${user.name}*\n💆‍♂️ *${booking.item?.title}*\n🗓️ *${dateStr} às ${booking.time}*\n📍 *${loc}*\n💰 *R$ ${financials.total},00* (via ${booking.payment.toUpperCase()})\n\nAguardo confirmação!`;
       window.open(`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
+      
+      // Update XP
+      const gainedXP = booking.type === 'pack' ? 150 : 50;
+      setUser(u => ({ ...u, xp: u.xp + gainedXP, ordersCount: (u.ordersCount||0) + 1 }));
+      
+      setBooking(b => ({...b, item: null, type:'single', payment:'', termsAccepted:false}));
+      setShowConfetti(true);
       setStep(4);
   };
 
   // --- RENDER ---
   if (!isClient) return <div className="bg-slate-950 min-h-screen"/>;
 
+  if (loading) return (
+      <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-slate-950 text-white">
+        <div className="relative mb-8 animate-bounce">
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-sky-500 to-blue-700 shadow-2xl flex items-center justify-center text-4xl font-bold font-sans">TM</div>
+        </div>
+        <div className="flex gap-2">
+            <div className="w-3 h-3 bg-sky-500 rounded-full animate-bounce delay-75"></div>
+            <div className="w-3 h-3 bg-sky-500 rounded-full animate-bounce delay-150"></div>
+            <div className="w-3 h-3 bg-sky-500 rounded-full animate-bounce delay-300"></div>
+        </div>
+      </div>
+  );
+
   return (
     <div className="h-[100dvh] w-full bg-slate-950 text-slate-100 flex flex-col font-sans overflow-hidden">
-      <FontStyles />
+      <GlobalStyles />
+      <Confetti active={showConfetti} />
+
+      {/* TOASTS */}
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-3 w-full max-w-xs pointer-events-none px-4">
+        {toasts.map(t => (
+          <div key={t.id} className={`pointer-events-auto flex items-center gap-4 p-4 rounded-2xl border backdrop-blur-xl shadow-2xl animate-pop ${t.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+            {t.type === 'success' ? <Check size={20} /> : <AlertTriangle size={20} />}
+            <span className="text-xs font-bold">{t.msg}</span>
+          </div>
+        ))}
+      </div>
 
       {/* HEADER (Gaussian Blur) */}
       <header className="fixed top-0 left-0 w-full h-20 z-50 glass-panel border-b-0 border-b-white/5 flex items-center justify-between px-6">
@@ -298,13 +420,12 @@ export default function App() {
               <h1 className="text-xl font-bold tracking-tight text-white leading-none">Thalyson</h1>
               <span className="text-[10px] font-bold text-sky-500 uppercase tracking-[0.3em]">Massagens</span>
           </div>
-          {step > 0 && step < 4 && (
-              <div className="flex items-center gap-2">
-                  <div className="h-1 w-12 bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-sky-500 transition-all duration-500" style={{width: `${(step/3)*100}%`}}></div>
-                  </div>
+          <div className="flex gap-2">
+              <div className="px-3 py-1 bg-slate-800 rounded-lg border border-slate-700 flex items-center gap-2">
+                  <Trophy size={14} className="text-amber-400"/>
+                  <span className="text-xs font-bold">{user.xp} XP</span>
               </div>
-          )}
+          </div>
       </header>
 
       {/* MAIN CONTENT */}
@@ -315,65 +436,67 @@ export default function App() {
           {step === 0 && (
             <>
               <div className="space-y-2">
-                  <h2 className="text-3xl font-semibold text-white">Escolha sua <br/><span className="text-sky-500">Experiência</span></h2>
-                  <p className="text-slate-400 text-sm leading-relaxed">Pausa, respira e conecta. O momento é seu.</p>
+                  <h2 className="text-3xl font-semibold text-white">Olá, <span className="text-sky-500">{user.name ? user.name.split(' ')[0] : 'Visitante'}</span></h2>
+                  <p className="text-slate-400 text-sm leading-relaxed">Escolha como quer relaxar hoje.</p>
+              </div>
+
+              {/* XP Progress Bar */}
+              <div className="bg-slate-900/50 p-4 rounded-2xl border border-white/5">
+                  <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
+                      <span>Nível Atual</span>
+                      <span className="text-sky-500">{DATA.levels.find(l=>user.xp>=l.xp)?.title || "Visitante"}</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-sky-600 to-sky-400" style={{width: `${Math.min(100, (user.xp/800)*100)}%`}}></div>
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-2 text-right">Próximo nível: +{50} XP</p>
               </div>
 
               {/* Toggle Tabs */}
               <div className="bg-slate-900 p-1.5 rounded-2xl grid grid-cols-2 gap-1 border border-slate-800">
-                  <button onClick={()=>{vibrate(); setActiveTab('packs')}} className={`py-3 rounded-xl text-xs font-bold uppercase transition-all ${activeTab==='packs' ? 'bg-slate-800 text-sky-400 shadow-md' : 'text-slate-500'}`}>Ciclos & Planos</button>
-                  <button onClick={()=>{vibrate(); setActiveTab('single')}} className={`py-3 rounded-xl text-xs font-bold uppercase transition-all ${activeTab==='single' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-500'}`}>Avulso</button>
+                  <button onClick={()=>{vibrate(); setActiveTab('packs')}} className={`py-3 rounded-xl text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 ${activeTab==='packs' ? 'bg-slate-800 text-sky-400 shadow-md' : 'text-slate-500'}`}><Package size={14}/> Ciclos</button>
+                  <button onClick={()=>{vibrate(); setActiveTab('single')}} className={`py-3 rounded-xl text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 ${activeTab==='single' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-500'}`}><LayoutList size={14}/> Avulso</button>
               </div>
 
-              <div className="grid gap-5 pb-8">
+              <div className="grid gap-5">
                   {(activeTab === 'single' ? DATA.services : DATA.plans).map(item => (
                       <Card key={item.id} onClick={() => { vibrate(); setBooking(b => ({ ...b, type: activeTab === 'single' ? 'single' : item.type, item })); setStep(1); }}>
-                          {item.tag && <span className="absolute top-4 right-4 bg-sky-500/20 text-sky-400 text-[10px] font-bold px-3 py-1 rounded-full border border-sky-500/20">{item.tag}</span>}
+                          {item.tag && <span className="absolute top-0 right-0 bg-sky-600 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl shadow-lg">{item.tag}</span>}
                           <div className="flex items-start gap-5">
                               <div className="h-14 w-14 rounded-2xl bg-slate-800 flex items-center justify-center text-sky-500 shrink-0">
                                   <item.icon size={28} strokeWidth={1.5} />
                               </div>
-                              <div>
+                              <div className="flex-1">
                                   <h3 className="text-xl font-bold text-white mb-1">{item.title}</h3>
                                   <p className="text-sm text-slate-400 leading-snug">{item.desc}</p>
                               </div>
                           </div>
-                          <div className="mt-5 pt-5 border-t border-white/5 flex justify-between items-end">
-                              <span className="text-xs font-bold text-slate-500 uppercase">{item.min ? `${item.min} MIN` : 'MENSAL'}</span>
-                              <div className="text-right">
-                                  {item.fullPrice && <span className="text-xs line-through text-slate-600 block">R$ {item.fullPrice}</span>}
-                                  <span className="text-2xl font-bold text-sky-400">R$ {item.price}</span>
+                          <div className="mt-4 pt-4 border-t border-white/5">
+                              <p className="text-xs text-slate-500 mb-3 leading-relaxed whitespace-pre-line">{item.details}</p>
+                              <div className="flex justify-between items-end">
+                                  <span className="text-xs font-bold text-slate-500 uppercase">{item.min ? `${item.min} MIN` : 'MENSAL'}</span>
+                                  <div className="text-right">
+                                      {item.fullPrice && <span className="text-xs line-through text-slate-600 block">R$ {item.fullPrice}</span>}
+                                      <span className="text-2xl font-bold text-sky-400">R$ {item.price}</span>
+                                  </div>
                               </div>
                           </div>
                       </Card>
                   ))}
               </div>
               
-              {/* Reviews Scroll Horizontal */}
-              <div className="border-t border-white/5 pt-8">
-                  <h3 className="text-sm font-bold text-slate-500 uppercase mb-4 pl-2">O que dizem</h3>
-                  <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x px-2">
-                      {DATA.reviews.map((r, i) => (
-                          <div key={i} className="min-w-[260px] bg-slate-900/50 p-5 rounded-3xl border border-white/5 snap-center">
-                              <div className="flex gap-1 mb-3 text-sky-500"><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/></div>
-                              <p className="text-sm text-slate-300 italic mb-3">"{r.t}"</p>
-                              <p className="text-xs font-bold text-slate-500 uppercase">{r.n}</p>
-                          </div>
-                      ))}
-                  </div>
-              </div>
+              <AutoScrollReviews reviews={DATA.reviews} />
             </>
           )}
 
           {/* STEP 1: DATA E HORA */}
           {step === 1 && (
-            <div className="space-y-8">
+            <div className="space-y-8 animate-enter">
                <div className="text-center">
                    <h2 className="text-2xl font-bold text-white">Quando?</h2>
-                   <p className="text-slate-400 text-sm">Selecione o melhor horário.</p>
+                   <p className="text-slate-400 text-sm">Selecione data e horário.</p>
                </div>
 
-               {/* Datas - Horizontal Scroll */}
                <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar snap-x -mx-4 px-4">
                    {daysArray.map((d, i) => {
                        const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
@@ -386,25 +509,24 @@ export default function App() {
                    })}
                </div>
 
-               {/* Grid de Horários */}
                {booking.date ? (
                    generateTimeSlots.length > 0 ? (
-                       <div className="grid grid-cols-4 gap-3 animate-enter">
+                       <div className="grid grid-cols-4 gap-3 animate-pop">
                            {generateTimeSlots.map((t) => (
                                <button key={t} onClick={() => {vibrate(); setBooking(b => ({...b, time: t}))}} className={`py-3 rounded-xl text-sm font-bold border-2 transition-all ${booking.time === t ? 'bg-white text-black border-white' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600'}`}>
                                    {t}
                                </button>
                            ))}
                        </div>
-                   ) : <div className="p-6 bg-slate-900 rounded-2xl text-center text-slate-500 border border-white/5">Dia cheio. Tente outro.</div>
+                   ) : <div className="p-6 bg-slate-900 rounded-2xl text-center text-slate-500 border border-white/5">Agenda cheia.</div>
                ) : <div className="p-8 text-center text-slate-600 font-medium">Toque em uma data acima.</div>}
             </div>
           )}
 
           {/* STEP 2: LOCAL E DADOS */}
           {step === 2 && (
-             <div className="space-y-8">
-                 <h2 className="text-2xl font-bold text-center text-white">Localização</h2>
+             <div className="space-y-8 animate-enter">
+                 <h2 className="text-2xl font-bold text-center text-white">Onde será?</h2>
                  <div className="grid grid-cols-3 gap-3">
                      {[{id:'home', l:'Casa', i:Home}, {id:'motel', l:'Motel', i:BedDouble}, {id:'hotel', l:'Hotel', i:Building}].map(x => (
                          <button key={x.id} onClick={()=>{vibrate(); setBooking(b=>({...b, locationType: x.id}))}} className={`h-24 rounded-2xl text-xs font-bold uppercase flex flex-col items-center justify-center gap-3 border-2 transition-all ${booking.locationType === x.id ? 'bg-sky-500/20 border-sky-500 text-sky-400' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
@@ -413,8 +535,8 @@ export default function App() {
                      ))}
                  </div>
                  
-                 <div className="space-y-5 animate-enter">
-                     <InputField label="Seu Nome" value={user.name} onChange={v=>setUser(u=>({...u, name: v}))} icon={User} placeholder="Como prefere ser chamado?" />
+                 <div className="space-y-5">
+                     <InputField label="Seu Nome" value={user.name} onChange={v=>setUser(u=>({...u, name: v}))} icon={User} placeholder="Nome/Apelido" />
                      {booking.locationType !== 'motel' && (
                          <>
                              <div className="grid grid-cols-[1fr_90px] gap-4">
@@ -424,11 +546,10 @@ export default function App() {
                              <InputField label={booking.locationType==='hotel'?'Cidade':'Bairro'} value={booking.address.district} onChange={v=>setBooking(b=>({...b, address: {...b.address, district: v}}))} icon={MapPin} />
                          </>
                      )}
-                     {booking.locationType === 'motel' && <div className="p-4 bg-slate-900/50 rounded-xl border border-dashed border-slate-700 text-center text-sm text-slate-400">A taxa do local fica por conta do cliente.</div>}
                  </div>
 
                  <div className="pt-6 border-t border-white/5">
-                     <h3 className="text-xs font-bold text-slate-500 uppercase mb-4">Turbine sua sessão</h3>
+                     <h3 className="text-xs font-bold text-slate-500 uppercase mb-4">Adicionais</h3>
                      <div className="space-y-3">
                          {DATA.extras.map(ex => (
                              <div key={ex.id} onClick={()=>{vibrate(); setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))}} className={`flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all ${booking.extras[ex.id] ? 'bg-sky-500/10 border-sky-500' : 'bg-slate-900 border-slate-800'}`}>
@@ -465,7 +586,7 @@ export default function App() {
                          </div>
                          <div className="flex justify-between items-end">
                              <span className="text-xs font-bold uppercase text-slate-500">Total</span>
-                             <span className="text-4xl font-bold text-white">R$ {totalValue}</span>
+                             <span className="text-4xl font-bold text-white">R$ {financials.total}</span>
                          </div>
                      </div>
                  </div>
@@ -485,7 +606,7 @@ export default function App() {
                          <p className="text-xs text-center text-slate-500 mb-3 uppercase font-bold">Chave CNPJ</p>
                          <div className="flex gap-2">
                              <div className="flex-1 bg-black/30 rounded-xl flex items-center justify-center text-lg font-mono text-white border border-white/5">{CONFIG.PIX_DISPLAY}</div>
-                             <button onClick={()=>{navigator.clipboard.writeText(CONFIG.PIX_KEY); vibrate();}} className="h-12 w-12 bg-slate-800 rounded-xl flex items-center justify-center text-white border border-slate-700 active:bg-sky-500"><Copy size={20}/></button>
+                             <button onClick={()=>{navigator.clipboard.writeText(CONFIG.PIX_KEY); vibrate(); addToast("Chave Copiada!", "success")}} className="h-12 w-12 bg-slate-800 rounded-xl flex items-center justify-center text-white border border-slate-700 active:bg-sky-500"><Copy size={20}/></button>
                          </div>
                      </div>
                  )}
@@ -505,8 +626,8 @@ export default function App() {
                  <div className="h-28 w-28 bg-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_50px_-10px_rgba(16,185,129,0.5)] mb-8">
                      <Check size={56} className="text-white" strokeWidth={3}/>
                  </div>
-                 <h2 className="text-3xl font-bold text-white mb-3">Tudo Certo!</h2>
-                 <p className="text-slate-400 mb-10 max-w-[250px]">Seu pré-agendamento foi gerado. Finalize no WhatsApp para confirmar.</p>
+                 <h2 className="text-3xl font-bold text-white mb-3">Agendado!</h2>
+                 <p className="text-slate-400 mb-10 max-w-[250px]">Finalize a confirmação enviando a mensagem no WhatsApp.</p>
                  <Button variant="secondary" full onClick={()=>{setStep(0); setBooking({...booking, item:null})}}>Voltar ao Início</Button>
              </div>
           )}
@@ -521,11 +642,12 @@ export default function App() {
                   {step > 0 && <Button variant="secondary" size="icon" icon={ChevronLeft} onClick={()=>{vibrate(); setStep(step-1)}} />}
                   <Button full variant={step===3 ? 'whatsapp' : 'primary'} size="lg" onClick={()=>{
                       vibrate();
-                      if(step===0 && !booking.item) return;
-                      if(step===1 && (!booking.date || !booking.time)) return;
-                      if(step===2 && !user.name) return;
+                      if(step===0 && !booking.item) return addToast("Selecione um item!");
+                      if(step===1 && (!booking.date || !booking.time)) return addToast("Escolha a data!");
+                      if(step===2 && !user.name) return addToast("Preencha seu nome!");
                       if(step===3) {
-                          if(!booking.payment || !booking.termsAccepted) return;
+                          if(!booking.payment) return addToast("Selecione o pagamento!");
+                          if(!booking.termsAccepted) return addToast("Aceite os termos!");
                           generateWhatsApp();
                       } else {
                           setStep(step+1);
@@ -533,6 +655,21 @@ export default function App() {
                   }}>
                       {step === 3 ? 'FINALIZAR NO WHATSAPP' : 'CONTINUAR'}
                   </Button>
+              </div>
+          </div>
+      )}
+
+      {/* POPUP WELCOME */}
+      {welcomePopup && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-6">
+              <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={()=>setWelcomePopup(false)}></div>
+              <div className="relative glass-card p-8 rounded-3xl text-center max-w-sm w-full animate-enter">
+                  <div className="h-16 w-16 bg-gradient-to-tr from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl rotate-3">
+                      <Gift size={32} className="text-white"/>
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Bem-vindo!</h2>
+                  <p className="text-sm text-slate-400 mb-6">Ganhe pontos a cada agendamento e troque por sessões gratuitas.</p>
+                  <Button full onClick={()=>{setWelcomePopup(false); setUser(u=>({...u, hasSeenWelcome:true}))}}>Começar</Button>
               </div>
           </div>
       )}
