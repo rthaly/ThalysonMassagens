@@ -11,19 +11,19 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v39.0 - TITAN BLUE (ACCESSIBILITY MAX)
+ * THALYSON APP OS v40.0 - TITAN BLUE (SPACIOUS & ROBUST EDITION)
  * ==================================================================================
- * 1. PIX: Chave CNPJ Atualizada.
- * 2. UX/UI: Fontes maiores, botões mais altos (Touch Friendly).
- * 3. AVALIAÇÕES: Botões de navegação adicionados (Desktop Friendly).
- * 4. CONTRASTE: Melhor leitura em modo escuro e claro.
+ * 1. UI: Cards com PADDING ROBUSTO (p-8 a p-10).
+ * 2. UX: Footer Flutuante com respiro.
+ * 3. LAYOUT: Espaçamento (gap) aumentado drasticamente.
+ * 4. LEGIBILIDADE: Fontes grandes e claras (Poppins).
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v39_max', 
-  PIX_KEY: "62.922.530/0001-14", // <--- CHAVE ATUALIZADA
+  STORAGE_KEY: '@thaly_app_v40_spacious', 
+  PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
   SECRET_TOKEN: 'THALY_2026_SECURE',
@@ -32,37 +32,36 @@ const CONFIG = {
 };
 
 // ==================================================================================
-// 1. DESIGN SYSTEM & COMPONENTS (REFEITO PARA LEGIBILIDADE)
+// 1. DESIGN SYSTEM & COMPONENTS (ROBUSTOS)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
-  // AUMENTADO: Padding e tamanhos de fonte base
-  const baseStyle = "relative flex items-center justify-center font-semibold tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.96] hover:brightness-110 shadow-lg hover:shadow-xl font-['Poppins']";
+  const baseStyle = "relative flex items-center justify-center font-bold tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-3xl select-none touch-manipulation overflow-hidden active:scale-[0.96] hover:brightness-110 shadow-xl hover:shadow-2xl font-['Poppins']";
   
   const variants = {
-    // BLUE THEME - Cores vibrantes
-    primary: "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sky-500/30 border border-sky-400/20",
-    secondary: "bg-white/5 backdrop-blur-md border border-white/10 text-zinc-100 hover:bg-white/10 hover:border-white/20",
-    whatsapp: "bg-[#25D366] text-white shadow-green-500/20 border border-green-400/20",
-    instagram: "bg-gradient-to-tr from-purple-500 to-pink-500 text-white shadow-pink-500/20 border border-pink-400/20",
-    outline: "bg-transparent border border-zinc-600 text-zinc-300 hover:text-white hover:border-zinc-400",
-    icon: "bg-white/5 backdrop-blur-md border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10"
+    // Cores mais vibrantes e sólidas
+    primary: "bg-gradient-to-r from-sky-500 to-blue-700 text-white shadow-sky-500/40 border border-sky-400/20",
+    secondary: "bg-white/10 backdrop-blur-xl border border-white/20 text-zinc-100 hover:bg-white/20",
+    whatsapp: "bg-[#25D366] text-white shadow-green-500/30 border border-green-400/20",
+    instagram: "bg-gradient-to-tr from-purple-600 to-pink-600 text-white shadow-pink-500/30 border border-pink-400/20",
+    outline: "bg-transparent border-2 border-zinc-600 text-zinc-300 hover:text-white hover:border-zinc-400",
+    icon: "bg-white/10 backdrop-blur-xl border border-white/20 text-zinc-200 hover:text-white hover:bg-white/20"
   };
   
-  // AUMENTADO: Alturas mínimas para facilitar o toque (Touch Target)
+  // Tamanhos "Chunky" para facilitar o toque
   const sizes = { 
-    sm: "h-11 text-xs px-4", 
-    md: "h-14 text-sm px-6", // Padrão agora é maior
-    lg: "h-16 text-base px-8", 
-    xl: "h-16 text-sm font-bold uppercase tracking-widest", 
-    icon: "h-12 w-12 p-0 flex-shrink-0 rounded-full" // Botão ícone maior
+    sm: "h-12 text-xs px-5", 
+    md: "h-16 text-base px-8", 
+    lg: "h-20 text-lg px-10", 
+    xl: "h-16 text-sm font-black uppercase tracking-widest", 
+    icon: "h-14 w-14 p-0 flex-shrink-0 rounded-full" 
   };
 
   return (
     <button onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant] || variants.primary} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}>
-      {loading ? <Loader2 size={20} className="animate-spin text-current"/> : (
+      {loading ? <Loader2 size={24} className="animate-spin text-current"/> : (
         <>
-          {Icon && <Icon size={20} className={children ? "mr-2.5 opacity-90 flex-shrink-0" : ""} strokeWidth={2.5} />}
+          {Icon && <Icon size={24} className={children ? "mr-3 opacity-90 flex-shrink-0" : ""} strokeWidth={3} />}
           <span className="truncate">{children}</span>
         </>
       )}
@@ -71,39 +70,37 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
 };
 
 const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "text", error, isDark }) => (
-  <div className="space-y-2.5 w-full group font-['Poppins']">
-    {/* AUMENTADO: Tamanho da label e contraste */}
-    {label && <label className={`text-xs font-bold uppercase tracking-widest ml-1 transition-colors ${isDark ? 'text-zinc-400 group-focus-within:text-sky-400' : 'text-slate-600 group-focus-within:text-blue-600'}`}>{label}</label>}
+  <div className="space-y-3 w-full group font-['Poppins']">
+    {label && <label className={`text-sm font-bold uppercase tracking-widest ml-2 transition-colors ${isDark ? 'text-zinc-400 group-focus-within:text-sky-400' : 'text-slate-600 group-focus-within:text-blue-600'}`}>{label}</label>}
     <div className="relative">
-      <div className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors z-10 ${isDark ? 'text-zinc-400 group-focus-within:text-sky-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}>{Icon && <Icon size={20} />}</div>
+      <div className={`absolute left-6 top-1/2 -translate-y-1/2 transition-colors z-10 ${isDark ? 'text-zinc-400 group-focus-within:text-sky-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}>{Icon && <Icon size={24} />}</div>
       <input 
         type={type} 
         value={value} 
         onChange={onChange} 
         placeholder={placeholder} 
-        // AUMENTADO: text-base evita zoom no iPhone. Padding aumentado.
-        className={`w-full pl-14 pr-5 py-5 rounded-2xl outline-none text-base font-medium transition-all duration-300 
+        className={`w-full pl-16 pr-6 py-6 rounded-3xl outline-none text-lg font-medium transition-all duration-300 
         ${isDark 
-            ? 'bg-zinc-900/50 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:bg-zinc-900 focus:border-sky-500/50' 
-            : 'bg-white border-slate-300 text-slate-800 placeholder:text-slate-400 focus:border-blue-500 focus:shadow-md'} 
-        border focus:shadow-[0_0_20px_-5px_rgba(14,165,233,0.15)] ${error ? 'border-red-500/50 text-red-500' : ''}`} 
+            ? 'bg-zinc-900/60 border-2 border-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus:bg-zinc-900 focus:border-sky-500' 
+            : 'bg-white border-2 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-blue-500 focus:shadow-xl'} 
+        focus:shadow-[0_0_30px_-5px_rgba(14,165,233,0.3)] ${error ? 'border-red-500/80 text-red-500' : ''}`} 
       />
     </div>
-    {error && <p className="text-red-500 text-xs ml-2 font-bold animate-pulse">{error}</p>}
+    {error && <p className="text-red-500 text-sm ml-3 font-bold animate-pulse">{error}</p>}
   </div>
 );
 
 const Card = ({ children, className = '', onClick, active = false, isDark = true }) => (
   <div 
     onClick={onClick} 
-    className={`relative p-7 rounded-[2.5rem] transition-all duration-500 overflow-hidden h-full flex flex-col group font-['Poppins']
-    ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-1' : ''} 
+    className={`relative p-8 md:p-10 rounded-[3rem] transition-all duration-500 overflow-hidden h-full flex flex-col group font-['Poppins']
+    ${onClick ? 'cursor-pointer active:scale-[0.97] hover:-translate-y-2' : ''} 
     ${active 
-        ? 'bg-sky-500/10 border border-sky-500/40 shadow-[0_0_40px_-10px_rgba(14,165,233,0.25)]' 
-        : (isDark ? 'bg-zinc-900/60 backdrop-blur-xl border border-white/10 hover:border-sky-500/30 hover:bg-zinc-900' : 'bg-white border border-slate-200 shadow-xl shadow-slate-200/50 hover:border-blue-500/30')} 
+        ? 'bg-sky-500/10 border-2 border-sky-500 shadow-[0_0_60px_-10px_rgba(14,165,233,0.4)]' 
+        : (isDark ? 'bg-zinc-900/80 backdrop-blur-2xl border border-white/10 hover:border-sky-500/50 hover:bg-zinc-800' : 'bg-white border border-slate-200 shadow-2xl shadow-slate-200/50 hover:border-blue-500/50')} 
     ${className}`}
   >
-    {active && <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/5 to-transparent pointer-events-none" />}
+    {active && <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/10 to-transparent pointer-events-none" />}
     {children}
   </div>
 );
@@ -150,14 +147,13 @@ const Confetti = ({ active }) => {
   return <canvas ref={canvasRef} className="fixed inset-0 z-[60] pointer-events-none" />;
 };
 
-// ATUALIZADO: Carrossel de Reviews com Setas para Desktop
 const ReviewsCarousel = ({ reviews, isDark }) => {
   const scrollRef = useRef(null);
 
   const scroll = (direction) => {
     if (scrollRef.current) {
         const { current } = scrollRef;
-        const scrollAmount = 320; // Tamanho aproximado de um card
+        const scrollAmount = 340; 
         if (direction === 'left') {
             current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
         } else {
@@ -167,39 +163,34 @@ const ReviewsCarousel = ({ reviews, isDark }) => {
   };
 
   return (
-    <div className={`w-full overflow-hidden py-10 border-y mb-12 backdrop-blur-sm relative group/reviews ${isDark ? 'bg-zinc-950/30 border-white/5' : 'bg-slate-50/80 border-slate-200'}`}>
-      
-      {/* Botão Esquerda */}
-      <button onClick={() => scroll('left')} className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-md opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white/80 border-slate-200 text-slate-800 hover:bg-white'}`}>
-        <ChevronLeft size={24} />
+    <div className={`w-full overflow-hidden py-12 border-y mb-16 backdrop-blur-md relative group/reviews ${isDark ? 'bg-zinc-950/40 border-white/5' : 'bg-slate-50/80 border-slate-200'}`}>
+      <button onClick={() => scroll('left')} className={`absolute left-6 top-1/2 -translate-y-1/2 z-20 w-14 h-14 flex items-center justify-center rounded-full border-2 transition-all shadow-2xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}>
+        <ChevronLeft size={28} />
+      </button>
+      <button onClick={() => scroll('right')} className={`absolute right-6 top-1/2 -translate-y-1/2 z-20 w-14 h-14 flex items-center justify-center rounded-full border-2 transition-all shadow-2xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}>
+        <ChevronRight size={28} />
       </button>
 
-      {/* Botão Direita */}
-      <button onClick={() => scroll('right')} className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-md opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white/80 border-slate-200 text-slate-800 hover:bg-white'}`}>
-        <ChevronRight size={24} />
-      </button>
-
-      <div ref={scrollRef} className="flex gap-6 overflow-x-auto scrollbar-hide px-6 md:px-16 snap-x snap-mandatory font-['Poppins']">
+      <div ref={scrollRef} className="flex gap-8 overflow-x-auto scrollbar-hide px-8 md:px-20 snap-x snap-mandatory font-['Poppins']">
         {reviews.map((r, i) => (
-            <div key={`${i}-${r.n}`} className={`snap-center flex-shrink-0 w-80 sm:w-96 border p-7 rounded-[2rem] transition-all duration-300 hover:scale-[1.01] select-none ${isDark ? 'bg-zinc-900/90 border-white/10 hover:border-sky-500/30' : 'bg-white border-slate-200 shadow-sm hover:border-blue-400'}`}>
-              <div className="flex justify-between items-start mb-5">
+            <div key={`${i}-${r.n}`} className={`snap-center flex-shrink-0 w-80 sm:w-96 border p-8 rounded-[2.5rem] transition-all duration-300 hover:scale-[1.01] select-none ${isDark ? 'bg-zinc-900/80 border-white/10 hover:border-sky-500/30' : 'bg-white border-slate-200 shadow-sm hover:border-blue-400'}`}>
+              <div className="flex justify-between items-start mb-6">
                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border ${isDark ? 'bg-zinc-800 text-zinc-300 border-white/5' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>{r.n.charAt(0)}</div>
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-bold border ${isDark ? 'bg-zinc-800 text-zinc-300 border-white/5' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>{r.n.charAt(0)}</div>
                     <div>
-                      <span className={`text-base font-bold block leading-none mb-1 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{r.n}</span>
-                      <span className="text-[10px] text-sky-500 uppercase font-bold tracking-wider">{r.loc}</span>
+                      <span className={`text-lg font-bold block leading-none mb-1 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{r.n}</span>
+                      <span className="text-xs text-sky-500 uppercase font-bold tracking-wider">{r.loc}</span>
                     </div>
                  </div>
                  <div className="flex gap-0.5">
                    {[...Array(5)].map((_, k) => (
-                     <Star key={k} size={14} fill={k < r.s ? "#0ea5e9" : "none"} className={k < r.s ? "text-sky-500" : (isDark ? "text-zinc-700" : "text-slate-300")} />
+                     <Star key={k} size={16} fill={k < r.s ? "#0ea5e9" : "none"} className={k < r.s ? "text-sky-500" : (isDark ? "text-zinc-700" : "text-slate-300")} />
                    ))}
                  </div>
               </div>
-              <p className={`text-sm leading-relaxed font-light italic ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{r.t}"</p>
+              <p className={`text-base leading-relaxed font-light italic ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{r.t}"</p>
             </div>
         ))}
-        {/* Espaçador final */}
         <div className="w-4 shrink-0"></div>
       </div>
     </div>
@@ -207,12 +198,11 @@ const ReviewsCarousel = ({ reviews, isDark }) => {
 };
 
 // ==================================================================================
-// 2. DADOS (FULL TRANSLATION PT/EN)
+// 2. DADOS
 // ==================================================================================
 
 const getData = (lang) => {
     const isPT = lang === 'pt';
-    
     return {
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor" },
@@ -845,9 +835,9 @@ ${T.zap.wait}
       {/* Toasts */}
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-3 w-full max-w-xs pointer-events-none px-4">
         {toasts.map(t => (
-          <div key={t.id} className={`pointer-events-auto flex items-center gap-4 p-5 rounded-2xl border backdrop-blur-xl shadow-2xl animate-slide-down ${t.type === 'success' ? (isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-100 border-emerald-200 text-emerald-800') : (isDark ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-red-100 border-red-200 text-red-700')}`}>
-            {t.type === 'success' ? <Check size={20} /> : <AlertTriangle size={20} />}
-            <span className="text-sm font-medium leading-tight">{t.msg}</span>
+          <div key={t.id} className={`pointer-events-auto flex items-center gap-4 p-5 rounded-3xl border backdrop-blur-xl shadow-2xl animate-slide-down ${t.type === 'success' ? (isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-100 border-emerald-200 text-emerald-800') : (isDark ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-red-100 border-red-200 text-red-700')}`}>
+            {t.type === 'success' ? <Check size={24} /> : <AlertTriangle size={24} />}
+            <span className="text-base font-medium leading-tight">{t.msg}</span>
           </div>
         ))}
       </div>
@@ -855,77 +845,77 @@ ${T.zap.wait}
       <Confetti active={showConfetti} />
 
       {/* Header */}
-      <header className="h-20 px-6 md:px-12 flex items-center justify-between z-20 shrink-0 bg-transparent relative max-w-5xl mx-auto w-full">
+      <header className="h-24 px-6 md:px-16 flex items-center justify-between z-20 shrink-0 bg-transparent relative max-w-6xl mx-auto w-full">
         <div className="flex flex-col justify-center">
-            <span className={`font-bold text-lg tracking-wide block leading-none ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson</span>
-            <span className="text-[10px] uppercase font-bold text-sky-500 tracking-[0.2em]">Massagens</span>
+            <span className={`font-bold text-2xl tracking-wide block leading-none ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson</span>
+            <span className="text-xs uppercase font-bold text-sky-500 tracking-[0.3em]">Massagens</span>
         </div>
-        <div className="flex gap-2">
-            <button onClick={handleShare} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Share2 size={20}/></button>
-            <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Instagram size={20}/></a>
-            <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Globe size={20}/></button>
-            <button onClick={() => setIsDark(!isDark)} className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-sky-500 hover:text-sky-600 shadow-sm'}`}>{isDark ? <Moon size={20}/> : <Sun size={20}/>}</button>
+        <div className="flex gap-3">
+            <button onClick={handleShare} className={`w-14 h-14 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Share2 size={24}/></button>
+            <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noreferrer" className={`w-14 h-14 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Instagram size={24}/></a>
+            <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`w-14 h-14 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Globe size={24}/></button>
+            <button onClick={() => setIsDark(!isDark)} className={`w-14 h-14 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-sky-500 hover:text-sky-600 shadow-sm'}`}>{isDark ? <Moon size={24}/> : <Sun size={24}/>}</button>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-48 pt-4 scroll-smooth relative z-10 px-4 md:px-8">
+      <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-48 pt-6 scroll-smooth relative z-10 px-6 md:px-12">
         
         {step < 3 && <ReviewsCarousel reviews={DATA.reviews} isDark={isDark} />}
 
-        <div className="max-w-md md:max-w-5xl mx-auto space-y-12">
+        <div className="max-w-6xl mx-auto space-y-16">
 
           {/* CATALOG (STEP 0) */}
           {step === 0 && (
-            <div className="animate-fade-in space-y-12">
+            <div className="animate-fade-in space-y-16">
               
-              <div className="md:grid md:grid-cols-2 md:gap-12 items-center">
+              <div className="md:grid md:grid-cols-2 md:gap-16 items-center">
                 <div className="animate-slide-up delay-100">
-                    <div className="flex items-end gap-2 mb-4">
-                        <h1 className={`text-4xl md:text-5xl font-light tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome} <span className="font-bold text-sky-500">{user.name ? user.name.split(' ')[0] : (lang === 'pt' ? "Visitante" : "Visitor")}</span></h1>
+                    <div className="flex items-end gap-3 mb-6">
+                        <h1 className={`text-5xl md:text-6xl font-light tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome} <span className="font-bold text-sky-500">{user.name ? user.name.split(' ')[0] : (lang === 'pt' ? "Visitante" : "Visitor")}</span></h1>
                     </div>
-                    <p className={`text-base font-light leading-relaxed max-w-md ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.subtitle}</p>
+                    <p className={`text-lg font-light leading-relaxed max-w-lg ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.subtitle}</p>
                     
-                    <div className="mt-6 flex items-center gap-2 p-3 rounded-xl border border-sky-500/20 bg-sky-500/5 text-sky-500 text-xs font-medium">
-                        <ExternalLink size={14} />
+                    <div className="mt-8 flex items-center gap-3 p-4 rounded-2xl border border-sky-500/20 bg-sky-500/5 text-sky-500 text-sm font-medium">
+                        <ExternalLink size={18} />
                         <span>{T.zap.browser_warn}</span>
                     </div>
                 </div>
                 
                 {/* Level Card */}
-                <div className={`hidden md:block animate-slide-up delay-200 relative overflow-hidden rounded-[2.5rem] p-10 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-sky-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-blue-500/30'}`}>
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-sky-500/10 blur-[60px] rounded-full pointer-events-none transition-all duration-700"></div>
-                    <div className="flex justify-between items-start mb-8 relative z-10">
-                        <div className="flex items-center gap-5">
-                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg ${isDark ? 'bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-sky-500/20' : 'bg-sky-500 text-white shadow-sky-200'}`}>
-                                <Trophy size={32} />
+                <div className={`hidden md:block animate-slide-up delay-200 relative overflow-hidden rounded-[3rem] p-12 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-sky-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-blue-500/30'}`}>
+                    <div className="absolute top-0 right-0 w-60 h-60 bg-sky-500/10 blur-[80px] rounded-full pointer-events-none transition-all duration-700"></div>
+                    <div className="flex justify-between items-start mb-10 relative z-10">
+                        <div className="flex items-center gap-6">
+                            <div className={`w-20 h-20 rounded-3xl flex items-center justify-center shadow-lg ${isDark ? 'bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-sky-500/20' : 'bg-sky-500 text-white shadow-sky-200'}`}>
+                                <Trophy size={40} />
                             </div>
                             <div>
-                                <span className={`text-xs uppercase font-bold tracking-[0.15em] ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.level_label}</span>
-                                <h3 className={`font-bold text-3xl mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                <span className={`text-sm uppercase font-bold tracking-[0.15em] ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.level_label}</span>
+                                <h3 className={`font-bold text-4xl mt-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                     {user.xp >= 800 ? "VIP Master Elite" : (DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title)}
                                 </h3>
                             </div>
                         </div>
                         <div className="text-right">
-                            <span className={`text-4xl font-bold block ${isDark ? 'text-white' : 'text-slate-900'}`}>{user.xp}</span>
-                            <span className="text-xs font-bold uppercase text-sky-500 tracking-wider">XP</span>
+                            <span className={`text-5xl font-bold block ${isDark ? 'text-white' : 'text-slate-900'}`}>{user.xp}</span>
+                            <span className="text-sm font-bold uppercase text-sky-500 tracking-wider">XP</span>
                         </div>
                     </div>
                     <div className="relative z-10">
-                        <div className={`flex justify-between text-xs font-bold mb-3 uppercase tracking-wide ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                        <div className={`flex justify-between text-sm font-bold mb-4 uppercase tracking-wide ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                             <span>Progresso</span>
                             <span className="text-sky-500">{Math.floor(getCurrentLevelProgress())}%</span>
                         </div>
-                        <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`}>
-                            <div className="h-full bg-gradient-to-r from-sky-600 to-sky-400 shadow-[0_0_15px_#0ea5e9]" style={{width: `${getCurrentLevelProgress()}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'}}></div>
+                        <div className={`h-3 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`}>
+                            <div className="h-full bg-gradient-to-r from-sky-600 to-sky-400 shadow-[0_0_20px_#0ea5e9]" style={{width: `${getCurrentLevelProgress()}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'}}></div>
                         </div>
                     </div>
                 </div>
               </div>
 
               {/* Mobile Level Card */}
-              <div className={`md:hidden animate-slide-up delay-200 relative mt-4 overflow-hidden rounded-[2.5rem] p-8 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-sky-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-blue-500/30'}`}>
+              <div className={`md:hidden animate-slide-up delay-200 relative mt-6 overflow-hidden rounded-[2.5rem] p-8 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-sky-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-blue-500/30'}`}>
                     <div className="absolute top-0 right-0 w-40 h-40 bg-sky-500/10 blur-[60px] rounded-full pointer-events-none transition-all duration-700"></div>
                     <div className="flex justify-between items-start mb-8 relative z-10">
                         <div className="flex items-center gap-4">
@@ -959,38 +949,38 @@ ${T.zap.wait}
               </div>
 
               {/* Tabs */}
-              <div className={`animate-slide-up delay-300 grid grid-cols-2 p-2 rounded-3xl border relative max-w-sm mx-auto md:mx-0 ${isDark ? 'bg-zinc-900/50 border-white/5' : 'bg-white border-slate-200 shadow-sm'}`}>
-                  <button onClick={()=>setActiveTab('packs')} className={`relative z-10 py-5 text-xs font-bold uppercase tracking-wider rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='packs' ? (isDark ? 'bg-zinc-800 text-sky-500 shadow-xl shadow-black/20 ring-1 ring-sky-500/20' : 'bg-slate-100 text-blue-600 shadow-sm') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}`}>
-                      <Package size={16} className={activeTab === 'packs' ? 'animate-pulse' : ''}/> {T.tab_packs}
-                      {activeTab !== 'packs' && <span className="absolute -top-1 -right-1 w-2 h-2 bg-sky-500 rounded-full animate-ping"></span>}
+              <div className={`animate-slide-up delay-300 grid grid-cols-2 p-2 rounded-[2rem] border relative max-w-sm mx-auto md:mx-0 ${isDark ? 'bg-zinc-900/50 border-white/5' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <button onClick={()=>setActiveTab('packs')} className={`relative z-10 py-5 text-sm font-bold uppercase tracking-wider rounded-3xl transition-all duration-300 flex items-center justify-center gap-3 ${activeTab==='packs' ? (isDark ? 'bg-zinc-800 text-sky-500 shadow-xl shadow-black/20 ring-1 ring-sky-500/20' : 'bg-slate-100 text-blue-600 shadow-sm') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}`}>
+                      <Package size={20} className={activeTab === 'packs' ? 'animate-pulse' : ''}/> {T.tab_packs}
+                      {activeTab !== 'packs' && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-sky-500 rounded-full animate-ping"></span>}
                   </button>
-                  <button onClick={()=>setActiveTab('single')} className={`relative z-10 py-5 text-xs font-bold uppercase tracking-wider rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='single' ? (isDark ? 'bg-zinc-800 text-white shadow-xl shadow-black/20' : 'bg-slate-100 text-slate-900 shadow-sm') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}`}>
-                      <LayoutList size={16}/> {T.tab_single}
+                  <button onClick={()=>setActiveTab('single')} className={`relative z-10 py-5 text-sm font-bold uppercase tracking-wider rounded-3xl transition-all duration-300 flex items-center justify-center gap-3 ${activeTab==='single' ? (isDark ? 'bg-zinc-800 text-white shadow-xl shadow-black/20' : 'bg-slate-100 text-slate-900 shadow-sm') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}`}>
+                      <LayoutList size={20}/> {T.tab_single}
                   </button>
               </div>
 
               {/* Products Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-in delay-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 animate-slide-in delay-300">
                   {activeTab === 'single' && DATA.services.map((s, idx) => (
                       <div key={s.id} className="animate-scale-in" style={{animationDelay: `${idx * 100}ms`}}>
                         <Card active={booking.item?.id === s.id} onClick={() => handleSelectItem('single', s)} isDark={isDark}>
-                            <div className="flex justify-between items-start mb-6">
-                                <div className={`p-4 rounded-2xl transition-all duration-300 ${booking.item?.id === s.id ? 'bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-lg shadow-sky-500/20' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={28}/></div>
+                            <div className="flex justify-between items-start mb-8">
+                                <div className={`p-5 rounded-3xl transition-all duration-300 ${booking.item?.id === s.id ? 'bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-lg shadow-sky-500/20' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={32}/></div>
                                 <div className="text-right">
                                     <span className={`block text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>R$ {s.price}</span>
-                                    <span className={`text-xs font-bold uppercase tracking-wider flex items-center justify-end gap-1.5 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}><Clock size={14}/> {s.min} min</span>
+                                    <span className={`text-xs font-bold uppercase tracking-wider flex items-center justify-end gap-1.5 mt-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}><Clock size={14}/> {s.min} min</span>
                                 </div>
                             </div>
-                            <div className="mb-4 flex-1">
-                                {s.tag && <span className="inline-block px-3 py-1.5 rounded-lg bg-sky-500/10 border border-sky-500/20 text-[10px] font-bold text-sky-500 mb-3 uppercase tracking-widest">{s.tag}</span>}
-                                <h3 className={`font-bold text-xl leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{s.title}</h3>
-                                <p className={`text-sm leading-loose font-light mt-3 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{s.desc}</p>
+                            <div className="mb-6 flex-1">
+                                {s.tag && <span className="inline-block px-4 py-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-xs font-bold text-sky-500 mb-4 uppercase tracking-widest">{s.tag}</span>}
+                                <h3 className={`font-bold text-2xl leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{s.title}</h3>
+                                <p className={`text-base leading-loose font-light mt-3 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{s.desc}</p>
                             </div>
-                            <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === s.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
+                            <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === s.id ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
                                 <div className="overflow-hidden">
-                                    <div className={`p-6 rounded-3xl border text-xs leading-loose font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                                        <div className="flex items-center gap-2 font-bold mb-3 text-sky-500 uppercase tracking-wider text-[11px]"><Info size={14}/> {T.details_label}</div>
-                                        <p className="whitespace-pre-line text-sm">{s.details}</p>
+                                    <div className={`p-8 rounded-[2rem] border text-sm leading-loose font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                                        <div className="flex items-center gap-3 font-bold mb-4 text-sky-500 uppercase tracking-wider text-xs"><Info size={16}/> {T.details_label}</div>
+                                        <p className="whitespace-pre-line text-base">{s.details}</p>
                                     </div>
                                 </div>
                             </div>
@@ -1001,27 +991,27 @@ ${T.zap.wait}
                   {activeTab === 'packs' && DATA.plans.map((plan, idx) => (
                       <div key={plan.id} className="animate-scale-in" style={{animationDelay: `${idx * 100}ms`}}>
                         <Card active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} isDark={isDark} className="border-sky-500/20">
-                            {plan.tag && (<div className="absolute top-0 right-0 bg-gradient-to-bl from-sky-500 to-blue-600 text-white text-[10px] font-bold px-4 py-3 rounded-bl-3xl shadow-lg shadow-sky-500/20">{plan.tag}</div>)}
-                            <div className="flex items-center gap-5 mb-6">
-                                <div className={`p-5 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-sky-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={32}/></div>
+                            {plan.tag && (<div className="absolute top-0 right-0 bg-gradient-to-bl from-sky-500 to-blue-600 text-white text-xs font-bold px-5 py-4 rounded-bl-[2rem] shadow-lg shadow-sky-500/20 z-10">{plan.tag}</div>)}
+                            <div className="flex items-center gap-6 mb-8">
+                                <div className={`p-6 rounded-3xl transition-all ${booking.item?.id === plan.id ? 'bg-sky-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={36}/></div>
                                 <div>
-                                    <h3 className={`font-bold text-xl leading-none mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3>
+                                    <h3 className={`font-bold text-2xl leading-none mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3>
                                     <p className={`text-xs uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{plan.type === 'pack' ? (lang === 'pt' ? "Pacote" : "Pack") : (lang === 'pt' ? "Assinatura" : "Subscription")}</p>
                                 </div>
                             </div>
-                            <div className={`mb-6 p-4 rounded-2xl border flex-1 ${isDark ? 'bg-zinc-950/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
-                                <p className={`text-sm font-medium leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{plan.desc}</p>
+                            <div className={`mb-8 p-6 rounded-3xl border flex-1 ${isDark ? 'bg-zinc-950/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
+                                <p className={`text-base font-medium leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{plan.desc}</p>
                             </div>
-                            <div className={`flex items-end gap-3 p-5 rounded-3xl border ${isDark ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
+                            <div className={`flex items-end gap-4 p-6 rounded-[2rem] border ${isDark ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
                                 <span className="text-3xl font-bold text-sky-500">R$ {plan.price}</span>
                                 <span className={`text-sm line-through decoration-zinc-600 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>R$ {plan.fullPrice}</span>
-                                <span className="text-[10px] text-emerald-500 font-bold mb-1 ml-auto bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/20">-R${plan.savings}</span>
+                                <span className="text-xs text-emerald-500 font-bold mb-1 ml-auto bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20">-R${plan.savings}</span>
                             </div>
-                            <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === plan.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
+                            <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === plan.id ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
                                 <div className="overflow-hidden">
-                                    <div className={`p-6 rounded-3xl border text-xs leading-loose font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                                        <div className="flex items-center gap-2 font-bold mb-3 text-sky-500 uppercase tracking-wider text-[11px]"><Info size={14}/> {T.details_label}</div>
-                                        <p className="whitespace-pre-line text-sm">{plan.details}</p>
+                                    <div className={`p-8 rounded-[2rem] border text-sm leading-loose font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                                        <div className="flex items-center gap-3 font-bold mb-4 text-sky-500 uppercase tracking-wider text-xs"><Info size={16}/> {T.details_label}</div>
+                                        <p className="whitespace-pre-line text-base">{plan.details}</p>
                                     </div>
                                 </div>
                             </div>
@@ -1034,17 +1024,17 @@ ${T.zap.wait}
 
           {/* DATE (STEP 1) */}
           {step === 1 && (
-            <div className="animate-slide-in space-y-12">
-              <div className="text-center mb-8">
-                 <h2 className={`text-4xl font-light mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.select_time_title}</h2>
+            <div className="animate-slide-in space-y-16">
+              <div className="text-center mb-10">
+                 <h2 className={`text-4xl font-light mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.select_time_title}</h2>
                  <p className={`text-xs uppercase tracking-[0.25em] font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.date_sub}</p>
               </div>
               
               <div className="relative group">
-                  <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full border transition-all hover:scale-110 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-md'}`}><ChevronLeft size={24} /></button>
+                  <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-14 h-14 items-center justify-center rounded-full border transition-all hover:scale-110 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-md'}`}><ChevronLeft size={28} /></button>
                   
                   <div className="overflow-hidden">
-                      <div ref={dateScrollRef} className="flex gap-4 overflow-x-auto pb-8 scrollbar-hide px-2 snap-x snap-mandatory">
+                      <div ref={dateScrollRef} className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide px-2 snap-x snap-mandatory">
                         {daysArray.map((d, i) => { 
                           const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
                           let lbl = d.toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN, {weekday:'short'}).slice(0,3);
@@ -1053,12 +1043,12 @@ ${T.zap.wait}
                           const showMonth = d.getDate() === 1 || i === 0;
 
                           return (
-                            <div key={i} className="flex flex-col gap-2">
-                                {showMonth && <span className={`text-[10px] font-bold uppercase tracking-widest pl-1 ${isDark ? 'text-zinc-400' : 'text-slate-400'}`}>{monthName}</span>}
-                                <button onClick={() => setBooking(b => ({ ...b, date: d, time: null }))} className={`snap-start min-w-[90px] h-32 rounded-3xl flex flex-col items-center justify-center gap-1.5 border transition-all flex-shrink-0 active:scale-95 duration-300 ${isSel ? 'bg-sky-500 border-sky-500 text-white shadow-lg shadow-sky-500/20 scale-105' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 shadow-sm')} ${!showMonth ? 'mt-6' : ''}`}>
+                            <div key={i} className="flex flex-col gap-3">
+                                {showMonth && <span className={`text-xs font-bold uppercase tracking-widest pl-2 ${isDark ? 'text-zinc-400' : 'text-slate-400'}`}>{monthName}</span>}
+                                <button onClick={() => setBooking(b => ({ ...b, date: d, time: null }))} className={`snap-start min-w-[100px] h-36 rounded-[2rem] flex flex-col items-center justify-center gap-2 border transition-all flex-shrink-0 active:scale-95 duration-300 ${isSel ? 'bg-sky-500 border-sky-500 text-white shadow-xl shadow-sky-500/30 scale-105' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 shadow-sm')} ${!showMonth ? 'mt-7' : ''}`}>
                                     <span className="text-xs font-bold uppercase tracking-wider opacity-80">{lbl}</span>
-                                    <span className="text-4xl font-bold">{d.getDate()}</span>
-                                    {isSel && <span className="w-1.5 h-1.5 rounded-full bg-white mt-2"></span>}
+                                    <span className="text-5xl font-bold">{d.getDate()}</span>
+                                    {isSel && <span className="w-2 h-2 rounded-full bg-white mt-2"></span>}
                                 </button>
                             </div>
                           )
@@ -1066,46 +1056,46 @@ ${T.zap.wait}
                       </div>
                   </div>
 
-                  <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full border transition-all hover:scale-110 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-md'}`}><ChevronRight size={24} /></button>
+                  <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-14 h-14 items-center justify-center rounded-full border transition-all hover:scale-110 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-md'}`}><ChevronRight size={28} /></button>
               </div>
               
-              {!booking.date && (<div className={`text-center py-20 opacity-30 border border-dashed rounded-[2.5rem] mx-2 ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-slate-300 text-slate-400'}`}><Calendar size={48} className="mx-auto mb-4"/><p className="text-xs font-bold uppercase tracking-wider">{T.empty_date}</p></div>)}
+              {!booking.date && (<div className={`text-center py-24 opacity-30 border border-dashed rounded-[3rem] mx-2 ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-slate-300 text-slate-400'}`}><Calendar size={56} className="mx-auto mb-6"/><p className="text-sm font-bold uppercase tracking-wider">{T.empty_date}</p></div>)}
               
               {booking.date && generateTimeSlots.length > 0 && (
-                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 animate-fade-in">
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 animate-fade-in">
                    {generateTimeSlots.map((t, idx) => (
-                       <button key={t} onClick={() => { setBooking(b => ({...b, time: t})); }} className={`py-5 rounded-2xl text-base font-semibold border transition-all active:scale-95 duration-200 relative overflow-hidden group animate-scale-in ${booking.time === t ? (isDark ? 'bg-zinc-100 text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'bg-slate-900 text-white border-slate-900 shadow-xl') : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800')}`} style={{animationDelay: `${idx * 50}ms`}}>
+                       <button key={t} onClick={() => { setBooking(b => ({...b, time: t})); }} className={`py-6 rounded-3xl text-lg font-semibold border transition-all active:scale-95 duration-200 relative overflow-hidden group animate-scale-in ${booking.time === t ? (isDark ? 'bg-zinc-100 text-black border-white shadow-[0_0_30px_rgba(255,255,255,0.4)]' : 'bg-slate-900 text-white border-slate-900 shadow-xl') : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800')}`} style={{animationDelay: `${idx * 50}ms`}}>
                            {t}
                        </button>
                    ))}
                 </div>
               )}
-              {booking.date && generateTimeSlots.length === 0 && (<div className={`text-center py-12 rounded-[2rem] border ${isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-slate-100 border-slate-200 text-slate-500'}`}><p className="text-sm font-medium">{T.empty_slots}</p></div>)}
+              {booking.date && generateTimeSlots.length === 0 && (<div className={`text-center py-16 rounded-[2.5rem] border ${isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-slate-100 border-slate-200 text-slate-500'}`}><p className="text-base font-medium">{T.empty_slots}</p></div>)}
             </div>
           )}
 
           {step === 2 && (
-             <div className="animate-slide-in space-y-12">
-               <h2 className={`text-4xl font-light text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
-               <div className="grid grid-cols-3 gap-4 mb-8 max-w-lg mx-auto">
+             <div className="animate-slide-in space-y-16">
+               <h2 className={`text-4xl font-light text-center mb-10 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
+               <div className="grid grid-cols-3 gap-6 mb-10 max-w-2xl mx-auto">
                   {[{id:'home', l:T.zap.house, i:Home}, {id:'motel', l:T.zap.motel, i:BedDouble}, {id:'hotel', l:T.zap.hotel, i:Building}].map(x => (
-                      <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`py-8 rounded-[2rem] text-[10px] md:text-xs font-bold uppercase tracking-wide flex flex-col items-center justify-center gap-3 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-sky-500/10 border-sky-500/50 text-sky-500 shadow-[0_0_20px_-5px_rgba(14,165,233,0.3)] scale-105' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-700')}`}>
-                          <x.i size={28} strokeWidth={2}/> {x.l}
+                      <button key={x.id} onClick={()=>setBooking(b=>({...b, locationType: x.id}))} className={`py-10 rounded-[2.5rem] text-xs font-bold uppercase tracking-wide flex flex-col items-center justify-center gap-4 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-sky-500/10 border-sky-500/50 text-sky-500 shadow-[0_0_30px_-5px_rgba(14,165,233,0.3)] scale-105' : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-700')}`}>
+                          <x.i size={32} strokeWidth={2}/> {x.l}
                       </button>
                   ))}
                </div>
 
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                   <div className="space-y-8">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                   <div className="space-y-10">
                       <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={e=>setUser(u=>({...u, name: e.target.value}))} icon={User} placeholder={lang === 'pt' ? "Seu Nome/Apelido" : "Your Name/Nickname"} />
                       {booking.locationType === 'home' && (
                           <div className="space-y-8 animate-fade-in">
-                              <div className="grid grid-cols-[1fr_120px] gap-4">
+                              <div className="grid grid-cols-[1fr_140px] gap-6">
                                  <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={e=>setBooking(b=>({...b, address: {...b.address, street: e.target.value}}))} icon={MapPin} placeholder={lang === 'pt' ? "Rua" : "Street"} />
                                  <InputField isDark={isDark} label={T.input_num} value={booking.address.number} type="tel" onChange={e=>setBooking(b=>({...b, address: {...b.address, number: e.target.value}}))} placeholder={lang === 'pt' ? "Nº" : "No."} />
                               </div>
                               <InputField isDark={isDark} label={T.input_bairro} value={booking.address.district} onChange={e=>setBooking(b=>({...b, address: {...b.address, district: e.target.value}}))} placeholder={lang === 'pt' ? "Bairro" : "District"} />
-                              <div className="grid grid-cols-2 gap-4">
+                              <div className="grid grid-cols-2 gap-6">
                                  <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={e=>setBooking(b=>({...b, address: {...b.address, city: e.target.value}}))} placeholder={lang === 'pt' ? "Cidade" : "City"} />
                                  <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={e=>setBooking(b=>({...b, address: {...b.address, comp: e.target.value}}))} placeholder={lang === 'pt' ? "Comp" : "Unit/Apt"} />
                               </div>
@@ -1119,26 +1109,26 @@ ${T.zap.wait}
                           </div>
                       )}
                       {booking.locationType === 'motel' && (
-                          <div className={`p-8 rounded-[2rem] border border-dashed text-center ${isDark ? 'border-zinc-700 bg-zinc-900/30' : 'border-slate-300 bg-slate-50'}`}>
-                             <Smartphone size={32} className={`mx-auto mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}/>
-                             <p className={`text-sm leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.motel_note}</p>
+                          <div className={`p-10 rounded-[2.5rem] border border-dashed text-center ${isDark ? 'border-zinc-700 bg-zinc-900/30' : 'border-slate-300 bg-slate-50'}`}>
+                             <Smartphone size={36} className={`mx-auto mb-5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}/>
+                             <p className={`text-base leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.motel_note}</p>
                           </div>
                       )}
                    </div>
-                   <div className={`pt-0 md:pl-10 md:border-l ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+                   <div className={`pt-0 md:pl-12 md:border-l ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
                       <h3 className={`text-xs font-bold uppercase mb-8 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{booking.type !== 'single' ? T.extras_title.replace('Extras:', 'Adicionais (20% OFF):') : T.extras_title}</h3>
-                      <div className="space-y-4">
+                      <div className="space-y-5">
                          {DATA.extras.map((ex, idx) => {
                             const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
                             return (
-                               <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-5 rounded-3xl border cursor-pointer transition-all duration-300 animate-slide-in ${booking.extras[ex.id] ? 'bg-sky-500/10 border-sky-500/40 shadow-[0_0_20px_-5px_rgba(14,165,233,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`} style={{animationDelay: `${idx * 100}ms`}}>
-                                 <div className="flex items-center gap-5">
-                                     <div className={`p-3 rounded-2xl transition-colors ${booking.extras[ex.id] ? 'text-sky-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}><ex.icon size={24}/></div>
-                                     <div><p className={`text-base font-bold transition-colors ${booking.extras[ex.id] ? 'text-sky-500' : (isDark ? 'text-zinc-200' : 'text-slate-700')}`}>{ex.label}</p><p className={`text-xs font-medium pt-1 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p></div>
+                               <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-6 rounded-[2rem] border cursor-pointer transition-all duration-300 animate-slide-in ${booking.extras[ex.id] ? 'bg-sky-500/10 border-sky-500/40 shadow-[0_0_20px_-5px_rgba(14,165,233,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`} style={{animationDelay: `${idx * 100}ms`}}>
+                                 <div className="flex items-center gap-6">
+                                     <div className={`p-4 rounded-2xl transition-colors ${booking.extras[ex.id] ? 'text-sky-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}><ex.icon size={28}/></div>
+                                     <div><p className={`text-lg font-bold transition-colors ${booking.extras[ex.id] ? 'text-sky-500' : (isDark ? 'text-zinc-200' : 'text-slate-700')}`}>{ex.label}</p><p className={`text-sm font-medium pt-1 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p></div>
                                  </div>
                                  <div className="text-right">
                                     {booking.type !== 'single' && (<span className={`text-[10px] line-through block ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>R$ {ex.price}</span>)}
-                                    <span className={`text-xs font-bold whitespace-nowrap px-3 py-1.5 rounded-xl inline-block ${booking.extras[ex.id] ? 'bg-sky-500/20 text-sky-500' : (isDark ? 'text-zinc-500 bg-zinc-800' : 'text-slate-500 bg-slate-100')}`}>+ R$ {price}</span>
+                                    <span className={`text-sm font-bold whitespace-nowrap px-4 py-2 rounded-2xl inline-block ${booking.extras[ex.id] ? 'bg-sky-500/20 text-sky-500' : (isDark ? 'text-zinc-500 bg-zinc-800' : 'text-slate-500 bg-slate-100')}`}>+ R$ {price}</span>
                                  </div>
                                </div>
                             )
@@ -1150,55 +1140,55 @@ ${T.zap.wait}
           )}
 
           {step === 3 && (
-             <div className="animate-slide-in pb-12 space-y-10">
-                <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-10">
+             <div className="animate-slide-in pb-16 space-y-12">
+                <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-12">
                     <div className="relative">
-                        <div className={`p-10 rounded-[2.5rem] border backdrop-blur-2xl shadow-2xl relative overflow-hidden ${isDark ? 'border-white/10 bg-zinc-900/80' : 'border-slate-200 bg-white/90'}`}>
+                        <div className={`p-12 rounded-[3rem] border backdrop-blur-2xl shadow-2xl relative overflow-hidden ${isDark ? 'border-white/10 bg-zinc-900/80' : 'border-slate-200 bg-white/90'}`}>
                           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-500 to-blue-700 shadow-[0_0_20px_#0ea5e9]"></div>
                           <div className="mb-10 pt-2">
                               <span className={`text-xs font-bold uppercase tracking-widest mb-3 block ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{booking.type === 'pack' ? (lang === 'pt' ? "Pacote" : "Pack") : (booking.type === 'subscription' ? (lang === 'pt' ? "Assinatura" : "Subscription") : (lang === 'pt' ? "Sessão Individual" : "Single Session"))}</span>
-                              <h2 className={`font-bold text-4xl leading-tight mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{booking.item.title}</h2>
-                              <p className="text-sm text-sky-500 font-medium flex items-center gap-2 bg-sky-500/10 px-4 py-2 rounded-full w-fit border border-sky-500/10"><Calendar size={14}/> {booking.date ? new Date(booking.date).toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN) : ''} • {booking.time}</p>
+                              <h2 className={`font-bold text-5xl leading-tight mb-5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{booking.item.title}</h2>
+                              <p className="text-base text-sky-500 font-medium flex items-center gap-3 bg-sky-500/10 px-5 py-2.5 rounded-full w-fit border border-sky-500/10"><Calendar size={16}/> {booking.date ? new Date(booking.date).toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN) : ''} • {booking.time}</p>
                           </div>
-                          <div className={`space-y-5 border-b border-dashed pb-10 mb-10 ${isDark ? 'border-white/10' : 'border-slate-300'}`}>
-                              <div className={`flex justify-between text-base ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}><span>{lang === 'pt' ? "Valor Base" : "Base Price"}</span><span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>R$ {booking.item.price}</span></div>
+                          <div className={`space-y-6 border-b border-dashed pb-10 mb-10 ${isDark ? 'border-white/10' : 'border-slate-300'}`}>
+                              <div className={`flex justify-between text-lg ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}><span>{lang === 'pt' ? "Valor Base" : "Base Price"}</span><span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>R$ {booking.item.price}</span></div>
                               {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>{
                                   const extraItem = DATA.extras.find(e=>e.id===k);
                                   if(!extraItem) return null;
                                   const price = booking.type !== 'single' ? Math.floor(extraItem.price * 0.8) : extraItem.price;
-                                  return (<div key={k} className={`flex justify-between text-base ${isDark ? 'text-zinc-500' : 'text-slate-600'}`}><span>+ {extraItem.label} {booking.type!=='single' && '(Promo)'}</span><span>{price}</span></div>);
+                                  return (<div key={k} className={`flex justify-between text-lg ${isDark ? 'text-zinc-500' : 'text-slate-600'}`}><span>+ {extraItem.label} {booking.type!=='single' && '(Promo)'}</span><span>{price}</span></div>);
                               })}
-                              {booking.appliedCoupon && (<div className="flex justify-between text-base text-emerald-500 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 font-bold"><span>{lang === 'pt' ? "Cupom" : "Coupon"} ({booking.appliedCoupon.code})</span><span>- R$ {booking.appliedCoupon.val}</span></div>)}
+                              {booking.appliedCoupon && (<div className="flex justify-between text-lg text-emerald-500 bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/20 font-bold"><span>{lang === 'pt' ? "Cupom" : "Coupon"} ({booking.appliedCoupon.code})</span><span>- R$ {booking.appliedCoupon.val}</span></div>)}
                           </div>
                           <div className="flex justify-between items-end">
-                              <div><span className={`text-xs font-bold uppercase block mb-2 ${isDark ? 'text-zinc-600' : 'text-slate-500'}`}>{T.total_label}</span><span className="text-xs font-medium text-sky-500/80 bg-sky-500/5 px-3 py-1 rounded-full border border-sky-500/10">{T.uber_warning}</span></div>
+                              <div><span className={`text-xs font-bold uppercase block mb-2 ${isDark ? 'text-zinc-600' : 'text-slate-500'}`}>{T.total_label}</span><span className="text-sm font-medium text-sky-500/80 bg-sky-500/5 px-4 py-1.5 rounded-full border border-sky-500/10">{T.uber_warning}</span></div>
                               <div className="text-right">
-                                  <span className={`block text-6xl font-light tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>R$ {financials.total}</span>
-                                  <span className="text-sm font-bold text-sky-500 flex items-center justify-end gap-2 mt-2"><Sparkles size={14}/> +{estimatedXP} XP</span>
+                                  <span className={`block text-7xl font-light tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>R$ {financials.total}</span>
+                                  <span className="text-base font-bold text-sky-500 flex items-center justify-end gap-2 mt-3"><Sparkles size={16}/> +{estimatedXP} XP</span>
                               </div>
                           </div>
                         </div>
                     </div>
                     
-                    <div className="space-y-8">
-                        <div className="flex gap-3">
+                    <div className="space-y-10">
+                        <div className="flex gap-4">
                             <div className="relative flex-1">
-                                <input value={couponInput} onChange={e=>setCouponInput(e.target.value)} placeholder={T.coupon_placeholder} className={`w-full pl-5 pr-10 py-4 rounded-2xl border text-sm font-bold uppercase tracking-widest outline-none focus:border-sky-500/50 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-600' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'}`}/>
-                                <Tag size={18} className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}/>
+                                <input value={couponInput} onChange={e=>setCouponInput(e.target.value)} placeholder={T.coupon_placeholder} className={`w-full pl-6 pr-12 py-5 rounded-[2rem] border text-base font-bold uppercase tracking-widest outline-none focus:border-sky-500/50 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-600' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'}`}/>
+                                <Tag size={20} className={`absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}/>
                             </div>
                             <Button onClick={handleApplyCoupon} variant="secondary" size="md">{T.coupon_btn}</Button>
                         </div>
 
                          {user.coupons && user.coupons.length > 0 && (
-                            <div className="w-full overflow-x-auto pb-2 pt-1 scrollbar-hide">
-                                <div className="flex gap-2">
+                            <div className="w-full overflow-x-auto pb-4 pt-2 scrollbar-hide">
+                                <div className="flex gap-3">
                                     {user.coupons.map(c => {
                                         const isApplied = booking.appliedCoupon?.id === c.id;
                                         return (
                                             <button 
                                                 key={c.id} 
                                                 onClick={() => setBooking(b => ({...b, appliedCoupon: isApplied ? null : c}))} 
-                                                className={`flex-shrink-0 px-4 py-3 rounded-2xl border text-xs font-bold uppercase transition-all whitespace-nowrap active:scale-95 ${isApplied ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500' : (isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300')}`}
+                                                className={`flex-shrink-0 px-5 py-3 rounded-2xl border text-sm font-bold uppercase transition-all whitespace-nowrap active:scale-95 ${isApplied ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500' : (isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300')}`}
                                             >
                                                 {c.title}
                                             </button>
@@ -1209,35 +1199,35 @@ ${T.zap.wait}
                         )}
 
                         <div>
-                            <h3 className={`text-xs font-bold uppercase mb-4 ml-1 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.pay_title}</h3>
-                            <div className="grid grid-cols-1 gap-3">
+                            <h3 className={`text-xs font-bold uppercase mb-6 ml-2 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.pay_title}</h3>
+                            <div className="grid grid-cols-1 gap-4">
                                 {[{id:'pix', l:T.pay_pix, i:QrCode, sub:''}, {id:'card', l:T.pay_card, i:CreditCard, sub:''}, {id:'money', l:T.pay_cash, i:Banknote, sub:''}].map((p, idx) => (
-                                    <button key={p.id} onClick={()=>setBooking(b=>({...b, payment: p.id}))} className={`animate-slide-in px-6 py-5 rounded-2xl border flex items-center gap-5 transition-all duration-300 ${booking.payment === p.id ? 'bg-zinc-800 border-sky-500/50 shadow-[0_0_20px_-5px_rgba(14,165,233,0.2)]' : (isDark ? 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800' : 'bg-white border-slate-200 hover:bg-slate-50')}`} style={{animationDelay: `${idx * 100}ms`}}>
-                                            <div className={`p-3 rounded-full ${booking.payment === p.id ? 'bg-sky-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><p.i size={20}/></div>
-                                            <div className="text-left"><span className={`font-bold text-sm block ${booking.payment === p.id ? (isDark ? 'text-white' : 'text-slate-900') : (isDark ? 'text-zinc-400' : 'text-slate-600')}`}>{p.l}</span></div>
-                                            {booking.payment === p.id && <Check size={20} className="ml-auto text-sky-500" strokeWidth={3}/>}
+                                    <button key={p.id} onClick={()=>setBooking(b=>({...b, payment: p.id}))} className={`animate-slide-in px-8 py-6 rounded-[2rem] border flex items-center gap-6 transition-all duration-300 ${booking.payment === p.id ? 'bg-zinc-800 border-sky-500/50 shadow-[0_0_30px_-5px_rgba(14,165,233,0.2)]' : (isDark ? 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800' : 'bg-white border-slate-200 hover:bg-slate-50')}`} style={{animationDelay: `${idx * 100}ms`}}>
+                                            <div className={`p-4 rounded-full ${booking.payment === p.id ? 'bg-sky-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><p.i size={24}/></div>
+                                            <div className="text-left"><span className={`font-bold text-base block ${booking.payment === p.id ? (isDark ? 'text-white' : 'text-slate-900') : (isDark ? 'text-zinc-400' : 'text-slate-600')}`}>{p.l}</span></div>
+                                            {booking.payment === p.id && <Check size={24} className="ml-auto text-sky-500" strokeWidth={3}/>}
                                     </button>
                                 ))}
                             </div>
                             
                             {/* PIX COPY PASTE */}
                             {booking.payment === 'pix' && (
-                                <div className={`mt-5 p-6 rounded-3xl border border-dashed ${isDark ? 'border-zinc-700 bg-zinc-900/50' : 'border-slate-300 bg-slate-50'} animate-fade-in`}>
-                                    <p className={`text-xs uppercase font-bold text-center mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Chave Pix (Copia e Cola)</p>
-                                    <div className="flex gap-3">
-                                        <input readOnly value={CONFIG.PIX_KEY} className={`w-full text-sm font-mono text-center rounded-xl border px-3 py-3 ${isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-300' : 'bg-white border-slate-200 text-slate-600'}`} />
-                                        <button onClick={()=>{navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success")}} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}><Copy size={20}/></button>
+                                <div className={`mt-6 p-8 rounded-[2.5rem] border border-dashed ${isDark ? 'border-zinc-700 bg-zinc-900/50' : 'border-slate-300 bg-slate-50'} animate-fade-in`}>
+                                    <p className={`text-xs uppercase font-bold text-center mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Chave Pix (Copia e Cola)</p>
+                                    <div className="flex gap-4">
+                                        <input readOnly value={CONFIG.PIX_KEY} className={`w-full text-base font-mono text-center rounded-2xl border px-4 py-4 ${isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-300' : 'bg-white border-slate-200 text-slate-600'}`} />
+                                        <button onClick={()=>{navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success")}} className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}><Copy size={24}/></button>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        <div className={`p-5 rounded-3xl border ${isDark ? 'border-zinc-800 bg-zinc-900/30' : 'border-slate-200 bg-slate-50'}`}>
-                             <div className="flex items-start gap-4 mb-3">
-                                  <ShieldCheck className={`${isDark ? 'text-zinc-500' : 'text-slate-500'} shrink-0 mt-0.5`} size={20}/>
-                                  <div><h4 className={`text-sm font-bold mb-1 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.terms_title}</h4><p className={`text-xs cursor-pointer hover:text-sky-500 transition-colors underline ${isDark ? 'text-zinc-500' : 'text-slate-500'}`} onClick={() => setTermsOpen(true)}>{T.terms_link}</p></div>
+                        <div className={`p-6 rounded-[2rem] border ${isDark ? 'border-zinc-800 bg-zinc-900/30' : 'border-slate-200 bg-slate-50'}`}>
+                             <div className="flex items-start gap-4 mb-4">
+                                  <ShieldCheck className={`${isDark ? 'text-zinc-500' : 'text-slate-500'} shrink-0 mt-0.5`} size={24}/>
+                                  <div><h4 className={`text-base font-bold mb-1 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.terms_title}</h4><p className={`text-xs cursor-pointer hover:text-sky-500 transition-colors underline ${isDark ? 'text-zinc-500' : 'text-slate-500'}`} onClick={() => setTermsOpen(true)}>{T.terms_link}</p></div>
                              </div>
-                             <label className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer hover:border-zinc-500 transition-colors select-none ${isDark ? 'bg-zinc-950/50 border-zinc-800' : 'bg-white border-slate-200'}`}><input type="checkbox" checked={booking.termsAccepted} onChange={e=>setBooking(b=>({...b, termsAccepted: e.target.checked}))} className="w-5 h-5 rounded border-zinc-600 bg-zinc-800 accent-sky-500 cursor-pointer"/><span className={`text-xs font-bold uppercase ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.agree_terms}</span></label>
+                             <label className={`flex items-center gap-4 p-5 rounded-2xl border cursor-pointer hover:border-zinc-500 transition-colors select-none ${isDark ? 'bg-zinc-950/50 border-zinc-800' : 'bg-white border-slate-200'}`}><input type="checkbox" checked={booking.termsAccepted} onChange={e=>setBooking(b=>({...b, termsAccepted: e.target.checked}))} className="w-6 h-6 rounded border-zinc-600 bg-zinc-800 accent-sky-500 cursor-pointer"/><span className={`text-sm font-bold uppercase ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.agree_terms}</span></label>
                         </div>
                     </div>
                 </div>
@@ -1246,48 +1236,48 @@ ${T.zap.wait}
 
           {/* SUCCESS (STEP 4) */}
           {step === 4 && (
-             <div className="flex flex-col items-center justify-center pt-20 text-center animate-scale-in">
-                 <div className="relative mb-12 group">
-                     <div className="absolute inset-0 bg-emerald-500 blur-[100px] opacity-30 rounded-full animate-pulse"></div>
-                     <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-emerald-500 to-emerald-700 flex items-center justify-center shadow-2xl shadow-emerald-500/30 relative z-10 border border-emerald-400/20">
-                         <Check size={56} className="text-white" strokeWidth={3}/>
+             <div className="flex flex-col items-center justify-center pt-24 text-center animate-scale-in">
+                 <div className="relative mb-16 group">
+                     <div className="absolute inset-0 bg-emerald-500 blur-[120px] opacity-30 rounded-full animate-pulse"></div>
+                     <div className="w-40 h-40 rounded-full bg-gradient-to-tr from-emerald-500 to-emerald-700 flex items-center justify-center shadow-2xl shadow-emerald-500/30 relative z-10 border border-emerald-400/20">
+                         <Check size={64} className="text-white" strokeWidth={3}/>
                      </div>
                  </div>
-                 <h1 className={`text-3xl font-light mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h1>
-                 <p className={`text-sm leading-relaxed max-w-sm mx-auto mb-12 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
+                 <h1 className={`text-4xl font-light mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h1>
+                 <p className={`text-base leading-relaxed max-w-md mx-auto mb-16 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
                  
-                 <div className="w-full max-w-sm space-y-4">
-                     <div className="grid grid-cols-2 gap-4">
+                 <div className="w-full max-w-md space-y-6">
+                     <div className="grid grid-cols-2 gap-6">
                          <Button variant="secondary" onClick={() => { navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success"); }} icon={Copy}>{T.copy_pix_btn}</Button>
                          <Button variant="instagram" onClick={() => window.open(CONFIG.INSTAGRAM_URL, '_blank')} icon={Instagram}>{T.instagram_btn}</Button>
                      </div>
-                     <Button variant="whatsapp" full size="xl" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon={MessageCircle}>{T.whatsapp_btn}</Button>
+                     <Button variant="whatsapp" full size="lg" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon={MessageCircle}>{T.whatsapp_btn}</Button>
                  </div>
 
-                 <button onClick={()=>{setStep(0); setBooking({...booking, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false}); setShowConfetti(false);}} className={`mt-10 text-xs font-bold uppercase tracking-widest transition-colors py-4 ${isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-slate-400 hover:text-slate-600'}`}>{T.back_home}</button>
+                 <button onClick={()=>{setStep(0); setBooking({...booking, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false}); setShowConfetti(false);}} className={`mt-16 text-sm font-bold uppercase tracking-widest transition-colors py-6 ${isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-slate-400 hover:text-slate-600'}`}>{T.back_home}</button>
              </div>
           )}
         </div>
       </main>
 
-      {/* FOOTER NAV */}
+      {/* FOOTER NAV - FLOATING GLASS BAR */}
       {step < 4 && (
-         <div className="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-safe">
-            <div className={`w-full p-5 backdrop-blur-xl border-t ${isDark ? 'bg-zinc-950/90 border-white/5' : 'bg-white/90 border-slate-200'}`}>
-                <div className="pointer-events-auto max-w-md md:max-w-5xl mx-auto flex items-center gap-4">
+         <div className="fixed bottom-6 left-0 w-full z-50 pointer-events-none px-4">
+            <div className={`max-w-2xl mx-auto p-4 rounded-[2.5rem] backdrop-blur-2xl shadow-2xl border pointer-events-auto transition-all duration-500 ${isDark ? 'bg-zinc-950/80 border-white/10 shadow-black/50' : 'bg-white/80 border-slate-200 shadow-slate-200/50'}`}>
+                <div className="flex items-center gap-4">
                     {step > 0 && (
-                      <div className="flex gap-2">
-                        <Button variant="secondary" size="icon" onClick={() => setStep(0)} icon={Home} />
-                        <Button variant="secondary" size="icon" onClick={() => setStep(step - 1)} icon={ChevronLeft} />
+                      <div className="flex gap-3">
+                        <button onClick={() => setStep(0)} className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><Home size={24}/></button>
+                        <button onClick={() => setStep(step - 1)} className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><ChevronLeft size={24}/></button>
                       </div>
                     )}
                     <button 
                       onClick={handleNextStep} 
-                      className={`flex-1 min-h-[4rem] rounded-2xl flex flex-col items-center justify-center px-6 transition-all duration-300 shadow-xl active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sky-500/20 hover:shadow-sky-500/30' : 'bg-[#25D366] text-white shadow-green-500/20 hover:bg-[#20bd5a]'}`}
+                      className={`flex-1 h-20 rounded-[2rem] flex flex-col items-center justify-center px-8 transition-all duration-300 shadow-lg active:scale-[0.98] ${step < 3 ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sky-500/30 hover:shadow-sky-500/50' : 'bg-[#25D366] text-white shadow-green-500/30 hover:bg-[#20bd5a]'}`}
                     >
                       <div className="flex items-center justify-center w-full">
-                          <span className="text-sm font-bold uppercase tracking-widest mr-3">{step === 3 ? T.book_btn : T.next_btn}</span>
-                          {!booking.item && <ArrowRight size={20} strokeWidth={2.5}/>}
+                          <span className="text-lg font-bold uppercase tracking-widest mr-3">{step === 3 ? T.book_btn : T.next_btn}</span>
+                          {!booking.item && <ArrowRight size={24} strokeWidth={3}/>}
                       </div>
                       {booking.item && (
                         <div className="flex flex-col items-center leading-none opacity-90 mt-1">
@@ -1304,23 +1294,23 @@ ${T.zap.wait}
 
       <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${reviewsOpen ? 'opacity-100' : 'opacity-0'}`}>
          <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${reviewsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setReviewsOpen(false)}></div>
-         <div className={`relative w-full max-w-md border rounded-[2.5rem] p-8 max-h-[80vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${reviewsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
-            <div className={`flex justify-between items-center mb-8 sticky top-0 z-10 py-4 border-b ${isDark ? 'bg-zinc-900 border-white/5' : 'bg-white border-slate-100'}`}><h3 className={`text-xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title || "Experiências"}</h3><button onClick={()=>setReviewsOpen(false)} className={`p-3 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={20}/></button></div>
-            <div className="space-y-5">
+         <div className={`relative w-full max-w-lg border rounded-[3rem] p-10 max-h-[85vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${reviewsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className={`flex justify-between items-center mb-10 sticky top-0 z-10 py-4 border-b ${isDark ? 'bg-zinc-900 border-white/5' : 'bg-white border-slate-100'}`}><h3 className={`text-2xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title || "Experiências"}</h3><button onClick={()=>setReviewsOpen(false)} className={`p-4 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={24}/></button></div>
+            <div className="space-y-6">
                 {DATA.reviews.map((r,i)=>(
-                   <div key={i} className={`p-6 rounded-3xl border relative ${isDark ? 'bg-zinc-800/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
-                       <Quote size={24} className={`absolute top-5 right-5 ${isDark ? 'text-zinc-700' : 'text-slate-300'}`} />
-                       <div className="flex justify-between mb-3">
-                           <span className={`font-bold text-sm flex items-center gap-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
-                               <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-black border ${isDark ? 'bg-gradient-to-br from-sky-500/20 to-blue-600/20 text-sky-500 border-sky-500/20' : 'bg-sky-100 text-sky-600 border-sky-200'}`}>{r.n.charAt(0)}</div>
+                   <div key={i} className={`p-8 rounded-[2rem] border relative ${isDark ? 'bg-zinc-800/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
+                       <Quote size={28} className={`absolute top-6 right-6 ${isDark ? 'text-zinc-700' : 'text-slate-300'}`} />
+                       <div className="flex justify-between mb-4">
+                           <span className={`font-bold text-base flex items-center gap-5 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                               <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-black border ${isDark ? 'bg-gradient-to-br from-sky-500/20 to-blue-600/20 text-sky-500 border-sky-500/20' : 'bg-sky-100 text-sky-600 border-sky-200'}`}>{r.n.charAt(0)}</div>
                                <div>
-                                 <span className="block leading-tight text-sm">{r.n}</span>
+                                 <span className="block leading-tight text-base">{r.n}</span>
                                  <span className={`text-[10px] font-normal uppercase ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{r.loc}</span>
                                </div>
                            </span>
                        </div>
-                       <div className="flex gap-0.5 mb-3">{[...Array(5)].map((_,k)=><Star key={k} size={14} fill={k < r.s ? "#0ea5e9" : "none"} className={k < r.s ? "text-sky-500" : (isDark ? "text-zinc-700" : "text-slate-300")} />)}</div>
-                       <p className={`text-sm leading-relaxed italic ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>"{r.t}"</p>
+                       <div className="flex gap-0.5 mb-4">{[...Array(5)].map((_,k)=><Star key={k} size={16} fill={k < r.s ? "#0ea5e9" : "none"} className={k < r.s ? "text-sky-500" : (isDark ? "text-zinc-700" : "text-slate-300")} />)}</div>
+                       <p className={`text-base leading-relaxed italic ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>"{r.t}"</p>
                    </div>
                 ))}
             </div>
@@ -1329,10 +1319,10 @@ ${T.zap.wait}
 
       <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${termsOpen ? 'opacity-100' : 'opacity-0'}`}>
          <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${termsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setTermsOpen(false)}></div>
-         <div className={`relative w-full max-w-md border rounded-[2.5rem] p-8 max-h-[80vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${termsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
-            <div className="flex justify-between items-center mb-8"><h3 className={`text-xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</h3><button onClick={()=>setTermsOpen(false)} className={`p-3 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={20}/></button></div>
-            <div className="space-y-5">
-                {T.terms_body.map((t,i)=>(<div key={i} className={`flex gap-5 p-5 rounded-2xl border ${isDark ? 'bg-zinc-950/50 border-white/5' : 'bg-slate-50 border-slate-200'}`}><span className="font-bold text-sky-500 text-2xl opacity-50">{i+1}</span><p className={`text-sm leading-relaxed pt-1.5 font-light ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{t.substring(3)}</p></div>))}
+         <div className={`relative w-full max-w-lg border rounded-[3rem] p-10 max-h-[85vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${termsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className="flex justify-between items-center mb-10"><h3 className={`text-2xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</h3><button onClick={()=>setTermsOpen(false)} className={`p-4 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={24}/></button></div>
+            <div className="space-y-6">
+                {T.terms_body.map((t,i)=>(<div key={i} className={`flex gap-6 p-6 rounded-[2rem] border ${isDark ? 'bg-zinc-950/50 border-white/5' : 'bg-slate-50 border-slate-200'}`}><span className="font-bold text-sky-500 text-3xl opacity-50">{i+1}</span><p className={`text-base leading-relaxed pt-2 font-light ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{t.substring(3)}</p></div>))}
                 <Button full onClick={()=>setTermsOpen(false)} variant="primary">{T.terms_btn}</Button>
             </div>
          </div>
@@ -1341,10 +1331,10 @@ ${T.zap.wait}
       {levelUpPopup && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={()=>setLevelUpPopup(false)}></div>
-            <div className="relative p-10 rounded-[3rem] text-center max-w-sm w-full animate-scale-in shadow-2xl border border-sky-500/20 bg-zinc-900">
-                <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[3rem] pointer-events-none"><div className="absolute -top-20 -left-20 w-40 h-40 bg-sky-500 blur-[80px] opacity-20"></div></div>
-                <div className="w-24 h-24 bg-gradient-to-tr from-sky-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-sky-500/30 animate-bounce-slow"><Trophy size={40} className="text-white" /></div>
-                <h2 className="text-3xl font-light text-white mb-3">{T.popup_level_title}</h2><p className="text-zinc-400 text-sm leading-relaxed mb-10">{T.popup_level_msg}</p>
+            <div className="relative p-12 rounded-[3.5rem] text-center max-w-md w-full animate-scale-in shadow-2xl border border-sky-500/20 bg-zinc-900">
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[3.5rem] pointer-events-none"><div className="absolute -top-20 -left-20 w-60 h-60 bg-sky-500 blur-[100px] opacity-20"></div></div>
+                <div className="w-28 h-28 bg-gradient-to-tr from-sky-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-sky-500/30 animate-bounce-slow"><Trophy size={48} className="text-white" /></div>
+                <h2 className="text-4xl font-light text-white mb-4">{T.popup_level_title}</h2><p className="text-zinc-400 text-base leading-relaxed mb-12">{T.popup_level_msg}</p>
                 <Button full size="lg" onClick={()=>setLevelUpPopup(false)} icon={Ticket}>{T.popup_btn_coupon}</Button>
             </div>
         </div>
@@ -1353,10 +1343,10 @@ ${T.zap.wait}
       {welcomePopup && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fade-in" onClick={()=>setWelcomePopup(false)}></div>
-            <div className="relative p-10 rounded-[3rem] text-center max-w-sm w-full animate-scale-in shadow-2xl border border-white/10 bg-zinc-900">
-                <div className="w-20 h-20 bg-zinc-800 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/5 rotate-3"><Gift size={40} className="text-sky-500" /></div>
-                <h2 className="text-2xl font-light text-white mb-3">{T.popup_welcome_title}</h2><p className="text-zinc-400 text-sm leading-relaxed mb-8">{T.popup_welcome_msg}</p>
-                <div className="bg-zinc-950 p-5 rounded-2xl border border-dashed border-zinc-800 mb-8"><p className="text-xs uppercase font-bold text-zinc-500 mb-2">Seu Código:</p><p className="text-2xl font-mono font-bold text-sky-500 tracking-widest">WELCOME10</p></div>
+            <div className="relative p-12 rounded-[3.5rem] text-center max-w-md w-full animate-scale-in shadow-2xl border border-white/10 bg-zinc-900">
+                <div className="w-24 h-24 bg-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-10 shadow-xl border border-white/5 rotate-3"><Gift size={48} className="text-sky-500" /></div>
+                <h2 className="text-3xl font-light text-white mb-4">{T.popup_welcome_title}</h2><p className="text-zinc-400 text-base leading-relaxed mb-10">{T.popup_welcome_msg}</p>
+                <div className="bg-zinc-950 p-6 rounded-3xl border border-dashed border-zinc-800 mb-10"><p className="text-sm uppercase font-bold text-zinc-500 mb-2">Seu Código:</p><p className="text-3xl font-mono font-bold text-sky-500 tracking-widest">WELCOME10</p></div>
                 <Button full variant="primary" onClick={()=>{
                     setWelcomePopup(false); 
                     setUser(u=>({...u, hasSeenWelcome: true}));
@@ -1368,7 +1358,7 @@ ${T.zap.wait}
         </div>
       )}
 
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.8s ease-out}.animate-slide-in{animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-slide-up{animation:slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;opacity:0}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.4s ease-out}.animate-pulse-slow{animation:pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite}.pb-safe{padding-bottom:env(safe-area-inset-bottom,32px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}@keyframes slideDown{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.8s ease-out}.animate-slide-in{animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-slide-up{animation:slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;opacity:0}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.4s ease-out}.animate-pulse-slow{animation:pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite}.pb-safe{padding-bottom:env(safe-area-inset-bottom,32px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}@keyframes slideDown{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
     </div>
   );
 }
