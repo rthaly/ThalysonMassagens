@@ -2,14 +2,14 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS vFINAL - AJUSTES FINAIS (TEXTOS, ÍCONES, UI IOS 2026)
+ * THALYSON APP OS vFINAL - REFINAMENTO UI/UX + AVALIAÇÕES REALISTAS
  * ==================================================================================
  */
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_prod_v70_glass',
+  STORAGE_KEY: '@thaly_app_prod_v71_final_glass',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -19,36 +19,26 @@ const CONFIG = {
 };
 
 // ==================================================================================
-// 1. ÍCONES (SVG PURO - ATUALIZADOS)
+// 1. ÍCONES (SVG PURO)
 // ==================================================================================
 const Icon = ({ name, size = 24, className = "" }) => {
   const icons = {
-    // Serviços
     Wind: <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2" />, 
     Flame: <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.246-5.318-1-1 4.41-4.41 6 3 6 6 0 2.21-1.79 4-4 4s-4-1.79-4-4a2 2 0 0 1 4 0Z" />, 
     Zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />, 
-    
-    // Lugares
     Home: <><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></>,
     Building: <><rect width="16" height="20" x="4" y="2" rx="2" ry="2" /><path d="M9 22v-4h6v4" /><path d="M8 6h.01" /><path d="M16 6h.01" /><path d="M12 6h.01" /><path d="M12 10h.01" /><path d="M12 14h.01" /><path d="M16 10h.01" /><path d="M16 14h.01" /><path d="M8 10h.01" /><path d="M8 14h.01" /></>,
     BedDouble: <><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" /><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4" /><path d="M12 4v6" /><path d="M2 18h20" /></>,
-    
-    // UI & Extras
     Clock: <><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></>,
-    // Novo ícone de Troca (Refresh/Swap)
     Switch: <path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/>,
     Package: <><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></>,
     Layers: <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z M22 17.65l-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65 M22 12.65l-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>,
     Crown: <path d="m2 4 3 12h14l3-12-6 7-4-9-4 9-6-7z" />,
     Loader2: <path d="M21 12a9 9 0 1 1-6.219-8.56" />,
     AlertTriangle: <><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" x2="12" y1="9" y2="13" /><line x1="12" x2="12.01" y1="17" y2="17" /></>,
-    
-    // Pagamento
     QrCode: <><rect width="5" height="5" x="3" y="3" rx="1" /><rect width="5" height="5" x="16" y="3" rx="1" /><rect width="5" height="5" x="3" y="16" rx="1" /><path d="M21 16h-3a2 2 0 0 0-2 2v3" /><path d="M21 21v.01" /><path d="M12 7v3a2 2 0 0 1-2 2H7" /><path d="M3 12h.01" /><path d="M12 3h.01" /><path d="M12 16v.01" /><path d="M16 12h1" /><path d="M21 12v.01" /><path d="M12 21v-1" /></>,
     CreditCard: <><rect width="22" height="16" x="1" y="4" rx="2" ry="2" /><line x1="1" x2="23" y1="10" y2="10" /></>,
     Banknote: <><rect width="20" height="12" x="2" y="6" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" /></>,
-    
-    // Ações
     Check: <polyline points="20 6 9 17 4 12" />,
     X: <path d="M18 6 6 18M6 6l12 12" />,
     ChevronLeft: <path d="m15 18-6-6 6-6" />,
@@ -91,12 +81,13 @@ const Icon = ({ name, size = 24, className = "" }) => {
 };
 
 // ==================================================================================
-// 0. DADOS E TEXTOS (DESCRIÇÕES E LINGUAGEM CORRIGIDAS)
+// 0. DADOS E TEXTOS (AJUSTADOS)
 // ==================================================================================
 const getData = (lang) => {
     const isPT = lang === 'pt';
     const currency = isPT ? 'R$' : '$';
     
+    // DEFINIÇÃO DE PREÇOS
     const p = {
         relax: isPT ? 125 : 25,
         sens: isPT ? 155 : 30,
@@ -109,9 +100,9 @@ const getData = (lang) => {
     return {
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor" },
-            { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Amigo" : "Bronze" },
-            { level: 3, xpNeeded: 350, reward: 30, title: isPT ? "Próximo" : "Silver" },
-            { level: 4, xpNeeded: 800, reward: 50, title: isPT ? "Íntimo" : "Gold" }
+            { level: 2, xpNeeded: 100, reward: 15, title: isPT ? "Membro" : "Member" },
+            { level: 3, xpNeeded: 350, reward: 30, title: isPT ? "VIP" : "VIP" },
+            { level: 4, xpNeeded: 800, reward: 50, title: isPT ? "Elite" : "Elite" }
         ],
         services: [
             { 
@@ -130,7 +121,7 @@ const getData = (lang) => {
               id: 'mista', min: 60, price: p.titan, icon: 'Zap', tag: isPT ? "A MAIS COMPLETA" : "FULL FUSION",
               title: isPT ? "Experiência Fusion" : "Fusion Experience",
               desc: isPT ? "O melhor de tudo: Massagem relaxante + Corpo a Corpo + Lingam." : "Best of all: Relaxing + Body-to-Body + Lingam.",
-              details: isPT ? `PARA QUEM QUER TUDO:\n• Começamos soltando a musculatura (relaxante).\n• Evoluímos para o Corpo a Corpo (Nuru) com óleo.\n• Finalização Lingam intensa e demorada.\n• A experiência definitiva.` : `FOR WHO WANTS IT ALL:\n• Relaxing muscle start.\n• Body-to-Body with oil.\n• Intense Lingam finish.`
+              details: isPT ? `PARA QUEM QUER TUDO:\n• Começamos soltando a musculatura (relaxante).\n• Evoluímos para o Corpo a Corpo (troca de energia) sobre você.\n• Finalização Lingam intensa e demorada.\n• A experiência definitiva.` : `FOR WHO WANTS IT ALL:\n• Relaxing muscle start.\n• Body-to-Body energy.\n• Intense Lingam finish.`
             }
         ],
         extras: [
@@ -140,8 +131,10 @@ const getData = (lang) => {
         ],
         faq: [
             { q: "Qual a diferença real entre as sessões?", a: "Clássica (125) = Relaxamento muscular corpo todo (costas/pés). Tântrica (155) = Toque leve (pontas dos dedos) + Lingam. Fusion (195) = Mistura tudo e tem corpo a corpo." },
-            { q: "O que é a Massagem Lingam?", a: "É uma massagem na região íntima (pênis, testículos e períneo). O foco não é apenas a finalização, mas estimular o prazer, circulação e sensibilidade de toda a área." },
+            { q: "O que é a Massagem Lingam?", a: "É uma massagem na região íntima. O foco não é apenas a finalização, mas estimular o prazer, circulação e sensibilidade de toda a área." },
             { q: "Você leva maca?", a: "Não. Levo óleos, cremes, lubrificantes, rolos de madeira e som ambiente. O atendimento é feito na sua cama ou sofá, de forma confortável." },
+            { q: "O atendimento é sigiloso?", a: "Totalmente. Chego no local como um visitante comum, sem uniformes ou maletas chamativas." },
+            { q: "Preciso ter estacionamento?", a: "Não obrigatório, mas se for em local de difícil acesso (centro/zonas pagas), o custo do estacionamento pode ser cobrado à parte." },
             { q: "Aceita cartão?", a: "Sim. Pix (5% off), Cartão de Crédito/Débito e Dinheiro." }
         ],
         plans: [
@@ -208,7 +201,8 @@ const getData = (lang) => {
         currency: currency,
         text: {
             welcome: isPT ? "Olá," : "Hello,",
-            subtitle: isPT ? "Desligue a mente e sinta o corpo. Escolha sua experiência:" : "Disconnect your mind, feel your body. Choose your experience:",
+            // Saudação dinâmica será tratada no componente
+            subtitle: isPT ? "Ótima tarde para relaxar. Escolha sua experiência:" : "Disconnect your mind, feel your body. Choose your experience:",
             loading: isPT ? "Carregando..." : "Loading...",
             level_label: isPT ? "Nível Fidelidade" : "Loyalty Level",
             missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP para o próximo nível (+R$${reward} de bônus)` : `${needed} XP needed for next level (+$${reward} bonus)`,
@@ -269,11 +263,10 @@ const getData = (lang) => {
             toast_accept_terms: isPT ? "Aceite as regras para continuar" : "Accept terms",
             toast_coupon_success: isPT ? "Cupom aplicado com sucesso!" : "Coupon applied!",
             zap: {
-                browser_warn: isPT ? "Melhor visualizado no Chrome/Safari" : "Use Chrome/Safari",
                 house: isPT ? "Atendimento em Residência" : "Residential Service",
                 motel: isPT ? "Atendimento em Motel" : "Motel Service",
                 hotel: isPT ? "Atendimento em Hotel" : "Hotel Service",
-                intro: isPT ? "Opa Thalyson, acabei de escolher minha sessão no App:" : "Hello Thalyson, confirming my booking:",
+                intro: isPT ? "Thalyson, acabei de escolher minha sessão no App:" : "Hello Thalyson, confirming my booking:",
                 order_title: "🔥 *NOVO PEDIDO*",
                 client: "👤 *Cliente:*",
                 service: "💆‍♂️ *Sessão:*",
@@ -294,7 +287,7 @@ const getData = (lang) => {
 };
 
 // ==================================================================================
-// 2. COMPONENTES VISUAIS (CONTRASTE E ESTILO REFINADO)
+// 2. COMPONENTES VISUAIS
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: IconName, className = '', loading = false }) => {
@@ -654,6 +647,20 @@ export default function App() {
       return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
   };
 
+  const getGreeting = () => {
+      const h = new Date().getHours();
+      if (h < 12) return lang === 'pt' ? "Bom dia" : "Good morning";
+      if (h < 18) return lang === 'pt' ? "Boa tarde" : "Good afternoon";
+      return lang === 'pt' ? "Boa noite" : "Good evening";
+  };
+
+  const getSubGreeting = () => {
+      const h = new Date().getHours();
+      if (h < 12) return lang === 'pt' ? "Ótimo dia para relaxar" : "Great day to relax";
+      if (h < 18) return lang === 'pt' ? "Ótima tarde para relaxar" : "Great afternoon to relax";
+      return lang === 'pt' ? "Ótima noite para relaxar" : "Great night to relax";
+  };
+
   const generateSecurityHash = (price, date, itemName) => {
     const raw = `${price}-${date}-${itemName}-${CONFIG.SECRET_TOKEN}`;
     return btoa(raw).substring(0, 8).toUpperCase();
@@ -699,7 +706,7 @@ export default function App() {
     }).filter(Boolean).join('\n');
     
     const msg = `
-${T.zap.intro}
+${getGreeting()} ${T.zap.intro}
 ${T.zap.order_title} 🔐 #${securityHash}
 ──────────────────────
 
@@ -851,32 +858,33 @@ ${T.zap.wait}
         ))}
       </div>
 
-      <header className="h-24 px-6 md:px-12 flex items-center justify-between z-20 shrink-0 bg-transparent relative max-w-5xl mx-auto w-full">
-        <div className="flex flex-col justify-center">
-            <span className={`font-bold text-2xl tracking-wide block leading-none ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson</span>
-            <span className="text-[10px] uppercase font-bold text-blue-500 tracking-[0.15em] mt-1.5 flex items-center gap-1"><Icon name="Star" size={12} className="fill-[#2563eb] text-[#2563eb]"/> +80 Clientes</span>
-        </div>
-        <div className="flex gap-2">
-            <button onClick={()=>setSettingsOpen(true)} className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="Settings" size={20}/></button>
-            <button onClick={handleShare} className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="Share2" size={20}/></button>
-            <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="Globe" size={20}/></button>
-            <button onClick={() => setIsDark(!isDark)} className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-blue-500 hover:text-blue-600 shadow-sm'}`}>{isDark ? <Icon name="Moon" size={20}/> : <Icon name="Sun" size={20}/>}</button>
-        </div>
-      </header>
+      {/* HEADER (Ocultar no Passo 4 para clean look) */}
+      {step !== 4 && (
+        <header className="h-24 px-6 md:px-12 flex items-center justify-between z-20 shrink-0 bg-transparent relative max-w-5xl mx-auto w-full">
+            <div className="flex flex-col justify-center">
+                <span className={`font-bold text-2xl tracking-wide block leading-none ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson</span>
+                <span className="text-[10px] uppercase font-bold text-blue-500 tracking-[0.15em] mt-1.5 flex items-center gap-1"><Icon name="Star" size={12} className="fill-[#2563eb] text-[#2563eb]"/> +80 Clientes</span>
+            </div>
+            <div className="flex gap-2">
+                <button onClick={()=>setSettingsOpen(true)} className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="Settings" size={20}/></button>
+                <button onClick={handleShare} className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="Share2" size={20}/></button>
+                <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="Globe" size={20}/></button>
+                <button onClick={() => setIsDark(!isDark)} className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-blue-500 hover:text-blue-600 shadow-sm'}`}>{isDark ? <Icon name="Moon" size={20}/> : <Icon name="Sun" size={20}/>}</button>
+            </div>
+        </header>
+      )}
 
-      <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-36 pt-4 scroll-smooth relative z-10 px-6 md:px-12">
+      <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-40 pt-4 scroll-smooth relative z-10 px-6 md:px-12">
         <div className="max-w-5xl mx-auto space-y-16">
           {step === 0 && (
             <div className="animate-fade-in space-y-16">
               <div className="md:grid md:grid-cols-2 md:gap-12 items-center">
                 <div className="animate-slide-up delay-100">
                     <div className="flex items-end gap-3 mb-6">
-                        <h1 className={`text-5xl md:text-6xl font-light tracking-tight leading-[1.1] ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome} <span className="font-bold text-blue-500">{user.name ? user.name.split(' ')[0] : (lang === 'pt' ? "Visitante" : "Visitor")}</span></h1>
+                        <h1 className={`text-5xl md:text-6xl font-light tracking-tight leading-[1.1] ${isDark ? 'text-white' : 'text-slate-900'}`}>{getGreeting()}, <span className="font-bold text-blue-500">{user.name ? user.name.split(' ')[0] : (lang === 'pt' ? "Visitante" : "Visitor")}</span></h1>
                     </div>
-                    <p className={`text-lg font-light leading-relaxed max-w-lg ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.subtitle}</p>
-                    <div className="mt-8 flex items-center gap-3 p-4 rounded-2xl border border-blue-500/20 bg-blue-500/5 text-blue-400 text-xs font-bold w-fit tracking-wide uppercase">
-                        <Icon name="ExternalLink" size={16} />
-                        <span>{T.zap.browser_warn}</span>
+                    <div className="text-lg font-light leading-relaxed max-w-lg min-h-[30px] flex items-center">
+                        <span className={`animate-fade-in ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{getSubGreeting()}. <span className="opacity-50">Escolha:</span></span>
                     </div>
                 </div>
                 <div className={`hidden md:block animate-slide-up delay-200 relative overflow-hidden rounded-[2.5rem] p-10 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-blue-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-blue-500/30'}`}>
@@ -913,6 +921,7 @@ ${T.zap.wait}
                 </div>
               </div>
 
+              {/* Mobile Level Card */}
               <div className={`md:hidden animate-slide-up delay-200 relative mt-4 overflow-hidden rounded-[2rem] p-6 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-blue-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-blue-500/30'}`}>
                     <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 blur-[60px] rounded-full pointer-events-none transition-all duration-700"></div>
                     <div className="flex justify-between items-start mb-6 relative z-10">
@@ -1226,23 +1235,18 @@ ${T.zap.wait}
                                     </button>
                                 ))}
                             </div>
-                            {booking.payment === 'pix' && (
-                                <div className="mt-6 p-6 rounded-3xl bg-blue-500/5 border border-blue-500/10 animate-fade-in">
-                                    <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-3 text-center">Chave Pix para Cópia</p>
-                                    <div className="flex gap-2">
-                                        <input readOnly value={CONFIG.PIX_KEY} className={`w-full text-sm font-mono text-center rounded-xl border px-3 py-3 ${isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-300' : 'bg-white border-slate-200 text-slate-600'}`} />
-                                        <button onClick={()=>{navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success")}} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}><Icon name="Copy" size={20}/></button>
-                                    </div>
-                                </div>
-                            )}
                         </div>
-                        <div className="flex items-start gap-4 px-4">
-                            <div onClick={()=>setBooking(b=>({...b, termsAccepted: !b.termsAccepted}))} className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center cursor-pointer transition-all shrink-0 ${booking.termsAccepted ? 'bg-blue-600 border-blue-600 text-white' : (isDark ? 'border-zinc-700' : 'border-slate-300')}`}>
-                                {booking.termsAccepted && <Icon name="Check" size={14} />}
+                        {/* Botão de Conduta / Termos - Alinhado */}
+                        <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer ${booking.termsAccepted ? 'bg-blue-500/10 border-blue-500/50' : (isDark ? 'border-zinc-800 hover:border-zinc-700' : 'border-slate-200 hover:border-slate-300')}`} onClick={() => setTermsOpen(true)}>
+                            <div className="flex items-center gap-3">
+                                <Icon name="ShieldCheck" className={`${isDark ? 'text-zinc-400' : 'text-slate-500'} shrink-0`} size={24}/>
+                                <div className="flex flex-col">
+                                    <span className={`text-sm font-bold ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{T.terms_title}</span>
+                                    <span className={`text-xs ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Toque para ler</span>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Icon name="ShieldCheck" className={`${isDark ? 'text-zinc-500' : 'text-slate-500'} shrink-0 mt-0.5`} size={20}/>
-                                <div><h4 className={`text-sm font-bold mb-1 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.terms_title}</h4><p className={`text-xs cursor-pointer hover:text-blue-500 transition-colors underline ${isDark ? 'text-zinc-500' : 'text-slate-500'}`} onClick={() => setTermsOpen(true)}>{T.terms_link}</p></div>
+                            <div onClick={(e) => { e.stopPropagation(); setBooking(b=>({...b, termsAccepted: !b.termsAccepted})); }} className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all ${booking.termsAccepted ? 'bg-blue-600 border-blue-600 text-white' : (isDark ? 'border-zinc-700' : 'border-slate-300')}`}>
+                                {booking.termsAccepted && <Icon name="Check" size={16} />}
                             </div>
                         </div>
                     </div>
@@ -1251,49 +1255,54 @@ ${T.zap.wait}
           )}
 
           {step === 4 && (
-             <div className="animate-scale-in flex flex-col items-center justify-center py-24 text-center space-y-10">
-                <div className="relative">
-                    <div className="w-36 h-36 bg-blue-600 rounded-[3rem] flex items-center justify-center shadow-2xl shadow-blue-600/40 animate-bounce-slow relative z-10">
-                        <Icon name="Check" size={64} className="text-white" />
+             <div className={`fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-xl ${isDark ? 'bg-black/60' : 'bg-white/40'}`}>
+                 <div className="animate-scale-in flex flex-col items-center justify-center text-center space-y-10 w-full max-w-lg">
+                    <div className="relative">
+                        <div className="w-36 h-36 bg-blue-600 rounded-[3rem] flex items-center justify-center shadow-2xl shadow-blue-600/40 animate-bounce-slow relative z-10">
+                            <Icon name="Check" size={64} className="text-white" />
+                        </div>
+                        <div className="absolute inset-0 bg-blue-500 blur-[80px] opacity-30 animate-pulse"></div>
                     </div>
-                    <div className="absolute inset-0 bg-blue-500 blur-[80px] opacity-30 animate-pulse"></div>
-                </div>
-                <div>
-                    <h2 className={`text-5xl font-light mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h2>
-                    <p className={`text-lg max-w-sm mx-auto font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
-                </div>
-                <div className="flex flex-col gap-6 w-full max-w-sm">
-                    <Button variant="whatsapp" full size="xl" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon="MessageCircle">{T.whatsapp_btn}</Button>
-                    <button onClick={() => setStep(0)} className={`text-sm font-bold uppercase tracking-widest transition-colors ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600'}`}>
-                        {T.back_home}
-                    </button>
-                </div>
+                    <div>
+                        <h2 className={`text-5xl font-light mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h2>
+                        <p className={`text-lg max-w-sm mx-auto font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{T.success_sub}</p>
+                    </div>
+                    <div className="flex flex-col gap-6 w-full max-w-sm">
+                        <Button variant="whatsapp" full size="xl" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon="MessageCircle">{T.whatsapp_btn}</Button>
+                        <button onClick={() => setStep(0)} className={`text-sm font-bold uppercase tracking-widest transition-colors ${isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'}`}>
+                            {T.back_home}
+                        </button>
+                    </div>
+                 </div>
              </div>
           )}
         </div>
       </main>
 
-      {/* FOOTER IOS 2026 GLASS */}
-      <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-6 pointer-events-none">
-         <div className={`flex justify-between items-center p-2 rounded-[2.5rem] backdrop-blur-2xl border pointer-events-auto shadow-2xl transition-all duration-500 ${isDark ? 'bg-black/70 border-white/10 shadow-black/50' : 'bg-white/70 border-white/40 shadow-slate-300/50'}`}>
-             <div className="flex items-center pl-2">
-                 {step > 0 && step < 4 && (
-                     <div className="flex gap-2 animate-slide-in">
-                         <button onClick={() => setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-black/5 text-slate-800 hover:bg-black/10'}`}><Icon name="Home" size={22}/></button>
-                         <button onClick={() => setStep(step - 1)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-black/5 text-slate-800 hover:bg-black/10'}`}><Icon name="ChevronLeft" size={22}/></button>
-                     </div>
-                 )}
-                 {step === 0 && <div className="w-14 h-14"></div> /* Spacer */}
-             </div>
-             
-             {step < 4 && (
-                 <button onClick={handleNextStep} className={`h-14 px-8 rounded-[2rem] bg-blue-600 text-white font-bold text-sm uppercase tracking-widest flex items-center gap-3 shadow-lg shadow-blue-600/30 transition-all active:scale-95 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed`}>
-                     {step === 3 ? 'Finalizar' : 'Próximo'}
-                     {!booking.item && <Icon name="ArrowRight" size={18} />}
-                 </button>
-             )}
-         </div>
-      </footer>
+      {/* FOOTER IOS 2026 GLASS - OCULTO NO PASSO 4 */}
+      {step !== 4 && (
+        <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-6 pointer-events-none">
+            <div className={`flex justify-between items-center p-2 rounded-[2.5rem] backdrop-blur-2xl border pointer-events-auto shadow-2xl transition-all duration-500 ${isDark ? 'bg-black/60 border-white/10 shadow-black/50' : 'bg-white/60 border-white/40 shadow-slate-300/50'}`}>
+                <div className="flex items-center pl-2">
+                    {step > 0 && (
+                        <div className="flex gap-2 animate-slide-in">
+                            <button onClick={() => setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-black/5 text-slate-800 hover:bg-black/10'}`}><Icon name="Home" size={22}/></button>
+                            <button onClick={() => setStep(step - 1)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-black/5 text-slate-800 hover:bg-black/10'}`}><Icon name="ChevronLeft" size={22}/></button>
+                        </div>
+                    )}
+                    {step === 0 && <div className="w-14 h-14"></div> /* Spacer */}
+                </div>
+                
+                {/* Botão Próximo - Só aparece se houver item selecionado no passo 0 */}
+                {(step > 0 || (step === 0 && booking.item)) && (
+                    <button onClick={handleNextStep} className={`h-14 px-8 rounded-[2rem] bg-blue-600 text-white font-bold text-sm uppercase tracking-widest flex items-center gap-3 shadow-lg shadow-blue-600/30 transition-all active:scale-95 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed`}>
+                        {step === 3 ? 'Finalizar' : 'Próximo'}
+                        {!booking.item && <Icon name="ArrowRight" size={18} />}
+                    </button>
+                )}
+            </div>
+        </footer>
+      )}
 
       {/* MODALS E POPUPS */}
       <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${settingsOpen ? 'opacity-100' : 'opacity-0'}`}>
