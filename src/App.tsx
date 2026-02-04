@@ -2,14 +2,14 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS vFINAL - REFINAMENTO UI/UX + AVALIAÇÕES REALISTAS
+ * THALYSON APP OS vFINAL - AJUSTES FINAIS (TEXTOS, ÍCONES, UI IOS 2026)
  * ==================================================================================
  */
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_prod_v69_refined',
+  STORAGE_KEY: '@thaly_app_prod_v70_glass',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -19,25 +19,36 @@ const CONFIG = {
 };
 
 // ==================================================================================
-// 1. ÍCONES (SVG PURO)
+// 1. ÍCONES (SVG PURO - ATUALIZADOS)
 // ==================================================================================
 const Icon = ({ name, size = 24, className = "" }) => {
   const icons = {
+    // Serviços
     Wind: <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2" />, 
     Flame: <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.246-5.318-1-1 4.41-4.41 6 3 6 6 0 2.21-1.79 4-4 4s-4-1.79-4-4a2 2 0 0 1 4 0Z" />, 
     Zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />, 
+    
+    // Lugares
     Home: <><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></>,
     Building: <><rect width="16" height="20" x="4" y="2" rx="2" ry="2" /><path d="M9 22v-4h6v4" /><path d="M8 6h.01" /><path d="M16 6h.01" /><path d="M12 6h.01" /><path d="M12 10h.01" /><path d="M12 14h.01" /><path d="M16 10h.01" /><path d="M16 14h.01" /><path d="M8 10h.01" /><path d="M8 14h.01" /></>,
     BedDouble: <><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" /><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4" /><path d="M12 4v6" /><path d="M2 18h20" /></>,
+    
+    // UI & Extras
     Clock: <><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></>,
-    Heart: <path d="M19 14c1.49-1.28 3.6-2.34 4.58-2.74-1.05-5.5-7.5-5.5-8.58 0-.84 4.34-2.71 5.07-3 5.18V8.5a2.5 2.5 0 0 0-5 0v3.18c-.73-.83-3.44-3.11-3.44-5.18 0-3 3.32-3.8 6-1.63" />, 
+    // Novo ícone de Troca (Refresh/Swap)
+    Switch: <path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/>,
     Package: <><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></>,
+    Layers: <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z M22 17.65l-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65 M22 12.65l-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>,
     Crown: <path d="m2 4 3 12h14l3-12-6 7-4-9-4 9-6-7z" />,
     Loader2: <path d="M21 12a9 9 0 1 1-6.219-8.56" />,
     AlertTriangle: <><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" x2="12" y1="9" y2="13" /><line x1="12" x2="12.01" y1="17" y2="17" /></>,
+    
+    // Pagamento
     QrCode: <><rect width="5" height="5" x="3" y="3" rx="1" /><rect width="5" height="5" x="16" y="3" rx="1" /><rect width="5" height="5" x="3" y="16" rx="1" /><path d="M21 16h-3a2 2 0 0 0-2 2v3" /><path d="M21 21v.01" /><path d="M12 7v3a2 2 0 0 1-2 2H7" /><path d="M3 12h.01" /><path d="M12 3h.01" /><path d="M12 16v.01" /><path d="M16 12h1" /><path d="M21 12v.01" /><path d="M12 21v-1" /></>,
     CreditCard: <><rect width="22" height="16" x="1" y="4" rx="2" ry="2" /><line x1="1" x2="23" y1="10" y2="10" /></>,
     Banknote: <><rect width="20" height="12" x="2" y="6" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" /></>,
+    
+    // Ações
     Check: <polyline points="20 6 9 17 4 12" />,
     X: <path d="M18 6 6 18M6 6l12 12" />,
     ChevronLeft: <path d="m15 18-6-6 6-6" />,
@@ -80,13 +91,12 @@ const Icon = ({ name, size = 24, className = "" }) => {
 };
 
 // ==================================================================================
-// 0. DADOS E TEXTOS (ATUALIZADO COM AVALIAÇÕES REALISTAS E DESCRIÇÕES CLARAS)
+// 0. DADOS E TEXTOS (DESCRIÇÕES E LINGUAGEM CORRIGIDAS)
 // ==================================================================================
 const getData = (lang) => {
     const isPT = lang === 'pt';
     const currency = isPT ? 'R$' : '$';
     
-    // DEFINIÇÃO DE PREÇOS
     const p = {
         relax: isPT ? 125 : 25,
         sens: isPT ? 155 : 30,
@@ -105,40 +115,41 @@ const getData = (lang) => {
         ],
         services: [
             { 
-              id: 'relaxante', min: 60, price: p.relax, icon: 'Wind', tag: isPT ? "ZERO MALÍCIA" : "PHYSICAL",
+              id: 'relaxante', min: 60, price: p.relax, icon: 'Wind', tag: isPT ? "100% FÍSICO" : "PHYSICAL",
               title: isPT ? "Massagem Clássica" : "Classic Relax",
-              desc: isPT ? "Foco 100% muscular para tirar dores. Sem toque íntimo." : "For pain. Muscle focus only. No intimate touch.",
-              details: isPT ? `O QUE ACONTECE NA SESSÃO:\n• Foco total em dores nas costas, pernas e pescoço.\n• Uso força média/alta para soltar a musculatura.\n• NÃO existe toque genital nesta modalidade.\n• Perfeito para quem treina pesado ou está travado.` : `BODY RESET:\n• HOW IT WORKS: Firm maneuvers.\n• FOCUS: Remove knots and fatigue.`
+              desc: isPT ? "Corpo todo (Costas, Mãos e Pés). Pressão Baixa/Média para relaxar." : "Full body (Back, Hands, Feet). Low/Mid pressure to relax.",
+              details: isPT ? `RELAXAMENTO TOTAL (SEM DOR):\n• Foco: Costas, pernas, mãos e pés.\n• Pressão: Baixa a média (não machuca, é para relaxar).\n• Objetivo: Tirar o cansaço do dia a dia.\n• Sem toque íntimo nesta modalidade.` : `FULL BODY RELAX:\n• Focus: Back, legs, hands, feet.\n• Pressure: Low to Medium (relaxing).\n• No intimate touch.`
             },
             { 
               id: 'sensitiva', min: 60, price: p.sens, icon: 'Flame', tag: isPT ? "SENSORIAL + LINGAM" : "SENSORY",
               title: isPT ? "Tântrica Sensorial" : "Tantric Sensory",
-              desc: isPT ? "Toques leves (pena), arrepios e finalização manual (Lingam)." : "Relax + Subtle Touch + Finish. Underwear service.",
-              details: isPT ? `UMA EXPERIÊNCIA DE ARREPIOS:\n• Começa com toques muito leves usando pontas dos dedos e penas.\n• O objetivo é despertar a sensibilidade da pele.\n• Finaliza com a Massagem Lingam (toque genital focado no prazer).\n• Você recebe passivamente (não toca no massagista).` : `TOUCH EVOLUTION:\n• START: Muscle relaxation.\n• ATTIRE: **Underwear**.\n• PEAK: Includes Lingam Massage.`
+              desc: isPT ? "Toque sutil, arrepios pelo corpo e finalização (Lingam)." : "Subtle touch, shivers and Lingam finish.",
+              details: isPT ? `DESPERTAR DO CORPO:\n• Começa com toques sutis (pontas dos dedos) pelo corpo todo.\n• O objetivo é causar arrepios e sensibilidade.\n• Finaliza com a Massagem Lingam (toque genital focado no prazer).\n• Você recebe e sente.` : `BODY AWAKENING:\n• Subtle touches (fingertips).\n• Goal: Shivers and sensitivity.\n• Ends with Lingam Massage.`
             },
             { 
               id: 'mista', min: 60, price: p.titan, icon: 'Zap', tag: isPT ? "A MAIS COMPLETA" : "FULL FUSION",
               title: isPT ? "Experiência Fusion" : "Fusion Experience",
-              desc: isPT ? "Mistura tudo: Massagem forte + Corpo a Corpo + Finalização Intensa." : "All in one: Muscle + Body-to-Body + Intense Lingam.",
-              details: isPT ? `O MELHOR DOS DOIS MUNDOS:\n• Começamos tirando a tensão muscular (massagem forte).\n• Evoluímos para o Corpo a Corpo (Nuru) deslizando sobre você.\n• Encerramos com uma Lingam demorada e intensa.\n• É a sessão onde você sai "flutuando" e vazio.` : `FOR WHO WANTS IT ALL:\n• JOURNEY: Muscle -> Body-to-Body -> Ecstasy.\n• ATTIRE: Underwear.`
+              desc: isPT ? "O melhor de tudo: Massagem relaxante + Corpo a Corpo + Lingam." : "Best of all: Relaxing + Body-to-Body + Lingam.",
+              details: isPT ? `PARA QUEM QUER TUDO:\n• Começamos soltando a musculatura (relaxante).\n• Evoluímos para o Corpo a Corpo (Nuru) com óleo.\n• Finalização Lingam intensa e demorada.\n• A experiência definitiva.` : `FOR WHO WANTS IT ALL:\n• Relaxing muscle start.\n• Body-to-Body with oil.\n• Intense Lingam finish.`
             }
         ],
         extras: [
             { id: 'more_time', price: isPT ? 55 : 15, icon: 'Clock', label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Pra não correr." : "No rush." },
-            { id: 'touch', price: isPT ? 55 : 15, icon: 'Heart', label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você pode tocar." : "You touch too." },
-            { id: 'aroma', price: isPT ? 5 : 5, icon: 'Wind', label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Óleos essenciais." : "Total immersion." }
+            { id: 'touch', price: isPT ? 55 : 15, icon: 'Switch', label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você pode tocar." : "You touch too." },
+            { id: 'aroma', price: isPT ? 5 : 5, icon: 'Wind', label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Óleos essenciais." : "Essential oils." }
         ],
         faq: [
-            { q: "Qual a diferença real entre as sessões?", a: "Simples: A Clássica (125) é só pra dor muscular. A Tântrica (155) é focada em prazer e arrepios com a mão. A Fusion (195) mistura tudo e tem o corpo a corpo." },
-            { q: "Você tem local próprio?", a: "Não. Atendo exclusivamente Delivery (vou até seu hotel, motel ou residência) em SP e região." },
-            { q: "Aceita cartão?", a: "Aceito Pix (com 5% de desconto) e Cartão de Crédito/Débito. Dinheiro também." }
+            { q: "Qual a diferença real entre as sessões?", a: "Clássica (125) = Relaxamento muscular corpo todo (costas/pés). Tântrica (155) = Toque leve (pontas dos dedos) + Lingam. Fusion (195) = Mistura tudo e tem corpo a corpo." },
+            { q: "O que é a Massagem Lingam?", a: "É uma massagem na região íntima (pênis, testículos e períneo). O foco não é apenas a finalização, mas estimular o prazer, circulação e sensibilidade de toda a área." },
+            { q: "Você leva maca?", a: "Não. Levo óleos, cremes, lubrificantes, rolos de madeira e som ambiente. O atendimento é feito na sua cama ou sofá, de forma confortável." },
+            { q: "Aceita cartão?", a: "Sim. Pix (5% off), Cartão de Crédito/Débito e Dinheiro." }
         ],
         plans: [
             { 
               id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Anti-Stress" : "Anti-Stress Cycle", 
               price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save,
               desc: isPT ? "4 Sessões de Massagem Clássica." : "4 Classic Massage Sessions.",
-              details: isPT ? "MANUTENÇÃO CONTRA DOR:\n• 4 sessões focadas 100% em tirar tensão muscular." : "PAIN MAINTENANCE:\n• 4 sessions focused on muscle tension.", 
+              details: isPT ? "MANUTENÇÃO CONTRA CANSAÇO:\n• 4 sessões focadas no corpo todo (mãos, pés, costas)." : "TIREDNESS MAINTENANCE:\n• 4 sessions focused on full body.", 
               tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: 'Package' 
             },
             { 
@@ -157,12 +168,9 @@ const getData = (lang) => {
             }
         ],
         reviews: [
-            // ORIGINAIS INTACTAS
             { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito.", s: 5 },
             { n: "Tiago", loc: "SP - Bela Vista", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", s: 5 },
             { n: "Alan", loc: "SP - Bela Vista", t: "Gostei bastante, saí mais leve. Da pra ver que ele manda bem no que faz.", s: 5 },
-            
-            // NOVAS REALISTAS (MISTURA DE 5 e 4 ESTRELAS)
             { n: "Felipe", loc: "Londrina", t: "Cara, sai da sessão flutuando. A parte do corpo a corpo é bizarra de boa.", s: 5 },
             { n: "Ricardo M.", loc: "Rio Preto", t: "Mão firme, sabe onde apertar. Tava travadão e resolveu.", s: 5 },
             { n: "André L.", loc: "SP - Jardins", t: "Curti muito, mas achei que 1 hora passou voando. Na próxima pego 1h30.", s: 4 },
@@ -286,7 +294,7 @@ const getData = (lang) => {
 };
 
 // ==================================================================================
-// 2. COMPONENTES VISUAIS (REFINADOS: CONTRASTE & PADDING)
+// 2. COMPONENTES VISUAIS (CONTRASTE E ESTILO REFINADO)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: IconName, className = '', loading = false }) => {
@@ -421,9 +429,9 @@ const ReviewsCarousel = ({ reviews, isDark, title }) => {
                  </div>
                  <div className={`px-2 py-1 rounded-lg border flex gap-1 ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-slate-50 border-slate-100'}`}>{[...Array(5)].map((_, k) => (<Icon key={k} name="Star" size={10} className={k < r.s ? "text-blue-500 fill-blue-500" : (isDark ? "text-zinc-800" : "text-slate-300")} />))}</div>
               </div>
-              <div className="relative">
-                  <div className={`absolute -top-2 -left-1 opacity-10 ${isDark ? 'text-white' : 'text-black'}`}><Icon name="Quote" size={24}/></div>
-                  <p className={`text-sm leading-relaxed font-light italic relative z-10 pl-4 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{r.t}"</p>
+              <div className="relative pt-2 pl-2">
+                  <div className={`absolute -top-4 -left-2 opacity-10 ${isDark ? 'text-white' : 'text-black'}`}><Icon name="Quote" size={40}/></div>
+                  <p className={`text-sm leading-relaxed font-light italic relative z-10 pl-2 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{r.t}"</p>
               </div>
             </div>
         ))}
@@ -875,7 +883,7 @@ ${T.zap.wait}
                     <div className="absolute top-0 right-0 w-60 h-60 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none transition-all duration-700"></div>
                     <div className="flex justify-between items-start mb-8 relative z-10">
                         <div className="flex items-center gap-6">
-                            <div className={`w-20 h-20 rounded-3xl flex items-center justify-center shadow-lg ${isDark ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-blue-500/20' : 'bg-blue-500 text-white shadow-blue-200'}`}>
+                            <div className={`w-20 h-20 rounded-3xl flex items-center justify-center shadow-lg ${isDark ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-blue-500/20' : 'bg-blue-50 text-white shadow-blue-200'}`}>
                                 <Icon name="Trophy" size={40} />
                             </div>
                             <div>
@@ -909,7 +917,7 @@ ${T.zap.wait}
                     <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 blur-[60px] rounded-full pointer-events-none transition-all duration-700"></div>
                     <div className="flex justify-between items-start mb-6 relative z-10">
                         <div className="flex items-center gap-4">
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${isDark ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-blue-500/20' : 'bg-blue-500 text-white shadow-blue-200'}`}>
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${isDark ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-blue-500/20' : 'bg-blue-50 text-white shadow-blue-200'}`}>
                                 <Icon name="Trophy" size={26} />
                             </div>
                             <div>
@@ -937,7 +945,7 @@ ${T.zap.wait}
 
               <div className="flex p-1.5 rounded-2xl bg-zinc-900/50 border border-white/5 max-w-md mx-auto">
                   <button onClick={() => setActiveTab('packs')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'packs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-zinc-500 hover:text-zinc-300'}`}>
-                      <Icon name="Package" size={16} className={activeTab === 'packs' ? 'animate-pulse' : ''}/> {T.tab_packs}
+                      <Icon name="Layers" size={16} className={activeTab === 'packs' ? 'animate-pulse' : ''}/> {T.tab_packs}
                   </button>
                   <button onClick={() => setActiveTab('single')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'single' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-zinc-500 hover:text-zinc-300'}`}>
                       <Icon name="LayoutList" size={16}/> {T.tab_single}
@@ -1254,39 +1262,40 @@ ${T.zap.wait}
                     <h2 className={`text-5xl font-light mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h2>
                     <p className={`text-lg max-w-sm mx-auto font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
                 </div>
-                <div className="flex flex-col gap-4 w-full max-w-sm">
-                    <div className="flex gap-3">
-                        <Button variant="secondary" size="icon" onClick={() => { navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success"); }} icon="Copy" />
-                        <Button variant="instagram" size="icon" onClick={() => window.open(CONFIG.INSTAGRAM_URL, '_blank')} icon="Instagram" />
-                        <Button variant="outline" full onClick={() => setStep(0)} icon="Home">Início</Button>
-                    </div>
+                <div className="flex flex-col gap-6 w-full max-w-sm">
                     <Button variant="whatsapp" full size="xl" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon="MessageCircle">{T.whatsapp_btn}</Button>
+                    <button onClick={() => setStep(0)} className={`text-sm font-bold uppercase tracking-widest transition-colors ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600'}`}>
+                        {T.back_home}
+                    </button>
                 </div>
              </div>
           )}
         </div>
       </main>
 
-      <footer className="fixed bottom-0 left-0 w-full z-40 px-6 pb-safe pt-6 pointer-events-none">
-         <div className="max-w-5xl mx-auto flex justify-between items-end pointer-events-auto">
-             <div className="flex gap-3">
+      {/* FOOTER IOS 2026 GLASS */}
+      <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-6 pointer-events-none">
+         <div className={`flex justify-between items-center p-2 rounded-[2.5rem] backdrop-blur-2xl border pointer-events-auto shadow-2xl transition-all duration-500 ${isDark ? 'bg-black/70 border-white/10 shadow-black/50' : 'bg-white/70 border-white/40 shadow-slate-300/50'}`}>
+             <div className="flex items-center pl-2">
                  {step > 0 && step < 4 && (
-                     <>
-                         <button onClick={() => setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><Icon name="Home" size={24}/></button>
-                         <button onClick={() => setStep(step - 1)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}><Icon name="ChevronLeft" size={24}/></button>
-                     </>
+                     <div className="flex gap-2 animate-slide-in">
+                         <button onClick={() => setStep(0)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-black/5 text-slate-800 hover:bg-black/10'}`}><Icon name="Home" size={22}/></button>
+                         <button onClick={() => setStep(step - 1)} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-black/5 text-slate-800 hover:bg-black/10'}`}><Icon name="ChevronLeft" size={22}/></button>
+                     </div>
                  )}
+                 {step === 0 && <div className="w-14 h-14"></div> /* Spacer */}
              </div>
+             
              {step < 4 && (
-                 <button onClick={handleNextStep} className={`h-16 px-10 rounded-[2.5rem] bg-blue-600 text-white font-bold text-sm uppercase tracking-widest flex items-center gap-4 shadow-xl shadow-blue-600/30 transition-all active:scale-95 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-1`}>
+                 <button onClick={handleNextStep} className={`h-14 px-8 rounded-[2rem] bg-blue-600 text-white font-bold text-sm uppercase tracking-widest flex items-center gap-3 shadow-lg shadow-blue-600/30 transition-all active:scale-95 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed`}>
                      {step === 3 ? 'Finalizar' : 'Próximo'}
-                     {!booking.item && <Icon name="ArrowRight" size={20} />}
+                     {!booking.item && <Icon name="ArrowRight" size={18} />}
                  </button>
              )}
          </div>
       </footer>
 
-      {/* MODALS E POPUPS (MANTIDOS E VISUALMENTE AJUSTADOS) */}
+      {/* MODALS E POPUPS */}
       <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${settingsOpen ? 'opacity-100' : 'opacity-0'}`}>
          <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${settingsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setSettingsOpen(false)}></div>
          <div className={`relative w-full max-w-sm border rounded-[2.5rem] p-10 transform transition-transform duration-500 shadow-2xl ${settingsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
