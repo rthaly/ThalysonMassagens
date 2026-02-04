@@ -11,18 +11,18 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v38.0 - TITAN BLUE EDITION (FULL FEATURED)
+ * THALYSON APP OS v38.5 - TITAN BLUE (POP EDITION)
  * ==================================================================================
- * 1. TEMA: Blue Sapphire (Confiança & Higiene).
- * 2. LÓGICA: Fast Track (11:55 libera 12:00).
- * 3. PAGAMENTO: Pix Copia e Cola integrado.
- * 4. DADOS: Base de dados completa restaurada (Reviews, Textos, Termos).
+ * 1. FONTE: Poppins (Google Fonts).
+ * 2. REVIEWS: Scroll Manual (Sem tontura).
+ * 3. MAPS: Link corrigido.
+ * 4. WHATSAPP: Texto enriquecido com Pix e Insta.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v38_titan', 
+  STORAGE_KEY: '@thaly_app_v38_pop', 
   PIX_KEY: "62922530000144", // <--- COLOQUE SUA CHAVE AQUI
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -36,13 +36,14 @@ const CONFIG = {
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
-  const baseStyle = "relative flex items-center justify-center font-medium tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.96] hover:brightness-110 shadow-lg hover:shadow-xl";
+  const baseStyle = "relative flex items-center justify-center font-medium tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.96] hover:brightness-110 shadow-lg hover:shadow-xl font-['Poppins']";
   
   const variants = {
     // BLUE THEME
     primary: "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sky-500/30 border border-sky-400/20",
     secondary: "bg-white/5 backdrop-blur-md border border-white/10 text-zinc-200 hover:bg-white/10 hover:border-white/20",
     whatsapp: "bg-[#25D366] text-white shadow-green-500/20 border border-green-400/20",
+    instagram: "bg-gradient-to-tr from-purple-500 to-pink-500 text-white shadow-pink-500/20 border border-pink-400/20",
     outline: "bg-transparent border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500",
     icon: "bg-white/5 backdrop-blur-md border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10"
   };
@@ -68,7 +69,7 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
 };
 
 const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "text", error, isDark }) => (
-  <div className="space-y-2 w-full group">
+  <div className="space-y-2 w-full group font-['Poppins']">
     {label && <label className={`text-[10px] font-bold uppercase tracking-widest ml-1 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-sky-500' : 'text-slate-500 group-focus-within:text-blue-600'}`}>{label}</label>}
     <div className="relative">
       <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors z-10 ${isDark ? 'text-zinc-500 group-focus-within:text-sky-500' : 'text-slate-400 group-focus-within:text-blue-600'}`}>{Icon && <Icon size={18} />}</div>
@@ -91,7 +92,7 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
 const Card = ({ children, className = '', onClick, active = false, isDark = true }) => (
   <div 
     onClick={onClick} 
-    className={`relative p-6 rounded-[2rem] transition-all duration-500 overflow-hidden h-full flex flex-col group
+    className={`relative p-6 rounded-[2rem] transition-all duration-500 overflow-hidden h-full flex flex-col group font-['Poppins']
     ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-1' : ''} 
     ${active 
         ? 'bg-sky-500/10 border border-sky-500/30 shadow-[0_0_30px_-10px_rgba(14,165,233,0.2)]' 
@@ -145,42 +146,13 @@ const Confetti = ({ active }) => {
   return <canvas ref={canvasRef} className="fixed inset-0 z-[60] pointer-events-none" />;
 };
 
-const AutoScrollReviews = ({ reviews, isDark }) => {
-  const scrollRef = useRef(null);
-  const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
-    let animationFrameId;
-    const scroll = () => {
-      if (!isPaused) {
-        if (scrollContainer.scrollLeft >= (scrollContainer.scrollWidth / 2)) {
-          scrollContainer.scrollLeft = 0;
-        } else {
-          scrollContainer.scrollLeft += 0.6; 
-        }
-      }
-      animationFrameId = requestAnimationFrame(scroll);
-    };
-    animationFrameId = requestAnimationFrame(scroll);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isPaused]);
-
-  const loopReviews = [...reviews, ...reviews, ...reviews];
-
+// ATUALIZADO: Scroll Manual para evitar tontura
+const ManualScrollReviews = ({ reviews, isDark }) => {
   return (
     <div className={`w-full overflow-hidden py-8 border-y mb-10 backdrop-blur-sm ${isDark ? 'bg-zinc-950/30 border-white/5' : 'bg-slate-50/80 border-slate-200'}`}>
-      <div 
-        ref={scrollRef}
-        className="flex gap-5 overflow-x-auto scrollbar-hide px-6"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        onTouchStart={() => setIsPaused(true)}
-        onTouchEnd={() => setTimeout(() => setIsPaused(false), 2000)}
-      >
-        {loopReviews.map((r, i) => (
-            <div key={`${i}-${r.n}`} className={`flex-shrink-0 w-80 border p-6 rounded-3xl transition-all duration-500 hover:scale-[1.02] cursor-grab active:cursor-grabbing select-none ${isDark ? 'bg-zinc-900/80 border-white/5 hover:border-sky-500/30' : 'bg-white border-slate-200 shadow-sm hover:border-blue-400'}`}>
+      <div className="flex gap-5 overflow-x-auto scrollbar-hide px-6 snap-x snap-mandatory font-['Poppins']">
+        {reviews.map((r, i) => (
+            <div key={`${i}-${r.n}`} className={`snap-center flex-shrink-0 w-80 border p-6 rounded-3xl transition-all duration-300 hover:scale-[1.01] select-none ${isDark ? 'bg-zinc-900/80 border-white/5 hover:border-sky-500/30' : 'bg-white border-slate-200 shadow-sm hover:border-blue-400'}`}>
               <div className="flex justify-between items-start mb-4">
                  <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border ${isDark ? 'bg-zinc-800 text-zinc-300 border-white/5' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>{r.n.charAt(0)}</div>
@@ -198,13 +170,15 @@ const AutoScrollReviews = ({ reviews, isDark }) => {
               <p className={`text-xs leading-relaxed font-light italic ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>"{r.t}"</p>
             </div>
         ))}
+        {/* Espaçador final */}
+        <div className="w-2 shrink-0"></div>
       </div>
     </div>
   );
 };
 
 // ==================================================================================
-// 2. DADOS (FULL TRANSLATION PT/EN) - RESTAURADOS COMPLETOS
+// 2. DADOS (FULL TRANSLATION PT/EN)
 // ==================================================================================
 
 const getData = (lang) => {
@@ -259,7 +233,6 @@ const getData = (lang) => {
             }
         ],
         plans: [
-            // UPDATE: Preços Psicológicos (Terminados em 7 ou 9)
             { 
               id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Relax (4x)" : "Relax Cycle (4x)", 
               price: 397, fullPrice: 500, savings: 103,
@@ -350,6 +323,8 @@ const getData = (lang) => {
             success_sub: isPT ? "Recebi seu pedido. Me chame no WhatsApp para combinarmos os detalhes finais." 
                               : "Request received. Please msg me on WhatsApp to finalize details.",
             whatsapp_btn: isPT ? "COMBINAR NO WHATSAPP" : "FINALIZE ON WHATSAPP",
+            copy_pix_btn: "COPIAR CHAVE PIX",
+            instagram_btn: "VER INSTAGRAM",
             back_home: isPT ? "Voltar ao início" : "Back to home",
             today: isPT ? "Hoje" : "Today",
             tomorrow: isPT ? "Amanhã" : "Tomorrow",
@@ -583,9 +558,6 @@ export default function App() {
           const currentHour = now.getHours();
           return slots.filter(time => {
               const [hour] = time.split(':').map(Number);
-              // Lógica: Se a hora do slot for maior que a hora atual, mostra.
-              // Exemplo: São 11:55 (Hora 11). Slot 12:00 (Hora 12). 12 > 11 (True). Mostra.
-              // Exemplo: São 12:05 (Hora 12). Slot 12:00 (Hora 12). 12 > 12 (False). Esconde.
               return hour > currentHour; 
           });
       }
@@ -667,6 +639,8 @@ export default function App() {
         return `✅ ${ext.label} (+ R$ ${price})`;
     }).filter(Boolean).join('\n');
     
+    // ATUALIZADO: LINK DO MAPS CORRIGIDO
+    // ATUALIZADO: PIX E INSTA NO TEXTO
     const msg = `
 ${T.zap.intro}
 ${T.zap.order_title} 🔐 #${securityHash}
@@ -679,13 +653,16 @@ ${T.zap.date} ${dateStr} - ${booking.time}
 ${extrasList ? `${T.zap.extra_title}\n${extrasList}\n` : ''}
 ${T.zap.location}
 ${locTxt}
-${mapQuery ? `\n🔗 *Mapa:* http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
+${mapQuery ? `\n🔗 *Mapa:* https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}` : ''}
 ──────────────────────
 
 ${T.zap.value}
 Total: R$ ${f.total},00
 ${T.zap.payment} ${booking.payment.toUpperCase()}
 ${T.zap.uber_label} ${T.zap.uber_text}
+
+💰 *CHAVE PIX:* ${CONFIG.PIX_KEY}
+📸 *INSTAGRAM:* ${CONFIG.INSTAGRAM_URL}
 
 ${T.zap.xp_status}
 ⚜️ ${T.zap.xp_gain} +${xpGain} XP
@@ -807,11 +784,11 @@ ${T.zap.wait}
 
   // --- RENDER GUARDS ---
   
-  if (!isClient) return <div className="min-h-screen w-full bg-zinc-950" />;
+  if (!isClient) return <div className="min-h-screen w-full bg-zinc-950 font-['Poppins']" />;
 
-  // --- ANIMAÇÃO INICIAL (AZUL) ---
+  // --- ANIMAÇÃO INICIAL ---
   if (loading) return (
-      <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center transition-all duration-700 ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
+      <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center transition-all duration-700 font-['Poppins'] ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
         <div className="relative mb-12">
             <div className={`absolute inset-0 blur-3xl opacity-30 rounded-full animate-pulse-slow ${isDark ? 'bg-sky-500' : 'bg-blue-400'}`}></div>
             <div className="w-32 h-32 rounded-[2rem] flex items-center justify-center font-black text-5xl shadow-2xl relative z-10 bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-sky-500/30 animate-bounce-slow">TM</div>
@@ -830,9 +807,9 @@ ${T.zap.wait}
   // --- LAYOUT PRINCIPAL ---
 
   return (
-    <div className={`h-[100dvh] w-full font-sans flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100 selection:bg-sky-500/30 selection:text-sky-500' : 'bg-slate-50 text-slate-800 selection:bg-blue-200 selection:text-blue-800'}`}>
+    <div className={`h-[100dvh] w-full font-['Poppins'] flex flex-col overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-zinc-100 selection:bg-sky-500/30 selection:text-sky-500' : 'bg-slate-50 text-slate-800 selection:bg-blue-200 selection:text-blue-800'}`}>
       
-      {/* Background Ambience - BLUE THEME */}
+      {/* Background Ambience */}
       <div className="fixed inset-0 pointer-events-none">
           <div className={`absolute top-[-20%] left-[-20%] w-[70%] h-[70%] blur-[150px] rounded-full animate-pulse-slow ${isDark ? 'bg-sky-500/5' : 'bg-blue-200/40'}`}></div>
           <div className={`absolute bottom-[-20%] right-[-20%] w-[70%] h-[70%] blur-[150px] rounded-full animate-pulse-slow ${isDark ? 'bg-indigo-600/5' : 'bg-indigo-200/40'}`}></div>
@@ -867,7 +844,7 @@ ${T.zap.wait}
       {/* Main Content Area */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-48 pt-4 scroll-smooth relative z-10 px-4 md:px-8">
         
-        {step < 3 && <AutoScrollReviews reviews={DATA.reviews} isDark={isDark} />}
+        {step < 3 && <ManualScrollReviews reviews={DATA.reviews} isDark={isDark} />}
 
         <div className="max-w-md md:max-w-5xl mx-auto space-y-10">
 
@@ -875,7 +852,6 @@ ${T.zap.wait}
           {step === 0 && (
             <div className="animate-fade-in space-y-10">
               
-              {/* Desktop Header Grid */}
               <div className="md:grid md:grid-cols-2 md:gap-12 items-center">
                 <div className="animate-slide-up delay-100">
                     <div className="flex items-end gap-2 mb-3">
@@ -889,7 +865,7 @@ ${T.zap.wait}
                     </div>
                 </div>
                 
-                {/* Level Card (BLUE THEME) */}
+                {/* Level Card */}
                 <div className={`hidden md:block animate-slide-up delay-200 relative overflow-hidden rounded-[2rem] p-8 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-sky-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-blue-500/30'}`}>
                     <div className="absolute top-0 right-0 w-40 h-40 bg-sky-500/10 blur-[60px] rounded-full pointer-events-none transition-all duration-700"></div>
                     <div className="flex justify-between items-start mb-6 relative z-10">
@@ -921,7 +897,7 @@ ${T.zap.wait}
                 </div>
               </div>
 
-              {/* Mobile Level Card (BLUE THEME) */}
+              {/* Mobile Level Card */}
               <div className={`md:hidden animate-slide-up delay-200 relative mt-4 overflow-hidden rounded-[2rem] p-6 border backdrop-blur-2xl transition-all duration-700 ${isDark ? 'border-white/10 bg-zinc-900/40 hover:border-sky-500/30' : 'border-slate-200 bg-white/60 shadow-xl hover:border-blue-500/30'}`}>
                     <div className="absolute top-0 right-0 w-40 h-40 bg-sky-500/10 blur-[60px] rounded-full pointer-events-none transition-all duration-700"></div>
                     <div className="flex justify-between items-start mb-8 relative z-10">
@@ -1029,7 +1005,7 @@ ${T.zap.wait}
             </div>
           )}
 
-          {/* DATE (STEP 1) - FULL MONTH */}
+          {/* DATE (STEP 1) */}
           {step === 1 && (
             <div className="animate-slide-in space-y-12">
               <div className="text-center mb-8">
@@ -1252,7 +1228,15 @@ ${T.zap.wait}
                  </div>
                  <h1 className={`text-2xl font-light mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h1>
                  <p className={`text-xs leading-relaxed max-w-xs mx-auto mb-10 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
-                 <Button variant="whatsapp" full size="xl" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon={MessageCircle}>{T.whatsapp_btn}</Button>
+                 
+                 <div className="w-full max-w-sm space-y-3">
+                     <div className="grid grid-cols-2 gap-3">
+                         <Button variant="secondary" onClick={() => { navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success"); }} icon={Copy}>{T.copy_pix_btn}</Button>
+                         <Button variant="instagram" onClick={() => window.open(CONFIG.INSTAGRAM_URL, '_blank')} icon={Instagram}>{T.instagram_btn}</Button>
+                     </div>
+                     <Button variant="whatsapp" full size="xl" onClick={() => window.open(generateWhatsAppLink(), '_blank')} icon={MessageCircle}>{T.whatsapp_btn}</Button>
+                 </div>
+
                  <button onClick={()=>{setStep(0); setBooking({...booking, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false}); setShowConfetti(false);}} className={`mt-8 text-[10px] font-bold uppercase tracking-widest transition-colors py-4 ${isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-slate-400 hover:text-slate-600'}`}>{T.back_home}</button>
              </div>
           )}
@@ -1357,7 +1341,7 @@ ${T.zap.wait}
         </div>
       )}
 
-      <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.8s ease-out}.animate-slide-in{animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-slide-up{animation:slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;opacity:0}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.4s ease-out}.animate-pulse-slow{animation:pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite}.pb-safe{padding-bottom:env(safe-area-inset-bottom,32px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}@keyframes slideDown{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap');.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.8s ease-out}.animate-slide-in{animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-slide-up{animation:slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;opacity:0}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.4s ease-out}.animate-pulse-slow{animation:pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite}.pb-safe{padding-bottom:env(safe-area-inset-bottom,32px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}@keyframes slideDown{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
     </div>
   );
 }
