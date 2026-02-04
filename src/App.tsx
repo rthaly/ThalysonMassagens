@@ -6,24 +6,23 @@ import {
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, 
   ChevronLeft, ChevronRight, Loader2, ShieldCheck, AlertTriangle, Tag, Sparkles, 
   MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
-  Lock, User, Quote, Share2, ExternalLink, Copy, Hourglass, Settings, Download
+  Lock, User, Quote, Share2, ExternalLink, Copy, Hourglass, Settings, Download, HelpCircle, ChevronDown
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v45.0 - ABSOLUTE HARMONY (FINAL UX/UI)
+ * THALYSON APP OS v46.0 - EMPATHY & CLARITY EDITION
  * ==================================================================================
- * 1. TAB CICLOS: Azul Vibrante (Contraste Alto).
- * 2. TIMER: Loop infinito suave (sem travar no 0).
- * 3. SUCCESS SCREEN: Ícones minimalistas + CTA WhatsApp.
- * 4. SETTINGS: Tutorial "Instalar App".
- * 5. CONFETES: Removidos.
+ * 1. COPYWRITING: Acolhedora, explica Lingam, Cueca e Clímax natural.
+ * 2. FAQ: Nova seção interativa e elegante.
+ * 3. LAYOUT: Reviews movidos para baixo dos serviços.
+ * 4. UI: Mantido o padrão Titan Blue robusto.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v45_absolute', 
+  STORAGE_KEY: '@thaly_app_v46_empathy', 
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -33,18 +32,18 @@ const CONFIG = {
 };
 
 // ==================================================================================
-// 1. DESIGN SYSTEM (SENIOR LEVEL)
+// 1. DESIGN SYSTEM
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
-  const baseStyle = "relative flex items-center justify-center font-semibold tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.98] hover:brightness-110 shadow-sm font-['Poppins']";
+  const baseStyle = "relative flex items-center justify-center font-semibold tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.98] hover:brightness-110 shadow-md hover:shadow-lg font-['Poppins']";
   
   const variants = {
-    primary: "bg-blue-600 text-white border border-blue-500/20 shadow-blue-500/20 shadow-lg", // Azul Sólido e Forte
+    primary: "bg-blue-600 text-white border border-blue-500/20 shadow-blue-500/20 shadow-lg",
     secondary: "bg-white/5 backdrop-blur-md border border-white/10 text-zinc-100 hover:bg-white/10 hover:border-white/20",
     whatsapp: "bg-[#25D366] text-white border border-green-400/20 shadow-green-500/20 shadow-lg",
+    instagram: "bg-gradient-to-tr from-purple-600 to-pink-600 text-white border border-pink-400/20",
     outline: "bg-transparent border border-zinc-500 text-zinc-300 hover:text-white hover:border-zinc-300",
-    ghost: "bg-transparent text-zinc-400 hover:text-white hover:bg-white/5",
     icon: "bg-white/5 backdrop-blur-md border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10"
   };
   
@@ -104,26 +103,22 @@ const Card = ({ children, className = '', onClick, active = false, isDark = true
   </div>
 );
 
-// TIMER INTELIGENTE (LOOP SUAVE)
 const SmartTimer = ({ isDark }) => {
-  const [time, setTime] = useState(600); // 10 min
-  
+  const [time, setTime] = useState(600); 
   useEffect(() => {
     const interval = setInterval(() => {
         setTime(prev => {
-            if (prev <= 0) return 600; // Reinicia suavemente (Loop de Urgência)
+            if (prev <= 0) return 600; 
             return prev - 1;
         });
     }, 1000);
     return () => clearInterval(interval);
   }, []);
-
   const format = (t) => {
     const m = Math.floor(t / 60);
     const s = t % 60;
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
-
   return (
     <div className={`flex items-center justify-center gap-2 p-3 rounded-xl mb-6 border transition-colors duration-500 ${time < 60 ? 'bg-red-500/10 border-red-500/30 text-red-400' : (isDark ? 'bg-blue-500/5 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-600')}`}>
         <Hourglass size={16} className={time < 60 ? "animate-spin" : "animate-pulse"}/>
@@ -137,7 +132,6 @@ const SmartTimer = ({ isDark }) => {
 
 const ReviewsCarousel = ({ reviews, isDark }) => {
   const scrollRef = useRef(null);
-
   const scroll = (direction) => {
     if (scrollRef.current) {
         const { current } = scrollRef;
@@ -149,34 +143,23 @@ const ReviewsCarousel = ({ reviews, isDark }) => {
         }
     }
   };
-
   return (
-    <div className={`w-full overflow-hidden py-10 border-y mb-12 backdrop-blur-md relative group/reviews ${isDark ? 'bg-zinc-950/40 border-white/5' : 'bg-slate-50/80 border-slate-200'}`}>
-      
-      {/* Botões SÓ no Desktop (hidden no mobile) */}
-      <button onClick={() => scroll('left')} className={`hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}>
-        <ChevronLeft size={20} />
-      </button>
-      <button onClick={() => scroll('right')} className={`hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}>
-        <ChevronRight size={20} />
-      </button>
-
+    <div className={`w-full overflow-hidden py-12 border-t mt-16 relative group/reviews ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+      <div className="text-center mb-10">
+          <h3 className={`text-2xl font-light mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>O que dizem sobre mim</h3>
+          <p className={`text-xs uppercase tracking-[0.2em] font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Experiências Reais</p>
+      </div>
+      <button onClick={() => scroll('left')} className={`hidden md:flex absolute left-4 top-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}><ChevronLeft size={20} /></button>
+      <button onClick={() => scroll('right')} className={`hidden md:flex absolute right-4 top-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}><ChevronRight size={20} /></button>
       <div ref={scrollRef} className="flex gap-5 overflow-x-auto scrollbar-hide px-6 md:px-12 snap-x snap-mandatory font-['Poppins']">
         {reviews.map((r, i) => (
             <div key={`${i}-${r.n}`} className={`snap-center flex-shrink-0 w-72 sm:w-80 border p-6 rounded-[1.5rem] transition-all duration-300 hover:scale-[1.01] select-none ${isDark ? 'bg-zinc-900/80 border-white/10 hover:border-blue-500/20' : 'bg-white border-slate-200 shadow-sm hover:border-blue-400'}`}>
               <div className="flex justify-between items-start mb-4">
                  <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border ${isDark ? 'bg-zinc-800 text-zinc-300 border-white/5' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>{r.n.charAt(0)}</div>
-                    <div>
-                      <span className={`text-sm font-bold block leading-none mb-1 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{r.n}</span>
-                      <span className="text-[10px] text-blue-500 uppercase font-bold tracking-wider">{r.loc}</span>
-                    </div>
+                    <div><span className={`text-sm font-bold block leading-none mb-1 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{r.n}</span><span className="text-[10px] text-blue-500 uppercase font-bold tracking-wider">{r.loc}</span></div>
                  </div>
-                 <div className="flex gap-0.5">
-                   {[...Array(5)].map((_, k) => (
-                     <Star key={k} size={12} fill={k < r.s ? "#3b82f6" : "none"} className={k < r.s ? "text-blue-500" : (isDark ? "text-zinc-700" : "text-slate-300")} />
-                   ))}
-                 </div>
+                 <div className="flex gap-0.5">{[...Array(5)].map((_, k) => (<Star key={k} size={12} fill={k < r.s ? "#3b82f6" : "none"} className={k < r.s ? "text-blue-500" : (isDark ? "text-zinc-700" : "text-slate-300")} />))}</div>
               </div>
               <p className={`text-sm leading-relaxed font-light italic ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>"{r.t}"</p>
             </div>
@@ -187,8 +170,24 @@ const ReviewsCarousel = ({ reviews, isDark }) => {
   );
 };
 
+// FAQ COMPONENT (NEW)
+const FAQItem = ({ q, a, isDark }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className={`border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+            <button onClick={() => setIsOpen(!isOpen)} className="w-full py-5 flex items-center justify-between text-left group">
+                <span className={`text-sm font-semibold transition-colors ${isDark ? 'text-zinc-200 group-hover:text-blue-400' : 'text-slate-700 group-hover:text-blue-600'}`}>{q}</span>
+                <ChevronDown size={18} className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-500' : (isDark ? 'text-zinc-500' : 'text-slate-400')}`} />
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 pb-5' : 'max-h-0 opacity-0'}`}>
+                <p className={`text-sm leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
+            </div>
+        </div>
+    );
+};
+
 // ==================================================================================
-// 2. DADOS
+// 2. DADOS (UPDATED COPYWRITING)
 // ==================================================================================
 
 const getData = (lang) => {
@@ -204,42 +203,56 @@ const getData = (lang) => {
             { 
               id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "TERAPÊUTICA" : "RELAX",
               title: isPT ? "Sessão Relaxante" : "Relaxing Session",
-              desc: isPT ? "Alívio muscular e mental." : "Deep muscle and mental relief.",
-              details: isPT ? `FOCO NO ALÍVIO:
-• COMO É: Massagem profunda para tirar tensão e dores do corpo.
-• LIMITE: **Não possui toques íntimos.** Apenas relaxamento muscular.
-• IDEAL PARA: Quem está travado, cansado ou estressado.` 
-              : `FOCUS ON RELIEF:
-• WHAT IS IT: Deep massage to remove tension and body aches.
-• LIMIT: **No intimate touches.** Just muscle relaxation.
-• IDEAL FOR: Those who are stuck, tired or stressed.`
+              desc: isPT ? "Alívio muscular profundo. Foco total em tirar a tensão." : "Deep muscle relief. Focus on removing tension.",
+              details: isPT ? `PARA QUEM BUSCA PAZ:
+• DURAÇÃO: 60 minutos de pura desconexão.
+• O QUE É: Manobras firmes e envolventes para soltar a musculatura travada.
+• TRAJE: O terapeuta atende com roupa padrão de massagem.
+• NOTA: Esta sessão não possui toque íntimo. Ideal para quem quer apenas relaxar o corpo físico.` 
+              : `FOR THOSE SEEKING PEACE:
+• DURATION: 60 minutes of pure disconnection.
+• WHAT IS IT: Firm maneuvers to loosen locked muscles.
+• ATTIRE: Therapist wears standard massage clothing.
+• NOTE: No intimate touch. Ideal for physical relaxation.`
             },
             { 
               id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
               title: isPT ? "Terapia Sensitiva" : "Sensitive Therapy",
-              desc: isPT ? "Um despertar suave do corpo." : "A gentle awakening of the body.",
-              details: isPT ? `CONEXÃO SUTIL:
-• INÍCIO: Começamos sempre com a relaxante para soltar o corpo.
-• EVOLUÇÃO: Toques leves (ponta dos dedos) percorrendo a pele.
-• FINAL: A massagem íntima faz parte. O gozar é permitido e natural.`
-              : `SUBTLE CONNECTION:
-• START: We always start with relaxing massage to loosen the body.
-• EVOLUTION: Light touches (fingertips) running across the skin.
-• END: Intimate massage is part of it. Climax is allowed and natural.`
+              desc: isPT ? "Um despertar do corpo. Toques sutis e conexão." : "Body awakening. Subtle touches and connection.",
+              details: isPT ? `UMA EXPERIÊNCIA DE LIBERDADE:
+• DURAÇÃO: 60 minutos de evolução sensorial.
+• TRAJE: Para maior conexão e naturalidade, **atendo de cueca** a partir desta modalidade.
+• O QUE É: Começa com relaxamento e evolui para toques sutis (ponta dos dedos) por todo o corpo.
+• FINALIZAÇÃO: O clímax (gozar) é permitido e visto como um alívio natural e terapêutico.`
+              : `A FREEDOM EXPERIENCE:
+• DURATION: 60 minutes.
+• ATTIRE: **I wear underwear** for greater connection.
+• WHAT IS IT: Starts with relaxation, evolves to subtle touches.
+• FINISH: Climax is allowed and seen as natural relief.`
             },
             { 
               id: 'mista', min: 60, price: 195, icon: Zap, tag: isPT ? "COMPLETA" : "COMPLETE",
               title: isPT ? "Experiência Mista" : "Mixed Experience",
-              desc: isPT ? "A fusão do relaxamento com o intenso." : "The fusion of relaxation with intensity.",
-              details: isPT ? `A ESCOLHA FAVORITA:
-• INÍCIO: Relaxante muscular completa.
-• MEIO: Evolui para sensitiva e contato corpo a corpo (Body).
-• FINAL: Liberdade total. O clímax (gozar) é bem-vindo e faz parte do alívio.`
-              : `FAVORITE CHOICE:
-• START: Full muscle relaxation.
-• MIDDLE: Evolves to sensitive and Body-to-Body contact.
-• END: Total freedom. Climax is welcome and part of the relief.`
+              desc: isPT ? "A fusão perfeita: Massagem Muscular + Tântrica + Lingam." : "Perfect fusion: Muscle + Tantra + Lingam.",
+              details: isPT ? `A ESCOLHA FAVORITA DOS CLIENTES (+PEDIDA):
+• DURAÇÃO: 60 minutos intensos.
+• O QUE É: Unimos o melhor dos dois mundos. Começa tirando a dor muscular e termina com o prazer tântrico.
+• LINGAM MASSAGE: Inclui massagem específica na região íntima para desbloqueio de energia e prazer intenso.
+• ACOLHIMENTO: Sinta-se seguro para expressar seu prazer. O gozar aqui é celebrado.`
+              : `CLIENT FAVORITE:
+• DURATION: 60 intense minutes.
+• WHAT IS IT: Best of both worlds. Muscle relief + Tantric pleasure.
+• LINGAM: Includes intimate massage.
+• WELCOMING: Feel safe to express pleasure.`
             }
+        ],
+        faq: [
+            { q: "Onde você atende?", a: "Atendo no conforto da sua casa, em hotéis (levo tudo necessário) ou motéis. Em São Paulo (Capital), atendo nos principais bairros. O valor do deslocamento combinamos no WhatsApp." },
+            { q: "Você tem local próprio?", a: "No momento, meu atendimento é exclusivamente Delivery (vou até você), garantindo sua total privacidade e conforto sem você precisar sair do lugar." },
+            { q: "O que é a Massagem Lingam?", a: "É uma técnica tântrica focada na região genital masculina. O objetivo não é apenas a 'finalização', mas sim honrar o corpo, distribuir a energia sexual e proporcionar um prazer profundo e terapêutico." },
+            { q: "Pode 'gozar' na massagem?", a: "Sim, com certeza! Nas terapias Sensitiva e Mista, o clímax é encarado como uma liberação de energia natural e saudável. Você não precisa se segurar ou sentir vergonha. É um espaço livre de julgamentos." },
+            { q: "Qual a forma de pagamento?", a: "Aceito Pix (preferencial) e dinheiro. Cartão de crédito também é possível mediante link de pagamento (+ taxas)." },
+            { q: "Qual a higiene e traje?", a: "Prezo pela higiene absoluta. Uso óleos neutros de alta qualidade. Nas sessões tântricas, atendo de cueca para facilitar as manobras corporais (body-to-body) e a conexão." }
         ],
         plans: [
             { 
@@ -268,9 +281,9 @@ const getData = (lang) => {
             }
         ],
         extras: [
-            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para não ter pressa." : "No rush." },
-            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Interatividade" : "Interactivity", desc: isPT ? "Você toca também." : "You touch too." },
-            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Essência no ar." : "Scent in the air." }
+            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para curtir sem pressa." : "No rush." },
+            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Interatividade" : "Interactivity", desc: isPT ? "Você também pode tocar." : "You touch too." },
+            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Óleos essenciais no ambiente." : "Scent in the air." }
         ],
         reviews: [
             { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito." : "Thalyson, I want to say your massage was executed very well. You first get to know the body to perform the procedure with care and safety. Highly recommend.", s: 5 },
@@ -280,27 +293,14 @@ const getData = (lang) => {
             { n: "Ricardo M.", loc: "Rio Preto", t: isPT ? "Mão firme. Consegui relaxar de verdade, coisa que não fazia há tempos." : "Firm hand. Managed to truly relax, something I hadn't done in ages.", s: 5 },
             { n: "André L.", loc: "SP - Bela Vista", t: isPT ? "O toque dele é diferente. Me senti muito à vontade." : "His touch is different. Felt very comfortable.", s: 5 },
             { n: "Gustavo", loc: "Santa Fé do Sul", t: isPT ? "Gostei muito da energia, pessoa do bem. Recomendo." : "Liked the energy a lot, good person. Recommend.", s: 4 },
-            { n: "Bruno", loc: "Jales", t: isPT ? "Veio até meu hotel, foi super discreto e educado. Salvou minha semana." : "Came to my hotel, super discreet and polite. Saved my week.", s: 5 },
-            { n: "Carlos", loc: "Londrina", t: isPT ? "Massagem ótima, pena que estava muito quente no dia." : "Great massage, pity it was very hot that day.", s: 4 },
             { n: "Pedro", loc: "Rio Preto", t: isPT ? "A energia do corpo a corpo é intensa. Me senti renovado." : "The body-to-body energy is intense. Felt renewed.", s: 5 },
-            { n: "Lucas", loc: "Santa Fé do Sul", t: isPT ? "Foi um pouco difícil achar vaga, mas a sessão compensou o estresse." : "Was hard to find parking, but the session made up for the stress.", s: 4 },
             { n: "Renato", loc: "SP - Centro", t: isPT ? "Muito respeitoso e profissional. A sensitiva é uma experiência única." : "Very respectful and professional. The sensitive therapy is a unique experience.", s: 5 },
-            { n: "Vitor", loc: "Jales", t: isPT ? "Gostei, passou rápido demais. Na próxima pego mais tempo." : "Liked it, went too fast. Next time I'll take more time.", s: 4 },
-            { n: "Eduardo", loc: "Londrina", t: isPT ? "Ele se adapta bem. Fizemos na cama e foi super tranquilo." : "He adapts well. We did it on the bed and it was super chill.", s: 5 },
-            { n: "Caio", loc: "Rio Preto", t: isPT ? "A atenção que ele dá faz valer a pena." : "The attention he gives makes it worth it.", s: 5 },
-            { n: "Breno", loc: "SP - Bela Vista", t: isPT ? "Relaxei e me diverti. Ótimo pra esquecer os problemas de SP." : "Relaxed and had fun. Great to forget SP problems.", s: 5 },
-            { n: "Sérgio", loc: "Santa Fé do Sul", t: isPT ? "A massagem nos pés foi um detalhe que fez diferença." : "The foot massage was a detail that made a difference.", s: 5 },
-            { n: "Matheus", loc: "Londrina", t: isPT ? "Demorou um pouquinho pra responder, mas pessoalmente é nota 10." : "Took a bit to reply, but in person is 10/10.", s: 4 },
-            { n: "Roberto", loc: "SP - Augusta", t: isPT ? "Pedi com interação. Foi uma troca muito gostosa." : "Asked for interaction. It was a very nice exchange.", s: 5 },
-            { n: "Fabio", loc: "Rio Preto", t: isPT ? "Saiu todo o peso das costas. Recomendo pra quem busca paz." : "All the weight off my back gone. Recommend for those seeking peace.", s: 5 },
-            { n: "Junior", loc: "SP - Moema", t: isPT ? "Me senti leve. Energia ótima." : "Felt light. Great energy.", s: 5 },
-            { n: "Paulo", loc: "Votuporanga", t: isPT ? "Muito bom, só o Uber que ficou caro pra vir." : "Very good, only the Uber was expensive to come.", s: 4 },
-            { n: "M. (Sigilo)", loc: "SP - Jardins", t: isPT ? "Finalização intensa, perdi as forças. O cara é bom." : "Intense finish, lost my strength. The guy is good.", s: 5 }
+            { n: "Eduardo", loc: "Londrina", t: isPT ? "Ele se adapta bem. Fizemos na cama e foi super tranquilo." : "He adapts well. We did it on the bed and it was super chill.", s: 5 }
         ],
         text: {
             loading: isPT ? "CARREGANDO..." : "LOADING...",
             welcome: isPT ? "Olá," : "Hello,",
-            subtitle: isPT ? "Um convite para pausar e se reconectar com você." : "An invitation to pause and reconnect with yourself.",
+            subtitle: isPT ? "Um convite para pausar, sentir e se reconectar com seu prazer." : "An invitation to pause, feel and reconnect with your pleasure.",
             tab_single: isPT ? "Experiências" : "Experiences",
             tab_packs: isPT ? "Ciclos & Planos" : "Cycles & Plans",
             select_time_title: isPT ? "Data & Horário" : "Date & Time",
@@ -357,6 +357,7 @@ const getData = (lang) => {
             terms_btn: isPT ? "Entendido" : "Understood",
             level_label: isPT ? "Fidelidade" : "Loyalty",
             missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP para liberar R$ ${reward} de desconto` : `Missing ${needed} XP to unlock R$ ${reward} discount`,
+            faq_title: isPT ? "Dúvidas Frequentes" : "FAQ",
             
             toast_select_item: isPT ? "Selecione uma experiência primeiro." : "Select an experience first.",
             toast_select_date: isPT ? "Qual dia fica melhor para você?" : "Which day works best?",
@@ -410,12 +411,10 @@ export default function App() {
   const [isClient, setIsClient] = useState(false);
   
   // MODAIS & UI
-  const [reviewsOpen, setReviewsOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
   const [couponInput, setCouponInput] = useState('');
   const [toasts, setToasts] = useState([]);
   
@@ -773,7 +772,7 @@ ${T.zap.wait}
         usedCoupons: updatedHistory,
         ordersCount: prev.ordersCount + 1 
     }));
-    setShowConfetti(true);
+    // REMOVIDO: setShowConfetti(true);
     if (typeof window !== 'undefined') { window.open(generateWhatsAppLink(), '_blank'); }
     setBooking(b => ({...b, item: null, type:'single', payment: '', appliedCoupon: null, termsAccepted: false})); 
     localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({ user: {...user, xp: newXP}, bookingDraft: null, step: 0 }));
@@ -835,17 +834,13 @@ ${T.zap.wait}
         ))}
       </div>
 
-      {/* CONFETES REMOVIDOS */}
-
       {/* Header */}
       <header className="h-20 px-6 md:px-12 flex items-center justify-between z-20 shrink-0 bg-transparent relative max-w-5xl mx-auto w-full">
         <div className="flex flex-col justify-center">
             <span className={`font-bold text-xl tracking-wide block leading-none ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson</span>
-            {/* GATILHO: PROVA SOCIAL */}
             <span className="text-[9px] uppercase font-bold text-blue-500 tracking-[0.1em] mt-1 flex items-center gap-1"><Star size={10} fill="#2563eb"/> +59 Clientes Atendidos</span>
         </div>
         <div className="flex gap-2">
-            {/* BOTÃO CONFIG (INSTALAR APP) */}
             <button onClick={()=>setSettingsOpen(true)} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Settings size={18}/></button>
             <button onClick={handleShare} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Share2 size={18}/></button>
             <button onClick={() => setLang(l => l==='pt'?'en':'pt')} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Globe size={18}/></button>
@@ -856,9 +851,6 @@ ${T.zap.wait}
       {/* Main Content Area */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-32 pt-6 scroll-smooth relative z-10 px-6 md:px-12">
         
-        {/* REVIEWS SÓ NA HOME (Step 0) */}
-        {step === 0 && <ReviewsCarousel reviews={DATA.reviews} isDark={isDark} />}
-
         <div className="max-w-5xl mx-auto space-y-12">
 
           {/* CATALOG (STEP 0) */}
@@ -906,7 +898,6 @@ ${T.zap.wait}
                         <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`}>
                             <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_15px_#2563eb]" style={{width: `${getCurrentLevelProgress()}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'}}></div>
                         </div>
-                        {/* GATILHO: FIDELIDADE CLARA */}
                         <p className={`text-xs mt-4 text-center font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                              {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : "Ciclo Elite: +R$50 a cada 500 XP"}
                         </p>
@@ -942,14 +933,13 @@ ${T.zap.wait}
                         <div className={`h-1.5 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`}>
                             <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_15px_#2563eb]" style={{width: `${getCurrentLevelProgress()}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'}}></div>
                         </div>
-                          {/* GATILHO: FIDELIDADE CLARA */}
                           <p className={`text-[10px] mt-3 text-center font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                              {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : "Ciclo Elite: +R$50 a cada 500 XP"}
                         </p>
                     </div>
               </div>
 
-              {/* Tabs - AZUL VIBRANTE NO ATIVO */}
+              {/* Tabs */}
               <div className={`animate-slide-up delay-300 grid grid-cols-2 p-1.5 rounded-2xl border relative max-w-sm mx-auto md:mx-0 ${isDark ? 'bg-zinc-900/50 border-white/5' : 'bg-white border-slate-200 shadow-sm'}`}>
                   <button onClick={()=>setActiveTab('packs')} className={`relative z-10 py-4 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${activeTab==='packs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}`}>
                       <Package size={16} className={activeTab === 'packs' ? 'animate-pulse' : ''}/> {T.tab_packs}
@@ -991,7 +981,6 @@ ${T.zap.wait}
                   {activeTab === 'packs' && DATA.plans.map((plan, idx) => (
                       <div key={plan.id} className="animate-scale-in" style={{animationDelay: `${idx * 100}ms`}}>
                         <Card active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} isDark={isDark} className="border-blue-500/20">
-                            {/* GATILHO: ANCORAGEM DE PREÇO VISUAL */}
                             {plan.tag && (<div className="absolute top-0 right-0 bg-gradient-to-bl from-blue-500 to-blue-700 text-white text-[10px] font-bold px-4 py-2 rounded-bl-2xl shadow-lg shadow-blue-500/20 z-10">{plan.tag}</div>)}
                             <div className="flex items-center gap-5 mb-6">
                                 <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-blue-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={32}/></div>
@@ -1020,6 +1009,20 @@ ${T.zap.wait}
                       </div>
                   ))}
               </div>
+
+              {/* REVIEWS MOVED HERE (PROVA SOCIAL APÓS SERVIÇOS) */}
+              <ReviewsCarousel reviews={DATA.reviews} isDark={isDark} />
+
+              {/* FAQ SECTION (NOVA) */}
+              <div className="space-y-6">
+                  <h3 className={`text-2xl font-light text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.faq_title}</h3>
+                  <div className={`rounded-2xl border p-2 ${isDark ? 'bg-zinc-900/50 border-white/5' : 'bg-white border-slate-200'}`}>
+                      {DATA.faq.map((item, idx) => (
+                          <FAQItem key={idx} q={item.q} a={item.a} isDark={isDark} />
+                      ))}
+                  </div>
+              </div>
+
             </div>
           )}
 
@@ -1065,7 +1068,6 @@ ${T.zap.wait}
               {booking.date && generateTimeSlots.length > 0 && (
                 <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 animate-fade-in">
                    {generateTimeSlots.map((t, idx) => {
-                       // GATILHO: ESCASSEZ (ÚLTIMA VAGA)
                        const isLastSpot = idx === generateTimeSlots.length - 1 || idx === 2;
                        return (
                            <button key={t} onClick={() => { setBooking(b => ({...b, time: t})); }} className={`py-4 rounded-xl text-sm font-semibold border transition-all active:scale-95 duration-200 relative overflow-hidden group animate-scale-in ${booking.time === t ? (isDark ? 'bg-zinc-100 text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'bg-slate-900 text-white border-slate-900 shadow-xl') : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800')}`} style={{animationDelay: `${idx * 50}ms`}}>
@@ -1177,7 +1179,6 @@ ${T.zap.wait}
                     </div>
                     
                     <div className="space-y-8">
-                        {/* GATILHO: TIMER DE URGÊNCIA */}
                         <SmartTimer isDark={isDark} />
 
                         <div className="flex gap-3">
@@ -1219,7 +1220,6 @@ ${T.zap.wait}
                                 ))}
                             </div>
                             
-                            {/* PIX COPY PASTE */}
                             {booking.payment === 'pix' && (
                                 <div className={`mt-5 p-6 rounded-2xl border border-dashed ${isDark ? 'border-zinc-700 bg-zinc-900/50' : 'border-slate-300 bg-slate-50'} animate-fade-in`}>
                                     <p className={`text-[10px] uppercase font-bold text-center mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Chave Pix (Copia e Cola)</p>
@@ -1255,7 +1255,6 @@ ${T.zap.wait}
                  <h1 className={`text-3xl font-light mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h1>
                  <p className={`text-sm leading-relaxed max-w-sm mx-auto mb-10 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
                  
-                 {/* BARRA DE AÇÕES MINIMALISTA */}
                  <div className="w-full max-w-sm space-y-4">
                      <div className="flex gap-4 justify-center mb-2">
                          <Button variant="secondary" size="icon" onClick={() => { navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success"); }} icon={Copy} />
@@ -1270,7 +1269,7 @@ ${T.zap.wait}
         </div>
       </main>
 
-      {/* FOOTER NAV - FLOATING GLASS BAR */}
+      {/* FOOTER NAV */}
       {step < 4 && (
          <div className="fixed bottom-6 left-0 w-full z-50 pointer-events-none px-4">
             <div className={`max-w-xl mx-auto p-3 rounded-[2rem] backdrop-blur-2xl shadow-2xl border pointer-events-auto transition-all duration-500 ${isDark ? 'bg-zinc-950/80 border-white/10 shadow-black/50' : 'bg-white/80 border-slate-200 shadow-slate-200/50'}`}>
@@ -1311,31 +1310,6 @@ ${T.zap.wait}
                 2. Selecione "Adicionar à Tela de Início".
             </div>
             <Button full onClick={()=>setSettingsOpen(false)}>Ok</Button>
-         </div>
-      </div>
-
-      <div className={`fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 transition-all duration-500 pointer-events-none ${reviewsOpen ? 'opacity-100' : 'opacity-0'}`}>
-         <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${reviewsOpen ? 'pointer-events-auto' : ''}`} onClick={()=>setReviewsOpen(false)}></div>
-         <div className={`relative w-full max-w-lg border rounded-[2rem] p-8 max-h-[85vh] overflow-y-auto transform transition-transform duration-500 shadow-2xl ${reviewsOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full'} ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'}`}>
-            <div className={`flex justify-between items-center mb-8 sticky top-0 z-10 py-2 border-b ${isDark ? 'bg-zinc-900 border-white/5' : 'bg-white border-slate-100'}`}><h3 className={`text-xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title || "Experiências"}</h3><button onClick={()=>setReviewsOpen(false)} className={`p-3 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}><X size={20}/></button></div>
-            <div className="space-y-5">
-                {DATA.reviews.map((r,i)=>(
-                   <div key={i} className={`p-6 rounded-2xl border relative ${isDark ? 'bg-zinc-800/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
-                       <Quote size={20} className={`absolute top-5 right-5 ${isDark ? 'text-zinc-700' : 'text-slate-300'}`} />
-                       <div className="flex justify-between mb-3">
-                           <span className={`font-bold text-sm flex items-center gap-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
-                               <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-black border ${isDark ? 'bg-gradient-to-br from-blue-500/20 to-blue-600/20 text-blue-500 border-blue-500/20' : 'bg-blue-100 text-blue-600 border-blue-200'}`}>{r.n.charAt(0)}</div>
-                               <div>
-                                 <span className="block leading-tight text-sm">{r.n}</span>
-                                 <span className={`text-[10px] font-normal uppercase ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{r.loc}</span>
-                               </div>
-                           </span>
-                       </div>
-                       <div className="flex gap-0.5 mb-3">{[...Array(5)].map((_,k)=><Star key={k} size={12} fill={k < r.s ? "#0ea5e9" : "none"} className={k < r.s ? "text-blue-500" : (isDark ? "text-zinc-700" : "text-slate-300")} />)}</div>
-                       <p className={`text-sm leading-relaxed italic ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>"{r.t}"</p>
-                   </div>
-                ))}
-            </div>
          </div>
       </div>
 
