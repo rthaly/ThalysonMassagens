@@ -6,23 +6,24 @@ import {
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, 
   ChevronLeft, ChevronRight, Loader2, ShieldCheck, AlertTriangle, Tag, Sparkles, 
   MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
-  Lock, User, Quote, Share2, ExternalLink, Copy
+  Lock, User, Quote, Share2, ExternalLink, Copy, Hourglass, Users
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v42.0 - FINAL HARMONY EDITION
+ * THALYSON APP OS v44.0 - PERSUASION ELITE (GATILHOS MENTAIS)
  * ==================================================================================
- * 1. REVIEWS: Apenas na Home (Step 0). Setas ocultas no Mobile.
- * 2. FOOTER: Botão com preço grande e legível (Layout Row).
- * 3. UX: Foco total na conversão nos passos seguintes.
- * 4. UI: Mantendo a elegância e contraste da v41.
+ * 1. PROVA SOCIAL: "+59 Clientes Atendidos" no topo.
+ * 2. FIDELIDADE: "Faltam X XP para desconto".
+ * 3. URGÊNCIA: Timer regressivo no checkout.
+ * 4. ESCASSEZ: Badges "Última Vaga" nos horários.
+ * 5. UX/UI: Mantida a harmonia da v42 (Reviews, Pix, Fontes).
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v42_final', 
+  STORAGE_KEY: '@thaly_app_v44_persuasion', 
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -145,6 +146,29 @@ const Confetti = ({ active }) => {
   return <canvas ref={canvasRef} className="fixed inset-0 z-[60] pointer-events-none" />;
 };
 
+// COMPONENTE NOVO: Timer de Urgência
+const UrgencyTimer = ({ isDark }) => {
+  const [time, setTime] = useState(600); // 10 minutos
+  
+  useEffect(() => {
+    const interval = setInterval(() => setTime(t => t > 0 ? t - 1 : 0), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const format = (t) => {
+    const m = Math.floor(t / 60);
+    const s = t % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  return (
+    <div className={`flex items-center justify-center gap-2 p-3 rounded-xl mb-6 border animate-pulse ${isDark ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' : 'bg-orange-50 border-orange-200 text-orange-600'}`}>
+        <Hourglass size={16} className="animate-spin-slow"/>
+        <span className="text-xs font-bold uppercase tracking-wider">Segurando sua vaga por {format(time)}</span>
+    </div>
+  );
+};
+
 const ReviewsCarousel = ({ reviews, isDark }) => {
   const scrollRef = useRef(null);
 
@@ -163,7 +187,7 @@ const ReviewsCarousel = ({ reviews, isDark }) => {
   return (
     <div className={`w-full overflow-hidden py-8 border-y mb-12 backdrop-blur-md relative group/reviews ${isDark ? 'bg-zinc-950/40 border-white/5' : 'bg-slate-50/80 border-slate-200'}`}>
       
-      {/* Botões SÓ no Desktop (hidden no mobile) */}
+      {/* Botões SÓ no Desktop */}
       <button onClick={() => scroll('left')} className={`hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full border transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}>
         <ChevronLeft size={20} />
       </button>
@@ -363,7 +387,7 @@ const getData = (lang) => {
             terms_link: isPT ? "Ler combinados importantes" : "Read important terms",
             terms_btn: isPT ? "Entendido" : "Understood",
             level_label: isPT ? "Fidelidade" : "Loyalty",
-            missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP -> R$ ${reward} de carinho` : `${needed} XP left -> R$ ${reward} treat`,
+            missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP para liberar R$ ${reward} de desconto` : `Missing ${needed} XP to unlock R$ ${reward} discount`,
             
             toast_select_item: isPT ? "Selecione uma experiência primeiro." : "Select an experience first.",
             toast_select_date: isPT ? "Qual dia fica melhor para você?" : "Which day works best?",
@@ -847,7 +871,8 @@ ${T.zap.wait}
       <header className="h-20 px-6 md:px-12 flex items-center justify-between z-20 shrink-0 bg-transparent relative max-w-5xl mx-auto w-full">
         <div className="flex flex-col justify-center">
             <span className={`font-bold text-xl tracking-wide block leading-none ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson</span>
-            <span className="text-[10px] uppercase font-bold text-sky-500 tracking-[0.2em]">Massagens</span>
+            {/* GATILHO: PROVA SOCIAL NO TOPO */}
+            <span className="text-[9px] uppercase font-bold text-sky-500 tracking-[0.1em] mt-1 flex items-center gap-1"><Star size={10} fill="#0ea5e9"/> +73 Clientes Atendidos</span>
         </div>
         <div className="flex gap-2">
             <button onClick={handleShare} className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}><Share2 size={18}/></button>
@@ -910,6 +935,10 @@ ${T.zap.wait}
                         <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`}>
                             <div className="h-full bg-gradient-to-r from-sky-600 to-sky-400 shadow-[0_0_15px_#0ea5e9]" style={{width: `${getCurrentLevelProgress()}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'}}></div>
                         </div>
+                        {/* GATILHO: FIDELIDADE CLARA */}
+                        <p className={`text-xs mt-4 text-center font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                             {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : "Ciclo Elite: +R$50 a cada 500 XP"}
+                        </p>
                     </div>
                 </div>
               </div>
@@ -942,6 +971,7 @@ ${T.zap.wait}
                         <div className={`h-1.5 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`}>
                             <div className="h-full bg-gradient-to-r from-sky-600 to-sky-400 shadow-[0_0_15px_#0ea5e9]" style={{width: `${getCurrentLevelProgress()}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'}}></div>
                         </div>
+                          {/* GATILHO: FIDELIDADE CLARA */}
                           <p className={`text-[10px] mt-3 text-center font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                              {nextLevelInfo ? T.missing_xp_msg(nextLevelInfo.needed, nextLevelInfo.reward) : "Ciclo Elite: +R$50 a cada 500 XP"}
                         </p>
@@ -991,6 +1021,7 @@ ${T.zap.wait}
                   {activeTab === 'packs' && DATA.plans.map((plan, idx) => (
                       <div key={plan.id} className="animate-scale-in" style={{animationDelay: `${idx * 100}ms`}}>
                         <Card active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} isDark={isDark} className="border-sky-500/20">
+                            {/* GATILHO: ANCORAGEM DE PREÇO VISUAL */}
                             {plan.tag && (<div className="absolute top-0 right-0 bg-gradient-to-bl from-sky-500 to-blue-600 text-white text-[10px] font-bold px-4 py-2 rounded-bl-2xl shadow-lg shadow-sky-500/20 z-10">{plan.tag}</div>)}
                             <div className="flex items-center gap-5 mb-6">
                                 <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-sky-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={32}/></div>
@@ -1063,11 +1094,16 @@ ${T.zap.wait}
               
               {booking.date && generateTimeSlots.length > 0 && (
                 <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 animate-fade-in">
-                   {generateTimeSlots.map((t, idx) => (
-                       <button key={t} onClick={() => { setBooking(b => ({...b, time: t})); }} className={`py-4 rounded-xl text-sm font-semibold border transition-all active:scale-95 duration-200 relative overflow-hidden group animate-scale-in ${booking.time === t ? (isDark ? 'bg-zinc-100 text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'bg-slate-900 text-white border-slate-900 shadow-xl') : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800')}`} style={{animationDelay: `${idx * 50}ms`}}>
-                           {t}
-                       </button>
-                   ))}
+                   {generateTimeSlots.map((t, idx) => {
+                       // GATILHO: ESCASSEZ (ÚLTIMA VAGA)
+                       const isLastSpot = idx === generateTimeSlots.length - 1 || idx === 2;
+                       return (
+                           <button key={t} onClick={() => { setBooking(b => ({...b, time: t})); }} className={`py-4 rounded-xl text-sm font-semibold border transition-all active:scale-95 duration-200 relative overflow-hidden group animate-scale-in ${booking.time === t ? (isDark ? 'bg-zinc-100 text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'bg-slate-900 text-white border-slate-900 shadow-xl') : (isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800')}`} style={{animationDelay: `${idx * 50}ms`}}>
+                               {t}
+                               {isLastSpot && <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-bl-lg">🔥</span>}
+                           </button>
+                       )
+                   })}
                 </div>
               )}
               {booking.date && generateTimeSlots.length === 0 && (<div className={`text-center py-12 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-slate-100 border-slate-200 text-slate-500'}`}><p className="text-sm font-medium">{T.empty_slots}</p></div>)}
@@ -1171,6 +1207,9 @@ ${T.zap.wait}
                     </div>
                     
                     <div className="space-y-8">
+                        {/* GATILHO: TIMER DE URGÊNCIA */}
+                        <UrgencyTimer isDark={isDark} />
+
                         <div className="flex gap-3">
                             <div className="relative flex-1">
                                 <input value={couponInput} onChange={e=>setCouponInput(e.target.value)} placeholder={T.coupon_placeholder} className={`w-full pl-5 pr-10 h-12 rounded-xl border text-sm font-bold uppercase tracking-widest outline-none focus:border-sky-500/50 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-600' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'}`}/>
@@ -1354,7 +1393,7 @@ ${T.zap.wait}
         </div>
       )}
 
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.8s ease-out}.animate-slide-in{animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-slide-up{animation:slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;opacity:0}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.4s ease-out}.animate-pulse-slow{animation:pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite}.pb-safe{padding-bottom:env(safe-area-inset-bottom,32px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}@keyframes slideDown{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');.scrollbar-hide::-webkit-scrollbar{display:none}.animate-fade-in{animation:fadeIn 0.8s ease-out}.animate-slide-in{animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-slide-up{animation:slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}.animate-scale-in{animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;opacity:0}.animate-bounce-slow{animation:bounce 3s infinite}.animate-slide-down{animation:slideDown 0.4s ease-out}.animate-pulse-slow{animation:pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite}.animate-spin-slow{animation:spin 3s linear infinite}.pb-safe{padding-bottom:env(safe-area-inset-bottom,32px)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}@keyframes slideDown{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
     </div>
   );
 }
