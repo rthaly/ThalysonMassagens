@@ -1,30 +1,216 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind,
-  Clock, Zap, X, Globe, Building, BedDouble,
-  Heart, Instagram, Moon, Sun, Home,
-  CreditCard, Banknote, QrCode, Trophy, Info, Gift,
-  ChevronLeft, ChevronRight, Loader2, ShieldCheck, AlertTriangle, Tag, Sparkles,
-  MapPin, Calendar, Smartphone, Crown, LayoutList, Package,
+  Check, Star, ArrowRight, MessageCircle, Ticket, Flame, Wind, 
+  Clock, Zap, X, Globe, Building, BedDouble, 
+  Heart, Instagram, Moon, Sun, Home, 
+  CreditCard, Banknote, QrCode, Trophy, Info, Gift, 
+  ChevronLeft, ChevronRight, Loader2, ShieldCheck, AlertTriangle, Tag, Sparkles, 
+  MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
   Lock, User, Quote, Share2, ExternalLink, Copy, Hourglass, Settings, Download, HelpCircle, ChevronDown
 } from 'lucide-react';
 
 /**
  * ==================================================================================
- * THALYSON APP OS v58.0 - PIX DISCOUNT & DATES FIXED
+ * THALYSON APP OS v60.0 - CORREÇÃO FINAL CUPONS VISUAIS & PIX
  * ==================================================================================
+ * 1. DATAS: 30 dias corridos.
+ * 2. CUPONS: Lista visual restaurada. Campo manual removido. Código BEMVINDO10.
+ * 3. PIX: Desconto de 5% aplicado no total e visível.
+ * 4. REVIEWS: Visual Glass aprimorado.
  */
 
 const CONFIG = {
-  PHONE: "5517991360413",
-  INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v58_fixed',
-  PIX_KEY: "62.922.530/0001-14",
-  LOCALE_PT: 'pt-BR',
+  PHONE: "5517991360413", 
+  INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
+  STORAGE_KEY: '@thaly_app_v60_final', 
+  PIX_KEY: "62.922.530/0001-14", 
+  LOCALE_PT: 'pt-BR', 
   LOCALE_EN: 'en-US',
   SECRET_TOKEN: 'THALY_2026_SECURE',
   START_HOUR: 9,
   END_HOUR: 20
+};
+
+// ==================================================================================
+// 0. DICIONÁRIO DE TEXTOS
+// ==================================================================================
+const TEXTS = {
+  pt: {
+    loading: "Carregando...",
+    welcome: "Olá,",
+    subtitle: "Escolha a experiência ideal para o seu relaxamento.",
+    level_label: "Nível Atual",
+    missing_xp_msg: (needed, reward) => `Faltam ${needed} XP para o próximo nível (+R$${reward} de bônus)`,
+    tab_packs: "Pacotes",
+    tab_single: "Avulso",
+    details_label: "Detalhes",
+    faq_title: "Perguntas Frequentes",
+    select_time_title: "Data e Hora",
+    date_sub: "Escolha o melhor momento",
+    today: "Hoje",
+    tomorrow: "Amanhã",
+    empty_date: "Selecione uma data acima",
+    empty_slots: "Sem horários disponíveis para este dia.",
+    location_title: "Local do Atendimento",
+    motel_note: "Em motéis, o valor da suíte é pago diretamente ao estabelecimento pelo cliente. Chegue 15min antes.",
+    input_name: "Seu Nome",
+    input_addr: "Endereço",
+    input_num: "Número",
+    input_bairro: "Bairro",
+    input_city: "Cidade",
+    input_comp: "Complemento",
+    input_hotel: "Nome do Hotel",
+    input_room: "Número do Quarto",
+    extras_title: "Extras para sua sessão:",
+    total_label: "Valor Total",
+    uber_warning: "+ Taxa de Deslocamento (Uber)",
+    coupon_section_title: "Seus Cupons",
+    no_coupons: "Você ainda não possui cupons.",
+    pay_title: "Forma de Pagamento",
+    pay_pix: "Pix (5% de Desconto)",
+    pay_card: "Cartão de Crédito",
+    pay_cash: "Dinheiro / Espécie",
+    terms_title: "Termos e Condições",
+    terms_link: "Ler termos completos",
+    agree_terms: "Li e concordo com os termos de segurança e higiene.",
+    terms_body: [
+      "1. Higiene: Banho prévio é obrigatório.",
+      "2. Respeito: Qualquer conduta inadequada encerrará a sessão imediatamente.",
+      "3. Pagamento: Deve ser realizado antes ou logo após o serviço.",
+      "4. Cancelamento: Avisar com 2 horas de antecedência."
+    ],
+    terms_btn: "Entendi e Concordo",
+    success_title: "Agendamento Confirmado!",
+    success_sub: "Envie o comprovante no WhatsApp para finalizar sua reserva.",
+    whatsapp_btn: "Finalizar no WhatsApp",
+    back_home: "Voltar ao Início",
+    book_btn: "Agendar",
+    next_btn: "Continuar",
+    install_app: "Instalar App",
+    install_desc: "Tenha acesso rápido e fácil.",
+    popup_level_title: "Nível Subiu!",
+    popup_level_msg: "Parabéns! Você alcançou um novo nível de fidelidade e ganhou um desconto exclusivo.",
+    popup_btn_coupon: "Resgatar Recompensa",
+    popup_welcome_title: "Bem-vindo!",
+    popup_welcome_msg: "Como é sua primeira vez, preparamos um presente especial para você.",
+    toast_select_item: "Selecione um serviço para continuar",
+    toast_select_date: "Escolha dia e horário",
+    toast_fill_name: "Preencha seu nome corretamente",
+    toast_fill_addr: "Preencha o endereço completo",
+    toast_fill_hotel: "Preencha os dados do hotel",
+    toast_select_pay: "Selecione a forma de pagamento",
+    toast_accept_terms: "Você precisa aceitar os termos",
+    toast_coupon_success: "Cupom aplicado com sucesso!",
+    zap: {
+      browser_warn: "Use Chrome/Safari para melhor experiência",
+      house: "Atendimento Residencial",
+      motel: "Atendimento em Motel",
+      hotel: "Atendimento em Hotel",
+      intro: "Olá Thalyson, gostaria de confirmar meu agendamento:",
+      order_title: "🛎️ *NOVA RESERVA*",
+      client: "👤 *Cliente:*",
+      service: "💆‍♂️ *Serviço:*",
+      date: "📅 *Data:*",
+      extra_title: "➕ *Adicionais:*",
+      location: "📍 *Localização:*",
+      value: "💲 *Valor Final:*",
+      payment: "💳 *Pagamento:*",
+      uber_label: "🚗 *Deslocamento:*",
+      uber_text: "A calcular (Uber)",
+      xp_status: "📈 *Status Fidelidade:*",
+      xp_gain: "Ganho:",
+      xp_level: "Nível:",
+      wait: "Aguardo a confirmação. Obrigado!"
+    }
+  },
+  en: {
+    loading: "Loading...",
+    welcome: "Hello,",
+    subtitle: "Choose the ideal experience for your relaxation.",
+    level_label: "Current Level",
+    missing_xp_msg: (needed, reward) => `${needed} XP needed for next level (+$${reward} bonus)`,
+    tab_packs: "Packages",
+    tab_single: "Single",
+    details_label: "Details",
+    faq_title: "FAQ",
+    select_time_title: "Date & Time",
+    date_sub: "Choose the best moment",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    empty_date: "Select a date above",
+    empty_slots: "No slots available for this day.",
+    location_title: "Service Location",
+    motel_note: "In motels, the suite fee is paid directly to the establishment by the client. Please arrive 15min early.",
+    input_name: "Your Name",
+    input_addr: "Address",
+    input_num: "Number",
+    input_bairro: "Neighborhood",
+    input_city: "City",
+    input_comp: "Unit/Apt",
+    input_hotel: "Hotel Name",
+    input_room: "Room Number",
+    extras_title: "Extras for your session:",
+    total_label: "Total Value",
+    uber_warning: "+ Transport Fee (Uber)",
+    coupon_section_title: "Your Coupons",
+    no_coupons: "You have no coupons yet.",
+    pay_title: "Payment Method",
+    pay_pix: "Pix (5% OFF)",
+    pay_card: "Credit Card",
+    pay_cash: "Cash",
+    terms_title: "Terms & Conditions",
+    terms_link: "Read full terms",
+    agree_terms: "I read and agree to safety and hygiene terms.",
+    terms_body: [
+      "1. Hygiene: Prior shower is mandatory.",
+      "2. Respect: Any inappropriate conduct will end the session immediately.",
+      "3. Payment: Must be done before or right after service.",
+      "4. Cancellation: Notify 2 hours in advance."
+    ],
+    terms_btn: "I Understand & Agree",
+    success_title: "Booking Confirmed!",
+    success_sub: "Send the receipt on WhatsApp to finalize your reservation.",
+    whatsapp_btn: "Finalize on WhatsApp",
+    back_home: "Back to Home",
+    book_btn: "Book Now",
+    next_btn: "Continue",
+    install_app: "Install App",
+    install_desc: "Quick and easy access.",
+    popup_level_title: "Level Up!",
+    popup_level_msg: "Congrats! You reached a new loyalty level and earned an exclusive discount.",
+    popup_btn_coupon: "Redeem Reward",
+    popup_welcome_title: "Welcome!",
+    popup_welcome_msg: "Since it's your first time, we prepared a special gift for you.",
+    toast_select_item: "Select a service to continue",
+    toast_select_date: "Choose day and time",
+    toast_fill_name: "Fill your name correctly",
+    toast_fill_addr: "Fill full address",
+    toast_fill_hotel: "Fill hotel details",
+    toast_select_pay: "Select payment method",
+    toast_accept_terms: "You must accept the terms",
+    toast_coupon_success: "Coupon applied successfully!",
+    zap: {
+      browser_warn: "Use Chrome/Safari for best experience",
+      house: "Residential Service",
+      motel: "Motel Service",
+      hotel: "Hotel Service",
+      intro: "Hello Thalyson, I would like to confirm my booking:",
+      order_title: "🛎️ *NEW BOOKING*",
+      client: "👤 *Client:*",
+      service: "💆‍♂️ *Service:*",
+      date: "📅 *Date:*",
+      extra_title: "➕ *Extras:*",
+      location: "📍 *Location:*",
+      value: "💲 *Final Value:*",
+      payment: "💳 *Payment:*",
+      uber_label: "🚗 *Transport:*",
+      uber_text: "To be calculated (Uber)",
+      xp_status: "📈 *Loyalty Status:*",
+      xp_gain: "Gain:",
+      xp_level: "Level:",
+      wait: "Waiting for confirmation. Thanks!"
+    }
+  }
 };
 
 // ==================================================================================
@@ -127,7 +313,6 @@ const SmartTimer = ({ isDark }) => {
   );
 };
 
-// --- CARROSSEL DE AVALIAÇÕES APRIMORADO ---
 const ReviewsCarousel = ({ reviews, isDark, title }) => {
   const scrollRef = useRef(null);
   const scroll = (direction) => {
@@ -204,7 +389,6 @@ const getData = (lang) => {
         relax: isPT ? 125 : 35,
         sens: isPT ? 155 : 45,
         titan: isPT ? 195 : 60,
-        // Pacotes
         packRelax: { v: isPT ? 397 : 120, full: isPT ? 500 : 140, save: isPT ? 103 : 20 },
         packTri: { v: isPT ? 487 : 150, full: isPT ? 585 : 180, save: isPT ? 98 : 30 },
         packPass: { v: isPT ? 780 : 240, full: isPT ? 975 : 300, save: isPT ? 195 : 60 }
@@ -288,92 +472,7 @@ const getData = (lang) => {
             { n: "M. (Sigilo)", loc: "SP - Jardins", t: "Finalização intensa, perdi as forças. O cara é bom.", s: 5 }
         ],
         reviews_title: isPT ? "+50 Avaliações 5 Estrelas" : "+50 5-Star Reviews",
-        currency: currency,
-        text: {
-            welcome: isPT ? "Olá," : "Hello,",
-            subtitle: isPT ? "Escolha a experiência ideal para o seu relaxamento." : "Choose the ideal experience for your relaxation.",
-            loading: isPT ? "Carregando..." : "Loading...",
-            level_label: isPT ? "Nível de Fidelidade" : "Loyalty Level",
-            missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP para o próximo nível (+R$${reward} de bônus)` : `${needed} XP needed for next level (+$${reward} bonus)`,
-            tab_packs: isPT ? "Pacotes" : "Packages",
-            tab_single: isPT ? "Avulso" : "Single",
-            details_label: isPT ? "Detalhes" : "Details",
-            faq_title: "Perguntas Frequentes",
-            select_time_title: "Data e Hora",
-            date_sub: "Escolha o melhor momento",
-            today: isPT ? "Hoje" : "Today",
-            tomorrow: isPT ? "Amanhã" : "Tomorrow",
-            empty_date: isPT ? "Selecione uma data acima" : "Select a date above",
-            empty_slots: isPT ? "Sem horários disponíveis." : "No slots available.",
-            location_title: isPT ? "Local do Atendimento" : "Service Location",
-            motel_note: isPT ? "Em motéis, o valor da suíte é pago diretamente ao estabelecimento pelo cliente." : "In motels, the suite fee is paid directly to the establishment.",
-            input_name: isPT ? "Seu Nome" : "Your Name",
-            input_addr: isPT ? "Endereço" : "Address",
-            input_num: isPT ? "Número" : "Number",
-            input_bairro: isPT ? "Bairro" : "Neighborhood",
-            input_city: isPT ? "Cidade" : "City",
-            input_comp: isPT ? "Complemento" : "Unit/Apt",
-            input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
-            input_room: isPT ? "Número do Quarto" : "Room Number",
-            extras_title: isPT ? "Extras para sua sessão:" : "Extras for your session:",
-            total_label: "Valor Total",
-            uber_warning: isPT ? "+ Taxa de Deslocamento (Uber)" : "+ Transport Fee (Uber)",
-            coupon_placeholder: isPT ? "Código do Cupom" : "Coupon Code",
-            coupon_btn: isPT ? "Aplicar" : "Apply",
-            pay_title: isPT ? "Forma de Pagamento" : "Payment Method",
-            pay_pix: isPT ? "Pix (5% OFF)" : "Pix (Instant)",
-            pay_card: isPT ? "Cartão de Crédito" : "Credit Card",
-            pay_cash: isPT ? "Dinheiro / Espécie" : "Cash",
-            terms_title: isPT ? "Termos e Condições" : "Terms & Conditions",
-            terms_link: isPT ? "Ler termos completos" : "Read full terms",
-            agree_terms: isPT ? "Li e concordo com os termos." : "I read and agree to terms.",
-            terms_body: isPT ? ["1. Higiene: Banho prévio obrigatório.", "2. Respeito: Conduta inadequada encerra a sessão.", "3. Pagamento: Antes ou logo após o serviço.", "4. Cancelamento: 2h de antecedência."] : ["1. Hygiene mandatory.", "2. Respect required.", "3. Payment upfront.", "4. Cancellation 2h notice."],
-            terms_btn: isPT ? "Entendi e Concordo" : "I Understand & Agree",
-            success_title: isPT ? "Agendamento Confirmado!" : "Booking Confirmed!",
-            success_sub: isPT ? "Envie o comprovante no WhatsApp para finalizar." : "Send receipt on WhatsApp to finalize.",
-            whatsapp_btn: isPT ? "Finalizar no WhatsApp" : "Finalize on WhatsApp",
-            back_home: isPT ? "Voltar ao Início" : "Back to Home",
-            book_btn: isPT ? "Agendar" : "Book Now",
-            next_btn: isPT ? "Continuar" : "Continue",
-            install_app: "Instalar App",
-            install_desc: isPT ? "Tenha acesso rápido e fácil." : "Quick and easy access.",
-            popup_level_title: isPT ? "Nível Subiu!" : "Level Up!",
-            popup_level_msg: isPT ? "Parabéns! Você alcançou um novo nível." : "Congrats! You reached a new level.",
-            popup_btn_coupon: isPT ? "Resgatar Recompensa" : "Redeem Reward",
-            popup_welcome_title: isPT ? "Bem-vindo!" : "Welcome!",
-            popup_welcome_msg: isPT ? "Preparamos um presente especial para você." : "We prepared a special gift for you.",
-            toast_select_item: isPT ? "Selecione um serviço" : "Select a service",
-            toast_select_date: isPT ? "Escolha dia e horário" : "Choose day and time",
-            toast_fill_name: isPT ? "Preencha seu nome" : "Fill your name",
-            toast_fill_addr: isPT ? "Preencha o endereço" : "Fill address",
-            toast_fill_hotel: isPT ? "Preencha dados do hotel" : "Fill hotel details",
-            toast_select_pay: isPT ? "Selecione pagamento" : "Select payment",
-            toast_accept_terms: isPT ? "Aceite os termos" : "Accept terms",
-            toast_coupon_used: isPT ? "Cupom já utilizado" : "Coupon already used",
-            toast_coupon_success: isPT ? "Cupom aplicado!" : "Coupon applied!",
-            toast_coupon_error: isPT ? "Cupom inválido" : "Invalid coupon",
-            zap: {
-                browser_warn: isPT ? "Use Chrome/Safari" : "Use Chrome/Safari",
-                house: isPT ? "Atendimento Residencial" : "Residential Service",
-                motel: isPT ? "Atendimento em Motel" : "Motel Service",
-                hotel: isPT ? "Atendimento em Hotel" : "Hotel Service",
-                intro: isPT ? "Olá Thalyson, gostaria de confirmar meu agendamento:" : "Hello Thalyson, confirming my booking:",
-                order_title: "🛎️ *NOVA RESERVA*",
-                client: "👤 *Cliente:*",
-                service: "💆‍♂️ *Serviço:*",
-                date: "📅 *Data:*",
-                extra_title: "➕ *Adicionais:*",
-                location: "📍 *Localização:*",
-                value: "💲 *Valor:*",
-                payment: "💳 *Pagamento:*",
-                uber_label: "🚗 *Deslocamento:*",
-                uber_text: "A calcular (Uber)",
-                xp_status: "📈 *Status Fidelidade:*",
-                xp_gain: "Ganho:",
-                xp_level: "Nível:",
-                wait: "Aguardo a confirmação. Obrigado!"
-            }
-        }
+        currency: currency
     };
 };
 
@@ -394,7 +493,6 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
-  const [couponInput, setCouponInput] = useState('');
   const [toasts, setToasts] = useState([]);
   
   const scrollRef = useRef(null);
@@ -695,33 +793,6 @@ ${T.zap.wait}
       if(validateStep()) {
           if (step === 2) { setUser(prev => ({...prev, savedAddress: booking.address})); }
           if (step === 3) { finishBooking(); } else { setStep(s => s + 1); }
-      }
-  };
-
-  // --- LÓGICA DE CUPOM MANUAL ---
-  const handleApplyCoupon = () => {
-      if(!couponInput) return;
-      const code = couponInput.toUpperCase().trim();
-      if (user.usedCoupons.includes(code)) {
-          addToast(T.toast_coupon_used, "error");
-          return;
-      }
-      const validManualCodes = { 'WELCOME10': 10, 'THALYSON10': 10, 'VIP15': 15, 'PROMO30': 30, 'SUPER50': 50 };
-      
-      // Verifica se o usuário tem esse cupom no inventário dele
-      const inventoryCoupon = user.coupons.find(c => c.code === code);
-      
-      if (inventoryCoupon) {
-          setBooking(b => ({...b, appliedCoupon: inventoryCoupon}));
-          addToast(T.toast_coupon_success, "success");
-          setCouponInput('');
-      } else if (validManualCodes[code]) {
-          const newCoupon = { id: code, val: validManualCodes[code], title: `🎟️ ${code}`, code: code };
-          setBooking(b => ({...b, appliedCoupon: newCoupon}));
-          addToast(T.toast_coupon_success, "success");
-          setCouponInput('');
-      } else {
-          addToast(T.toast_coupon_error, "error");
       }
   };
 
@@ -1174,13 +1245,29 @@ ${T.zap.wait}
                     <div className="space-y-8">
                         <SmartTimer isDark={isDark} />
 
-                        {/* CUPONS: APENAS MANUAL */}
-                        <div className="flex gap-3">
-                            <div className="relative flex-1">
-                                <input value={couponInput} onChange={e=>setCouponInput(e.target.value)} placeholder={T.coupon_placeholder} className={`w-full pl-5 pr-10 h-12 rounded-xl border text-sm font-bold uppercase tracking-widest outline-none focus:border-blue-500/50 transition-colors ${isDark ? 'bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-600' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'}`}/>
-                                <Tag size={16} className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}/>
-                            </div>
-                            <Button onClick={handleApplyCoupon} variant="secondary" size="md">{T.coupon_btn}</Button>
+                        {/* LISTA VISUAL DE CUPONS (SEM INPUT MANUAL) */}
+                        <div className={`p-6 rounded-[2.5rem] border ${isDark ? 'bg-zinc-900/50 border-white/5' : 'bg-white border-slate-200 shadow-xl'}`}>
+                            <h3 className={`text-xl font-light mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.coupon_section_title}</h3>
+                            {user.coupons && user.coupons.length > 0 ? (
+                                <div className="w-full overflow-x-auto pb-2 scrollbar-hide">
+                                    <div className="flex gap-3">
+                                        {user.coupons.map(c => {
+                                            const isApplied = booking.appliedCoupon?.id === c.id;
+                                            return (
+                                                <button 
+                                                    key={c.id} 
+                                                    onClick={() => setBooking(b => ({...b, appliedCoupon: isApplied ? null : c}))} 
+                                                    className={`flex-shrink-0 px-5 py-3 rounded-xl border text-xs font-bold uppercase transition-all whitespace-nowrap active:scale-95 ${isApplied ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500 shadow-lg shadow-emerald-500/20' : (isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-600' : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300')}`}
+                                                >
+                                                    {c.title}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className={`text-sm italic ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.no_coupons}</p>
+                            )}
                         </div>
 
                         <div>
@@ -1317,12 +1404,13 @@ ${T.zap.wait}
             <div className="relative p-10 rounded-[2.5rem] text-center max-w-md w-full animate-scale-in shadow-2xl border border-white/10 bg-zinc-900">
                 <div className="w-24 h-24 bg-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/5 rotate-3"><Gift size={40} className="text-blue-500" /></div>
                 <h2 className="text-2xl font-light text-white mb-4">{T.popup_welcome_title}</h2><p className="text-zinc-400 text-sm leading-relaxed mb-8">{T.popup_welcome_msg}</p>
-                <div className="bg-zinc-950 p-5 rounded-2xl border border-dashed border-zinc-800 mb-8"><p className="text-xs uppercase font-bold text-zinc-500 mb-2">Seu Código:</p><p className="text-2xl font-mono font-bold text-blue-500 tracking-widest">WELCOME10</p></div>
+                <div className="bg-zinc-950 p-5 rounded-2xl border border-dashed border-zinc-800 mb-8"><p className="text-xs uppercase font-bold text-zinc-500 mb-2">Seu Código:</p><p className="text-2xl font-mono font-bold text-blue-500 tracking-widest">BEMVINDO10</p></div>
                 <Button full variant="primary" onClick={()=>{
                     setWelcomePopup(false); 
                     setUser(u=>({...u, hasSeenWelcome: true}));
-                    const welcomeCoupon = { id: 'WELCOME10', val: 10, title: '🎁 Welcome', code: 'WELCOME10' };
+                    const welcomeCoupon = { id: 'BEMVINDO10', val: 10, title: '🎁 BEMVINDO10', code: 'BEMVINDO10' };
                     setBooking(b => ({...b, appliedCoupon: welcomeCoupon}));
+                    setUser(prev => ({...prev, coupons: [...prev.coupons, welcomeCoupon]}));
                     addToast(T.toast_coupon_success, "success");
                 }}>{T.popup_btn_coupon}</Button>
             </div>
