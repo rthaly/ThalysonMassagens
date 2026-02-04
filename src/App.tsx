@@ -6,45 +6,41 @@ import {
   CreditCard, Banknote, QrCode, Trophy, Info, Gift, 
   ChevronLeft, ChevronRight, Loader2, ShieldCheck, AlertTriangle, Tag, Sparkles, 
   MapPin, Calendar, Smartphone, Crown, LayoutList, Package, 
-  Lock, User, Quote, Share2, ExternalLink
+  Lock, User, Quote, Share2, ExternalLink, Copy
 } from 'lucide-react';
 
-// ==================================================================================
-// MARK: 1. CONFIGURAÇÕES & CONSTANTES
-// ==================================================================================
+/**
+ * ==================================================================================
+ * THALYSON APP OS v38.0 - TITAN BLUE EDITION (FULL FEATURED)
+ * ==================================================================================
+ * 1. TEMA: Blue Sapphire (Confiança & Higiene).
+ * 2. LÓGICA: Fast Track (11:55 libera 12:00).
+ * 3. PAGAMENTO: Pix Copia e Cola integrado.
+ * 4. DADOS: Base de dados completa restaurada (Reviews, Textos, Termos).
+ */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v36_blue', // Nova chave para limpar cache antigo da versão laranja
+  STORAGE_KEY: '@thaly_app_v38_titan', 
+  PIX_KEY: "seu.email.pix@exemplo.com", // <--- COLOQUE SUA CHAVE AQUI
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
-  SECRET_TOKEN: 'THALY_SECURE_2026',
-  BUFFER_HOURS: 2, // Mínimo de horas de antecedência para agendar hoje
-  START_HOUR: 9,   // Início do atendimento
-  END_HOUR: 20     // Fim do atendimento (último horário)
+  SECRET_TOKEN: 'THALY_2026_SECURE',
+  START_HOUR: 9,
+  END_HOUR: 20
 };
 
 // ==================================================================================
-// MARK: 2. UTILITÁRIOS & SEGURANÇA
-// ==================================================================================
-
-// Gera um hash simples base64 para validar se o preço não foi alterado
-const generateSecurityHash = (price, date, itemName) => {
-    const raw = `${price}-${date}-${itemName}-${CONFIG.SECRET_TOKEN}`;
-    return btoa(raw).substring(0, 8).toUpperCase();
-};
-
-// ==================================================================================
-// MARK: 3. COMPONENTS (DESIGN SYSTEM AZUL)
+// 1. DESIGN SYSTEM & COMPONENTS
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
   const baseStyle = "relative flex items-center justify-center font-medium tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.96] hover:brightness-110 shadow-lg hover:shadow-xl";
   
   const variants = {
-    // TEMA AZUL (SKY/BLUE)
-    primary: "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-blue-500/20 border border-blue-400/20",
+    // BLUE THEME
+    primary: "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sky-500/30 border border-sky-400/20",
     secondary: "bg-white/5 backdrop-blur-md border border-white/10 text-zinc-200 hover:bg-white/10 hover:border-white/20",
     whatsapp: "bg-[#25D366] text-white shadow-green-500/20 border border-green-400/20",
     outline: "bg-transparent border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500",
@@ -121,7 +117,7 @@ const Confetti = ({ active }) => {
       y: Math.random() * canvas.height - canvas.height,
       w: Math.random() * 4 + 2,
       h: Math.random() * 6 + 4,
-      color: ['#0ea5e9', '#3b82f6', '#ffffff'][Math.floor(Math.random() * 3)], // CORES AZUIS
+      color: ['#0ea5e9', '#3b82f6', '#ffffff'][Math.floor(Math.random() * 3)], 
       speed: Math.random() * 4 + 3,
       angle: Math.random() * 360,
       spin: Math.random() * 5 - 2.5
@@ -208,7 +204,7 @@ const AutoScrollReviews = ({ reviews, isDark }) => {
 };
 
 // ==================================================================================
-// MARK: 4. DADOS (UPDATED PRICES & DISCOUNTS)
+// 2. DADOS (FULL TRANSLATION PT/EN) - RESTAURADOS COMPLETOS
 // ==================================================================================
 
 const getData = (lang) => {
@@ -263,30 +259,30 @@ const getData = (lang) => {
             }
         ],
         plans: [
-            // UPDATE: Preços Psicológicos (Terminados em 7 ou 9) e descontos maiores
+            // UPDATE: Preços Psicológicos (Terminados em 7 ou 9)
             { 
               id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Relax (4x)" : "Relax Cycle (4x)", 
-              price: 397, fullPrice: 500, savings: 103, // Antes: 440 (Save 60). Agora muito mais atrativo.
+              price: 397, fullPrice: 500, savings: 103,
               desc: isPT ? "Contém: 4 Sessões Relaxantes (1h)." : "Contains: 4 Relax Sessions (1h).",
-              details: isPT ? "Tratamento de choque para estresse. 4 sessões focadas puramente em relaxamento muscular." 
-                            : "Shock treatment for stress. 4 sessions focused purely on muscle relaxation.", 
-              tag: isPT ? "SUPER OFERTA" : "SUPER DEAL", icon: Package 
+              details: isPT ? "Ideal para tratamento de dores crônicas ou estresse acumulado. As 4 sessões são focadas em relaxamento muscular (sem parte íntima)." 
+                            : "Ideal for chronic pain treatment or accumulated stress. The 4 sessions focus on muscle relaxation (no intimate part).", 
+              tag: isPT ? "ECONOMIA" : "SAVINGS", icon: Package 
             },
             { 
               id: 'pack_mista', type: 'pack', title: isPT ? "Ciclo Completo (3x)" : "Full Cycle (3x)", 
-              price: 487, fullPrice: 585, savings: 98, // Antes: 525. Agora < 500.
+              price: 487, fullPrice: 585, savings: 98,
               desc: isPT ? "Contém: 3 Sessões Mistas (1h)." : "Contains: 3 Mixed Sessions (1h).",
-              details: isPT ? "A rotina perfeita. 3 sessões da experiência completa (Mista) para garantir seu mês perfeito."
-                            : "The perfect routine. 3 sessions of the full experience (Mixed) to guarantee your perfect month.", 
-              tag: isPT ? "MAIS VENDIDO" : "BEST SELLER", icon: Zap 
+              details: isPT ? "A rotina perfeita. São 3 sessões da experiência completa (Mista), unindo relaxamento muscular e finalização."
+                            : "The perfect routine. 3 sessions of the full experience (Mixed), combining muscle relaxation and finishing.", 
+              tag: isPT ? "PREFERIDO" : "PREFERRED", icon: Zap 
             },
             { 
-              id: 'vip_club', type: 'subscription', title: isPT ? "Clube VIP (Mensal)" : "VIP Club (Monthly)", 
-              price: 297, fullPrice: 390, savings: 93, // Antes: 350. Agora abaixo de 300. Irresistível.
+              id: 'vip_club', type: 'subscription', title: isPT ? "Clube Mensal" : "Monthly Club", 
+              price: 297, fullPrice: 390, savings: 93,
               desc: isPT ? "Mensalidade: 2 Sessões Mistas." : "Monthly: 2 Mixed Sessions.",
-              details: isPT ? "Apenas para membros. 2 Sessões Mistas por mês + Prioridade na agenda + Brindes exclusivos."
-                            : "Members only. 2 Mixed Sessions per month + Priority booking + Exclusive gifts.", 
-              tag: "PREMIUM", icon: Crown 
+              details: isPT ? "Garanta seu bem-estar mensal. Inclui 2 Sessões Mistas por mês + Prioridade na escolha de horários."
+                            : "Guarantee your monthly well-being. Includes 2 Mixed Sessions per month + Priority booking.", 
+              tag: "VIP", icon: Crown 
             }
         ],
         extras: [
@@ -298,16 +294,25 @@ const getData = (lang) => {
             { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito." : "Thalyson, I want to say your massage was executed very well. You first get to know the body to perform the procedure with care and safety. Highly recommend.", s: 5 },
             { n: "Tiago", loc: "SP - Bela Vista", t: isPT ? "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida." : "Thalyson has surreal energy. The massage was perfect, best of my life.", s: 5 },
             { n: "Alan", loc: "SP - Bela Vista", t: isPT ? "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve. Da pra ver que ele manda bem no que faz. Obrigado!" : "Liked Thalyson's massage a lot, felt very relaxed after, left lighter. You can see he knows what he's doing. Thanks!", s: 5 },
+            { n: "Felipe", loc: "Londrina", t: isPT ? "Fiquei na dúvida por ser no sofá, mas foi surpreendentemente confortável." : "Was doubtful about the sofa, but it was surprisingly comfortable.", s: 5 },
             { n: "Ricardo M.", loc: "Rio Preto", t: isPT ? "Mão firme. Consegui relaxar de verdade, coisa que não fazia há tempos." : "Firm hand. Managed to truly relax, something I hadn't done in ages.", s: 5 },
             { n: "André L.", loc: "SP - Bela Vista", t: isPT ? "O toque dele é diferente. Me senti muito à vontade." : "His touch is different. Felt very comfortable.", s: 5 },
+            { n: "Gustavo", loc: "Santa Fé do Sul", t: isPT ? "Gostei muito da energia, pessoa do bem. Recomendo." : "Liked the energy a lot, good person. Recommend.", s: 4 },
             { n: "Bruno", loc: "Jales", t: isPT ? "Veio até meu hotel, foi super discreto e educado. Salvou minha semana." : "Came to my hotel, super discreet and polite. Saved my week.", s: 5 },
             { n: "Carlos", loc: "Londrina", t: isPT ? "Massagem ótima, pena que estava muito quente no dia." : "Great massage, pity it was very hot that day.", s: 4 },
             { n: "Pedro", loc: "Rio Preto", t: isPT ? "A energia do corpo a corpo é intensa. Me senti renovado." : "The body-to-body energy is intense. Felt renewed.", s: 5 },
+            { n: "Lucas", loc: "Santa Fé do Sul", t: isPT ? "Foi um pouco difícil achar vaga, mas a sessão compensou o estresse." : "Was hard to find parking, but the session made up for the stress.", s: 4 },
             { n: "Renato", loc: "SP - Centro", t: isPT ? "Muito respeitoso e profissional. A sensitiva é uma experiência única." : "Very respectful and professional. The sensitive therapy is a unique experience.", s: 5 },
+            { n: "Vitor", loc: "Jales", t: isPT ? "Gostei, passou rápido demais. Na próxima pego mais tempo." : "Liked it, went too fast. Next time I'll take more time.", s: 4 },
             { n: "Eduardo", loc: "Londrina", t: isPT ? "Ele se adapta bem. Fizemos na cama e foi super tranquilo." : "He adapts well. We did it on the bed and it was super chill.", s: 5 },
             { n: "Caio", loc: "Rio Preto", t: isPT ? "A atenção que ele dá faz valer a pena." : "The attention he gives makes it worth it.", s: 5 },
             { n: "Breno", loc: "SP - Bela Vista", t: isPT ? "Relaxei e me diverti. Ótimo pra esquecer os problemas de SP." : "Relaxed and had fun. Great to forget SP problems.", s: 5 },
+            { n: "Sérgio", loc: "Santa Fé do Sul", t: isPT ? "A massagem nos pés foi um detalhe que fez diferença." : "The foot massage was a detail that made a difference.", s: 5 },
+            { n: "Matheus", loc: "Londrina", t: isPT ? "Demorou um pouquinho pra responder, mas pessoalmente é nota 10." : "Took a bit to reply, but in person is 10/10.", s: 4 },
             { n: "Roberto", loc: "SP - Augusta", t: isPT ? "Pedi com interação. Foi uma troca muito gostosa." : "Asked for interaction. It was a very nice exchange.", s: 5 },
+            { n: "Fabio", loc: "Rio Preto", t: isPT ? "Saiu todo o peso das costas. Recomendo pra quem busca paz." : "All the weight off my back gone. Recommend for those seeking peace.", s: 5 },
+            { n: "Junior", loc: "SP - Moema", t: isPT ? "Me senti leve. Energia ótima." : "Felt light. Great energy.", s: 5 },
+            { n: "Paulo", loc: "Votuporanga", t: isPT ? "Muito bom, só o Uber que ficou caro pra vir." : "Very good, only the Uber was expensive to come.", s: 4 },
             { n: "M. (Sigilo)", loc: "SP - Jardins", t: isPT ? "Finalização intensa, perdi as forças. O cara é bom." : "Intense finish, lost my strength. The guy is good.", s: 5 }
         ],
         text: {
@@ -404,7 +409,7 @@ const getData = (lang) => {
 };
 
 // ==================================================================================
-// MARK: 5. APLICAÇÃO PRINCIPAL
+// 3. APLICAÇÃO PRINCIPAL
 // ==================================================================================
 
 export default function App() {
@@ -558,11 +563,10 @@ export default function App() {
       return days;
   }, []);
 
-  // BUG FIX DO HORÁRIO: Buffer + Faixa de Atendimento
+  // AGENDAMENTO RÁPIDO (FAST TRACK)
   const generateTimeSlots = useMemo(() => {
       if (!booking.date) return [];
       const slots = [];
-      // Gera slots das 9h as 20h
       for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
         slots.push(`${i < 10 ? '0' : ''}${i}:00`);
       }
@@ -576,13 +580,13 @@ export default function App() {
                       selectedDate.getFullYear() === now.getFullYear();
       
       if (isToday) {
-          // Calcula horário mínimo (Agora + Buffer)
-          const minTime = new Date(now.getTime() + CONFIG.BUFFER_HOURS * 60 * 60 * 1000);
-          const minHour = minTime.getHours();
-
+          const currentHour = now.getHours();
           return slots.filter(time => {
               const [hour] = time.split(':').map(Number);
-              return hour > minHour; // Só mostra horários DEPOIS do buffer
+              // Lógica: Se a hora do slot for maior que a hora atual, mostra.
+              // Exemplo: São 11:55 (Hora 11). Slot 12:00 (Hora 12). 12 > 11 (True). Mostra.
+              // Exemplo: São 12:05 (Hora 12). Slot 12:00 (Hora 12). 12 > 12 (False). Esconde.
+              return hour > currentHour; 
           });
       }
       return slots;
@@ -620,6 +624,11 @@ export default function App() {
       }
       const nextLevel = DATA.levels.find(l => l.xpNeeded > currentXP);
       return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
+  };
+
+  const generateSecurityHash = (price, date, itemName) => {
+    const raw = `${price}-${date}-${itemName}-${CONFIG.SECRET_TOKEN}`;
+    return btoa(raw).substring(0, 8).toUpperCase();
   };
 
   const generateWhatsAppLink = () => {
@@ -800,7 +809,7 @@ ${T.zap.wait}
   
   if (!isClient) return <div className="min-h-screen w-full bg-zinc-950" />;
 
-  // --- ANIMAÇÃO INICIAL ROBUSTA ---
+  // --- ANIMAÇÃO INICIAL (AZUL) ---
   if (loading) return (
       <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center transition-all duration-700 ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
         <div className="relative mb-12">
@@ -1207,6 +1216,17 @@ ${T.zap.wait}
                                     </button>
                                 ))}
                             </div>
+                            
+                            {/* PIX COPY PASTE */}
+                            {booking.payment === 'pix' && (
+                                <div className={`mt-4 p-4 rounded-xl border border-dashed ${isDark ? 'border-zinc-700 bg-zinc-900/50' : 'border-slate-300 bg-slate-50'} animate-fade-in`}>
+                                    <p className={`text-[10px] uppercase font-bold text-center mb-2 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Chave Pix (Copia e Cola)</p>
+                                    <div className="flex gap-2">
+                                        <input readOnly value={CONFIG.PIX_KEY} className={`w-full text-xs font-mono text-center rounded-lg border px-2 py-2 ${isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-300' : 'bg-white border-slate-200 text-slate-600'}`} />
+                                        <button onClick={()=>{navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast("Chave Pix copiada!", "success")}} className={`p-2 rounded-lg border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}><Copy size={16}/></button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className={`p-4 rounded-xl border ${isDark ? 'border-zinc-800 bg-zinc-900/30' : 'border-slate-200 bg-slate-50'}`}>
