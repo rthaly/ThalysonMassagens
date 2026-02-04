@@ -11,21 +11,12 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v42.0 - INFINITE BLUE VERTICAL (FULL DESKTOP/MOBILE)
+ * THALYSON APP OS v43.0 - PLATINUM EDITION (VERTICAL + INFINITE REVIEWS)
  * ==================================================================================
- * ARQUITETURA:
- * 1. FLUXO: Waterfall (Cascata). O usuário desce a tela, não troca de página.
- * 2. RESPONSIVIDADE: 
- * - Mobile: Coluna única vertical com scroll suave.
- * - Desktop: Grid de 2 colunas (Fluxo à esquerda, Resumo "Sticky" à direita).
- * 3. LÓGICA DE NEGÓCIO: 
- * - Fast Track (11:55 libera 12:00).
- * - Pix CNPJ Integrado.
- * - Persistência LocalStorage robusta.
- * 4. UI/UX:
- * - Fonte Poppins (Google Fonts).
- * - Glassmorphism Profundo (Azul Safira).
- * - Animações de entrada "Reveal".
+ * 1. AVALIAÇÕES: Loop Infinito Automático (JS Physics) restaurado.
+ * 2. UX: Vertical Flow (Cascata) + Glassmorphism (Vidro Azul).
+ * 3. LÓGICA: Fast Track (Hora atual liberada) + Persistência Local.
+ * 4. LAYOUT: Mobile First (Toque fácil) + Desktop Split (Resumo fixo).
  */
 
 // --- 1. CONFIGURAÇÕES & DADOS ---
@@ -33,10 +24,10 @@ import {
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v42_infinite', 
+  STORAGE_KEY: '@thaly_app_v43_platinum', 
   PIX_KEY: "62922530000144",
   PIX_DISPLAY: "62.922.530/0001-44",
-  SECRET_TOKEN: 'INFINITE_BLUE_2026',
+  SECRET_TOKEN: 'PLATINUM_2026',
   START_HOUR: 9,
   END_HOUR: 20
 };
@@ -103,7 +94,9 @@ const getData = () => ({
         { n: "André L.", loc: "SP - Bela Vista", t: "O toque dele é diferente. Me senti muito à vontade.", s: 5 },
         { n: "Gustavo", loc: "Santa Fé do Sul", t: "Gostei muito da energia, pessoa do bem. Recomendo.", s: 4 },
         { n: "Renato", loc: "SP - Centro", t: "Muito respeitoso e profissional. A sensitiva é uma experiência única.", s: 5 },
-        { n: "Pedro", loc: "Rio Preto", t: "A energia do corpo a corpo é intensa. Me senti renovado.", s: 5 }
+        { n: "Pedro", loc: "Rio Preto", t: "A energia do corpo a corpo é intensa. Me senti renovado.", s: 5 },
+        { n: "Felipe", loc: "Londrina", t: "Fiquei na dúvida por ser no sofá, mas foi surpreendentemente confortável.", s: 5 },
+        { n: "Roberto", loc: "SP - Augusta", t: "Pedi com interação. Foi uma troca muito gostosa.", s: 5 }
     ],
     levels: [
         { lvl: 1, xp: 0, title: "Visitante" },
@@ -129,9 +122,8 @@ const GlobalStyles = () => (
     
     :root {
       --color-bg: #020617; /* Slate 950 */
-      --color-card: rgba(30, 41, 59, 0.4);
       --color-glass: rgba(15, 23, 42, 0.7);
-      --color-primary: #0ea5e9; /* Sky 500 */
+      --color-glass-border: rgba(255, 255, 255, 0.08);
     }
 
     body { 
@@ -145,40 +137,35 @@ const GlobalStyles = () => (
       background: var(--color-glass);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid var(--color-glass-border);
     }
     
     .glass-card {
-      background: var(--color-card);
+      background: rgba(30, 41, 59, 0.3);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     
-    /* Animações Verticais */
+    /* Animações de Scroll e Entrada */
     .reveal-section { 
-      animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: reveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(20px);
     }
     
-    @keyframes reveal {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Utilitários */
-    .touch-target { min-height: 48px; }
+    @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
   `}</style>
 );
 
 // ==================================================================================
-// 3. COMPONENTES UI
+// 3. COMPONENTES UI (GLASS & BLUE)
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
-  const baseStyle = "relative flex items-center justify-center font-semibold tracking-wide transition-all duration-200 active:scale-[0.98] rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyle = "relative flex items-center justify-center font-semibold tracking-wide transition-all duration-200 active:scale-[0.97] rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
     primary: "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sky-500/20 hover:brightness-110",
@@ -245,7 +232,7 @@ const Card = ({ children, onClick, active = false, className = "" }) => (
 
 const SectionTitle = ({ title, sub, icon: Icon }) => (
     <div className="mb-6 flex items-start gap-4">
-        <div className="h-10 w-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-sky-500 shadow-lg">
+        <div className="h-10 w-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-sky-500 shadow-lg shrink-0">
             {Icon && <Icon size={20} />}
         </div>
         <div>
@@ -254,6 +241,70 @@ const SectionTitle = ({ title, sub, icon: Icon }) => (
         </div>
     </div>
 );
+
+// === COMPONENTE DE REVIEWS INFINITO (CORRIGIDO) ===
+const InfiniteReviews = ({ reviews }) => {
+  const scrollRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+    let animationId;
+    
+    const scroll = () => {
+      if (!isPaused) {
+        if (scrollContainer.scrollLeft >= (scrollContainer.scrollWidth / 2)) {
+          scrollContainer.scrollLeft = 0; // Reset suave
+        } else {
+          scrollContainer.scrollLeft += 0.8; // Velocidade do scroll
+        }
+      }
+      animationId = requestAnimationFrame(scroll);
+    };
+    animationId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationId);
+  }, [isPaused]);
+
+  // Duplicamos o array para criar o efeito de loop infinito
+  const loopReviews = [...reviews, ...reviews, ...reviews];
+
+  return (
+    <div className="w-full overflow-hidden py-8 border-y border-white/5 bg-slate-900/30 mb-8 relative group">
+      {/* Sombras laterais para suavizar */}
+      <div className="absolute top-0 left-0 h-full w-8 bg-gradient-to-r from-[#020617] to-transparent z-10"></div>
+      <div className="absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-[#020617] to-transparent z-10"></div>
+      
+      <div 
+        ref={scrollRef}
+        className="flex gap-5 overflow-x-auto pb-4 hide-scrollbar px-4"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setTimeout(() => setIsPaused(false), 2000)}
+      >
+        {loopReviews.map((r, i) => (
+            <div key={`${i}-${r.n}`} className="min-w-[300px] bg-slate-900 p-5 rounded-3xl border border-slate-800 shrink-0 shadow-xl relative select-none">
+              <Quote size={20} className="absolute top-4 right-4 text-slate-700 opacity-50"/>
+              <div className="flex justify-between items-start mb-4">
+                 <div className="flex items-center gap-3">
+                     <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-sky-500 text-sm shadow-inner">{r.n.charAt(0)}</div>
+                     <div>
+                         <p className="text-sm font-bold text-white leading-none">{r.n}</p>
+                         <p className="text-[10px] text-slate-500 uppercase mt-1 tracking-wider">{r.loc}</p>
+                     </div>
+                 </div>
+                 <div className="flex gap-0.5 text-amber-400">
+                   {[...Array(5)].map((_,k)=><Star key={k} size={12} fill={k<r.s?"currentColor":"none"} className={k<r.s?"":"text-slate-700"}/>)}
+                 </div>
+              </div>
+              <p className="text-xs text-slate-300 italic mb-0 leading-relaxed font-light">"{r.t}"</p>
+            </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 // ==================================================================================
 // 4. APLICAÇÃO PRINCIPAL
@@ -303,6 +354,7 @@ export default function App() {
         try {
             const p = JSON.parse(s);
             if(p.user) setUser(p.user);
+            // Recupera rascunho apenas se a data ainda for válida (futura ou hoje)
             if(p.draft && new Date(p.draft.date) >= new Date().setHours(0,0,0,0)) {
                 setBooking(p.draft);
             }
@@ -316,15 +368,13 @@ export default function App() {
       if(isClient && !loading) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({ user, draft: booking })); 
   }, [user, booking, isClient, loading]);
 
-  // Scroll Automático (Waterfall Logic)
+  // Scroll Automático (Waterfall)
   useEffect(() => {
       if(!loading) {
           if(booking.item && !booking.date) {
               setTimeout(() => dateRef.current?.scrollIntoView({behavior: 'smooth', block: 'start'}), 300);
           } else if(booking.date && booking.time && !user.name) {
               setTimeout(() => locationRef.current?.scrollIntoView({behavior: 'smooth', block: 'start'}), 300);
-          } else if(user.name && (booking.locationType !== 'home' || booking.address.street)) {
-              // Scroll to payment logic handled by user interaction usually, but we can nudge
           }
       }
   }, [booking.item, booking.date, booking.time, loading]);
@@ -397,6 +447,46 @@ export default function App() {
       setShowConfetti(true);
   };
 
+  const ConfettiComponent = () => {
+      const canvasRef = useRef(null);
+      useEffect(() => {
+        if(!showConfetti) return;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const particles = Array.from({ length: 100 }, () => ({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          w: Math.random() * 5 + 2,
+          h: Math.random() * 8 + 4,
+          color: ['#0ea5e9', '#3b82f6', '#6366f1', '#ffffff'][Math.floor(Math.random() * 4)],
+          speed: Math.random() * 6 + 3,
+          angle: Math.random() * 360,
+          spin: Math.random() * 8 - 4
+        }));
+        let ani;
+        const draw = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles.forEach(p => {
+            ctx.fillStyle = p.color;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.angle * Math.PI / 180);
+            ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+            ctx.restore();
+            p.y += p.speed;
+            p.angle += p.spin;
+          });
+          ani = requestAnimationFrame(draw);
+        };
+        draw();
+        return () => cancelAnimationFrame(ani);
+      }, [showConfetti]);
+      if(!showConfetti) return null;
+      return <canvas ref={canvasRef} className="fixed inset-0 z-[100] pointer-events-none" />;
+  };
+
   // --- RENDER ---
   if (!isClient) return <div className="bg-[#020617] min-h-screen"/>;
 
@@ -410,6 +500,7 @@ export default function App() {
   return (
     <div className="min-h-screen w-full bg-[#020617] text-slate-100 font-sans selection:bg-sky-500/30">
       <GlobalStyles />
+      <ConfettiComponent />
       
       {/* BACKGROUND AMBIENCE */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -475,7 +566,7 @@ export default function App() {
                             
                             {/* DETALHES EXPANSIVEIS SE SELECIONADO */}
                             {booking.item?.id === item.id && (
-                                <div className="mt-5 pt-5 border-t border-sky-500/20 animate-enter">
+                                <div className="mt-5 pt-5 border-t border-sky-500/20 reveal-section">
                                     <div className="bg-sky-500/5 p-4 rounded-xl border border-sky-500/10 mb-4">
                                         <p className="text-xs text-sky-200 leading-relaxed whitespace-pre-line flex gap-2">
                                             <Info size={14} className="shrink-0 text-sky-500 mt-0.5"/>
@@ -496,13 +587,18 @@ export default function App() {
                 </div>
             </section>
 
+            {/* REVIEWS MARQUEE (INFINITE SCROLL) */}
+            <section className="reveal-section">
+                <InfiniteReviews reviews={DATA.reviews} />
+            </section>
+
             {/* 2. DATA & HORA */}
             {booking.item && (
                 <section ref={dateRef} className="reveal-section border-t border-white/5 pt-12">
                     <SectionTitle icon={Calendar} title="Data & Horário" sub="Quando fica melhor para você?" />
                     
                     <div className="relative group mb-8">
-                        <div ref={dateScrollRef} className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar snap-x -mx-4 px-4 lg:mx-0 lg:px-0">
+                        <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar snap-x -mx-4 px-4 lg:mx-0 lg:px-0">
                             {daysArray.map((d, i) => {
                                 const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
                                 const isToday = i===0;
@@ -518,7 +614,7 @@ export default function App() {
 
                     {booking.date ? (
                         generateTimeSlots.length > 0 ? (
-                            <div className="grid grid-cols-4 lg:grid-cols-6 gap-3 animate-pop">
+                            <div className="grid grid-cols-4 lg:grid-cols-6 gap-3 reveal-section">
                                 {generateTimeSlots.map((t) => (
                                     <button key={t} onClick={() => {vibrate(); setBooking(b => ({...b, time: t}))}} className={`py-3 rounded-xl text-sm font-bold border-2 transition-all ${booking.time === t ? 'bg-white text-black border-white shadow-lg' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600'}`}>
                                         {t}
@@ -584,7 +680,7 @@ export default function App() {
                      <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><Ticket className="text-sky-500"/> Resumo</h3>
                      
                      {booking.item ? (
-                         <div className="space-y-4 animate-enter">
+                         <div className="space-y-4 reveal-section">
                              <div className="flex justify-between items-start pb-4 border-b border-white/10">
                                  <div>
                                      <p className="font-bold text-white">{booking.item.title}</p>
@@ -611,7 +707,7 @@ export default function App() {
 
                              {/* PAGAMENTO */}
                              {user.name && booking.time && (
-                                 <div className="pt-6 animate-enter">
+                                 <div className="pt-6 reveal-section">
                                      <h4 className="text-[10px] font-bold text-slate-500 uppercase mb-3">Forma de Pagamento</h4>
                                      <div className="space-y-2">
                                          {[{id:'pix', l:'PIX (CNPJ)', i:QrCode}, {id:'money', l:'Dinheiro', i:Banknote}, {id:'card', l:'Cartão', i:CreditCard}].map(p => (
@@ -623,7 +719,7 @@ export default function App() {
                                      </div>
 
                                      {booking.payment === 'pix' && (
-                                         <div className="mt-4 p-4 bg-slate-900 rounded-xl border border-dashed border-slate-700 animate-enter">
+                                         <div className="mt-4 p-4 bg-slate-900 rounded-xl border border-dashed border-slate-700 reveal-section">
                                              <p className="text-[10px] text-center text-slate-500 mb-2 uppercase font-bold">Chave CNPJ</p>
                                              <div className="flex gap-2">
                                                  <div className="flex-1 bg-black/30 rounded-lg flex items-center justify-center text-sm font-mono text-white border border-white/5">{CONFIG.PIX_DISPLAY}</div>
@@ -654,11 +750,8 @@ export default function App() {
 
       </div>
 
-      <Confetti active={showConfetti} />
-      
-      {/* GLOBAL OVERLAY CONFETTI */}
       {showConfetti && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md animate-enter">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md reveal-section">
              <div className="text-center">
                  <div className="h-32 w-32 bg-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_60px_-10px_rgba(16,185,129,0.6)] mb-8 mx-auto animate-bounce">
                      <Check size={64} className="text-white" strokeWidth={4}/>
