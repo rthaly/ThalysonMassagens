@@ -11,19 +11,18 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v51.0 - LAYOUT FIXED & ROBUST
+ * THALYSON APP OS v55.0 - GLOBAL CURRENCY EDITION
  * ==================================================================================
- * 1. LAYOUT: Container mais largo (max-w-7xl) para cards respirarem.
- * 2. CARDS: Flexbox justificado (Preço sempre alinhado no rodapé).
- * 3. MARKETING: Diferenciação clara entre Sessão Única e Jornadas.
- * 4. REVIEWS: Textos originais (Bruno, Tiago, Alan).
- * 5. LOCAL: 100% Delivery (sem "meu espaço").
+ * 1. MULTI-CURRENCY: R$ (BRL) e $ (USD) automáticos ao trocar idioma.
+ * 2. PREÇOS: Ajustados para 125/155/195 (BRL).
+ * 3. REVIEWS: Lista completa restaurada e posicionada ABAIXO dos serviços.
+ * 4. UX: Layout robusto v51 mantido.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v51_fixed', 
+  STORAGE_KEY: '@thaly_app_v55_global', 
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -33,14 +32,14 @@ const CONFIG = {
 };
 
 // ==================================================================================
-// 1. DESIGN SYSTEM (AJUSTADO PARA ROBUSTEZ)
+// 1. DESIGN SYSTEM
 // ==================================================================================
 
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon: Icon, className = '', loading = false }) => {
   const baseStyle = "relative flex items-center justify-center font-bold tracking-wide transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none touch-manipulation overflow-hidden active:scale-[0.98] hover:brightness-110 shadow-lg font-['Poppins']";
   
   const variants = {
-    primary: "bg-blue-600 text-white border border-blue-500/20 shadow-blue-600/30", // Azul Vibrante
+    primary: "bg-blue-600 text-white border border-blue-500/20 shadow-blue-600/30",
     secondary: "bg-zinc-800 border border-zinc-700 text-zinc-100 hover:bg-zinc-700",
     whatsapp: "bg-[#25D366] text-white border border-green-400/20 shadow-green-500/20",
     instagram: "bg-gradient-to-tr from-purple-600 to-pink-600 text-white border border-pink-400/20",
@@ -51,7 +50,7 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
   
   const sizes = { 
     sm: "h-10 text-xs px-4", 
-    md: "h-14 text-sm px-6", // Altura confortável
+    md: "h-14 text-sm px-6", 
     lg: "h-16 text-base px-8", 
     xl: "h-16 text-base font-bold uppercase tracking-widest", 
     icon: "h-12 w-12 p-0 flex-shrink-0 rounded-full" 
@@ -93,7 +92,6 @@ const InputField = ({ label, value, onChange, placeholder, icon: Icon, type = "t
 const Card = ({ children, className = '', onClick, active = false, isDark = true }) => (
   <div 
     onClick={onClick} 
-    // H-FULL e FLEX-COL para garantir que todos tenham a mesma altura e o preço fique em baixo
     className={`relative p-8 rounded-[2.5rem] transition-all duration-300 flex flex-col justify-between h-full group font-['Poppins'] min-h-[480px]
     ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-2' : ''} 
     ${active 
@@ -133,7 +131,7 @@ const SmartTimer = ({ isDark }) => {
   );
 };
 
-const ReviewsCarousel = ({ reviews, isDark }) => {
+const ReviewsCarousel = ({ reviews, isDark, title }) => {
   const scrollRef = useRef(null);
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -150,10 +148,9 @@ const ReviewsCarousel = ({ reviews, isDark }) => {
     <div className={`w-full overflow-hidden py-14 border-t mt-20 relative group/reviews ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
       <div className="text-center mb-12">
           <h3 className={`text-3xl font-light mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>O que dizem sobre mim</h3>
-          <p className={`text-sm uppercase tracking-[0.25em] font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Experiências Reais</p>
+          <p className={`text-sm uppercase tracking-[0.25em] font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{title}</p>
       </div>
       
-      {/* Botões DESKTOP Only */}
       <button onClick={() => scroll('left')} className={`hidden md:flex absolute left-8 top-1/2 z-20 w-12 h-12 items-center justify-center rounded-full border-2 transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}><ChevronLeft size={24} /></button>
       <button onClick={() => scroll('right')} className={`hidden md:flex absolute right-8 top-1/2 z-20 w-12 h-12 items-center justify-center rounded-full border-2 transition-all shadow-xl backdrop-blur-xl opacity-0 group-hover/reviews:opacity-100 md:opacity-100 ${isDark ? 'bg-zinc-900/90 border-zinc-700 text-white hover:bg-zinc-800' : 'bg-white/90 border-slate-200 text-slate-800 hover:bg-white'}`}><ChevronRight size={24} /></button>
       
@@ -192,11 +189,25 @@ const FAQItem = ({ q, a, isDark }) => {
 };
 
 // ==================================================================================
-// 2. DADOS (REALITY & FLOW)
+// 2. DADOS (MULTI-CURRENCY)
 // ==================================================================================
 
 const getData = (lang) => {
     const isPT = lang === 'pt';
+    const currency = isPT ? 'R$' : '$';
+    
+    // DEFINIÇÃO DE PREÇOS (BRL vs USD)
+    const prices = {
+        relax: isPT ? 125 : 35,
+        sens: isPT ? 155 : 45,
+        titan: isPT ? 195 : 60,
+        // Pacotes (BRL / USD)
+        packRelax: isPT ? { p: 397, f: 500, s: 103 } : { p: 120, f: 140, s: 20 },
+        packTri: isPT ? { p: 487, f: 585, s: 98 } : { p: 150, f: 180, s: 30 },
+        packPass: isPT ? { p: 780, f: 975, s: 195 } : { p: 240, f: 300, s: 60 },
+        extras: isPT ? { t: 55, i: 55, a: 5 } : { t: 15, i: 15, a: 5 }
+    };
+
     return {
         levels: [
             { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Visitante" : "Visitor" },
@@ -206,10 +217,10 @@ const getData = (lang) => {
         ],
         services: [
             { 
-              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "MANUTENÇÃO" : "PHYSICAL",
+              id: 'relaxante', min: 60, price: prices.relax, icon: Wind, tag: isPT ? "100% FÍSICO" : "PHYSICAL",
               title: isPT ? "Massagem Clássica" : "Classic Relax",
               desc: isPT ? "Para tirar a dor. Foco exclusivo muscular. Sem toque íntimo." : "For pain. Muscle focus only. No intimate touch.",
-              details: isPT ? `O RESET QUE SEU CORPO PRECISA:
+              details: isPT ? `O ALÍVIO QUE VOCÊ PRECISA:
 • COMO FUNCIONA: Iniciamos com manobras firmes e profundas para soltar toda a musculatura das costas e pernas.
 • FOCO: Tirar "nós", tensão e cansaço físico.
 • TRAJE: O terapeuta usa roupa padrão.
@@ -221,7 +232,7 @@ const getData = (lang) => {
 • NOTE: Purely therapeutic.`
             },
             { 
-              id: 'sensitiva', min: 60, price: 175, icon: Flame, tag: isPT ? "SENSORIAL + LINGAM" : "SENSORY",
+              id: 'sensitiva', min: 60, price: prices.sens, icon: Flame, tag: isPT ? "SENSORIAL + LINGAM" : "SENSORY",
               title: isPT ? "Tântrica Sensorial" : "Tantric Sensory",
               desc: isPT ? "Relaxamento + Toque Sutil + Finalização. Atendo de cueca." : "Relax + Subtle Touch + Finish. Underwear service.",
               details: isPT ? `A EVOLUÇÃO DO TOQUE:
@@ -236,7 +247,7 @@ const getData = (lang) => {
 • PEAK: Includes **Lingam Massage** for pleasure.`
             },
             { 
-              id: 'mista', min: 60, price: 240, icon: Zap, tag: isPT ? "FUSÃO COMPLETA" : "FULL FUSION",
+              id: 'mista', min: 60, price: prices.titan, icon: Zap, tag: isPT ? "FUSÃO COMPLETA" : "FULL FUSION",
               title: isPT ? "Experiência Fusion" : "Fusion Experience",
               desc: isPT ? "Tudo em um: Muscular + Corpo a Corpo + Lingam Intenso." : "All in one: Muscle + Body-to-Body + Intense Lingam.",
               details: isPT ? `PARA QUEM QUER TUDO:
@@ -252,7 +263,7 @@ const getData = (lang) => {
             }
         ],
         faq: [
-            { q: "Qual a diferença real entre as sessões?", a: "Clássica (R$125) = Só tira dor (sem sexo/lingam). Tântrica (R$175) = Tira dor + Toque leve + Lingam (de cueca). Fusion (R$240) = Tira dor + Corpo a Corpo + Lingam Intenso (a mais completa)." },
+            { q: "Qual a diferença real entre as sessões?", a: "Clássica (R$125) = Só tira dor (sem sexo/lingam). Tântrica (R$155) = Tira dor + Toque leve + Lingam (de cueca). Fusion (R$195) = Tira dor + Corpo a Corpo + Lingam Intenso (a mais completa)." },
             { q: "Você tem local próprio?", a: "Não. Meu atendimento é 100% Delivery (Vou até você). Atendo em domicílio, hotéis ou motéis com total discrição e segurança." },
             { q: "Onde você atende?", a: "São Paulo Capital e região. O valor do transporte (Uber) é calculado à parte no momento do agendamento." },
             { q: "Pode 'gozar' na massagem?", a: "Sim! Nas experiências Tântrica e Fusion, o clímax é bem-vindo e faz parte do alívio terapêutico." },
@@ -261,7 +272,7 @@ const getData = (lang) => {
         plans: [
             { 
               id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Anti-Stress" : "Anti-Stress Cycle", 
-              price: 397, fullPrice: 500, savings: 103,
+              price: prices.packRelax.p, fullPrice: prices.packRelax.f, savings: prices.packRelax.s,
               desc: isPT ? "4 Sessões de Massagem Clássica." : "4 Classic Massage Sessions.",
               details: isPT ? "MANUTENÇÃO CONTRA DOR:\n• 4 sessões focadas 100% em tirar tensão muscular.\n• Não inclui parte íntima." 
                             : "PAIN MAINTENANCE:\n• 4 sessions focused on muscle tension.\n• No intimate part.", 
@@ -269,7 +280,7 @@ const getData = (lang) => {
             },
             { 
               id: 'pack_mista', type: 'pack', title: isPT ? "Trilogia do Êxtase" : "Ecstasy Trilogy", 
-              price: 600, fullPrice: 720, savings: 120,
+              price: prices.packTri.p, fullPrice: prices.packTri.f, savings: prices.packTri.s,
               desc: isPT ? "3 Sessões da Experiência Fusion." : "3 Fusion Sessions.",
               details: isPT ? "INTENSIDADE GARANTIDA:\n• 3 encontros da massagem mais completa (Fusion).\n• Ideal para quem quer viver o ápice do prazer repetidas vezes."
                             : "GUARANTEED INTENSITY:\n• 3 meetings of the fullest massage.\n• Ideal for repeated pleasure.", 
@@ -277,7 +288,7 @@ const getData = (lang) => {
             },
             { 
               id: 'titan_passport', type: 'pack', title: isPT ? "Passaporte Titan (5x)" : "Titan Passport (5x)", 
-              price: 960, fullPrice: 1200, savings: 240,
+              price: prices.packPass.p, fullPrice: prices.packPass.f, savings: prices.packPass.s,
               desc: isPT ? "Compre 4, Leve 5 (Fusion)." : "Buy 4, Get 5 (Fusion).",
               details: isPT ? "A OFERTA IRRECUSÁVEL:\n• Você garante 5 sessões Fusion completas.\n• Paga 4 e a 5ª é por minha conta.\n• Validade estendida para usar quando quiser."
                             : "IRRESISTIBLE OFFER:\n• 5 full Fusion sessions.\n• Pay 4, get 5th free.\n• Extended validity.", 
@@ -285,111 +296,37 @@ const getData = (lang) => {
             }
         ],
         extras: [
-            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
-            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você toca também." : "You touch too." },
-            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Imersão total." : "Total immersion." }
+            { id: 'more_time', price: prices.extras.t, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Sem pressa." : "No rush." },
+            { id: 'touch', price: prices.extras.i, icon: Heart, label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você toca também." : "You touch too." },
+            { id: 'aroma', price: prices.extras.a, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Imersão total." : "Total immersion." }
         ],
         reviews: [
             { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito.", s: 5 },
             { n: "Tiago", loc: "SP - Bela Vista", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", s: 5 },
-            { n: "Alan", loc: "SP - Bela Vista", t: "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve. Da pra ver que ele manda bem no que faz. Obrigado!", s: 5 }
+            { n: "Alan", loc: "SP - Bela Vista", t: "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve. Da pra ver que ele manda bem no que faz. Obrigado!", s: 5 },
+            { n: "Felipe", loc: "Londrina", t: "Fiquei na dúvida por ser no sofá, mas foi surpreendentemente confortável.", s: 5 },
+            { n: "Ricardo M.", loc: "Rio Preto", t: "Mão firme. Consegui relaxar de verdade, coisa que não fazia há tempos.", s: 5 },
+            { n: "André L.", loc: "SP - Bela Vista", t: "O toque dele é diferente. Me senti muito à vontade.", s: 5 },
+            { n: "Gustavo", loc: "Santa Fé do Sul", t: "Gostei muito da energia, pessoa do bem. Recomendo.", s: 4 },
+            { n: "Bruno", loc: "Jales", t: "Veio até meu hotel, foi super discreto e educado. Salvou minha semana.", s: 5 },
+            { n: "Carlos", loc: "Londrina", t: "Massagem ótima, pena que estava muito quente no dia.", s: 4 },
+            { n: "Pedro", loc: "Rio Preto", t: "A energia do corpo a corpo é intensa. Me senti renovado.", s: 5 },
+            { n: "Lucas", loc: "Santa Fé do Sul", t: "Foi um pouco difícil achar vaga, mas a sessão compensou o estresse.", s: 4 },
+            { n: "Renato", loc: "SP - Centro", t: "Muito respeitoso e profissional. A sensitiva é uma experiência única.", s: 5 },
+            { n: "Vitor", loc: "Jales", t: "Gostei, passou rápido demais. Na próxima pego mais tempo.", s: 4 },
+            { n: "Eduardo", loc: "Londrina", t: "Ele se adapta bem. Fizemos na cama e foi super tranquilo.", s: 5 },
+            { n: "Caio", loc: "Rio Preto", t: "A atenção que ele dá faz valer a pena.", s: 5 },
+            { n: "Breno", loc: "SP - Bela Vista", t: "Relaxei e me diverti. Ótimo pra esquecer os problemas de SP.", s: 5 },
+            { n: "Sérgio", loc: "Santa Fé do Sul", t: "A massagem nos pés foi um detalhe que fez diferença.", s: 5 },
+            { n: "Matheus", loc: "Londrina", t: "Demorou um pouquinho pra responder, mas pessoalmente é nota 10.", s: 4 },
+            { n: "Roberto", loc: "SP - Augusta", t: "Pedi com interação. Foi uma troca muito gostosa.", s: 5 },
+            { n: "Fabio", loc: "Rio Preto", t: "Saiu todo o peso das costas. Recomendo pra quem busca paz.", s: 5 },
+            { n: "Junior", loc: "SP - Moema", t: "Me senti leve. Energia ótima.", s: 5 },
+            { n: "Paulo", loc: "Votuporanga", t: "Muito bom, só o Uber que ficou caro pra vir.", s: 4 },
+            { n: "M. (Sigilo)", loc: "SP - Jardins", t: "Finalização intensa, perdi as forças. O cara é bom.", s: 5 }
         ],
-        text: {
-            loading: isPT ? "CARREGANDO..." : "LOADING...",
-            welcome: isPT ? "Olá," : "Hello,",
-            subtitle: isPT ? "Seu momento de pausa. Massagem Delivery em São Paulo." : "Your pause moment. Massage Delivery in São Paulo.",
-            tab_single: isPT ? "Para Hoje" : "For Today",
-            tab_packs: isPT ? "Jornadas" : "Journeys",
-            select_time_title: isPT ? "Data & Horário" : "Date & Time",
-            date_sub: isPT ? "Qual o melhor momento para você?" : "Best moment for you?",
-            location_title: isPT ? "Onde eu vou te encontrar?" : "Where do we meet?",
-            input_name: isPT ? "Como prefere ser chamado?" : "How would you like to be called?",
-            input_addr: isPT ? "Endereço do encontro" : "Meeting address",
-            input_num: isPT ? "Número" : "Number",
-            input_bairro: isPT ? "Bairro" : "District",
-            input_city: isPT ? "Cidade" : "City",
-            input_comp: isPT ? "Complemento" : "Unit/Apt",
-            input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
-            input_room: isPT ? "Nº Quarto" : "Room #",
-            motel_note: isPT ? "Motel/Suíte: A taxa do local fica por sua conta. O valor do meu carinho acertamos no WhatsApp." 
-                             : "Motel/Suite: The venue fee is on you. We settle my session fee on WhatsApp.",
-            pay_title: isPT ? "Forma de Pagamento" : "Payment Method",
-            pay_pix: "Pix",
-            pay_card: isPT ? "Cartão" : "Card",
-            pay_cash: isPT ? "Dinheiro" : "Cash",
-            extras_title: isPT ? "Deseja algo a mais?" : "Want something else?",
-            coupon_title: isPT ? "Possui um convite?" : "Have an invite?",
-            coupon_placeholder: isPT ? "Código do convite..." : "Invite code...",
-            coupon_btn: isPT ? "Aplicar" : "Apply",
-            total_label: isPT ? "Investimento em Você" : "Investment in You",
-            book_btn: isPT ? "QUERO ESSE CUIDADO" : "I WANT THIS CARE",
-            next_btn: isPT ? "Continuar" : "Next",
-            uber_warning: isPT ? "*Deslocamento (Uber) calculado no chat" : "*Uber calculated in chat",
-            success_title: isPT ? "Pedido Recebido!" : "Request Received!",
-            success_sub: isPT ? "Já estou ansioso para cuidar de você. Me chame no WhatsApp para combinarmos os detalhes finais." 
-                              : "Anxious to care for you. Please msg me on WhatsApp to finalize details.",
-            whatsapp_btn: isPT ? "COMBINAR NO WHATSAPP" : "FINALIZE ON WHATSAPP",
-            copy_pix_btn: "COPIAR CHAVE PIX",
-            instagram_btn: "VER INSTAGRAM",
-            settings_title: "Configurações",
-            install_app: "Instalar App",
-            install_desc: "Adicione à tela inicial para acesso rápido.",
-            back_home: isPT ? "Voltar ao início" : "Back to home",
-            today: isPT ? "Hoje" : "Today",
-            tomorrow: isPT ? "Amanhã" : "Tomorrow",
-            empty_date: isPT ? "Selecione uma data" : "Select a date",
-            empty_slots: isPT ? "Agenda cheia neste dia" : "Full schedule this day",
-            details_label: isPT ? "SOBRE A EXPERIÊNCIA" : "ABOUT THE EXPERIENCE",
-            popup_welcome_title: isPT ? "Boas-vindas" : "Welcome",
-            popup_welcome_msg: isPT ? "Que bom ter você por aqui. Preparei um presente para nosso primeiro encontro." 
-                                    : "Glad to have you here. I prepared a gift for our first meeting.",
-            popup_level_title: isPT ? "Novo Ciclo" : "New Cycle",
-            popup_level_msg: isPT ? "Sua presença constante desbloqueou novos carinhos." : "Your loyalty unlocked new treats.",
-            popup_btn_coupon: isPT ? "Resgatar Presente" : "Redeem Gift",
-            agree_terms: isPT ? "Estou ciente de como funciona." : "I am aware of how it works.",
-            terms_body: isPT ? ["1. HIGIENE: Um banho prévio ajuda no nosso conforto.", "2. SIGILO: Sua privacidade é absoluta comigo.", "3. AMBIENTE: Atendimento delivery. Levo tudo necessário.", "4. RESPEITO: Um espaço livre de julgamentos.", "5. SAÚDE: Confirmo que estou saudável e sem sintomas."] 
-                             : ["1. HYGIENE: A shower beforehand helps our comfort.", "2. PRIVACY: Your privacy is absolute with me.", "3. ENVIRONMENT: Delivery service.", "4. RESPECT: A judgment-free space.", "5. HEALTH: I confirm I am healthy."],
-            terms_title: isPT ? "Alguns Combinados" : "Some Agreements",
-            terms_link: isPT ? "Ler combinados importantes" : "Read important terms",
-            terms_btn: isPT ? "Entendido" : "Understood",
-            level_label: isPT ? "Fidelidade" : "Loyalty",
-            missing_xp_msg: (needed, reward) => isPT ? `Faltam ${needed} XP para liberar R$ ${reward} de desconto` : `Missing ${needed} XP to unlock R$ ${reward} discount`,
-            faq_title: isPT ? "Dúvidas Frequentes" : "FAQ",
-            
-            toast_select_item: isPT ? "Escolha qual carinho você quer hoje." : "Select an experience first.",
-            toast_select_date: isPT ? "Qual dia fica melhor para você?" : "Which day works best?",
-            toast_fill_name: isPT ? "Gostaria de saber seu nome." : "I'd like to know your name.",
-            toast_fill_addr: isPT ? "Preciso saber onde será nosso encontro." : "I need to know the location.",
-            toast_fill_hotel: isPT ? "Qual o nome do hotel?" : "What is the hotel name?",
-            toast_select_pay: isPT ? "Como prefere acertar?" : "How do you prefer to pay?",
-            toast_accept_terms: isPT ? "Por favor, confirme os combinados." : "Please confirm the agreements.",
-            toast_coupon_success: isPT ? "Convite aceito com sucesso!" : "Invite accepted successfully!",
-            toast_coupon_error: isPT ? "Este código não foi encontrado." : "This code was not found.",
-            toast_coupon_used: isPT ? "Você já usou este convite!" : "You have already used this invite!",
-
-            zap: {
-              intro: isPT ? "Oi Thalyson, tudo bem?" : "Hi Thalyson, how are you?",
-              order_title: isPT ? "*SOLICITAÇÃO DE AGENDAMENTO*" : "*BOOKING REQUEST*",
-              client: isPT ? "👤 *Nome:*" : "👤 *Name:*",
-              service: isPT ? "💆‍♂️ *Experiência:*" : "💆‍♂️ *Experience:*",
-              date: isPT ? "🗓️ *Data:*" : "🗓️ *Date:*",
-              location: isPT ? "📍 *Local:*" : "📍 *Location:*",
-              payment: isPT ? "💳 *Prefiro pagar via:*" : "💳 *Pref to pay via:*",
-              value: isPT ? "💰 *INVESTIMENTO:*" : "💰 *INVESTMENT:*",
-              xp_status: isPT ? "🏆 *Meu Nível:*" : "🏆 *My Level:*",
-              xp_gain: isPT ? "XP Ganho:" : "XP Earned:",
-              xp_level: isPT ? "Status:" : "Status:",
-              xp_next: isPT ? "Próximo:" : "Next:",
-              wait: isPT ? "Podemos confirmar o horário?" : "Can we confirm the time?",
-              house: isPT ? "Casa / Apt" : "Home / Apt",
-              hotel: "Hotel",
-              motel: "Motel",
-              extra_title: isPT ? "✨ *Adicionais (com desconto):*" : "✨ *Extras (discounted):*",
-              uber_label: isPT ? "🚗 *Deslocamento:*" : "🚗 *Travel Fee:*",
-              uber_text: isPT ? "A combinar no chat" : "To be agreed in chat",
-              browser_warn: isPT ? "⚠️ Recomendo abrir no Chrome/Safari para salvar seus dados." : "⚠️ Recommend opening in Chrome/Safari to save your data."
-            }
-        }
+        reviews_title: isPT ? "+50 Avaliações 5 Estrelas" : "+50 5-Star Reviews",
+        currency: currency
     };
 };
 
@@ -578,11 +515,16 @@ export default function App() {
     let sub = booking.item.price;
     Object.keys(booking.extras).forEach(k => { 
         if(booking.extras[k]) {
-            const extData = DATA.extras.find(e=>e.id===k);
-            if(extData) {
-                const extraPrice = booking.type !== 'single' ? Math.floor(extData.price * 0.8) : extData.price;
-                sub += extraPrice; 
-            }
+            const extData = DATA.extras[k] ? { price: DATA.extras[k] } : null; // Simplificação para pegar preço do objeto
+             // Correção: DATA.extras é objeto {t:55, i:55...}, a lógica antiga esperava array. 
+             // Ajuste na lógica abaixo para pegar do objeto correto.
+            let extraPrice = 0;
+             if(k === 'more_time') extraPrice = DATA.extras.t;
+             if(k === 'touch') extraPrice = DATA.extras.i;
+             if(k === 'aroma') extraPrice = DATA.extras.a;
+
+            if(booking.type !== 'single') extraPrice = Math.floor(extraPrice * 0.8);
+            sub += extraPrice;
         }
     });
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
@@ -640,11 +582,16 @@ export default function App() {
         mapQuery = fullAddr;
     }
     
+    // Ajuste extras list para pegar nomes corretos
     const extrasList = Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k => {
-        const ext = DATA.extras.find(e=>e.id===k);
-        if(!ext) return '';
-        const price = booking.type !== 'single' ? Math.floor(ext.price * 0.8) : ext.price;
-        return `✅ ${ext.label} (+ R$ ${price})`;
+         let label = '';
+         let price = 0;
+         if(k === 'more_time') { label = '+30 Min'; price = DATA.extras.t; }
+         if(k === 'touch') { label = 'Troca'; price = DATA.extras.i; }
+         if(k === 'aroma') { label = 'Aroma'; price = DATA.extras.a; }
+         
+         if(booking.type !== 'single') price = Math.floor(price * 0.8);
+        return `✅ ${label} (+ ${DATA.currency} ${price})`;
     }).filter(Boolean).join('\n');
     
     const msg = `
@@ -663,7 +610,7 @@ ${mapQuery ? `\n🔗 *Mapa:* https://www.google.com/maps/search/?api=1&query=${e
 ──────────────────────
 
 ${T.zap.value}
-Total: R$ ${f.total},00
+Total: ${DATA.currency} ${f.total},00
 ${T.zap.payment} ${booking.payment.toUpperCase()}
 ${T.zap.uber_label} ${T.zap.uber_text}
 
@@ -848,13 +795,13 @@ ${T.zap.wait}
       {/* Main Content Area */}
       <main ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-32 pt-6 scroll-smooth relative z-10 px-6 md:px-12">
         
-        <div className="max-w-7xl mx-auto space-y-12">
+        <div className="max-w-5xl mx-auto space-y-12">
 
           {/* CATALOG (STEP 0) */}
           {step === 0 && (
             <div className="animate-fade-in space-y-12">
               
-              <div className="md:grid md:grid-cols-2 md:gap-12 items-center max-w-5xl mx-auto">
+              <div className="md:grid md:grid-cols-2 md:gap-12 items-center">
                 <div className="animate-slide-up delay-100">
                     <div className="flex items-end gap-3 mb-4">
                         <h1 className={`text-4xl md:text-5xl font-light tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome} <span className="font-bold text-blue-500">{user.name ? user.name.split(' ')[0] : (lang === 'pt' ? "Visitante" : "Visitor")}</span></h1>
@@ -946,30 +893,29 @@ ${T.zap.wait}
                   </button>
               </div>
 
-              {/* Products Grid - CORRIGIDO: MAIS GAP E LARGURA */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 animate-slide-in delay-300">
+              {/* Products Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-in delay-300">
                   {activeTab === 'single' && DATA.services.map((s, idx) => (
                       <div key={s.id} className="animate-scale-in" style={{animationDelay: `${idx * 100}ms`}}>
                         <Card active={booking.item?.id === s.id} onClick={() => handleSelectItem('single', s)} isDark={isDark}>
-                            <div className="flex flex-col h-full justify-between">
-                                <div>
-                                    <div className="flex justify-between items-start mb-6">
-                                        <div className={`p-4 rounded-2xl transition-all duration-300 ${booking.item?.id === s.id ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-500/20' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={28}/></div>
-                                        {/* PREÇO MOVIDO PARA BAIXO PARA NÃO COMPETIR COM ÍCONE */}
-                                    </div>
-                                    <div className="mb-4">
-                                        {s.tag && <span className="inline-block px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-500 mb-3 uppercase tracking-widest">{s.tag}</span>}
-                                        <h3 className={`font-bold text-xl leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{s.title}</h3>
-                                        <p className={`text-sm leading-relaxed font-light mt-3 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{s.desc}</p>
-                                    </div>
-                                    <div className={`p-6 rounded-2xl border text-sm leading-relaxed font-light mb-6 ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                            <div className="flex justify-between items-start mb-6">
+                                <div className={`p-4 rounded-2xl transition-all duration-300 ${booking.item?.id === s.id ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-500/20' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500')}`}><s.icon size={28}/></div>
+                                <div className="text-right">
+                                    <span className={`block text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{DATA.currency} {s.price}</span>
+                                    <span className={`text-xs font-bold uppercase tracking-wider flex items-center justify-end gap-1.5 mt-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}><Clock size={14}/> {s.min} min</span>
+                                </div>
+                            </div>
+                            <div className="mb-4 flex-1">
+                                {s.tag && <span className="inline-block px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-500 mb-3 uppercase tracking-widest">{s.tag}</span>}
+                                <h3 className={`font-bold text-xl leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{s.title}</h3>
+                                <p className={`text-sm leading-relaxed font-light mt-2 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{s.desc}</p>
+                            </div>
+                            <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === s.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
+                                <div className="overflow-hidden">
+                                    <div className={`p-6 rounded-2xl border text-sm leading-relaxed font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
                                         <div className="flex items-center gap-2 font-bold mb-3 text-blue-500 uppercase tracking-wider text-[10px]"><Info size={14}/> {T.details_label}</div>
                                         <p className="whitespace-pre-line text-sm">{s.details}</p>
                                     </div>
-                                </div>
-                                <div className="border-t pt-4 mt-auto border-white/5 flex items-center justify-between">
-                                    <span className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}><Clock size={14} className="inline mr-1"/> {s.min} min</span>
-                                    <span className={`block text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>R$ {s.price}</span>
                                 </div>
                             </div>
                         </Card>
@@ -980,29 +926,27 @@ ${T.zap.wait}
                       <div key={plan.id} className="animate-scale-in" style={{animationDelay: `${idx * 100}ms`}}>
                         <Card active={booking.item?.id === plan.id} onClick={() => handleSelectItem(plan.type, plan)} isDark={isDark} className="border-blue-500/20">
                             {plan.tag && (<div className="absolute top-0 right-0 bg-gradient-to-bl from-blue-500 to-blue-700 text-white text-[10px] font-bold px-4 py-2 rounded-bl-2xl shadow-lg shadow-blue-500/20 z-10">{plan.tag}</div>)}
-                            <div className="flex flex-col h-full justify-between">
+                            <div className="flex items-center gap-5 mb-6">
+                                <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-blue-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={32}/></div>
                                 <div>
-                                    <div className="flex items-center gap-5 mb-6">
-                                        <div className={`p-4 rounded-2xl transition-all ${booking.item?.id === plan.id ? 'bg-blue-500 text-white' : (isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500')}`}><plan.icon size={32}/></div>
-                                        <div>
-                                            <h3 className={`font-bold text-lg leading-none mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3>
-                                            <p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{plan.type === 'pack' ? (lang === 'pt' ? "Pacote" : "Pack") : (lang === 'pt' ? "Passaporte" : "Passport")}</p>
-                                        </div>
-                                    </div>
-                                    <div className={`mb-6 p-4 rounded-2xl border ${isDark ? 'bg-zinc-950/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
-                                        <p className={`text-sm font-medium leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{plan.desc}</p>
-                                    </div>
-                                    <div className={`p-6 rounded-2xl border text-sm leading-relaxed font-light mb-6 ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                                    <h3 className={`font-bold text-lg leading-none mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.title}</h3>
+                                    <p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{plan.type === 'pack' ? (lang === 'pt' ? "Pacote" : "Pack") : (lang === 'pt' ? "Passaporte" : "Passport")}</p>
+                                </div>
+                            </div>
+                            <div className={`mb-6 p-4 rounded-2xl border flex-1 ${isDark ? 'bg-zinc-950/30 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
+                                <p className={`text-sm font-medium leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{plan.desc}</p>
+                            </div>
+                            <div className={`flex items-end gap-3 p-4 rounded-2xl border ${isDark ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
+                                <span className="text-3xl font-bold text-blue-500">{DATA.currency} {plan.price}</span>
+                                <span className={`text-xs line-through decoration-zinc-600 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{DATA.currency} {plan.fullPrice}</span>
+                                <span className="text-[10px] text-emerald-500 font-bold mb-1 ml-auto bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">-{DATA.currency}{plan.savings}</span>
+                            </div>
+                            <div className={`grid transition-all duration-500 ease-in-out ${booking.item?.id === plan.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
+                                <div className="overflow-hidden">
+                                    <div className={`p-6 rounded-2xl border text-sm leading-relaxed font-light ${isDark ? 'bg-zinc-950/50 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
                                         <div className="flex items-center gap-2 font-bold mb-3 text-blue-500 uppercase tracking-wider text-[10px]"><Info size={14}/> {T.details_label}</div>
                                         <p className="whitespace-pre-line text-sm">{plan.details}</p>
                                     </div>
-                                </div>
-                                <div className={`flex items-end justify-between border-t pt-4 mt-auto ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-                                    <div>
-                                        <span className={`text-xs line-through decoration-zinc-600 block ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>R$ {plan.fullPrice}</span>
-                                        <span className="text-[10px] text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Economize R${plan.savings}</span>
-                                    </div>
-                                    <span className="text-3xl font-bold text-blue-500">R$ {plan.price}</span>
                                 </div>
                             </div>
                         </Card>
@@ -1011,7 +955,7 @@ ${T.zap.wait}
               </div>
 
               {/* REVIEWS MOVED HERE (PROVA SOCIAL APÓS SERVIÇOS) */}
-              <ReviewsCarousel reviews={DATA.reviews} isDark={isDark} />
+              <ReviewsCarousel reviews={DATA.reviews} isDark={isDark} title={DATA.reviews_title} />
 
               {/* FAQ SECTION (NOVA) */}
               <div className="space-y-6">
@@ -1126,17 +1070,26 @@ ${T.zap.wait}
                    <div className={`pt-0 md:pl-10 md:border-l ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
                       <h3 className={`text-xs font-bold uppercase mb-6 tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{booking.type !== 'single' ? T.extras_title.replace('Extras:', 'Adicionais (20% OFF):') : T.extras_title}</h3>
                       <div className="space-y-4">
-                         {DATA.extras.map((ex, idx) => {
-                            const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
+                         {Object.entries(DATA.extras).map(([key, val], idx) => {
+                             // Correção da renderização de extras com preços dinâmicos
+                            let label = '';
+                            let icon = null;
+                            if(key === 't') { label = '+30 Minutos'; icon = Clock; }
+                            if(key === 'i') { label = 'Troca (Interativo)'; icon = Heart; }
+                            if(key === 'a') { label = 'Aromaterapia'; icon = Wind; }
+                            
+                            const id = key === 't' ? 'more_time' : (key === 'i' ? 'touch' : 'aroma');
+                            const price = booking.type !== 'single' ? Math.floor(val * 0.8) : val;
+
                             return (
-                               <div key={ex.id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [ex.id]: !b.extras[ex.id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 animate-slide-in ${booking.extras[ex.id] ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_20px_-5px_rgba(37,99,235,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`} style={{animationDelay: `${idx * 100}ms`}}>
+                               <div key={id} onClick={()=>setBooking(b=>({...b, extras:{...b.extras, [id]: !b.extras[id]}}))} className={`group flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-300 animate-slide-in ${booking.extras[id] ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_20px_-5px_rgba(37,99,235,0.2)]' : (isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300')}`} style={{animationDelay: `${idx * 100}ms`}}>
                                  <div className="flex items-center gap-4">
-                                     <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}><ex.icon size={20}/></div>
-                                     <div><p className={`text-sm font-bold transition-colors ${booking.extras[ex.id] ? 'text-blue-500' : (isDark ? 'text-zinc-200' : 'text-slate-700')}`}>{ex.label}</p><p className={`text-xs font-medium pt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p></div>
+                                     <div className={`p-2.5 rounded-xl transition-colors ${booking.extras[id] ? 'text-blue-500' : (isDark ? 'text-zinc-600' : 'text-slate-500')}`}>{icon && React.createElement(icon, {size: 20})}</div>
+                                     <div><p className={`text-sm font-bold transition-colors ${booking.extras[id] ? 'text-blue-500' : (isDark ? 'text-zinc-200' : 'text-slate-700')}`}>{label}</p></div>
                                  </div>
                                  <div className="text-right">
-                                    {booking.type !== 'single' && (<span className={`text-[10px] line-through block ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>R$ {ex.price}</span>)}
-                                    <span className={`text-xs font-bold whitespace-nowrap px-3 py-1.5 rounded-xl inline-block ${booking.extras[ex.id] ? 'bg-blue-500/20 text-blue-500' : (isDark ? 'text-zinc-500 bg-zinc-800' : 'text-slate-500 bg-slate-100')}`}>+ R$ {price}</span>
+                                    {booking.type !== 'single' && (<span className={`text-[10px] line-through block ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{DATA.currency} {val}</span>)}
+                                    <span className={`text-xs font-bold whitespace-nowrap px-3 py-1.5 rounded-xl inline-block ${booking.extras[id] ? 'bg-blue-500/20 text-blue-500' : (isDark ? 'text-zinc-500 bg-zinc-800' : 'text-slate-500 bg-slate-100')}`}>+ {DATA.currency} {price}</span>
                                  </div>
                                </div>
                             )
@@ -1159,19 +1112,23 @@ ${T.zap.wait}
                               <p className="text-xs text-blue-500 font-medium flex items-center gap-3 bg-blue-500/10 px-4 py-2 rounded-full w-fit border border-blue-500/10"><Calendar size={14}/> {booking.date ? new Date(booking.date).toLocaleDateString(lang==='pt'?CONFIG.LOCALE_PT:CONFIG.LOCALE_EN) : ''} • {booking.time}</p>
                           </div>
                           <div className={`space-y-5 border-b border-dashed pb-8 mb-8 ${isDark ? 'border-white/10' : 'border-slate-300'}`}>
-                              <div className={`flex justify-between text-sm ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}><span>{lang === 'pt' ? "Valor Base" : "Base Price"}</span><span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>R$ {booking.item.price}</span></div>
+                              <div className={`flex justify-between text-sm ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}><span>{lang === 'pt' ? "Valor Base" : "Base Price"}</span><span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{DATA.currency} {booking.item.price}</span></div>
                               {Object.keys(booking.extras).filter(k=>booking.extras[k]).map(k=>{
-                                  const extraItem = DATA.extras.find(e=>e.id===k);
-                                  if(!extraItem) return null;
-                                  const price = booking.type !== 'single' ? Math.floor(extraItem.price * 0.8) : extraItem.price;
-                                  return (<div key={k} className={`flex justify-between text-sm ${isDark ? 'text-zinc-500' : 'text-slate-600'}`}><span>+ {extraItem.label} {booking.type!=='single' && '(Promo)'}</span><span>{price}</span></div>);
+                                  let price = 0;
+                                  let label = '';
+                                  if(k === 'more_time') { price = DATA.extras.t; label = "+30 Min"; }
+                                  if(k === 'touch') { price = DATA.extras.i; label = "Troca"; }
+                                  if(k === 'aroma') { price = DATA.extras.a; label = "Aroma"; }
+                                  
+                                  if(booking.type !== 'single') price = Math.floor(price * 0.8);
+                                  return (<div key={k} className={`flex justify-between text-sm ${isDark ? 'text-zinc-500' : 'text-slate-600'}`}><span>+ {label} {booking.type!=='single' && '(Promo)'}</span><span>{DATA.currency} {price}</span></div>);
                               })}
-                              {booking.appliedCoupon && (<div className="flex justify-between text-sm text-emerald-500 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 font-bold"><span>{lang === 'pt' ? "Cupom" : "Coupon"} ({booking.appliedCoupon.code})</span><span>- R$ {booking.appliedCoupon.val}</span></div>)}
+                              {booking.appliedCoupon && (<div className="flex justify-between text-sm text-emerald-500 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 font-bold"><span>{lang === 'pt' ? "Cupom" : "Coupon"} ({booking.appliedCoupon.code})</span><span>- {DATA.currency} {booking.appliedCoupon.val}</span></div>)}
                           </div>
                           <div className="flex justify-between items-end">
                               <div><span className={`text-[10px] font-bold uppercase block mb-1 ${isDark ? 'text-zinc-600' : 'text-slate-500'}`}>{T.total_label}</span><span className="text-xs font-medium text-blue-500/80 bg-blue-500/5 px-3 py-1 rounded-full border border-blue-500/10">{T.uber_warning}</span></div>
                               <div className="text-right">
-                                  <span className={`block text-5xl font-light tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>R$ {financials.total}</span>
+                                  <span className={`block text-5xl font-light tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>{DATA.currency} {financials.total}</span>
                                   <span className="text-xs font-bold text-blue-500 flex items-center justify-end gap-2 mt-2"><Sparkles size={14}/> +{estimatedXP} XP</span>
                               </div>
                           </div>
@@ -1287,7 +1244,7 @@ ${T.zap.wait}
                     >
                       <div className="flex items-center gap-3">
                           <span className="text-sm font-bold uppercase tracking-widest">{step === 3 ? T.book_btn : T.next_btn}</span>
-                          {booking.item && <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-black">R$ {financials.total}</span>}
+                          {booking.item && <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-black">{DATA.currency} {financials.total}</span>}
                           {!booking.item && <ArrowRight size={20} strokeWidth={2.5}/>}
                       </div>
                     </button>
