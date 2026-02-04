@@ -11,18 +11,18 @@ import {
 
 /**
  * ==================================================================================
- * THALYSON APP OS v46.0 - EMPATHY & CLARITY EDITION
+ * THALYSON APP OS v47.0 - MARKETING STRATEGY EDITION
  * ==================================================================================
- * 1. COPYWRITING: Acolhedora, explica Lingam, Cueca e Clímax natural.
- * 2. FAQ: Nova seção interativa e elegante.
- * 3. LAYOUT: Reviews movidos para baixo dos serviços.
- * 4. UI: Mantido o padrão Titan Blue robusto.
+ * 1. ESTRATÉGIA: Diferença clara entre Físico (Relax) vs Sensorial (Sensitiva) vs Genital (Titan).
+ * 2. PACOTES: "Protocolo Zero Dor" e "Imersão 2h" (Substituindo Clube).
+ * 3. COPY: Educativa sobre Lingam e Traje (Cueca).
+ * 4. UX: Layout mantido e otimizado.
  */
 
 const CONFIG = {
   PHONE: "5517991360413", 
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens", 
-  STORAGE_KEY: '@thaly_app_v46_empathy', 
+  STORAGE_KEY: '@thaly_app_v47_mkt', 
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -170,7 +170,6 @@ const ReviewsCarousel = ({ reviews, isDark }) => {
   );
 };
 
-// FAQ COMPONENT (NEW)
 const FAQItem = ({ q, a, isDark }) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
@@ -187,7 +186,7 @@ const FAQItem = ({ q, a, isDark }) => {
 };
 
 // ==================================================================================
-// 2. DADOS (UPDATED COPYWRITING)
+// 2. DADOS (MARKETING MASTER)
 // ==================================================================================
 
 const getData = (lang) => {
@@ -201,101 +200,93 @@ const getData = (lang) => {
         ],
         services: [
             { 
-              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "TERAPÊUTICA" : "RELAX",
-              title: isPT ? "Sessão Relaxante" : "Relaxing Session",
-              desc: isPT ? "Alívio muscular profundo. Foco total em tirar a tensão." : "Deep muscle relief. Focus on removing tension.",
-              details: isPT ? `PARA QUEM BUSCA PAZ:
-• DURAÇÃO: 60 minutos de pura desconexão.
-• O QUE É: Manobras firmes e envolventes para soltar a musculatura travada.
-• TRAJE: O terapeuta atende com roupa padrão de massagem.
-• NOTA: Esta sessão não possui toque íntimo. Ideal para quem quer apenas relaxar o corpo físico.` 
-              : `FOR THOSE SEEKING PEACE:
-• DURATION: 60 minutes of pure disconnection.
-• WHAT IS IT: Firm maneuvers to loosen locked muscles.
-• ATTIRE: Therapist wears standard massage clothing.
-• NOTE: No intimate touch. Ideal for physical relaxation.`
+              id: 'relaxante', min: 60, price: 125, icon: Wind, tag: isPT ? "100% FÍSICO" : "PHYSICAL",
+              title: isPT ? "Clássica Relaxante" : "Classic Relax",
+              desc: isPT ? "Foco exclusivo em dores e tensão. Sem toque íntimo." : "Exclusive focus on muscle pain. No intimate touch.",
+              details: isPT ? `O RESET QUE SEU CORPO PRECISA:
+• OBJETIVO: Manutenção física. Tirar "nós" e dores das costas/pernas.
+• TRAJE: Terapeuta com roupa padrão.
+• MECÂNICA: Massagem técnica, firme e profunda.
+• O QUE NÃO TEM: Não possui massagem na região genital ou finalização.` 
+              : `BODY RESET:
+• GOAL: Remove knots and pain.
+• ATTIRE: Therapist fully clothed.
+• DIFFERENCE: Technical, therapeutic, firm.
+• WHAT'S NOT INCLUDED: No genital massage or finish.`
             },
             { 
               id: 'sensitiva', min: 60, price: 155, icon: Flame, tag: isPT ? "SENSORIAL" : "SENSORY",
               title: isPT ? "Terapia Sensitiva" : "Sensitive Therapy",
-              desc: isPT ? "Um despertar do corpo. Toques sutis e conexão." : "Body awakening. Subtle touches and connection.",
-              details: isPT ? `UMA EXPERIÊNCIA DE LIBERDADE:
-• DURAÇÃO: 60 minutos de evolução sensorial.
-• TRAJE: Para maior conexão e naturalidade, **atendo de cueca** a partir desta modalidade.
-• O QUE É: Começa com relaxamento e evolui para toques sutis (ponta dos dedos) por todo o corpo.
-• FINALIZAÇÃO: O clímax (gozar) é permitido e visto como um alívio natural e terapêutico.`
-              : `A FREEDOM EXPERIENCE:
-• DURATION: 60 minutes.
-• ATTIRE: **I wear underwear** for greater connection.
-• WHAT IS IT: Starts with relaxation, evolves to subtle touches.
-• FINISH: Climax is allowed and seen as natural relief.`
+              desc: isPT ? "Evolução do toque. Atendimento de cueca para conexão." : "Touch evolution. Underwear service for connection.",
+              details: isPT ? `O DESPERTAR DA PELE:
+• DIFERENÇA: O foco sai do músculo e vai para a pele. Toques sutis (ponta dos dedos) para arrepiar.
+• TRAJE: **Atendo de cueca** para facilitar o contato pele com pele e quebrar a barreira profissional.
+• FINALIZAÇÃO: O clímax (gozar) é permitido como alívio natural, mas sem massagem lingam dedicada.`
+              : `SKIN AWAKENING:
+• DIFFERENCE: Lighter touch to awaken skin.
+• ATTIRE: **I wear underwear** for skin-to-skin contact.
+• FINISH: Climax allowed as relaxation consequence.`
             },
             { 
-              id: 'mista', min: 60, price: 195, icon: Zap, tag: isPT ? "COMPLETA" : "COMPLETE",
-              title: isPT ? "Experiência Mista" : "Mixed Experience",
-              desc: isPT ? "A fusão perfeita: Massagem Muscular + Tântrica + Lingam." : "Perfect fusion: Muscle + Tantra + Lingam.",
-              details: isPT ? `A ESCOLHA FAVORITA DOS CLIENTES (+PEDIDA):
-• DURAÇÃO: 60 minutos intensos.
-• O QUE É: Unimos o melhor dos dois mundos. Começa tirando a dor muscular e termina com o prazer tântrico.
-• LINGAM MASSAGE: Inclui massagem específica na região íntima para desbloqueio de energia e prazer intenso.
-• ACOLHIMENTO: Sinta-se seguro para expressar seu prazer. O gozar aqui é celebrado.`
-              : `CLIENT FAVORITE:
-• DURATION: 60 intense minutes.
-• WHAT IS IT: Best of both worlds. Muscle relief + Tantric pleasure.
-• LINGAM: Includes intimate massage.
-• WELCOMING: Feel safe to express pleasure.`
+              id: 'mista', min: 60, price: 195, icon: Zap, tag: isPT ? "A MAIS PEDIDA" : "BEST SELLER",
+              title: isPT ? "Experiência Titan" : "Titan Experience",
+              desc: isPT ? "O ápice. Une Massagem Muscular + Tântrica + Lingam." : "The peak. Muscle + Tantra + Full Lingam.",
+              details: isPT ? `A EXPERIÊNCIA COMPLETA:
+• TUDO EM UM: Começamos tirando a dor (Muscular) e terminamos com o prazer (Tântrica).
+• LINGAM MASSAGE: Massagem dedicada e demorada na região íntima. Foco em elevar a energia e o prazer.
+• TRAJE: Atendo de cueca.
+• BENEFÍCIO: Alívio físico total + Descarga de estresse sexual. Você sai renovado.`
+              : `FULL EXPERIENCE:
+• ALL IN ONE: Muscle relief + Tantric pleasure.
+• LINGAM: Dedicated intimate massage.
+• ATTIRE: Underwear.
+• BENEFIT: Total physical relief + Sexual stress discharge.`
             }
         ],
         faq: [
-            { q: "Onde você atende?", a: "Atendo no conforto da sua casa, em hotéis (levo tudo necessário) ou motéis. Em São Paulo (Capital), atendo nos principais bairros. O valor do deslocamento combinamos no WhatsApp." },
-            { q: "Você tem local próprio?", a: "No momento, meu atendimento é exclusivamente Delivery (vou até você), garantindo sua total privacidade e conforto sem você precisar sair do lugar." },
-            { q: "O que é a Massagem Lingam?", a: "É uma técnica tântrica focada na região genital masculina. O objetivo não é apenas a 'finalização', mas sim honrar o corpo, distribuir a energia sexual e proporcionar um prazer profundo e terapêutico." },
-            { q: "Pode 'gozar' na massagem?", a: "Sim, com certeza! Nas terapias Sensitiva e Mista, o clímax é encarado como uma liberação de energia natural e saudável. Você não precisa se segurar ou sentir vergonha. É um espaço livre de julgamentos." },
-            { q: "Qual a forma de pagamento?", a: "Aceito Pix (preferencial) e dinheiro. Cartão de crédito também é possível mediante link de pagamento (+ taxas)." },
-            { q: "Qual a higiene e traje?", a: "Prezo pela higiene absoluta. Uso óleos neutros de alta qualidade. Nas sessões tântricas, atendo de cueca para facilitar as manobras corporais (body-to-body) e a conexão." }
+            { q: "Qual a diferença real entre as sessões?", a: "Simples: A Relaxante é 100% muscular (dor). A Sensitiva é sensorial (pele e arrepios). A Titan é a completa: une o alívio da dor com o prazer intenso da massagem genital (Lingam)." },
+            { q: "O que é a Massagem Lingam?", a: "É uma técnica tântrica focada na região genital masculina. O objetivo é honrar o corpo, prolongar o prazer e gerar uma descarga de energia terapêutica muito superior a uma finalização comum." },
+            { q: "Onde você atende?", a: "Vou até você! Atendo em domicílio, hotéis ou motéis em São Paulo. Levo tudo o que é necessário. Sua única preocupação é relaxar." },
+            { q: "Pode 'gozar' na massagem?", a: "Sim! Nas terapias Sensitiva e Titan, o clímax é encarado como saúde e alívio. É um espaço seguro e sem julgamentos para você liberar seu estresse." },
+            { q: "É seguro e discreto?", a: "Absolutamente. Prezo pelo sigilo total e profissionalismo. Sou um terapeuta homem atendendo outros homens, entendendo exatamente suas necessidades." }
         ],
         plans: [
             { 
-              id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Relax (4x)" : "Relax Cycle (4x)", 
+              id: 'pack_relax', type: 'pack', title: isPT ? "Protocolo Zero Dor" : "No Pain Protocol", 
               price: 397, fullPrice: 500, savings: 103,
-              desc: isPT ? "Contém: 4 Sessões Relaxantes (1h)." : "Contains: 4 Relax Sessions (1h).",
-              details: isPT ? "Ideal para tratamento de dores crônicas ou estresse acumulado. As 4 sessões são focadas em relaxamento muscular (sem parte íntima)." 
-                            : "Ideal for chronic pain treatment or accumulated stress. The 4 sessions focus on muscle relaxation (no intimate part).", 
-              tag: isPT ? "ECONOMIA" : "SAVINGS", icon: Package 
+              desc: isPT ? "4 Sessões de Massagem Clássica." : "4 Classic Massage Sessions.",
+              details: isPT ? "PARA MANUTENÇÃO FÍSICA:\n• Ideal para quem treina pesado ou tem dores constantes.\n• 4 sessões focadas puramente em soltar a musculatura.\n• Não inclui parte íntima." 
+                            : "FOR PHYSICAL MAINTENANCE:\n• Ideal for heavy training.\n• 4 sessions focused purely on muscles.\n• No intimate part.", 
+              tag: isPT ? "TRATAMENTO" : "TREATMENT", icon: Package 
             },
             { 
-              id: 'pack_mista', type: 'pack', title: isPT ? "Ciclo Completo (3x)" : "Full Cycle (3x)", 
+              id: 'pack_mista', type: 'pack', title: isPT ? "Trilogia do Êxtase" : "Ecstasy Trilogy", 
               price: 487, fullPrice: 585, savings: 98,
-              desc: isPT ? "Contém: 3 Sessões Mistas (1h)." : "Contains: 3 Mixed Sessions (1h).",
-              details: isPT ? "A rotina perfeita. São 3 sessões da experiência completa (Mista), unindo relaxamento muscular e finalização."
-                            : "The perfect routine. 3 sessions of the full experience (Mixed), combining muscle relaxation and finishing.", 
-              tag: isPT ? "PREFERIDO" : "PREFERRED", icon: Zap 
+              desc: isPT ? "3 Sessões da Experiência Titan." : "3 Titan Experience Sessions.",
+              details: isPT ? "O MELHOR CUSTO-BENEFÍCIO:\n• Garanta 3 encontros da massagem mais completa.\n• Ideal para manter sua rotina de prazer em dia.\n• Inclui Lingam e relaxamento muscular em todas."
+                            : "BEST VALUE:\n• 3 sessions of the most complete massage.\n• Keep your pleasure routine up to date.\n• Includes Lingam.", 
+              tag: isPT ? "DESEJO" : "DESIRE", icon: Zap 
             },
             { 
-              id: 'vip_club', type: 'subscription', title: isPT ? "Clube Mensal" : "Monthly Club", 
-              price: 297, fullPrice: 390, savings: 93,
-              desc: isPT ? "Mensalidade: 2 Sessões Mistas." : "Monthly: 2 Mixed Sessions.",
-              details: isPT ? "Garanta seu bem-estar mensal. Inclui 2 Sessões Mistas por mês + Prioridade na escolha de horários."
-                            : "Guarantee your monthly well-being. Includes 2 Mixed Sessions per month + Priority booking.", 
-              tag: "VIP", icon: Crown 
+              id: 'double_session', type: 'subscription', title: isPT ? "Imersão Tântrica (2h)" : "Tantric Immersion (2h)", 
+              price: 350, fullPrice: 390, savings: 40,
+              desc: isPT ? "Uma Sessão Única de 2 Horas." : "Single 2-Hour Session.",
+              details: isPT ? "O PRODUTO PREMIUM:\n• O dobro do tempo para uma conexão profunda.\n• Permite um relaxamento muito maior antes do prazer.\n• Sem pressa. Você comanda o ritmo."
+                            : "PREMIUM PRODUCT:\n• Double the time.\n• Deep connection.\n• No rush.", 
+              tag: "IMERSÃO", icon: Crown 
             }
         ],
         extras: [
-            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Para curtir sem pressa." : "No rush." },
-            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Interatividade" : "Interactivity", desc: isPT ? "Você também pode tocar." : "You touch too." },
-            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Óleos essenciais no ambiente." : "Scent in the air." }
+            { id: 'more_time', price: 55, icon: Clock, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Estenda o prazer. Sem pressa." : "Extend pleasure. No rush." },
+            { id: 'touch', price: 55, icon: Heart, label: isPT ? "Troca (Interativo)" : "Interactive", desc: isPT ? "Você também toca. Conexão total." : "You touch too. Total connection." },
+            { id: 'aroma', price: 5, icon: Wind, label: isPT ? "Aromaterapia Premium" : "Premium Aroma", desc: isPT ? "Óleos importados para imersão." : "Imported oils." }
         ],
         reviews: [
-            { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Você primeiro conhece o corpo para ir executando o procedimento com muito cuidado e segurança. Recomendo muito." : "Thalyson, I want to say your massage was executed very well. You first get to know the body to perform the procedure with care and safety. Highly recommend.", s: 5 },
-            { n: "Tiago", loc: "SP - Bela Vista", t: isPT ? "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida." : "Thalyson has surreal energy. The massage was perfect, best of my life.", s: 5 },
-            { n: "Alan", loc: "SP - Bela Vista", t: isPT ? "Gostei bastante da massagem do Thalyson, me senti bem relaxado depois, saí mais leve. Da pra ver que ele manda bem no que faz. Obrigado!" : "Liked Thalyson's massage a lot, felt very relaxed after, left lighter. You can see he knows what he's doing. Thanks!", s: 5 },
-            { n: "Felipe", loc: "Londrina", t: isPT ? "Fiquei na dúvida por ser no sofá, mas foi surpreendentemente confortável." : "Was doubtful about the sofa, but it was surprisingly comfortable.", s: 5 },
-            { n: "Ricardo M.", loc: "Rio Preto", t: isPT ? "Mão firme. Consegui relaxar de verdade, coisa que não fazia há tempos." : "Firm hand. Managed to truly relax, something I hadn't done in ages.", s: 5 },
-            { n: "André L.", loc: "SP - Bela Vista", t: isPT ? "O toque dele é diferente. Me senti muito à vontade." : "His touch is different. Felt very comfortable.", s: 5 },
-            { n: "Gustavo", loc: "Santa Fé do Sul", t: isPT ? "Gostei muito da energia, pessoa do bem. Recomendo." : "Liked the energy a lot, good person. Recommend.", s: 4 },
-            { n: "Pedro", loc: "Rio Preto", t: isPT ? "A energia do corpo a corpo é intensa. Me senti renovado." : "The body-to-body energy is intense. Felt renewed.", s: 5 },
-            { n: "Renato", loc: "SP - Centro", t: isPT ? "Muito respeitoso e profissional. A sensitiva é uma experiência única." : "Very respectful and professional. The sensitive therapy is a unique experience.", s: 5 },
-            { n: "Eduardo", loc: "Londrina", t: isPT ? "Ele se adapta bem. Fizemos na cama e foi super tranquilo." : "He adapts well. We did it on the bed and it was super chill.", s: 5 }
+            { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Cara, a Titan é outro nível. Ele tira a dor das costas e depois... sem palavras. Recomendo." : "Man, Titan is another level. He removes back pain and then... speechless. Recommend.", s: 5 },
+            { n: "Tiago", loc: "SP - Jardins", t: isPT ? "Fiquei com receio por ser em casa, mas o Thalyson é super profissional. A massagem Lingam foi a melhor que já recebi." : "Was afraid because it was at home, but Thalyson is super professional. The Lingam massage was the best I've ever had.", s: 5 },
+            { n: "Alan", loc: "SP - Centro", t: isPT ? "O fato dele atender de cueca na sensitiva deixa tudo mais natural. Me senti muito à vontade para curtir." : "Him wearing underwear in the sensitive one makes everything more natural. Felt very comfortable to enjoy.", s: 5 },
+            { n: "Ricardo", loc: "Rio Preto", t: isPT ? "Fechei o pacote Trilogia. Vale cada centavo. É minha terapia semanal." : "Bought the Trilogy pack. Worth every penny. It's my weekly therapy.", s: 5 },
+            { n: "Pedro", loc: "Jales", t: isPT ? "Mão pesada pra tirar dor e leve pra dar prazer. O cara entende do assunto." : "Heavy hand for pain, light for pleasure. The guy knows his stuff.", s: 5 }
         ],
         text: {
             loading: isPT ? "CARREGANDO..." : "LOADING...",
@@ -1220,6 +1211,7 @@ ${T.zap.wait}
                                 ))}
                             </div>
                             
+                            {/* PIX COPY PASTE */}
                             {booking.payment === 'pix' && (
                                 <div className={`mt-5 p-6 rounded-2xl border border-dashed ${isDark ? 'border-zinc-700 bg-zinc-900/50' : 'border-slate-300 bg-slate-50'} animate-fade-in`}>
                                     <p className={`text-[10px] uppercase font-bold text-center mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Chave Pix (Copia e Cola)</p>
