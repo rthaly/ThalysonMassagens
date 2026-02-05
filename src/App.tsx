@@ -620,7 +620,7 @@ The definitive experience`
     price: isPT ? 66 : 15,
     icon: "scissors",
     label: isPT ? "Aparador de Pêlos" : "Hair Trimmer",
-    desc: isPT ? "Aparador com maquininha até 3 locais" : "Hair trimmer for up to 3 areas"
+    desc: isPT ? "Aparador com maquininha até 2 locais" : "Hair trimmer for up to 2 areas"
   },
   {
     id: 'pain_relief',
