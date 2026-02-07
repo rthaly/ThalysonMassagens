@@ -429,6 +429,7 @@ const generateReviews = (isPT: boolean): Review[] => {
     { n: "Tiago", loc: "SP - Bela Vista", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida." },
     { n: "Alan", loc: "SP - Bela Vista", t: "Gostei bastante, saí mais leve. Da pra ver que ele manda bem no que faz." },
     { n: "Marcos", loc: "Londrina", t: "Foi incrível, recomendo demais." },
+    { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️" },
     { n: "Lucas", loc: "Rio Preto", t: "Curti o sigilo e o local ser no meu hotel. Muito prático." },
     { n: "Felipe", loc: "Santa Fé", t: "Nunca tinha feito tântrica. Foi uma descoberta, recomendo." },
     { n: "André", loc: "Jales", t: "Massagem completa de verdade. O corpo todo agradece." },
