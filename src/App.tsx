@@ -2,53 +2,57 @@ import * as React from 'react';
 import { useState, useEffect, useMemo, useRef } from 'react';
 
 // ==================================================================================
-// ESTILOS E ÍCONES
+// ESTILOS GLOBAIS & DESIGN SYSTEM
 // ==================================================================================
 
 const GlobalStyles = ({ isDark }: { isDark: boolean }) => (
   <style dangerouslySetInnerHTML={{ __html: `
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
     
-    * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
-    h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif; }
+    * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
     
-    /* CORREÇÃO DO FUNDO BRANCO NO MOBILE */
+    :root {
+      --font-primary: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Playfair Display', serif;
+    }
+
     html, body {
-      background-color: ${isDark ? '#09090b' : '#ffffff'};
-      color: ${isDark ? '#ffffff' : '#000000'};
+      background-color: ${isDark ? '#09090b' : '#f8fafc'};
+      color: ${isDark ? '#ffffff' : '#0f172a'};
       transition: background-color 0.3s ease;
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
+      font-family: var(--font-primary);
     }
     
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* Classe para centralizar emojis */
-    .emoji-icon { 
-      font-style: normal; 
-      display: inline-block; 
-      line-height: 1; 
-      vertical-align: middle;
-      text-align: center;
+    /* Animações */
+    @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    .animate-slide-in { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    
+    .emoji-icon { font-style: normal; display: inline-block; line-height: 1; vertical-align: middle; text-align: center; }
+    
+    /* Efeito Glassmorphism para o Menu */
+    .glass-panel {
+      background: ${isDark ? 'rgba(9, 9, 11, 0.8)' : 'rgba(255, 255, 255, 0.9)'};
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-left: 1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
     }
   `}} />
 );
 
-// Sistema Híbrido: SVG Outline para UI/Serviços e Emojis para Extras
+// Ícones SVG Otimizados
 const Icon = ({ name, size = 22, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
-  
-  if (isEmoji) {
-    return (
-      <span className={`emoji-icon ${className}`} style={{ fontSize: size }}>
-        {name}
-      </span>
-    );
-  }
+  if (isEmoji) return <span className={`emoji-icon ${className}`} style={{ fontSize: size }}>{name}</span>;
 
-  // Biblioteca Outline Premium (Stroke 1.5px)
   const paths: Record<string, string> = {
-    // UI Navegação
+    'menu': 'M4 6h16M4 12h16M4 18h16', // Hamburger
     'chevron-left': 'M15 18l-6-6 6-6',
     'chevron-right': 'M9 18l6-6-6-6',
     'chevron-down': 'M6 9l6 6 6-6',
@@ -61,16 +65,12 @@ const Icon = ({ name, size = 22, className = "", isEmoji = false }: { name: stri
     'sun': 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z',
     'moon': 'M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z',
     'star': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
-    
-    // Serviços
     'user-check': 'M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2 M8.5 3a4 4 0 100 8 4 4 0 000-8z M20 8v6M23 11h-6',
     'sparkles': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
     'zap': 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
     'package': 'M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16zM16.5 9.4L7.5 4.21M3.3 7l8.7 5 8.7-5M12 22v-10',
     'layers': 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
     'user': 'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2 M12 11a4 4 0 100-8 4 4 0 000 8z',
-    
-    // Locais & UI
     'home': 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
     'bed': 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z',
     'building': 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5',
@@ -80,48 +80,34 @@ const Icon = ({ name, size = 22, className = "", isEmoji = false }: { name: stri
     'smartphone': 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z',
     'message': 'M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8.9h.5a8.48 8.48 0 018 8v.5z',
     'watch': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 6v6l4 2',
-    
-    // Financeiro & Regras
     'credit-card': 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
     'banknote': 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
     'shield': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
     'shower': 'M12 4v4m0 0l-2 2m2-2l2 2M7.5 12.5L5 15m14-2.5L21.5 15M10 15l-1 4m6-4l1 4',
     'hand': 'M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3',
     'clock': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-    
-    // Fidelidade
     'award': 'M12 15l-2 5-9-9 9-9 9 9-9 9-2-5',
     'trophy': 'M8 21h8M12 17v4m9-13.5a2.5 2.5 0 00-5 0v3a2.5 2.5 0 005 0v-3zM3 7.5a2.5 2.5 0 015 0v3a2.5 2.5 0 01-5 0v-3zM9 4.5h6',
     'gift': 'M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16-4h-4m-8 0H4m12 0a2 2 0 104 0m-4 0a2 2 0 11-4 0m0 0H8m4 0a2 2 0 11-4 0m0 0a2 2 0 10-4 0m4 8v7m0-7v-4',
     'camera': 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
-    'video': 'M23 7l-7 5 7 5V7z M14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z'
+    'video': 'M23 7l-7 5 7 5V7z M14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z',
+    'scissors': 'M6 9L12 15 18 9 M6 20a3 3 0 01-3-3v-6l6 6v3z M18 20a3 3 0 003-3v-6l-6 6v3z' // Ícone novo para depilação
   };
 
   return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width={size} 
-      height={size} 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="1.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-      className={className}
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <path d={paths[name] || ''} />
     </svg>
   );
 };
 
 // ==================================================================================
-// CONFIGURAÇÃO
+// CONFIGURAÇÃO GERAL
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v18_secure',
+  STORAGE_KEY: '@thaly_app_v19_final',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -131,22 +117,8 @@ const CONFIG = {
   MAX_STORAGE_SIZE: 5000 
 } as const;
 
-// Types
-interface ServiceItem {
-  id: string;
-  min: number;
-  price: number;
-  icon: string;
-  isEmoji?: boolean;
-  tag: string;
-  title: string;
-  desc: string;
-  details: string;
-  fullPrice?: number;
-  savings?: number;
-  type?: string;
-}
-
+// Types e Interfaces (Mantidos Integrais)
+interface ServiceItem { id: string; min: number; price: number; icon: string; isEmoji?: boolean; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; }
 interface Coupon { id: string; val: number; title: string; code: string; }
 interface Review { n: string; loc: string; t: string; s: number; }
 interface UserData { name: string; xp: number; coupons: Coupon[]; usedCoupons: string[]; hasSeenWelcome: boolean; ordersCount: number; lastActivity: string; }
@@ -155,8 +127,9 @@ interface BookingData { type: 'single' | 'pack'; item: ServiceItem | null; extra
 interface Rule { icon: string; title: string; description: string; }
 
 // ==================================================================================
-// COMPONENTES
+// COMPONENTES DE UI (ATUALIZADOS)
 // ==================================================================================
+
 const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon, className = '', loading = false }: any) => {
   const baseStyle = "inline-flex items-center justify-center font-bold tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none active:scale-[0.97] font-poppins gap-2";
   const variants = {
@@ -172,6 +145,60 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
     <button type="button" onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant as keyof typeof variants] || variants.primary} ${sizes[size as keyof typeof sizes]} ${full ? 'w-full' : ''} ${className}`}>
       {loading ? <span className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></span> : <>{icon && <Icon name={icon} size={20} />}{children}</>}
     </button>
+  );
+};
+
+// Menu Hambúrguer "Side Panel" (NOVO RECURSO)
+const SideMenu = ({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang, user }: any) => {
+  if (!isOpen) return null;
+  return (
+    <>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} />
+      <div className={`fixed top-0 right-0 h-full w-[85%] max-w-sm z-[70] p-6 shadow-2xl animate-slide-in glass-panel ${isDark ? 'text-white' : 'text-slate-900'}`}>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-bold font-display">Menu</h2>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-500/10"><Icon name="x" size={24} /></button>
+        </div>
+        
+        {/* User Card no Menu */}
+        <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg">
+          <p className="text-xs opacity-80 uppercase font-bold tracking-wider">Seu Nível Atual</p>
+          <div className="flex justify-between items-end mt-1">
+             <span className="text-2xl font-bold">{user.xp} XP</span>
+             <Icon name="award" />
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${isDark ? 'border-zinc-800 hover:bg-zinc-800' : 'border-slate-200 hover:bg-slate-50'}`}>
+            <div className="flex items-center gap-3">
+              <Icon name={isDark ? "moon" : "sun"} className="text-blue-500" />
+              <span className="font-medium">Tema</span>
+            </div>
+            <span className="text-xs font-bold opacity-50 uppercase">{isDark ? 'Escuro' : 'Claro'}</span>
+          </button>
+          
+          <button onClick={toggleLang} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${isDark ? 'border-zinc-800 hover:bg-zinc-800' : 'border-slate-200 hover:bg-slate-50'}`}>
+            <div className="flex items-center gap-3">
+              <Icon name="globe" className="text-purple-500" />
+              <span className="font-medium">Idioma</span>
+            </div>
+            <span className="text-xs font-bold opacity-50 uppercase">{lang}</span>
+          </button>
+
+          <button onClick={() => { if(navigator.share) navigator.share({title: 'Thalyson Massagens', url: window.location.href}) }} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${isDark ? 'border-zinc-800 hover:bg-zinc-800' : 'border-slate-200 hover:bg-slate-50'}`}>
+            <div className="flex items-center gap-3">
+              <Icon name="share" className="text-emerald-500" />
+              <span className="font-medium">Compartilhar</span>
+            </div>
+          </button>
+        </div>
+        
+        <div className="absolute bottom-6 left-6 right-6 text-center opacity-30 text-xs">
+          <p>Thalyson App v2.0</p>
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -245,10 +272,9 @@ const validateAddress = (address: Address): boolean => !!(address.street && addr
 const cleanupStorage = () => { try { const itemsToRemove: string[] = []; for (let i = 0; i < localStorage.length; i++) { const key = localStorage.key(i); if (key && key.startsWith('@thaly_app')) { const item = localStorage.getItem(key); if (item) { try { const parsed = JSON.parse(item); if (parsed.expires && new Date(parsed.expires) < new Date()) { itemsToRemove.push(key); } } catch (e) { itemsToRemove.push(key); } } } } itemsToRemove.forEach(key => localStorage.removeItem(key)); } catch (e) { console.error('Storage error:', e); } };
 
 // ==================================================================================
-// DADOS, TEXTOS E TRADUÇÃO COMPLETA
+// DADOS, TEXTOS E REVIEWS (COMPLETOS)
 // ==================================================================================
 const generateReviews = (isPT: boolean): Review[] => {
-  // Feedbacks REAIS Originais
   const realReviews = [
     { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: isPT ? "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️" : "You have blessed hands and I soared! I really needed this rest, this peace. It was super respectful all the time and relaxed me a lot. Thank you! ❤️" },
     { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito." : "Thalyson, I want to say that your massage was very well executed. Highly recommend." },
@@ -256,7 +282,6 @@ const generateReviews = (isPT: boolean): Review[] => {
     { n: "Tiago", loc: "SP - Bela Vista", t: isPT ? "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida." : "Thalyson has surreal energy. The massage was perfect, best of my life." }
   ];
 
-  // Feedbacks Sérios/Profundos (Novos e Específicos) - Traduzidos
   const seriousReviews = [
     { n: "Roberto", loc: isPT ? "São Paulo - Jardins" : "SP - Jardins", t: isPT ? "A sensação de vazio e paz que senti após a sessão foi indescritível. A finalização foi extremamente potente, liberando uma carga de tensão que eu carregava há meses. Profissionalismo impecável." : "The feeling of emptiness and peace I felt after the session was indescribable. The finish was extremely powerful, releasing a load of tension I had been carrying for months. Impeccable professionalism." },
     { n: "Carla", loc: "Rio Preto", t: isPT ? "Me senti acolhida em um nível que não esperava. Ele tem uma pegada firme que relaxa a musculatura e ao mesmo tempo desperta sensações adormecidas. O alívio no final foi total." : "I felt welcomed on a level I didn't expect. He has a firm grip that relaxes muscles while awakening dormant sensations. The relief at the end was total." },
@@ -287,23 +312,23 @@ const generateReviews = (isPT: boolean): Review[] => {
 const getData = (lang: string) => {
   const isPT = lang === 'pt';
   const currency = isPT ? 'R$' : '$';
-  const USD_RATE = 5.75; // Taxa de conversão fixa para simulação "exata"
+  const USD_RATE = 5.75;
 
-  // Função para converter e formatar preço
   const getPrice = (brl: number) => isPT ? brl : Math.round(brl / USD_RATE);
 
   const p = {
-    relax: getPrice(125),
-    sens: getPrice(155),
-    titan: getPrice(195),
-    packRelax: { v: getPrice(390), full: getPrice(500), save: getPrice(110) },
-    packTri: { v: getPrice(480), full: getPrice(585), save: getPrice(105) },
-    packMix: { v: getPrice(600), full: getPrice(700), save: getPrice(100) },
+    relax: getPrice(145),
+    sens: getPrice(175),
+    titan: getPrice(205),
+    depil: getPrice(110), // Novo Preço Depilação
+    packRelax: { v: getPrice(490), full: getPrice(585), save: getPrice(95) },
+    packTri: { v: getPrice(525), full: getPrice(615), save: getPrice(90) },
+    packMix: { v: getPrice(640), full: getPrice(760), save: getPrice(120) }, // Ajustado
     extras: {
-      more_time: getPrice(55),
-      touch: getPrice(55),
-      aroma: getPrice(5),
-      hair_trim: getPrice(66),
+      more_time: getPrice(77),
+      touch: getPrice(77),
+      aroma: getPrice(10), // Aroma com preço justo
+      hair_trim: getPrice(50), // Ajustado para 50
       pain_relief: getPrice(10)
     }
   };
@@ -316,6 +341,18 @@ const getData = (lang: string) => {
       { level: 4, xpNeeded: 800, reward: getPrice(50), title: isPT ? "Íntimo" : "Intimate" }
     ],
     services: [
+      {
+        id: 'depilacao',
+        min: 45,
+        price: p.depil,
+        icon: "scissors",
+        tag: isPT ? "NOVO" : "NEW",
+        title: isPT ? "Depilação (Maquininha)" : "Body Trimming",
+        desc: isPT ? "Higiene e estética em dia." : "Hygiene and aesthetics.",
+        details: isPT 
+          ? "Aparo completo com máquina (Zero ou Pente)\nPeito, pernas, braços e costas"
+          : "Full body trimming with machine\nChest, legs, arms, and back"
+      },
       {
         id: 'relaxante',
         min: 60,
@@ -337,14 +374,14 @@ const getData = (lang: string) => {
         title: isPT ? "Tântrica Sensorial" : "Sensory Tantra",
         desc: isPT ? "Reconecte-se com seu corpo. Toques sutis que arrepiam." : "Reconnect with your body. Subtle touches that thrill.",
         details: isPT 
-          ? "Toques de pluma para despertar a pele\nSensação de leveza e acolhimento\nFinalização especial (Lingam)\nPara quem busca sentir mais" 
-          : "Feather touches to awaken the skin\nFeeling of lightness and warmth\nSpecial finish (Lingam)\nFor those seeking to feel more"
+          ? "Toques leves para despertar a pele\nSensação de leveza e acolhimento\nFinalização especial (Lingam)\nPara quem busca sentir mais" 
+          : "Touches to awaken the skin\nFeeling of lightness and warmth\nSpecial finish (Lingam)\nFor those seeking to feel more"
       },
       {
         id: 'mista',
         min: 60,
         price: p.titan,
-        icon: "zap", // Ícone RAIO (Zap)
+        icon: "zap",
         tag: isPT ? "EXPERIÊNCIA COMPLETA" : "FULL EXPERIENCE",
         title: isPT ? "Fusion Experience" : "Fusion Experience",
         desc: isPT ? "A união perfeita: relaxamento muscular + energia intensa." : "The perfect union: muscle relaxation + intense energy.",
@@ -354,15 +391,15 @@ const getData = (lang: string) => {
       }
     ] as ServiceItem[],
     extras: [
-      { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Mais tempo para você" : "More time for you" },
-      { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: isPT ? "Troca Interativa" : "Interactive Touch", desc: isPT ? "Sinta a liberdade de tocar" : "Feel free to touch" },
-      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Fragrâncias que acalmam" : "Calming fragrances" },
-      { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: isPT ? "Aparar Pêlos" : "Trimming", desc: isPT ? "Máquina em até 2 partes do corpo" : "Trimmer on up to 2 body parts" },
-      { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isPT ? "Pomada para Dores" : "Pain Relief Cream", desc: isPT ? "Alivia as dores no corpo durante a sessão" : "Relieves body pain during session" }
+      { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: isPT ? "Aparo (Extra)" : "Trim (Extra)", desc: isPT ? "Adicione aparo a sua massagem 2 partes do corpo" : "Add trim to your massage, 2 parts of body" },
+      { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Mais tempo para você relaxar" : "More time for you" },
+      { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: isPT ? "Troca Interativa" : "Interactive Touch", desc: isPT ? "Sinta a liberdade de tocar também" : "Feel free to touch too" },
+      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Cheiro bom no ar" : "Essential oils to calm the mind" },
+      { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isPT ? "Pomada Dores" : "Pain Cream", desc: isPT ? "Alivia dores musculares fortes" : "Relieves strong muscle pain" }
     ],
     plans: [
-      { id: 'pack_relax', type: 'pack', title: isPT ? "Refúgio Anti-Stress" : "Anti-Stress Refuge", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: isPT ? "4 Sessões Relaxantes" : "4 Relax Sessions", details: isPT ? "Garanta sua paz semanalmente.\nO cuidado constante que você merece." : "Ensure your weekly peace.\nThe constant care you deserve.", tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: "package" },
-      { id: 'pack_mista', type: 'pack', title: isPT ? "Jornada Fusion" : "Fusion Journey", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: isPT ? "3 Sessões Fusion" : "3 Fusion Sessions", details: isPT ? "Três encontros intensos.\nPara quem precisa escapar da rotina." : "Three intense encounters.\nFor those who need to escape routine.", tag: isPT ? "ESCAPE" : "ESCAPE", icon: "layers" },
+      { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4x)" : "Relax Pack (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: isPT ? "4 Sessões Relaxantes" : "4 Relax Sessions", details: isPT ? "Garanta sua paz semanalmente.\nO cuidado constante que você merece." : "Ensure your weekly peace.\nThe constant care you deserve.", tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: "package" },
+      { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Fusion (3x)" : "Fusion Pack (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: isPT ? "3 Sessões Fusion" : "3 Fusion Sessions", details: isPT ? "Três encontros intensos.\nPara quem precisa escapar da rotina." : "Three intense encounters.\nFor those who need to escape routine.", tag: isPT ? "ESCAPE" : "ESCAPE", icon: "layers" },
       { id: 'pack_mix_4', type: 'pack', title: isPT ? "Ciclo Completo" : "Full Cycle", price: p.packMix.v, fullPrice: p.packMix.full, savings: p.packMix.save, desc: isPT ? "2 Sensoriais + 2 Fusion" : "2 Sensory + 2 Fusion", details: isPT ? "Explore todas as sensações.\nVariedade para cada momento seu." : "Explore all sensations.\nVariety for your every moment.", tag: "PREMIUM", icon: "star" }
     ] as ServiceItem[],
     faq: [
@@ -388,10 +425,10 @@ const getData = (lang: string) => {
     currency,
     text: {
       welcome: isPT ? "Olá," : "Hello,",
-      choose_sub: isPT ? "Relaxamento profissional no conforto do seu espaço. Permita-se sentir." : "Professional relaxation in the comfort of your space. Allow yourself to feel.",
+      choose_sub: isPT ? "Como você quer se sentir hoje? Escolha sua experiência." : "How do you want to feel today? Choose your experience.",
       level_label: isPT ? "Sua Jornada" : "Your Journey",
       tab_packs: isPT ? "Pacotes" : "Packages",
-      tab_single: isPT ? "Sessão Única" : "Single Session",
+      tab_single: isPT ? "Sessão Avulsa" : "Single Session",
       book_btn: isPT ? "Reservar" : "Book",
       next_btn: isPT ? "Continuar" : "Continue",
       finish_btn: isPT ? "Finalizar Pedido" : "Finish Order",
@@ -463,12 +500,13 @@ export default function App() {
   const [step, setStep] = useState(0);
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
-  const [activeTab, setActiveTab] = useState('packs');
+  const [activeTab, setActiveTab] = useState('packs'); // PACOTES PRIMEIRO
   const [toasts, setToasts] = useState<{id: number, msg: string, type: "success" | "error"}[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // Menu Lateral
   
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
@@ -621,71 +659,10 @@ export default function App() {
     scrollRef.current?.scrollTo(0, 0);
   }, [step]);
   
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === CONFIG.STORAGE_KEY && e.oldValue && !e.newValue) {
-        console.warn('Storage was unexpectedly cleared');
-        setUser({
-          name: '',
-          xp: 0,
-          coupons: [],
-          usedCoupons: [],
-          hasSeenWelcome: false,
-          ordersCount: 69,
-          lastActivity: new Date().toISOString()
-        });
-        setBooking({
-          type: 'single',
-          item: null,
-          extras: {},
-          date: null,
-          time: null,
-          locationType: 'home',
-          address: {
-            street: '',
-            number: '',
-            district: '',
-            city: '',
-            comp: '',
-            placeName: ''
-          },
-          payment: '',
-          appliedCoupon: null,
-          termsAccepted: false,
-          bookingId: `BOOK_${Date.now()}`,
-          mediaAllowed: false
-        });
-        setStep(0);
-      }
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-  
   const addToast = (msg: string, type: "success" | "error" = "success") => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, msg, type }]);
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3000);
-  };
-  
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({ title: 'Thalyson Massagens', url: window.location.href })
-        .catch(e => {
-          if (e.name !== 'AbortError') {
-            console.error('Share failed:', e);
-            addToast("Erro ao compartilhar", "error");
-          }
-        });
-    } else {
-      navigator.clipboard.writeText(window.location.href)
-        .then(() => addToast("Link copiado!", "success"))
-        .catch(e => {
-          console.error('Copy failed:', e);
-          addToast("Erro ao copiar link", "error");
-        });
-    }
   };
   
   const handleSelectItem = (type: 'single' | 'pack', item: ServiceItem) => {
@@ -816,7 +793,6 @@ export default function App() {
     
     let serviceTitle = booking.item?.title || '';
     if (booking.type !== 'single' && booking.item?.desc) {
-      const descClean = booking.item.desc.replace(/^(Contém:|Contains:)\s*/i, '');
       serviceTitle += ` ${lang === 'pt' ? '(Pacote)' : '(Pack)'}`;
     }
     
@@ -835,7 +811,6 @@ export default function App() {
       mapQuery = fullAddr;
     }
     
-    // Lista de extras com preços individuais
     const extrasList = Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => {
       const ex = DATA.extras.find(e => e.id === k);
       if (!ex) return '';
@@ -843,7 +818,6 @@ export default function App() {
       return `✅ ${ex.label} (+${DATA.currency} ${price})`;
     }).filter(Boolean).join('\n');
     
-    // Construção detalhada do preço
     let priceDetails = `💵 *${lang === 'pt' ? 'Base' : 'Base'} (${serviceTitle}):* ${DATA.currency} ${booking.item?.price}`;
     
     if (f.disc > 0) priceDetails += `\n📉 *${lang === 'pt' ? 'Cupom' : 'Coupon'}:* -${DATA.currency} ${f.disc}`;
@@ -852,7 +826,6 @@ export default function App() {
     
     priceDetails += `\n\n💰 *TOTAL FINAL: ${DATA.currency} ${f.total},00*`;
     
-    // Mensagem final formatada
     const msg = `
 *${lang === 'pt' ? 'NOVA RESERVA' : 'NEW BOOKING'}* | #${securityHash}
 ──────────────────
@@ -1059,12 +1032,13 @@ ${priceDetails}
         <div className={`absolute bottom-0 right-0 w-96 h-96 blur-3xl rounded-full opacity-20 ${isDark ? 'bg-indigo-600' : 'bg-indigo-400'}`} />
       </div>
       
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none px-4 w-full max-w-md">
+      {/* TOASTS */}
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none px-4 w-full max-w-md">
         {toasts.map(t => (
           <div
             key={t.id}
             className={`
-              pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-xl shadow-lg animate-in slide-in-from-top font-inter
+              pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-xl shadow-lg animate-fade-in font-inter
               ${t.type === 'success'
                 ? isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-100 border-emerald-200 text-emerald-800'
                 : isDark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-100 border-amber-200 text-amber-700'
@@ -1077,6 +1051,8 @@ ${priceDetails}
         ))}
       </div>
       
+      <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} isDark={isDark} toggleTheme={() => setIsDark(!isDark)} toggleLang={() => setLang(l => l === 'pt' ? 'en' : 'pt')} lang={lang} user={user} />
+
       {/* Wrapper principal sem overflow hidden para permitir scroll nativo */}
       <div className={`min-h-screen relative z-10 pb-32 px-6 md:px-12 max-w-6xl mx-auto ${isDark ? 'text-white' : 'text-black'}`}>
         {step !== 4 && (
@@ -1093,42 +1069,20 @@ ${priceDetails}
                 {user.ordersCount || 69} Sessões Realizadas
               </div>
             </div>
-            <div className="flex flex-wrap justify-end gap-2 max-w-[180px]">
-              <button
-                onClick={() => setSettingsOpen(true)}
-                className={`w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${isDark ? 'bg-zinc-900 text-zinc-400 hover:text-white' : 'bg-white text-slate-500 hover:text-slate-900 shadow-sm'}`}
-                aria-label="Configurações"
-              >
-                <Icon name="settings" size={18} />
-              </button>
-              <button
-                onClick={handleShare}
-                className={`w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${isDark ? 'bg-zinc-900 text-zinc-400 hover:text-white' : 'bg-white text-slate-500 hover:text-slate-900 shadow-sm'}`}
-                aria-label="Compartilhar"
-              >
-                <Icon name="share" size={18} />
-              </button>
-              <button
-                onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')}
-                className={`w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${isDark ? 'bg-zinc-900 text-zinc-400 hover:text-white' : 'bg-white text-slate-500 hover:text-slate-900 shadow-sm'}`}
-                aria-label="Alterar idioma"
-              >
-                <Icon name="globe" size={18} />
-              </button>
-              <button
-                onClick={() => setIsDark(!isDark)}
-                className={`w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${isDark ? 'bg-zinc-900 text-zinc-400 hover:text-white' : 'bg-white text-blue-500 shadow-sm'}`}
-                aria-label="Alternar tema"
-              >
-                <Icon name={isDark ? 'moon' : 'sun'} size={18} />
-              </button>
-            </div>
+            {/* BOTÃO HAMBURGUER PREMIUM */}
+            <button
+               onClick={() => setMenuOpen(true)}
+               className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isDark ? 'bg-zinc-900 text-white hover:bg-zinc-800' : 'bg-white text-slate-900 shadow-md hover:bg-slate-50'}`}
+               aria-label="Menu"
+            >
+               <Icon name="menu" size={24} />
+            </button>
           </header>
         )}
         
         <div className="space-y-12">
           {step === 0 && (
-            <div className="space-y-12 animate-in fade-in duration-700">
+            <div className="space-y-12 animate-fade-in">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-8">
                 <div>
                   <h2 className={`text-4xl md:text-5xl font-playfair font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -1211,16 +1165,17 @@ ${priceDetails}
                         </div>
                         <div className="text-right">
                           {s.fullPrice && (
-                            <span className={`text-xs line-through block mb-1 font-inter ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
-                              {DATA.currency} {s.fullPrice}
+                            /* CORREÇÃO DO RISCO VERMELHO: Agora discreto e elegante */
+                            <span className={`text-xs block mb-1 font-inter font-medium ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
+                              De: <span className="line-through">{DATA.currency} {s.fullPrice}</span>
                             </span>
                           )}
                           <span className="text-3xl font-bold text-blue-500 font-playfair">
                             {DATA.currency} {s.price}
                           </span>
                           {s.savings && (
-                            <span className="text-xs font-bold text-emerald-500 block mt-1 font-inter">
-                              Economize {DATA.currency} {s.savings}
+                            <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-full block mt-1 font-inter">
+                              ECONOMIZE {DATA.currency} {s.savings}
                             </span>
                           )}
                         </div>
@@ -1309,7 +1264,7 @@ ${priceDetails}
           )}
           
           {step === 1 && (
-            <div className="space-y-8 animate-in fade-in duration-700">
+            <div className="space-y-8 animate-fade-in">
               <div className="text-center">
                 <h2 className={`text-3xl font-playfair font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {T.select_time_title}
@@ -1342,7 +1297,7 @@ ${priceDetails}
                           className={`
                             w-20 h-28 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all border-2 font-inter
                             ${isSel
-                              ? 'bg-blue-600 border-blue-500 text-white shadow-lg scale-110'
+                              ? 'bg-blue-600 border-blue-600 text-white shadow-lg scale-110'
                               : isDark
                                 ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700'
                                 : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'
@@ -1408,7 +1363,7 @@ ${priceDetails}
           )}
           
           {step === 2 && (
-            <div className="space-y-12 animate-in fade-in duration-700">
+            <div className="space-y-12 animate-fade-in">
               <h2 className={`text-3xl font-playfair font-bold text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {T.location_title}
               </h2>
@@ -1567,15 +1522,11 @@ ${priceDetails}
                               <p className={`text-sm font-semibold ${isActive ? 'text-blue-500' : isDark ? 'text-zinc-200' : 'text-slate-700'} font-inter`}>
                                 {ex.label}
                               </p>
+                              {/* DESCRIÇÃO DO EXTRA ADICIONADA AQUI */}
                               <p className={`text-xs ${isDark ? 'text-zinc-500' : 'text-slate-500'} font-inter`}>{ex.desc}</p>
                             </div>
                           </div>
                           <div className="text-right">
-                            {booking.type !== 'single' && (
-                              <span className={`text-xs line-through block ${isDark ? 'text-zinc-600' : 'text-slate-400'} font-inter`}>
-                                {DATA.currency} {ex.price}
-                              </span>
-                            )}
                             <span className={`text-xs font-bold px-2 py-1 rounded-lg ${isActive ? 'bg-blue-500/20 text-blue-500' : isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500'} font-inter`}>
                               + {DATA.currency} {price}
                             </span>
@@ -1590,7 +1541,7 @@ ${priceDetails}
           )}
           
           {step === 3 && (
-            <div className="space-y-8 animate-in fade-in duration-700">
+            <div className="space-y-8 animate-fade-in">
               <SmartTimer isDark={isDark} text={T.timer_text} />
               
               <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8">
@@ -1679,8 +1630,8 @@ ${priceDetails}
                       </div>
                       {/* AVISO DO UBER NO RESUMO */}
                       <div className={`mt-4 p-3 rounded-xl border flex items-center gap-3 text-xs font-medium ${isDark ? 'bg-zinc-800/50 border-zinc-700 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
-                         <Icon name="car" size={16} />
-                         <span>{T.uber_notice}</span>
+                          <Icon name="car" size={16} />
+                          <span>{T.uber_notice}</span>
                       </div>
                     </div>
                   </div>
@@ -1721,7 +1672,7 @@ ${priceDetails}
 
                   {/* SEÇÃO DE AUTORIZAÇÃO DE IMAGEM */}
                   <div className={`p-6 rounded-2xl border ${isDark ? 'bg-purple-900/10 border-purple-500/30' : 'bg-purple-50 border-purple-200'}`}>
-                     <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-4">
                         <div className={`mt-1 p-2 rounded-lg ${isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-600'}`}>
                            <Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={24} />
                         </div>
@@ -1753,7 +1704,7 @@ ${priceDetails}
                               )}
                            </button>
                         </div>
-                     </div>
+                      </div>
                   </div>
                   
                   <div className={`p-6 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-slate-200'}`}>
@@ -1835,7 +1786,7 @@ ${priceDetails}
           )}
           
           {step === 4 && (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center text-center animate-in zoom-in duration-500">
+            <div className="min-h-[60vh] flex flex-col items-center justify-center text-center animate-fade-in">
               <div className="relative mb-8">
                 <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center shadow-2xl shadow-blue-600/40 animate-bounce text-white">
                   <Icon name="check" size={40} />
@@ -1919,7 +1870,7 @@ ${priceDetails}
       )}
       
       {termsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
           <div className={`relative w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[80vh] overflow-y-auto ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white'}`}>
             <button onClick={() => setTermsOpen(false)} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-500/10" aria-label="Fechar">
               <Icon name="x" size={24} />
@@ -1942,26 +1893,8 @@ ${priceDetails}
         </div>
       )}
       
-      {settingsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className={`relative w-full max-w-sm rounded-3xl p-8 text-center shadow-2xl ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white'}`}>
-            <button onClick={() => setSettingsOpen(false)} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-500/10" aria-label="Fechar">
-              <Icon name="x" size={24} />
-            </button>
-            <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-blue-500">
-              <Icon name="smartphone" size={32} />
-            </div>
-            <h3 className={`text-xl font-playfair font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.install_app}</h3>
-            <p className={`text-sm mb-6 font-inter ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.install_desc}</p>
-            <Button full variant="secondary" onClick={() => setSettingsOpen(false)}>
-              Ok
-            </Button>
-          </div>
-        </div>
-      )}
-      
       {welcomePopup && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
           <div className={`relative w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white'}`}>
             <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl rotate-12 flex items-center justify-center shadow-xl mb-4 text-white">
               <Icon name="gift" size={48} />
@@ -1987,7 +1920,7 @@ ${priceDetails}
       )}
       
       {levelUpPopup && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
           <div className={`relative w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl border ${isDark ? 'bg-zinc-900 border-amber-500/20' : 'bg-white'}`}>
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[2.5rem] pointer-events-none">
               <div className="absolute -top-24 -right-24 w-64 h-64 bg-amber-500/20 blur-3xl rounded-full" />
