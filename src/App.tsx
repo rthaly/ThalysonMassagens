@@ -1,11 +1,72 @@
 import * as React from 'react';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 
 // ==================================================================================
-// ESTILOS GLOBAIS & DESIGN SYSTEM
+// 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS (PERFORMANCE)
 // ==================================================================================
 
-const GlobalStyles = ({ isDark }: { isDark: boolean }) => (
+const CONFIG = {
+  PHONE: "5517991360413",
+  INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
+  STORAGE_KEY: '@thaly_app_v20_optimized', // Versão atualizada
+  PIX_KEY: "62.922.530/0001-14",
+  LOCALE_PT: 'pt-BR',
+  LOCALE_EN: 'en-US',
+  SECRET_TOKEN: 'THALY_SECURE_V5',
+  START_HOUR: 9,
+  END_HOUR: 20,
+  MAX_STORAGE_SIZE: 5000 
+} as const;
+
+// Caminhos SVG movidos para fora para não serem recriados a cada renderização (Ganho massivo de FPS)
+const ICON_PATHS: Record<string, string> = {
+  'menu': 'M4 6h16M4 12h16M4 18h16',
+  'chevron-left': 'M15 18l-6-6 6-6',
+  'chevron-right': 'M9 18l6-6-6-6',
+  'chevron-down': 'M6 9l6 6 6-6',
+  'x': 'M18 6L6 18M6 6l12 12',
+  'check': 'M20 6L9 17l-5-5',
+  'alert-circle': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 8v4M12 16h.01',
+  'settings': 'M12 15a3 3 0 100-6 3 3 0 000 6z M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z',
+  'share': 'M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13',
+  'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z',
+  'sun': 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z',
+  'moon': 'M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z',
+  'star': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+  'user-check': 'M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2 M8.5 3a4 4 0 100 8 4 4 0 000-8z M20 8v6M23 11h-6',
+  'sparkles': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+  'zap': 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
+  'package': 'M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16zM16.5 9.4L7.5 4.21M3.3 7l8.7 5 8.7-5M12 22v-10',
+  'layers': 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
+  'user': 'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2 M12 11a4 4 0 100-8 4 4 0 000 8z',
+  'home': 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+  'bed': 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z',
+  'building': 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5',
+  'map-pin': 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z',
+  'car': 'M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 002 12v4c0 .6.4 1 1 1h2',
+  'calendar': 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+  'smartphone': 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z',
+  'message': 'M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8.9h.5a8.48 8.48 0 018 8v.5z',
+  'watch': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 6v6l4 2',
+  'credit-card': 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
+  'banknote': 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+  'shield': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+  'shower': 'M12 4v4m0 0l-2 2m2-2l2 2M7.5 12.5L5 15m14-2.5L21.5 15M10 15l-1 4m6-4l1 4',
+  'hand': 'M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3',
+  'clock': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+  'award': 'M12 15l-2 5-9-9 9-9 9 9-9 9-2-5',
+  'trophy': 'M8 21h8M12 17v4m9-13.5a2.5 2.5 0 00-5 0v3a2.5 2.5 0 005 0v-3zM3 7.5a2.5 2.5 0 015 0v3a2.5 2.5 0 01-5 0v-3zM9 4.5h6',
+  'gift': 'M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16-4h-4m-8 0H4m12 0a2 2 0 104 0m-4 0a2 2 0 11-4 0m0 0H8m4 0a2 2 0 11-4 0m0 0a2 2 0 10-4 0m4 8v7m0-7v-4',
+  'camera': 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+  'video': 'M23 7l-7 5 7 5V7z M14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z',
+  'scissors': 'M6 9L12 15 18 9 M6 20a3 3 0 01-3-3v-6l6 6v3z M18 20a3 3 0 003-3v-6l-6 6v3z'
+};
+
+// ==================================================================================
+// 2. DESIGN SYSTEM & ESTILOS GLOBAIS
+// ==================================================================================
+
+const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   <style dangerouslySetInnerHTML={{ __html: `
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
     
@@ -37,7 +98,6 @@ const GlobalStyles = ({ isDark }: { isDark: boolean }) => (
     
     .emoji-icon { font-style: normal; display: inline-block; line-height: 1; vertical-align: middle; text-align: center; }
     
-    /* Efeito Glassmorphism para o Menu */
     .glass-panel {
       background: ${isDark ? 'rgba(9, 9, 11, 0.8)' : 'rgba(255, 255, 255, 0.9)'};
       backdrop-filter: blur(12px);
@@ -45,79 +105,20 @@ const GlobalStyles = ({ isDark }: { isDark: boolean }) => (
       border-left: 1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
     }
   `}} />
-);
+));
 
-// Ícones SVG Otimizados
-const Icon = ({ name, size = 22, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
-  if (isEmoji) return <span className={`emoji-icon ${className}`} style={{ fontSize: size }}>{name}</span>;
-
-  const paths: Record<string, string> = {
-    'menu': 'M4 6h16M4 12h16M4 18h16', // Hamburger
-    'chevron-left': 'M15 18l-6-6 6-6',
-    'chevron-right': 'M9 18l6-6-6-6',
-    'chevron-down': 'M6 9l6 6 6-6',
-    'x': 'M18 6L6 18M6 6l12 12',
-    'check': 'M20 6L9 17l-5-5',
-    'alert-circle': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 8v4M12 16h.01',
-    'settings': 'M12 15a3 3 0 100-6 3 3 0 000 6z M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z',
-    'share': 'M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13',
-    'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z',
-    'sun': 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z',
-    'moon': 'M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z',
-    'star': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
-    'user-check': 'M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2 M8.5 3a4 4 0 100 8 4 4 0 000-8z M20 8v6M23 11h-6',
-    'sparkles': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
-    'zap': 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
-    'package': 'M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16zM16.5 9.4L7.5 4.21M3.3 7l8.7 5 8.7-5M12 22v-10',
-    'layers': 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
-    'user': 'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2 M12 11a4 4 0 100-8 4 4 0 000 8z',
-    'home': 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
-    'bed': 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z',
-    'building': 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5',
-    'map-pin': 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z',
-    'car': 'M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 002 12v4c0 .6.4 1 1 1h2',
-    'calendar': 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
-    'smartphone': 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z',
-    'message': 'M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8.9h.5a8.48 8.48 0 018 8v.5z',
-    'watch': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 6v6l4 2',
-    'credit-card': 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
-    'banknote': 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-    'shield': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
-    'shower': 'M12 4v4m0 0l-2 2m2-2l2 2M7.5 12.5L5 15m14-2.5L21.5 15M10 15l-1 4m6-4l1 4',
-    'hand': 'M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3',
-    'clock': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-    'award': 'M12 15l-2 5-9-9 9-9 9 9-9 9-2-5',
-    'trophy': 'M8 21h8M12 17v4m9-13.5a2.5 2.5 0 00-5 0v3a2.5 2.5 0 005 0v-3zM3 7.5a2.5 2.5 0 015 0v3a2.5 2.5 0 01-5 0v-3zM9 4.5h6',
-    'gift': 'M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16-4h-4m-8 0H4m12 0a2 2 0 104 0m-4 0a2 2 0 11-4 0m0 0H8m4 0a2 2 0 11-4 0m0 0a2 2 0 10-4 0m4 8v7m0-7v-4',
-    'camera': 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
-    'video': 'M23 7l-7 5 7 5V7z M14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z',
-    'scissors': 'M6 9L12 15 18 9 M6 20a3 3 0 01-3-3v-6l6 6v3z M18 20a3 3 0 003-3v-6l-6 6v3z' // Ícone novo para depilação
-  };
+// Ícone Memorizado (Melhor Performance)
+const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
+  if (isEmoji) return <span className={`emoji-icon ${className}`} style={{ fontSize: size }} role="img" aria-label={name}>{name}</span>;
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d={paths[name] || ''} />
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d={ICON_PATHS[name] || ''} />
     </svg>
   );
-};
+});
 
-// ==================================================================================
-// CONFIGURAÇÃO GERAL
-// ==================================================================================
-const CONFIG = {
-  PHONE: "5517991360413",
-  INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v19_final',
-  PIX_KEY: "62.922.530/0001-14",
-  LOCALE_PT: 'pt-BR',
-  LOCALE_EN: 'en-US',
-  SECRET_TOKEN: 'THALY_SECURE_V5',
-  START_HOUR: 9,
-  END_HOUR: 20,
-  MAX_STORAGE_SIZE: 5000 
-} as const;
-
-// Types e Interfaces (Mantidos Integrais)
+// Types e Interfaces
 interface ServiceItem { id: string; min: number; price: number; icon: string; isEmoji?: boolean; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; }
 interface Coupon { id: string; val: number; title: string; code: string; }
 interface Review { n: string; loc: string; t: string; s: number; }
@@ -127,10 +128,10 @@ interface BookingData { type: 'single' | 'pack'; item: ServiceItem | null; extra
 interface Rule { icon: string; title: string; description: string; }
 
 // ==================================================================================
-// COMPONENTES DE UI (ATUALIZADOS)
+// 3. COMPONENTES DE UI (MEMORIZADOS PARA PERFORMANCE)
 // ==================================================================================
 
-const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon, className = '', loading = false }: any) => {
+const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon, className = '', loading = false, ariaLabel }: any) => {
   const baseStyle = "inline-flex items-center justify-center font-bold tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none active:scale-[0.97] font-poppins gap-2";
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/25",
@@ -142,25 +143,23 @@ const Button = ({ children, onClick, variant = 'primary', size = 'md', disabled 
   const sizes = { sm: "h-10 text-sm px-4", md: "h-12 text-sm px-6", lg: "h-14 text-base px-8", xl: "h-16 text-base px-10" };
   
   return (
-    <button type="button" onClick={onClick} disabled={disabled || loading} className={`${baseStyle} ${variants[variant as keyof typeof variants] || variants.primary} ${sizes[size as keyof typeof sizes]} ${full ? 'w-full' : ''} ${className}`}>
+    <button type="button" onClick={onClick} disabled={disabled || loading} aria-label={ariaLabel} className={`${baseStyle} ${variants[variant as keyof typeof variants] || variants.primary} ${sizes[size as keyof typeof sizes]} ${full ? 'w-full' : ''} ${className}`}>
       {loading ? <span className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></span> : <>{icon && <Icon name={icon} size={20} />}{children}</>}
     </button>
   );
-};
+});
 
-// Menu Hambúrguer "Side Panel" (NOVO RECURSO)
-const SideMenu = ({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang, user }: any) => {
+const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang, user }: any) => {
   if (!isOpen) return null;
   return (
     <>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} />
-      <div className={`fixed top-0 right-0 h-full w-[85%] max-w-sm z-[70] p-6 shadow-2xl animate-slide-in glass-panel ${isDark ? 'text-white' : 'text-slate-900'}`}>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} role="presentation" />
+      <aside className={`fixed top-0 right-0 h-full w-[85%] max-w-sm z-[70] p-6 shadow-2xl animate-slide-in glass-panel ${isDark ? 'text-white' : 'text-slate-900'}`}>
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold font-display">Menu</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-500/10"><Icon name="x" size={24} /></button>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-500/10" aria-label="Fechar menu"><Icon name="x" size={24} /></button>
         </div>
         
-        {/* User Card no Menu */}
         <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg">
           <p className="text-xs opacity-80 uppercase font-bold tracking-wider">Seu Nível Atual</p>
           <div className="flex justify-between items-end mt-1">
@@ -169,7 +168,7 @@ const SideMenu = ({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang, user
           </div>
         </div>
 
-        <div className="space-y-3">
+        <nav className="space-y-3">
           <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${isDark ? 'border-zinc-800 hover:bg-zinc-800' : 'border-slate-200 hover:bg-slate-50'}`}>
             <div className="flex items-center gap-3">
               <Icon name={isDark ? "moon" : "sun"} className="text-blue-500" />
@@ -192,23 +191,23 @@ const SideMenu = ({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang, user
               <span className="font-medium">Compartilhar</span>
             </div>
           </button>
-        </div>
+        </nav>
         
         <div className="absolute bottom-6 left-6 right-6 text-center opacity-30 text-xs">
-          <p>Thalyson App v2.0</p>
+          <p>Thalyson App v2.0 Optimized</p>
         </div>
-      </div>
+      </aside>
     </>
   );
-};
+});
 
-const Card = ({ children, className = '', onClick, active = false, isDark = true }: any) => (
+const Card = memo(({ children, className = '', onClick, active = false, isDark = true }: any) => (
   <div onClick={onClick} className={`relative p-8 rounded-3xl transition-all duration-300 flex flex-col h-full font-poppins ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-1' : ''} ${active ? 'bg-blue-900/10 border-2 border-blue-500 shadow-lg shadow-blue-500/20' : isDark ? 'bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 hover:border-zinc-700' : 'bg-white border border-slate-200 shadow-lg hover:border-slate-300'} ${className}`}>
     {children}
   </div>
-);
+));
 
-const InputField = ({ label, value, onChange, placeholder, icon, type = "text", isDark = true }: any) => (
+const InputField = memo(({ label, value, onChange, placeholder, icon, type = "text", isDark = true }: any) => (
   <div className="space-y-2 w-full">
     {label && <label className={`text-xs font-bold uppercase tracking-wider font-poppins ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{label}</label>}
     <div className="relative">
@@ -216,64 +215,93 @@ const InputField = ({ label, value, onChange, placeholder, icon, type = "text", 
       <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-12 rounded-xl outline-none text-sm font-medium transition-all font-poppins ${icon ? 'pl-12 pr-4' : 'px-4'} ${isDark ? 'bg-zinc-900 border-2 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:border-blue-500' : 'bg-white border-2 border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-blue-600'}`} />
     </div>
   </div>
-);
+));
 
-const ReviewCard = ({ review, isDark }: { review: Review; isDark: boolean }) => (
-  <div className={`w-full h-full p-5 rounded-2xl transition-all duration-300 hover:-translate-y-1 border ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-slate-200 shadow-md'}`}>
+const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
+  <article className={`w-full h-full p-5 rounded-2xl transition-all duration-300 hover:-translate-y-1 border ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-slate-200 shadow-md'}`}>
     <div className="flex justify-between items-start mb-3">
       <div className="flex items-center gap-3">
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold ${isDark ? 'bg-blue-600/20 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>{review.n.charAt(0)}</div>
         <div><span className={`text-sm font-semibold block ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{review.n}</span><span className={`text-xs ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span></div>
       </div>
-      <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Icon key={i} name="star" size={14} className={i < review.s ? 'text-yellow-400 fill-yellow-400' : isDark ? 'text-zinc-700' : 'text-slate-400'} />)}</div>
+      <div className="flex gap-0.5" aria-label={`Avaliação: ${review.s} estrelas`}>{[...Array(5)].map((_, i) => <Icon key={i} name="star" size={14} className={i < review.s ? 'text-yellow-400 fill-yellow-400' : isDark ? 'text-zinc-700' : 'text-slate-400'} />)}</div>
     </div>
     <p className={`text-sm leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{review.t}</p>
-  </div>
-);
+  </article>
+));
 
-const SmartTimer = ({ isDark, text }: any) => {
+const SmartTimer = memo(({ isDark, text }: any) => {
   const [time, setTime] = useState(600);
-  useEffect(() => { const interval = setInterval(() => { setTime(prev => prev <= 0 ? 600 : prev - 1); }, 1000); return () => clearInterval(interval); }, []);
+  // Intervalo corrigido para limpar corretamente
+  useEffect(() => { 
+    const interval = setInterval(() => { 
+      setTime(prev => prev <= 0 ? 600 : prev - 1); 
+    }, 1000); 
+    return () => clearInterval(interval); 
+  }, []);
+  
   const format = (t: number) => { const m = Math.floor(t / 60); const s = t % 60; return `${m}:${s < 10 ? '0' : ''}${s}`; };
   const isUrgent = time < 60;
+  
   return (
     <div className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all font-inter ${isUrgent ? 'bg-red-500/10 border-red-500/30 text-red-400' : isDark ? 'bg-blue-500/5 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
       <Icon name="watch" size={20} className={isUrgent ? 'animate-pulse' : ''} />
       <span className="text-sm font-semibold">{text}: <span className="font-mono">{format(time)}</span></span>
     </div>
   );
-};
+});
 
-const FAQItem = ({ q, a, isDark }: { q: string; a: string; isDark: boolean }) => {
+const FAQItem = memo(({ q, a, isDark }: { q: string; a: string; isDark: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className={`border-b ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full py-5 flex items-center justify-between text-left group font-inter">
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full py-5 flex items-center justify-between text-left group font-inter" aria-expanded={isOpen}>
         <span className={`text-sm font-semibold font-inter ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{q}</span>
         <span className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-500' : isDark ? 'text-zinc-500' : 'text-slate-500'}`}><Icon name="chevron-down" size={20} /></span>
       </button>
       <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 pb-5' : 'max-h-0'}`}><p className={`text-sm font-inter ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p></div>
     </div>
   );
-};
+});
 
-const RuleItem = ({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
+const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
   <div className={`flex gap-4 p-5 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-slate-200'}`}>
     <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50 text-blue-600'}`}><Icon name={rule.icon} size={24} /></div>
     <div><h4 className={`text-base font-bold mb-1 font-playfair ${isDark ? 'text-white' : 'text-slate-900'}`}>{rule.title}</h4><p className={`text-sm leading-relaxed font-inter ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{rule.description}</p></div>
   </div>
-);
+));
 
 // ==================================================================================
-// FUNÇÕES UTILITÁRIAS
+// 4. LÓGICA DE DADOS E FUNÇÕES PURAS
 // ==================================================================================
 const sanitizeInput = (value: string): string => value.replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
-const cleanupStorage = () => { try { const itemsToRemove: string[] = []; for (let i = 0; i < localStorage.length; i++) { const key = localStorage.key(i); if (key && key.startsWith('@thaly_app')) { const item = localStorage.getItem(key); if (item) { try { const parsed = JSON.parse(item); if (parsed.expires && new Date(parsed.expires) < new Date()) { itemsToRemove.push(key); } } catch (e) { itemsToRemove.push(key); } } } } itemsToRemove.forEach(key => localStorage.removeItem(key)); } catch (e) { console.error('Storage error:', e); } };
 
-// ==================================================================================
-// DADOS, TEXTOS E REVIEWS (COMPLETOS)
-// ==================================================================================
+// Cleanup mais seguro, evita limpar dados de outros sites se rodar em domínio compartilhado
+const cleanupStorage = () => { 
+  try { 
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+        if (key && key.startsWith('@thaly_app')) {
+             try {
+                 const item = localStorage.getItem(key);
+                 if (item) {
+                     const parsed = JSON.parse(item);
+                     if (parsed.expires && new Date(parsed.expires) < new Date()) {
+                         localStorage.removeItem(key);
+                     }
+                 }
+             } catch (e) {
+                 localStorage.removeItem(key);
+             }
+        }
+    });
+  } catch (e) { 
+    console.error('Storage cleanup error:', e); 
+  } 
+};
+
+// Dados extraídos para manter a lógica limpa
 const generateReviews = (isPT: boolean): Review[] => {
   const realReviews = [
     { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: isPT ? "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️" : "You have blessed hands and I soared! I really needed this rest, this peace. It was super respectful all the time and relaxed me a lot. Thank you! ❤️" },
@@ -320,15 +348,15 @@ const getData = (lang: string) => {
     relax: getPrice(145),
     sens: getPrice(175),
     titan: getPrice(205),
-    depil: getPrice(110), // Novo Preço Depilação
+    depil: getPrice(110),
     packRelax: { v: getPrice(490), full: getPrice(585), save: getPrice(95) },
     packTri: { v: getPrice(525), full: getPrice(615), save: getPrice(90) },
-    packMix: { v: getPrice(640), full: getPrice(760), save: getPrice(120) }, // Ajustado
+    packMix: { v: getPrice(640), full: getPrice(760), save: getPrice(120) },
     extras: {
       more_time: getPrice(77),
       touch: getPrice(77),
-      aroma: getPrice(10), // Aroma com preço justo
-      hair_trim: getPrice(50), // Ajustado para 50
+      aroma: getPrice(10),
+      hair_trim: getPrice(50),
       pain_relief: getPrice(10)
     }
   };
@@ -491,7 +519,7 @@ const getData = (lang: string) => {
 };
 
 // ==================================================================================
-// MAIN APP
+// 5. MAIN APP
 // ==================================================================================
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -500,13 +528,12 @@ export default function App() {
   const [step, setStep] = useState(0);
   const [lang, setLang] = useState('pt');
   const [isDark, setIsDark] = useState(true);
-  const [activeTab, setActiveTab] = useState('packs'); // PACOTES PRIMEIRO
+  const [activeTab, setActiveTab] = useState('packs');
   const [toasts, setToasts] = useState<{id: number, msg: string, type: "success" | "error"}[]>([]);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // Menu Lateral
+  const [menuOpen, setMenuOpen] = useState(false);
   
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
@@ -528,14 +555,7 @@ export default function App() {
     date: null,
     time: null,
     locationType: 'home',
-    address: {
-      street: '',
-      number: '',
-      district: '',
-      city: '',
-      comp: '',
-      placeName: ''
-    },
+    address: { street: '', number: '', district: '', city: '', comp: '', placeName: '' },
     payment: '',
     appliedCoupon: null,
     termsAccepted: false,
@@ -546,13 +566,25 @@ export default function App() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const dateScrollRef = useRef<HTMLDivElement>(null);
   
-  // Initialize
+  // SEO: Atualizar título da página
+  useEffect(() => {
+    if (isClient) {
+        document.title = step === 0 ? "Thalyson Massagens - Agende seu Relaxamento" : "Thalyson - Finalizar Reserva";
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+            const meta = document.createElement('meta');
+            meta.name = "description";
+            meta.content = "Agende massagens relaxantes, tântricas e depilação no conforto da sua casa ou hotel. Atendimento profissional e discreto.";
+            document.head.appendChild(meta);
+        }
+    }
+  }, [step, isClient]);
+
   useEffect(() => {
     setIsClient(true);
     cleanupStorage();
   }, []);
   
-  // Load from storage with error handling and validation
   useEffect(() => {
     if (!isClient) return;
     
@@ -615,10 +647,7 @@ export default function App() {
     if (isClient && dataLoaded) {
       try {
         const saveData = {
-          user: {
-            ...user,
-            lastActivity: new Date().toISOString()
-          },
+          user: { ...user, lastActivity: new Date().toISOString() },
           bookingDraft: {
             ...booking,
             appliedCoupon: booking.appliedCoupon ? {
@@ -633,14 +662,9 @@ export default function App() {
         };
         
         const serialized = JSON.stringify(saveData);
-        const size = serialized.length / 1024;
-        
-        if (size > 100) {
-          console.warn('Storage data too large:', size, 'KB');
-          return;
+        if (serialized.length < CONFIG.MAX_STORAGE_SIZE * 1024) { // Check size limit
+            localStorage.setItem(CONFIG.STORAGE_KEY, serialized);
         }
-        
-        localStorage.setItem(CONFIG.STORAGE_KEY, serialized);
         cleanupStorage();
       } catch (e) {
         console.error('Storage error:', e);
@@ -657,15 +681,16 @@ export default function App() {
   
   useEffect(() => {
     scrollRef.current?.scrollTo(0, 0);
+    window.scrollTo(0,0);
   }, [step]);
   
-  const addToast = (msg: string, type: "success" | "error" = "success") => {
+  const addToast = useCallback((msg: string, type: "success" | "error" = "success") => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, msg, type }]);
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3000);
-  };
+  }, []);
   
-  const handleSelectItem = (type: 'single' | 'pack', item: ServiceItem) => {
+  const handleSelectItem = useCallback((type: 'single' | 'pack', item: ServiceItem) => {
     setBooking(prev => ({ 
       ...prev, 
       type, 
@@ -677,11 +702,11 @@ export default function App() {
     }));
     
     if (item.id === 'relaxante') {
-      addToast(T.upgrade_msg, "error");
+      addToast(DATA.text.upgrade_msg, "error");
     } else {
       addToast(item.title, "success");
     }
-  };
+  }, [addToast, DATA.text.upgrade_msg]);
   
   const daysArray = useMemo(() => {
     const days = [];
@@ -733,7 +758,6 @@ export default function App() {
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
     let runningTotal = Math.max(0, sub - disc);
     
-    // Desconto de Mídia (1% sobre o valor após cupom)
     let mediaDisc = 0;
     if (booking.mediaAllowed) {
       mediaDisc = Math.ceil(runningTotal * 0.01);
@@ -855,7 +879,7 @@ ${priceDetails}
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`;
   };
   
-  const validateStep = () => {
+  const validateStep = useCallback(() => {
     if (step === 0 && !booking.item) {
       addToast(T.toast_select_item, "error");
       return false;
@@ -904,7 +928,7 @@ ${priceDetails}
     }
     
     return true;
-  };
+  }, [step, booking, user.name, T, addToast]);
   
   const finishBooking = () => {
     let updatedCoupons = [...user.coupons];
@@ -972,7 +996,7 @@ ${priceDetails}
     setStep(4);
   };
   
-  const handleNextStep = () => {
+  const handleNextStep = useCallback(() => {
     if (validateStep()) {
       if (step === 3) {
         finishBooking();
@@ -980,7 +1004,7 @@ ${priceDetails}
         setStep(s => s + 1);
       }
     }
-  };
+  }, [validateStep, step, finishBooking]);
   
   const scrollDates = (dir: 'left' | 'right') => {
     if (dateScrollRef.current) {
@@ -1026,17 +1050,16 @@ ${priceDetails}
     <>
       <GlobalStyles isDark={isDark} />
       
-      {/* Background Fixo - Fora do fluxo de scroll */}
-      <div className={`fixed inset-0 z-[-1] pointer-events-none ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
+      <div className={`fixed inset-0 z-[-1] pointer-events-none ${isDark ? 'bg-zinc-950' : 'bg-white'}`} aria-hidden="true">
         <div className={`absolute top-0 left-0 w-96 h-96 blur-3xl rounded-full opacity-20 ${isDark ? 'bg-blue-600' : 'bg-blue-400'}`} />
         <div className={`absolute bottom-0 right-0 w-96 h-96 blur-3xl rounded-full opacity-20 ${isDark ? 'bg-indigo-600' : 'bg-indigo-400'}`} />
       </div>
       
-      {/* TOASTS */}
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none px-4 w-full max-w-md">
         {toasts.map(t => (
           <div
             key={t.id}
+            role="alert"
             className={`
               pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-xl shadow-lg animate-fade-in font-inter
               ${t.type === 'success'
@@ -1053,8 +1076,7 @@ ${priceDetails}
       
       <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} isDark={isDark} toggleTheme={() => setIsDark(!isDark)} toggleLang={() => setLang(l => l === 'pt' ? 'en' : 'pt')} lang={lang} user={user} />
 
-      {/* Wrapper principal sem overflow hidden para permitir scroll nativo */}
-      <div className={`min-h-screen relative z-10 pb-32 px-6 md:px-12 max-w-6xl mx-auto ${isDark ? 'text-white' : 'text-black'}`}>
+      <main className={`min-h-screen relative z-10 pb-32 px-6 md:px-12 max-w-6xl mx-auto ${isDark ? 'text-white' : 'text-black'}`}>
         {step !== 4 && (
           <header className="pt-12 pb-6 flex items-start justify-between">
             <div className="flex flex-col">
@@ -1069,11 +1091,10 @@ ${priceDetails}
                 {user.ordersCount || 69} Sessões Realizadas
               </div>
             </div>
-            {/* BOTÃO HAMBURGUER PREMIUM */}
             <button
                onClick={() => setMenuOpen(true)}
                className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isDark ? 'bg-zinc-900 text-white hover:bg-zinc-800' : 'bg-white text-slate-900 shadow-md hover:bg-slate-50'}`}
-               aria-label="Menu"
+               aria-label="Abrir Menu"
             >
                <Icon name="menu" size={24} />
             </button>
@@ -1082,7 +1103,7 @@ ${priceDetails}
         
         <div className="space-y-12">
           {step === 0 && (
-            <div className="space-y-12 animate-fade-in">
+            <section className="space-y-12 animate-fade-in">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-8">
                 <div>
                   <h2 className={`text-4xl md:text-5xl font-playfair font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -1118,7 +1139,7 @@ ${priceDetails}
                       <span>Progresso</span>
                       <span className="text-blue-500">{Math.floor(getCurrentLevelProgress())}%</span>
                     </div>
-                    <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`}>
+                    <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-300'}`} role="progressbar" aria-valuenow={getCurrentLevelProgress()} aria-valuemin={0} aria-valuemax={100}>
                       <div
                         className="h-full bg-gradient-to-r from-blue-600 to-blue-400"
                         style={{ width: `${getCurrentLevelProgress()}%`, transition: 'width 1s ease' }}
@@ -1133,18 +1154,20 @@ ${priceDetails}
                 </div>
               </div>
               
-              <div className={`flex p-1 rounded-2xl border max-w-md mx-auto ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-slate-100 border-slate-200'}`}>
+              <div className={`flex p-1 rounded-2xl border max-w-md mx-auto ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-slate-100 border-slate-200'}`} role="tablist">
                 <button
+                  role="tab"
+                  aria-selected={activeTab === 'packs'}
                   onClick={() => setActiveTab('packs')}
                   className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all font-inter ${activeTab === 'packs' ? 'bg-blue-600 text-white shadow-lg' : isDark ? 'text-zinc-500' : 'text-slate-600'}`}
-                  aria-label="Pacotes"
                 >
                   <Icon name="package" size={18} /> {T.tab_packs}
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={activeTab === 'single'}
                   onClick={() => setActiveTab('single')}
                   className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all font-inter ${activeTab === 'single' ? 'bg-blue-600 text-white shadow-lg' : isDark ? 'text-zinc-500' : 'text-slate-600'}`}
-                  aria-label="Sessão Avulsa"
                 >
                   <Icon name="user" size={18} /> {T.tab_single}
                 </button>
@@ -1165,7 +1188,6 @@ ${priceDetails}
                         </div>
                         <div className="text-right">
                           {s.fullPrice && (
-                            /* CORREÇÃO DO RISCO VERMELHO: Agora discreto e elegante */
                             <span className={`text-xs block mb-1 font-inter font-medium ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
                               De: <span className="line-through">{DATA.currency} {s.fullPrice}</span>
                             </span>
@@ -1260,11 +1282,11 @@ ${priceDetails}
                   ))}
                 </div>
               </div>
-            </div>
+            </section>
           )}
           
           {step === 1 && (
-            <div className="space-y-8 animate-fade-in">
+            <section className="space-y-8 animate-fade-in">
               <div className="text-center">
                 <h2 className={`text-3xl font-playfair font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {T.select_time_title}
@@ -1359,11 +1381,11 @@ ${priceDetails}
                   <p className="text-sm font-medium">{T.empty_slots}</p>
                 </div>
               )}
-            </div>
+            </section>
           )}
           
           {step === 2 && (
-            <div className="space-y-12 animate-fade-in">
+            <section className="space-y-12 animate-fade-in">
               <h2 className={`text-3xl font-playfair font-bold text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {T.location_title}
               </h2>
@@ -1513,6 +1535,8 @@ ${priceDetails}
                             }
                           `}
                           aria-label={`Extra: ${ex.label}`}
+                          role="checkbox"
+                          aria-checked={isActive}
                         >
                           <div className="flex items-center gap-3">
                             <div className={`${isActive ? 'text-blue-500' : isDark ? 'text-zinc-600' : 'text-slate-500'}`}>
@@ -1522,7 +1546,6 @@ ${priceDetails}
                               <p className={`text-sm font-semibold ${isActive ? 'text-blue-500' : isDark ? 'text-zinc-200' : 'text-slate-700'} font-inter`}>
                                 {ex.label}
                               </p>
-                              {/* DESCRIÇÃO DO EXTRA ADICIONADA AQUI */}
                               <p className={`text-xs ${isDark ? 'text-zinc-500' : 'text-slate-500'} font-inter`}>{ex.desc}</p>
                             </div>
                           </div>
@@ -1537,11 +1560,11 @@ ${priceDetails}
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
           )}
           
           {step === 3 && (
-            <div className="space-y-8 animate-fade-in">
+            <section className="space-y-8 animate-fade-in">
               <SmartTimer isDark={isDark} text={T.timer_text} />
               
               <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8">
@@ -1628,7 +1651,7 @@ ${priceDetails}
                           </div>
                         </div>
                       </div>
-                      {/* AVISO DO UBER NO RESUMO */}
+                      
                       <div className={`mt-4 p-3 rounded-xl border flex items-center gap-3 text-xs font-medium ${isDark ? 'bg-zinc-800/50 border-zinc-700 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
                           <Icon name="car" size={16} />
                           <span>{T.uber_notice}</span>
@@ -1670,7 +1693,6 @@ ${priceDetails}
                     )}
                   </div>
 
-                  {/* SEÇÃO DE AUTORIZAÇÃO DE IMAGEM */}
                   <div className={`p-6 rounded-2xl border ${isDark ? 'bg-purple-900/10 border-purple-500/30' : 'bg-purple-50 border-purple-200'}`}>
                       <div className="flex items-start gap-4">
                         <div className={`mt-1 p-2 rounded-lg ${isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-600'}`}>
@@ -1782,11 +1804,11 @@ ${priceDetails}
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
           )}
           
           {step === 4 && (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center text-center animate-fade-in">
+            <section className="min-h-[60vh] flex flex-col items-center justify-center text-center animate-fade-in">
               <div className="relative mb-8">
                 <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center shadow-2xl shadow-blue-600/40 animate-bounce text-white">
                   <Icon name="check" size={40} />
@@ -1827,13 +1849,13 @@ ${priceDetails}
                   {T.back_home}
                 </Button>
               </div>
-            </div>
+            </section>
           )}
         </div>
-      </div>
+      </main>
       
       {step < 4 && booking.item && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-40 pointer-events-none">
+        <nav className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-40 pointer-events-none" aria-label="Navegação da Reserva">
           <div className={`
             max-w-2xl mx-auto rounded-3xl p-4 shadow-2xl border backdrop-blur-xl pointer-events-auto flex justify-between items-center transition-all font-inter
             ${isDark ? 'bg-zinc-900/90 border-zinc-800' : 'bg-white/90 border-slate-200'}
@@ -1862,11 +1884,12 @@ ${priceDetails}
             <Button
               onClick={handleNextStep}
               className="rounded-full !px-6"
+              ariaLabel={step === 3 ? T.finish_btn : T.next_btn}
             >
               {step === 3 ? T.finish_btn : T.next_btn} <Icon name="chevron-right" size={20} className="ml-2" />
             </Button>
           </div>
-        </div>
+        </nav>
       )}
       
       {termsOpen && (
