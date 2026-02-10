@@ -414,7 +414,7 @@ const getData = (lang: string) => {
         title: isPT ? "Fusion Experience" : "Fusion Experience",
         desc: isPT ? "A união perfeita: relaxamento muscular + energia intensa." : "The perfect union: muscle relaxation + intense energy.",
         details: isPT 
-          ? "Começa tirando a tensão muscular\nEvolui para uma troca de energia corpo a corpo\nFinalização intensa e libertadora\nA escolha favorita de quem quer tudo" 
+          ? "Começa tirando a tensão muscular\nEvolui para uma troca de energia corpo a corpo (Massagista de cueca)\nFinalização intensa e libertadora\nA escolha favorita de quem quer tudo" 
           : "Starts removing muscle tension\nEvolves into body-to-body energy exchange\nIntense and liberating finish\nThe favorite choice for those who want it all"
       }
     ] as ServiceItem[],
