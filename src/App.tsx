@@ -390,7 +390,7 @@ const getData = (lang: string) => {
         title: isPT ? "Massagem Clássica" : "Classic Massage",
         desc: isPT ? "Para quem carrega o peso do mundo. Relaxe profundamente." : "For those carrying the world's weight. Deep relaxation.",
         details: isPT 
-          ? "Toque firme e acolhedor nas costas e pernas\nAlivia o estresse e o cansaço mental\nUm momento só seu de silêncio e paz\n(Modalidade terapêutica, sem toque íntimo)" 
+          ? "Toque firme e acolhedor nas no corpo todo, foco nas costas, mãos, pernas e pés. \nAlivia o estresse e o cansaço mental\nUm momento só seu de relaxamento e paz\n(Modalidade terapêutica, sem toque íntimo)" 
           : "Firm and welcoming touch on back and legs\nRelieves stress and mental fatigue\nA moment of peace just for you\n(Therapeutic mode, no intimate touch)"
       },
       {
