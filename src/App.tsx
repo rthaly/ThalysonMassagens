@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v20_optimized', // Versão atualizada
+  STORAGE_KEY: '@thaly_app_v20_optimized',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -18,7 +18,6 @@ const CONFIG = {
   MAX_STORAGE_SIZE: 5000 
 } as const;
 
-// Caminhos SVG movidos para fora para não serem recriados a cada renderização (Ganho massivo de FPS)
 const ICON_PATHS: Record<string, string> = {
   'menu': 'M4 6h16M4 12h16M4 18h16',
   'chevron-left': 'M15 18l-6-6 6-6',
@@ -107,7 +106,6 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   `}} />
 ));
 
-// Ícone Memorizado (Melhor Performance)
 const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
   if (isEmoji) return <span className={`emoji-icon ${className}`} style={{ fontSize: size }} role="img" aria-label={name}>{name}</span>;
 
@@ -118,7 +116,6 @@ const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name:
   );
 });
 
-// Types e Interfaces
 interface ServiceItem { id: string; min: number; price: number; icon: string; isEmoji?: boolean; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; }
 interface Coupon { id: string; val: number; title: string; code: string; }
 interface Review { n: string; loc: string; t: string; s: number; }
@@ -232,7 +229,6 @@ const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }
 
 const SmartTimer = memo(({ isDark, text }: any) => {
   const [time, setTime] = useState(600);
-  // Intervalo corrigido para limpar corretamente
   useEffect(() => { 
     const interval = setInterval(() => { 
       setTime(prev => prev <= 0 ? 600 : prev - 1); 
@@ -277,7 +273,6 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 const sanitizeInput = (value: string): string => value.replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
 
-// Cleanup mais seguro, evita limpar dados de outros sites se rodar em domínio compartilhado
 const cleanupStorage = () => { 
   try { 
     const keys = Object.keys(localStorage);
@@ -301,13 +296,11 @@ const cleanupStorage = () => {
   } 
 };
 
-// Dados extraídos para manter a lógica limpa
 const generateReviews = (isPT: boolean): Review[] => {
   const realReviews = [
+    { n: "Gustavo", loc: "Bela Vista - SP", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões de início de ano e pós-Carnaval. Foi a primeira vez que contratei um massagista pra atender em minha casa e a experiência foi incrível. Ele consegue deixar a gente relaxado, tem mãos incríveis e os efeitos são imediatos, pois eu levantei e parecia que pesava 10kg a menos. Recomendo e já quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax after the tension of early year and post-Carnival. It was the first time I hired a massage therapist at my home and the experience was incredible. He leaves us relaxed, has amazing hands and the effects are immediate, because I stood up and felt 10kg lighter. Highly recommend and want it again." },
     { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: isPT ? "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️" : "You have blessed hands and I soared! I really needed this rest, this peace. It was super respectful all the time and relaxed me a lot. Thank you! ❤️" },
-    { n: "Osvaldo", loc: "Santa Fé do Sul", t: isPT ? "HOJE, 10/02/26 não poderia ter teminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS !!! Que delícia!
-Os 4 pilares essenciais do seu trabalho são bases para transformar o atendimento em uma SENSAÇÃO UNICA que gera valores pro corpo, combinando o aspecto de super EMPATIA com o cliente, sem esquecer da EFICIENCIA e agilidade, clareza durante a sessão, tornando ha, uma visão da PERFEIÇÃO de executar este trabalho de massagem com maestria! Thalyson foca sempre no propósito de servir bem o cliente, desde o início ao fim q é surpreendente! VALE A PENA. 👏👏👏" : "TODAY, 02/10/26, the day couldn’t have ended BETTER, being attended by Thalyson at home in a massage session with his MAGIC HANDS !!! What a delight!
-The 4 essential pillars of his work are the foundation to turn the service into a UNIQUE SENSATION that brings value to the body, combining a super EMPATHY with the client, without forgetting about EFFICIENCY and agility, clarity throughout the session, giving a view of the PERFECTION of performing this massage work with mastery! Thalyson always focuses on the purpose of serving the client well, from start to finish, which is amazing! WORTH IT. 👏👏👏" },
+    { n: "Osvaldo", loc: "Santa Fé do Sul", t: isPT ? "HOJE, 10/02/26 não poderia ter teminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS !!! Que delícia!\nOs 4 pilares essenciais do seu trabalho são bases para transformar o atendimento em uma SENSAÇÃO UNICA que gera valores pro corpo, combinando o aspecto de super EMPATIA com o cliente, sem esquecer da EFICIENCIA e agilidade, clareza durante a sessão, tornando ha, uma visão da PERFEIÇÃO de executar este trabalho de massagem com maestria! Thalyson foca sempre no propósito de servir bem o cliente, desde o início ao fim q é surpreendente! VALE A PENA. 👏👏👏" : "TODAY, 02/10/26, the day couldn’t have ended BETTER, being attended by Thalyson at home in a massage session with his MAGIC HANDS !!! What a delight!\nThe 4 essential pillars of his work are the foundation to turn the service into a UNIQUE SENSATION that brings value to the body, combining a super EMPATHY with the client, without forgetting about EFFICIENCY and agility, clarity throughout the session, giving a view of the PERFECTION of performing this massage work with mastery! Thalyson always focuses on the purpose of serving the client well, from start to finish, which is amazing! WORTH IT. 👏👏👏" },
     { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito." : "Thalyson, I want to say that your massage was very well executed. Highly recommend." },
     { n: "Alan", loc: "SP - Bela Vista", t: isPT ? "Gostei bastante, saí mais leve. Da pra ver que ele manda bem no que faz." : "Liked it a lot, left feeling lighter. You can tell he knows what he's doing." },
     { n: "Tiago", loc: "SP - Bela Vista", t: isPT ? "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida." : "Thalyson has surreal energy. The massage was perfect, best of my life." }
@@ -351,10 +344,12 @@ const getData = (lang: string) => {
     relax: getPrice(145),
     sens: getPrice(175),
     titan: getPrice(205),
+    nuru: getPrice(320), // Ajustado conforme pedido
     depil: getPrice(110),
     packRelax: { v: getPrice(490), full: getPrice(585), save: getPrice(95) },
     packTri: { v: getPrice(525), full: getPrice(615), save: getPrice(90) },
     packMix: { v: getPrice(640), full: getPrice(760), save: getPrice(120) },
+    packSupreme: { v: getPrice(550), full: getPrice(670), save: getPrice(120) }, // Ajustado combo Nuru/Relax/Fusion para refletir o novo valor com desconto atraente
     extras: {
       more_time: getPrice(77),
       touch: getPrice(77),
@@ -409,7 +404,7 @@ const getData = (lang: string) => {
           : "Touches to awaken the skin\nFeeling of lightness and warmth\nSpecial finish (Lingam)\nFor those seeking to feel more"
       },
       {
-        id: 'mista',
+        id: 'mista', // Fusion agora vem ANTES da Nuru
         min: 60,
         price: p.titan,
         icon: "zap",
@@ -419,6 +414,18 @@ const getData = (lang: string) => {
         details: isPT 
           ? "Começa tirando a tensão muscular\nEvolui para uma troca de energia corpo a corpo (Massagista de cueca)\nFinalização intensa e libertadora\nA escolha favorita de quem quer tudo" 
           : "Starts removing muscle tension\nEvolves into body-to-body energy exchange\nIntense and liberating finish\nThe favorite choice for those who want it all"
+      },
+      {
+        id: 'nuru', // Nuru vem DEPOIS da Fusion e focada em acolhimento e entrega
+        min: 60,
+        price: p.nuru,
+        icon: "sparkles",
+        tag: isPT ? "ENTREGA & ACOLHIMENTO" : "SURRENDER & WARMTH",
+        title: isPT ? "Massagem Nuru" : "Nuru Massage",
+        desc: isPT ? "Deslizamento corpo a corpo com gel aquecido. O ápice do relaxamento e cuidado." : "Body-to-body slide with heated gel. The peak of relaxation and care.",
+        details: isPT 
+          ? "Uso de gel Nuru aquecido que hidrata e relaxa\nContato intenso e acolhedor corpo a corpo\nAlivia o estresse profundo através do calor e fricção\nUma experiência de pura liberdade e conexão" 
+          : "Use of heated Nuru gel that hydrates and relaxes\nIntense and welcoming body-to-body contact\nRelieves deep stress through heat and friction\nAn experience of pure freedom and connection"
       }
     ] as ServiceItem[],
     extras: [
@@ -431,10 +438,11 @@ const getData = (lang: string) => {
     plans: [
       { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4x)" : "Relax Pack (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: isPT ? "4 Sessões Relaxantes" : "4 Relax Sessions", details: isPT ? "Garanta sua paz semanalmente.\nO cuidado constante que você merece." : "Ensure your weekly peace.\nThe constant care you deserve.", tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: "package" },
       { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Fusion (3x)" : "Fusion Pack (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: isPT ? "3 Sessões Fusion" : "3 Fusion Sessions", details: isPT ? "Três encontros intensos.\nPara quem precisa escapar da rotina." : "Three intense encounters.\nFor those who need to escape routine.", tag: isPT ? "ESCAPE" : "ESCAPE", icon: "layers" },
+      { id: 'pack_supreme', type: 'pack', title: isPT ? "Pack Supreme (3x)" : "Supreme Pack (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: isPT ? "1 Nuru + 1 Relaxante + 1 Fusion" : "1 Nuru + 1 Relax + 1 Fusion", details: isPT ? "O cuidado máximo com o seu bem-estar.\nTrês momentos de fuga da rotina para você se renovar." : "The maximum care for your well-being.\nThree moments of escape from routine for you to renew yourself.", tag: "VIP", icon: "award" },
       { id: 'pack_mix_4', type: 'pack', title: isPT ? "Ciclo Completo" : "Full Cycle", price: p.packMix.v, fullPrice: p.packMix.full, savings: p.packMix.save, desc: isPT ? "2 Sensoriais + 2 Fusion" : "2 Sensory + 2 Fusion", details: isPT ? "Explore todas as sensações.\nVariedade para cada momento seu." : "Explore all sensations.\nVariety for your every moment.", tag: "PREMIUM", icon: "star" }
     ] as ServiceItem[],
     faq: [
-      { q: isPT ? "Onde é o atendimento?" : "Where is the service?", a: isPT ? "Atendo exclusivamente a domicílio (sua residência, hotel ou motel). Não possuo local próprio e não levo maca: a sessão é realizada na sua cama ou sofá, garantindo seu conforto e privacidade total." : "I attend exclusively at your home, hotel or motel. I do not have my own place and I do not bring a massage table: the session is held on your bed or sofa, ensuring your comfort and total privacy." },
+      { q: isPT ? "Onde é o atendimento?" : "Where is the service?", a: isPT ? "Atendo exclusivamente a domicílio (sua residência, hotel ou motel). Não possuo local próprio, a sessão é realizada na sua cama ou sofá, garantindo seu conforto e privacidade total." : "I attend exclusively at your home, hotel or motel. I do not have my own place, the session is held on your bed or sofa, ensuring your comfort and total privacy." },
       { q: isPT ? "É seguro e discreto?" : "Is it safe and discreet?", a: isPT ? "Absolutamente. Atendo homens casados, solteiros e pessoas públicas com total sigilo. Ninguém precisa saber do seu momento." : "Absolutely. I attend married men, singles and public figures with total secrecy. No one needs to know about your moment." },
       { q: isPT ? "Como devo me preparar?" : "How should I prepare?", a: isPT ? "Apenas tome um banho e venha de coração aberto. Se preferir, separe um lençol, mas levo óleos de qualidade que não mancham." : "Just take a shower and come with an open heart. If you prefer, separate a sheet, but I bring quality oils that don't stain." },
       { q: isPT ? "Tenho vergonha do meu corpo..." : "I'm ashamed of my body...", a: isPT ? "Não tenha. Aqui não há julgamentos, apenas acolhimento. Todos os corpos merecem toque e carinho." : "Don't be. There are no judgments here, only acceptance. All bodies deserve touch and care." }
@@ -456,7 +464,7 @@ const getData = (lang: string) => {
     currency,
     text: {
       welcome: isPT ? "Olá," : "Hello,",
-      choose_sub: isPT ? "Como você quer se sentir hoje? Escolha sua experiência." : "How do you want to feel today? Choose your experience.",
+      choose_sub: isPT ? "Como você quer se sentir hoje? Permita-se esse cuidado." : "How do you want to feel today? Allow yourself this care.",
       level_label: isPT ? "Sua Jornada" : "Your Journey",
       tab_packs: isPT ? "Pacotes" : "Packages",
       tab_single: isPT ? "Sessão Avulsa" : "Single Session",
