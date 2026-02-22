@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v20_optimized', // Versão atualizada
+  STORAGE_KEY: '@thaly_app_v20_optimized',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -18,7 +18,6 @@ const CONFIG = {
   MAX_STORAGE_SIZE: 5000 
 } as const;
 
-// Caminhos SVG movidos para fora para não serem recriados a cada renderização (Ganho massivo de FPS)
 const ICON_PATHS: Record<string, string> = {
   'menu': 'M4 6h16M4 12h16M4 18h16',
   'chevron-left': 'M15 18l-6-6 6-6',
@@ -107,7 +106,6 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   `}} />
 ));
 
-// Ícone Memorizado (Melhor Performance)
 const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
   if (isEmoji) return <span className={`emoji-icon ${className}`} style={{ fontSize: size }} role="img" aria-label={name}>{name}</span>;
 
@@ -118,7 +116,6 @@ const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name:
   );
 });
 
-// Types e Interfaces
 interface ServiceItem { id: string; min: number; price: number; icon: string; isEmoji?: boolean; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; }
 interface Coupon { id: string; val: number; title: string; code: string; }
 interface Review { n: string; loc: string; t: string; s: number; }
@@ -232,7 +229,6 @@ const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }
 
 const SmartTimer = memo(({ isDark, text }: any) => {
   const [time, setTime] = useState(600);
-  // Intervalo corrigido para limpar corretamente
   useEffect(() => { 
     const interval = setInterval(() => { 
       setTime(prev => prev <= 0 ? 600 : prev - 1); 
@@ -277,7 +273,6 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 const sanitizeInput = (value: string): string => value.replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
 
-// Cleanup mais seguro, evita limpar dados de outros sites se rodar em domínio compartilhado
 const cleanupStorage = () => { 
   try { 
     const keys = Object.keys(localStorage);
@@ -301,7 +296,6 @@ const cleanupStorage = () => {
   } 
 };
 
-// Dados extraídos para manter a lógica limpa
 const generateReviews = (isPT: boolean): Review[] => {
   const realReviews = [
     { n: "Cliente", loc: "Atendimento em Casa", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões de início de ano e pós-Carnaval. Foi a primeira vez que contratei um massagista pra atender em minha casa e a experiência foi incrível. Ele consegue deixar a gente relaxado, tem mãos incríveis e os efeitos são imediatos, pois eu levantei e parecia que pesava 10kg a menos. Recomendo e já quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax after the tension of early year and post-Carnival. It was the first time I hired a massage therapist at my home and the experience was incredible. He leaves us relaxed, has amazing hands and the effects are immediate, because I stood up and felt 10kg lighter. Highly recommend and want it again." },
@@ -350,12 +344,12 @@ const getData = (lang: string) => {
     relax: getPrice(145),
     sens: getPrice(175),
     titan: getPrice(205),
-    nuru: getPrice(250), // Novo Nuru
+    nuru: getPrice(320), // Ajustado conforme pedido
     depil: getPrice(110),
     packRelax: { v: getPrice(490), full: getPrice(585), save: getPrice(95) },
     packTri: { v: getPrice(525), full: getPrice(615), save: getPrice(90) },
     packMix: { v: getPrice(640), full: getPrice(760), save: getPrice(120) },
-    packSupreme: { v: getPrice(500), full: getPrice(600), save: getPrice(100) }, // Novo Pacote Nuru/Relax/Fusion
+    packSupreme: { v: getPrice(550), full: getPrice(670), save: getPrice(120) }, // Ajustado combo Nuru/Relax/Fusion para refletir o novo valor com desconto atraente
     extras: {
       more_time: getPrice(77),
       touch: getPrice(77),
@@ -410,19 +404,7 @@ const getData = (lang: string) => {
           : "Touches to awaken the skin\nFeeling of lightness and warmth\nSpecial finish (Lingam)\nFor those seeking to feel more"
       },
       {
-        id: 'nuru',
-        min: 60,
-        price: p.nuru,
-        icon: "sparkles",
-        tag: isPT ? "IMERSÃO & DESLIZAMENTO" : "SLIDE & IMMERSION",
-        title: isPT ? "Massagem Nuru" : "Nuru Massage",
-        desc: isPT ? "Deslizamento corpo a corpo com gel especial. Experiência altamente sensorial." : "Body-to-body sliding with special gel. Highly sensory experience.",
-        details: isPT 
-          ? "Uso de gel Nuru aquecido à base de algas marinhas\nContato intenso e deslizamento contínuo corpo a corpo\nAlivia tensões profundas através da fricção térmica\nUma experiência inesquecível, envolvente e luxuosa" 
-          : "Use of heated seaweed-based Nuru gel\nIntense contact and continuous body-to-body slide\nRelieves deep tension through thermal friction\nAn unforgettable, immersive and luxurious experience"
-      },
-      {
-        id: 'mista',
+        id: 'mista', // Fusion agora vem ANTES da Nuru
         min: 60,
         price: p.titan,
         icon: "zap",
@@ -432,6 +414,18 @@ const getData = (lang: string) => {
         details: isPT 
           ? "Começa tirando a tensão muscular\nEvolui para uma troca de energia corpo a corpo (Massagista de cueca)\nFinalização intensa e libertadora\nA escolha favorita de quem quer tudo" 
           : "Starts removing muscle tension\nEvolves into body-to-body energy exchange\nIntense and liberating finish\nThe favorite choice for those who want it all"
+      },
+      {
+        id: 'nuru', // Nuru vem DEPOIS da Fusion e focada em acolhimento e entrega
+        min: 60,
+        price: p.nuru,
+        icon: "sparkles",
+        tag: isPT ? "ENTREGA & ACOLHIMENTO" : "SURRENDER & WARMTH",
+        title: isPT ? "Massagem Nuru" : "Nuru Massage",
+        desc: isPT ? "Deslizamento corpo a corpo com gel aquecido. O ápice do relaxamento e cuidado." : "Body-to-body slide with heated gel. The peak of relaxation and care.",
+        details: isPT 
+          ? "Uso de gel Nuru aquecido que hidrata e relaxa\nContato intenso e acolhedor corpo a corpo\nAlivia o estresse profundo através do calor e fricção\nUma experiência de pura liberdade e conexão" 
+          : "Use of heated Nuru gel that hydrates and relaxes\nIntense and welcoming body-to-body contact\nRelieves deep stress through heat and friction\nAn experience of pure freedom and connection"
       }
     ] as ServiceItem[],
     extras: [
@@ -444,7 +438,7 @@ const getData = (lang: string) => {
     plans: [
       { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4x)" : "Relax Pack (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: isPT ? "4 Sessões Relaxantes" : "4 Relax Sessions", details: isPT ? "Garanta sua paz semanalmente.\nO cuidado constante que você merece." : "Ensure your weekly peace.\nThe constant care you deserve.", tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: "package" },
       { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Fusion (3x)" : "Fusion Pack (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: isPT ? "3 Sessões Fusion" : "3 Fusion Sessions", details: isPT ? "Três encontros intensos.\nPara quem precisa escapar da rotina." : "Three intense encounters.\nFor those who need to escape routine.", tag: isPT ? "ESCAPE" : "ESCAPE", icon: "layers" },
-      { id: 'pack_supreme', type: 'pack', title: isPT ? "Pack Supreme (3x)" : "Supreme Pack (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: isPT ? "1 Nuru + 1 Relaxante + 1 Fusion" : "1 Nuru + 1 Relax + 1 Fusion", details: isPT ? "A jornada definitiva.\nExperimente todas as nossas melhores técnicas em três sessões distintas." : "The ultimate journey.\nExperience all our best techniques in three distinct sessions.", tag: "VIP", icon: "award" },
+      { id: 'pack_supreme', type: 'pack', title: isPT ? "Pack Supreme (3x)" : "Supreme Pack (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: isPT ? "1 Nuru + 1 Relaxante + 1 Fusion" : "1 Nuru + 1 Relax + 1 Fusion", details: isPT ? "O cuidado máximo com o seu bem-estar.\nTrês momentos de fuga da rotina para você se renovar." : "The maximum care for your well-being.\nThree moments of escape from routine for you to renew yourself.", tag: "VIP", icon: "award" },
       { id: 'pack_mix_4', type: 'pack', title: isPT ? "Ciclo Completo" : "Full Cycle", price: p.packMix.v, fullPrice: p.packMix.full, savings: p.packMix.save, desc: isPT ? "2 Sensoriais + 2 Fusion" : "2 Sensory + 2 Fusion", details: isPT ? "Explore todas as sensações.\nVariedade para cada momento seu." : "Explore all sensations.\nVariety for your every moment.", tag: "PREMIUM", icon: "star" }
     ] as ServiceItem[],
     faq: [
@@ -470,7 +464,7 @@ const getData = (lang: string) => {
     currency,
     text: {
       welcome: isPT ? "Olá," : "Hello,",
-      choose_sub: isPT ? "Como você quer se sentir hoje? Escolha sua experiência." : "How do you want to feel today? Choose your experience.",
+      choose_sub: isPT ? "Como você quer se sentir hoje? Permita-se esse cuidado." : "How do you want to feel today? Allow yourself this care.",
       level_label: isPT ? "Sua Jornada" : "Your Journey",
       tab_packs: isPT ? "Pacotes" : "Packages",
       tab_single: isPT ? "Sessão Avulsa" : "Single Session",
