@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v20_optimized', // Mantida para não perder XP do cliente
+  STORAGE_KEY: '@thaly_app_v20_optimized', // Mantida para preservar XP dos clientes
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -18,6 +18,7 @@ const CONFIG = {
   MAX_STORAGE_SIZE: 5000 
 } as const;
 
+// Caminhos SVG movidos para fora para não serem recriados a cada renderização
 const ICON_PATHS: Record<string, string> = {
   'menu': 'M4 6h16M4 12h16M4 18h16',
   'chevron-left': 'M15 18l-6-6 6-6',
@@ -63,12 +64,12 @@ const ICON_PATHS: Record<string, string> = {
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM & ESTILOS GLOBAIS (Minimalista e Elegante)
+// 2. DESIGN SYSTEM & ESTILOS GLOBAIS (UX Minimalista e Elegante)
 // ==================================================================================
 
 const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   <style dangerouslySetInnerHTML={{ __html: `
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
     
     * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
     
@@ -109,7 +110,7 @@ const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name:
   );
 });
 
-// Formatador Financeiro Profissional
+// Formatador Sênior e Protegido
 const formatMoney = (val: number | undefined, isPT: boolean = true) => {
   if (val === undefined || isNaN(val)) return isPT ? 'R$ 0,00' : '$0.00';
   return isPT ? `R$ ${val.toFixed(2).replace('.', ',')}` : `$${val.toFixed(2)}`;
@@ -157,7 +158,7 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang,
         </div>
         
         <div className="mb-10 p-5 rounded-2xl bg-zinc-900 text-white shadow-inner">
-          <p className="text-[10px] uppercase font-bold tracking-widest mb-1 opacity-70">Histórico de Cuidado</p>
+          <p className="text-[10px] opacity-70 uppercase font-bold tracking-widest mb-1">Histórico de Cuidado</p>
           <div className="flex justify-between items-end">
              <span className="text-3xl font-light font-playfair">{user.xp} <span className="text-sm font-bold text-blue-400 font-sans">XP</span></span>
              <Icon name="award" className="text-blue-400" />
@@ -167,18 +168,18 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang,
         <nav className="space-y-4">
           <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
             <div className="flex items-center gap-4">
-              <Icon name={isDark ? "moon" : "sun"} className={isDark ? 'text-zinc-400' : 'text-slate-400'} />
+              <Icon name={isDark ? "moon" : "sun"} className={isDark ? "text-zinc-400" : "text-slate-400"} />
               <span className="font-medium">Interface</span>
             </div>
-            <span className="text-xs opacity-50 uppercase tracking-widest font-bold">{isDark ? 'Noturna' : 'Clara'}</span>
+            <span className="text-xs font-bold opacity-50 uppercase tracking-widest">{isDark ? 'Noturna' : 'Clara'}</span>
           </button>
           
           <button onClick={toggleLang} className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
             <div className="flex items-center gap-4">
-              <Icon name="globe" className={isDark ? 'text-zinc-400' : 'text-slate-400'} />
+              <Icon name="globe" className={isDark ? "text-zinc-400" : "text-slate-400"} />
               <span className="font-medium">Idioma</span>
             </div>
-            <span className="text-xs opacity-50 uppercase tracking-widest font-bold">{lang}</span>
+            <span className="text-xs font-bold opacity-50 uppercase tracking-widest">{lang}</span>
           </button>
 
           <button onClick={() => { if(navigator.share) navigator.share({title: 'Thalyson Massagens', url: window.location.href}) }} className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
@@ -209,7 +210,7 @@ const InputField = memo(({ label, value, onChange, placeholder, icon, type = "te
     {label && <label className={`text-[10px] font-bold uppercase tracking-widest font-poppins ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{label}</label>}
     <div className="relative">
       {icon && <div className={`absolute left-4 top-1/2 -translate-y-1/2 ${hasError ? 'text-red-500' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name={icon} size={18} /></div>}
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-12 rounded-xl outline-none text-sm transition-all font-poppins bg-transparent ${icon ? 'pl-11 pr-4' : 'px-4'} ${hasError ? 'border border-red-500/50 bg-red-500/5 text-red-500 placeholder:text-red-400' : isDark ? 'border border-zinc-800 text-zinc-100 placeholder:text-zinc-700 focus:border-zinc-500' : 'border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-slate-400'}`} />
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-12 rounded-xl outline-none text-sm font-medium transition-all font-poppins bg-transparent ${icon ? 'pl-11 pr-4' : 'px-4'} ${hasError ? 'border border-red-500/50 bg-red-500/5 placeholder:text-red-400/50 text-red-500' : isDark ? 'border border-zinc-800 text-zinc-100 placeholder:text-zinc-700 focus:border-zinc-500' : 'border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-slate-400'}`} />
     </div>
   </div>
 ));
@@ -277,11 +278,12 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 ));
 
 // ==================================================================================
-// 4. LÓGICA DE DADOS E FUNÇÕES PURAS (COPY SÊNIOR + AVALIAÇÕES ORIGINAIS)
+// 4. LÓGICA DE DADOS E FUNÇÕES PURAS (COM BLINDAGEM DE CACHE)
 // ==================================================================================
 const sanitizeInput = (value: string): string => value.replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
 
+// Limpeza segura silenciosa
 const cleanupStorage = () => { 
   try { 
     const keys = Object.keys(localStorage);
@@ -303,7 +305,7 @@ const cleanupStorage = () => {
   } catch (e) { console.error('Storage cleanup error:', e); } 
 };
 
-// Avaliações estritamente restauradas do primeiro código conforme pedido
+// Avaliações estritamente restauradas do primeiro código
 const generateReviews = (isPT: boolean): Review[] => {
   const realReviews = [
     { n: "Cliente", loc: "Atendimento em Casa", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões de início de ano e pós-Carnaval. Foi a primeira vez que contratei um massagista pra atender em minha casa e a experiência foi incrível. Ele consegue deixar a gente relaxado, tem mãos incríveis e os efeitos são imediatos, pois eu levantei e parecia que pesava 10kg a menos. Recomendo e já quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax after the tension of early year and post-Carnival. It was the first time I hired a massage therapist at my home and the experience was incredible. He leaves us relaxed, has amazing hands and the effects are immediate, because I stood up and felt 10kg lighter. Highly recommend and want it again." },
@@ -350,7 +352,7 @@ const getData = (lang: string) => {
     relax: getPrice(145),
     sens: getPrice(175),
     titan: getPrice(205),
-    nuru: getPrice(320), // Nuru com valor de 320
+    nuru: getPrice(320),
     depil: getPrice(110),
     packRelax: { v: getPrice(490), full: getPrice(585), save: getPrice(95) },
     packTri: { v: getPrice(525), full: getPrice(615), save: getPrice(90) },
@@ -500,7 +502,7 @@ const getData = (lang: string) => {
       success_sub: isPT ? "Seu pedido de reserva está rascunhado. Direcione o sumário ao WhatsApp corporativo para averbação final." : "Your booking request is drafted. Direct the summary to corporate WhatsApp for final confirmation.",
       whatsapp_btn: isPT ? "Submeter via WhatsApp" : "Submit via WhatsApp",
       back_home: isPT ? "Retornar ao Painel" : "Return to Dashboard",
-      timer_text: isPT ? "Reserva Sistêmica" : "System reservation",
+      timer_text: isPT ? "Reserva sistêmica" : "System reservation",
       motel_note: isPT ? "O deslocamento é garantido. A averbação do leito fica sob encargo do titular da reserva." : "Displacement is guaranteed. Suite booking is the responsibility of the reservation holder.",
       upgrade_msg: isPT ? "Excelente escolha para alívio estrutural. Caso a tensão seja também mental, sugere-se a Tântrica." : "Excellent choice for structural relief. If tension is also mental, consider the Tantric modality.",
       input_name: isPT ? "Nome de Identificação" : "Identification Name",
@@ -576,7 +578,7 @@ export default function App() {
         if (!metaDesc) {
             const meta = document.createElement('meta');
             meta.name = "description";
-            meta.content = "Atendimento terapêutico focado no alívio severo de estresse. Logística domiciliar ou hoteleira em total sigilo.";
+            meta.content = "Descompressão sistêmica e atendimento terapêutico focado no alívio severo de estresse. Logística domiciliar ou corporativa com total sigilo.";
             document.head.appendChild(meta);
         }
     }
@@ -602,7 +604,6 @@ export default function App() {
       if (stored) {
         const parsed = JSON.parse(stored);
         
-        // 1. Carrega dados do usuário preservando histórico
         if (parsed.user && typeof parsed.user === 'object') {
           loadedUser = {
             name: parsed.user.name || '',
@@ -615,7 +616,6 @@ export default function App() {
           };
         }
         
-        // 2. Verifica e valida o rascunho de forma segura
         let draftItemExists = false;
         if (parsed.bookingDraft && parsed.bookingDraft.item && parsed.bookingDraft.item.id) {
            const allServices = [...DATA.services, ...DATA.plans];
@@ -628,6 +628,8 @@ export default function App() {
             loadedBooking = {
               ...booking,
               ...parsed.bookingDraft,
+              // GARENTE QUE EXTRAS NUNCA SEJA UNDEFINED E CRASHE O APP
+              extras: typeof parsed.bookingDraft.extras === 'object' && parsed.bookingDraft.extras !== null ? parsed.bookingDraft.extras : {},
               mediaAllowed: parsed.bookingDraft.mediaAllowed || false,
               address: { 
                 street: sanitizeInput(parsed.bookingDraft.address?.street || ''), 
@@ -644,12 +646,12 @@ export default function App() {
             }
           }
         } else if (parsed.bookingDraft) {
-           // CACHE ANTIGO DETECTADO: Limpa o rascunho, mas mantém usuário e XP (Evita tela branca)
+           // CACHE ANTIGO: Limpa o rascunho sem travar a tela
            loadedStep = 0;
         }
       }
     } catch (e) {
-      console.error('Falha de Cache - Resetando rascunho', e);
+      console.error('Falha de Cache - Resetando', e);
       loadedStep = 0;
     }
     
@@ -698,7 +700,7 @@ export default function App() {
     setBooking(prev => ({ ...prev, type, item, extras: {}, payment: '', termsAccepted: false, bookingId: `BOOK_${Date.now()}` }));
     if (item.id === 'relaxante') addToast(DATA.text.upgrade_msg, "success");
     else addToast(item.title, "success");
-    setTimeout(() => setStep(1), 300); // Avanço Automático Liso
+    setTimeout(() => setStep(1), 300); // AVANÇO AUTOMÁTICO UX
   }, [addToast, DATA.text.upgrade_msg]);
   
   const applyManualCoupon = () => {
@@ -734,7 +736,8 @@ export default function App() {
   const financials = useMemo(() => {
     if (!booking.item) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0 };
     let sub = booking.item.price;
-    Object.keys(booking.extras).forEach(k => { 
+    // PROTEÇÃO CRÍTICA DO OBJECT.KEYS
+    Object.keys(booking.extras || {}).forEach(k => { 
       if (booking.extras[k]) { 
         const extData = DATA.extras.find(e => e.id === k); 
         if (extData) sub += booking.type !== 'single' ? Math.floor(extData.price * 0.8) : extData.price; 
@@ -785,7 +788,8 @@ export default function App() {
       mapQuery = fullAddr; 
     }
     
-    const extrasList = Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => { 
+    // PROTEÇÃO CRÍTICA DO OBJECT.KEYS
+    const extrasList = Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).map(k => { 
       const ex = DATA.extras.find(e => e.id === k); 
       if (!ex) return ''; 
       return `✅ ${ex.label} (+${formatMoney(booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price, lang === 'pt')})`; 
@@ -877,8 +881,17 @@ ${priceDetails}
       }
     });
     
-    const newOrdersCount = user.ordersCount + 1;
-    setUser(prev => ({ ...prev, xp: newXP, coupons: updatedCoupons, usedCoupons: updatedHistory, ordersCount: newOrdersCount, lastActivity: new Date().toISOString() }));
+    // ATUALIZAÇÃO SEGURA DO CONTADOR BASEADA NO HISTÓRICO
+    const newOrdersCount = (user.ordersCount || 0) + 1;
+    
+    setUser(prev => ({ 
+      ...prev, 
+      xp: newXP, 
+      coupons: updatedCoupons, 
+      usedCoupons: updatedHistory, 
+      ordersCount: newOrdersCount, 
+      lastActivity: new Date().toISOString() 
+    }));
     
     if (leveledUp) { 
       setLevelUpPopup(true); 
@@ -954,8 +967,8 @@ ${priceDetails}
                 </h1>
                 <div className="flex items-center gap-2 text-[10px] text-zinc-500 uppercase tracking-widest mt-3 font-medium font-inter">
                   <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-zinc-500"></span></span>
-                  {/* Corrigido o Contador com Base 69 */}
-                  {69 + user.ordersCount} Vidas Reestruturadas
+                  {/* Corrigido o Contador de Sessões */}
+                  {69 + (user.ordersCount || 0)} Vidas Reestruturadas
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -970,7 +983,7 @@ ${priceDetails}
               </div>
             </div>
             
-            {/* Indicador de Progresso (UX Limpo) */}
+            {/* Indicador de Progresso Minimalista */}
             {step > 0 && step < 4 && (
               <div className="mt-12 flex items-center justify-between gap-4 max-w-sm mx-auto">
                 {[1, 2, 3].map(i => (
@@ -992,7 +1005,7 @@ ${priceDetails}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center py-4">
                 <div>
                   <h2 className={`text-4xl md:text-5xl font-playfair font-medium leading-tight mb-6 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
-                    {T.welcome} <span className="font-italic text-zinc-500">{user.name ? user.name.split(' ')[0] : (isPT ? "Visitante" : "Visitor")}.</span>
+                    {T.welcome} <span className="font-italic text-zinc-500">{user.name ? user.name.split(' ')[0] : (isPT ? "Priorize-se" : "Visitor")}.</span>
                   </h2>
                   <p className={`text-base md:text-lg font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                     {T.choose_sub}
@@ -1010,7 +1023,7 @@ ${priceDetails}
                           {T.level_label}
                         </span>
                         <h3 className={`text-xl font-playfair ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
-                          {user.xp >= 800 ? "Íntimo Plus" : (DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title)}
+                          {user.xp >= 800 ? "Plenitude Alcançada Plus" : (DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title)}
                         </h3>
                       </div>
                     </div>
@@ -1064,7 +1077,7 @@ ${priceDetails}
                           </span>
                           {s.savings && (
                             <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full block mt-2 border ${isDark ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>
-                              ECONOMIA: {formatMoney(s.savings, isPT)}
+                              BENEFÍCIO: {formatMoney(s.savings, isPT)}
                             </span>
                           )}
                         </div>
@@ -1095,7 +1108,7 @@ ${priceDetails}
                 ))}
               </div>
               
-              {/* Avaliações do Primeiro Código */}
+              {/* Avaliações Sênior Restauradas */}
               <div className="py-16 relative">
                 <div className="flex items-center justify-between mb-10 px-2">
                   <h3 className={`text-2xl font-playfair ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
@@ -1139,7 +1152,7 @@ ${priceDetails}
               
               <div className={`p-5 rounded-2xl flex items-center justify-between border ${isDark ? 'bg-zinc-900/30 border-zinc-800/50' : 'bg-white border-slate-200/50 shadow-sm'}`}>
                  <span className={`text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{booking.item?.title}</span>
-                 <button onClick={() => setStep(0)} className={`text-[10px] uppercase font-bold tracking-widest transition-colors ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-700'}`}>Trocar Escolha</button>
+                 <button onClick={() => setStep(0)} className={`text-[10px] uppercase font-bold tracking-widest transition-colors ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-700'}`}>Reavaliar</button>
               </div>
 
               <div className="relative mt-12">
@@ -1197,8 +1210,8 @@ ${priceDetails}
               
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { id: 'home', label: isPT ? 'Residência' : 'Home', icon: 'home' },
-                  { id: 'motel', label: 'Motel', icon: 'bed' },
+                  { id: 'home', label: isPT ? 'Sede Própria' : 'Home', icon: 'home' },
+                  { id: 'motel', label: 'Suíte', icon: 'bed' },
                   { id: 'hotel', label: 'Hotel', icon: 'building' }
                 ].map(x => (
                   <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} className={`py-6 rounded-3xl flex flex-col items-center gap-4 transition-all border ${booking.locationType === x.id ? isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-slate-100 border-slate-300 text-slate-900' : isDark ? 'bg-zinc-900/30 border-zinc-800/50 text-zinc-500 hover:border-zinc-700' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300 shadow-sm'}`}>
@@ -1214,7 +1227,7 @@ ${priceDetails}
                 {booking.locationType === 'home' && (
                   <>
                     <div className="grid grid-cols-[1fr_100px] gap-4">
-                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder={isPT ? "Rua / Avenida" : "Street"} hasError={!booking.address.street} />
+                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder={isPT ? "Avenida / Rua" : "Street"} hasError={!booking.address.street} />
                       <InputField isDark={isDark} label={T.input_num} value={booking.address.number} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))} placeholder="Nº" type="tel" hasError={!booking.address.number} />
                     </div>
                     <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder={isPT ? "Bairro" : "District"} hasError={!booking.address.district} />
@@ -1227,7 +1240,7 @@ ${priceDetails}
                 
                 {booking.locationType === 'hotel' && (
                   <>
-                    <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder={isPT ? "Nome do hotel" : "Hotel name"} hasError={!booking.address.placeName} />
+                    <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder={isPT ? "Nome da Instalação" : "Hotel name"} hasError={!booking.address.placeName} />
                     <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={isPT ? "Cidade" : "City"} hasError={!booking.address.city} />
                     <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Nº do Quarto" />
                   </>
@@ -1301,18 +1314,20 @@ ${priceDetails}
                       </span>
                     </div>
                     
-                    {Object.keys(booking.extras).filter(k => booking.extras[k]).length > 0 && (
+                    {/* PROTEÇÃO CONTRA CACHE UNDEFINED */}
+                    {Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).length > 0 && (
                       <div className={`pt-8 border-t ${isDark ? 'border-zinc-800/50' : 'border-slate-100'}`}>
                         <p className={`text-[10px] uppercase font-bold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
-                          ADICIONAIS
+                          EXTENSÕES CLÍNICAS
                         </p>
                         <div className="space-y-3">
-                          {Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => {
+                          {Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).map(k => {
                             const ex = DATA.extras.find(e => e.id === k);
-                            const price = booking.type !== 'single' ? Math.floor(ex!.price * 0.8) : ex!.price;
+                            if (!ex) return null; // PREVINE TELA BRANCA
+                            const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
                             return (
                               <div key={k} className="flex justify-between text-sm font-light">
-                                <span className={isDark ? 'text-zinc-400' : 'text-slate-600'}>{ex!.label}</span>
+                                <span className={isDark ? 'text-zinc-400' : 'text-slate-600'}>{ex.label}</span>
                                 <span className={`font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>+ {formatMoney(price, isPT)}</span>
                               </div>
                             );
@@ -1377,8 +1392,8 @@ ${priceDetails}
                     </h3>
                     
                     <div className="flex gap-2 mb-5">
-                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Código do Cupom" className={`flex-1 h-12 px-4 rounded-xl text-sm outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-700' : 'border-slate-300 focus:border-slate-400 text-slate-900 placeholder:text-slate-400'}`} />
-                      <button onClick={applyManualCoupon} className={`px-5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-slate-900 text-white hover:bg-slate-800'}`}>Aplicar</button>
+                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Validação Técnica" className={`flex-1 h-12 px-4 rounded-xl text-sm outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-700' : 'border-slate-300 focus:border-slate-400 text-slate-900 placeholder:text-slate-400'}`} />
+                      <button onClick={applyManualCoupon} className={`px-5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-slate-900 text-white hover:bg-slate-800'}`}>Ativar</button>
                     </div>
 
                     {user.coupons.length > 0 && (
@@ -1399,7 +1414,7 @@ ${priceDetails}
                            <h3 className={`text-lg font-playfair mb-2 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.media_title}</h3>
                            <p className={`text-xs font-light leading-relaxed mb-5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.media_desc}</p>
                            <button onClick={() => setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed }))} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all text-xs font-bold uppercase tracking-widest ${booking.mediaAllowed ? isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-slate-100 border-slate-200 text-slate-800' : isDark ? 'bg-transparent border-zinc-800 text-zinc-500 hover:border-zinc-700' : 'bg-transparent border-slate-200 text-slate-500 hover:border-slate-300'}`}>
-                              <span>{booking.mediaAllowed ? 'Autorizado' : 'Não Autorizar'}</span>
+                              <span>{booking.mediaAllowed ? 'Concedido' : 'Reter Autorização'}</span>
                               {booking.mediaAllowed ? <div className="flex items-center gap-2"><span className={`text-[9px] px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-200 text-slate-600'}`}>-1%</span><Icon name="check" size={14} /></div> : <span className={`text-[9px] ${isDark ? 'text-zinc-400' : 'text-slate-400'}`}>{T.media_bonus}</span>}
                            </button>
                         </div>
@@ -1410,9 +1425,9 @@ ${priceDetails}
                     <h3 className={`text-lg font-playfair mb-5 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.payment_title}</h3>
                     <div className="space-y-3">
                       {[
-                        { id: 'pix', label: 'Pix (3% OFF)', icon: 'smartphone' },
+                        { id: 'pix', label: 'Pix (3% de Amortização)', icon: 'smartphone' },
                         { id: 'card', label: isPT ? 'Cartão' : 'Card', icon: 'credit-card' },
-                        { id: 'money', label: isPT ? 'Dinheiro' : 'Cash', icon: 'banknote' }
+                        { id: 'money', label: isPT ? 'Espécie' : 'Cash', icon: 'banknote' }
                       ].map(p => (
                         <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))} className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${booking.payment === p.id ? isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-slate-100 border-slate-200 text-slate-800' : isDark ? 'bg-transparent border-zinc-800 text-zinc-500 hover:border-zinc-700' : 'bg-transparent border-slate-200 text-slate-500 hover:border-slate-300'}`}>
                           <Icon name={p.icon} size={20} />
@@ -1421,7 +1436,7 @@ ${priceDetails}
                         </button>
                       ))}
                     </div>
-                    <p className={`text-[10px] text-center mt-5 font-light flex items-center justify-center gap-1.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="shield" size={12} /> Pagamento realizado apenas no momento da sessão.</p>
+                    <p className={`text-[10px] text-center mt-5 font-light flex items-center justify-center gap-1.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="shield" size={12} /> Exigência financeira exclusiva ao final da sessão.</p>
                   </div>
                   
                   <div onClick={() => setTermsOpen(true)} className={`flex items-center justify-between p-6 rounded-[2rem] border cursor-pointer transition-all ${booking.termsAccepted ? isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-100 border-slate-200' : isDark ? 'bg-zinc-900/20 border-zinc-800/60 hover:border-zinc-700' : 'bg-white border-slate-100 hover:border-slate-200 shadow-sm'}`}>
@@ -1429,7 +1444,7 @@ ${priceDetails}
                       <div className={`${booking.termsAccepted ? isDark ? 'text-zinc-300' : 'text-slate-700' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="shield" size={20} /></div>
                       <div>
                         <span className={`text-sm font-medium block mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.terms_title}</span>
-                        <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Regras e Acordos</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Revisão do código de ética</span>
                       </div>
                     </div>
                     <div onClick={(e) => { e.stopPropagation(); setBooking(b => ({ ...b, termsAccepted: !b.termsAccepted })); }} className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${booking.termsAccepted ? isDark ? 'bg-zinc-200 border-zinc-200 text-zinc-900' : 'bg-slate-900 border-slate-900 text-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
@@ -1451,7 +1466,7 @@ ${priceDetails}
               
               <div className="flex flex-col gap-4 w-full">
                 <Button variant="whatsapp" size="lg" full icon="message" onClick={() => window.open(generateWhatsAppLink(), '_blank')}>{T.whatsapp_btn}</Button>
-                <Button variant="secondary" size="lg" full icon="copy" onClick={copyToClipboard}>Copiar Resumo</Button>
+                <Button variant="secondary" size="lg" full icon="copy" onClick={copyToClipboard}>Copiar Rascunho Clínico</Button>
                 <button onClick={() => { setStep(0); setBooking({ ...booking, item: null, type: 'single', termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`mt-4 text-[10px] font-bold uppercase tracking-widest transition-colors ${isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-slate-400 hover:text-slate-600'}`}>
                   {T.back_home}
                 </button>
@@ -1523,7 +1538,7 @@ ${priceDetails}
             <h3 className={`text-3xl font-playfair mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
             <p className={`text-sm font-light leading-relaxed mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.levelup_popup_msg}</p>
             <button onClick={() => setLevelUpPopup(false)} className={`w-full h-14 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all ${isDark ? 'bg-zinc-200 text-zinc-900 hover:bg-white' : 'bg-slate-900 text-white hover:bg-black'}`}>
-              Uhuul!
+              Confirmar Reconhecimento
             </button>
           </div>
         </div>
