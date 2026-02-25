@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 
 // ==================================================================================
-// 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS (PERFORMANCE & SEGURANÇA)
+// 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS (PERFORMANCE)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v24_premium', 
+  STORAGE_KEY: '@thaly_app_v25_mobile_first', 
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
-  SECRET_TOKEN: 'THALY_SECURE_V7',
+  SECRET_TOKEN: 'THALY_SECURE_V8',
   START_HOUR: 9,
   END_HOUR: 20,
   MAX_STORAGE_SIZE: 5000 
@@ -59,7 +59,8 @@ const ICON_PATHS: Record<string, string> = {
   'video': 'M23 7l-7 5 7 5V7z M14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z',
   'scissors': 'M6 9L12 15 18 9 M6 20a3 3 0 0 1-3-3v-6l6 6v3z M18 20a3 3 0 0 0 3-3v-6l-6 6v3z',
   'copy': 'M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1 M16 3H10a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z',
-  'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8'
+  'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8',
+  'heart': 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'
 };
 
 // ==================================================================================
@@ -90,16 +91,16 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     
     @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
     .animate-slide-in { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .animate-fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     
     .emoji-icon { font-style: normal; display: inline-block; line-height: 1; vertical-align: middle; text-align: center; }
   `}} />
 ));
 
-const Icon = memo(({ name, size = 24, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
+const Icon = memo(({ name, size = 20, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
   if (isEmoji) return <span className={`emoji-icon shrink-0 ${className}`} style={{ fontSize: size }} role="img" aria-label={name}>{name}</span>;
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true">
@@ -123,22 +124,28 @@ interface BookingData { type: 'single' | 'pack'; item: ServiceItem | null; extra
 interface Rule { icon: string; title: string; description: string; }
 
 // ==================================================================================
-// 3. COMPONENTES DE UI (FOCO EM CONVERSÃO E ESPAÇAMENTO PREMIUM)
+// 3. COMPONENTES DE UI (MOBILE-FIRST)
 // ==================================================================================
 
 const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon, className = '', loading = false, ariaLabel }: any) => {
-  const baseStyle = "inline-flex items-center justify-center font-bold tracking-widest uppercase transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none active:scale-[0.98] gap-3";
+  const baseStyle = "inline-flex items-center justify-center font-bold tracking-widest uppercase transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none active:scale-[0.98] gap-2 shrink-0";
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-900/20",
     secondary: "bg-zinc-800 border border-zinc-700 text-zinc-100 hover:bg-zinc-700",
     whatsapp: "bg-[#25D366] text-white hover:bg-[#20BD5A] shadow-xl shadow-green-900/20",
-    outline: "bg-transparent border border-zinc-600 text-zinc-300 hover:border-zinc-400"
+    outline: "bg-transparent border border-zinc-600 text-zinc-300 hover:border-zinc-400",
+    ghost: "bg-transparent text-zinc-500 hover:text-zinc-300"
   };
-  const sizes = { sm: "h-12 text-[10px] px-6", md: "h-14 text-xs px-8", lg: "h-16 text-sm px-10", xl: "h-20 text-sm px-12" };
+  const sizes = { 
+    sm: "h-10 text-[10px] px-4", 
+    md: "h-12 text-[11px] px-5", 
+    lg: "h-14 text-xs px-6", 
+    xl: "h-14 md:h-16 text-xs md:text-sm px-6" 
+  };
   
   return (
     <button type="button" onClick={onClick} disabled={disabled || loading} aria-label={ariaLabel} className={`${baseStyle} ${variants[variant as keyof typeof variants] || variants.primary} ${sizes[size as keyof typeof sizes]} ${full ? 'w-full' : ''} ${className}`}>
-      {loading ? <span className="inline-block w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin"></span> : <>{icon && <Icon name={icon} size={22} />}{children}</>}
+      {loading ? <span className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0"></span> : <>{icon && <Icon name={icon} size={18} />}{children}</>}
     </button>
   );
 });
@@ -148,33 +155,33 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang,
   return (
     <>
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} role="presentation" />
-      <aside className={`fixed top-0 right-0 h-full w-[85%] sm:w-[75%] max-w-sm z-[70] p-6 sm:p-8 md:p-10 shadow-2xl animate-slide-in flex flex-col ${isDark ? 'bg-zinc-950 text-white border-l border-zinc-800/50' : 'bg-white text-slate-900 border-l border-slate-100'}`}>
-        <div className="flex justify-between items-center mb-10 md:mb-12">
-          <h2 className="text-2xl md:text-3xl font-playfair font-medium">Menu Central</h2>
-          <button onClick={onClose} className="p-3 rounded-full hover:bg-zinc-500/10 transition-colors" aria-label="Fechar menu"><Icon name="x" size={26} /></button>
+      <aside className={`fixed top-0 right-0 h-full w-[85%] max-w-sm z-[70] p-6 shadow-2xl animate-slide-in flex flex-col ${isDark ? 'bg-zinc-950 text-white border-l border-zinc-800/50' : 'bg-white text-slate-900 border-l border-slate-100'}`}>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-playfair font-medium">Menu</h2>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-zinc-500/10 transition-colors" aria-label="Fechar menu"><Icon name="x" size={24} /></button>
         </div>
         
-        <div className="mb-10 md:mb-12 p-6 md:p-8 rounded-[2rem] bg-gradient-to-br from-zinc-800 to-zinc-900 text-white shadow-2xl border border-zinc-700/50">
-          <p className="text-[11px] opacity-70 uppercase font-bold tracking-widest mb-3">Seu Nível de Cuidado</p>
+        <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 text-white shadow-xl border border-zinc-700/50">
+          <p className="text-[10px] opacity-70 uppercase font-bold tracking-widest mb-2">Seu Nível</p>
           <div className="flex justify-between items-end">
-             <span className="text-3xl md:text-4xl font-light font-playfair">{user.xp} <span className="text-sm font-bold text-blue-400 font-sans tracking-widest uppercase">XP</span></span>
-             <Icon name="award" size={32} className="text-blue-400" />
+             <span className="text-3xl font-light font-playfair">{user.xp} <span className="text-[10px] font-bold text-blue-400 font-sans tracking-widest uppercase">XP</span></span>
+             <Icon name="award" size={28} className="text-blue-400" />
           </div>
         </div>
 
-        <nav className="space-y-4 flex-1">
-          <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-5 md:p-6 rounded-2xl transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
-            <div className="flex items-center gap-4 md:gap-5">
-              <Icon name={isDark ? "moon" : "sun"} size={24} className={isDark ? "text-blue-400" : "text-blue-600"} />
-              <span className="font-semibold text-sm md:text-base">Interface Visual</span>
+        <nav className="space-y-3 flex-1">
+          <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
+            <div className="flex items-center gap-4">
+              <Icon name={isDark ? "moon" : "sun"} size={20} className={isDark ? "text-blue-400" : "text-blue-600"} />
+              <span className="font-semibold text-sm">Aparência</span>
             </div>
-            <span className="text-[10px] font-bold opacity-50 uppercase tracking-widest">{isDark ? 'Noturna' : 'Clara'}</span>
+            <span className="text-[9px] font-bold opacity-50 uppercase tracking-widest">{isDark ? 'Noturna' : 'Clara'}</span>
           </button>
           
-          <button onClick={() => { if(navigator.share) navigator.share({title: 'Thalyson Massagens', text: 'Encontrei a melhor massagem para tirar todo o estresse do corpo.', url: window.location.href}) }} className={`w-full flex items-center justify-between p-5 md:p-6 rounded-2xl transition-colors mt-4 ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
-            <div className="flex items-center gap-4 md:gap-5">
-              <Icon name="share" size={24} className="text-emerald-400" />
-              <span className="font-semibold text-sm md:text-base">Indicar Amigo(a)</span>
+          <button onClick={() => { if(navigator.share) navigator.share({title: 'Thalyson Massagens', text: 'Encontrei a melhor massagem para tirar todo o estresse.', url: window.location.href}) }} className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors mt-2 ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
+            <div className="flex items-center gap-4">
+              <Icon name="share" size={20} className="text-emerald-400" />
+              <span className="font-semibold text-sm">Indicar Alguém</span>
             </div>
           </button>
         </nav>
@@ -184,10 +191,10 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang,
 });
 
 const Card = memo(({ children, className = '', onClick, active = false, isDark = true, popular = false }: any) => (
-  <div onClick={onClick} className={`relative p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] transition-all duration-300 flex flex-col h-full ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-2 hover:shadow-2xl' : ''} ${active ? 'bg-blue-600/5 border-2 border-blue-500 shadow-blue-500/20' : isDark ? 'bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700' : 'bg-white border border-slate-200 shadow-md hover:border-slate-300 hover:shadow-lg'} ${className}`}>
+  <div onClick={onClick} className={`relative p-5 md:p-8 rounded-2xl md:rounded-3xl transition-all duration-300 flex flex-col h-full ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-1 hover:shadow-xl' : ''} ${active ? 'bg-blue-600/5 border-2 border-blue-500 shadow-blue-500/20' : isDark ? 'bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700' : 'bg-white border border-slate-200 shadow-sm hover:border-slate-300'} ${className}`}>
     {popular && (
-      <div className="absolute -top-4 left-6 md:left-8 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-widest px-4 sm:px-5 py-2 rounded-full shadow-lg border border-blue-400/30">
-        ✦ A Mais Desejada
+      <div className="absolute -top-3 left-5 md:left-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md border border-blue-400/30">
+        ✦ Mais Desejada
       </div>
     )}
     {children}
@@ -195,33 +202,33 @@ const Card = memo(({ children, className = '', onClick, active = false, isDark =
 ));
 
 const InputField = memo(({ label, value, onChange, placeholder, icon, type = "text", isDark = true, hasError = false }: any) => (
-  <div className="space-y-3 w-full">
-    {label && <label className={`text-[11px] font-bold uppercase tracking-widest pl-1 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{label}</label>}
+  <div className="space-y-2 w-full min-w-0">
+    {label && <label className={`text-[10px] font-bold uppercase tracking-widest pl-1 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{label}</label>}
     <div className="relative group">
-      {icon && <div className={`absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-500' : isDark ? 'text-zinc-500 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}><Icon name={icon} size={22} /></div>}
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-14 sm:h-16 rounded-2xl outline-none text-sm sm:text-base font-medium transition-all bg-transparent ${icon ? 'pl-12 sm:pl-14 pr-4 sm:pr-6' : 'px-4 sm:px-6'} ${hasError ? 'border-2 border-red-500/50 bg-red-500/5 placeholder:text-red-400/50 text-red-500' : isDark ? 'border border-zinc-800 text-zinc-100 placeholder:text-zinc-700 focus:border-blue-500 focus:bg-zinc-900/80' : 'border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-blue-50/50'}`} />
+      {icon && <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-500' : isDark ? 'text-zinc-500 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}><Icon name={icon} size={20} /></div>}
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-12 md:h-14 rounded-xl outline-none text-sm font-medium transition-all bg-transparent ${icon ? 'pl-11 pr-4' : 'px-4'} ${hasError ? 'border-2 border-red-500/50 bg-red-500/5 placeholder:text-red-400/50 text-red-500' : isDark ? 'border border-zinc-800 text-zinc-100 placeholder:text-zinc-700 focus:border-blue-500 focus:bg-zinc-900/80' : 'border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-blue-50/50'}`} />
     </div>
   </div>
 ));
 
-// Refatorado com flex-col, flex-1 e alturas flexíveis para garantir cards idênticos em altura com respiro perfeito
+// Avaliações: Refatorado para altura 100% igual e respiro elegante
 const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
-  <article className={`w-full h-full flex flex-col p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] transition-all duration-300 border gap-6 md:gap-8 ${isDark ? 'bg-zinc-900/30 border-zinc-800/80 hover:bg-zinc-900/60 hover:shadow-xl' : 'bg-white border-slate-200 shadow-sm hover:shadow-lg'}`}>
+  <article className={`w-full h-full flex flex-col p-6 md:p-8 rounded-3xl transition-all duration-300 border gap-5 ${isDark ? 'bg-zinc-900/30 border-zinc-800/80 hover:bg-zinc-900/60' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}`}>
     <div className="flex justify-between items-start">
-      <div className="flex items-center gap-4 sm:gap-5">
-        <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold font-playfair shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-200' : 'bg-slate-100 text-slate-700'}`}>
+      <div className="flex items-center gap-3 min-w-0">
+        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-lg font-bold font-playfair shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-200' : 'bg-slate-100 text-slate-700'}`}>
           {review.n.charAt(0)}
         </div>
-        <div>
-          <span className={`text-sm sm:text-base font-semibold block mb-0.5 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{review.n}</span>
-          <span className={`text-[10px] sm:text-xs block tracking-widest uppercase font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span>
+        <div className="min-w-0">
+          <span className={`text-sm md:text-base font-semibold block mb-0.5 truncate ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{review.n}</span>
+          <span className={`text-[9px] md:text-[10px] block tracking-widest uppercase font-bold truncate ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span>
         </div>
       </div>
-      <div className="flex gap-1 bg-zinc-800/20 px-2 sm:px-3 py-1.5 rounded-full shrink-0">
+      <div className="flex gap-0.5 md:gap-1 px-2 py-1 rounded-full shrink-0">
         {[...Array(5)].map((_, i) => <Icon key={i} name="star" size={12} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />)}
       </div>
     </div>
-    <p className={`text-sm sm:text-base leading-relaxed sm:leading-loose font-light italic flex-1 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{review.t}"</p>
+    <p className={`text-xs md:text-sm leading-relaxed md:leading-loose font-light italic flex-1 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{review.t}"</p>
   </article>
 ));
 
@@ -235,9 +242,9 @@ const SmartTimer = memo(({ isDark, text }: any) => {
   const format = (t: number) => { const m = Math.floor(t / 60); const s = t % 60; return `${m}:${s < 10 ? '0' : ''}${s}`; };
   
   return (
-    <div className={`flex items-center justify-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl transition-all border shadow-sm ${isDark ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
-      <Icon name="watch" size={24} className="animate-pulse shrink-0" />
-      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest break-words text-center">{text}: <span className="font-mono text-sm sm:text-base ml-1 sm:ml-2 bg-blue-500/20 px-2 sm:px-3 py-1 rounded-lg">{format(time)}</span></span>
+    <div className={`flex items-center justify-center gap-3 p-4 rounded-xl transition-all border shadow-sm ${isDark ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
+      <Icon name="watch" size={20} className="animate-pulse shrink-0" />
+      <span className="text-[10px] font-bold uppercase tracking-widest break-words text-center">{text}: <span className="font-mono text-sm ml-1 bg-blue-500/20 px-2 py-1 rounded-md">{format(time)}</span></span>
     </div>
   );
 });
@@ -246,23 +253,23 @@ const FAQItem = memo(({ q, a, isDark }: { q: string; a: string; isDark: boolean 
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className={`border-b ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full py-6 md:py-8 flex items-center justify-between text-left group" aria-expanded={isOpen}>
-        <span className={`text-sm sm:text-base md:text-lg font-medium pr-4 sm:pr-6 leading-snug ${isDark ? 'text-zinc-200 group-hover:text-white' : 'text-slate-800 group-hover:text-black'}`}>{q}</span>
-        <span className={`transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180 text-blue-500' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="chevron-down" size={24} /></span>
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full py-5 md:py-6 flex items-center justify-between text-left group" aria-expanded={isOpen}>
+        <span className={`text-sm md:text-base font-medium pr-4 leading-snug ${isDark ? 'text-zinc-200 group-hover:text-white' : 'text-slate-800 group-hover:text-black'}`}>{q}</span>
+        <span className={`transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-blue-500' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="chevron-down" size={20} /></span>
       </button>
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 pb-6 md:pb-8 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <p className={`text-sm sm:text-base font-light leading-relaxed sm:leading-loose ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
       </div>
     </div>
   );
 });
 
 const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
-  <div className={`flex gap-4 sm:gap-6 p-5 sm:p-6 md:p-8 rounded-3xl border border-transparent transition-colors ${isDark ? 'hover:bg-zinc-900/60' : 'hover:bg-slate-50'}`}>
-    <div className={`flex-shrink-0 mt-1 ${isDark ? 'text-blue-500' : 'text-blue-600'}`}><Icon name={rule.icon} size={28} className="sm:w-8 sm:h-8" /></div>
+  <div className={`flex gap-4 p-5 md:p-6 rounded-2xl border border-transparent transition-colors ${isDark ? 'hover:bg-zinc-900/60' : 'hover:bg-slate-50'}`}>
+    <div className={`shrink-0 mt-0.5 ${isDark ? 'text-blue-500' : 'text-blue-600'}`}><Icon name={rule.icon} size={24} /></div>
     <div>
-      <h4 className={`text-sm sm:text-base md:text-lg font-bold mb-1.5 sm:mb-2 font-playfair ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{rule.title}</h4>
-      <p className={`text-xs sm:text-sm md:text-base font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{rule.description}</p>
+      <h4 className={`text-sm md:text-base font-bold mb-1 font-playfair ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{rule.title}</h4>
+      <p className={`text-[11px] md:text-xs font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{rule.description}</p>
     </div>
   </div>
 ));
@@ -294,7 +301,7 @@ const cleanupStorage = () => {
   } catch (e) { console.error('Storage cleanup error:', e); } 
 };
 
-// Avaliações mescladas e avançadas focadas em entrega e prazer (Sem "Sigilo")
+// Avaliações baseadas apenas em prazer, entrega e relaxamento (Sem "sigilo")
 const generateReviews = (isPT: boolean): Review[] => {
   const reviews = [
     { n: "Gustavo", loc: "Bela Vista - SP", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões do mês. A experiência em casa foi incrível. Ele consegue deixar a gente completamente relaxado, as mãos dele tem uma técnica sem igual. O alívio foi imediato, levantei parecendo 10kg mais leve. Quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax. The experience at home was incredible. The relief was immediate, felt 10kg lighter.", s: 5 },
@@ -320,7 +327,7 @@ const getData = (lang: string) => {
   const currency = isPT ? 'R$' : '$';
   const USD_RATE = 5.75;
 
-  // Valores exatos exigidos
+  // Exatos valores solicitados
   const getPrice = (brl: number) => isPT ? brl : Math.round(brl / USD_RATE);
 
   const p = {
@@ -416,7 +423,7 @@ const getData = (lang: string) => {
       { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: isPT ? "Aparo (Extra)" : "Trim (Extra)", desc: isPT ? "Manutenção em 2 partes do corpo para ficar impecável." : "Add trim to your massage, 2 parts of body" },
       { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: isPT ? "Tempo Estendido (+30m)" : "+30 Minutes", desc: isPT ? "Porque quando está bom, não queremos que acabe." : "More time for you" },
       { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: isPT ? "Interação Orgânica" : "Interactive Touch", desc: isPT ? "Sinta-se livre para participar e tocar também." : "Feel free to touch too" },
-      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isPT ? "Aromaterapia Profunda" : "Aromatherapy", desc: isPT ? "Óleos essenciais que baixam a sua frequência mental." : "Essential oils to calm the mind" },
+      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isPT ? "Aromaterapia Profunda" : "Aromatherapy", desc: isPT ? "Óleos essenciais que baixam a frequência mental." : "Essential oils to calm the mind" },
       { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isPT ? "Foco Extra em Dores" : "Pain Cream", desc: isPT ? "Uso de pomada técnica para tratar dores fortes." : "Relieves strong muscle pain" }
     ],
     plans: [
@@ -491,7 +498,7 @@ const getData = (lang: string) => {
       rules_complete: "Acordo de Entrega Mútua",
       media_discount: "Desconto Portfólio (1%)",
       media_title: "Apoiar meu trabalho (Opcional)",
-      media_desc: "Se quiser, você pode permitir fotos estéticas anônimas (apenas o contorno do corpo, sem rosto e sem intimidade) para meu portfólio. Em troca, você ganha 1% OFF.",
+      media_desc: "Se quiser, você pode permitir fotos estéticas anônimas (apenas do contorno do corpo, sem rosto e sem intimidade) para meu portfólio. Em troca, você ganha 1% OFF.",
       media_bonus: "Liberar para ganhar 1% OFF",
       uber_notice: "Deslocamento: Como vou até você cuidar do seu corpo, uma taxa de Uber será calculada e confirmada na nossa conversa do WhatsApp, ok?",
       motel_note: "Um ambiente para sua entrega absoluta. A escolha, reserva e os custos do local ficam por sua conta, o prazer e o relaxamento são minha missão."
@@ -652,12 +659,21 @@ const getData = (lang: string) => {
   const generateTimeSlots = useMemo(() => {
     if (!booking.date) return [];
     const slots = [];
-    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) slots.push(`${i < 10 ? '0' : ''}${i}:00`);
-    const now = new Date(); const selectedDate = new Date(booking.date);
+    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
+      slots.push(`${i < 10 ? '0' : ''}${i}:00`);
+    }
+
+    const now = new Date();
+    const selectedDate = new Date(booking.date);
     if (isNaN(selectedDate.getTime())) return [];
-    if (selectedDate.toDateString() === now.toDateString()) {
+
+    const isToday = selectedDate.toDateString() === now.toDateString();
+    if (isToday) {
       const currentHour = now.getHours();
-      return slots.filter(time => { const [hour] = time.split(':').map(Number); return hour > currentHour + 1; });
+      return slots.filter(time => {
+        const [hour] = time.split(':').map(Number);
+        return hour > currentHour; 
+      });
     }
     return slots;
   }, [booking.date]);
@@ -831,7 +847,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
   
   const scrollDates = (dir: 'left' | 'right') => { 
     if (dateScrollRef.current) {
-      dateScrollRef.current.scrollBy({ left: dir === 'left' ? -300 : 300, behavior: 'smooth' }); 
+      dateScrollRef.current.scrollBy({ left: dir === 'left' ? -250 : 250, behavior: 'smooth' }); 
     }
   };
   
@@ -853,13 +869,13 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
     return (
       <div className={`fixed inset-0 flex flex-col items-center justify-center z-[100] transition-colors duration-700 ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
         <div className="flex flex-col items-center max-w-sm w-full px-8">
-          <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-5xl font-playfair mb-10 animate-pulse shadow-2xl shadow-blue-500/20 border border-blue-400/20">
+          <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-4xl md:text-5xl font-playfair mb-8 md:mb-10 animate-pulse shadow-2xl shadow-blue-500/20 border border-blue-400/20">
             T
           </div>
-          <div className="w-full h-2 bg-zinc-800/30 overflow-hidden mb-6 rounded-full">
+          <div className="w-full h-1.5 md:h-2 bg-zinc-800/30 overflow-hidden mb-4 md:mb-6 rounded-full">
             <div className="h-full bg-blue-500 rounded-full" style={{ width: '100%', animation: 'loading-bar 2s ease-in-out infinite' }}></div>
           </div>
-          <p className="text-xs uppercase font-bold tracking-widest opacity-50">{T.loading}</p>
+          <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest opacity-50">{T.loading}</p>
         </div>
         <style dangerouslySetInnerHTML={{ __html: `@keyframes loading-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }`}} />
       </div>
@@ -874,44 +890,44 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
       <div className={`fixed inset-0 z-[-1] pointer-events-none transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-slate-50'}`} aria-hidden="true" />
       
       {/* Toasts / Notifications */}
-      <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-4 pointer-events-none px-6 w-full max-w-lg">
+      <div className="fixed top-6 md:top-8 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-3 pointer-events-none px-4 w-full max-w-md">
         {toasts.map(t => (
-          <div key={t.id} role="alert" className={`pointer-events-auto flex items-center gap-4 px-6 py-5 rounded-2xl border backdrop-blur-2xl shadow-2xl animate-fade-in ${t.type === 'success' ? isDark ? 'bg-zinc-800/90 border-zinc-700 text-zinc-100' : 'bg-white/95 border-slate-200 text-slate-800' : 'bg-red-500/95 border-red-500 text-white'}`}>
-            <Icon name={t.type === 'success' ? 'check' : 'alert-circle'} size={24} className="shrink-0" />
-            <span className="text-sm font-semibold tracking-wide leading-snug">{t.msg}</span>
+          <div key={t.id} role="alert" className={`pointer-events-auto flex items-center gap-3 px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl border backdrop-blur-2xl shadow-2xl animate-fade-in ${t.type === 'success' ? isDark ? 'bg-zinc-800/90 border-zinc-700 text-zinc-100' : 'bg-white/95 border-slate-200 text-slate-800' : 'bg-red-500/95 border-red-500 text-white'}`}>
+            <Icon name={t.type === 'success' ? 'check' : 'alert-circle'} size={20} className="shrink-0" />
+            <span className="text-xs md:text-sm font-semibold tracking-wide leading-snug">{t.msg}</span>
           </div>
         ))}
       </div>
       
       <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} isDark={isDark} toggleTheme={() => setIsDark(!isDark)} toggleLang={() => setLang(l => l === 'pt' ? 'en' : 'pt')} lang={lang} user={user} />
 
-      <main className="min-h-screen relative z-10 pb-48 px-4 sm:px-6 md:px-12 lg:px-16 max-w-7xl mx-auto selection:bg-blue-500/30 selection:text-blue-200">
+      <main className="min-h-screen relative z-10 pb-40 md:pb-48 px-4 md:px-8 max-w-5xl mx-auto selection:bg-blue-500/30 selection:text-blue-200">
         {step !== 4 && (
-          <header className="pt-12 sm:pt-16 pb-10 sm:pb-12">
+          <header className="pt-10 md:pt-16 pb-8 md:pb-12">
             <div className="flex items-start justify-between">
               <div className="flex flex-col cursor-pointer transition-opacity hover:opacity-80" onClick={() => setStep(0)} title="Voltar ao Início">
-                <h1 className={`text-4xl md:text-5xl font-playfair tracking-tight font-medium ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
-                  Thalyson <br className="block md:hidden" /> Massagens
+                <h1 className={`text-2xl md:text-4xl font-playfair tracking-tight font-medium ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+                  Thalyson <br className="block sm:hidden" /> Massagens
                 </h1>
-                <div className="flex items-center gap-3 text-[11px] text-zinc-500 uppercase tracking-widest mt-4 font-bold">
-                  <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span></span>
+                <div className="flex items-center gap-2 text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest mt-2 md:mt-3 font-bold">
+                  <span className="relative flex h-2 w-2 md:h-2.5 md:w-2.5 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-blue-500"></span></span>
                   Mais de {user.ordersCount || 142} tensões resolvidas
                 </div>
               </div>
-              <div className="flex items-center gap-6 mt-2 sm:mt-0">
-                <button onClick={() => setMenuOpen(true)} className={`w-14 h-14 flex items-center justify-center rounded-full transition-all border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:shadow-md'}`}>
-                   <Icon name="menu" size={24} />
+              <div className="flex items-center gap-4 shrink-0">
+                <button onClick={() => setMenuOpen(true)} className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:shadow-md'}`}>
+                   <Icon name="menu" size={20} />
                 </button>
               </div>
             </div>
             
             {/* Progressão Visual Elegante e Espaçada */}
             {step > 0 && step < 4 && (
-              <div className="mt-16 flex items-center justify-between gap-4 max-w-md mx-auto">
+              <div className="mt-8 md:mt-12 flex items-center justify-between gap-3 max-w-sm mx-auto">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-4">
-                    <div className={`w-full h-1.5 rounded-full transition-all duration-700 ${step >= i ? 'bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]' : isDark ? 'bg-zinc-800' : 'bg-slate-200'}`} />
-                    <span className={`text-[10px] md:text-xs font-bold uppercase tracking-widest transition-colors duration-500 ${step >= i ? isDark ? 'text-zinc-100' : 'text-slate-900' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
+                  <div key={i} className="flex-1 flex flex-col items-center gap-2 md:gap-3">
+                    <div className={`w-full h-1 md:h-1.5 rounded-full transition-all duration-700 ${step >= i ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : isDark ? 'bg-zinc-800' : 'bg-slate-200'}`} />
+                    <span className={`text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-colors duration-500 ${step >= i ? isDark ? 'text-zinc-100' : 'text-slate-900' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
                       {i === 1 ? 'Quando' : i === 2 ? 'Onde' : 'Resumo'}
                     </span>
                   </div>
@@ -921,54 +937,54 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
           </header>
         )}
         
-        <div className="space-y-16">
+        <div className="space-y-12 md:space-y-16">
           {step === 0 && (
-            <section className="space-y-16 animate-fade-in">
+            <section className="space-y-12 md:space-y-16 animate-fade-in">
               {/* Seção de Boas Vindas Super Espaçada */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center py-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center py-2 md:py-6">
                 <div>
-                  <h2 className={`text-5xl md:text-6xl font-playfair font-medium leading-[1.1] mb-8 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+                  <h2 className={`text-3xl md:text-5xl font-playfair font-medium leading-[1.15] mb-4 md:mb-6 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                     {T.welcome} <span className="italic text-blue-500">{user.name ? String(user.name).trim().split(' ')[0] : "permita-se"}.</span>
                   </h2>
-                  <p className={`text-lg md:text-xl font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                  <p className={`text-sm md:text-lg font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                     {T.choose_sub}
                   </p>
                 </div>
                 
                 {/* Cartão de XP / Cuidado */}
-                <div className={`p-8 sm:p-10 md:p-12 rounded-[2rem] md:rounded-[3rem] border transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-100 shadow-xl shadow-slate-200/50 hover:border-slate-300'}`}>
-                  <div className="flex justify-between items-start mb-10 sm:mb-12">
-                    <div className="flex items-center gap-4 sm:gap-6">
-                      <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center border shadow-inner shrink-0 ${isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700 text-amber-500' : 'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 text-amber-600'}`}>
-                        <Icon name="award" size={28} />
+                <div className={`p-6 md:p-8 rounded-3xl border transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-100 shadow-lg shadow-slate-200/50 hover:border-slate-300'}`}>
+                  <div className="flex justify-between items-start mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border shadow-inner shrink-0 ${isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700 text-amber-500' : 'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 text-amber-600'}`}>
+                        <Icon name="award" size={24} />
                       </div>
-                      <div>
-                        <span className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest block mb-1.5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                      <div className="min-w-0">
+                        <span className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest block mb-1 truncate ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                           {T.level_label}
                         </span>
-                        <h3 className={`text-xl sm:text-2xl font-playfair font-medium ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
+                        <h3 className={`text-lg md:text-xl font-playfair font-medium truncate ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
                           {user.xp >= 800 ? "Plenitude Plus" : (DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title)}
                         </h3>
                       </div>
                     </div>
-                    <div className="text-right shrink-0 ml-4">
-                      <span className={`text-4xl sm:text-5xl font-playfair font-semibold bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-zinc-100 to-zinc-400' : 'from-slate-700 to-slate-900'}`}>{user.xp}</span>
-                      <span className="text-[10px] sm:text-[11px] font-bold text-blue-500 uppercase tracking-widest block mt-2">Nível Atual</span>
+                    <div className="text-right shrink-0">
+                      <span className={`text-3xl md:text-4xl font-playfair font-semibold bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-zinc-100 to-zinc-400' : 'from-slate-700 to-slate-900'}`}>{user.xp}</span>
+                      <span className="text-[9px] font-bold text-blue-500 uppercase tracking-widest block mt-1 md:mt-2">Nível Atual</span>
                     </div>
                   </div>
                   <div>
-                    <div className={`flex justify-between text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mb-4 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                    <div className={`flex justify-between text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                       <span>Sua Jornada</span>
                       <span>{Math.floor(getCurrentLevelProgress())}%</span>
                     </div>
-                    <div className={`h-2.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800/60' : 'bg-slate-200'}`} role="progressbar" aria-valuenow={getCurrentLevelProgress()} aria-valuemin={0} aria-valuemax={100}>
+                    <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800/60' : 'bg-slate-200'}`} role="progressbar" aria-valuenow={getCurrentLevelProgress()} aria-valuemin={0} aria-valuemax={100}>
                       <div className="h-full bg-blue-500 transition-all duration-1000 ease-out relative" style={{ width: `${getCurrentLevelProgress()}%` }}>
                           <div className="absolute top-0 right-0 bottom-0 left-0 bg-white/20 animate-pulse"></div>
                       </div>
                     </div>
                     {nextLevelInfo && (
-                      <p className={`text-sm mt-6 text-center font-medium ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
-                        Mantenha o cuidado. Faltam <strong className={isDark ? 'text-zinc-300' : 'text-slate-700'}>{nextLevelInfo.needed} XP</strong> para seu próximo benefício de <span className="text-blue-500 break-words">+{formatMoney(nextLevelInfo.reward, isPT)}</span>.
+                      <p className={`text-[11px] md:text-xs mt-4 text-center font-medium ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+                        Mantenha o cuidado. Faltam <strong className={isDark ? 'text-zinc-300' : 'text-slate-700'}>{nextLevelInfo.needed} XP</strong> para seu próximo benefício de <span className="text-blue-500">+{formatMoney(nextLevelInfo.reward, isPT)}</span>.
                       </p>
                     )}
                   </div>
@@ -976,81 +992,82 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
               </div>
               
               {/* Abas */}
-              <div className={`flex p-2 rounded-3xl border max-w-lg mx-auto shadow-inner ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-slate-100/80 border-slate-200'}`} role="tablist">
-                <button role="tab" aria-selected={activeTab === 'single'} onClick={() => setActiveTab('single')} className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'single' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
-                  <Icon name="user" size={18} /> {T.tab_single}
+              <div className={`flex p-1.5 md:p-2 rounded-2xl md:rounded-3xl border max-w-sm mx-auto shadow-inner ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-slate-100/80 border-slate-200'}`} role="tablist">
+                <button role="tab" aria-selected={activeTab === 'single'} onClick={() => setActiveTab('single')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'single' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
+                  <Icon name="user" size={16} /> {T.tab_single}
                 </button>
-                <button role="tab" aria-selected={activeTab === 'packs'} onClick={() => setActiveTab('packs')} className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'packs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
-                  <Icon name="package" size={18} /> {T.tab_packs}
+                <button role="tab" aria-selected={activeTab === 'packs'} onClick={() => setActiveTab('packs')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'packs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
+                  <Icon name="package" size={16} /> {T.tab_packs}
                 </button>
               </div>
               
               {/* Grid de Serviços Otimizado */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 {(activeTab === 'single' ? DATA.services : DATA.plans).map((s: ServiceItem) => (
                   <Card key={s.id} active={booking.item?.id === s.id} onClick={() => handleSelectItem(activeTab === 'single' ? 'single' : 'pack', s)} isDark={isDark} popular={s.popular}>
                     <div className="flex-1">
-                      <div className="flex justify-between items-start mb-8">
-                        <div className={`w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-slate-200 text-slate-700'}`}>
-                          <Icon name={s.icon} size={24} className="sm:w-6 sm:h-6" isEmoji={s.isEmoji} />
+                      <div className="flex justify-between items-start mb-6 gap-3">
+                        <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-slate-200 text-slate-700'}`}>
+                          <Icon name={s.icon} size={24} isEmoji={s.isEmoji} />
                         </div>
-                        <div className="text-right pl-3">
+                        <div className="text-right min-w-0 flex-1 flex flex-col items-end">
                           {s.fullPrice && (
-                            <span className={`text-[10px] sm:text-[11px] block mb-1 font-inter uppercase tracking-widest font-bold break-words ${isDark ? 'text-red-400/80' : 'text-red-500/80'}`}>
+                            <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold truncate w-full ${isDark ? 'text-red-400/80' : 'text-red-500/80'}`}>
                               De: <span className="line-through">{formatMoney(s.fullPrice, isPT)}</span>
                             </span>
                           )}
-                          <span className={`text-2xl sm:text-3xl font-playfair font-semibold break-words ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          <span className={`text-xl md:text-2xl font-playfair font-semibold truncate w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
                             {formatMoney(s.price, isPT)}
                           </span>
                           {s.savings && (
-                            <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full block mt-2 sm:mt-2.5 border ${isDark ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
+                            <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full block mt-2 border max-w-fit ${isDark ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
                               ECONOMIA: {formatMoney(s.savings, isPT)}
                             </span>
                           )}
                         </div>
                       </div>
                       
-                      <div className="mb-8">
-                        <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-widest border px-4 py-2 rounded-full inline-block mb-4 sm:mb-5 ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
+                      <div className="mb-6">
+                        <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
                           {s.tag}
                         </span>
-                        <h3 className={`text-xl sm:text-2xl font-playfair font-medium mb-3 sm:mb-4 leading-snug ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+                        <h3 className={`text-lg md:text-xl font-playfair font-medium mb-2 md:mb-3 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                           {s.title}
                         </h3>
-                        <p className={`text-sm sm:text-base font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                        <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                           {s.desc}
                         </p>
                       </div>
                     </div>
                     
-                    <div className={`pt-6 mt-2 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
-                      <div className={`flex items-center gap-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mb-4 ${isDark ? 'text-zinc-300' : 'text-slate-500'}`}>
-                        <Icon name="check" size={16} className="text-emerald-500 shrink-0" /> {T.details_label}
+                    <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
+                      <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-zinc-300' : 'text-slate-500'}`}>
+                        <Icon name="check" size={14} className="text-emerald-500 shrink-0" /> {T.details_label}
                       </div>
-                      <div className={`text-xs sm:text-sm space-y-3 font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                        {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className="text-blue-500 mt-1 text-[10px] sm:text-xs shrink-0">•</span> <span>{line}</span></p>)}
+                      <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                        {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className="text-blue-500 mt-1 text-[10px] shrink-0">•</span> <span>{line}</span></p>)}
                       </div>
                     </div>
                   </Card>
                 ))}
               </div>
               
-              {/* Seção de Social Proof (Reviews) Corrigida com Altura Flexível e Respiro Perfeito */}
-              <div className="py-16 sm:py-20 relative border-t border-b border-dashed border-zinc-800/50 mt-16">
-                <div className="flex items-center justify-between mb-10 sm:mb-12 px-4 sm:px-6">
-                  <h3 className={`text-2xl sm:text-3xl font-playfair font-medium leading-snug ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
+              {/* Seção de Social Proof (Reviews) Refatorada - Mobile First com Altura Flexível */}
+              <div className="py-12 md:py-16 relative border-t border-b border-dashed border-zinc-800/50 mt-12 md:mt-16">
+                <div className="flex items-center justify-between mb-8 md:mb-10">
+                  <h3 className={`text-2xl md:text-3xl font-playfair font-medium ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
                     {T.reviews_title}
                   </h3>
-                  <div className="hidden md:flex gap-4">
-                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: -420, behavior: 'smooth' })} className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm hover:shadow-md'}`} aria-label="Avaliações anteriores"><Icon name="chevron-left" size={24} /></button>
-                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: 420, behavior: 'smooth' })} className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm hover:shadow-md'}`} aria-label="Próximas avaliações"><Icon name="chevron-right" size={24} /></button>
+                  <div className="hidden md:flex gap-3">
+                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: -320, behavior: 'smooth' })} className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm'}`}><Icon name="chevron-left" size={20} /></button>
+                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: 320, behavior: 'smooth' })} className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm'}`}><Icon name="chevron-right" size={20} /></button>
                   </div>
                 </div>
                 
-                <div id="reviews-slider" className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth pb-8 pt-4 px-4 sm:px-6 -mx-4 sm:-mx-6 gap-6 sm:gap-8 items-stretch" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {/* Container do Carrossel usando flex com items-stretch para forçar os cards a terem a mesma altura */}
+                <div id="reviews-slider" className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth pb-6 pt-2 -mx-4 md:-mx-8 px-4 md:px-8 gap-4 md:gap-6 items-stretch" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {DATA.reviews.map((r, i) => (
-                    <div key={i} className="snap-center flex-shrink-0 w-[85vw] sm:w-[380px] md:w-[420px] flex h-auto">
+                    <div key={i} className="snap-center shrink-0 w-[85vw] sm:w-[320px] md:w-[360px] flex h-auto">
                       <ReviewCard review={r} isDark={isDark} />
                     </div>
                   ))}
@@ -1058,8 +1075,8 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
               </div>
               
               {/* FAQ */}
-              <div className="max-w-4xl mx-auto py-12 sm:py-16 px-2 sm:px-0">
-                <h3 className={`text-2xl sm:text-3xl font-playfair font-medium text-center mb-10 sm:mb-12 ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
+              <div className="max-w-2xl mx-auto py-10 md:py-12">
+                <h3 className={`text-2xl md:text-3xl font-playfair font-medium text-center mb-8 md:mb-10 ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
                   {T.faq_title}
                 </h3>
                 <div className={`border-t border-b ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
@@ -1070,63 +1087,63 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
           )}
           
           {step === 1 && (
-            <section className="space-y-12 animate-fade-in max-w-4xl mx-auto">
-              <div className="text-center mb-12 sm:mb-16">
-                <h2 className={`text-3xl sm:text-4xl font-playfair font-medium mb-4 sm:mb-6 leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+            <section className="space-y-10 animate-fade-in max-w-3xl mx-auto">
+              <div className="text-center mb-10 md:mb-12">
+                <h2 className={`text-2xl md:text-4xl font-playfair font-medium mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                   {T.select_time_title}
                 </h2>
-                <p className={`text-sm sm:text-base font-light px-4 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                <p className={`text-sm font-light ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                   {T.toast_select_date}
                 </p>
               </div>
               
               {/* Resumo da Escolha Atual */}
-              <div className={`p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] flex items-center justify-between border shadow-sm ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-slate-200'}`}>
-                 <div className="flex flex-col gap-1 pr-4">
-                   <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Sua Escolha de Cuidado</span>
-                   <span className={`text-lg sm:text-xl font-semibold font-playfair leading-tight ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{booking.item?.title}</span>
+              <div className={`p-5 md:p-6 rounded-2xl flex items-center justify-between border shadow-sm ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-slate-200'}`}>
+                 <div className="flex flex-col gap-1 min-w-0 pr-2">
+                   <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Sua Escolha</span>
+                   <span className={`text-base md:text-lg font-semibold font-playfair truncate ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{booking.item?.title}</span>
                  </div>
-                 <button onClick={() => setStep(0)} className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-colors border shrink-0 ${isDark ? 'border-zinc-700 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800' : 'border-slate-300 text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}>Alterar</button>
+                 <button onClick={() => setStep(0)} className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest px-4 py-2 rounded-full transition-colors border shrink-0 ${isDark ? 'border-zinc-700 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800' : 'border-slate-300 text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}>Alterar</button>
               </div>
 
-              <div className="relative mt-12 sm:mt-16">
-                <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-16 top-1/2 -translate-y-1/2 z-20 w-14 h-14 items-center justify-center rounded-full transition-all border shadow-lg ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'}`} aria-label="Datas anteriores"><Icon name="chevron-left" size={24} /></button>
+              <div className="relative mt-10">
+                <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full transition-all border shadow-lg shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'}`}><Icon name="chevron-left" size={20} /></button>
                 
-                <div ref={dateScrollRef} className="flex gap-4 sm:gap-5 overflow-x-auto px-2 sm:px-4 py-4 sm:py-6 snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div ref={dateScrollRef} className="flex gap-3 md:gap-4 overflow-x-auto px-2 py-4 snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {daysArray.map((d, idx) => {
                     const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
                     const monthName = d.toLocaleDateString(isPT ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN, { month: 'short' }).replace('.', '');
                     return (
                       <div key={idx} className="snap-center shrink-0">
-                        <button onClick={() => setBooking(b => ({ ...b, date: d.toISOString(), time: null }))} className={`w-[85px] h-[110px] sm:w-[100px] sm:h-[130px] rounded-2xl sm:rounded-[2rem] flex flex-col items-center justify-center gap-1.5 sm:gap-2.5 transition-all duration-300 border ${isSel ? 'bg-blue-600 border-blue-500 text-white scale-[1.05] shadow-xl shadow-blue-900/30' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-800/60' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 shadow-sm'}`}>
-                          <span className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest ${isSel ? 'text-blue-100' : 'opacity-60'}`}>{monthName}</span>
-                          <span className="text-2xl sm:text-3xl font-bold font-playfair">{d.getDate()}</span>
-                          <span className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest ${isSel ? 'text-blue-200' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{getDayLabel(d)}</span>
+                        <button onClick={() => setBooking(b => ({ ...b, date: d.toISOString(), time: null }))} className={`w-[72px] h-[96px] md:w-[85px] md:h-[110px] rounded-2xl flex flex-col items-center justify-center gap-1.5 transition-all duration-300 border ${isSel ? 'bg-blue-600 border-blue-500 text-white scale-[1.05] shadow-lg shadow-blue-900/30' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-800/60' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 shadow-sm'}`}>
+                          <span className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest ${isSel ? 'text-blue-100' : 'opacity-60'}`}>{monthName}</span>
+                          <span className="text-xl md:text-2xl font-bold font-playfair">{d.getDate()}</span>
+                          <span className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest ${isSel ? 'text-blue-200' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{getDayLabel(d)}</span>
                         </button>
                       </div>
                     );
                   })}
                 </div>
                 
-                <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-16 top-1/2 -translate-y-1/2 z-20 w-14 h-14 items-center justify-center rounded-full transition-all border shadow-lg ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'}`} aria-label="Próximas datas"><Icon name="chevron-right" size={24} /></button>
+                <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full transition-all border shadow-lg shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'}`}><Icon name="chevron-right" size={20} /></button>
               </div>
               
               {!booking.date && (
-                <div className={`text-center py-20 sm:py-24 rounded-[2rem] sm:rounded-[3rem] border border-dashed flex flex-col items-center justify-center gap-4 sm:gap-5 mt-8 sm:mt-10 transition-colors px-4 ${isDark ? 'border-zinc-800 bg-zinc-900/30 text-zinc-500' : 'border-slate-300 bg-slate-50/50 text-slate-400'}`}>
-                  <Icon name="calendar" size={48} className="opacity-30 sm:w-12 sm:h-12" />
-                  <p className="text-xs sm:text-sm font-bold uppercase tracking-widest leading-relaxed">{T.empty_date}</p>
+                <div className={`text-center py-16 md:py-20 rounded-3xl border border-dashed flex flex-col items-center justify-center gap-4 mt-8 transition-colors px-4 ${isDark ? 'border-zinc-800 bg-zinc-900/30 text-zinc-500' : 'border-slate-300 bg-slate-50/50 text-slate-400'}`}>
+                  <Icon name="calendar" size={36} className="opacity-30" />
+                  <p className="text-xs font-bold uppercase tracking-widest">{T.empty_date}</p>
                 </div>
               )}
               
               {booking.date && generateTimeSlots.length > 0 && (
-                <div className="mt-12 sm:mt-16 animate-fade-in">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
-                    <h4 className={`text-sm sm:text-base font-bold uppercase tracking-widest text-center sm:text-left ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>Escolha o Horário</h4>
-                    <span className="text-[10px] sm:text-[11px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/30 px-4 py-1.5 rounded-full animate-pulse mx-auto sm:mx-0">Alta Procura</span>
+                <div className="mt-10 md:mt-12 animate-fade-in">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <h4 className={`text-sm font-bold uppercase tracking-widest ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>Escolha o Horário</h4>
+                    <span className="text-[9px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/30 px-3 py-1 rounded-full animate-pulse self-start sm:self-auto">Alta Procura</span>
                   </div>
-                  <div className="grid grid-cols-2 min-[380px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 md:gap-4">
                     {generateTimeSlots.map((t) => (
-                      <button key={t} onClick={() => setBooking(b => ({ ...b, time: t }))} className={`py-4 sm:py-5 rounded-xl sm:rounded-2xl text-sm sm:text-base font-bold transition-all duration-300 border ${booking.time === t ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/30 scale-105' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800/60' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50 shadow-sm'}`}>
+                      <button key={t} onClick={() => setBooking(b => ({ ...b, time: t }))} className={`py-3 md:py-4 rounded-xl md:rounded-2xl text-sm font-bold transition-all duration-300 border ${booking.time === t ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/30 scale-105' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-300 hover:border-zinc-600' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm'}`}>
                         {t}
                       </button>
                     ))}
@@ -1135,88 +1152,88 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
               )}
               
               {booking.date && generateTimeSlots.length === 0 && (
-                <div className={`text-center py-16 sm:py-20 rounded-[2rem] sm:rounded-[3rem] border mt-8 sm:mt-10 px-4 ${isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-500' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
-                  <p className="text-sm sm:text-base font-medium tracking-wide leading-relaxed">{T.empty_slots}</p>
+                <div className={`text-center py-16 rounded-3xl border mt-8 ${isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-500' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+                  <p className="text-sm font-medium tracking-wide leading-relaxed px-4">{T.empty_slots}</p>
                 </div>
               )}
             </section>
           )}
           
           {step === 2 && (
-            <section className="space-y-12 sm:space-y-16 animate-fade-in max-w-3xl mx-auto">
-              <h2 className={`text-3xl sm:text-4xl font-playfair font-medium text-center leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+            <section className="space-y-10 md:space-y-12 animate-fade-in max-w-2xl mx-auto">
+              <h2 className={`text-2xl md:text-4xl font-playfair font-medium text-center ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                 {T.location_title}
               </h2>
               
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-3 gap-2 md:gap-4">
                 {[
-                  { id: 'home', label: 'Residência', icon: 'home' },
-                  { id: 'motel', label: 'Suíte / Motel', icon: 'bed' },
-                  { id: 'hotel', label: 'Quarto de Hotel', icon: 'building' }
+                  { id: 'home', label: 'Sua Casa', icon: 'home' },
+                  { id: 'motel', label: 'Motel', icon: 'bed' },
+                  { id: 'hotel', label: 'Hotel', icon: 'building' }
                 ].map(x => (
-                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} className={`py-6 sm:py-8 md:py-10 px-4 rounded-3xl sm:rounded-[2.5rem] flex flex-row sm:flex-col items-center justify-center sm:justify-start gap-4 sm:gap-6 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl shadow-blue-900/30 sm:-translate-y-2' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900/80' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 shadow-sm'}`}>
-                    <Icon name={x.icon} size={28} className="sm:w-8 sm:h-8" />
-                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-center px-2">{x.label}</span>
+                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} className={`py-4 md:py-6 px-2 rounded-2xl flex flex-col items-center gap-2 md:gap-3 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/30 -translate-y-1' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 shadow-sm'}`}>
+                    <Icon name={x.icon} size={24} />
+                    <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-center">{x.label}</span>
                   </button>
                 ))}
               </div>
               
-              <div className={`p-6 sm:p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'} space-y-6 sm:space-y-8 md:space-y-10`}>
-                <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder="Como gosta de ser chamado?" hasError={!user.name || String(user.name).trim().length < 3} />
+              <div className={`p-5 md:p-8 rounded-3xl border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'} space-y-6 md:space-y-8`}>
+                <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder="Seu nome" hasError={!user.name || String(user.name).trim().length < 3} />
                 
                 {booking.locationType === 'home' && (
-                  <div className="space-y-5 sm:space-y-6 md:space-y-8 animate-fade-in">
-                    <div className="grid grid-cols-1 sm:grid-cols-[1fr_130px] gap-5 sm:gap-6">
-                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder="Endereço" hasError={!booking.address.street} />
+                  <div className="space-y-5 animate-fade-in">
+                    <div className="grid grid-cols-1 sm:grid-cols-[1fr_100px] gap-4">
+                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder="Rua / Avenida" hasError={!booking.address.street} />
                       <InputField isDark={isDark} label={T.input_num} value={booking.address.number} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))} placeholder="Nº" type="tel" hasError={!booking.address.number} />
                     </div>
-                    <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder="Bairro" hasError={!booking.address.district} />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-                      <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder="Cidade" hasError={!booking.address.city} />
-                      <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Apto, Bloco, etc" />
+                    <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder="Seu Bairro" hasError={!booking.address.district} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder="Sua Cidade" hasError={!booking.address.city} />
+                      <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Apto, Bloco (Opcional)" />
                     </div>
                   </div>
                 )}
                 
                 {booking.locationType === 'hotel' && (
-                  <div className="space-y-5 sm:space-y-6 md:space-y-8 animate-fade-in">
+                  <div className="space-y-5 animate-fade-in">
                     <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder="Nome do Hotel" hasError={!booking.address.placeName} />
-                    <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder="Sua Cidade" hasError={!booking.address.city} />
-                    <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Nº do Quarto / Reserva no nome de quem?" />
+                    <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder="Cidade" hasError={!booking.address.city} />
+                    <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Nº do Quarto" />
                   </div>
                 )}
                 
                 {booking.locationType === 'motel' && (
-                  <div className={`p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-3xl border text-center animate-fade-in ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-slate-50 border-slate-200'} flex flex-col items-center gap-4 sm:gap-5`}>
-                    <div className={`p-3 sm:p-4 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-200 text-slate-500'}`}>
-                      <Icon name="shield" size={32} className="sm:w-8 sm:h-8" />
+                  <div className={`p-6 rounded-2xl border text-center animate-fade-in ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-slate-50 border-slate-200'} flex flex-col items-center gap-4`}>
+                    <div className={`p-3 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-200 text-slate-500'}`}>
+                      <Icon name="heart" size={24} />
                     </div>
-                    <p className={`text-sm sm:text-base font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
+                    <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
                       {T.motel_note}
                     </p>
                   </div>
                 )}
               </div>
               
-              <div className="pt-6 sm:pt-8">
-                <h3 className={`text-xs sm:text-sm font-bold uppercase mb-6 sm:mb-8 tracking-widest pl-2 flex items-center gap-3 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                  <Icon name="sparkles" size={18} className="text-blue-500" /> {T.extras_title}
+              <div className="pt-4">
+                <h3 className={`text-xs font-bold uppercase mb-4 tracking-widest pl-1 flex items-center gap-2 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                  <Icon name="sparkles" size={16} className="text-blue-500" /> {T.extras_title}
                 </h3>
-                <div className="space-y-4 sm:space-y-5">
+                <div className="space-y-3">
                   {DATA.extras.map((ex) => {
                     const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
                     const isActive = booking.extras[ex.id];
                     return (
-                      <div key={ex.id} onClick={() => setBooking(b => ({ ...b, extras: { ...b.extras, [ex.id]: !b.extras[ex.id] } }))} className={`flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:p-6 md:p-8 rounded-3xl md:rounded-[2.5rem] border cursor-pointer transition-all duration-300 gap-4 sm:gap-0 ${isActive ? 'bg-blue-600/10 border-blue-500 shadow-lg shadow-blue-900/10' : isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/80' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'} group`} role="checkbox" aria-checked={isActive}>
-                        <div className="flex items-center gap-4 sm:gap-6">
-                          <div className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}><Icon name={ex.icon} size={28} isEmoji={ex.isEmoji} /></div>
-                          <div>
-                            <p className={`text-sm sm:text-base md:text-lg font-semibold ${isActive ? isDark ? 'text-blue-400' : 'text-blue-700' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{ex.label}</p>
-                            <p className={`text-[11px] sm:text-xs md:text-sm font-light mt-1 md:mt-1.5 leading-relaxed ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p>
+                      <div key={ex.id} onClick={() => setBooking(b => ({ ...b, extras: { ...b.extras, [ex.id]: !b.extras[ex.id] } }))} className={`flex items-center justify-between p-4 md:p-5 rounded-2xl border cursor-pointer transition-all duration-300 ${isActive ? 'bg-blue-600/10 border-blue-500 shadow-sm' : isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'} group`} role="checkbox" aria-checked={isActive}>
+                        <div className="flex items-center gap-4 min-w-0 pr-2">
+                          <div className={`transition-transform duration-300 shrink-0 ${isActive ? 'scale-110' : ''}`}><Icon name={ex.icon} size={24} isEmoji={ex.isEmoji} /></div>
+                          <div className="min-w-0">
+                            <p className={`text-sm font-semibold truncate ${isActive ? isDark ? 'text-blue-400' : 'text-blue-700' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{ex.label}</p>
+                            <p className={`text-[10px] md:text-xs font-light mt-0.5 truncate ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p>
                           </div>
                         </div>
-                        <div className="text-right sm:shrink-0 flex sm:block justify-end">
-                          <span className={`text-[10px] md:text-xs font-bold tracking-widest px-4 md:px-5 py-2 md:py-2.5 rounded-full transition-colors inline-block ${isActive ? 'bg-blue-500 text-white' : isDark ? 'bg-zinc-800 text-zinc-300 group-hover:bg-zinc-700' : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'}`}>
+                        <div className="text-right shrink-0">
+                          <span className={`text-[9px] md:text-[10px] font-bold tracking-widest px-3 py-1.5 rounded-full transition-colors ${isActive ? 'bg-blue-500 text-white' : isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>
                             + {formatMoney(price, isPT)}
                           </span>
                         </div>
@@ -1229,49 +1246,49 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
           )}
           
           {step === 3 && (
-            <section className="space-y-8 sm:space-y-12 animate-fade-in max-w-5xl mx-auto">
+            <section className="space-y-8 md:space-y-12 animate-fade-in max-w-4xl mx-auto">
               <SmartTimer isDark={isDark} text={T.timer_text} />
               
-              <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8 sm:gap-10 md:gap-12">
-                <div className={`p-6 sm:p-8 md:p-14 rounded-[2rem] md:rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
-                  <h3 className={`text-2xl sm:text-3xl font-playfair font-medium mb-8 sm:mb-10 flex items-center gap-3 sm:gap-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
-                    <Icon name="file-text" size={32} className="text-blue-500 shrink-0 sm:w-8 sm:h-8" /> Resumo do Cuidado
+              <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6 md:gap-8">
+                <div className={`p-6 md:p-10 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
+                  <h3 className={`text-xl md:text-2xl font-playfair font-medium mb-6 md:mb-8 flex items-center gap-3 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+                    <Icon name="file-text" size={24} className="text-blue-500" /> Resumo
                   </h3>
-                  <div className="space-y-8 sm:space-y-10">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0">
-                      <div className="flex-1">
-                        <p className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest mb-2 sm:mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                  <div className="space-y-6 md:space-y-8">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1 min-w-0 pr-4">
+                        <p className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest mb-1.5 md:mb-2 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                           MODALIDADE ESCOLHIDA
                         </p>
-                        <h4 className={`text-xl sm:text-2xl font-playfair font-semibold leading-tight ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                        <h4 className={`text-base md:text-lg font-playfair font-semibold truncate ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                           {booking.item ? (DATA.services.find(s => s.id === booking.item?.id) || DATA.plans.find(p => p.id === booking.item?.id))?.title : ''}
                         </h4>
-                        <div className={`flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-medium mt-4 sm:mt-5 border px-4 sm:px-5 py-2 sm:py-2.5 rounded-full w-fit shadow-sm break-words ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
-                          <Icon name="calendar" size={16} className="text-blue-500 shrink-0" />
+                        <div className={`flex items-center gap-2 text-[10px] md:text-xs font-medium mt-3 border px-3 py-1.5 rounded-full w-fit shadow-sm truncate ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+                          <Icon name="calendar" size={12} className="text-blue-500 shrink-0" />
                           {booking.date ? new Date(booking.date).toLocaleDateString(isPT ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN) : ''} às {booking.time}
                         </div>
                       </div>
-                      <span className={`text-2xl sm:text-3xl font-medium font-playfair mt-2 sm:mt-0 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+                      <span className={`text-lg md:text-xl font-medium font-playfair shrink-0 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                         {formatMoney(financials.sub, isPT)}
                       </span>
                     </div>
                     
                     {Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).length > 0 && (
-                      <div className={`pt-6 sm:pt-10 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
-                        <p className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest mb-4 sm:mb-6 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                      <div className={`pt-6 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
+                        <p className={`text-[9px] uppercase font-bold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                           POTENCIALIZADORES INCLUÍDOS
                         </p>
-                        <div className="space-y-4 sm:space-y-5">
+                        <div className="space-y-3">
                           {Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).map(k => {
                             const ex = DATA.extras.find(e => e.id === k);
                             if (!ex) return null;
                             const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
                             return (
-                              <div key={k} className="flex flex-col sm:flex-row sm:justify-between text-sm sm:text-base font-medium gap-1 sm:gap-0">
-                                <span className={`flex items-center gap-2 sm:gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                                   <Icon name="check" size={16} className="text-blue-500 shrink-0" /> <span className="break-words">{ex.label}</span>
+                              <div key={k} className="flex justify-between text-sm font-medium">
+                                <span className={`flex items-center gap-2 truncate pr-2 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                                   <Icon name="check" size={14} className="text-blue-500 shrink-0" /> <span className="truncate">{ex.label}</span>
                                 </span>
-                                <span className={`pl-6 sm:pl-0 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>+ {formatMoney(price, isPT)}</span>
+                                <span className={`shrink-0 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>+ {formatMoney(price, isPT)}</span>
                               </div>
                             );
                           })}
@@ -1279,73 +1296,73 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                       </div>
                     )}
                     
-                    <div className={`pt-8 sm:pt-10 border-t border-dashed ${isDark ? 'border-zinc-800' : 'border-slate-300'}`}>
-                      <div className="flex justify-between mb-4 sm:mb-5">
-                        <span className={`text-sm sm:text-base font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.subtotal}</span>
-                        <span className={`text-sm sm:text-base font-semibold ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                    <div className={`pt-6 border-t border-dashed ${isDark ? 'border-zinc-800' : 'border-slate-300'}`}>
+                      <div className="flex justify-between mb-3 text-sm">
+                        <span className={`font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.subtotal}</span>
+                        <span className={`font-semibold ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                           {formatMoney(financials.sub, isPT)}
                         </span>
                       </div>
                       
                       {financials.disc > 0 && (
-                        <div className="flex flex-col sm:flex-row sm:justify-between mb-4 sm:mb-5 text-emerald-500 font-medium gap-1 sm:gap-0">
-                          <span className="text-sm sm:text-base break-words">Seu Presente ({booking.appliedCoupon?.code})</span>
-                          <span className="text-sm sm:text-base">- {formatMoney(financials.disc, isPT)}</span>
+                        <div className="flex justify-between mb-3 text-emerald-500 font-medium text-sm">
+                          <span className="truncate pr-2">{T.discount} ({booking.appliedCoupon?.code})</span>
+                          <span className="shrink-0">- {formatMoney(financials.disc, isPT)}</span>
                         </div>
                       )}
 
                       {financials.mediaDisc > 0 && (
-                        <div className="flex flex-col sm:flex-row sm:justify-between mb-4 sm:mb-5 text-blue-400 font-medium gap-1 sm:gap-0">
-                          <span className="text-sm sm:text-base break-words">{T.media_discount}</span>
-                          <span className="text-sm sm:text-base">- {formatMoney(financials.mediaDisc, isPT)}</span>
+                        <div className="flex justify-between mb-3 text-blue-400 font-medium text-sm">
+                          <span className="truncate pr-2">{T.media_discount}</span>
+                          <span className="shrink-0">- {formatMoney(financials.mediaDisc, isPT)}</span>
                         </div>
                       )}
                       
                       {financials.pixDisc > 0 && (
-                        <div className={`flex flex-col sm:flex-row sm:justify-between mb-4 sm:mb-5 font-medium gap-1 sm:gap-0 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                          <span className="text-sm sm:text-base break-words">{T.pix_discount}</span>
-                          <span className="text-sm sm:text-base">- {formatMoney(financials.pixDisc, isPT)}</span>
+                        <div className={`flex justify-between mb-3 font-medium text-sm ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                          <span className="truncate pr-2">{T.pix_discount}</span>
+                          <span className="shrink-0">- {formatMoney(financials.pixDisc, isPT)}</span>
                         </div>
                       )}
                       
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end pt-6 sm:pt-8 mt-4 sm:mt-6 border-t border-solid border-blue-500/20 gap-3 sm:gap-0">
-                        <span className={`text-xs sm:text-sm uppercase tracking-widest font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.total_label}</span>
-                        <div className="text-left sm:text-right">
-                          <span className={`text-4xl sm:text-5xl md:text-6xl font-playfair font-semibold bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-blue-400 to-indigo-400' : 'from-blue-600 to-indigo-600'}`}>
+                      <div className="flex justify-between items-end pt-6 mt-4 border-t border-solid border-blue-500/20">
+                        <span className={`text-[10px] md:text-xs uppercase tracking-widest font-bold pb-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.total_label}</span>
+                        <div className="text-right">
+                          <span className={`text-3xl md:text-4xl font-playfair font-semibold bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-blue-400 to-indigo-400' : 'from-blue-600 to-indigo-600'}`}>
                             {formatMoney(financials.total, isPT)}
                           </span>
-                          <div className={`flex items-center justify-start sm:justify-end gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] uppercase tracking-widest font-bold mt-2 sm:mt-3 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
-                            <Icon name="sparkles" size={14} /> +{estimatedXP} XP GARANTIDOS
+                          <div className={`flex items-center justify-end gap-1 text-[8px] md:text-[9px] uppercase tracking-widest font-bold mt-1.5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                            <Icon name="sparkles" size={10} /> +{estimatedXP} XP GARANTIDOS
                           </div>
                         </div>
                       </div>
                       
-                      <div className={`mt-8 sm:mt-10 p-5 sm:p-6 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 text-xs sm:text-sm font-medium leading-relaxed ${isDark ? 'bg-zinc-900/60 border-zinc-800/80 text-zinc-400' : 'bg-blue-50/50 border-blue-100 text-blue-800'}`}>
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-blue-100 text-blue-600'}`}>
-                            <Icon name="car" size={20} />
+                      <div className={`mt-6 p-4 rounded-xl border flex items-start gap-3 text-[11px] font-medium leading-relaxed ${isDark ? 'bg-zinc-900/60 border-zinc-800/80 text-zinc-400' : 'bg-blue-50/50 border-blue-100 text-blue-800'}`}>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-blue-100 text-blue-600'}`}>
+                            <Icon name="car" size={16} />
                           </div>
-                          <span className="mt-0 sm:mt-1">{T.uber_notice}</span>
+                          <span>{T.uber_notice}</span>
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="space-y-8 sm:space-y-10">
+                <div className="space-y-6 md:space-y-8">
                   {/* Cupom Section */}
-                  <div className={`p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
-                    <h3 className={`text-lg sm:text-xl font-playfair font-medium mb-6 sm:mb-8 leading-tight ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                  <div className={`p-6 md:p-8 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
+                    <h3 className={`text-base font-playfair font-medium mb-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                       {T.coupon_section}
                     </h3>
                     
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
-                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Código Promocional" className={`flex-1 h-14 sm:h-16 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm sm:text-base outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-blue-500 text-zinc-100 placeholder:text-zinc-600' : 'border-slate-300 focus:border-blue-500 text-slate-900 placeholder:text-slate-400'}`} />
-                      <button onClick={applyManualCoupon} className={`h-14 sm:h-16 px-6 sm:px-8 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-all w-full sm:w-auto ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-900/30' : 'bg-slate-900 text-white hover:bg-black shadow-md'}`}>Aplicar</button>
+                    <div className="flex gap-2 mb-4">
+                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Cupom" className={`flex-1 min-w-0 h-12 px-4 rounded-xl text-sm outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-blue-500 text-zinc-100 placeholder:text-zinc-600' : 'border-slate-300 focus:border-blue-500 text-slate-900 placeholder:text-slate-400'}`} />
+                      <button onClick={applyManualCoupon} className={`px-5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shrink-0 ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-md' : 'bg-slate-900 text-white hover:bg-black shadow-md'}`}>Aplicar</button>
                     </div>
 
                     {user.coupons.length > 0 && (
-                      <div className={`flex flex-wrap gap-2 sm:gap-3 pt-6 sm:pt-8 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
+                      <div className={`flex flex-wrap gap-2 pt-4 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
                         {user.coupons.map(c => (
-                          <button key={c.id} onClick={() => setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c }))} className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest transition-all border w-full sm:w-auto text-center ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-900/30' : isDark ? 'bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50 shadow-sm'}`}>
+                          <button key={c.id} onClick={() => setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c }))} className={`px-3 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all border ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : isDark ? 'bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 shadow-sm'}`}>
                             {c.title}
                           </button>
                         ))}
@@ -1354,57 +1371,51 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                   </div>
 
                   {/* Media Permission */}
-                  <div className={`p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
-                      <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-                        <div className={`mt-1 p-3 rounded-full hidden sm:block shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}><Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={24} /></div>
-                        <div className="flex-1 w-full">
-                           <div className="flex items-center gap-3 mb-3 sm:mb-4">
-                             <div className={`p-2 rounded-full block sm:hidden shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}><Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={18} /></div>
-                             <h3 className={`text-lg sm:text-xl font-playfair font-medium leading-tight ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.media_title}</h3>
-                           </div>
-                           <p className={`text-xs sm:text-sm font-light leading-relaxed mb-6 sm:mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.media_desc}</p>
-                           <button onClick={() => setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed }))} className={`w-full flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 sm:gap-0 p-4 sm:p-5 rounded-2xl border transition-all text-[10px] sm:text-xs font-bold uppercase tracking-widest ${booking.mediaAllowed ? 'bg-blue-600/10 border-blue-500 text-blue-500' : isDark ? 'bg-transparent border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50 shadow-sm'}`}>
-                              <span className="text-center sm:text-left">{booking.mediaAllowed ? 'Autorização Concedida' : 'Apoiar o Trabalho'}</span>
-                              {booking.mediaAllowed ? <div className="flex items-center gap-2"><Icon name="check" size={18} /></div> : <span className={`text-[9px] sm:text-[11px] px-3 sm:px-4 py-1.5 rounded-full whitespace-nowrap ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{T.media_bonus}</span>}
+                  <div className={`p-6 md:p-8 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
+                      <div className="flex items-start gap-4">
+                        <div className={`mt-0.5 p-2.5 rounded-full shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}><Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={20} /></div>
+                        <div className="flex-1 min-w-0">
+                           <h3 className={`text-base font-playfair font-medium mb-2 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.media_title}</h3>
+                           <p className={`text-[11px] md:text-xs font-light leading-relaxed mb-4 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.media_desc}</p>
+                           <button onClick={() => setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed }))} className={`w-full flex items-center justify-between p-3 md:p-4 rounded-xl border transition-all text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${booking.mediaAllowed ? 'bg-blue-600/10 border-blue-500 text-blue-500' : isDark ? 'bg-transparent border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 shadow-sm'}`}>
+                              <span className="truncate pr-2">{booking.mediaAllowed ? 'Autorização Concedida' : 'Apoiar o Trabalho'}</span>
+                              {booking.mediaAllowed ? <div className="flex items-center gap-1 shrink-0"><Icon name="check" size={14} /></div> : <span className={`text-[8px] md:text-[9px] px-2 py-1 rounded-full whitespace-nowrap shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{T.media_bonus}</span>}
                            </button>
                         </div>
                       </div>
                   </div>
                   
                   {/* Payment */}
-                  <div className={`p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
-                    <h3 className={`text-lg sm:text-xl font-playfair font-medium mb-6 sm:mb-8 leading-tight ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.payment_title}</h3>
-                    <div className="space-y-3 sm:space-y-4">
+                  <div className={`p-6 md:p-8 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
+                    <h3 className={`text-base font-playfair font-medium mb-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.payment_title}</h3>
+                    <div className="space-y-3">
                       {[
-                        { id: 'pix', label: 'Pix (3% OFF Adicional)', icon: 'smartphone' },
-                        { id: 'card', label: isPT ? 'Cartão de Crédito/Débito' : 'Card', icon: 'credit-card' },
-                        { id: 'money', label: isPT ? 'Espécie / Dinheiro' : 'Cash', icon: 'banknote' }
+                        { id: 'pix', label: 'Pix (3% OFF)', icon: 'smartphone' },
+                        { id: 'card', label: 'Cartão', icon: 'credit-card' },
+                        { id: 'money', label: 'Dinheiro', icon: 'banknote' }
                       ].map(p => (
-                        <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))} className={`w-full flex items-center gap-4 sm:gap-5 p-4 sm:p-6 rounded-2xl border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl shadow-blue-900/30 scale-[1.02]' : isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm'}`}>
-                          <Icon name={p.icon} size={24} className="sm:w-6 sm:h-6 shrink-0" />
-                          <span className="text-[11px] sm:text-sm font-bold uppercase tracking-widest flex-1 text-left leading-snug">{p.label}</span>
-                          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${booking.payment === p.id ? 'border-white bg-blue-500' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
-                             {booking.payment === p.id && <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white" />}
+                        <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))} className={`w-full flex items-center gap-3 p-4 rounded-xl border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-md scale-[1.01]' : isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm'}`}>
+                          <Icon name={p.icon} size={20} className="shrink-0" />
+                          <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest flex-1 text-left truncate">{p.label}</span>
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${booking.payment === p.id ? 'border-white bg-blue-500' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
+                             {booking.payment === p.id && <div className="w-2 h-2 rounded-full bg-white" />}
                           </div>
                         </button>
                       ))}
                     </div>
-                    <div className={`mt-6 sm:mt-8 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-center sm:text-left ${isDark ? 'bg-zinc-900/60 text-zinc-500' : 'bg-slate-50 text-slate-400'}`}>
-                      <Icon name="shield" size={16} className="shrink-0" /> <span className="leading-snug">O pagamento é efetuado somente no encontro.</span>
-                    </div>
                   </div>
                   
                   {/* Terms */}
-                  <div onClick={() => setTermsOpen(true)} className={`flex flex-col sm:flex-row items-center justify-between p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border cursor-pointer transition-all duration-300 gap-4 sm:gap-0 ${booking.termsAccepted ? 'bg-emerald-500/10 border-emerald-500/50' : isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`}>
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6 w-full">
-                      <div className={`shrink-0 ${booking.termsAccepted ? 'text-emerald-500' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Icon name="shield" size={32} className="sm:w-9 sm:h-9" /></div>
-                      <div className="flex-1">
-                        <span className={`text-sm sm:text-base font-semibold block mb-1 sm:mb-1.5 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.terms_title}</span>
-                        <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Revisar e Aceitar para concluir</span>
+                  <div onClick={() => setTermsOpen(true)} className={`flex items-center justify-between p-5 md:p-6 rounded-3xl border cursor-pointer transition-all duration-300 ${booking.termsAccepted ? 'bg-emerald-500/10 border-emerald-500/50' : isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`}>
+                    <div className="flex items-center gap-4 min-w-0 pr-2">
+                      <div className={`shrink-0 ${booking.termsAccepted ? 'text-emerald-500' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Icon name="heart" size={24} /></div>
+                      <div className="min-w-0">
+                        <span className={`text-sm font-semibold block mb-0.5 truncate ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.terms_title}</span>
+                        <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest truncate block ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Revisar e Aceitar</span>
                       </div>
-                      <div onClick={(e) => { e.stopPropagation(); setBooking(b => ({ ...b, termsAccepted: !b.termsAccepted })); }} className={`w-10 h-10 rounded-full border-2 flex items-center justify-center shrink-0 transition-all mx-auto sm:mx-0 ${booking.termsAccepted ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
-                        {booking.termsAccepted && <Icon name="check" size={20} />}
-                      </div>
+                    </div>
+                    <div onClick={(e) => { e.stopPropagation(); setBooking(b => ({ ...b, termsAccepted: !b.termsAccepted })); }} className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.termsAccepted ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
+                      {booking.termsAccepted && <Icon name="check" size={16} />}
                     </div>
                   </div>
                 </div>
@@ -1413,20 +1424,20 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
           )}
           
           {step === 4 && (
-            <section className="min-h-[75vh] flex flex-col items-center justify-center text-center animate-fade-in max-w-2xl mx-auto px-4 sm:px-6">
-              <div className="relative mb-10 sm:mb-14">
-                <div className="absolute inset-0 bg-blue-500/20 blur-[50px] rounded-full scale-[2] animate-pulse" />
-                <div className={`relative w-24 h-24 sm:w-32 sm:h-32 rounded-full flex items-center justify-center border-[6px] shadow-2xl shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-blue-500' : 'bg-white border-slate-100 text-blue-600'}`}>
-                  <Icon name="check" size={48} className="sm:w-14 sm:h-14" />
+            <section className="min-h-[60vh] flex flex-col items-center justify-center text-center animate-fade-in max-w-md mx-auto px-4">
+              <div className="relative mb-10">
+                <div className="absolute inset-0 bg-blue-500/20 blur-[40px] rounded-full scale-[1.5] animate-pulse" />
+                <div className={`relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center border-[4px] shadow-xl shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-blue-500' : 'bg-white border-slate-100 text-blue-600'}`}>
+                  <Icon name="check" size={36} />
                 </div>
               </div>
-              <h2 className={`text-4xl sm:text-5xl font-playfair font-medium mb-4 sm:mb-6 leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.success_title}</h2>
-              <p className={`text-base sm:text-lg md:text-xl font-light leading-relaxed mb-12 sm:mb-16 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
+              <h2 className={`text-3xl md:text-4xl font-playfair font-medium mb-4 leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.success_title}</h2>
+              <p className={`text-sm md:text-base font-light leading-relaxed mb-10 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
               
-              <div className="flex flex-col gap-4 sm:gap-6 w-full max-w-md">
-                <Button variant="whatsapp" size="xl" full icon="message" onClick={() => window.open(generateWhatsAppLink(), '_blank')}>{T.whatsapp_btn}</Button>
-                <Button variant="secondary" size="lg" full icon="copy" onClick={copyToClipboard}>Copiar Resumo da Sessão</Button>
-                <button onClick={() => { setStep(0); setBooking({ ...booking, item: null, type: 'single', termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`mt-6 sm:mt-8 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest transition-colors py-3 sm:py-4 ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600'}`}>
+              <div className="flex flex-col gap-4 w-full">
+                <Button variant="whatsapp" size="lg" full icon="message" onClick={() => window.open(generateWhatsAppLink(), '_blank')}>{T.whatsapp_btn}</Button>
+                <Button variant="secondary" size="lg" full icon="copy" onClick={copyToClipboard}>Copiar Resumo</Button>
+                <button onClick={() => { setStep(0); setBooking({ ...booking, item: null, type: 'single', termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`mt-4 text-[10px] font-bold uppercase tracking-widest transition-colors py-3 ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600'}`}>
                   {T.back_home}
                 </button>
               </div>
@@ -1435,39 +1446,39 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
         </div>
       </main>
       
-      {/* Footer Navigation (Premium Fixed Bar com Padding e Respiro) */}
+      {/* Footer Navigation Premium Mobile-First */}
       {step > 0 && step < 4 && booking.item && (
-        <nav className="fixed bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 z-40 animate-fade-in pointer-events-none">
-          <div className={`max-w-5xl mx-auto rounded-full p-3 sm:p-4 md:p-5 border backdrop-blur-3xl pointer-events-auto flex justify-between items-center transition-all shadow-2xl gap-2 sm:gap-4 ${isDark ? 'bg-zinc-950/90 border-zinc-800/80 shadow-black/80' : 'bg-white/95 border-slate-200/80 shadow-slate-300/60'}`}>
-            <button onClick={() => { setStep(s => s - 1); }} className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center rounded-full transition-colors border border-transparent shrink-0 ${isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100 hover:border-slate-200'}`} aria-label="Voltar Etapa">
-              <Icon name="chevron-left" size={24} className="sm:w-7 sm:h-7" />
+        <nav className="fixed bottom-0 left-0 right-0 p-3 md:p-6 z-40 animate-fade-in pointer-events-none">
+          <div className={`max-w-2xl mx-auto rounded-full p-2 md:p-3 border backdrop-blur-3xl pointer-events-auto flex justify-between items-center transition-all shadow-2xl ${isDark ? 'bg-zinc-950/90 border-zinc-800/80 shadow-black/80' : 'bg-white/95 border-slate-200/80 shadow-slate-300/60'}`}>
+            <button onClick={() => { setStep(s => s - 1); }} className={`w-12 h-12 flex items-center justify-center rounded-full transition-colors border border-transparent shrink-0 ${isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100 hover:border-slate-200'}`} aria-label="Voltar Etapa">
+              <Icon name="chevron-left" size={20} />
             </button>
             
-            <div className="flex-1 flex flex-col items-center justify-center px-2">
-              <p className={`text-[9px] sm:text-[10px] md:text-[11px] font-bold uppercase tracking-widest mb-0.5 sm:mb-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{step === 3 ? T.total_label : T.subtotal}</p>
-              <p className={`text-xl sm:text-2xl md:text-3xl font-playfair font-semibold truncate w-full text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>{step === 3 ? formatMoney(financials.total, isPT) : formatMoney(financials.sub, isPT)}</p>
+            <div className="flex-1 flex flex-col items-center justify-center min-w-0 px-2">
+              <p className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest mb-0.5 truncate w-full text-center ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{step === 3 ? T.total_label : T.subtotal}</p>
+              <p className={`text-lg md:text-xl font-playfair font-semibold truncate w-full text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>{step === 3 ? formatMoney(financials.total, isPT) : formatMoney(financials.sub, isPT)}</p>
             </div>
             
-            <button onClick={handleNextStep} disabled={!isStepValid()} className={`h-12 sm:h-14 md:h-16 px-5 sm:px-8 md:px-10 rounded-full text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-widest flex items-center gap-2 sm:gap-3 transition-all duration-300 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed shrink-0 ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-900/40 hover:-translate-y-1' : 'bg-slate-900 text-white hover:bg-black shadow-slate-900/30 hover:-translate-y-1'}`}>
+            <Button onClick={handleNextStep} disabled={!isStepValid()} size="sm" className="!h-12 !px-5 md:!px-6 !text-[10px] md:!text-xs shrink-0 rounded-full" ariaLabel={step === 3 ? T.finish_btn : T.next_btn}>
               <span className="hidden sm:inline">{step === 3 ? T.finish_btn : T.next_btn}</span>
               <span className="inline sm:hidden">{step === 3 ? 'Confirmar' : 'Avançar'}</span>
-              <Icon name="chevron-right" size={18} className="sm:w-5 sm:h-5" />
-            </button>
+              <Icon name="chevron-right" size={16} className="ml-1 md:ml-2" />
+            </Button>
           </div>
         </nav>
       )}
       
-      {/* Modal Termos (Maior e com espaçamentos) */}
+      {/* Modal Termos */}
       {termsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-2xl max-h-[90vh] sm:max-h-[85vh] rounded-3xl sm:rounded-[3rem] p-6 sm:p-10 md:p-14 flex flex-col border shadow-2xl shadow-black/80 ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100'}`}>
-            <button onClick={() => setTermsOpen(false)} className={`absolute top-4 sm:top-8 right-4 sm:right-8 p-2 sm:p-3 rounded-full transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-500' : 'hover:bg-slate-50 text-slate-400'}`} aria-label="Fechar"><Icon name="x" size={24} className="sm:w-[26px] sm:h-[26px]" /></button>
-            <h3 className={`text-2xl sm:text-3xl font-playfair font-medium mb-8 sm:mb-12 text-center shrink-0 pr-10 sm:pr-0 ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{T.rules_complete}</h3>
-            <div className="space-y-3 sm:space-y-4 overflow-y-auto scrollbar-hide mb-6 sm:mb-10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className={`relative w-full max-w-xl max-h-[85vh] rounded-3xl p-6 md:p-10 flex flex-col border shadow-2xl ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100'}`}>
+            <button onClick={() => setTermsOpen(false)} className={`absolute top-4 right-4 p-2 rounded-full transition-colors shrink-0 ${isDark ? 'hover:bg-zinc-900 text-zinc-500' : 'hover:bg-slate-50 text-slate-400'}`} aria-label="Fechar"><Icon name="x" size={20} /></button>
+            <h3 className={`text-xl md:text-2xl font-playfair font-medium mb-6 md:mb-8 text-center shrink-0 pr-6 ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{T.rules_complete}</h3>
+            <div className="space-y-3 overflow-y-auto scrollbar-hide mb-6">
               {DATA.rules.map((rule, i) => <RuleItem key={i} rule={rule} isDark={isDark} />)}
             </div>
-            <div className="shrink-0 pt-6 sm:pt-8 border-t border-zinc-800/50">
-              <Button full size="xl" onClick={() => { setBooking(b => ({ ...b, termsAccepted: true })); setTermsOpen(false); }}>{T.agree_terms}</Button>
+            <div className="shrink-0 pt-4 border-t border-zinc-800/50">
+              <Button full size="lg" onClick={() => { setBooking(b => ({ ...b, termsAccepted: true })); setTermsOpen(false); }}>{T.agree_terms}</Button>
             </div>
           </div>
         </div>
@@ -1475,23 +1486,23 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
       
       {/* Popups de Boas-Vindas */}
       {welcomePopup && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-lg rounded-3xl sm:rounded-[3rem] p-8 sm:p-12 text-center border shadow-2xl ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100'}`}>
-            <div className={`w-20 h-20 sm:w-28 sm:h-28 mx-auto rounded-full flex items-center justify-center mb-8 sm:mb-10 border-[6px] shadow-inner shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-blue-500' : 'bg-slate-50 border-slate-100 text-blue-600'}`}><Icon name="gift" size={40} className="sm:w-12 sm:h-12" /></div>
-            <h3 className={`text-3xl sm:text-4xl font-playfair font-medium mb-4 sm:mb-6 leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
-            <p className={`text-sm sm:text-base font-light leading-relaxed mb-8 sm:mb-12 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.welcome_popup_msg}</p>
-            <div className={`p-6 sm:p-8 rounded-[2rem] border mb-8 sm:mb-12 border-dashed ${isDark ? 'bg-blue-900/10 border-blue-500/30' : 'bg-blue-50 border-blue-200'}`}>
-              <p className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mb-2 sm:mb-3 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>SEU PRESENTE INAUGURAL</p>
-              <p className={`text-3xl sm:text-4xl font-playfair font-semibold tracking-wide break-all ${isDark ? 'text-white' : 'text-slate-900'}`}>BEMVINDO10</p>
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className={`relative w-full max-w-sm rounded-3xl p-8 md:p-10 text-center border shadow-2xl ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100'}`}>
+            <div className={`w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full flex items-center justify-center mb-6 border-[4px] shadow-inner shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-blue-500' : 'bg-slate-50 border-slate-100 text-blue-600'}`}><Icon name="gift" size={32} /></div>
+            <h3 className={`text-2xl md:text-3xl font-playfair font-medium mb-3 leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
+            <p className={`text-xs md:text-sm font-light leading-relaxed mb-6 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.welcome_popup_msg}</p>
+            <div className={`p-4 md:p-5 rounded-2xl border mb-6 border-dashed ${isDark ? 'bg-blue-900/10 border-blue-500/30' : 'bg-blue-50 border-blue-200'}`}>
+              <p className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-1 md:mb-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>SEU PRESENTE INAUGURAL</p>
+              <p className={`text-2xl md:text-3xl font-playfair font-semibold tracking-wide break-all ${isDark ? 'text-white' : 'text-slate-900'}`}>BEMVINDO10</p>
             </div>
-            <Button full onClick={() => {
+            <Button full size="lg" onClick={() => {
               setWelcomePopup(false);
               setUser(u => ({ ...u, hasSeenWelcome: true }));
               const welcomeCoupon = { id: 'welcome', val: 10, title: '🎁 BEMVINDO10', code: 'BEMVINDO10' };
               setBooking(b => ({ ...b, appliedCoupon: welcomeCoupon }));
               setUser(prev => ({ ...prev, coupons: [...prev.coupons, welcomeCoupon] }));
               addToast(T.toast_coupon_success, "success");
-            }} className={`w-full h-14 sm:h-16 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-all shadow-xl hover:-translate-y-1 ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-900/40' : 'bg-slate-900 text-white hover:bg-black shadow-slate-900/30'}`}>
+            }}>
               {T.get_coupon}
             </Button>
           </div>
@@ -1499,15 +1510,15 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
       )}
       
       {levelUpPopup && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-lg rounded-3xl sm:rounded-[3rem] p-8 sm:p-12 md:p-14 text-center border shadow-2xl ${isDark ? 'bg-zinc-950 border-amber-500/30 shadow-amber-900/30' : 'bg-white border-slate-100 shadow-amber-500/20'}`}>
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-3xl sm:rounded-[3rem] pointer-events-none"><div className="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-64 h-64 sm:w-96 sm:h-96 bg-amber-500/20 blur-[60px] sm:blur-[80px] rounded-full" /></div>
-            <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-8 sm:mb-10 shadow-2xl shadow-amber-500/50 text-white animate-bounce shrink-0"><Icon name="trophy" size={48} className="sm:w-14 sm:h-14" /></div>
-            <h3 className={`text-4xl sm:text-5xl font-playfair font-medium mb-4 sm:mb-6 leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
-            <p className={`text-base sm:text-lg font-light leading-relaxed mb-8 sm:mb-12 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.levelup_popup_msg}</p>
-            <Button full onClick={() => setLevelUpPopup(false)} className={`w-full h-14 sm:h-16 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-all shadow-xl hover:-translate-y-1 ${isDark ? 'bg-amber-500 text-zinc-950 hover:bg-amber-400 shadow-amber-900/50' : 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-500/40'}`}>
-              Resgatar Nova Conquista
-            </Button>
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fade-in">
+          <div className={`relative w-full max-w-sm rounded-3xl p-8 md:p-10 text-center border shadow-2xl overflow-hidden ${isDark ? 'bg-zinc-950 border-amber-500/30 shadow-amber-900/30' : 'bg-white border-slate-100 shadow-amber-500/20'}`}>
+            <div className="absolute -top-20 -right-20 w-48 h-48 bg-amber-500/20 blur-[50px] rounded-full pointer-events-none" />
+            <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-amber-500/40 animate-bounce shrink-0 relative z-10 text-white"><Icon name="trophy" size={36} /></div>
+            <h3 className={`text-3xl md:text-4xl font-playfair font-medium mb-3 relative z-10 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
+            <p className={`text-sm md:text-base font-light leading-relaxed mb-8 relative z-10 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.levelup_popup_msg}</p>
+            <button onClick={() => setLevelUpPopup(false)} className={`w-full h-14 rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all shadow-xl hover:-translate-y-1 relative z-10 shrink-0 ${isDark ? 'bg-amber-500 text-zinc-950 hover:bg-amber-400 shadow-amber-900/50' : 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-500/40'}`}>
+              Resgatar Conquista
+            </button>
           </div>
         </div>
       )}
