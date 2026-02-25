@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 
 // ==================================================================================
 // 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS (PERFORMANCE)
@@ -997,10 +996,10 @@ ${priceDetails}
           </header>
         )}
         
-        <div className="space-y-16 mt-8">
+        <div className="space-y-12">
           {step === 0 && (
-            <section className="space-y-16 animate-fade-in">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center py-4">
+            <section className="space-y-12 animate-fade-in">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center py-4">
                 <div>
                   <h2 className={`text-4xl md:text-5xl font-playfair font-medium leading-tight mb-6 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                     {T.welcome} <span className="font-italic text-zinc-500">{user.name ? String(user.name).trim().split(' ')[0] : (isPT ? "Priorize-se" : "Visitor")}.</span>
@@ -1056,11 +1055,11 @@ ${priceDetails}
                 </button>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {(activeTab === 'single' ? DATA.services : DATA.plans).map((s: ServiceItem) => (
                   <Card key={s.id} active={booking.item?.id === s.id} onClick={() => handleSelectItem(activeTab === 'single' ? 'single' : 'pack', s)} isDark={isDark} popular={s.popular}>
                     <div className="flex-1">
-                      <div className="flex justify-between items-start mb-8">
+                      <div className="flex justify-between items-start mb-6">
                         <div className={`w-12 h-12 flex items-center justify-center rounded-full border ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
                           <Icon name={s.icon} size={20} isEmoji={s.isEmoji} />
                         </div>
@@ -1075,17 +1074,17 @@ ${priceDetails}
                           </span>
                           {s.savings && (
                             <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full block mt-2 border ${isDark ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>
-                              ECONOMIA: {formatMoney(s.savings, isPT)}
+                              BENEFÍCIO: {formatMoney(s.savings, isPT)}
                             </span>
                           )}
                         </div>
                       </div>
                       
-                      <div className="mb-8">
-                        <span className={`text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-5 ${isDark ? 'bg-zinc-900/50 border-zinc-700 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+                      <div className="mb-6">
+                        <span className={`text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-4 ${isDark ? 'bg-zinc-900/50 border-zinc-700 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
                           {s.tag}
                         </span>
-                        <h3 className={`text-xl font-playfair mb-3 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+                        <h3 className={`text-xl font-playfair mb-2 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                           {s.title}
                         </h3>
                         <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
@@ -1094,7 +1093,7 @@ ${priceDetails}
                       </div>
                     </div>
                     
-                    <div className={`pt-6 border-t ${isDark ? 'border-zinc-800/50' : 'border-slate-100'}`}>
+                    <div className={`pt-5 border-t ${isDark ? 'border-zinc-800/50' : 'border-slate-100'}`}>
                       <div className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                         <Icon name="alert-circle" size={12} /> {T.details_label}
                       </div>
@@ -1107,9 +1106,9 @@ ${priceDetails}
               </div>
               
               {/* Avaliações Otimizadas (Respiro menor) */}
-              <div className="py-16 relative">
-                <div className="flex items-center justify-between mb-10 px-2">
-                  <h3 className={`text-2xl md:text-3xl font-playfair ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+              <div className="py-12 relative">
+                <div className="flex items-center justify-between mb-8 px-2">
+                  <h3 className={`text-2xl font-playfair ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                     {T.reviews_title}
                   </h3>
                   <div className="hidden md:flex gap-3">
@@ -1126,8 +1125,8 @@ ${priceDetails}
                 </div>
               </div>
               
-              <div className="max-w-3xl mx-auto py-16">
-                <h3 className={`text-2xl md:text-3xl font-playfair text-center mb-10 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+              <div className="max-w-3xl mx-auto py-12">
+                <h3 className={`text-2xl font-playfair text-center mb-8 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                   {T.faq_title}
                 </h3>
                 <div className={`border-t ${isDark ? 'border-zinc-800/50' : 'border-slate-100'}`}>
@@ -1138,22 +1137,22 @@ ${priceDetails}
           )}
           
           {step === 1 && (
-            <section className="space-y-12 animate-fade-in max-w-3xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className={`text-3xl md:text-4xl font-playfair mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+            <section className="space-y-10 animate-fade-in max-w-3xl mx-auto">
+              <div className="text-center mb-10">
+                <h2 className={`text-3xl font-playfair mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                   {T.select_time_title}
                 </h2>
-                <p className={`text-sm md:text-base font-light ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+                <p className={`text-sm font-light ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
                   {T.toast_select_date}
                 </p>
               </div>
               
-              <div className={`p-5 md:p-6 rounded-[2rem] flex items-center justify-between border ${isDark ? 'bg-zinc-900/30 border-zinc-800/50' : 'bg-white border-slate-200/50 shadow-sm'}`}>
-                 <span className={`text-sm md:text-base font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{booking.item?.title}</span>
+              <div className={`p-5 rounded-2xl flex items-center justify-between border ${isDark ? 'bg-zinc-900/30 border-zinc-800/50' : 'bg-white border-slate-200/50 shadow-sm'}`}>
+                 <span className={`text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{booking.item?.title}</span>
                  <button onClick={() => setStep(0)} className={`text-[10px] uppercase font-bold tracking-widest transition-colors ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-700'}`}>Reavaliar</button>
               </div>
 
-              <div className="relative mt-12">
+              <div className="relative mt-10">
                 <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full transition-all border ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm'}`}><Icon name="chevron-left" size={18} /></button>
                 
                 <div ref={dateScrollRef} className="flex gap-3 overflow-x-auto px-2 py-4 snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -1176,7 +1175,7 @@ ${priceDetails}
               </div>
               
               {!booking.date && (
-                <div className={`text-center py-20 rounded-3xl border border-dashed flex flex-col items-center justify-center gap-5 mt-8 ${isDark ? 'border-zinc-800/50 text-zinc-600' : 'border-slate-300 text-slate-400'}`}>
+                <div className={`text-center py-16 rounded-3xl border border-dashed flex flex-col items-center justify-center gap-4 mt-8 ${isDark ? 'border-zinc-800/50 text-zinc-600' : 'border-slate-300 text-slate-400'}`}>
                   <Icon name="calendar" size={32} />
                   <p className="text-[11px] font-bold uppercase tracking-widest">{T.empty_date}</p>
                 </div>
@@ -1193,7 +1192,7 @@ ${priceDetails}
               )}
               
               {booking.date && generateTimeSlots.length === 0 && (
-                <div className={`text-center py-16 rounded-3xl border mt-8 ${isDark ? 'bg-zinc-900/30 border-zinc-800/50 text-zinc-500' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
+                <div className={`text-center py-12 rounded-3xl border mt-8 ${isDark ? 'bg-zinc-900/30 border-zinc-800/50 text-zinc-500' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
                   <p className="text-xs font-medium tracking-wide">{T.empty_slots}</p>
                 </div>
               )}
@@ -1201,8 +1200,8 @@ ${priceDetails}
           )}
           
           {step === 2 && (
-            <section className="space-y-12 animate-fade-in max-w-3xl mx-auto">
-              <h2 className={`text-3xl md:text-4xl font-playfair text-center ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+            <section className="space-y-10 animate-fade-in max-w-3xl mx-auto">
+              <h2 className={`text-3xl font-playfair text-center ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                 {T.location_title}
               </h2>
               
@@ -1299,7 +1298,7 @@ ${priceDetails}
                         <p className={`text-[10px] uppercase font-bold tracking-widest mb-2 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                           MODALIDADE SELECIONADA
                         </p>
-                        <h4 className={`text-lg md:text-xl font-playfair font-medium ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                        <h4 className={`text-lg font-playfair font-medium ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                           {booking.item ? (DATA.services.find(s => s.id === booking.item?.id) || DATA.plans.find(p => p.id === booking.item?.id))?.title : ''}
                         </h4>
                         <div className={`flex items-center gap-2 text-xs font-medium mt-3 border px-3 py-1.5 rounded-full w-fit ${isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
@@ -1307,7 +1306,7 @@ ${priceDetails}
                           {booking.date ? new Date(booking.date).toLocaleDateString(isPT ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN) : ''} • {booking.time}
                         </div>
                       </div>
-                      <span className={`text-xl md:text-2xl font-medium font-playfair ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                      <span className={`text-xl font-medium font-playfair ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                         {formatMoney(financials.sub, isPT)}
                       </span>
                     </div>
@@ -1323,7 +1322,7 @@ ${priceDetails}
                             if (!ex) return null;
                             const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
                             return (
-                              <div key={k} className="flex justify-between text-sm md:text-base font-light">
+                              <div key={k} className="flex justify-between text-sm font-light">
                                 <span className={isDark ? 'text-zinc-400' : 'text-slate-600'}>{ex.label}</span>
                                 <span className={`font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>+ {formatMoney(price, isPT)}</span>
                               </div>
@@ -1335,37 +1334,37 @@ ${priceDetails}
                     
                     <div className={`pt-8 border-t ${isDark ? 'border-zinc-800/50' : 'border-slate-100'}`}>
                       <div className="flex justify-between mb-3">
-                        <span className={`text-sm md:text-base font-light ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.subtotal}</span>
-                        <span className={`text-sm md:text-base font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                        <span className={`text-sm font-light ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.subtotal}</span>
+                        <span className={`text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                           {formatMoney(financials.sub, isPT)}
                         </span>
                       </div>
                       
                       {financials.disc > 0 && (
                         <div className="flex justify-between mb-3 text-emerald-500/80">
-                          <span className="text-sm md:text-base font-light">{T.discount} ({booking.appliedCoupon?.code})</span>
-                          <span className="text-sm md:text-base font-medium">- {formatMoney(financials.disc, isPT)}</span>
+                          <span className="text-sm font-light">{T.discount} ({booking.appliedCoupon?.code})</span>
+                          <span className="text-sm font-medium">- {formatMoney(financials.disc, isPT)}</span>
                         </div>
                       )}
 
                       {financials.mediaDisc > 0 && (
                         <div className="flex justify-between mb-3 text-blue-400/80">
-                          <span className="text-sm md:text-base font-light">{T.media_discount}</span>
-                          <span className="text-sm md:text-base font-medium">- {formatMoney(financials.mediaDisc, isPT)}</span>
+                          <span className="text-sm font-light">{T.media_discount}</span>
+                          <span className="text-sm font-medium">- {formatMoney(financials.mediaDisc, isPT)}</span>
                         </div>
                       )}
                       
                       {financials.pixDisc > 0 && (
                         <div className="flex justify-between mb-3 text-zinc-400">
-                          <span className="text-sm md:text-base font-light">{T.pix_discount}</span>
-                          <span className="text-sm md:text-base font-medium">- {formatMoney(financials.pixDisc, isPT)}</span>
+                          <span className="text-sm font-light">{T.pix_discount}</span>
+                          <span className="text-sm font-medium">- {formatMoney(financials.pixDisc, isPT)}</span>
                         </div>
                       )}
                       
                       <div className="flex justify-between items-center pt-6 mt-2 border-t border-dashed border-zinc-800/40">
-                        <span className={`text-sm md:text-base uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.total_label}</span>
+                        <span className={`text-sm uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.total_label}</span>
                         <div className="text-right">
-                          <span className={`text-4xl md:text-5xl font-playfair font-medium ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+                          <span className={`text-4xl font-playfair font-medium ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                             {formatMoney(financials.total, isPT)}
                           </span>
                           <div className={`flex items-center justify-end gap-1.5 text-[10px] uppercase tracking-widest font-bold mt-2 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
@@ -1374,7 +1373,7 @@ ${priceDetails}
                         </div>
                       </div>
                       
-                      <div className={`mt-8 p-4 rounded-xl border flex items-start gap-3 text-xs md:text-sm font-light leading-relaxed ${isDark ? 'bg-zinc-900/30 border-zinc-800 text-zinc-500' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+                      <div className={`mt-8 p-4 rounded-xl border flex items-start gap-3 text-xs font-light leading-relaxed ${isDark ? 'bg-zinc-900/30 border-zinc-800 text-zinc-500' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
                           <Icon name="car" size={16} className="mt-0.5 shrink-0" />
                           <span>{T.uber_notice}</span>
                       </div>
@@ -1384,12 +1383,12 @@ ${priceDetails}
                 
                 <div className="space-y-6">
                   <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-zinc-900/20 border-zinc-800/60' : 'bg-white border-slate-100 shadow-sm'}`}>
-                    <h3 className={`text-lg md:text-xl font-playfair mb-5 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                    <h3 className={`text-lg font-playfair mb-5 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                       {T.coupon_section}
                     </h3>
                     
                     <div className="flex gap-2 mb-5">
-                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Validação Técnica" className={`flex-1 h-12 md:h-14 px-4 rounded-xl text-sm outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-700' : 'border-slate-300 focus:border-slate-400 text-slate-900 placeholder:text-slate-400'}`} />
+                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Validação Técnica" className={`flex-1 h-12 px-4 rounded-xl text-sm outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-700' : 'border-slate-300 focus:border-slate-400 text-slate-900 placeholder:text-slate-400'}`} />
                       <button onClick={applyManualCoupon} className={`px-5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-slate-900 text-white hover:bg-slate-800'}`}>Ativar</button>
                     </div>
 
@@ -1408,8 +1407,8 @@ ${priceDetails}
                       <div className="flex items-start gap-4">
                         <div className={`mt-0.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={24} /></div>
                         <div className="flex-1">
-                           <h3 className={`text-lg md:text-xl font-playfair mb-2 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.media_title}</h3>
-                           <p className={`text-xs md:text-sm font-light leading-relaxed mb-5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.media_desc}</p>
+                           <h3 className={`text-lg font-playfair mb-2 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.media_title}</h3>
+                           <p className={`text-xs font-light leading-relaxed mb-5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.media_desc}</p>
                            <button onClick={() => setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed }))} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all text-xs font-bold uppercase tracking-widest ${booking.mediaAllowed ? isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-slate-100 border-slate-200 text-slate-800' : isDark ? 'bg-transparent border-zinc-800 text-zinc-500 hover:border-zinc-700' : 'bg-transparent border-slate-200 text-slate-500 hover:border-slate-300'}`}>
                               <span>{booking.mediaAllowed ? 'Concedido' : 'Reter Autorização'}</span>
                               {booking.mediaAllowed ? <div className="flex items-center gap-2"><span className={`text-[9px] px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-200 text-slate-600'}`}>-1%</span><Icon name="check" size={14} /></div> : <span className={`text-[9px] ${isDark ? 'text-zinc-400' : 'text-slate-400'}`}>{T.media_bonus}</span>}
@@ -1419,7 +1418,7 @@ ${priceDetails}
                   </div>
                   
                   <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-zinc-900/20 border-zinc-800/60' : 'bg-white border-slate-100 shadow-sm'}`}>
-                    <h3 className={`text-lg md:text-xl font-playfair mb-5 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.payment_title}</h3>
+                    <h3 className={`text-lg font-playfair mb-5 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.payment_title}</h3>
                     <div className="space-y-3">
                       {[
                         { id: 'pix', label: 'Pix (3% de Amortização)', icon: 'smartphone' },
@@ -1428,20 +1427,20 @@ ${priceDetails}
                       ].map(p => (
                         <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))} className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${booking.payment === p.id ? isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-slate-100 border-slate-200 text-slate-800' : isDark ? 'bg-transparent border-zinc-800 text-zinc-500 hover:border-zinc-700' : 'bg-transparent border-slate-200 text-slate-500 hover:border-slate-300'}`}>
                           <Icon name={p.icon} size={20} />
-                          <span className="text-xs md:text-sm font-bold uppercase tracking-widest flex-1 text-left">{p.label}</span>
+                          <span className="text-xs font-bold uppercase tracking-widest flex-1 text-left">{p.label}</span>
                           {booking.payment === p.id && <Icon name="check" size={16} />}
                         </button>
                       ))}
                     </div>
-                    <p className={`text-[10px] md:text-xs text-center mt-5 font-light flex items-center justify-center gap-1.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="shield" size={12} /> Exigência financeira exclusiva ao final da sessão.</p>
+                    <p className={`text-[10px] text-center mt-5 font-light flex items-center justify-center gap-1.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="shield" size={12} /> Exigência financeira exclusiva ao final da sessão.</p>
                   </div>
                   
-                  <div onClick={() => setTermsOpen(true)} className={`flex items-center justify-between p-6 md:p-8 rounded-[2rem] border cursor-pointer transition-all ${booking.termsAccepted ? isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-100 border-slate-200' : isDark ? 'bg-zinc-900/20 border-zinc-800/60 hover:border-zinc-700' : 'bg-white border-slate-100 hover:border-slate-200 shadow-sm'}`}>
+                  <div onClick={() => setTermsOpen(true)} className={`flex items-center justify-between p-6 rounded-[2rem] border cursor-pointer transition-all ${booking.termsAccepted ? isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-100 border-slate-200' : isDark ? 'bg-zinc-900/20 border-zinc-800/60 hover:border-zinc-700' : 'bg-white border-slate-100 hover:border-slate-200 shadow-sm'}`}>
                     <div className="flex items-center gap-4">
                       <div className={`${booking.termsAccepted ? isDark ? 'text-zinc-300' : 'text-slate-700' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="shield" size={24} /></div>
                       <div>
-                        <span className={`text-sm md:text-base font-medium block mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.terms_title}</span>
-                        <span className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Revisão do código de ética</span>
+                        <span className={`text-sm font-medium block mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.terms_title}</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Revisão do código de ética</span>
                       </div>
                     </div>
                     <div onClick={(e) => { e.stopPropagation(); setBooking(b => ({ ...b, termsAccepted: !b.termsAccepted })); }} className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${booking.termsAccepted ? isDark ? 'bg-zinc-200 border-zinc-200 text-zinc-900' : 'bg-slate-900 border-slate-900 text-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
@@ -1458,7 +1457,7 @@ ${priceDetails}
               <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-8 border ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
                 <Icon name="check" size={32} />
               </div>
-              <h2 className={`text-4xl md:text-5xl font-playfair mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.success_title}</h2>
+              <h2 className={`text-4xl font-playfair mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.success_title}</h2>
               <p className={`text-base font-light leading-relaxed mb-12 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.success_sub}</p>
               
               <div className="flex flex-col gap-4 w-full">
@@ -1476,17 +1475,17 @@ ${priceDetails}
       {/* Footer Navigation Clean */}
       {step > 0 && step < 4 && booking.item && (
         <nav className="fixed bottom-0 left-0 right-0 p-4 md:p-8 z-40 animate-fade-in pointer-events-none">
-          <div className={`max-w-3xl mx-auto rounded-[2rem] p-4 border backdrop-blur-xl pointer-events-auto flex justify-between items-center transition-all ${isDark ? 'bg-zinc-950/80 border-zinc-800/50' : 'bg-white/80 border-slate-200/50 shadow-xl shadow-slate-200/20'}`}>
+          <div className={`max-w-3xl mx-auto rounded-[2.5rem] p-4 border backdrop-blur-xl pointer-events-auto flex justify-between items-center transition-all ${isDark ? 'bg-zinc-950/80 border-zinc-800/50' : 'bg-white/80 border-slate-200/50 shadow-xl shadow-slate-200/20'}`}>
             <button onClick={() => { setStep(s => s - 1); }} className={`w-12 h-12 flex items-center justify-center rounded-full transition-colors ${isDark ? 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`} aria-label="Voltar Etapa">
               <Icon name="chevron-left" size={24} />
             </button>
             
             <div className="text-center px-4">
               <p className={`text-[9px] font-bold uppercase tracking-widest mb-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{step === 3 ? T.total_label : T.subtotal}</p>
-              <p className={`text-lg md:text-xl font-playfair font-medium ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{step === 3 ? formatMoney(financials.total, isPT) : formatMoney(financials.sub, isPT)}</p>
+              <p className={`text-lg font-playfair font-medium ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{step === 3 ? formatMoney(financials.total, isPT) : formatMoney(financials.sub, isPT)}</p>
             </div>
             
-            <button onClick={handleNextStep} disabled={!isStepValid()} className={`h-12 px-6 md:px-8 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'bg-zinc-200 text-zinc-900 hover:bg-white' : 'bg-slate-900 text-white hover:bg-black'}`}>
+            <button onClick={handleNextStep} disabled={!isStepValid()} className={`h-12 px-6 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'bg-zinc-200 text-zinc-900 hover:bg-white' : 'bg-slate-900 text-white hover:bg-black'}`}>
               {step === 3 ? T.finish_btn : T.next_btn} <Icon name="chevron-right" size={16} />
             </button>
           </div>
@@ -1495,7 +1494,7 @@ ${priceDetails}
       
       {/* Modal Termos */}
       {termsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
           <div className={`relative w-full max-w-xl max-h-[85vh] rounded-[2.5rem] p-8 md:p-10 flex flex-col border ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100 shadow-2xl'}`}>
             <button onClick={() => setTermsOpen(false)} className={`absolute top-6 right-6 p-2 rounded-full transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-500' : 'hover:bg-slate-50 text-slate-400'}`} aria-label="Fechar"><Icon name="x" size={20} /></button>
             <h3 className={`text-2xl font-playfair mb-8 text-center shrink-0 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.rules_complete}</h3>
@@ -1511,7 +1510,7 @@ ${priceDetails}
       
       {/* Popups */}
       {welcomePopup && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
           <div className={`relative w-full max-w-sm rounded-[2.5rem] p-10 text-center border ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100 shadow-2xl'}`}>
             <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-8 border ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}><Icon name="gift" size={32} /></div>
             <h3 className={`text-2xl font-playfair mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
@@ -1528,7 +1527,7 @@ ${priceDetails}
       )}
       
       {levelUpPopup && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
           <div className={`relative w-full max-w-sm rounded-[2.5rem] p-10 text-center border ${isDark ? 'bg-zinc-950 border-amber-500/20' : 'bg-white border-slate-100 shadow-2xl'}`}>
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[2.5rem] pointer-events-none"><div className="absolute -top-24 -right-24 w-64 h-64 bg-amber-500/20 blur-3xl rounded-full" /></div>
             <div className="w-20 h-20 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-amber-500/40 animate-bounce text-white"><Icon name="trophy" size={32} /></div>
