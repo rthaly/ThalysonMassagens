@@ -214,24 +214,26 @@ const InputField = memo(({ label, value, onChange, placeholder, icon, type = "te
   </div>
 ));
 
-// Refatorado para perfeição de respiro e altura flexível
+// Refatorado com flex-col para forçar altura igual e com paddings e entrelinhas para respiro perfeito
 const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
-  <article className={`w-full h-full p-8 md:p-10 rounded-[2.5rem] transition-all duration-500 hover:-translate-y-2 border flex flex-col ${isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-900/80 hover:border-zinc-700' : 'bg-white border-slate-200 shadow-sm hover:shadow-xl'}`}>
-    <div className="flex justify-between items-start mb-8">
-      <div className="flex items-center gap-5">
-        <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold font-playfair shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-200' : 'bg-slate-100 text-slate-700'}`}>
+  <article className={`w-full h-full flex flex-col p-6 md:p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1 border ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-slate-200 shadow-md'}`}>
+    <div className="flex justify-between items-start mb-5">
+      <div className="flex items-center gap-4">
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-base font-bold shrink-0 ${isDark ? 'bg-blue-600/20 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
           {review.n.charAt(0)}
         </div>
         <div>
-          <span className={`text-base font-semibold block mb-1 tracking-wide ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{review.n}</span>
-          <span className={`text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span>
+          <span className={`text-sm font-semibold block mb-0.5 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{review.n}</span>
+          <span className={`text-xs opacity-80 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span>
         </div>
       </div>
-      <div className={`flex gap-1 px-3 py-2 rounded-full border ${isDark ? 'bg-zinc-800/30 border-zinc-800/80' : 'bg-slate-50 border-slate-100'}`}>
-        {[...Array(5)].map((_, i) => <Icon key={i} name="star" size={14} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />)}
+      <div className="flex gap-1 shrink-0" aria-label={`Avaliação: ${review.s} estrelas`}>
+        {[...Array(5)].map((_, i) => <Icon key={i} name="star" size={14} className={i < review.s ? 'text-yellow-400 fill-yellow-400' : isDark ? 'text-zinc-700' : 'text-slate-300'} />)}
       </div>
     </div>
-    <p className={`text-sm md:text-base leading-loose font-light italic flex-1 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{review.t}"</p>
+    <p className={`text-sm leading-loose flex-1 font-inter ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
+      "{review.t}"
+    </p>
   </article>
 ));
 
@@ -276,7 +278,7 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 ));
 
 // ==================================================================================
-// 4. LÓGICA DE DADOS E GERAÇÃO DE TEXTOS
+// 4. LÓGICA DE DADOS E FUNÇÕES PURAS
 // ==================================================================================
 const sanitizeInput = (value: string): string => value.replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
@@ -304,11 +306,12 @@ const cleanupStorage = () => {
   } 
 };
 
+// Avaliações mescladas e avançadas
 const generateReviews = (isPT: boolean): Review[] => {
   const realReviews = [
     { n: "Gustavo", loc: "Bela Vista - SP", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões de início de ano e pós-Carnaval. Foi a primeira vez que contratei um massagista pra atender em minha casa e a experiência foi incrível. Ele consegue deixar a gente relaxado, tem mãos incríveis e os efeitos são imediatos, pois eu levantei e parecia que pesava 10kg a menos. Recomendo e já quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax after the tension of early year and post-Carnival. It was the first time I hired a massage therapist at my home and the experience was incredible. He leaves us relaxed, has amazing hands and the effects are immediate, because I stood up and felt 10kg lighter. Highly recommend and want it again." },
-    { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: isPT ? "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️" : "You have blessed hands and I soared! I really needed this rest, this peace. It was super respectful all the time and relaxed me a lot. Thank you! ❤️" },
-    { n: "Osvaldo", loc: "Santa Fé do Sul", t: isPT ? "HOJE, 10/02/26 não poderia ter teminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS !!! Que delícia!\nOs 4 pilares essenciais do seu trabalho são bases para transformar o atendimento em uma SENSAÇÃO UNICA que gera valores pro corpo, combinando o aspecto de super EMPATIA com o cliente, sem esquecer da EFICIENCIA e agilidade, clareza durante a sessão, tornando ha, uma visão da PERFEIÇÃO de executar este trabalho de massagem com maestria! Thalyson foca sempre no propósito de servir bem o cliente, desde o início ao fim q é surpreendente! VALE A PENA. 👏👏👏" : "TODAY, 02/10/26, the day couldn’t have ended BETTER, being attended by Thalyson at home in a massage session with his MAGIC HANDS !!! What a delight!\nThe 4 essential pillars of his work are the foundation to turn the service into a UNIQUE SENSATION that brings value to the body, combining a super EMPATHY with the client, without forgetting about EFFICIENCY and agility, clarity throughout the session, giving a view of the PERFECTION of performing this massage work with mastery! Thalyson always focuses on the purpose of serving the client well, from start to finish, which is amazing! WORTH IT. 👏👏👏" },
+    { n: "Giovana", loc: "Hotel Portal da Mata", t: isPT ? "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️" : "You have blessed hands and I soared! I really needed this rest, this peace. It was super respectful all the time and relaxed me a lot. Thank you! ❤️" },
+    { n: "Osvaldo", loc: "Santa Fé do Sul", t: isPT ? "HOJE, não poderia ter terminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS !!! Que delícia!\nOs 4 pilares essenciais do seu trabalho são bases para transformar o atendimento em uma SENSAÇÃO UNICA que gera valores pro corpo, combinando o aspecto de super EMPATIA com o cliente, sem esquecer da EFICIENCIA e agilidade. Thalyson foca sempre no propósito de servir bem o cliente. VALE A PENA." : "TODAY, the day couldn’t have ended BETTER, being attended by Thalyson at home in a massage session with his MAGIC HANDS !!! What a delight!\nThe 4 essential pillars of his work are the foundation to turn the service into a UNIQUE SENSATION that brings value to the body, combining super EMPATHY with the client, without forgetting EFFICIENCY and agility. WORTH IT." },
     { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito." : "Thalyson, I want to say that your massage was very well executed. Highly recommend." },
     { n: "Alan", loc: "SP - Bela Vista", t: isPT ? "Gostei bastante, saí mais leve. Da pra ver que ele manda bem no que faz." : "Liked it a lot, left feeling lighter. You can tell he knows what he's doing." },
     { n: "Tiago", loc: "SP - Bela Vista", t: isPT ? "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida." : "Thalyson has surreal energy. The massage was perfect, best of my life." }
@@ -346,15 +349,15 @@ const getData = (lang: string) => {
   const currency = isPT ? 'R$' : '$';
   const USD_RATE = 5.75;
 
-  // Valores cravados nas exigências: 157, 177, 207, 317 (e 107 ajustado na depilação para seguir a mesma ordem decimal)
   const getPrice = (brl: number) => isPT ? brl : Math.round(brl / USD_RATE);
 
+  // Valores cravados conforme exigência
   const p = {
     relax: getPrice(157),
     sens: getPrice(177),
     titan: getPrice(207),
-    nuru: getPrice(317),
-    depil: getPrice(107), 
+    nuru: getPrice(317), 
+    depil: getPrice(107),
     packRelax: { v: getPrice(527), full: getPrice(628), save: getPrice(101) },
     packTri: { v: getPrice(517), full: getPrice(621), save: getPrice(104) },
     packMix: { v: getPrice(637), full: getPrice(768), save: getPrice(131) },
@@ -381,11 +384,11 @@ const getData = (lang: string) => {
         min: 45,
         price: p.depil,
         icon: "scissors",
-        tag: isPT ? "NOVO" : "NEW",
-        title: isPT ? "Depilação (Maquininha)" : "Body Trimming",
-        desc: isPT ? "Higiene e estética em dia." : "Hygiene and aesthetics.",
+        tag: isPT ? "CUIDADO PESSOAL" : "PERSONAL CARE",
+        title: isPT ? "Aparo Corporal" : "Body Trimming",
+        desc: isPT ? "Manutenção higiênica e estética. Sentir-se leve e limpo é o primeiro passo para o conforto." : "Hygiene and aesthetics in day.",
         details: isPT 
-          ? "Aparo completo com máquina (Zero ou Pente)\nPeito, pernas, braços e costas"
+          ? "Aparo uniforme com equipamento profissional\nFoco no peito, costas, abdômen e pernas\nAmbiente privado e extremamente respeitoso"
           : "Full body trimming with machine\nChest, legs, arms, and back"
       },
       {
@@ -393,11 +396,11 @@ const getData = (lang: string) => {
         min: 60,
         price: p.relax,
         icon: "user-check",
-        tag: isPT ? "ALÍVIO & PAZ" : "RELIEF & PEACE",
-        title: isPT ? "Massagem Clássica" : "Classic Massage",
-        desc: isPT ? "Para quem carrega o peso do mundo. Relaxe profundamente." : "For those carrying the world's weight. Deep relaxation.",
+        tag: isPT ? "SOLUÇÃO PARA DORES" : "PAIN RELIEF",
+        title: isPT ? "Descompressão Profunda" : "Classic Massage",
+        desc: isPT ? "Costas travadas e rotina pesada? Alívio imediato para corpo e mente cansados." : "For those carrying the world's weight. Deep relaxation.",
         details: isPT 
-          ? "Toque suave e acolhedor no corpo todo, foco nas costas, mãos, pernas e pés. \nAlivia o estresse e o cansaço mental\nUm momento só seu de relaxamento e paz\n(Modalidade terapêutica, sem toque íntimo)" 
+          ? "Mapeamento minucioso para desfazer nódulos de tensão\nFoco intensivo na lombar, ombros e pescoço pesado\nToque firme e acolhedor que devolve sua mobilidade\nMomento terapêutico puro para zerar a fadiga física" 
           : "Firm and welcoming touch on back and legs\nRelieves stress and mental fatigue\nA moment of peace just for you\n(Therapeutic mode, no intimate touch)"
       },
       {
@@ -405,11 +408,11 @@ const getData = (lang: string) => {
         min: 60,
         price: p.sens,
         icon: "sparkles",
-        tag: isPT ? "DESPERTAR SENSORIAL" : "SENSORY AWAKENING",
-        title: isPT ? "Tântrica Sensorial" : "Sensory Tantra",
-        desc: isPT ? "Reconecte-se com seu corpo. Toques sutis que arrepiam." : "Reconnect with your body. Subtle touches that thrill.",
+        tag: isPT ? "DESCONEXÃO MENTAL" : "SENSORY AWAKENING",
+        title: isPT ? "Jornada Sensorial" : "Sensory Tantra",
+        desc: isPT ? "Quando sua mente não desliga. Desperte a sensibilidade e alcance o clímax do relaxamento." : "Reconnect with your body. Subtle touches that thrill.",
         details: isPT 
-          ? "Toques leves para despertar a pele\nSensação de leveza e acolhimento\nFinalização especial (Lingam)\nPara quem busca sentir mais" 
+          ? "Toques sutis e arrepiantes que tiram o foco dos pensamentos\nCondução fluida para um estado de entrega absoluta\nFinalização focada em intensa descarga de prazer e endorfina\nPara quem precisa esvaziar a mente sentindo o próprio corpo" 
           : "Touches to awaken the skin\nFeeling of lightness and warmth\nSpecial finish (Lingam)\nFor those seeking to feel more"
       },
       {
@@ -417,12 +420,11 @@ const getData = (lang: string) => {
         min: 60,
         price: p.titan,
         icon: "zap",
-        popular: true,
-        tag: isPT ? "EXPERIÊNCIA COMPLETA" : "FULL EXPERIENCE",
-        title: isPT ? "Fusion Experience" : "Fusion Experience",
-        desc: isPT ? "A união perfeita: relaxamento muscular + energia intensa." : "The perfect union: muscle relaxation + intense energy.",
+        tag: isPT ? "RESTAURAÇÃO & PRAZER" : "FULL EXPERIENCE",
+        title: isPT ? "Experiência Fusion" : "Fusion Experience",
+        desc: isPT ? "Primeiro curamos suas dores, depois guiamos seu corpo a um estado de êxtase profundo." : "The perfect union: muscle relaxation + intense energy.",
         details: isPT 
-          ? "Começa tirando a tensão muscular\nEvolui para uma troca de energia corpo a corpo (Massagista de cueca)\nFinalização intensa e libertadora\nA escolha favorita de quem quer tudo" 
+          ? "Começa quebrando a rigidez das costas e ombros travados\nTransita naturalmente para um toque envolvente corpo a corpo\nCulmina em uma liberação orgânica de toda a tensão acumulada\nA jornada definitiva para sair flutuando da sessão" 
           : "Starts removing muscle tension\nEvolves into body-to-body energy exchange\nIntense and liberating finish\nThe favorite choice for those who want it all"
       },
       {
@@ -430,11 +432,11 @@ const getData = (lang: string) => {
         min: 60,
         price: p.nuru,
         icon: "sparkles",
-        tag: isPT ? "ENTREGA & ACOLHIMENTO" : "SURRENDER & WARMTH",
-        title: isPT ? "Massagem Nuru" : "Nuru Massage",
-        desc: isPT ? "Deslizamento corpo a corpo com gel aquecido. O ápice do relaxamento e cuidado." : "Body-to-body slide with heated gel. The peak of relaxation and care.",
+        tag: isPT ? "IMERSÃO & CALOR" : "SURRENDER & WARMTH",
+        title: isPT ? "Imersão Nuru" : "Nuru Massage",
+        desc: isPT ? "Calor orgânico e contato direto que derretem o estresse até a última gota." : "Body-to-body slide with heated gel. The peak of relaxation and care.",
         details: isPT 
-          ? "Uso de gel Nuru aquecido que hidrata e relaxa\nContato intenso e acolhedor corpo a corpo\nAlivia o estresse profundo através do calor e fricção\nUma experiência de pura liberdade e conexão" 
+          ? "Aplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA experiência mais luxuosa e imersiva de gozo físico e mental\nFoco em soltar todo o controle e apenas receber o toque" 
           : "Use of heated Nuru gel that hydrates and relaxes\nIntense and welcoming body-to-body contact\nRelieves deep stress through heat and friction\nAn experience of pure freedom and connection"
       }
     ] as ServiceItem[],
@@ -1034,6 +1036,8 @@ ${priceDetails}
     }
   };
   
+  const nextLevelInfo = getNextLevelInfo(user.xp);
+  
   if (!isClient) {
     return <div className="min-h-screen w-full bg-zinc-950" />;
   }
@@ -1247,21 +1251,39 @@ ${priceDetails}
                 ))}
               </div>
               
-              {/* Seção de Social Proof (Reviews) */}
-              <div className="py-16 sm:py-24 relative border-t border-b border-dashed border-zinc-800/50 mt-16 sm:mt-24">
-                <div className="flex items-center justify-between mb-12 sm:mb-16 px-6 md:px-10">
-                  <h3 className={`text-3xl sm:text-4xl font-playfair font-medium leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
+              <div className="py-12 relative group">
+                <div className="flex items-center justify-between mb-8 px-4">
+                  <h3 className={`text-2xl md:text-3xl font-playfair font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {T.reviews_title}
                   </h3>
-                  <div className="hidden md:flex gap-4">
-                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: -400, behavior: 'smooth' })} className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-600 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm hover:shadow-md'}`}><Icon name="chevron-left" size={24} /></button>
-                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: 400, behavior: 'smooth' })} className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-600 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm hover:shadow-md'}`}><Icon name="chevron-right" size={24} /></button>
+                  <div className="hidden md:flex gap-2">
+                    <button
+                      onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: -320, behavior: 'smooth' })}
+                      className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-white' : 'bg-white border-slate-200 hover:bg-slate-50 shadow-sm'}`}
+                      aria-label="Anterior"
+                    >
+                      <Icon name="chevron-left" size={20} />
+                    </button>
+                    <button
+                      onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: 320, behavior: 'smooth' })}
+                      className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-white' : 'bg-white border-slate-200 hover:bg-slate-50 shadow-sm'}`}
+                      aria-label="Próximo"
+                    >
+                      <Icon name="chevron-right" size={20} />
+                    </button>
                   </div>
                 </div>
                 
-                <div id="reviews-slider" className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth pb-8 pt-4 px-6 md:px-10 gap-6 md:gap-8" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div
+                  id="reviews-slider"
+                  className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth px-4 pb-8 pt-4 -mx-4 gap-5 items-stretch"
+                  style={{ 
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
+                  }}
+                >
                   {DATA.reviews.map((r, i) => (
-                    <div key={i} className="snap-center flex-shrink-0 w-[85vw] sm:w-[380px] md:w-[420px] h-auto flex">
+                    <div key={i} className="snap-center flex-shrink-0 w-[280px] md:w-80 first:ml-4 last:mr-4 flex h-auto">
                       <ReviewCard review={r} isDark={isDark} />
                     </div>
                   ))}
