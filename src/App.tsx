@@ -280,7 +280,8 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 // ==================================================================================
 // 4. LÓGICA DE DADOS E FUNÇÕES PURAS (COM BLINDAGEM DE CACHE)
 // ==================================================================================
-const sanitizeInput = (value: string): string => value.replace(/[<>&"']/g, '');
+// CORREÇÃO: blindado contra strings vazias, nulos ou arrays para evitar crash do .replace
+const sanitizeInput = (value: string): string => String(value || '').replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
 
 // Limpeza segura silenciosa
@@ -760,6 +761,9 @@ export default function App() {
     return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
   };
   
+  // CORREÇÃO CRÍTICA DO BUG DE REFERENCE ERROR NO RENDER
+  const nextLevelInfo = getNextLevelInfo(user.xp);
+
   const getCurrentLevelProgress = () => {
     if (user.xp >= 800) return ((user.xp - 800) % 500 / 500) * 100;
     const currentLevelIndex = DATA.levels.slice().reverse().findIndex(l => user.xp >= l.xpNeeded);
@@ -770,7 +774,8 @@ export default function App() {
   
   const generateWhatsAppMsg = () => {
     const f = financials; const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'pt' ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN) : '';
-    const securityHash = btoa(`${f.total}-${dateStr}-${booking.item?.id || ''}-${CONFIG.SECRET_TOKEN}`).substring(0, 8).toUpperCase();
+    // CORREÇÃO: encodeURIComponent garante que iOS não vai crashar o app no btoa por causa de caracteres invisiveis de data
+    const securityHash = btoa(encodeURIComponent(`${f.total}-${dateStr}-${booking.item?.id || ''}-${CONFIG.SECRET_TOKEN}`)).substring(0, 8).toUpperCase();
     let serviceTitle = booking.item?.title || ''; if (booking.type !== 'single' && booking.item?.desc) serviceTitle += ` ${lang === 'pt' ? '(Jornada)' : '(Journey)'}`;
     
     let locTxt = ""; let mapQuery = "";
@@ -814,7 +819,7 @@ ${extrasList ? `\n➕ *${lang === 'pt' ? 'COMPLEMENTOS CLÍNICOS' : 'ADD-ONS'}:*
 
 📍 *${lang === 'pt' ? 'DIRETRIZ DE LOCAL' : 'LOCATION'}:*
 ${locTxt}
-${mapQuery ? `🔗 Rota Fixada: https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}` : ''}
+${mapQuery ? `🔗 Rota Fixada: https://maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
 
 🚗 *${lang === 'pt' ? 'TAXA DE MOBILIDADE (UBER)' : 'TRANSPORT (UBER)'}:*
 *${lang === 'pt' ? 'A ser indexada na aprovação' : 'To be agreed separately'}*
@@ -839,7 +844,7 @@ ${priceDetails}
     if (step === 0) return !!booking.item;
     if (step === 1) return !!(booking.date && booking.time);
     if (step === 2) {
-      if (!user.name || user.name.trim().length < 3) return false;
+      if (!user.name || String(user.name).trim().length < 3) return false;
       if (booking.locationType === 'home') return validateAddress(booking.address);
       if (booking.locationType === 'hotel') return !!(booking.address.placeName && booking.address.city);
       return true;
@@ -1005,7 +1010,7 @@ ${priceDetails}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center py-4">
                 <div>
                   <h2 className={`text-4xl md:text-5xl font-playfair font-medium leading-tight mb-6 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
-                    {T.welcome} <span className="font-italic text-zinc-500">{user.name ? user.name.split(' ')[0] : (isPT ? "Priorize-se" : "Visitor")}.</span>
+                    {T.welcome} <span className="font-italic text-zinc-500">{user.name ? String(user.name).trim().split(' ')[0] : (isPT ? "Priorize-se" : "Visitor")}.</span>
                   </h2>
                   <p className={`text-base md:text-lg font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                     {T.choose_sub}
@@ -1222,7 +1227,7 @@ ${priceDetails}
               </div>
               
               <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-zinc-900/20 border-zinc-800/60' : 'bg-white border-slate-100 shadow-sm'} space-y-6`}>
-                <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder={isPT ? "Inserir seu nome" : "Your name"} hasError={!user.name || user.name.trim().length < 3} />
+                <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder={isPT ? "Inserir seu nome" : "Your name"} hasError={!user.name || String(user.name).trim().length < 3} />
                 
                 {booking.locationType === 'home' && (
                   <>
@@ -1302,7 +1307,7 @@ ${priceDetails}
                           MODALIDADE SELECIONADA
                         </p>
                         <h4 className={`text-lg font-playfair font-medium ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
-                          {booking.item ? (DATA.services.find(s => s.id === booking.item!.id) || DATA.plans.find(p => p.id === booking.item!.id))?.title : ''}
+                          {booking.item ? (DATA.services.find(s => s.id === booking.item?.id) || DATA.plans.find(p => p.id === booking.item?.id))?.title : ''}
                         </h4>
                         <div className={`flex items-center gap-2 text-xs font-medium mt-3 border px-3 py-1.5 rounded-full w-fit ${isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
                           <Icon name="calendar" size={14} />
