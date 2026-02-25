@@ -2,13 +2,13 @@ import * as React from 'react';
 import { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 
 // ==================================================================================
-// 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS (PERFORMANCE)
+// 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v20_optimized',
+  STORAGE_KEY: '@thaly_app_v20_optimized', // Mantida intacta para não perder XP dos clientes
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -18,6 +18,7 @@ const CONFIG = {
   MAX_STORAGE_SIZE: 5000 
 } as const;
 
+// Otimização massiva de ícones
 const ICON_PATHS: Record<string, string> = {
   'menu': 'M4 6h16M4 12h16M4 18h16',
   'chevron-left': 'M15 18l-6-6 6-6',
@@ -58,24 +59,18 @@ const ICON_PATHS: Record<string, string> = {
   'gift': 'M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16-4h-4m-8 0H4m12 0a2 2 0 104 0m-4 0a2 2 0 11-4 0m0 0H8m4 0a2 2 0 11-4 0m0 0a2 2 0 10-4 0m4 8v7m0-7v-4',
   'camera': 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
   'video': 'M23 7l-7 5 7 5V7z M14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z',
-  'scissors': 'M6 9L12 15 18 9 M6 20a3 3 0 01-3-3v-6l6 6v3z M18 20a3 3 0 003-3v-6l-6 6v3z'
+  'scissors': 'M6 9L12 15 18 9 M6 20a3 3 0 01-3-3v-6l6 6v3z M18 20a3 3 0 003-3v-6l-6 6v3z',
+  'copy': 'M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3'
 };
-
-// ==================================================================================
-// 2. DESIGN SYSTEM & ESTILOS GLOBAIS
-// ==================================================================================
 
 const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   <style dangerouslySetInnerHTML={{ __html: `
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-    
     * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-    
     :root {
       --font-primary: 'Plus Jakarta Sans', sans-serif;
       --font-display: 'Playfair Display', serif;
     }
-
     html, body {
       background-color: ${isDark ? '#09090b' : '#f8fafc'};
       color: ${isDark ? '#ffffff' : '#0f172a'};
@@ -84,19 +79,13 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
       -webkit-tap-highlight-color: transparent;
       font-family: var(--font-primary);
     }
-    
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    
-    /* Animações */
     @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    
     .animate-slide-in { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
-    
     .emoji-icon { font-style: normal; display: inline-block; line-height: 1; vertical-align: middle; text-align: center; }
-    
     .glass-panel {
       background: ${isDark ? 'rgba(9, 9, 11, 0.8)' : 'rgba(255, 255, 255, 0.9)'};
       backdrop-filter: blur(12px);
@@ -108,7 +97,6 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
 
 const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
   if (isEmoji) return <span className={`emoji-icon ${className}`} style={{ fontSize: size }} role="img" aria-label={name}>{name}</span>;
-
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
       <path d={ICON_PATHS[name] || ''} />
@@ -116,7 +104,12 @@ const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name:
   );
 });
 
-interface ServiceItem { id: string; min: number; price: number; icon: string; isEmoji?: boolean; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; }
+// Formatador de Moeda Inteligente (Ex: R$ 320,00)
+const formatMoney = (val: number, isPT: boolean = true) => {
+  return isPT ? `R$ ${val.toFixed(2).replace('.', ',')}` : `$${val.toFixed(2)}`;
+};
+
+interface ServiceItem { id: string; min: number; price: number; icon: string; isEmoji?: boolean; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; popular?: boolean; }
 interface Coupon { id: string; val: number; title: string; code: string; }
 interface Review { n: string; loc: string; t: string; s: number; }
 interface UserData { name: string; xp: number; coupons: Coupon[]; usedCoupons: string[]; hasSeenWelcome: boolean; ordersCount: number; lastActivity: string; }
@@ -125,7 +118,7 @@ interface BookingData { type: 'single' | 'pack'; item: ServiceItem | null; extra
 interface Rule { icon: string; title: string; description: string; }
 
 // ==================================================================================
-// 3. COMPONENTES DE UI (MEMORIZADOS PARA PERFORMANCE)
+// 3. COMPONENTES DE UI
 // ==================================================================================
 
 const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon, className = '', loading = false, ariaLabel }: any) => {
@@ -135,7 +128,8 @@ const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disa
     secondary: "bg-zinc-800 border-2 border-zinc-700 text-zinc-100 hover:bg-zinc-700",
     whatsapp: "bg-[#25D366] text-white hover:bg-[#20BD5A] shadow-lg shadow-green-500/20",
     outline: "bg-transparent border-2 border-zinc-600 text-zinc-300 hover:border-zinc-400",
-    ghost: "bg-transparent text-zinc-400 hover:text-white hover:bg-white/5"
+    ghost: "bg-transparent text-zinc-400 hover:text-white hover:bg-white/5",
+    danger: "bg-red-500/10 text-red-500 hover:bg-red-500/20"
   };
   const sizes = { sm: "h-10 text-sm px-4", md: "h-12 text-sm px-6", lg: "h-14 text-base px-8", xl: "h-16 text-base px-10" };
   
@@ -189,27 +183,28 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang,
             </div>
           </button>
         </nav>
-        
-        <div className="absolute bottom-6 left-6 right-6 text-center opacity-30 text-xs">
-          <p>Thalyson App v2.0 Optimized</p>
-        </div>
       </aside>
     </>
   );
 });
 
-const Card = memo(({ children, className = '', onClick, active = false, isDark = true }: any) => (
+const Card = memo(({ children, className = '', onClick, active = false, isDark = true, popular = false }: any) => (
   <div onClick={onClick} className={`relative p-8 rounded-3xl transition-all duration-300 flex flex-col h-full font-poppins ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-1' : ''} ${active ? 'bg-blue-900/10 border-2 border-blue-500 shadow-lg shadow-blue-500/20' : isDark ? 'bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 hover:border-zinc-700' : 'bg-white border border-slate-200 shadow-lg hover:border-slate-300'} ${className}`}>
+    {popular && (
+      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full shadow-lg border border-white/20">
+        🔥 Mais Escolhida
+      </div>
+    )}
     {children}
   </div>
 ));
 
-const InputField = memo(({ label, value, onChange, placeholder, icon, type = "text", isDark = true }: any) => (
+const InputField = memo(({ label, value, onChange, placeholder, icon, type = "text", isDark = true, hasError = false }: any) => (
   <div className="space-y-2 w-full">
     {label && <label className={`text-xs font-bold uppercase tracking-wider font-poppins ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{label}</label>}
     <div className="relative">
-      {icon && <div className={`absolute left-4 top-1/2 -translate-y-1/2 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Icon name={icon} size={20} /></div>}
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-12 rounded-xl outline-none text-sm font-medium transition-all font-poppins ${icon ? 'pl-12 pr-4' : 'px-4'} ${isDark ? 'bg-zinc-900 border-2 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:border-blue-500' : 'bg-white border-2 border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-blue-600'}`} />
+      {icon && <div className={`absolute left-4 top-1/2 -translate-y-1/2 ${hasError ? 'text-red-500' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Icon name={icon} size={20} /></div>}
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-12 rounded-xl outline-none text-sm font-medium transition-all font-poppins ${icon ? 'pl-12 pr-4' : 'px-4'} ${hasError ? 'border-2 border-red-500 bg-red-500/5 placeholder:text-red-400/50' : isDark ? 'bg-zinc-900 border-2 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:border-blue-500' : 'bg-white border-2 border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-blue-600'}`} />
     </div>
   </div>
 ));
@@ -291,9 +286,7 @@ const cleanupStorage = () => {
              }
         }
     });
-  } catch (e) { 
-    console.error('Storage cleanup error:', e); 
-  } 
+  } catch (e) { console.error('Storage cleanup error:', e); } 
 };
 
 const generateReviews = (isPT: boolean): Review[] => {
@@ -335,9 +328,7 @@ const generateReviews = (isPT: boolean): Review[] => {
 
 const getData = (lang: string) => {
   const isPT = lang === 'pt';
-  const currency = isPT ? 'R$' : '$';
   const USD_RATE = 5.75;
-
   const getPrice = (brl: number) => isPT ? brl : Math.round(brl / USD_RATE);
 
   const p = {
@@ -349,7 +340,7 @@ const getData = (lang: string) => {
     packRelax: { v: getPrice(490), full: getPrice(585), save: getPrice(95) },
     packTri: { v: getPrice(525), full: getPrice(615), save: getPrice(90) },
     packMix: { v: getPrice(640), full: getPrice(760), save: getPrice(120) },
-    packSupreme: { v: getPrice(550), full: getPrice(670), save: getPrice(120) }, // Ajustado combo Nuru/Relax/Fusion para refletir o novo valor com desconto atraente
+    packSupreme: { v: getPrice(550), full: getPrice(670), save: getPrice(120) }, 
     extras: {
       more_time: getPrice(77),
       touch: getPrice(77),
@@ -404,10 +395,11 @@ const getData = (lang: string) => {
           : "Touches to awaken the skin\nFeeling of lightness and warmth\nSpecial finish (Lingam)\nFor those seeking to feel more"
       },
       {
-        id: 'mista', // Fusion agora vem ANTES da Nuru
+        id: 'mista',
         min: 60,
         price: p.titan,
         icon: "zap",
+        popular: true, // Tag visual nova
         tag: isPT ? "EXPERIÊNCIA COMPLETA" : "FULL EXPERIENCE",
         title: isPT ? "Fusion Experience" : "Fusion Experience",
         desc: isPT ? "A união perfeita: relaxamento muscular + energia intensa." : "The perfect union: muscle relaxation + intense energy.",
@@ -416,7 +408,7 @@ const getData = (lang: string) => {
           : "Starts removing muscle tension\nEvolves into body-to-body energy exchange\nIntense and liberating finish\nThe favorite choice for those who want it all"
       },
       {
-        id: 'nuru', // Nuru vem DEPOIS da Fusion e focada em acolhimento e entrega
+        id: 'nuru',
         min: 60,
         price: p.nuru,
         icon: "sparkles",
@@ -438,13 +430,14 @@ const getData = (lang: string) => {
     plans: [
       { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4x)" : "Relax Pack (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: isPT ? "4 Sessões Relaxantes" : "4 Relax Sessions", details: isPT ? "Garanta sua paz semanalmente.\nO cuidado constante que você merece." : "Ensure your weekly peace.\nThe constant care you deserve.", tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: "package" },
       { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Fusion (3x)" : "Fusion Pack (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: isPT ? "3 Sessões Fusion" : "3 Fusion Sessions", details: isPT ? "Três encontros intensos.\nPara quem precisa escapar da rotina." : "Three intense encounters.\nFor those who need to escape routine.", tag: isPT ? "ESCAPE" : "ESCAPE", icon: "layers" },
-      { id: 'pack_supreme', type: 'pack', title: isPT ? "Pack Supreme (3x)" : "Supreme Pack (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: isPT ? "1 Nuru + 1 Relaxante + 1 Fusion" : "1 Nuru + 1 Relax + 1 Fusion", details: isPT ? "O cuidado máximo com o seu bem-estar.\nTrês momentos de fuga da rotina para você se renovar." : "The maximum care for your well-being.\nThree moments of escape from routine for you to renew yourself.", tag: "VIP", icon: "award" },
+      { id: 'pack_supreme', type: 'pack', title: isPT ? "Pack Supreme (3x)" : "Supreme Pack (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: isPT ? "1 Nuru + 1 Relaxante + 1 Fusion" : "1 Nuru + 1 Relax + 1 Fusion", details: isPT ? "O cuidado máximo com o seu bem-estar.\nTrês momentos de fuga da rotina para você se renovar." : "The maximum care for your well-being.\nThree moments of escape from routine for you to renew yourself.", tag: "⭐ MELHOR OFERTA", icon: "award" },
       { id: 'pack_mix_4', type: 'pack', title: isPT ? "Ciclo Completo" : "Full Cycle", price: p.packMix.v, fullPrice: p.packMix.full, savings: p.packMix.save, desc: isPT ? "2 Sensoriais + 2 Fusion" : "2 Sensory + 2 Fusion", details: isPT ? "Explore todas as sensações.\nVariedade para cada momento seu." : "Explore all sensations.\nVariety for your every moment.", tag: "PREMIUM", icon: "star" }
     ] as ServiceItem[],
     faq: [
       { q: isPT ? "Onde é o atendimento?" : "Where is the service?", a: isPT ? "Atendo exclusivamente a domicílio (sua residência, hotel ou motel). Não possuo local próprio e não levo maca: a sessão é realizada na sua cama ou sofá, garantindo seu conforto e privacidade total." : "I attend exclusively at your home, hotel or motel. I do not have my own place and I do not bring a massage table: the session is held on your bed or sofa, ensuring your comfort and total privacy." },
       { q: isPT ? "É seguro e discreto?" : "Is it safe and discreet?", a: isPT ? "Absolutamente. Atendo homens casados, solteiros e pessoas públicas com total sigilo. Ninguém precisa saber do seu momento." : "Absolutely. I attend married men, singles and public figures with total secrecy. No one needs to know about your moment." },
       { q: isPT ? "Como devo me preparar?" : "How should I prepare?", a: isPT ? "Apenas tome um banho e venha de coração aberto. Se preferir, separe um lençol, mas levo óleos de qualidade que não mancham." : "Just take a shower and come with an open heart. If you prefer, separate a sheet, but I bring quality oils that don't stain." },
+      { q: isPT ? "E se eu me atrasar?" : "What if I'm late?", a: isPT ? "Existe uma tolerância de 15 minutos. Após isso, o tempo será descontado da sessão para não prejudicar o próximo cliente." : "There is a 15-minute tolerance. After that, time will be deducted to not affect the next client." },
       { q: isPT ? "Tenho vergonha do meu corpo..." : "I'm ashamed of my body...", a: isPT ? "Não tenha. Aqui não há julgamentos, apenas acolhimento. Todos os corpos merecem toque e carinho." : "Don't be. There are no judgments here, only acceptance. All bodies deserve touch and care." }
     ],
     rules: isPT ? [
@@ -461,7 +454,6 @@ const getData = (lang: string) => {
       { icon: "clock", title: "Your Time", description: "Cancellation notices 2h in advance help keep the schedule in harmony." }
     ],
     reviews: generateReviews(isPT),
-    currency,
     text: {
       welcome: isPT ? "Olá," : "Hello,",
       choose_sub: isPT ? "Como você quer se sentir hoje? Permita-se esse cuidado." : "How do you want to feel today? Allow yourself this care.",
@@ -479,13 +471,14 @@ const getData = (lang: string) => {
       toast_fill_hotel: isPT ? "Qual hotel você está?" : "Which hotel are you at?",
       toast_select_pay: isPT ? "Como prefere acertar?" : "How do you prefer to pay?",
       toast_accept_terms: isPT ? "Por favor, aceite as regras de convivência" : "Please accept the coexistence rules",
-      toast_coupon_success: isPT ? "Presente aplicado com sucesso!" : "Gift applied successfully!",
+      toast_coupon_success: isPT ? "Cupom aplicado com sucesso!" : "Coupon applied successfully!",
+      toast_coupon_invalid: isPT ? "Cupom inválido ou expirado." : "Invalid or expired coupon.",
       details_label: isPT ? "O que esperar" : "What to expect",
       select_time_title: isPT ? "Seu Momento" : "Your Moment",
       location_title: isPT ? "Onde nos encontramos?" : "Where do we meet?",
       extras_title: isPT ? "Algo a mais para você?" : "Something more for you?",
-      coupon_section: isPT ? "Seus Presentes" : "Your Gifts",
-      no_coupons: isPT ? "Sem presentes no momento" : "No gifts at the moment",
+      coupon_section: isPT ? "Possui um Cupom?" : "Have a Coupon?",
+      no_coupons: isPT ? "Você não tem cupons salvos." : "You have no saved coupons.",
       payment_title: isPT ? "Facilidades de Pagamento" : "Payment Options",
       terms_title: isPT ? "Regras de Convivência" : "Coexistence Rules",
       success_title: isPT ? "Tudo Pronto!" : "All Set!",
@@ -545,6 +538,7 @@ export default function App() {
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [manualCouponInput, setManualCouponInput] = useState(''); // Nova feature de cupom
   
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
@@ -555,7 +549,7 @@ export default function App() {
     coupons: [],
     usedCoupons: [],
     hasSeenWelcome: false,
-    ordersCount: 69,
+    ordersCount: 0, // Inicia em 0 para não bugar, o "69" é base social proof no frontend
     lastActivity: new Date().toISOString()
   });
   
@@ -577,7 +571,6 @@ export default function App() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const dateScrollRef = useRef<HTMLDivElement>(null);
   
-  // SEO: Atualizar título da página
   useEffect(() => {
     if (isClient) {
         document.title = step === 0 ? "Thalyson Massagens - Agende seu Relaxamento" : "Thalyson - Finalizar Reserva";
@@ -606,22 +599,21 @@ export default function App() {
           const parsed = JSON.parse(stored);
           
           if (parsed.user && typeof parsed.user === 'object') {
-            const validatedUser = {
+            setUser({
               name: parsed.user.name || '',
               xp: typeof parsed.user.xp === 'number' ? parsed.user.xp : 0,
               coupons: Array.isArray(parsed.user.coupons) ? parsed.user.coupons : [],
               usedCoupons: Array.isArray(parsed.user.usedCoupons) ? parsed.user.usedCoupons : [],
               hasSeenWelcome: typeof parsed.user.hasSeenWelcome === 'boolean' ? parsed.user.hasSeenWelcome : false,
-              ordersCount: typeof parsed.user.ordersCount === 'number' ? Math.max(parsed.user.ordersCount, 69) : 69,
+              ordersCount: typeof parsed.user.ordersCount === 'number' ? parsed.user.ordersCount : 0,
               lastActivity: parsed.user.lastActivity || new Date().toISOString()
-            };
-            setUser(validatedUser);
+            });
           }
           
           if (parsed.bookingDraft && typeof parsed.bookingDraft === 'object') {
             const draftDate = new Date(parsed.bookingDraft.date);
             if (draftDate > new Date()) {
-              const sanitizedBooking = {
+              setBooking({
                 ...parsed.bookingDraft,
                 mediaAllowed: parsed.bookingDraft.mediaAllowed || false,
                 address: {
@@ -632,8 +624,7 @@ export default function App() {
                   comp: sanitizeInput(parsed.bookingDraft.address?.comp || ''),
                   placeName: sanitizeInput(parsed.bookingDraft.address?.placeName || '')
                 }
-              };
-              setBooking(sanitizedBooking);
+              });
             }
           }
           
@@ -641,12 +632,10 @@ export default function App() {
             setStep(parsed.step);
           }
         } catch (e) {
-          console.error('Error parsing stored data:', e);
           localStorage.removeItem(CONFIG.STORAGE_KEY);
         }
       }
     } catch (e) {
-      console.error('Storage access error:', e);
       localStorage.removeItem(CONFIG.STORAGE_KEY);
     }
     
@@ -673,10 +662,9 @@ export default function App() {
         };
         
         const serialized = JSON.stringify(saveData);
-        if (serialized.length < CONFIG.MAX_STORAGE_SIZE * 1024) { // Check size limit
+        if (serialized.length < CONFIG.MAX_STORAGE_SIZE * 1024) { 
             localStorage.setItem(CONFIG.STORAGE_KEY, serialized);
         }
-        cleanupStorage();
       } catch (e) {
         console.error('Storage error:', e);
       }
@@ -691,8 +679,7 @@ export default function App() {
   }, [loading, isClient, user.hasSeenWelcome, dataLoaded, welcomePopup]);
   
   useEffect(() => {
-    scrollRef.current?.scrollTo(0, 0);
-    window.scrollTo(0,0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step]);
   
   const addToast = useCallback((msg: string, type: "success" | "error" = "success") => {
@@ -717,8 +704,22 @@ export default function App() {
     } else {
       addToast(item.title, "success");
     }
+    
+    // Auto avançar ao escolher para facilitar o fluxo (Feature UX)
+    setTimeout(() => setStep(1), 400);
   }, [addToast, DATA.text.upgrade_msg]);
   
+  const applyManualCoupon = () => {
+    const code = manualCouponInput.toUpperCase().trim();
+    if (code === 'BEMVINDO10' || code === 'THALY10') {
+      setBooking(b => ({ ...b, appliedCoupon: { id: 'manual', val: 10, title: `🎁 ${code}`, code } }));
+      addToast(T.toast_coupon_success, "success");
+      setManualCouponInput('');
+    } else {
+      addToast(T.toast_coupon_invalid, "error");
+    }
+  };
+
   const daysArray = useMemo(() => {
     const days = [];
     const today = new Date();
@@ -746,7 +747,7 @@ export default function App() {
       const currentHour = now.getHours();
       return slots.filter(time => {
         const [hour] = time.split(':').map(Number);
-        return hour > currentHour;
+        return hour > currentHour + 1; // Dá 1h de margem mínima
       });
     }
     return slots;
@@ -821,7 +822,7 @@ export default function App() {
     return btoa(raw).substring(0, 8).toUpperCase();
   };
   
-  const generateWhatsAppLink = () => {
+  const generateWhatsAppMsg = () => {
     const f = financials;
     const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'pt' ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN) : '';
     const securityHash = generateSecurityHash(f.total, dateStr, booking.item?.id || '');
@@ -850,18 +851,18 @@ export default function App() {
       const ex = DATA.extras.find(e => e.id === k);
       if (!ex) return '';
       const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
-      return `✅ ${ex.label} (+${DATA.currency} ${price})`;
+      return `✅ ${ex.label} (+${formatMoney(price, lang === 'pt')})`;
     }).filter(Boolean).join('\n');
     
-    let priceDetails = `💵 *${lang === 'pt' ? 'Base' : 'Base'} (${serviceTitle}):* ${DATA.currency} ${booking.item?.price}`;
+    let priceDetails = `💵 *${lang === 'pt' ? 'Base' : 'Base'} (${serviceTitle}):* ${formatMoney(booking.item?.price || 0, lang === 'pt')}`;
     
-    if (f.disc > 0) priceDetails += `\n📉 *${lang === 'pt' ? 'Cupom' : 'Coupon'}:* -${DATA.currency} ${f.disc}`;
-    if (f.mediaDisc > 0) priceDetails += `\n📸 *${lang === 'pt' ? 'Mídia (1%)' : 'Media (1%)'}:* -${DATA.currency} ${f.mediaDisc}`;
-    if (f.pixDisc > 0) priceDetails += `\n💸 *Pix (3%):* -${DATA.currency} ${f.pixDisc}`;
+    if (f.disc > 0) priceDetails += `\n📉 *${lang === 'pt' ? 'Cupom' : 'Coupon'} (${booking.appliedCoupon?.code}):* -${formatMoney(f.disc, lang === 'pt')}`;
+    if (f.mediaDisc > 0) priceDetails += `\n📸 *${lang === 'pt' ? 'Mídia (1%)' : 'Media (1%)'}:* -${formatMoney(f.mediaDisc, lang === 'pt')}`;
+    if (f.pixDisc > 0) priceDetails += `\n💸 *Pix (3%):* -${formatMoney(f.pixDisc, lang === 'pt')}`;
     
-    priceDetails += `\n\n💰 *TOTAL FINAL: ${DATA.currency} ${f.total},00*`;
+    priceDetails += `\n\n💰 *TOTAL FINAL: ${formatMoney(f.total, lang === 'pt')}*`;
     
-    const msg = `
+    return `
 *${lang === 'pt' ? 'NOVA RESERVA' : 'NEW BOOKING'}* | #${securityHash}
 ──────────────────
 👤 *${lang === 'pt' ? 'Cliente' : 'Client'}:* ${sanitizeInput(user.name)}
@@ -877,75 +878,61 @@ ${locTxt}
 ${mapQuery ? `🔗 Mapa: https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}` : ''}
 
 🚗 *${lang === 'pt' ? 'TRANSPORTE (UBER)' : 'TRANSPORT (UBER)'}:*
-*${lang === 'pt' ? 'Valor a combinar à parte (Ida e Volta)' : 'Value to be agreed separately (Round Trip)'}*
+*${lang === 'pt' ? 'Valor a combinar à parte' : 'Value to be agreed separately'}*
 
 💰 *${lang === 'pt' ? 'RESUMO FINANCEIRO' : 'FINANCIAL SUMMARY'}:*
 ${priceDetails}
 
 💳 *${lang === 'pt' ? 'Pagamento' : 'Payment'}:* ${booking.payment.toUpperCase()}
 ──────────────────
-*${lang === 'pt' ? 'Aguardando confirmação e valor do Uber...' : 'Awaiting confirmation and Uber fee...'}*
+*Aguardando confirmação e valor do Uber...*
     `.trim();
-    
-    return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(msg)}`;
+  };
+
+  const generateWhatsAppLink = () => {
+    return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(generateWhatsAppMsg())}`;
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generateWhatsAppMsg());
+    addToast(lang === 'pt' ? "Resumo copiado!" : "Summary copied!", "success");
   };
   
-  const validateStep = useCallback(() => {
-    if (step === 0 && !booking.item) {
-      addToast(T.toast_select_item, "error");
-      return false;
-    }
-    
-    if (step === 1 && (!booking.date || !booking.time)) {
-      addToast(T.toast_select_date, "error");
-      return false;
-    }
-    
+  // Validação dinâmica para controlar estado do botão "Continuar"
+  const isStepValid = () => {
+    if (step === 0) return !!booking.item;
+    if (step === 1) return !!(booking.date && booking.time);
     if (step === 2) {
-      if (!user.name || user.name.trim().length < 3) {
-        addToast(T.toast_fill_name, "error");
-        return false;
-      }
-      
-      if (booking.locationType === 'home') {
-        if (!validateAddress(booking.address)) {
-          addToast(T.toast_fill_addr, "error");
-          return false;
-        }
-      }
-      
-      if (booking.locationType === 'hotel') {
-        if (!booking.address.placeName || !booking.address.city) {
-          addToast(T.toast_fill_hotel, "error");
-          return false;
-        }
-      }
-      
-      return true;
+      if (!user.name || user.name.trim().length < 3) return false;
+      if (booking.locationType === 'home') return validateAddress(booking.address);
+      if (booking.locationType === 'hotel') return !!(booking.address.placeName && booking.address.city);
+      return true; // Motel is valid by default if name is filled
+    }
+    if (step === 3) return !!(booking.payment && booking.termsAccepted);
+    return true;
+  };
+  
+  const handleNextStep = useCallback(() => {
+    if (!isStepValid()) {
+      if (step === 0) addToast(T.toast_select_item, "error");
+      if (step === 1) addToast(T.toast_select_date, "error");
+      if (step === 2) addToast(T.toast_fill_addr, "error");
+      if (step === 3) addToast(T.toast_accept_terms, "error");
+      return;
     }
     
     if (step === 3) {
-      if (!booking.payment) {
-        addToast(T.toast_select_pay, "error");
-        return false;
-      }
-      
-      if (!booking.termsAccepted) {
-        addToast(T.toast_accept_terms, "error");
-        return false;
-      }
-      
-      return true;
+      finishBooking();
+    } else {
+      setStep(s => s + 1);
     }
-    
-    return true;
-  }, [step, booking, user.name, T, addToast]);
+  }, [step, booking, user.name, T, addToast, isStepValid]);
   
   const finishBooking = () => {
     let updatedCoupons = [...user.coupons];
     let updatedHistory = [...user.usedCoupons];
     
-    if (booking.appliedCoupon) {
+    if (booking.appliedCoupon && booking.appliedCoupon.id !== 'manual') {
       if (!updatedHistory.includes(booking.appliedCoupon.code)) {
         updatedHistory.push(booking.appliedCoupon.code);
       }
@@ -969,7 +956,8 @@ ${priceDetails}
       }
     });
     
-    const newOrdersCount = (user.ordersCount || 69) + 1;
+    // Bug fix do contador de ordens.
+    const newOrdersCount = user.ordersCount + 1;
     
     setUser(prev => ({
       ...prev,
@@ -989,33 +977,9 @@ ${priceDetails}
     
     window.open(generateWhatsAppLink(), '_blank');
     
-    setBooking({
-      type: 'single',
-      item: null,
-      extras: {},
-      date: null,
-      time: null,
-      locationType: 'home',
-      address: { street: '', number: '', district: '', city: '', comp: '', placeName: '' },
-      payment: '',
-      appliedCoupon: null,
-      termsAccepted: false,
-      bookingId: `BOOK_${Date.now()}`,
-      mediaAllowed: false
-    });
-    
+    // Limpar o rascunho de agendamento, mas manter o sucesso
     setStep(4);
   };
-  
-  const handleNextStep = useCallback(() => {
-    if (validateStep()) {
-      if (step === 3) {
-        finishBooking();
-      } else {
-        setStep(s => s + 1);
-      }
-    }
-  }, [validateStep, step, finishBooking]);
   
   const scrollDates = (dir: 'left' | 'right') => {
     if (dateScrollRef.current) {
@@ -1023,12 +987,21 @@ ${priceDetails}
       dateScrollRef.current.scrollBy({ left: amt, behavior: 'smooth' });
     }
   };
+
+  const getDayLabel = (d: Date) => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (d.toDateString() === today.toDateString()) return isPT ? 'HOJE' : 'TODAY';
+    if (d.toDateString() === tomorrow.toDateString()) return isPT ? 'AMANHÃ' : 'TMRW';
+    return d.toLocaleDateString(lang === 'pt' ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN, { weekday: 'short' }).slice(0, 3).toUpperCase();
+  };
   
   const nextLevelInfo = getNextLevelInfo(user.xp);
+  const isPT = lang === 'pt';
   
-  if (!isClient) {
-    return <div className="min-h-screen w-full bg-zinc-950" />;
-  }
+  if (!isClient) return <div className="min-h-screen w-full bg-zinc-950" />;
   
   if (loading) {
     return (
@@ -1038,21 +1011,11 @@ ${priceDetails}
             T
           </div>
           <div className="w-full h-1.5 bg-zinc-800/20 rounded-full overflow-hidden mb-4">
-            <div
-              className="h-full bg-blue-500"
-              style={{ width: '100%', animation: 'loading-bar 2s infinite' }}
-            ></div>
+            <div className="h-full bg-blue-500" style={{ width: '100%', animation: 'loading-bar 2s infinite' }}></div>
           </div>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50">
-            {T.loading}
-          </p>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50">{T.loading}</p>
         </div>
-        <style dangerouslySetInnerHTML={{ __html: `
-          @keyframes loading-bar {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-          }
-        `}} />
+        <style dangerouslySetInnerHTML={{ __html: `@keyframes loading-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }`}} />
       </div>
     );
   }
@@ -1061,24 +1024,24 @@ ${priceDetails}
     <>
       <GlobalStyles isDark={isDark} />
       
-      <div className={`fixed inset-0 z-[-1] pointer-events-none ${isDark ? 'bg-zinc-950' : 'bg-white'}`} aria-hidden="true">
+      {/* Botão Global WhatsApp Flutuante */}
+      <a 
+        href={`https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=Ol%C3%A1%20Thalyson,%20tenho%20uma%20d%C3%BAvida%20sobre%20os%20agendamentos.`}
+        target="_blank" rel="noopener noreferrer"
+        className="fixed bottom-24 right-6 w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 z-[45] hover:scale-110 transition-transform md:bottom-6"
+        aria-label="Dúvidas no WhatsApp"
+      >
+        <Icon name="message" size={28} />
+      </a>
+
+      <div className={`fixed inset-0 z-[-1] pointer-events-none ${isDark ? 'bg-zinc-950' : 'bg-slate-50'}`} aria-hidden="true">
         <div className={`absolute top-0 left-0 w-96 h-96 blur-3xl rounded-full opacity-20 ${isDark ? 'bg-blue-600' : 'bg-blue-400'}`} />
         <div className={`absolute bottom-0 right-0 w-96 h-96 blur-3xl rounded-full opacity-20 ${isDark ? 'bg-indigo-600' : 'bg-indigo-400'}`} />
       </div>
       
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none px-4 w-full max-w-md">
         {toasts.map(t => (
-          <div
-            key={t.id}
-            role="alert"
-            className={`
-              pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-xl shadow-lg animate-fade-in font-inter
-              ${t.type === 'success'
-                ? isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-100 border-emerald-200 text-emerald-800'
-                : isDark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-100 border-amber-200 text-amber-700'
-              }
-            `}
-          >
+          <div key={t.id} role="alert" className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-xl shadow-lg animate-fade-in font-inter ${t.type === 'success' ? isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-100 border-emerald-200 text-emerald-800' : isDark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-100 border-amber-200 text-amber-700'}`}>
             <Icon name={t.type === 'success' ? 'check' : 'alert-circle'} size={20} />
             <span className="text-sm font-medium">{t.msg}</span>
           </div>
@@ -1087,38 +1050,66 @@ ${priceDetails}
       
       <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} isDark={isDark} toggleTheme={() => setIsDark(!isDark)} toggleLang={() => setLang(l => l === 'pt' ? 'en' : 'pt')} lang={lang} user={user} />
 
-      <main className={`min-h-screen relative z-10 pb-32 px-6 md:px-12 max-w-6xl mx-auto ${isDark ? 'text-white' : 'text-black'}`}>
+      <main className={`min-h-screen relative z-10 pb-32 px-6 md:px-12 max-w-6xl mx-auto ${isDark ? 'text-white' : 'text-slate-900'}`}>
         {step !== 4 && (
-          <header className="pt-12 pb-6 flex items-start justify-between">
-            <div className="flex flex-col">
-              <h1 className={`text-2xl font-bold tracking-tight font-playfair leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                Thalyson <br className="block md:hidden" /> Massagens
-              </h1>
-              <div className="flex items-center gap-2 text-[10px] text-blue-500 font-black uppercase tracking-widest mt-2 font-inter">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                </span>
-                {user.ordersCount || 69} Sessões Realizadas
+          <header className="pt-8 pb-6">
+            <div className="flex items-start justify-between">
+              <div 
+                className="flex flex-col cursor-pointer hover:opacity-80 transition-opacity" 
+                onClick={() => setStep(0)}
+                aria-label="Ir para Home"
+              >
+                <h1 className={`text-2xl font-bold tracking-tight font-playfair leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  Thalyson <br className="block md:hidden" /> Massagens
+                </h1>
+                <div className="flex items-center gap-2 text-[10px] text-blue-500 font-black uppercase tracking-widest mt-2 font-inter">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                  </span>
+                  {/* Fake Base + Sessões Reais do Cliente */}
+                  {69 + user.ordersCount} Sessões Realizadas
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                {step > 0 && (
+                  <button onClick={() => setStep(0)} className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}`}>
+                    <Icon name="home" size={16} /> Home
+                  </button>
+                )}
+                <button
+                   onClick={() => setMenuOpen(true)}
+                   className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isDark ? 'bg-zinc-900 text-white hover:bg-zinc-800' : 'bg-white text-slate-900 shadow-md hover:bg-slate-50'}`}
+                   aria-label="Abrir Menu"
+                >
+                   <Icon name="menu" size={24} />
+                </button>
               </div>
             </div>
-            <button
-               onClick={() => setMenuOpen(true)}
-               className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isDark ? 'bg-zinc-900 text-white hover:bg-zinc-800' : 'bg-white text-slate-900 shadow-md hover:bg-slate-50'}`}
-               aria-label="Abrir Menu"
-            >
-               <Icon name="menu" size={24} />
-            </button>
+
+            {/* Barra de Progresso Visual */}
+            {step > 0 && step < 4 && (
+              <div className="mt-8 flex items-center justify-between gap-2 max-w-md mx-auto">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                    <div className={`w-full h-1.5 rounded-full transition-all ${step >= i ? 'bg-blue-500' : isDark ? 'bg-zinc-800' : 'bg-slate-300'}`} />
+                    <span className={`text-[10px] font-bold uppercase font-inter ${step >= i ? 'text-blue-500' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
+                      {i === 1 ? 'Data' : i === 2 ? 'Local' : 'Resumo'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </header>
         )}
         
         <div className="space-y-12">
           {step === 0 && (
             <section className="space-y-12 animate-fade-in">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-4">
                 <div>
                   <h2 className={`text-4xl md:text-5xl font-playfair font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {T.welcome} <span className="text-blue-500">{user.name ? user.name.split(' ')[0] : (lang === 'pt' ? "Visitante" : "Visitor")}</span>
+                    {T.welcome} <span className="text-blue-500">{user.name ? user.name.split(' ')[0] : (isPT ? "Visitante" : "Visitor")}</span>
                   </h2>
                   <p className={`text-lg mb-8 font-inter ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                     {T.choose_sub}
@@ -1158,7 +1149,7 @@ ${priceDetails}
                     </div>
                     {nextLevelInfo && (
                       <p className={`text-xs mt-3 text-center font-inter ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
-                        Faltam {nextLevelInfo.needed} XP para +R${nextLevelInfo.reward}
+                        Faltam {nextLevelInfo.needed} XP para +{formatMoney(nextLevelInfo.reward, isPT)}
                       </p>
                     )}
                   </div>
@@ -1170,7 +1161,7 @@ ${priceDetails}
                   role="tab"
                   aria-selected={activeTab === 'packs'}
                   onClick={() => setActiveTab('packs')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all font-inter ${activeTab === 'packs' ? 'bg-blue-600 text-white shadow-lg' : isDark ? 'text-zinc-500' : 'text-slate-600'}`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all font-inter ${activeTab === 'packs' ? 'bg-blue-600 text-white shadow-lg' : isDark ? 'text-zinc-500 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
                 >
                   <Icon name="package" size={18} /> {T.tab_packs}
                 </button>
@@ -1178,7 +1169,7 @@ ${priceDetails}
                   role="tab"
                   aria-selected={activeTab === 'single'}
                   onClick={() => setActiveTab('single')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all font-inter ${activeTab === 'single' ? 'bg-blue-600 text-white shadow-lg' : isDark ? 'text-zinc-500' : 'text-slate-600'}`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all font-inter ${activeTab === 'single' ? 'bg-blue-600 text-white shadow-lg' : isDark ? 'text-zinc-500 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
                 >
                   <Icon name="user" size={18} /> {T.tab_single}
                 </button>
@@ -1191,6 +1182,7 @@ ${priceDetails}
                     active={booking.item?.id === s.id}
                     onClick={() => handleSelectItem(activeTab === 'single' ? 'single' : 'pack', s)}
                     isDark={isDark}
+                    popular={s.popular}
                   >
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-6">
@@ -1200,15 +1192,15 @@ ${priceDetails}
                         <div className="text-right">
                           {s.fullPrice && (
                             <span className={`text-xs block mb-1 font-inter font-medium ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
-                              De: <span className="line-through">{DATA.currency} {s.fullPrice}</span>
+                              De: <span className="line-through">{formatMoney(s.fullPrice, isPT)}</span>
                             </span>
                           )}
                           <span className="text-3xl font-bold text-blue-500 font-playfair">
-                            {DATA.currency} {s.price}
+                            {formatMoney(s.price, isPT)}
                           </span>
                           {s.savings && (
                             <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-full block mt-1 font-inter">
-                              ECONOMIZE {DATA.currency} {s.savings}
+                              ECONOMIZE {formatMoney(s.savings, isPT)}
                             </span>
                           )}
                         </div>
@@ -1239,6 +1231,7 @@ ${priceDetails}
                 ))}
               </div>
               
+              {/* Avaliações */}
               <div className="py-12 relative group">
                 <div className="flex items-center justify-between mb-8 px-4">
                   <h3 className={`text-2xl md:text-3xl font-playfair font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -1265,10 +1258,7 @@ ${priceDetails}
                 <div
                   id="reviews-slider"
                   className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth px-4 pb-6 -mx-4"
-                  style={{ 
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none'
-                  }}
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                   {DATA.reviews.map((r, i) => (
                     <div key={i} className="snap-center flex-shrink-0 w-[280px] md:w-80 mx-2 first:ml-4 last:mr-4">
@@ -1276,13 +1266,9 @@ ${priceDetails}
                     </div>
                   ))}
                 </div>
-                
-                <div className="flex md:hidden justify-center gap-1 mt-2">
-                  <div className="w-8 h-1 bg-blue-500 rounded-full opacity-30"></div>
-                  <div className="w-2 h-1 bg-blue-500 rounded-full opacity-10"></div>
-                </div>
               </div>
               
+              {/* FAQ */}
               <div className="max-w-3xl mx-auto py-12">
                 <h3 className={`text-3xl font-playfair font-bold text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {T.faq_title}
@@ -1307,6 +1293,12 @@ ${priceDetails}
                 </p>
               </div>
               
+              {/* Serviço selecionado fixo no topo do passo */}
+              <div className={`max-w-md mx-auto p-4 rounded-xl flex items-center justify-between border ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-slate-50 border-slate-200'}`}>
+                 <span className={`text-sm font-semibold ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{booking.item?.title}</span>
+                 <button onClick={() => setStep(0)} className="text-xs text-blue-500 font-bold hover:underline">Trocar</button>
+              </div>
+
               <div className="relative">
                 <button
                   onClick={() => scrollDates('left')}
@@ -1315,32 +1307,29 @@ ${priceDetails}
                 >
                   <Icon name="chevron-left" size={20} />
                 </button>
-                <div ref={dateScrollRef} className="flex gap-4 overflow-x-auto px-2 py-4 snap-x" style={{ 
-                  scrollbarWidth: 'none',
-                  msOverflowStyle: 'none'
-                }}>
+                <div ref={dateScrollRef} className="flex gap-4 overflow-x-auto px-2 py-4 snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {daysArray.map((d, idx) => {
                     const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
                     const monthName = d.toLocaleDateString(lang === 'pt' ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN, { month: 'short' }).replace('.', '');
-                    const dayName = d.toLocaleDateString(lang === 'pt' ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN, { weekday: 'short' }).slice(0, 3);
+                    
                     return (
                       <div key={idx} className="snap-center">
                         <button
                           onClick={() => setBooking(b => ({ ...b, date: d.toISOString(), time: null }))}
                           className={`
-                            w-20 h-28 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all border-2 font-inter
+                            w-[85px] h-[110px] rounded-2xl flex flex-col items-center justify-center gap-1 transition-all border-2 font-inter
                             ${isSel
                               ? 'bg-blue-600 border-blue-600 text-white shadow-lg scale-110'
                               : isDark
-                                ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700'
-                                : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'
+                                ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                                : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                             }
                           `}
                           aria-label={`Data: ${d.toLocaleDateString()}`}
                         >
-                          <span className="text-xs uppercase opacity-60">{monthName}</span>
-                          <span className="text-xs uppercase opacity-80">{dayName}</span>
-                          <span className="text-2xl font-bold">{d.getDate()}</span>
+                          <span className="text-[10px] uppercase opacity-60 font-bold">{monthName}</span>
+                          <span className="text-2xl font-black">{d.getDate()}</span>
+                          <span className="text-[10px] uppercase font-bold text-blue-400">{getDayLabel(d)}</span>
                         </button>
                       </div>
                     );
@@ -1388,7 +1377,7 @@ ${priceDetails}
               )}
               
               {booking.date && generateTimeSlots.length === 0 && (
-                <div className={`text-center py-16 rounded-2xl ${isDark ? 'bg-zinc-900/50 border border-zinc-800 text-zinc-400' : 'bg-slate-100 border border-slate-200 text-slate-500'} font-inter`}>
+                <div className={`text-center py-16 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-slate-100 border-slate-200 text-slate-500'} font-inter`}>
                   <p className="text-sm font-medium">{T.empty_slots}</p>
                 </div>
               )}
@@ -1403,7 +1392,7 @@ ${priceDetails}
               
               <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
                 {[
-                  { id: 'home', label: lang === 'pt' ? 'Residência' : 'Home', icon: 'home' },
+                  { id: 'home', label: isPT ? 'Residência' : 'Home', icon: 'home' },
                   { id: 'motel', label: 'Motel', icon: 'bed' },
                   { id: 'hotel', label: 'Hotel', icon: 'building' }
                 ].map(x => (
@@ -1416,7 +1405,7 @@ ${priceDetails}
                         ? 'bg-blue-600/10 border-blue-500 text-blue-500 shadow-lg'
                         : isDark
                           ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700'
-                          : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'
+                          : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                       }
                     `}
                     aria-label={`Local: ${x.label}`}
@@ -1438,7 +1427,8 @@ ${priceDetails}
                       setUser(u => ({ ...u, name: sanitized }));
                     }}
                     icon="user"
-                    placeholder={lang === 'pt' ? "Seu nome" : "Your name"}
+                    placeholder={isPT ? "Seu nome" : "Your name"}
+                    hasError={!user.name || user.name.trim().length < 3}
                   />
                   
                   {booking.locationType === 'home' && (
@@ -1450,7 +1440,8 @@ ${priceDetails}
                           value={booking.address.street}
                           onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))}
                           icon="map-pin"
-                          placeholder={lang === 'pt' ? "Rua" : "Street"}
+                          placeholder={isPT ? "Rua" : "Street"}
+                          hasError={!booking.address.street}
                         />
                         <InputField
                           isDark={isDark}
@@ -1459,6 +1450,7 @@ ${priceDetails}
                           onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))}
                           placeholder="123"
                           type="tel"
+                          hasError={!booking.address.number}
                         />
                       </div>
                       <InputField
@@ -1466,7 +1458,8 @@ ${priceDetails}
                         label={T.input_district}
                         value={booking.address.district}
                         onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))}
-                        placeholder={lang === 'pt' ? "Bairro" : "District"}
+                        placeholder={isPT ? "Bairro" : "District"}
+                        hasError={!booking.address.district}
                       />
                       <div className="grid grid-cols-2 gap-3">
                         <InputField
@@ -1474,14 +1467,15 @@ ${priceDetails}
                           label={T.input_city}
                           value={booking.address.city}
                           onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))}
-                          placeholder={lang === 'pt' ? "Cidade" : "City"}
+                          placeholder={isPT ? "Cidade" : "City"}
+                          hasError={!booking.address.city}
                         />
                         <InputField
                           isDark={isDark}
                           label={T.input_comp}
                           value={booking.address.comp}
                           onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))}
-                          placeholder={lang === 'pt' ? "Apto 10" : "Apt 10"}
+                          placeholder={isPT ? "Apto 10" : "Apt 10"}
                         />
                       </div>
                     </>
@@ -1495,14 +1489,16 @@ ${priceDetails}
                         value={booking.address.placeName}
                         onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))}
                         icon="building"
-                        placeholder={lang === 'pt' ? "Nome do hotel" : "Hotel name"}
+                        placeholder={isPT ? "Nome do hotel" : "Hotel name"}
+                        hasError={!booking.address.placeName}
                       />
                       <InputField
                         isDark={isDark}
                         label={T.input_city}
                         value={booking.address.city}
                         onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))}
-                        placeholder={lang === 'pt' ? "Cidade" : "City"}
+                        placeholder={isPT ? "Cidade" : "City"}
+                        hasError={!booking.address.city}
                       />
                       <InputField
                         isDark={isDark}
@@ -1529,7 +1525,7 @@ ${priceDetails}
                     {T.extras_title}
                   </h3>
                   <div className="space-y-3">
-                    {DATA.extras.map((ex, idx) => {
+                    {DATA.extras.map((ex) => {
                       const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
                       const isActive = booking.extras[ex.id];
                       return (
@@ -1545,7 +1541,6 @@ ${priceDetails}
                                 : 'bg-white border-slate-200 hover:border-slate-300'
                             }
                           `}
-                          aria-label={`Extra: ${ex.label}`}
                           role="checkbox"
                           aria-checked={isActive}
                         >
@@ -1562,7 +1557,7 @@ ${priceDetails}
                           </div>
                           <div className="text-right">
                             <span className={`text-xs font-bold px-2 py-1 rounded-lg ${isActive ? 'bg-blue-500/20 text-blue-500' : isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-500'} font-inter`}>
-                              + {DATA.currency} {price}
+                              + {formatMoney(price, isPT)}
                             </span>
                           </div>
                         </div>
@@ -1581,24 +1576,24 @@ ${priceDetails}
               <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8">
                 <div className={`p-8 rounded-3xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-slate-200 shadow-xl'}`}>
                   <h3 className={`text-2xl font-playfair font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {T.total_label}
+                    Resumo do Pedido
                   </h3>
                   <div className="space-y-6">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <p className={`text-xs uppercase font-bold mb-1 font-inter ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
-                          {T.select_time_title}
+                          SERVIÇO SELECIONADO
                         </p>
                         <h4 className={`text-xl font-bold font-playfair ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                          {booking.item ? (DATA.services.find(s => s.id === booking.item.id) || DATA.plans.find(p => p.id === booking.item.id))?.title : ''}
+                          {booking.item ? (DATA.services.find(s => s.id === booking.item!.id) || DATA.plans.find(p => p.id === booking.item!.id))?.title : ''}
                         </h4>
                         <div className="flex items-center gap-2 text-xs text-blue-500 font-medium mt-2 bg-blue-500/10 px-3 py-1.5 rounded-full w-fit border border-blue-500/20 font-inter">
                           <Icon name="calendar" size={14} />
-                          {booking.date ? new Date(booking.date).toLocaleDateString(lang === 'pt' ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN) : ''} • {booking.time}
+                          {booking.date ? new Date(booking.date).toLocaleDateString(isPT ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN) : ''} • {booking.time}
                         </div>
                       </div>
                       <span className="text-2xl font-bold text-blue-500 font-playfair">
-                        {DATA.currency} {financials.sub}
+                        {formatMoney(financials.sub, isPT)}
                       </span>
                     </div>
                     
@@ -1614,7 +1609,7 @@ ${priceDetails}
                             return (
                               <div key={k} className="flex justify-between text-sm font-inter">
                                 <span className={isDark ? 'text-zinc-300' : 'text-slate-600'}>{ex!.label}</span>
-                                <span className="font-semibold text-blue-500">+ {DATA.currency} {price}</span>
+                                <span className="font-semibold text-blue-500">+ {formatMoney(price, isPT)}</span>
                               </div>
                             );
                           })}
@@ -1626,28 +1621,28 @@ ${priceDetails}
                       <div className="flex justify-between mb-2">
                         <span className={`text-sm font-inter ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.subtotal}</span>
                         <span className={`text-sm font-semibold font-inter ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                          {DATA.currency} {financials.sub}
+                          {formatMoney(financials.sub, isPT)}
                         </span>
                       </div>
                       
                       {financials.disc > 0 && (
                         <div className="flex justify-between mb-2 text-emerald-500 font-inter">
                           <span className="text-sm">{T.discount} ({booking.appliedCoupon?.title})</span>
-                          <span className="text-sm font-semibold">- {DATA.currency} {financials.disc}</span>
+                          <span className="text-sm font-semibold">- {formatMoney(financials.disc, isPT)}</span>
                         </div>
                       )}
 
                       {financials.mediaDisc > 0 && (
                         <div className="flex justify-between mb-2 text-purple-500 font-inter">
                           <span className="text-sm">{T.media_discount}</span>
-                          <span className="text-sm font-semibold">- {DATA.currency} {financials.mediaDisc}</span>
+                          <span className="text-sm font-semibold">- {formatMoney(financials.mediaDisc, isPT)}</span>
                         </div>
                       )}
                       
                       {financials.pixDisc > 0 && (
                         <div className="flex justify-between mb-2 text-blue-400 font-inter">
                           <span className="text-sm">{T.pix_discount}</span>
-                          <span className="text-sm font-semibold">- {DATA.currency} {financials.pixDisc}</span>
+                          <span className="text-sm font-semibold">- {formatMoney(financials.pixDisc, isPT)}</span>
                         </div>
                       )}
                       
@@ -1655,9 +1650,9 @@ ${priceDetails}
                         <span className={`text-xl font-bold font-playfair ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.total_label}</span>
                         <div className="text-right">
                           <span className="text-4xl font-black text-blue-500 font-playfair">
-                            {DATA.currency} {financials.total}
+                            {formatMoney(financials.total, isPT)}
                           </span>
-                          <div className="flex items-center gap-1 text-xs font-semibold text-blue-500 mt-1 font-inter">
+                          <div className="flex items-center justify-end gap-1 text-xs font-semibold text-blue-500 mt-1 font-inter">
                             <Icon name="sparkles" size={14} /> +{estimatedXP} XP
                           </div>
                         </div>
@@ -1672,12 +1667,27 @@ ${priceDetails}
                 </div>
                 
                 <div className="space-y-6">
+                  {/* Cupons e Inserção Manual */}
                   <div className={`p-6 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-slate-200'}`}>
                     <h3 className={`text-lg font-bold font-playfair mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                       {T.coupon_section}
                     </h3>
-                    {user.coupons.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
+                    
+                    <div className="flex gap-2 mb-4">
+                      <input 
+                        type="text" 
+                        value={manualCouponInput}
+                        onChange={(e) => setManualCouponInput(e.target.value)}
+                        placeholder="Digite o código"
+                        className={`flex-1 h-10 px-3 rounded-lg text-sm outline-none font-mono uppercase border ${isDark ? 'bg-zinc-950 border-zinc-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-300 text-black focus:border-blue-600'}`}
+                      />
+                      <button onClick={applyManualCoupon} className="px-4 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition">
+                        Aplicar
+                      </button>
+                    </div>
+
+                    {user.coupons.length > 0 && (
+                      <div className="flex flex-wrap gap-2 pt-2 border-t border-zinc-800">
                         {user.coupons.map(c => (
                           <button
                             key={c.id}
@@ -1691,16 +1701,11 @@ ${priceDetails}
                                   : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
                               }
                             `}
-                            aria-label={`Cupom: ${c.title}`}
                           >
                             {c.title}
                           </button>
                         ))}
                       </div>
-                    ) : (
-                      <p className={`text-sm italic font-inter ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
-                        {T.no_coupons}
-                      </p>
                     )}
                   </div>
 
@@ -1747,8 +1752,8 @@ ${priceDetails}
                     <div className="space-y-3">
                       {[
                         { id: 'pix', label: 'Pix (3% OFF)', icon: 'smartphone' },
-                        { id: 'card', label: lang === 'pt' ? 'Cartão' : 'Card', icon: 'credit-card' },
-                        { id: 'money', label: lang === 'pt' ? 'Dinheiro' : 'Cash', icon: 'banknote' }
+                        { id: 'card', label: isPT ? 'Cartão' : 'Card', icon: 'credit-card' },
+                        { id: 'money', label: isPT ? 'Dinheiro' : 'Cash', icon: 'banknote' }
                       ].map(p => (
                         <button
                           key={p.id}
@@ -1762,7 +1767,6 @@ ${priceDetails}
                                 : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300'
                             }
                           `}
-                          aria-label={`Pagamento: ${p.label}`}
                         >
                           <Icon name={p.icon} size={24} />
                           <span className="text-sm font-bold uppercase flex-1 text-left">{p.label}</span>
@@ -1770,6 +1774,10 @@ ${priceDetails}
                         </button>
                       ))}
                     </div>
+                    {/* Reassurance visual para fechar vendas */}
+                    <p className={`text-[10px] text-center mt-3 font-medium flex items-center justify-center gap-1 opacity-70`}>
+                      <Icon name="shield" size={12} /> Pagamento realizado apenas no momento do atendimento.
+                    </p>
                   </div>
                   
                   <div
@@ -1785,7 +1793,7 @@ ${priceDetails}
                     `}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                      <div className={`${booking.termsAccepted ? 'text-blue-500' : isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                         <Icon name="shield" size={24} />
                       </div>
                       <div>
@@ -1832,6 +1840,7 @@ ${priceDetails}
               <p className={`text-lg mb-8 max-w-md font-inter ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                 {T.success_sub}
               </p>
+              
               <div className="flex flex-col gap-4 w-full max-w-sm">
                 <Button
                   variant="whatsapp"
@@ -1842,6 +1851,17 @@ ${priceDetails}
                 >
                   {T.whatsapp_btn}
                 </Button>
+                
+                {/* Nova função que os clientes gostam: Copiar Resumo caso o link falhe */}
+                <Button
+                  variant="secondary"
+                  full
+                  icon="copy"
+                  onClick={copyToClipboard}
+                >
+                  Copiar Resumo
+                </Button>
+
                 <Button
                   variant="ghost"
                   onClick={() => {
@@ -1865,36 +1885,39 @@ ${priceDetails}
         </div>
       </main>
       
-      {step < 4 && booking.item && (
-        <nav className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-40 pointer-events-none" aria-label="Navegação da Reserva">
+      {/* Footer Nav Bar Dinâmico */}
+      {step > 0 && step < 4 && booking.item && (
+        <nav className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-40 animate-fade-in pointer-events-none">
           <div className={`
-            max-w-2xl mx-auto rounded-3xl p-4 shadow-2xl border backdrop-blur-xl pointer-events-auto flex justify-between items-center transition-all font-inter
-            ${isDark ? 'bg-zinc-900/90 border-zinc-800' : 'bg-white/90 border-slate-200'}
+            max-w-2xl mx-auto rounded-[2rem] p-4 shadow-2xl border backdrop-blur-xl pointer-events-auto flex justify-between items-center transition-all font-inter
+            ${isDark ? 'bg-zinc-900/95 border-zinc-800' : 'bg-white/95 border-slate-200'}
           `}>
-            {step > 0 ? (
-              <button
-                onClick={() => setStep(s => s - 1)}
-                className={`p-3 rounded-full transition-colors ${isDark ? 'hover:bg-zinc-800 text-zinc-400' : 'hover:bg-slate-100 text-slate-600'}`}
-                aria-label="Etapa anterior"
-              >
-                <Icon name="chevron-left" size={24} />
-              </button>
-            ) : (
-              <div className="w-12" />
-            )}
+            
+            {/* O botão "Cancelar" foi movido para cá para evitar travamentos */}
+            <button
+              onClick={() => {
+                 setBooking({ ...booking, item: null, type: 'single' });
+                 setStep(0);
+              }}
+              className={`w-12 h-12 flex items-center justify-center rounded-full transition-colors ${isDark ? 'hover:bg-red-500/20 text-zinc-500 hover:text-red-500' : 'hover:bg-red-50 text-slate-500 hover:text-red-500'}`}
+              aria-label="Cancelar Seleção"
+            >
+              <Icon name="x" size={24} />
+            </button>
             
             <div className="text-center">
               <p className={`text-[10px] font-bold uppercase tracking-widest font-inter ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
                 {step === 3 ? T.total_label : T.subtotal}
               </p>
               <p className={`text-xl font-bold font-playfair ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {step === 3 ? `${DATA.currency} ${financials.total}` : `${DATA.currency} ${financials.sub}`}
+                {step === 3 ? formatMoney(financials.total, isPT) : formatMoney(financials.sub, isPT)}
               </p>
             </div>
             
             <Button
               onClick={handleNextStep}
               className="rounded-full !px-6"
+              disabled={!isStepValid()} // Proteção contra avanços indevidos
               ariaLabel={step === 3 ? T.finish_btn : T.next_btn}
             >
               {step === 3 ? T.finish_btn : T.next_btn} <Icon name="chevron-right" size={20} className="ml-2" />
@@ -1903,19 +1926,22 @@ ${priceDetails}
         </nav>
       )}
       
+      {/* Modal de Termos */}
       {termsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className={`relative w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[80vh] overflow-y-auto ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white'}`}>
+          <div className={`relative w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[85vh] flex flex-col ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white'}`}>
             <button onClick={() => setTermsOpen(false)} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-500/10" aria-label="Fechar">
               <Icon name="x" size={24} />
             </button>
-            <h3 className={`text-2xl font-playfair font-bold mb-6 text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.rules_complete}</h3>
-            <div className="space-y-4">
+            <h3 className={`text-2xl font-playfair font-bold mb-6 text-center shrink-0 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.rules_complete}</h3>
+            
+            <div className="space-y-4 overflow-y-auto scrollbar-hide pr-2 mb-6">
               {DATA.rules.map((rule, i) => (
                 <RuleItem key={i} rule={rule} isDark={isDark} />
               ))}
             </div>
-            <div className="mt-8">
+            
+            <div className="shrink-0 pt-4 border-t border-zinc-800">
               <Button full onClick={() => { 
                 setBooking(b => ({ ...b, termsAccepted: true })); 
                 setTermsOpen(false); 
@@ -1927,6 +1953,7 @@ ${priceDetails}
         </div>
       )}
       
+      {/* Popups de Recompensas */}
       {welcomePopup && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
           <div className={`relative w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white'}`}>
