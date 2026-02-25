@@ -7,11 +7,11 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v23_premium', 
+  STORAGE_KEY: '@thaly_app_v24_premium', 
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
-  SECRET_TOKEN: 'THALY_SECURE_V6',
+  SECRET_TOKEN: 'THALY_SECURE_V7',
   START_HOUR: 9,
   END_HOUR: 20,
   MAX_STORAGE_SIZE: 5000 
@@ -99,10 +99,10 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   `}} />
 ));
 
-const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
-  if (isEmoji) return <span className={`emoji-icon ${className}`} style={{ fontSize: size }} role="img" aria-label={name}>{name}</span>;
+const Icon = memo(({ name, size = 24, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
+  if (isEmoji) return <span className={`emoji-icon shrink-0 ${className}`} style={{ fontSize: size }} role="img" aria-label={name}>{name}</span>;
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true">
       <path d={ICON_PATHS[name] || ''} />
     </svg>
   );
@@ -134,7 +134,7 @@ const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disa
     whatsapp: "bg-[#25D366] text-white hover:bg-[#20BD5A] shadow-xl shadow-green-900/20",
     outline: "bg-transparent border border-zinc-600 text-zinc-300 hover:border-zinc-400"
   };
-  const sizes = { sm: "h-10 text-[10px] px-6", md: "h-14 text-xs px-8", lg: "h-16 text-sm px-10", xl: "h-20 text-sm px-12" };
+  const sizes = { sm: "h-12 text-[10px] px-6", md: "h-14 text-xs px-8", lg: "h-16 text-sm px-10", xl: "h-20 text-sm px-12" };
   
   return (
     <button type="button" onClick={onClick} disabled={disabled || loading} aria-label={ariaLabel} className={`${baseStyle} ${variants[variant as keyof typeof variants] || variants.primary} ${sizes[size as keyof typeof sizes]} ${full ? 'w-full' : ''} ${className}`}>
@@ -148,33 +148,33 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang,
   return (
     <>
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} role="presentation" />
-      <aside className={`fixed top-0 right-0 h-full w-[85%] max-w-sm z-[70] p-10 shadow-2xl animate-slide-in flex flex-col ${isDark ? 'bg-zinc-950 text-white border-l border-zinc-800/50' : 'bg-white text-slate-900 border-l border-slate-100'}`}>
-        <div className="flex justify-between items-center mb-12">
-          <h2 className="text-3xl font-playfair font-medium">Menu Central</h2>
+      <aside className={`fixed top-0 right-0 h-full w-[85%] sm:w-[75%] max-w-sm z-[70] p-6 sm:p-8 md:p-10 shadow-2xl animate-slide-in flex flex-col ${isDark ? 'bg-zinc-950 text-white border-l border-zinc-800/50' : 'bg-white text-slate-900 border-l border-slate-100'}`}>
+        <div className="flex justify-between items-center mb-10 md:mb-12">
+          <h2 className="text-2xl md:text-3xl font-playfair font-medium">Menu Central</h2>
           <button onClick={onClose} className="p-3 rounded-full hover:bg-zinc-500/10 transition-colors" aria-label="Fechar menu"><Icon name="x" size={26} /></button>
         </div>
         
-        <div className="mb-12 p-8 rounded-[2rem] bg-gradient-to-br from-zinc-800 to-zinc-900 text-white shadow-2xl border border-zinc-700/50">
+        <div className="mb-10 md:mb-12 p-6 md:p-8 rounded-[2rem] bg-gradient-to-br from-zinc-800 to-zinc-900 text-white shadow-2xl border border-zinc-700/50">
           <p className="text-[11px] opacity-70 uppercase font-bold tracking-widest mb-3">Seu Nível de Cuidado</p>
           <div className="flex justify-between items-end">
-             <span className="text-4xl font-light font-playfair">{user.xp} <span className="text-sm font-bold text-blue-400 font-sans tracking-widest uppercase">XP</span></span>
+             <span className="text-3xl md:text-4xl font-light font-playfair">{user.xp} <span className="text-sm font-bold text-blue-400 font-sans tracking-widest uppercase">XP</span></span>
              <Icon name="award" size={32} className="text-blue-400" />
           </div>
         </div>
 
         <nav className="space-y-4 flex-1">
-          <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-6 rounded-2xl transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
-            <div className="flex items-center gap-5">
+          <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-5 md:p-6 rounded-2xl transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
+            <div className="flex items-center gap-4 md:gap-5">
               <Icon name={isDark ? "moon" : "sun"} size={24} className={isDark ? "text-blue-400" : "text-blue-600"} />
-              <span className="font-semibold text-base">Interface Visual</span>
+              <span className="font-semibold text-sm md:text-base">Interface Visual</span>
             </div>
             <span className="text-[10px] font-bold opacity-50 uppercase tracking-widest">{isDark ? 'Noturna' : 'Clara'}</span>
           </button>
           
-          <button onClick={() => { if(navigator.share) navigator.share({title: 'Thalyson Massagens', text: 'Encontrei a melhor massagem para tirar todo o estresse do corpo.', url: window.location.href}) }} className={`w-full flex items-center justify-between p-6 rounded-2xl transition-colors mt-4 ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
-            <div className="flex items-center gap-5">
+          <button onClick={() => { if(navigator.share) navigator.share({title: 'Thalyson Massagens', text: 'Encontrei a melhor massagem para tirar todo o estresse do corpo.', url: window.location.href}) }} className={`w-full flex items-center justify-between p-5 md:p-6 rounded-2xl transition-colors mt-4 ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
+            <div className="flex items-center gap-4 md:gap-5">
               <Icon name="share" size={24} className="text-emerald-400" />
-              <span className="font-semibold text-base">Indicar Amigo(a)</span>
+              <span className="font-semibold text-sm md:text-base">Indicar Amigo(a)</span>
             </div>
           </button>
         </nav>
@@ -184,9 +184,9 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang,
 });
 
 const Card = memo(({ children, className = '', onClick, active = false, isDark = true, popular = false }: any) => (
-  <div onClick={onClick} className={`relative p-8 md:p-10 rounded-[2.5rem] transition-all duration-300 flex flex-col h-full ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-2 hover:shadow-2xl' : ''} ${active ? 'bg-blue-600/5 border-2 border-blue-500 shadow-blue-500/20' : isDark ? 'bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700' : 'bg-white border border-slate-200 shadow-md hover:border-slate-300 hover:shadow-lg'} ${className}`}>
+  <div onClick={onClick} className={`relative p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] transition-all duration-300 flex flex-col h-full ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-2 hover:shadow-2xl' : ''} ${active ? 'bg-blue-600/5 border-2 border-blue-500 shadow-blue-500/20' : isDark ? 'bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700' : 'bg-white border border-slate-200 shadow-md hover:border-slate-300 hover:shadow-lg'} ${className}`}>
     {popular && (
-      <div className="absolute -top-4 left-8 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[11px] font-bold uppercase tracking-widest px-5 py-2 rounded-full shadow-lg border border-blue-400/30">
+      <div className="absolute -top-4 left-6 md:left-8 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-widest px-4 sm:px-5 py-2 rounded-full shadow-lg border border-blue-400/30">
         ✦ A Mais Desejada
       </div>
     )}
@@ -198,30 +198,30 @@ const InputField = memo(({ label, value, onChange, placeholder, icon, type = "te
   <div className="space-y-3 w-full">
     {label && <label className={`text-[11px] font-bold uppercase tracking-widest pl-1 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{label}</label>}
     <div className="relative group">
-      {icon && <div className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-500' : isDark ? 'text-zinc-500 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}><Icon name={icon} size={22} /></div>}
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-16 rounded-2xl outline-none text-base font-medium transition-all bg-transparent ${icon ? 'pl-14 pr-6' : 'px-6'} ${hasError ? 'border-2 border-red-500/50 bg-red-500/5 placeholder:text-red-400/50 text-red-500' : isDark ? 'border border-zinc-800 text-zinc-100 placeholder:text-zinc-700 focus:border-blue-500 focus:bg-zinc-900/80' : 'border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-blue-50/50'}`} />
+      {icon && <div className={`absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-500' : isDark ? 'text-zinc-500 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}><Icon name={icon} size={22} /></div>}
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-14 sm:h-16 rounded-2xl outline-none text-sm sm:text-base font-medium transition-all bg-transparent ${icon ? 'pl-12 sm:pl-14 pr-4 sm:pr-6' : 'px-4 sm:px-6'} ${hasError ? 'border-2 border-red-500/50 bg-red-500/5 placeholder:text-red-400/50 text-red-500' : isDark ? 'border border-zinc-800 text-zinc-100 placeholder:text-zinc-700 focus:border-blue-500 focus:bg-zinc-900/80' : 'border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-blue-50/50'}`} />
     </div>
   </div>
 ));
 
 // Refatorado com flex-col, flex-1 e alturas flexíveis para garantir cards idênticos em altura com respiro perfeito
 const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
-  <article className={`w-full h-full p-8 md:p-10 rounded-[2.5rem] transition-all duration-300 border flex flex-col gap-6 ${isDark ? 'bg-zinc-900/30 border-zinc-800/80 hover:bg-zinc-900/60' : 'bg-white border-slate-200 shadow-sm hover:shadow-lg'}`}>
+  <article className={`w-full h-full flex flex-col p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] transition-all duration-300 border gap-6 md:gap-8 ${isDark ? 'bg-zinc-900/30 border-zinc-800/80 hover:bg-zinc-900/60 hover:shadow-xl' : 'bg-white border-slate-200 shadow-sm hover:shadow-lg'}`}>
     <div className="flex justify-between items-start">
-      <div className="flex items-center gap-4">
-        <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold font-playfair shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-200' : 'bg-slate-100 text-slate-700'}`}>
+      <div className="flex items-center gap-4 sm:gap-5">
+        <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold font-playfair shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-200' : 'bg-slate-100 text-slate-700'}`}>
           {review.n.charAt(0)}
         </div>
         <div>
-          <span className={`text-base font-semibold block ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{review.n}</span>
-          <span className={`text-xs mt-1 block tracking-wide ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span>
+          <span className={`text-sm sm:text-base font-semibold block mb-0.5 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{review.n}</span>
+          <span className={`text-[10px] sm:text-xs block tracking-widest uppercase font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span>
         </div>
       </div>
-      <div className="flex gap-1 bg-zinc-800/20 px-3 py-1.5 rounded-full shrink-0">
-        {[...Array(5)].map((_, i) => <Icon key={i} name="star" size={14} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />)}
+      <div className="flex gap-1 bg-zinc-800/20 px-2 sm:px-3 py-1.5 rounded-full shrink-0">
+        {[...Array(5)].map((_, i) => <Icon key={i} name="star" size={12} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />)}
       </div>
     </div>
-    <p className={`text-base leading-loose font-light italic flex-1 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>"{review.t}"</p>
+    <p className={`text-sm sm:text-base leading-relaxed sm:leading-loose font-light italic flex-1 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{review.t}"</p>
   </article>
 ));
 
@@ -235,9 +235,9 @@ const SmartTimer = memo(({ isDark, text }: any) => {
   const format = (t: number) => { const m = Math.floor(t / 60); const s = t % 60; return `${m}:${s < 10 ? '0' : ''}${s}`; };
   
   return (
-    <div className={`flex items-center justify-center gap-4 p-5 rounded-2xl transition-all border shadow-sm ${isDark ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
-      <Icon name="watch" size={24} className="animate-pulse" />
-      <span className="text-xs font-bold uppercase tracking-widest">{text}: <span className="font-mono text-base ml-2 bg-blue-500/20 px-3 py-1 rounded-lg">{format(time)}</span></span>
+    <div className={`flex items-center justify-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl transition-all border shadow-sm ${isDark ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
+      <Icon name="watch" size={24} className="animate-pulse shrink-0" />
+      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest break-words text-center">{text}: <span className="font-mono text-sm sm:text-base ml-1 sm:ml-2 bg-blue-500/20 px-2 sm:px-3 py-1 rounded-lg">{format(time)}</span></span>
     </div>
   );
 });
@@ -246,29 +246,29 @@ const FAQItem = memo(({ q, a, isDark }: { q: string; a: string; isDark: boolean 
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className={`border-b ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full py-8 flex items-center justify-between text-left group" aria-expanded={isOpen}>
-        <span className={`text-base md:text-lg font-medium pr-6 ${isDark ? 'text-zinc-200 group-hover:text-white' : 'text-slate-800 group-hover:text-black'}`}>{q}</span>
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full py-6 md:py-8 flex items-center justify-between text-left group" aria-expanded={isOpen}>
+        <span className={`text-sm sm:text-base md:text-lg font-medium pr-4 sm:pr-6 leading-snug ${isDark ? 'text-zinc-200 group-hover:text-white' : 'text-slate-800 group-hover:text-black'}`}>{q}</span>
         <span className={`transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180 text-blue-500' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="chevron-down" size={24} /></span>
       </button>
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 pb-8 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <p className={`text-base font-light leading-loose ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 pb-6 md:pb-8 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <p className={`text-sm sm:text-base font-light leading-relaxed sm:leading-loose ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
       </div>
     </div>
   );
 });
 
 const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
-  <div className={`flex gap-6 p-6 rounded-3xl border border-transparent transition-colors ${isDark ? 'hover:bg-zinc-900/60' : 'hover:bg-slate-50'}`}>
-    <div className={`flex-shrink-0 mt-1 ${isDark ? 'text-blue-500' : 'text-blue-600'}`}><Icon name={rule.icon} size={28} /></div>
+  <div className={`flex gap-4 sm:gap-6 p-5 sm:p-6 md:p-8 rounded-3xl border border-transparent transition-colors ${isDark ? 'hover:bg-zinc-900/60' : 'hover:bg-slate-50'}`}>
+    <div className={`flex-shrink-0 mt-1 ${isDark ? 'text-blue-500' : 'text-blue-600'}`}><Icon name={rule.icon} size={28} className="sm:w-8 sm:h-8" /></div>
     <div>
-      <h4 className={`text-base font-bold mb-2 font-playfair ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{rule.title}</h4>
-      <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{rule.description}</p>
+      <h4 className={`text-sm sm:text-base md:text-lg font-bold mb-1.5 sm:mb-2 font-playfair ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{rule.title}</h4>
+      <p className={`text-xs sm:text-sm md:text-base font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{rule.description}</p>
     </div>
   </div>
 ));
 
 // ==================================================================================
-// 4. LÓGICA DE DADOS (COPYWRITING SENIOR & ACOLHEDORA)
+// 4. LÓGICA DE DADOS E GERAÇÃO DE TEXTOS
 // ==================================================================================
 const sanitizeInput = (value: string): string => String(value || '').replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
@@ -294,165 +294,210 @@ const cleanupStorage = () => {
   } catch (e) { console.error('Storage cleanup error:', e); } 
 };
 
-// ==================================================================================
-// 5. MAIN APP OTIMIZADO
-// ==================================================================================
-export default function App() {
-  const [loading, setLoading] = useState(true);
-  const [isClient, setIsClient] = useState(false);
-  const [dataLoaded, setDataLoaded] = useState(false);
-  const [step, setStep] = useState(0);
-  const [lang, setLang] = useState('pt');
-  const [isDark, setIsDark] = useState(true);
-  const [activeTab, setActiveTab] = useState('single'); 
-  const [toasts, setToasts] = useState<{id: number, msg: string, type: "success" | "error"}[]>([]);
-  const [termsOpen, setTermsOpen] = useState(false);
-  const [welcomePopup, setWelcomePopup] = useState(false);
-  const [levelUpPopup, setLevelUpPopup] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [manualCouponInput, setManualCouponInput] = useState(''); 
+// Avaliações mescladas e avançadas focadas em entrega e prazer (Sem "Sigilo")
+const generateReviews = (isPT: boolean): Review[] => {
+  const reviews = [
+    { n: "Gustavo", loc: "Bela Vista - SP", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões do mês. A experiência em casa foi incrível. Ele consegue deixar a gente completamente relaxado, as mãos dele tem uma técnica sem igual. O alívio foi imediato, levantei parecendo 10kg mais leve. Quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax. The experience at home was incredible. The relief was immediate, felt 10kg lighter.", s: 5 },
+    { n: "Roberto", loc: "São Paulo - Jardins", t: isPT ? "A sensação de paz que senti após a sessão foi indescritível. O momento da finalização foi extremamente potente, liberando uma carga de tensão e proporcionando um gozo que eu não sentia há meses. Entrega total." : "The feeling of peace I felt was indescribable. The final moment was extremely powerful, providing a release I hadn't felt for months.", s: 5 },
+    { n: "Carla", loc: "Rio Preto", t: isPT ? "Me senti profundamente acolhida em um nível que não esperava. Ele tem uma pegada firme que relaxa a musculatura e ao mesmo tempo desperta sensações adormecidas na pele. O prazer no final foi maravilhoso." : "I felt deeply welcomed. He has a firm grip that relaxes muscles while awakening dormant sensations. Wonderful pleasure at the end.", s: 5 },
+    { n: "Lucas", loc: "Londrina", t: isPT ? "A massagem tântrica me permitiu redescobrir o meu próprio corpo e sair da mente. A descarga de energia e o prazer final foram tão intensos que eu fiquei alguns minutos absorvendo tudo na cama." : "The tantric massage allowed me to rediscover my body. The energy discharge and final pleasure were so intense.", s: 5 },
+    { n: "Felipe", loc: "Votuporanga", t: isPT ? "Uma experiência de conexão rara. Fiquei trêmulo após a sessão, de uma forma absurdamente boa. Foi um momento de esvaziar a mente completamente e focar só no prazer físico. Recomendo." : "A rare connection experience. I was trembling in an absurdly good way. Focused only on physical pleasure. Highly recommend.", s: 5 },
+    { n: "Mariana", loc: "Jales", t: isPT ? "Toque respeitoso, acolhedor e com a intensidade certa. Consegui me desligar dos problemas do trabalho, entregar o corpo e focar apenas no meu bem-estar. Foi muito libertador e gostoso." : "Respectful, welcoming touch. I managed to disconnect from work problems and focus only on my well-being. Liberating and delightful.", s: 5 },
+    { n: "Gustavo", loc: "Hotel Ibis - SP", t: isPT ? "A combinação da massagem de relaxamento profundo com a sensitiva criou uma jornada perfeita. O clímax da sessão foi vigoroso. Sensação de leveza absurda, como se eu flutuasse no final." : "The combination created a perfect journey. The climax was vigorous. Absurd feeling of lightness, like floating at the end.", s: 5 },
+    { n: "Ricardo", loc: "Fernandópolis", t: isPT ? "Encontrei um profissionalismo raro. Me senti à vontade para soltar minhas travas mentais e apenas gozar o momento. Saí de lá me sentindo renovado, com uma energia vibrante." : "Rare professionalism. I felt comfortable letting go of mental blocks. Left feeling renewed, with a vibrant energy.", s: 5 },
+    { n: "Sérgio", loc: "Santa Fé", t: isPT ? "Sofro de ansiedade e essa sessão com o Thalyson ajudou mais que muita coisa. A conexão humana e o calor foram reais. A liberação no final foi a mais forte que já vivenciei." : "I suffer from anxiety and this session helped immensely. The connection and warmth were real. Strongest release I've ever experienced.", s: 5 },
+    { n: "André", loc: "Motel K2", t: isPT ? "O Thalyson é uma pessoa de energia muito boa e sabe guiar o nosso corpo para o ápice. Foi um encontro de puro prazer, revitalizante e necessário para minha rotina pesada." : "Thalyson has great energy and knows how to guide the body to the peak. A meeting of pure pleasure, revitalizing and necessary.", s: 5 },
+    { n: "Paulo", loc: "São Paulo - Paulista", t: isPT ? "Uma experiência completa e acolhedora. Do toque inicial reconfortante até a explosão de energia e gozo. Foi intenso e me deixou com as pernas bambas de tanto relaxamento." : "A complete and welcoming experience. From the comforting touch to the explosion of energy. Left me weak in the knees from relaxation.", s: 5 },
+    { n: "Eduardo", loc: "Rio Preto", t: isPT ? "Sensacional. A técnica dele para construir o calor no corpo e depois liberar a energia é uma coisa de outro mundo. Foi um alívio físico e um prazer mental gigantesco." : "Sensational. His technique to build body heat and release energy is otherworldly. Gigantic physical relief and mental pleasure.", s: 5 },
+    { n: "Diego", loc: "Fernandópolis", t: isPT ? "A melhor parte foi não me sentir julgado. Pude ser eu mesmo, expressar meu prazer, relaxar profundamente e aproveitar cada segundo do cuidado dele. Volto sempre." : "The best part was not feeling judged. I could be myself, express pleasure, and enjoy every second of care. Will return.", s: 5 }
+  ];
+
+  return reviews.map(r => ({ ...r, s: 5 }));
+};
+
+const getData = (lang: string) => {
+  const isPT = lang === 'pt';
+  const currency = isPT ? 'R$' : '$';
+  const USD_RATE = 5.75;
+
+  // Valores exatos exigidos
+  const getPrice = (brl: number) => isPT ? brl : Math.round(brl / USD_RATE);
+
+  const p = {
+    relax: getPrice(157),
+    sens: getPrice(177),
+    titan: getPrice(207),
+    nuru: getPrice(317), 
+    depil: getPrice(107),
+    packRelax: { v: getPrice(527), full: getPrice(628), save: getPrice(101) },
+    packTri: { v: getPrice(517), full: getPrice(621), save: getPrice(104) },
+    packMix: { v: getPrice(637), full: getPrice(768), save: getPrice(131) },
+    packSupreme: { v: getPrice(567), full: getPrice(681), save: getPrice(114) },
+    extras: {
+      more_time: getPrice(77),
+      touch: getPrice(77),
+      aroma: getPrice(17),
+      hair_trim: getPrice(57),
+      pain_relief: getPrice(17)
+    }
+  };
   
-  // Dados atualizados com novos valores, descrições novas e avaliações completas
-  const getData = useCallback((lang: string) => {
-    const isPT = lang === 'pt';
-    const USD_RATE = 5.75;
-    const getPrice = (brl: number) => isPT ? brl : Math.round(brl / USD_RATE);
-  
-    // Valores exatos exigidos
-    const p = {
-      relax: getPrice(157), 
-      sens: getPrice(177), 
-      titan: getPrice(207), 
-      nuru: getPrice(317), 
-      depil: getPrice(107), 
-      packRelax: { v: getPrice(527), full: getPrice(628), save: getPrice(101) },
-      packTri: { v: getPrice(517), full: getPrice(621), save: getPrice(104) },
-      packMix: { v: getPrice(637), full: getPrice(768), save: getPrice(131) },
-      packSupreme: { v: getPrice(567), full: getPrice(681), save: getPrice(114) },
-      extras: { more_time: getPrice(77), touch: getPrice(77), aroma: getPrice(17), hair_trim: getPrice(57), pain_relief: getPrice(17) }
-    };
-    
-    return {
-      levels: [
-        { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Iniciante no Cuidado" : "Beginner" },
-        { level: 2, xpNeeded: 100, reward: getPrice(15), title: isPT ? "Prioridade Certa" : "Priority" },
-        { level: 3, xpNeeded: 350, reward: getPrice(30), title: isPT ? "Corpo Consciente" : "Conscious Body" },
-        { level: 4, xpNeeded: 800, reward: getPrice(50), title: isPT ? "Plenitude Alcançada" : "Fullness" }
-      ],
-      // Descrições atualizadas
-      services: [
-        { id: 'relaxante', min: 60, price: p.relax, icon: "user-check", tag: "ALÍVIO & PAZ", title: "Massagem Clássica", desc: "Para quem carrega o peso do mundo. Relaxe profundamente.", details: "Toque suave e acolhedor no corpo todo, foco nas costas, mãos, pernas e pés.\nAlivia o estresse e o cansaço mental\nUm momento só seu de relaxamento e paz\n(Modalidade terapêutica, sem toque íntimo)" },
-        { id: 'sensitiva', min: 60, price: p.sens, icon: "sparkles", tag: "DESPERTAR SENSORIAL", title: "Tântrica Sensorial", desc: "Reconecte-se com seu corpo. Toques sutis que arrepiam.", details: "Toques leves para despertar a pele\nSensação de leveza e acolhimento\nFinalização especial (Lingam)\nPara quem busca sentir mais" },
-        { id: 'mista', min: 60, price: p.titan, icon: "zap", popular: true, tag: "EXPERIÊNCIA COMPLETA", title: "Fusion Experience", desc: "A união perfeita: relaxamento muscular + energia intensa.", details: "Começa tirando a tensão muscular\nEvolui para uma troca de energia corpo a corpo (Massagista de cueca)\nFinalização intensa e libertadora\nA escolha favorita de quem quer tudo" },
-        { id: 'nuru', min: 60, price: p.nuru, icon: "sparkles", tag: "ENTREGA & ACOLHIMENTO", title: "Massagem Nuru", desc: "Deslizamento corpo a corpo com gel aquecido. O ápice do relaxamento e cuidado.", details: "Uso de gel Nuru aquecido que hidrata e relaxa\nContato intenso e acolhedor corpo a corpo\nAlivia o estresse profundo através do calor e fricção\nUma experiência de pura liberdade e conexão" },
-        { id: 'depilacao', min: 45, price: p.depil, icon: "scissors", tag: "NOVO", title: "Depilação (Maquininha)", desc: "Higiene e estética em dia.", details: "Aparo completo com máquina (Zero ou Pente)\nPeito, pernas, braços e costas" }
-      ] as ServiceItem[],
-      extras: [
-        { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: "Tempo Estendido (+30 min)", desc: "Porque quando está bom, não queremos que acabe." },
-        { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: "Interação Orgânica", desc: "Sinta-se livre para participar ativamente do momento." },
-        { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: "Aromaterapia Profunda", desc: "Óleos essenciais que baixam sua frequência mental." },
-        { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: "Foco Extra em Dores", desc: "Uso de pomada técnica para tratar dores crônicas." }
-      ],
-      plans: [
-        { id: 'pack_mista', type: 'pack', title: "Ciclo Fusion (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: "3 Encontros de Desbloqueio e Prazer", details: "A rotina te consome toda semana. Tenha seu refúgio garantido.\nTrês imersões completas para alinhar o físico e o mental.", tag: "ACOLHIMENTO MENSAL", icon: "layers" },
-        { id: 'pack_relax', type: 'pack', title: "Ciclo Alívio (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: "4 Sessões Focadas na Dor", details: "Acabe com a dor lombar crônica de uma vez.\nUm cronograma de manutenções preventivas e curativas.", tag: "SAÚDE FÍSICA", icon: "package" },
-        { id: 'pack_supreme', type: 'pack', title: "Jornada Supreme (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: "O ápice de todas as técnicas", details: "Para quem quer provar tudo.\nUma sessão Terapêutica, uma Fusion e uma Nuru. O resgate absoluto.", tag: "✦ EXPERIÊNCIA PREMIUM", icon: "award" }
-      ] as ServiceItem[],
-      faq: [
-        { q: "Estou travado de dor. A massagem vai resolver?", a: "Sim. A sessão inicia com foco direto nas suas queixas (geralmente lombar, trapézio e pescoço). Uso uma pressão firme e técnica para desfazer os nódulos e devolver o alívio. Você vai sair da cama sentindo o corpo muito mais leve e solto." },
-        { q: "Como funciona a parte sensitiva e a finalização?", a: "Tudo é conduzido com muito respeito e focado no seu prazer genuíno. Após o relaxamento muscular, transitamos para estímulos que acalmam a mente. A finalização (clímax/liberação) acontece de forma natural, uma descarga deliciosa para levar todo o seu estresse embora." },
-        { q: "Nunca fiz antes. Preciso me preparar de alguma forma?", a: "De forma alguma! Meu papel é te acolher e te guiar. A única coisa que peço é que você tome uma ducha morna relaxante antes do nosso encontro. O resto, você apenas deita, fecha os olhos e deixa eu cuidar de você." },
-        { q: "O atendimento tem garantia de sigilo e descrição?", a: "Total. O respeito e a sua privacidade são inegociáveis. Nosso encontro é um momento só seu, num ambiente seguro e livre de julgamentos." }
-      ],
-      rules: [
-        { icon: "shower", title: "A Ducha Preparatória", description: "O banho prévio é essencial. A água morna começa o relaxamento e garante a higiene para que o toque seja perfeito." },
-        { icon: "hand", title: "Ambiente de Respeito", description: "Eu cuido de você e do seu prazer, e espero reciprocidade no respeito ao meu trabalho. O conforto mútuo faz a mágica acontecer." },
-        { icon: "shield", title: "Privacidade Absoluta", description: "O que acontece na sessão, fica na sessão. Seu nome e suas preferências estão guardados a sete chaves." },
-        { icon: "clock", title: "Seu Tempo é Sagrado", description: "Chego pontualmente para garantir que você aproveite cada minuto. Temos uma margem de tolerância de 15 minutos para imprevistos." }
-      ],
-      // Avaliações atualizadas e expandidas
-      reviews: [
-        { n: "Gustavo", loc: "Bela Vista - SP", t: "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões de início de ano e pós-Carnaval. Foi a primeira vez que contratei um massagista pra atender em minha casa e a experiência foi incrível. Ele consegue deixar a gente relaxado, tem mãos incríveis e os efeitos são imediatos, pois eu levantei e parecia que pesava 10kg a menos. Recomendo e já quero de novo.", s: 5 },
-        { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️", s: 5 },
-        { n: "Osvaldo", loc: "Santa Fé do Sul", t: "HOJE não poderia ter terminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS !!! Que delícia!\nOs 4 pilares essenciais do seu trabalho são bases para transformar o atendimento em uma SENSAÇÃO UNICA que gera valores pro corpo, combinando o aspecto de super EMPATIA com o cliente, sem esquecer da EFICIENCIA e agilidade. Thalyson foca sempre no propósito de servir bem o cliente. VALE A PENA.", s: 5 },
-        { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito.", s: 5 },
-        { n: "Alan", loc: "SP - Bela Vista", t: "Gostei bastante, saí mais leve. Da pra ver que ele manda bem no que faz.", s: 5 },
-        { n: "Tiago", loc: "SP - Bela Vista", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", s: 5 },
-        { n: "Roberto", loc: "São Paulo - Jardins", t: "A sensação de vazio e paz que senti após a sessão foi indescritível. A finalização foi extremamente potente, liberando uma carga de tensão que eu carregava há meses. Profissionalismo impecável.", s: 5 },
-        { n: "Carla", loc: "Rio Preto", t: "Me senti acolhida em um nível que não esperava. Ele tem uma pegada firme que relaxa a musculatura e ao mesmo tempo desperta sensações adormecidas. O alívio no final foi total.", s: 5 },
-        { n: "Lucas", loc: "Londrina", t: "Sendo casado, a discrição era minha prioridade e fui atendido com total sigilo. A massagem tântrica me permitiu redescobrir meu próprio corpo. A descarga de energia no final foi intensa.", s: 5 },
-        { n: "Felipe", loc: "Votuporanga", t: "Uma experiência de conexão rara. Fiquei trêmulo após a sessão, de uma forma boa. Foi um momento de esvaziar a mente completamente. Recomendo para quem busca algo além do físico.", s: 5 },
-        { n: "Mariana", loc: "Jales", t: "Toque respeitoso, mas com a intensidade certa. Consegui me desligar dos problemas do trabalho e focar apenas no meu prazer e bem-estar. Foi libertador.", s: 5 },
-        { n: "Gustavo", loc: "Hotel Ibis - SP", t: "A combinação da massagem relaxante com a sensitiva criou uma jornada perfeita. O ápice da sessão foi vigoroso e restaurador. Sensação de leveza absurda ao final.", s: 5 },
-        { n: "Ricardo", loc: "Fernandópolis", t: "Encontrei um profissionalismo raro. Me senti à vontade para soltar minhas travas. Saí de lá me sentindo 10kg mais leve, física e emocionalmente.", s: 5 },
-        { n: "Sérgio", loc: "Santa Fé", t: "Sofro de ansiedade e essa sessão foi mais eficaz que muitas terapias. A conexão humana foi real, e o clímax final foi o mais forte e libertador que já experimentei.", s: 5 },
-        { n: "Beatriz", loc: "Rio Preto", t: "Mãos quentes e presença firme. O ambiente ficou carregado de uma energia positiva. Consegui relaxar profundamente e esquecer o caos lá fora.", s: 5 },
-        { n: "Marcelo", loc: "SP - Centro", t: "Fui sem expectativa e saí surpreendido. A massagem lingam foi executada com uma técnica precisa e respeitosa. O prazer foi intenso e genuíno.", s: 5 },
-        { n: "André", loc: "Motel K2", t: "Discrição absoluta. O Thalyson é uma pessoa de energia muito boa e sabe o que faz. Foi um escape necessário e revitalizante da minha rotina.", s: 5 },
-        { n: "Juliana", loc: "Londrina", t: "Delicadeza e força alternadas nos momentos exatos. Me senti viva de novo. Obrigada pelo carinho e respeito com meu corpo.", s: 5 },
-        { n: "Paulo", loc: "São Paulo - Paulista", t: "Uma experiência completa. Do toque inicial reconfortante até a explosão final de energia. Foi intenso e me deixou com as pernas bambas de tanto relaxamento.", s: 5 },
-        { n: "Vinícius", loc: "Jales", t: "Tirou um peso das minhas costas que eu nem sabia que carregava. A finalização foi potente e necessária. Voltarei com certeza.", s: 5 }
-      ],
-      text: {
-        welcome: "É muito bom ter você aqui,",
-        choose_sub: "Sei o quanto a rotina está pesando nas suas costas. Escolha como quer ser cuidado hoje. Relaxe, a partir de agora é comigo.",
-        level_label: "Fidelidade & Recompensas",
-        tab_packs: "Planos de Cuidado",
-        tab_single: "Sessão Avulsa",
-        next_btn: "Avançar para Agendamento",
-        finish_btn: "Confirmar pelo WhatsApp",
-        loading: "Preparando um espaço seguro para você...",
-        toast_select_item: "Por favor, escolha uma das experiências abaixo para continuarmos.",
-        toast_select_date: "Toque na melhor data e selecione o horário para o nosso encontro.",
-        toast_fill_name: "Preciso saber como te chamar, preencha seu nome.",
-        toast_fill_addr: "Por favor, preencha os dados de localização corretamente.",
-        toast_accept_terms: "Leia e aceite nosso acordo de respeito mútuo para prosseguir.",
-        toast_coupon_success: "Presente aplicado! Desconto ativado.",
-        toast_coupon_invalid: "Poxa, esse código não é válido ou já expirou.",
-        details_label: "O QUE VOCÊ VAI VIVENCIAR:",
-        select_time_title: "Qual o melhor momento para você?",
-        location_title: "Onde será nosso encontro de paz?",
-        extras_title: "Quer deixar a experiência ainda melhor?",
-        coupon_section: "Tem algum código especial?",
-        payment_title: "Como prefere acertar? (Pagamento Pós-Sessão)",
-        terms_title: "Nosso Acordo de Confiança",
-        success_title: "Tudo pronto para o seu relaxamento!",
-        success_sub: "Seu pedido foi montado. Agora, só falta você me mandar um 'Oi' no WhatsApp com esse resumo para eu validar na minha agenda oficial. Te espero lá!",
-        whatsapp_btn: "Enviar Reserva no WhatsApp",
-        back_home: "Voltar e refazer escolhas",
-        timer_text: "Seu horário está garantido por",
-        upgrade_msg: "Excelente! Para uma experiência de entrega e prazer ainda maior, sugiro depois olhar a Experiência Fusion.",
-        input_name: "Qual é o seu nome ou apelido?",
-        input_addr: "Nome da Rua ou Avenida",
-        input_num: "Número",
-        input_district: "Seu Bairro",
-        input_city: "Sua Cidade",
-        input_comp: "Apto, Bloco, etc (Opcional)",
-        input_hotel: "Qual o nome do Hotel?",
-        input_room: "Número do Quarto / Suíte",
-        agree_terms: "Eu li e concordo com as regras de respeito e sigilo",
-        faq_title: "Dúvidas Frequentes",
-        reviews_title: "Quem já se permitiu relaxar:",
-        empty_date: "Toque num dia acima para ver meus horários.",
-        empty_slots: "Minha agenda já encheu para este dia. Pode tentar o próximo?",
-        total_label: "Investimento Final",
-        subtotal: "Valor do Cuidado",
-        discount: "Presente Especial",
-        pix_discount: "Benefício Pix (3%)",
-        welcome_popup_title: "Seja muito bem-vindo!",
-        welcome_popup_msg: "Fico feliz que você decidiu tirar um tempo para se cuidar. A maioria dos homens esquece de si mesmo. Aqui está um presente para a sua primeira vez comigo.",
-        levelup_popup_title: "Evolução Alcançada!",
-        levelup_popup_msg: "Sua constância gerou recompensas. Acabei de liberar um novo benefício exclusivo para o seu próximo agendamento.",
-        get_coupon: "Resgatar Meu Presente",
-        rules_complete: "Acordo de Confiança",
-        media_discount: "Desconto Portfólio (1%)",
-        media_title: "Autorização de Imagem (Opcional)",
-        media_desc: "Se quiser, você pode permitir fotos estéticas anônimas (apenas do corpo, sem rosto e sem exposição íntima) para me ajudar no meu portfólio. Em troca, você ganha 1% de desconto.",
-        media_bonus: "Liberar para ganhar 1% OFF",
-        uber_notice: "Deslocamento: Como vou até você, uma pequena taxa de Uber será calculada e informada durante a nossa conversa no WhatsApp, ok?"
+  return {
+    levels: [
+      { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Iniciante no Cuidado" : "Beginner" },
+      { level: 2, xpNeeded: 100, reward: getPrice(15), title: isPT ? "Prioridade Certa" : "Priority" },
+      { level: 3, xpNeeded: 350, reward: getPrice(30), title: isPT ? "Corpo Consciente" : "Conscious Body" },
+      { level: 4, xpNeeded: 800, reward: getPrice(50), title: isPT ? "Plenitude Alcançada" : "Fullness" }
+    ],
+    services: [
+      {
+        id: 'depilacao',
+        min: 45,
+        price: p.depil,
+        icon: "scissors",
+        tag: isPT ? "CUIDADO PESSOAL" : "PERSONAL CARE",
+        title: isPT ? "Aparo Corporal" : "Body Trimming",
+        desc: isPT ? "Sinta-se leve e limpo. A manutenção estética é o primeiro passo para o conforto." : "Hygiene and aesthetics in day.",
+        details: isPT 
+          ? "Aparo uniforme com equipamento profissional\nFoco no peito, costas, abdômen e pernas\nAmbiente privado com máximo acolhimento"
+          : "Full body trimming with machine\nChest, legs, arms, and back"
+      },
+      {
+        id: 'relaxante',
+        min: 60,
+        price: p.relax,
+        icon: "user-check",
+        tag: isPT ? "ALÍVIO IMEDIATO" : "PAIN RELIEF",
+        title: isPT ? "Descompressão Profunda" : "Classic Massage",
+        desc: isPT ? "Costas travadas e rotina pesada? Um alívio profundo para curar o corpo e a mente." : "For those carrying the world's weight. Deep relaxation.",
+        details: isPT 
+          ? "Mapeamento minucioso para desfazer nódulos de tensão\nFoco intensivo na lombar, ombros e pescoço\nToque firme e acolhedor que devolve sua mobilidade\nMomento terapêutico para zerar a fadiga do seu corpo" 
+          : "Firm and welcoming touch on back and legs\nRelieves stress and mental fatigue\nA moment of peace just for you"
+      },
+      {
+        id: 'sensitiva',
+        min: 60,
+        price: p.sens,
+        icon: "sparkles",
+        tag: isPT ? "DESPERTAR SENSORIAL" : "SENSORY AWAKENING",
+        title: isPT ? "Jornada Sensorial" : "Sensory Tantra",
+        desc: isPT ? "Quando sua mente não desliga. Desperte a sensibilidade e permita-se chegar ao clímax do relaxamento." : "Reconnect with your body. Subtle touches that thrill.",
+        details: isPT 
+          ? "Toques sutis que tiram o foco dos pensamentos\nCondução fluida para um estado de entrega absoluta\nFinalização focada em uma intensa descarga de prazer\nPara quem precisa esvaziar a mente sentindo o próprio corpo" 
+          : "Touches to awaken the skin\nFeeling of lightness and warmth\nSpecial finish (Lingam)\nFor those seeking to feel more"
+      },
+      {
+        id: 'mista',
+        min: 60,
+        price: p.titan,
+        icon: "zap",
+        popular: true,
+        tag: isPT ? "RESTAURAÇÃO & PRAZER" : "FULL EXPERIENCE",
+        title: isPT ? "Experiência Fusion" : "Fusion Experience",
+        desc: isPT ? "Primeiro curamos suas dores, depois guiamos seu corpo a um estado de êxtase e gozo profundo." : "The perfect union: muscle relaxation + intense energy.",
+        details: isPT 
+          ? "Inicia quebrando a rigidez das costas e ombros travados\nTransita para um toque envolvente corpo a corpo\nCulmina em uma liberação orgânica de toda a tensão\nA jornada perfeita para sair flutuando de satisfação" 
+          : "Starts removing muscle tension\nEvolves into body-to-body energy exchange\nIntense and liberating finish"
+      },
+      {
+        id: 'nuru',
+        min: 60,
+        price: p.nuru,
+        icon: "sparkles",
+        tag: isPT ? "ENTREGA & CALOR" : "SURRENDER & WARMTH",
+        title: isPT ? "Imersão Nuru" : "Nuru Massage",
+        desc: isPT ? "Ajoelhe-se diante do prazer. Calor orgânico e contato direto que derretem o estresse até a última gota." : "Body-to-body slide with heated gel. The peak of relaxation and care.",
+        details: isPT 
+          ? "Aplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA imersão mais profunda para o seu gozo físico e mental\nFoco em soltar todo o controle e apenas receber o toque" 
+          : "Use of heated Nuru gel that hydrates and relaxes\nIntense and welcoming body-to-body contact\nRelieves deep stress through heat and friction"
       }
-    };
-  }, []);
+    ] as ServiceItem[],
+    extras: [
+      { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: isPT ? "Aparo (Extra)" : "Trim (Extra)", desc: isPT ? "Manutenção em 2 partes do corpo para ficar impecável." : "Add trim to your massage, 2 parts of body" },
+      { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: isPT ? "Tempo Estendido (+30m)" : "+30 Minutes", desc: isPT ? "Porque quando está bom, não queremos que acabe." : "More time for you" },
+      { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: isPT ? "Interação Orgânica" : "Interactive Touch", desc: isPT ? "Sinta-se livre para participar e tocar também." : "Feel free to touch too" },
+      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isPT ? "Aromaterapia Profunda" : "Aromatherapy", desc: isPT ? "Óleos essenciais que baixam a sua frequência mental." : "Essential oils to calm the mind" },
+      { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isPT ? "Foco Extra em Dores" : "Pain Cream", desc: isPT ? "Uso de pomada técnica para tratar dores fortes." : "Relieves strong muscle pain" }
+    ],
+    plans: [
+      { id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Alívio (4x)" : "Relax Pack (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: isPT ? "4 Sessões de Descompressão" : "4 Relax Sessions", details: isPT ? "Acabe com a dor lombar crônica de uma vez.\nUm cronograma de manutenções preventivas e curativas." : "Ensure your weekly peace.\nThe constant care you deserve.", tag: isPT ? "SAÚDE FÍSICA" : "MAINTENANCE", icon: "package" },
+      { id: 'pack_mista', type: 'pack', title: isPT ? "Ciclo Fusion (3x)" : "Fusion Pack (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: isPT ? "3 Encontros de Desbloqueio e Prazer" : "3 Fusion Sessions", details: isPT ? "A rotina te consome. Tenha seu refúgio garantido.\nTrês imersões completas para alinhar o físico e o mental." : "Three intense encounters.\nFor those who need to escape routine.", tag: isPT ? "ACOLHIMENTO MENSAL" : "ESCAPE", icon: "layers" },
+      { id: 'pack_supreme', type: 'pack', title: isPT ? "Jornada Supreme (3x)" : "Supreme Pack (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: isPT ? "O ápice de todas as técnicas juntas" : "1 Nuru + 1 Relax + 1 Fusion", details: isPT ? "Para quem quer provar e gozar de tudo.\nUma sessão Terapêutica, uma Fusion e uma Nuru." : "The maximum care for your well-being.\nThree moments of escape from routine for you to renew yourself.", tag: "EXPERIÊNCIA PREMIUM", icon: "award" }
+    ] as ServiceItem[],
+    faq: [
+      { q: isPT ? "Como o toque e a finalização funcionam?" : "How does the touch work?", a: isPT ? "Tudo é conduzido com extremo respeito, focado inteiramente no seu conforto e prazer. O objetivo é criar um espaço seguro para que você possa se entregar, relaxar a mente e alcançar um gozo libertador que zera o estresse." : "Everything is conducted with extreme respect, focused entirely on your comfort and pleasure." },
+      { q: isPT ? "Onde é o local do nosso encontro?" : "Where is the service?", a: isPT ? "Vou até você, no conforto da sua residência ou hotel. Chego no horário marcado e transformo o ambiente (seja sua cama ou sofá) em um verdadeiro refúgio de paz para cuidarmos de você." : "I attend at your home or hotel. The session is held on your bed or sofa, ensuring your comfort." },
+      { q: isPT ? "Como devo me preparar para a sessão?" : "How should I prepare?", a: isPT ? "De coração aberto! O mais importante é que você tome um banho relaxante antes da minha chegada. O banho ajuda a soltar os músculos iniciais e deixa seu corpo pronto para a entrega total." : "Take a shower and come with an open heart. The shower helps relax muscles beforehand." },
+      { q: isPT ? "Tenho vergonha do meu corpo, e agora?" : "I'm ashamed of my body...", a: isPT ? "Esqueça isso. Meu trabalho é puro acolhimento. Durante a sessão, não existe julgamento, existe apenas a vontade de proporcionar alívio, relaxamento profundo e muito prazer." : "Don't be. There are no judgments here, only acceptance. All bodies deserve touch and care." }
+    ],
+    rules: [
+      { icon: "shower", title: "A Ducha Preparatória", description: "O banho prévio é essencial. A água morna começa o relaxamento e prepara sua pele para o toque perfeito e intenso." },
+      { icon: "hand", title: "Acolhimento e Respeito", description: "Eu cuido de você e do seu prazer. O respeito mútuo é a chave para que a magia aconteça de forma livre e natural." },
+      { icon: "heart", title: "Entrega Absoluta", description: "Esqueça o mundo lá fora. Este tempo é seu para relaxar a mente, desmanchar as tensões e apenas gozar o momento." },
+      { icon: "clock", title: "Seu Tempo é Sagrado", description: "Chego pontualmente para garantir que você aproveite cada minuto. Temos uma margem de tolerância de 15 minutos." }
+    ],
+    currency,
+    text: {
+      welcome: "É muito bom ter você aqui,",
+      choose_sub: "Sei o quanto a rotina está pesando. Escolha como quer ser cuidado e sentir prazer hoje. A partir de agora é comigo.",
+      level_label: "Sua Jornada de Cuidado",
+      tab_packs: "Planos Mensais",
+      tab_single: "Sessão Avulsa",
+      next_btn: "Avançar para Agendamento",
+      finish_btn: "Confirmar pelo WhatsApp",
+      loading: "Preparando um espaço de relaxamento para você...",
+      toast_select_item: "Por favor, escolha uma das experiências abaixo para continuarmos.",
+      toast_select_date: "Toque na melhor data e selecione o horário para o nosso encontro.",
+      toast_fill_name: "Preciso saber como te chamar, preencha seu nome.",
+      toast_fill_addr: "Por favor, preencha o local para eu ir cuidar de você.",
+      toast_accept_terms: "Leia e aceite nosso acordo de entrega e respeito.",
+      toast_coupon_success: "Presente aplicado! Desconto ativado.",
+      toast_coupon_invalid: "Poxa, esse código não é válido ou já expirou.",
+      details_label: "O QUE VOCÊ VAI VIVENCIAR:",
+      select_time_title: "Qual o melhor momento para o seu prazer?",
+      location_title: "Onde será nosso encontro de paz?",
+      extras_title: "Quer deixar a experiência ainda mais gostosa?",
+      coupon_section: "Tem algum presente ou cupom?",
+      payment_title: "Como prefere acertar? (Pagamento no encontro)",
+      terms_title: "Nosso Acordo de Entrega",
+      success_title: "Tudo pronto para o seu relaxamento!",
+      success_sub: "Seu pedido foi montado. Agora, basta me mandar um 'Oi' no WhatsApp com esse resumo para eu confirmar nosso momento na minha agenda. Te espero!",
+      whatsapp_btn: "Enviar Reserva no WhatsApp",
+      back_home: "Voltar e refazer escolhas",
+      timer_text: "Seu horário está garantido por",
+      upgrade_msg: "Excelente! Para uma experiência de entrega e prazer ainda maior, sugiro depois olhar a Experiência Fusion.",
+      input_name: "Qual é o seu nome ou apelido?",
+      input_addr: "Nome da Rua ou Avenida",
+      input_num: "Número",
+      input_district: "Seu Bairro",
+      input_city: "Sua Cidade",
+      input_comp: "Apto, Bloco, etc (Opcional)",
+      input_hotel: "Qual o nome do Hotel?",
+      input_room: "Número do Quarto / Suíte",
+      agree_terms: "Eu li e concordo com as regras de respeito e entrega mútua",
+      faq_title: "Dúvidas Frequentes",
+      reviews_title: "Quem já se permitiu relaxar:",
+      empty_date: "Toque num dia acima para ver meus horários.",
+      empty_slots: "Poxa, minha agenda já encheu para este dia. Pode tentar o próximo?",
+      total_label: "Investimento Final",
+      subtotal: "Valor do Cuidado",
+      discount: "Seu Presente",
+      pix_discount: "Benefício Pix (3%)",
+      welcome_popup_title: "Seja muito bem-vindo!",
+      welcome_popup_msg: "Fico feliz que você decidiu tirar um tempo para se cuidar e sentir prazer. A maioria dos homens esquece de si mesmo. Aqui está um presente para nossa primeira vez.",
+      levelup_popup_title: "Evolução Alcançada!",
+      levelup_popup_msg: "Sua constância gerou recompensas. Acabei de liberar um novo benefício exclusivo para o seu próximo agendamento.",
+      get_coupon: "Resgatar Meu Presente",
+      rules_complete: "Acordo de Entrega Mútua",
+      media_discount: "Desconto Portfólio (1%)",
+      media_title: "Apoiar meu trabalho (Opcional)",
+      media_desc: "Se quiser, você pode permitir fotos estéticas anônimas (apenas o contorno do corpo, sem rosto e sem intimidade) para meu portfólio. Em troca, você ganha 1% OFF.",
+      media_bonus: "Liberar para ganhar 1% OFF",
+      uber_notice: "Deslocamento: Como vou até você cuidar do seu corpo, uma taxa de Uber será calculada e confirmada na nossa conversa do WhatsApp, ok?",
+      motel_note: "Um ambiente para sua entrega absoluta. A escolha, reserva e os custos do local ficam por sua conta, o prazer e o relaxamento são minha missão."
+    }
+  };
+}, []);
 
   const DATA = useMemo(() => getData(lang), [getData, lang]);
   const T = DATA.text;
@@ -476,7 +521,7 @@ export default function App() {
 
   useEffect(() => {
     if (isClient) {
-        document.title = step === 0 ? "Thalyson Massagens - Conforto & Alívio" : "Seu Agendamento - Thalyson";
+        document.title = step === 0 ? "Thalyson Massagens - Conforto & Prazer" : "Seu Agendamento - Thalyson";
     }
   }, [step, isClient]);
   
@@ -686,7 +731,7 @@ export default function App() {
     priceDetails += `\n\n💰 *VALOR FINAL A ACERTAR: ${formatMoney(f.total, lang === 'pt')}*`;
     
     return `
-*RESERVA CONFIDENCIAL* | #${securityHash}
+*RESERVA DE CUIDADO* | #${securityHash}
 ──────────────────
 👤 *Nome:* ${sanitizeInput(user.name)}
 📅 *Data do Encontro:* ${dateStr}
@@ -707,7 +752,7 @@ ${priceDetails}
 
 💳 *Pagamento Pós-Sessão via:* ${booking.payment.toUpperCase()}
 ──────────────────
-_Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
+_Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
     `.trim();
   };
 
@@ -832,17 +877,17 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
       <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-4 pointer-events-none px-6 w-full max-w-lg">
         {toasts.map(t => (
           <div key={t.id} role="alert" className={`pointer-events-auto flex items-center gap-4 px-6 py-5 rounded-2xl border backdrop-blur-2xl shadow-2xl animate-fade-in ${t.type === 'success' ? isDark ? 'bg-zinc-800/90 border-zinc-700 text-zinc-100' : 'bg-white/95 border-slate-200 text-slate-800' : 'bg-red-500/95 border-red-500 text-white'}`}>
-            <Icon name={t.type === 'success' ? 'check' : 'alert-circle'} size={24} />
-            <span className="text-sm font-semibold tracking-wide">{t.msg}</span>
+            <Icon name={t.type === 'success' ? 'check' : 'alert-circle'} size={24} className="shrink-0" />
+            <span className="text-sm font-semibold tracking-wide leading-snug">{t.msg}</span>
           </div>
         ))}
       </div>
       
       <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} isDark={isDark} toggleTheme={() => setIsDark(!isDark)} toggleLang={() => setLang(l => l === 'pt' ? 'en' : 'pt')} lang={lang} user={user} />
 
-      <main className="min-h-screen relative z-10 pb-48 px-6 md:px-16 max-w-6xl mx-auto selection:bg-blue-500/30 selection:text-blue-200">
+      <main className="min-h-screen relative z-10 pb-48 px-4 sm:px-6 md:px-12 lg:px-16 max-w-7xl mx-auto selection:bg-blue-500/30 selection:text-blue-200">
         {step !== 4 && (
-          <header className="pt-16 pb-12">
+          <header className="pt-12 sm:pt-16 pb-10 sm:pb-12">
             <div className="flex items-start justify-between">
               <div className="flex flex-col cursor-pointer transition-opacity hover:opacity-80" onClick={() => setStep(0)} title="Voltar ao Início">
                 <h1 className={`text-4xl md:text-5xl font-playfair tracking-tight font-medium ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
@@ -853,8 +898,8 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
                   Mais de {user.ordersCount || 142} tensões resolvidas
                 </div>
               </div>
-              <div className="flex items-center gap-6">
-                <button onClick={() => setMenuOpen(true)} className={`w-14 h-14 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:shadow-md'}`}>
+              <div className="flex items-center gap-6 mt-2 sm:mt-0">
+                <button onClick={() => setMenuOpen(true)} className={`w-14 h-14 flex items-center justify-center rounded-full transition-all border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:shadow-md'}`}>
                    <Icon name="menu" size={24} />
                 </button>
               </div>
@@ -880,7 +925,7 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
           {step === 0 && (
             <section className="space-y-16 animate-fade-in">
               {/* Seção de Boas Vindas Super Espaçada */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center py-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center py-6">
                 <div>
                   <h2 className={`text-5xl md:text-6xl font-playfair font-medium leading-[1.1] mb-8 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                     {T.welcome} <span className="italic text-blue-500">{user.name ? String(user.name).trim().split(' ')[0] : "permita-se"}.</span>
@@ -891,28 +936,28 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
                 </div>
                 
                 {/* Cartão de XP / Cuidado */}
-                <div className={`p-10 md:p-12 rounded-[3rem] border transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-100 shadow-xl shadow-slate-200/50 hover:border-slate-300'}`}>
-                  <div className="flex justify-between items-start mb-12">
-                    <div className="flex items-center gap-6">
-                      <div className={`w-16 h-16 rounded-full flex items-center justify-center border shadow-inner ${isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700 text-amber-500' : 'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 text-amber-600'}`}>
+                <div className={`p-8 sm:p-10 md:p-12 rounded-[2rem] md:rounded-[3rem] border transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-100 shadow-xl shadow-slate-200/50 hover:border-slate-300'}`}>
+                  <div className="flex justify-between items-start mb-10 sm:mb-12">
+                    <div className="flex items-center gap-4 sm:gap-6">
+                      <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center border shadow-inner shrink-0 ${isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700 text-amber-500' : 'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 text-amber-600'}`}>
                         <Icon name="award" size={28} />
                       </div>
                       <div>
-                        <span className={`text-[11px] uppercase font-bold tracking-widest block mb-1.5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                        <span className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest block mb-1.5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                           {T.level_label}
                         </span>
-                        <h3 className={`text-2xl font-playfair font-medium ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
+                        <h3 className={`text-xl sm:text-2xl font-playfair font-medium ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
                           {user.xp >= 800 ? "Plenitude Plus" : (DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title)}
                         </h3>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <span className={`text-5xl font-playfair font-semibold bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-zinc-100 to-zinc-400' : 'from-slate-700 to-slate-900'}`}>{user.xp}</span>
-                      <span className="text-[11px] font-bold text-blue-500 uppercase tracking-widest block mt-2">Nível Atual</span>
+                    <div className="text-right shrink-0 ml-4">
+                      <span className={`text-4xl sm:text-5xl font-playfair font-semibold bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-zinc-100 to-zinc-400' : 'from-slate-700 to-slate-900'}`}>{user.xp}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold text-blue-500 uppercase tracking-widest block mt-2">Nível Atual</span>
                     </div>
                   </div>
                   <div>
-                    <div className={`flex justify-between text-[11px] font-bold uppercase tracking-widest mb-4 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                    <div className={`flex justify-between text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mb-4 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                       <span>Sua Jornada</span>
                       <span>{Math.floor(getCurrentLevelProgress())}%</span>
                     </div>
@@ -923,7 +968,7 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
                     </div>
                     {nextLevelInfo && (
                       <p className={`text-sm mt-6 text-center font-medium ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
-                        Mantenha o cuidado. Faltam <strong className={isDark ? 'text-zinc-300' : 'text-slate-700'}>{nextLevelInfo.needed} XP</strong> para seu próximo benefício de <span className="text-blue-500">+{formatMoney(nextLevelInfo.reward, isPT)}</span>.
+                        Mantenha o cuidado. Faltam <strong className={isDark ? 'text-zinc-300' : 'text-slate-700'}>{nextLevelInfo.needed} XP</strong> para seu próximo benefício de <span className="text-blue-500 break-words">+{formatMoney(nextLevelInfo.reward, isPT)}</span>.
                       </p>
                     )}
                   </div>
@@ -932,34 +977,34 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
               
               {/* Abas */}
               <div className={`flex p-2 rounded-3xl border max-w-lg mx-auto shadow-inner ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-slate-100/80 border-slate-200'}`} role="tablist">
-                <button role="tab" aria-selected={activeTab === 'single'} onClick={() => setActiveTab('single')} className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'single' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
+                <button role="tab" aria-selected={activeTab === 'single'} onClick={() => setActiveTab('single')} className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'single' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
                   <Icon name="user" size={18} /> {T.tab_single}
                 </button>
-                <button role="tab" aria-selected={activeTab === 'packs'} onClick={() => setActiveTab('packs')} className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'packs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
+                <button role="tab" aria-selected={activeTab === 'packs'} onClick={() => setActiveTab('packs')} className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'packs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
                   <Icon name="package" size={18} /> {T.tab_packs}
                 </button>
               </div>
               
               {/* Grid de Serviços Otimizado */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
                 {(activeTab === 'single' ? DATA.services : DATA.plans).map((s: ServiceItem) => (
                   <Card key={s.id} active={booking.item?.id === s.id} onClick={() => handleSelectItem(activeTab === 'single' ? 'single' : 'pack', s)} isDark={isDark} popular={s.popular}>
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-8">
-                        <div className={`w-14 h-14 flex items-center justify-center rounded-full border shadow-sm ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-slate-200 text-slate-700'}`}>
-                          <Icon name={s.icon} size={24} isEmoji={s.isEmoji} />
+                        <div className={`w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-slate-200 text-slate-700'}`}>
+                          <Icon name={s.icon} size={24} className="sm:w-6 sm:h-6" isEmoji={s.isEmoji} />
                         </div>
-                        <div className="text-right">
+                        <div className="text-right pl-3">
                           {s.fullPrice && (
-                            <span className={`text-[11px] block mb-1 font-inter uppercase tracking-widest font-bold ${isDark ? 'text-red-400/80' : 'text-red-500/80'}`}>
+                            <span className={`text-[10px] sm:text-[11px] block mb-1 font-inter uppercase tracking-widest font-bold break-words ${isDark ? 'text-red-400/80' : 'text-red-500/80'}`}>
                               De: <span className="line-through">{formatMoney(s.fullPrice, isPT)}</span>
                             </span>
                           )}
-                          <span className={`text-3xl font-playfair font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          <span className={`text-2xl sm:text-3xl font-playfair font-semibold break-words ${isDark ? 'text-white' : 'text-slate-900'}`}>
                             {formatMoney(s.price, isPT)}
                           </span>
                           {s.savings && (
-                            <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full block mt-2.5 border ${isDark ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
+                            <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full block mt-2 sm:mt-2.5 border ${isDark ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
                               ECONOMIA: {formatMoney(s.savings, isPT)}
                             </span>
                           )}
@@ -967,44 +1012,45 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
                       </div>
                       
                       <div className="mb-8">
-                        <span className={`text-[10px] font-bold uppercase tracking-widest border px-4 py-2 rounded-full inline-block mb-5 ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
+                        <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-widest border px-4 py-2 rounded-full inline-block mb-4 sm:mb-5 ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
                           {s.tag}
                         </span>
-                        <h3 className={`text-2xl font-playfair font-medium mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+                        <h3 className={`text-xl sm:text-2xl font-playfair font-medium mb-3 sm:mb-4 leading-snug ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                           {s.title}
                         </h3>
-                        <p className={`text-base font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                        <p className={`text-sm sm:text-base font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                           {s.desc}
                         </p>
                       </div>
                     </div>
                     
                     <div className={`pt-6 mt-2 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
-                      <div className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest mb-4 ${isDark ? 'text-zinc-300' : 'text-slate-500'}`}>
-                        <Icon name="check" size={16} className="text-emerald-500" /> {T.details_label}
+                      <div className={`flex items-center gap-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mb-4 ${isDark ? 'text-zinc-300' : 'text-slate-500'}`}>
+                        <Icon name="check" size={16} className="text-emerald-500 shrink-0" /> {T.details_label}
                       </div>
-                      <div className={`text-sm space-y-3 font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                        {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className="text-blue-500 mt-1 text-xs">•</span> <span>{line}</span></p>)}
+                      <div className={`text-xs sm:text-sm space-y-3 font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                        {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className="text-blue-500 mt-1 text-[10px] sm:text-xs shrink-0">•</span> <span>{line}</span></p>)}
                       </div>
                     </div>
                   </Card>
                 ))}
               </div>
               
-              {/* Seção de Social Proof (Reviews) com Respiro e Altura Flexível Otimizados */}
-              <div className="py-20 relative border-t border-b border-dashed border-zinc-800/50 mt-16">
-                <div className="flex items-center justify-between mb-12 px-4">
-                  <h3 className={`text-3xl font-playfair font-medium ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
+              {/* Seção de Social Proof (Reviews) Corrigida com Altura Flexível e Respiro Perfeito */}
+              <div className="py-16 sm:py-20 relative border-t border-b border-dashed border-zinc-800/50 mt-16">
+                <div className="flex items-center justify-between mb-10 sm:mb-12 px-4 sm:px-6">
+                  <h3 className={`text-2xl sm:text-3xl font-playfair font-medium leading-snug ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
                     {T.reviews_title}
                   </h3>
                   <div className="hidden md:flex gap-4">
-                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: -400, behavior: 'smooth' })} className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm hover:shadow-md'}`}><Icon name="chevron-left" size={24} /></button>
-                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: 400, behavior: 'smooth' })} className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm hover:shadow-md'}`}><Icon name="chevron-right" size={24} /></button>
+                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: -420, behavior: 'smooth' })} className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm hover:shadow-md'}`} aria-label="Avaliações anteriores"><Icon name="chevron-left" size={24} /></button>
+                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: 420, behavior: 'smooth' })} className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800 shadow-sm hover:shadow-md'}`} aria-label="Próximas avaliações"><Icon name="chevron-right" size={24} /></button>
                   </div>
                 </div>
-                <div id="reviews-slider" className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth pb-8 pt-4 -mx-6 px-6 gap-6 md:gap-8 items-stretch" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                
+                <div id="reviews-slider" className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth pb-8 pt-4 px-4 sm:px-6 -mx-4 sm:-mx-6 gap-6 sm:gap-8 items-stretch" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {DATA.reviews.map((r, i) => (
-                    <div key={i} className="snap-center flex-shrink-0 w-[85vw] md:w-[420px] flex h-auto">
+                    <div key={i} className="snap-center flex-shrink-0 w-[85vw] sm:w-[380px] md:w-[420px] flex h-auto">
                       <ReviewCard review={r} isDark={isDark} />
                     </div>
                   ))}
@@ -1012,8 +1058,8 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
               </div>
               
               {/* FAQ */}
-              <div className="max-w-4xl mx-auto py-16">
-                <h3 className={`text-3xl font-playfair font-medium text-center mb-12 ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
+              <div className="max-w-4xl mx-auto py-12 sm:py-16 px-2 sm:px-0">
+                <h3 className={`text-2xl sm:text-3xl font-playfair font-medium text-center mb-10 sm:mb-12 ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
                   {T.faq_title}
                 </h3>
                 <div className={`border-t border-b ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
@@ -1025,62 +1071,62 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
           
           {step === 1 && (
             <section className="space-y-12 animate-fade-in max-w-4xl mx-auto">
-              <div className="text-center mb-16">
-                <h2 className={`text-4xl font-playfair font-medium mb-6 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+              <div className="text-center mb-12 sm:mb-16">
+                <h2 className={`text-3xl sm:text-4xl font-playfair font-medium mb-4 sm:mb-6 leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                   {T.select_time_title}
                 </h2>
-                <p className={`text-base font-light ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                <p className={`text-sm sm:text-base font-light px-4 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                   {T.toast_select_date}
                 </p>
               </div>
               
               {/* Resumo da Escolha Atual */}
-              <div className={`p-8 rounded-[2rem] flex items-center justify-between border shadow-sm ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-slate-200'}`}>
-                 <div className="flex flex-col gap-1">
-                   <span className={`text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Sua Escolha de Cuidado</span>
-                   <span className={`text-xl font-semibold font-playfair ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{booking.item?.title}</span>
+              <div className={`p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] flex items-center justify-between border shadow-sm ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-slate-200'}`}>
+                 <div className="flex flex-col gap-1 pr-4">
+                   <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Sua Escolha de Cuidado</span>
+                   <span className={`text-lg sm:text-xl font-semibold font-playfair leading-tight ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{booking.item?.title}</span>
                  </div>
-                 <button onClick={() => setStep(0)} className={`text-[11px] uppercase font-bold tracking-widest px-6 py-3 rounded-full transition-colors border ${isDark ? 'border-zinc-700 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800' : 'border-slate-300 text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}>Alterar</button>
+                 <button onClick={() => setStep(0)} className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-colors border shrink-0 ${isDark ? 'border-zinc-700 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800' : 'border-slate-300 text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}>Alterar</button>
               </div>
 
-              <div className="relative mt-16">
-                <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-16 top-1/2 -translate-y-1/2 z-20 w-14 h-14 items-center justify-center rounded-full transition-all border shadow-lg ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'}`}><Icon name="chevron-left" size={24} /></button>
+              <div className="relative mt-12 sm:mt-16">
+                <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-16 top-1/2 -translate-y-1/2 z-20 w-14 h-14 items-center justify-center rounded-full transition-all border shadow-lg ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'}`} aria-label="Datas anteriores"><Icon name="chevron-left" size={24} /></button>
                 
-                <div ref={dateScrollRef} className="flex gap-5 overflow-x-auto px-4 py-6 snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div ref={dateScrollRef} className="flex gap-4 sm:gap-5 overflow-x-auto px-2 sm:px-4 py-4 sm:py-6 snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {daysArray.map((d, idx) => {
                     const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
                     const monthName = d.toLocaleDateString(isPT ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN, { month: 'short' }).replace('.', '');
                     return (
-                      <div key={idx} className="snap-center">
-                        <button onClick={() => setBooking(b => ({ ...b, date: d.toISOString(), time: null }))} className={`w-[100px] h-[130px] rounded-[2rem] flex flex-col items-center justify-center gap-2.5 transition-all duration-300 border ${isSel ? 'bg-blue-600 border-blue-500 text-white scale-[1.05] shadow-xl shadow-blue-900/30' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-800/60' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 shadow-sm'}`}>
-                          <span className={`text-[11px] uppercase font-bold tracking-widest ${isSel ? 'text-blue-100' : 'opacity-60'}`}>{monthName}</span>
-                          <span className="text-3xl font-bold font-playfair">{d.getDate()}</span>
-                          <span className={`text-[11px] uppercase font-bold tracking-widest ${isSel ? 'text-blue-200' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{getDayLabel(d)}</span>
+                      <div key={idx} className="snap-center shrink-0">
+                        <button onClick={() => setBooking(b => ({ ...b, date: d.toISOString(), time: null }))} className={`w-[85px] h-[110px] sm:w-[100px] sm:h-[130px] rounded-2xl sm:rounded-[2rem] flex flex-col items-center justify-center gap-1.5 sm:gap-2.5 transition-all duration-300 border ${isSel ? 'bg-blue-600 border-blue-500 text-white scale-[1.05] shadow-xl shadow-blue-900/30' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-800/60' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 shadow-sm'}`}>
+                          <span className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest ${isSel ? 'text-blue-100' : 'opacity-60'}`}>{monthName}</span>
+                          <span className="text-2xl sm:text-3xl font-bold font-playfair">{d.getDate()}</span>
+                          <span className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest ${isSel ? 'text-blue-200' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{getDayLabel(d)}</span>
                         </button>
                       </div>
                     );
                   })}
                 </div>
                 
-                <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-16 top-1/2 -translate-y-1/2 z-20 w-14 h-14 items-center justify-center rounded-full transition-all border shadow-lg ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'}`}><Icon name="chevron-right" size={24} /></button>
+                <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-16 top-1/2 -translate-y-1/2 z-20 w-14 h-14 items-center justify-center rounded-full transition-all border shadow-lg ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'}`} aria-label="Próximas datas"><Icon name="chevron-right" size={24} /></button>
               </div>
               
               {!booking.date && (
-                <div className={`text-center py-24 rounded-[3rem] border border-dashed flex flex-col items-center justify-center gap-5 mt-10 transition-colors ${isDark ? 'border-zinc-800 bg-zinc-900/30 text-zinc-500' : 'border-slate-300 bg-slate-50/50 text-slate-400'}`}>
-                  <Icon name="calendar" size={48} className="opacity-30" />
-                  <p className="text-sm font-bold uppercase tracking-widest">{T.empty_date}</p>
+                <div className={`text-center py-20 sm:py-24 rounded-[2rem] sm:rounded-[3rem] border border-dashed flex flex-col items-center justify-center gap-4 sm:gap-5 mt-8 sm:mt-10 transition-colors px-4 ${isDark ? 'border-zinc-800 bg-zinc-900/30 text-zinc-500' : 'border-slate-300 bg-slate-50/50 text-slate-400'}`}>
+                  <Icon name="calendar" size={48} className="opacity-30 sm:w-12 sm:h-12" />
+                  <p className="text-xs sm:text-sm font-bold uppercase tracking-widest leading-relaxed">{T.empty_date}</p>
                 </div>
               )}
               
               {booking.date && generateTimeSlots.length > 0 && (
-                <div className="mt-16 animate-fade-in">
-                  <div className="flex items-center justify-between mb-8">
-                    <h4 className={`text-base font-bold uppercase tracking-widest ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>Escolha o Horário</h4>
-                    <span className="text-[11px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/30 px-4 py-1.5 rounded-full animate-pulse">Alta Procura</span>
+                <div className="mt-12 sm:mt-16 animate-fade-in">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+                    <h4 className={`text-sm sm:text-base font-bold uppercase tracking-widest text-center sm:text-left ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>Escolha o Horário</h4>
+                    <span className="text-[10px] sm:text-[11px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/30 px-4 py-1.5 rounded-full animate-pulse mx-auto sm:mx-0">Alta Procura</span>
                   </div>
-                  <div className="grid grid-cols-2 min-[380px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-5">
+                  <div className="grid grid-cols-2 min-[380px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
                     {generateTimeSlots.map((t) => (
-                      <button key={t} onClick={() => setBooking(b => ({ ...b, time: t }))} className={`py-5 rounded-2xl text-base font-bold transition-all duration-300 border ${booking.time === t ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/30 scale-105' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800/60' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50 shadow-sm'}`}>
+                      <button key={t} onClick={() => setBooking(b => ({ ...b, time: t }))} className={`py-4 sm:py-5 rounded-xl sm:rounded-2xl text-sm sm:text-base font-bold transition-all duration-300 border ${booking.time === t ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/30 scale-105' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800/60' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50 shadow-sm'}`}>
                         {t}
                       </button>
                     ))}
@@ -1089,43 +1135,43 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
               )}
               
               {booking.date && generateTimeSlots.length === 0 && (
-                <div className={`text-center py-20 rounded-[3rem] border mt-10 ${isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-500' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
-                  <p className="text-base font-medium tracking-wide leading-relaxed">{T.empty_slots}</p>
+                <div className={`text-center py-16 sm:py-20 rounded-[2rem] sm:rounded-[3rem] border mt-8 sm:mt-10 px-4 ${isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-500' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+                  <p className="text-sm sm:text-base font-medium tracking-wide leading-relaxed">{T.empty_slots}</p>
                 </div>
               )}
             </section>
           )}
           
           {step === 2 && (
-            <section className="space-y-16 animate-fade-in max-w-3xl mx-auto">
-              <h2 className={`text-4xl font-playfair font-medium text-center ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+            <section className="space-y-12 sm:space-y-16 animate-fade-in max-w-3xl mx-auto">
+              <h2 className={`text-3xl sm:text-4xl font-playfair font-medium text-center leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                 {T.location_title}
               </h2>
               
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                 {[
                   { id: 'home', label: 'Residência', icon: 'home' },
                   { id: 'motel', label: 'Suíte / Motel', icon: 'bed' },
                   { id: 'hotel', label: 'Quarto de Hotel', icon: 'building' }
                 ].map(x => (
-                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} className={`py-10 px-4 rounded-[2.5rem] flex flex-col items-center gap-6 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl shadow-blue-900/30 -translate-y-2' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900/80' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 shadow-sm'}`}>
-                    <Icon name={x.icon} size={32} />
-                    <span className="text-xs font-bold uppercase tracking-widest text-center px-2">{x.label}</span>
+                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} className={`py-6 sm:py-8 md:py-10 px-4 rounded-3xl sm:rounded-[2.5rem] flex flex-row sm:flex-col items-center justify-center sm:justify-start gap-4 sm:gap-6 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl shadow-blue-900/30 sm:-translate-y-2' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900/80' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 shadow-sm'}`}>
+                    <Icon name={x.icon} size={28} className="sm:w-8 sm:h-8" />
+                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-center px-2">{x.label}</span>
                   </button>
                 ))}
               </div>
               
-              <div className={`p-10 md:p-12 rounded-[3rem] border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'} space-y-10`}>
+              <div className={`p-6 sm:p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'} space-y-6 sm:space-y-8 md:space-y-10`}>
                 <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder="Como gosta de ser chamado?" hasError={!user.name || String(user.name).trim().length < 3} />
                 
                 {booking.locationType === 'home' && (
-                  <div className="space-y-8 animate-fade-in">
-                    <div className="grid grid-cols-1 sm:grid-cols-[1fr_130px] gap-6">
+                  <div className="space-y-5 sm:space-y-6 md:space-y-8 animate-fade-in">
+                    <div className="grid grid-cols-1 sm:grid-cols-[1fr_130px] gap-5 sm:gap-6">
                       <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder="Endereço" hasError={!booking.address.street} />
                       <InputField isDark={isDark} label={T.input_num} value={booking.address.number} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))} placeholder="Nº" type="tel" hasError={!booking.address.number} />
                     </div>
                     <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder="Bairro" hasError={!booking.address.district} />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                       <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder="Cidade" hasError={!booking.address.city} />
                       <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Apto, Bloco, etc" />
                     </div>
@@ -1133,45 +1179,44 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
                 )}
                 
                 {booking.locationType === 'hotel' && (
-                  <div className="space-y-8 animate-fade-in">
+                  <div className="space-y-5 sm:space-y-6 md:space-y-8 animate-fade-in">
                     <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder="Nome do Hotel" hasError={!booking.address.placeName} />
                     <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder="Sua Cidade" hasError={!booking.address.city} />
-                    <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Nº do Quarto / Em qual nome está a reserva?" />
+                    <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Nº do Quarto / Reserva no nome de quem?" />
                   </div>
                 )}
                 
                 {booking.locationType === 'motel' && (
-                  <div className={`p-10 rounded-3xl border text-center animate-fade-in ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-slate-50 border-slate-200'} flex flex-col items-center gap-5`}>
-                    <div className={`p-4 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-200 text-slate-500'}`}>
-                      <Icon name="shield" size={32} />
+                  <div className={`p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-3xl border text-center animate-fade-in ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-slate-50 border-slate-200'} flex flex-col items-center gap-4 sm:gap-5`}>
+                    <div className={`p-3 sm:p-4 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-200 text-slate-500'}`}>
+                      <Icon name="shield" size={32} className="sm:w-8 sm:h-8" />
                     </div>
-                    <p className={`text-base font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
-                      Sua privacidade e discrição estão 100% garantidas.<br/><br/>
-                      <strong className="font-medium">Importante:</strong> A escolha, reserva da suíte e os custos do local são responsabilidade do cliente.
+                    <p className={`text-sm sm:text-base font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
+                      {T.motel_note}
                     </p>
                   </div>
                 )}
               </div>
               
-              <div className="pt-8">
-                <h3 className={`text-sm font-bold uppercase mb-8 tracking-widest pl-2 flex items-center gap-3 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+              <div className="pt-6 sm:pt-8">
+                <h3 className={`text-xs sm:text-sm font-bold uppercase mb-6 sm:mb-8 tracking-widest pl-2 flex items-center gap-3 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                   <Icon name="sparkles" size={18} className="text-blue-500" /> {T.extras_title}
                 </h3>
-                <div className="space-y-5">
+                <div className="space-y-4 sm:space-y-5">
                   {DATA.extras.map((ex) => {
                     const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
                     const isActive = booking.extras[ex.id];
                     return (
-                      <div key={ex.id} onClick={() => setBooking(b => ({ ...b, extras: { ...b.extras, [ex.id]: !b.extras[ex.id] } }))} className={`flex items-center justify-between p-8 rounded-[2.5rem] border cursor-pointer transition-all duration-300 ${isActive ? 'bg-blue-600/10 border-blue-500 shadow-lg shadow-blue-900/10' : isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/80' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'} group`} role="checkbox" aria-checked={isActive}>
-                        <div className="flex items-center gap-6">
+                      <div key={ex.id} onClick={() => setBooking(b => ({ ...b, extras: { ...b.extras, [ex.id]: !b.extras[ex.id] } }))} className={`flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:p-6 md:p-8 rounded-3xl md:rounded-[2.5rem] border cursor-pointer transition-all duration-300 gap-4 sm:gap-0 ${isActive ? 'bg-blue-600/10 border-blue-500 shadow-lg shadow-blue-900/10' : isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/80' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'} group`} role="checkbox" aria-checked={isActive}>
+                        <div className="flex items-center gap-4 sm:gap-6">
                           <div className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}><Icon name={ex.icon} size={28} isEmoji={ex.isEmoji} /></div>
                           <div>
-                            <p className={`text-base md:text-lg font-semibold ${isActive ? isDark ? 'text-blue-400' : 'text-blue-700' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{ex.label}</p>
-                            <p className={`text-sm font-light mt-1.5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p>
+                            <p className={`text-sm sm:text-base md:text-lg font-semibold ${isActive ? isDark ? 'text-blue-400' : 'text-blue-700' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{ex.label}</p>
+                            <p className={`text-[11px] sm:text-xs md:text-sm font-light mt-1 md:mt-1.5 leading-relaxed ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p>
                           </div>
                         </div>
-                        <div className="text-right shrink-0">
-                          <span className={`text-[11px] md:text-xs font-bold tracking-widest px-5 py-2.5 rounded-full transition-colors ${isActive ? 'bg-blue-500 text-white' : isDark ? 'bg-zinc-800 text-zinc-300 group-hover:bg-zinc-700' : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'}`}>
+                        <div className="text-right sm:shrink-0 flex sm:block justify-end">
+                          <span className={`text-[10px] md:text-xs font-bold tracking-widest px-4 md:px-5 py-2 md:py-2.5 rounded-full transition-colors inline-block ${isActive ? 'bg-blue-500 text-white' : isDark ? 'bg-zinc-800 text-zinc-300 group-hover:bg-zinc-700' : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'}`}>
                             + {formatMoney(price, isPT)}
                           </span>
                         </div>
@@ -1184,49 +1229,49 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
           )}
           
           {step === 3 && (
-            <section className="space-y-12 animate-fade-in max-w-5xl mx-auto">
+            <section className="space-y-8 sm:space-y-12 animate-fade-in max-w-5xl mx-auto">
               <SmartTimer isDark={isDark} text={T.timer_text} />
               
-              <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-12">
-                <div className={`p-10 md:p-14 rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
-                  <h3 className={`text-3xl font-playfair font-medium mb-10 flex items-center gap-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
-                    <Icon name="file-text" size={32} className="text-blue-500" /> Resumo do Cuidado
+              <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8 sm:gap-10 md:gap-12">
+                <div className={`p-6 sm:p-8 md:p-14 rounded-[2rem] md:rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
+                  <h3 className={`text-2xl sm:text-3xl font-playfair font-medium mb-8 sm:mb-10 flex items-center gap-3 sm:gap-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+                    <Icon name="file-text" size={32} className="text-blue-500 shrink-0 sm:w-8 sm:h-8" /> Resumo do Cuidado
                   </h3>
-                  <div className="space-y-10">
-                    <div className="flex justify-between items-start">
+                  <div className="space-y-8 sm:space-y-10">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0">
                       <div className="flex-1">
-                        <p className={`text-[11px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                        <p className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest mb-2 sm:mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                           MODALIDADE ESCOLHIDA
                         </p>
-                        <h4 className={`text-2xl font-playfair font-semibold ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                        <h4 className={`text-xl sm:text-2xl font-playfair font-semibold leading-tight ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                           {booking.item ? (DATA.services.find(s => s.id === booking.item?.id) || DATA.plans.find(p => p.id === booking.item?.id))?.title : ''}
                         </h4>
-                        <div className={`flex items-center gap-3 text-sm font-medium mt-5 border px-5 py-2.5 rounded-full w-fit shadow-sm ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
-                          <Icon name="calendar" size={16} className="text-blue-500" />
+                        <div className={`flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-medium mt-4 sm:mt-5 border px-4 sm:px-5 py-2 sm:py-2.5 rounded-full w-fit shadow-sm break-words ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+                          <Icon name="calendar" size={16} className="text-blue-500 shrink-0" />
                           {booking.date ? new Date(booking.date).toLocaleDateString(isPT ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN) : ''} às {booking.time}
                         </div>
                       </div>
-                      <span className={`text-3xl font-medium font-playfair ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+                      <span className={`text-2xl sm:text-3xl font-medium font-playfair mt-2 sm:mt-0 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                         {formatMoney(financials.sub, isPT)}
                       </span>
                     </div>
                     
                     {Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).length > 0 && (
-                      <div className={`pt-10 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
-                        <p className={`text-[11px] uppercase font-bold tracking-widest mb-6 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                      <div className={`pt-6 sm:pt-10 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
+                        <p className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest mb-4 sm:mb-6 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                           POTENCIALIZADORES INCLUÍDOS
                         </p>
-                        <div className="space-y-5">
+                        <div className="space-y-4 sm:space-y-5">
                           {Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).map(k => {
                             const ex = DATA.extras.find(e => e.id === k);
                             if (!ex) return null;
                             const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
                             return (
-                              <div key={k} className="flex justify-between text-base font-medium">
-                                <span className={`flex items-center gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                                   <Icon name="check" size={16} className="text-blue-500" /> {ex.label}
+                              <div key={k} className="flex flex-col sm:flex-row sm:justify-between text-sm sm:text-base font-medium gap-1 sm:gap-0">
+                                <span className={`flex items-center gap-2 sm:gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                                   <Icon name="check" size={16} className="text-blue-500 shrink-0" /> <span className="break-words">{ex.label}</span>
                                 </span>
-                                <span className={isDark ? 'text-zinc-100' : 'text-slate-900'}>+ {formatMoney(price, isPT)}</span>
+                                <span className={`pl-6 sm:pl-0 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>+ {formatMoney(price, isPT)}</span>
                               </div>
                             );
                           })}
@@ -1234,73 +1279,73 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
                       </div>
                     )}
                     
-                    <div className={`pt-10 border-t border-dashed ${isDark ? 'border-zinc-800' : 'border-slate-300'}`}>
-                      <div className="flex justify-between mb-5">
-                        <span className={`text-base font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.subtotal}</span>
-                        <span className={`text-base font-semibold ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                    <div className={`pt-8 sm:pt-10 border-t border-dashed ${isDark ? 'border-zinc-800' : 'border-slate-300'}`}>
+                      <div className="flex justify-between mb-4 sm:mb-5">
+                        <span className={`text-sm sm:text-base font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.subtotal}</span>
+                        <span className={`text-sm sm:text-base font-semibold ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                           {formatMoney(financials.sub, isPT)}
                         </span>
                       </div>
                       
                       {financials.disc > 0 && (
-                        <div className="flex justify-between mb-5 text-emerald-500 font-medium">
-                          <span className="text-base">Seu Presente ({booking.appliedCoupon?.code})</span>
-                          <span className="text-base">- {formatMoney(financials.disc, isPT)}</span>
+                        <div className="flex flex-col sm:flex-row sm:justify-between mb-4 sm:mb-5 text-emerald-500 font-medium gap-1 sm:gap-0">
+                          <span className="text-sm sm:text-base break-words">Seu Presente ({booking.appliedCoupon?.code})</span>
+                          <span className="text-sm sm:text-base">- {formatMoney(financials.disc, isPT)}</span>
                         </div>
                       )}
 
                       {financials.mediaDisc > 0 && (
-                        <div className="flex justify-between mb-5 text-blue-400 font-medium">
-                          <span className="text-base">{T.media_discount}</span>
-                          <span className="text-base">- {formatMoney(financials.mediaDisc, isPT)}</span>
+                        <div className="flex flex-col sm:flex-row sm:justify-between mb-4 sm:mb-5 text-blue-400 font-medium gap-1 sm:gap-0">
+                          <span className="text-sm sm:text-base break-words">{T.media_discount}</span>
+                          <span className="text-sm sm:text-base">- {formatMoney(financials.mediaDisc, isPT)}</span>
                         </div>
                       )}
                       
                       {financials.pixDisc > 0 && (
-                        <div className={`flex justify-between mb-5 font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                          <span className="text-base">{T.pix_discount}</span>
-                          <span className="text-base">- {formatMoney(financials.pixDisc, isPT)}</span>
+                        <div className={`flex flex-col sm:flex-row sm:justify-between mb-4 sm:mb-5 font-medium gap-1 sm:gap-0 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                          <span className="text-sm sm:text-base break-words">{T.pix_discount}</span>
+                          <span className="text-sm sm:text-base">- {formatMoney(financials.pixDisc, isPT)}</span>
                         </div>
                       )}
                       
-                      <div className="flex justify-between items-end pt-8 mt-6 border-t border-solid border-blue-500/20">
-                        <span className={`text-sm uppercase tracking-widest font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.total_label}</span>
-                        <div className="text-right">
-                          <span className={`text-6xl font-playfair font-semibold bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-blue-400 to-indigo-400' : 'from-blue-600 to-indigo-600'}`}>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end pt-6 sm:pt-8 mt-4 sm:mt-6 border-t border-solid border-blue-500/20 gap-3 sm:gap-0">
+                        <span className={`text-xs sm:text-sm uppercase tracking-widest font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.total_label}</span>
+                        <div className="text-left sm:text-right">
+                          <span className={`text-4xl sm:text-5xl md:text-6xl font-playfair font-semibold bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-blue-400 to-indigo-400' : 'from-blue-600 to-indigo-600'}`}>
                             {formatMoney(financials.total, isPT)}
                           </span>
-                          <div className={`flex items-center justify-end gap-2 text-[11px] uppercase tracking-widest font-bold mt-3 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                          <div className={`flex items-center justify-start sm:justify-end gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] uppercase tracking-widest font-bold mt-2 sm:mt-3 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                             <Icon name="sparkles" size={14} /> +{estimatedXP} XP GARANTIDOS
                           </div>
                         </div>
                       </div>
                       
-                      <div className={`mt-10 p-6 rounded-2xl border flex items-start gap-5 text-sm font-medium leading-relaxed ${isDark ? 'bg-zinc-900/60 border-zinc-800/80 text-zinc-400' : 'bg-blue-50/50 border-blue-100 text-blue-800'}`}>
+                      <div className={`mt-8 sm:mt-10 p-5 sm:p-6 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 text-xs sm:text-sm font-medium leading-relaxed ${isDark ? 'bg-zinc-900/60 border-zinc-800/80 text-zinc-400' : 'bg-blue-50/50 border-blue-100 text-blue-800'}`}>
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-blue-100 text-blue-600'}`}>
                             <Icon name="car" size={20} />
                           </div>
-                          <span className="mt-1">{T.uber_notice}</span>
+                          <span className="mt-0 sm:mt-1">{T.uber_notice}</span>
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="space-y-10">
+                <div className="space-y-8 sm:space-y-10">
                   {/* Cupom Section */}
-                  <div className={`p-10 rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
-                    <h3 className={`text-xl font-playfair font-medium mb-8 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                  <div className={`p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
+                    <h3 className={`text-lg sm:text-xl font-playfair font-medium mb-6 sm:mb-8 leading-tight ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                       {T.coupon_section}
                     </h3>
                     
-                    <div className="flex gap-4 mb-8">
-                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Código Promocional" className={`flex-1 h-16 px-6 rounded-2xl text-base outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-blue-500 text-zinc-100 placeholder:text-zinc-600' : 'border-slate-300 focus:border-blue-500 text-slate-900 placeholder:text-slate-400'}`} />
-                      <button onClick={applyManualCoupon} className={`px-8 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-900/30' : 'bg-slate-900 text-white hover:bg-black shadow-md'}`}>Aplicar</button>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
+                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Código Promocional" className={`flex-1 h-14 sm:h-16 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm sm:text-base outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-blue-500 text-zinc-100 placeholder:text-zinc-600' : 'border-slate-300 focus:border-blue-500 text-slate-900 placeholder:text-slate-400'}`} />
+                      <button onClick={applyManualCoupon} className={`h-14 sm:h-16 px-6 sm:px-8 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-all w-full sm:w-auto ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-900/30' : 'bg-slate-900 text-white hover:bg-black shadow-md'}`}>Aplicar</button>
                     </div>
 
                     {user.coupons.length > 0 && (
-                      <div className={`flex flex-wrap gap-3 pt-8 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
+                      <div className={`flex flex-wrap gap-2 sm:gap-3 pt-6 sm:pt-8 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
                         {user.coupons.map(c => (
-                          <button key={c.id} onClick={() => setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c }))} className={`px-5 py-3 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all border ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-900/30' : isDark ? 'bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50 shadow-sm'}`}>
+                          <button key={c.id} onClick={() => setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c }))} className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest transition-all border w-full sm:w-auto text-center ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-900/30' : isDark ? 'bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50 shadow-sm'}`}>
                             {c.title}
                           </button>
                         ))}
@@ -1309,54 +1354,57 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
                   </div>
 
                   {/* Media Permission */}
-                  <div className={`p-10 rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
-                      <div className="flex items-start gap-6">
-                        <div className={`mt-1 p-3 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}><Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={24} /></div>
-                        <div className="flex-1">
-                           <h3 className={`text-xl font-playfair font-medium mb-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.media_title}</h3>
-                           <p className={`text-sm font-light leading-relaxed mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.media_desc}</p>
-                           <button onClick={() => setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed }))} className={`w-full flex items-center justify-between p-5 rounded-2xl border transition-all text-xs font-bold uppercase tracking-widest ${booking.mediaAllowed ? 'bg-blue-600/10 border-blue-500 text-blue-500' : isDark ? 'bg-transparent border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50 shadow-sm'}`}>
-                              <span>{booking.mediaAllowed ? 'Autorização Concedida' : 'Apoiar o Trabalho'}</span>
-                              {booking.mediaAllowed ? <div className="flex items-center gap-2"><Icon name="check" size={20} /></div> : <span className={`text-[11px] px-4 py-1.5 rounded-full ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{T.media_bonus}</span>}
+                  <div className={`p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
+                      <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                        <div className={`mt-1 p-3 rounded-full hidden sm:block shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}><Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={24} /></div>
+                        <div className="flex-1 w-full">
+                           <div className="flex items-center gap-3 mb-3 sm:mb-4">
+                             <div className={`p-2 rounded-full block sm:hidden shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}><Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={18} /></div>
+                             <h3 className={`text-lg sm:text-xl font-playfair font-medium leading-tight ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.media_title}</h3>
+                           </div>
+                           <p className={`text-xs sm:text-sm font-light leading-relaxed mb-6 sm:mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.media_desc}</p>
+                           <button onClick={() => setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed }))} className={`w-full flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 sm:gap-0 p-4 sm:p-5 rounded-2xl border transition-all text-[10px] sm:text-xs font-bold uppercase tracking-widest ${booking.mediaAllowed ? 'bg-blue-600/10 border-blue-500 text-blue-500' : isDark ? 'bg-transparent border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50 shadow-sm'}`}>
+                              <span className="text-center sm:text-left">{booking.mediaAllowed ? 'Autorização Concedida' : 'Apoiar o Trabalho'}</span>
+                              {booking.mediaAllowed ? <div className="flex items-center gap-2"><Icon name="check" size={18} /></div> : <span className={`text-[9px] sm:text-[11px] px-3 sm:px-4 py-1.5 rounded-full whitespace-nowrap ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{T.media_bonus}</span>}
                            </button>
                         </div>
                       </div>
                   </div>
                   
                   {/* Payment */}
-                  <div className={`p-10 rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
-                    <h3 className={`text-xl font-playfair font-medium mb-8 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.payment_title}</h3>
-                    <div className="space-y-4">
+                  <div className={`p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
+                    <h3 className={`text-lg sm:text-xl font-playfair font-medium mb-6 sm:mb-8 leading-tight ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.payment_title}</h3>
+                    <div className="space-y-3 sm:space-y-4">
                       {[
                         { id: 'pix', label: 'Pix (3% OFF Adicional)', icon: 'smartphone' },
                         { id: 'card', label: isPT ? 'Cartão de Crédito/Débito' : 'Card', icon: 'credit-card' },
                         { id: 'money', label: isPT ? 'Espécie / Dinheiro' : 'Cash', icon: 'banknote' }
                       ].map(p => (
-                        <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))} className={`w-full flex items-center gap-5 p-6 rounded-2xl border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl shadow-blue-900/30 scale-[1.02]' : isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm'}`}>
-                          <Icon name={p.icon} size={24} />
-                          <span className="text-sm font-bold uppercase tracking-widest flex-1 text-left">{p.label}</span>
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${booking.payment === p.id ? 'border-white bg-blue-500' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
-                             {booking.payment === p.id && <div className="w-3 h-3 rounded-full bg-white" />}
+                        <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))} className={`w-full flex items-center gap-4 sm:gap-5 p-4 sm:p-6 rounded-2xl border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl shadow-blue-900/30 scale-[1.02]' : isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm'}`}>
+                          <Icon name={p.icon} size={24} className="sm:w-6 sm:h-6 shrink-0" />
+                          <span className="text-[11px] sm:text-sm font-bold uppercase tracking-widest flex-1 text-left leading-snug">{p.label}</span>
+                          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${booking.payment === p.id ? 'border-white bg-blue-500' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
+                             {booking.payment === p.id && <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white" />}
                           </div>
                         </button>
                       ))}
                     </div>
-                    <div className={`mt-8 p-5 rounded-2xl flex items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-widest ${isDark ? 'bg-zinc-900/60 text-zinc-500' : 'bg-slate-50 text-slate-400'}`}>
-                      <Icon name="shield" size={16} /> O pagamento é efetuado somente no encontro.
+                    <div className={`mt-6 sm:mt-8 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-center sm:text-left ${isDark ? 'bg-zinc-900/60 text-zinc-500' : 'bg-slate-50 text-slate-400'}`}>
+                      <Icon name="shield" size={16} className="shrink-0" /> <span className="leading-snug">O pagamento é efetuado somente no encontro.</span>
                     </div>
                   </div>
                   
                   {/* Terms */}
-                  <div onClick={() => setTermsOpen(true)} className={`flex items-center justify-between p-8 md:p-10 rounded-[3rem] border cursor-pointer transition-all duration-300 ${booking.termsAccepted ? 'bg-emerald-500/10 border-emerald-500/50' : isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`}>
-                    <div className="flex items-center gap-6">
-                      <div className={`${booking.termsAccepted ? 'text-emerald-500' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Icon name="shield" size={36} /></div>
-                      <div>
-                        <span className={`text-base font-semibold block mb-1.5 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.terms_title}</span>
-                        <span className={`text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Revisar e Aceitar para concluir</span>
+                  <div onClick={() => setTermsOpen(true)} className={`flex flex-col sm:flex-row items-center justify-between p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border cursor-pointer transition-all duration-300 gap-4 sm:gap-0 ${booking.termsAccepted ? 'bg-emerald-500/10 border-emerald-500/50' : isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`}>
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6 w-full">
+                      <div className={`shrink-0 ${booking.termsAccepted ? 'text-emerald-500' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Icon name="shield" size={32} className="sm:w-9 sm:h-9" /></div>
+                      <div className="flex-1">
+                        <span className={`text-sm sm:text-base font-semibold block mb-1 sm:mb-1.5 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.terms_title}</span>
+                        <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>Revisar e Aceitar para concluir</span>
                       </div>
-                    </div>
-                    <div onClick={(e) => { e.stopPropagation(); setBooking(b => ({ ...b, termsAccepted: !b.termsAccepted })); }} className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${booking.termsAccepted ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
-                      {booking.termsAccepted && <Icon name="check" size={20} />}
+                      <div onClick={(e) => { e.stopPropagation(); setBooking(b => ({ ...b, termsAccepted: !b.termsAccepted })); }} className={`w-10 h-10 rounded-full border-2 flex items-center justify-center shrink-0 transition-all mx-auto sm:mx-0 ${booking.termsAccepted ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
+                        {booking.termsAccepted && <Icon name="check" size={20} />}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1365,20 +1413,20 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
           )}
           
           {step === 4 && (
-            <section className="min-h-[75vh] flex flex-col items-center justify-center text-center animate-fade-in max-w-2xl mx-auto px-4">
-              <div className="relative mb-14">
+            <section className="min-h-[75vh] flex flex-col items-center justify-center text-center animate-fade-in max-w-2xl mx-auto px-4 sm:px-6">
+              <div className="relative mb-10 sm:mb-14">
                 <div className="absolute inset-0 bg-blue-500/20 blur-[50px] rounded-full scale-[2] animate-pulse" />
-                <div className={`relative w-32 h-32 rounded-full flex items-center justify-center border-[6px] shadow-2xl ${isDark ? 'bg-zinc-900 border-zinc-800 text-blue-500' : 'bg-white border-slate-100 text-blue-600'}`}>
-                  <Icon name="check" size={56} />
+                <div className={`relative w-24 h-24 sm:w-32 sm:h-32 rounded-full flex items-center justify-center border-[6px] shadow-2xl shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-blue-500' : 'bg-white border-slate-100 text-blue-600'}`}>
+                  <Icon name="check" size={48} className="sm:w-14 sm:h-14" />
                 </div>
               </div>
-              <h2 className={`text-5xl font-playfair font-medium mb-6 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.success_title}</h2>
-              <p className={`text-lg md:text-xl font-light leading-relaxed mb-16 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
+              <h2 className={`text-4xl sm:text-5xl font-playfair font-medium mb-4 sm:mb-6 leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.success_title}</h2>
+              <p className={`text-base sm:text-lg md:text-xl font-light leading-relaxed mb-12 sm:mb-16 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
               
-              <div className="flex flex-col gap-6 w-full max-w-md">
+              <div className="flex flex-col gap-4 sm:gap-6 w-full max-w-md">
                 <Button variant="whatsapp" size="xl" full icon="message" onClick={() => window.open(generateWhatsAppLink(), '_blank')}>{T.whatsapp_btn}</Button>
                 <Button variant="secondary" size="lg" full icon="copy" onClick={copyToClipboard}>Copiar Resumo da Sessão</Button>
-                <button onClick={() => { setStep(0); setBooking({ ...booking, item: null, type: 'single', termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`mt-8 text-[11px] font-bold uppercase tracking-widest transition-colors py-4 ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600'}`}>
+                <button onClick={() => { setStep(0); setBooking({ ...booking, item: null, type: 'single', termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`mt-6 sm:mt-8 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest transition-colors py-3 sm:py-4 ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600'}`}>
                   {T.back_home}
                 </button>
               </div>
@@ -1389,19 +1437,21 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
       
       {/* Footer Navigation (Premium Fixed Bar com Padding e Respiro) */}
       {step > 0 && step < 4 && booking.item && (
-        <nav className="fixed bottom-0 left-0 right-0 p-6 md:p-8 z-40 animate-fade-in pointer-events-none">
-          <div className={`max-w-5xl mx-auto rounded-full p-4 md:p-5 border backdrop-blur-3xl pointer-events-auto flex justify-between items-center transition-all shadow-2xl ${isDark ? 'bg-zinc-950/80 border-zinc-800/80 shadow-black/80' : 'bg-white/95 border-slate-200/80 shadow-slate-300/60'}`}>
-            <button onClick={() => { setStep(s => s - 1); }} className={`w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-full transition-colors border border-transparent ${isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100 hover:border-slate-200'}`} aria-label="Voltar Etapa">
-              <Icon name="chevron-left" size={28} />
+        <nav className="fixed bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 z-40 animate-fade-in pointer-events-none">
+          <div className={`max-w-5xl mx-auto rounded-full p-3 sm:p-4 md:p-5 border backdrop-blur-3xl pointer-events-auto flex justify-between items-center transition-all shadow-2xl gap-2 sm:gap-4 ${isDark ? 'bg-zinc-950/90 border-zinc-800/80 shadow-black/80' : 'bg-white/95 border-slate-200/80 shadow-slate-300/60'}`}>
+            <button onClick={() => { setStep(s => s - 1); }} className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center rounded-full transition-colors border border-transparent shrink-0 ${isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100 hover:border-slate-200'}`} aria-label="Voltar Etapa">
+              <Icon name="chevron-left" size={24} className="sm:w-7 sm:h-7" />
             </button>
             
-            <div className="flex-1 flex flex-col items-center justify-center">
-              <p className={`text-[10px] md:text-[11px] font-bold uppercase tracking-widest mb-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{step === 3 ? T.total_label : T.subtotal}</p>
-              <p className={`text-2xl md:text-3xl font-playfair font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{step === 3 ? formatMoney(financials.total, isPT) : formatMoney(financials.sub, isPT)}</p>
+            <div className="flex-1 flex flex-col items-center justify-center px-2">
+              <p className={`text-[9px] sm:text-[10px] md:text-[11px] font-bold uppercase tracking-widest mb-0.5 sm:mb-1 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{step === 3 ? T.total_label : T.subtotal}</p>
+              <p className={`text-xl sm:text-2xl md:text-3xl font-playfair font-semibold truncate w-full text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>{step === 3 ? formatMoney(financials.total, isPT) : formatMoney(financials.sub, isPT)}</p>
             </div>
             
-            <button onClick={handleNextStep} disabled={!isStepValid()} className={`h-14 md:h-16 px-8 md:px-10 rounded-full text-xs md:text-sm font-bold uppercase tracking-widest flex items-center gap-3 transition-all duration-300 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-900/40 hover:-translate-y-1' : 'bg-slate-900 text-white hover:bg-black shadow-slate-900/30 hover:-translate-y-1'}`}>
-              {step === 3 ? T.finish_btn : T.next_btn} <Icon name="chevron-right" size={20} />
+            <button onClick={handleNextStep} disabled={!isStepValid()} className={`h-12 sm:h-14 md:h-16 px-5 sm:px-8 md:px-10 rounded-full text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-widest flex items-center gap-2 sm:gap-3 transition-all duration-300 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed shrink-0 ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-900/40 hover:-translate-y-1' : 'bg-slate-900 text-white hover:bg-black shadow-slate-900/30 hover:-translate-y-1'}`}>
+              <span className="hidden sm:inline">{step === 3 ? T.finish_btn : T.next_btn}</span>
+              <span className="inline sm:hidden">{step === 3 ? 'Confirmar' : 'Avançar'}</span>
+              <Icon name="chevron-right" size={18} className="sm:w-5 sm:h-5" />
             </button>
           </div>
         </nav>
@@ -1409,14 +1459,14 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
       
       {/* Modal Termos (Maior e com espaçamentos) */}
       {termsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-2xl max-h-[85vh] rounded-[3rem] p-10 md:p-14 flex flex-col border shadow-2xl shadow-black/80 ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100'}`}>
-            <button onClick={() => setTermsOpen(false)} className={`absolute top-8 right-8 p-3 rounded-full transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-500' : 'hover:bg-slate-50 text-slate-400'}`} aria-label="Fechar"><Icon name="x" size={26} /></button>
-            <h3 className={`text-3xl font-playfair font-medium mb-12 text-center shrink-0 ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{T.rules_complete}</h3>
-            <div className="space-y-4 overflow-y-auto scrollbar-hide mb-10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className={`relative w-full max-w-2xl max-h-[90vh] sm:max-h-[85vh] rounded-3xl sm:rounded-[3rem] p-6 sm:p-10 md:p-14 flex flex-col border shadow-2xl shadow-black/80 ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100'}`}>
+            <button onClick={() => setTermsOpen(false)} className={`absolute top-4 sm:top-8 right-4 sm:right-8 p-2 sm:p-3 rounded-full transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-500' : 'hover:bg-slate-50 text-slate-400'}`} aria-label="Fechar"><Icon name="x" size={24} className="sm:w-[26px] sm:h-[26px]" /></button>
+            <h3 className={`text-2xl sm:text-3xl font-playfair font-medium mb-8 sm:mb-12 text-center shrink-0 pr-10 sm:pr-0 ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{T.rules_complete}</h3>
+            <div className="space-y-3 sm:space-y-4 overflow-y-auto scrollbar-hide mb-6 sm:mb-10">
               {DATA.rules.map((rule, i) => <RuleItem key={i} rule={rule} isDark={isDark} />)}
             </div>
-            <div className="shrink-0 pt-8 border-t border-zinc-800/50">
+            <div className="shrink-0 pt-6 sm:pt-8 border-t border-zinc-800/50">
               <Button full size="xl" onClick={() => { setBooking(b => ({ ...b, termsAccepted: true })); setTermsOpen(false); }}>{T.agree_terms}</Button>
             </div>
           </div>
@@ -1425,32 +1475,39 @@ _Olá Thalyson, aceita os termos e estou aguardando sua confirmação!_
       
       {/* Popups de Boas-Vindas */}
       {welcomePopup && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-lg rounded-[3rem] p-12 text-center border shadow-2xl ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100'}`}>
-            <div className={`w-28 h-28 mx-auto rounded-full flex items-center justify-center mb-10 border-[6px] shadow-inner ${isDark ? 'bg-zinc-900 border-zinc-800 text-blue-500' : 'bg-slate-50 border-slate-100 text-blue-600'}`}><Icon name="gift" size={48} /></div>
-            <h3 className={`text-4xl font-playfair font-medium mb-6 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
-            <p className={`text-base font-light leading-relaxed mb-12 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.welcome_popup_msg}</p>
-            <div className={`p-8 rounded-3xl border mb-12 border-dashed ${isDark ? 'bg-blue-900/10 border-blue-500/30' : 'bg-blue-50 border-blue-200'}`}>
-              <p className={`text-[11px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>SEU PRESENTE INAUGURAL</p>
-              <p className={`text-4xl font-playfair font-semibold tracking-wide ${isDark ? 'text-white' : 'text-slate-900'}`}>BEMVINDO10</p>
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className={`relative w-full max-w-lg rounded-3xl sm:rounded-[3rem] p-8 sm:p-12 text-center border shadow-2xl ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100'}`}>
+            <div className={`w-20 h-20 sm:w-28 sm:h-28 mx-auto rounded-full flex items-center justify-center mb-8 sm:mb-10 border-[6px] shadow-inner shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-blue-500' : 'bg-slate-50 border-slate-100 text-blue-600'}`}><Icon name="gift" size={40} className="sm:w-12 sm:h-12" /></div>
+            <h3 className={`text-3xl sm:text-4xl font-playfair font-medium mb-4 sm:mb-6 leading-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
+            <p className={`text-sm sm:text-base font-light leading-relaxed mb-8 sm:mb-12 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.welcome_popup_msg}</p>
+            <div className={`p-6 sm:p-8 rounded-[2rem] border mb-8 sm:mb-12 border-dashed ${isDark ? 'bg-blue-900/10 border-blue-500/30' : 'bg-blue-50 border-blue-200'}`}>
+              <p className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mb-2 sm:mb-3 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>SEU PRESENTE INAUGURAL</p>
+              <p className={`text-3xl sm:text-4xl font-playfair font-semibold tracking-wide break-all ${isDark ? 'text-white' : 'text-slate-900'}`}>BEMVINDO10</p>
             </div>
-            <button onClick={() => { setWelcomePopup(false); setUser(u => ({ ...u, hasSeenWelcome: true })); const welcomeCoupon = { id: 'welcome', val: 10, title: '🎁 BEMVINDO10', code: 'BEMVINDO10' }; setBooking(b => ({ ...b, appliedCoupon: welcomeCoupon })); setUser(prev => ({ ...prev, coupons: [...prev.coupons, welcomeCoupon] })); addToast(T.toast_coupon_success, "success"); }} className={`w-full h-16 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all shadow-xl hover:-translate-y-1 ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-900/40' : 'bg-slate-900 text-white hover:bg-black shadow-slate-900/30'}`}>
+            <Button full onClick={() => {
+              setWelcomePopup(false);
+              setUser(u => ({ ...u, hasSeenWelcome: true }));
+              const welcomeCoupon = { id: 'welcome', val: 10, title: '🎁 BEMVINDO10', code: 'BEMVINDO10' };
+              setBooking(b => ({ ...b, appliedCoupon: welcomeCoupon }));
+              setUser(prev => ({ ...prev, coupons: [...prev.coupons, welcomeCoupon] }));
+              addToast(T.toast_coupon_success, "success");
+            }} className={`w-full h-14 sm:h-16 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-all shadow-xl hover:-translate-y-1 ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-900/40' : 'bg-slate-900 text-white hover:bg-black shadow-slate-900/30'}`}>
               {T.get_coupon}
-            </button>
+            </Button>
           </div>
         </div>
       )}
       
       {levelUpPopup && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-lg rounded-[3rem] p-12 md:p-14 text-center border shadow-2xl ${isDark ? 'bg-zinc-950 border-amber-500/30 shadow-amber-900/30' : 'bg-white border-slate-100 shadow-amber-500/20'}`}>
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[3rem] pointer-events-none"><div className="absolute -top-40 -right-40 w-96 h-96 bg-amber-500/20 blur-[80px] rounded-full" /></div>
-            <div className="w-32 h-32 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-amber-500/50 text-white animate-bounce"><Icon name="trophy" size={56} /></div>
-            <h3 className={`text-5xl font-playfair font-medium mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
-            <p className={`text-lg font-light leading-relaxed mb-12 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.levelup_popup_msg}</p>
-            <button onClick={() => setLevelUpPopup(false)} className={`w-full h-16 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all shadow-xl hover:-translate-y-1 ${isDark ? 'bg-amber-500 text-zinc-950 hover:bg-amber-400 shadow-amber-900/50' : 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-500/40'}`}>
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md animate-fade-in">
+          <div className={`relative w-full max-w-lg rounded-3xl sm:rounded-[3rem] p-8 sm:p-12 md:p-14 text-center border shadow-2xl ${isDark ? 'bg-zinc-950 border-amber-500/30 shadow-amber-900/30' : 'bg-white border-slate-100 shadow-amber-500/20'}`}>
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-3xl sm:rounded-[3rem] pointer-events-none"><div className="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-64 h-64 sm:w-96 sm:h-96 bg-amber-500/20 blur-[60px] sm:blur-[80px] rounded-full" /></div>
+            <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-8 sm:mb-10 shadow-2xl shadow-amber-500/50 text-white animate-bounce shrink-0"><Icon name="trophy" size={48} className="sm:w-14 sm:h-14" /></div>
+            <h3 className={`text-4xl sm:text-5xl font-playfair font-medium mb-4 sm:mb-6 leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
+            <p className={`text-base sm:text-lg font-light leading-relaxed mb-8 sm:mb-12 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.levelup_popup_msg}</p>
+            <Button full onClick={() => setLevelUpPopup(false)} className={`w-full h-14 sm:h-16 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-all shadow-xl hover:-translate-y-1 ${isDark ? 'bg-amber-500 text-zinc-950 hover:bg-amber-400 shadow-amber-900/50' : 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-500/40'}`}>
               Resgatar Nova Conquista
-            </button>
+            </Button>
           </div>
         </div>
       )}
