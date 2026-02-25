@@ -267,7 +267,7 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 ));
 
 // ==================================================================================
-// 4. LÓGICA DE DADOS (COPYWRITING SENIOR & ACOLHEDORA)
+// 4. LÓGICA DE DADOS E GERAÇÃO DE TEXTOS
 // ==================================================================================
 const sanitizeInput = (value: string): string => String(value || '').replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
@@ -293,6 +293,43 @@ const cleanupStorage = () => {
   } catch (e) { console.error('Storage cleanup error:', e); } 
 };
 
+const generateReviews = (isPT: boolean): Review[] => {
+  const realReviews = [
+    { n: "Gustavo", loc: "Bela Vista - SP", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões de início de ano e pós-Carnaval. Foi a primeira vez que contratei um massagista pra atender em minha casa e a experiência foi incrível. Ele consegue deixar a gente relaxado, tem mãos incríveis e os efeitos são imediatos, pois eu levantei e parecia que pesava 10kg a menos. Recomendo e já quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax after the tension of early year and post-Carnival. It was the first time I hired a massage therapist at my home and the experience was incredible. He leaves us relaxed, has amazing hands and the effects are immediate, because I stood up and felt 10kg lighter. Highly recommend and want it again." },
+    { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: isPT ? "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️" : "You have blessed hands and I soared! I really needed this rest, this peace. It was super respectful all the time and relaxed me a lot. Thank you! ❤️" },
+    { n: "Osvaldo", loc: "Santa Fé do Sul", t: isPT ? "HOJE, não poderia ter terminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS !!! Que delícia!\nOs 4 pilares essenciais do seu trabalho são bases para transformar o atendimento em uma SENSAÇÃO UNICA que gera valores pro corpo, combinando o aspecto de super EMPATIA com o cliente, sem esquecer da EFICIENCIA e agilidade, clareza durante a sessão, tornando ha, uma visão da PERFEIÇÃO de executar este trabalho de massagem com maestria! Thalyson foca sempre no propósito de servir bem o cliente, desde o início ao fim q é surpreendente! VALE A PENA. 👏👏👏" : "TODAY, the day couldn’t have ended BETTER, being attended by Thalyson at home in a massage session with his MAGIC HANDS !!! What a delight!\nThe 4 essential pillars of his work are the foundation to turn the service into a UNIQUE SENSATION that brings value to the body, combining a super EMPATHY with the client, without forgetting about EFFICIENCY and agility, clarity throughout the session, giving a view of the PERFECTION of performing this massage work with mastery! Thalyson always focuses on the purpose of serving the client well, from start to finish, which is amazing! WORTH IT. 👏👏👏" },
+    { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito." : "Thalyson, I want to say that your massage was very well executed. Highly recommend." },
+    { n: "Alan", loc: "SP - Bela Vista", t: isPT ? "Gostei bastante, saí mais leve. Da pra ver que ele manda bem no que faz." : "Liked it a lot, left feeling lighter. You can tell he knows what he's doing." },
+    { n: "Tiago", loc: "SP - Bela Vista", t: isPT ? "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida." : "Thalyson has surreal energy. The massage was perfect, best of my life." }
+  ];
+
+  const seriousReviews = [
+    { n: "Roberto", loc: isPT ? "São Paulo - Jardins" : "SP - Jardins", t: isPT ? "A sensação de vazio e paz que senti após a sessão foi indescritível. A finalização foi extremamente potente, liberando uma carga de tensão que eu carregava há meses. Profissionalismo impecável." : "The feeling of emptiness and peace I felt after the session was indescribable. The finish was extremely powerful, releasing a load of tension I had been carrying for months. Impeccable professionalism." },
+    { n: "Carla", loc: "Rio Preto", t: isPT ? "Me senti acolhida em um nível que não esperava. Ele tem uma pegada firme que relaxa a musculatura e ao mesmo tempo desperta sensações adormecidas. O alívio no final foi total." : "I felt welcomed on a level I didn't expect. He has a firm grip that relaxes muscles while awakening dormant sensations. The relief at the end was total." },
+    { n: "Lucas", loc: "Londrina", t: isPT ? "Sendo casado, a discrição era minha prioridade e fui atendido com total sigilo. A massagem tântrica me permitiu redescobrir meu próprio corpo. A descarga de energia no final foi intensa." : "Being married, discretion was my priority and I was served with total secrecy. Tantric massage allowed me to rediscover my own body. The energy discharge at the end was intense." },
+    { n: "Felipe", loc: "Votuporanga", t: isPT ? "Uma experiência de conexão rara. Fiquei trêmulo após a sessão, de uma forma boa. Foi um momento de esvaziar a mente completamente. Recomendo para quem busca algo além do físico." : "A rare connection experience. I was trembling after the session, in a good way. It was a moment to empty the mind completely. Recommend for those seeking something beyond the physical." },
+    { n: "Mariana", loc: "Jales", t: isPT ? "Toque respeitoso, mas com a intensidade certa. Consegui me desligar dos problemas do trabalho e focar apenas no meu prazer e bem-estar. Foi libertador." : "Respectful touch, but with the right intensity. I managed to disconnect from work problems and focus only on my pleasure and well-being. It was liberating." },
+    { n: "Gustavo", loc: "Hotel Ibis - SP", t: isPT ? "A combinação da massagem relaxante com a sensitiva criou uma jornada perfeita. O ápice da sessão foi vigoroso e restaurador. Sensação de leveza absurda ao final." : "The combination of relaxing and sensory massage created a perfect journey. The peak of the session was vigorous and restorative. Absurd feeling of lightness at the end." },
+    { n: "Ricardo", loc: "Fernandópolis", t: isPT ? "Encontrei um profissionalismo raro. Me senti à vontade para soltar minhas travas. Saí de lá me sentindo 10kg mais leve, física e emocionalmente." : "I found rare professionalism. I felt comfortable letting go of my inhibitions. I left feeling 10kg lighter, physically and emotionally." },
+    { n: "Sérgio", loc: "Santa Fé", t: isPT ? "Sofro de ansiedade e essa sessão foi mais eficaz que muitas terapias. A conexão humana foi real, e o clímax final foi o mais forte e libertador que já experimentei." : "I suffer from anxiety and this session was more effective than many therapies. The human connection was real, and the final climax was the strongest and most liberating I've ever experienced." },
+    { n: "Beatriz", loc: "Rio Preto", t: isPT ? "Mãos quentes e presença firme. O ambiente ficou carregado de uma energia positiva. Consegui relaxar profundamente e esquecer o caos lá fora." : "Warm hands and firm presence. The environment was charged with positive energy. I managed to relax deeply and forget the chaos outside." },
+    { n: "Marcelo", loc: isPT ? "SP - Centro" : "SP - Downtown", t: isPT ? "Fui sem expectativa e saí surpreendido. A massagem lingam foi executada com uma técnica precisa e respeitosa. O prazer foi intenso e genuíno." : "I went without expectation and left surprised. The lingam massage was executed with precise and respectful technique. The pleasure was intense and genuine." },
+    { n: "André", loc: "Motel K2", t: isPT ? "Discrição absoluta. O Thalyson é uma pessoa de energia muito boa e sabe o que faz. Foi um escape necessário e revitalizante da minha rotina." : "Absolute discretion. Thalyson has very good energy and knows what he's doing. It was a necessary and revitalizing escape from my routine." },
+    { n: "Juliana", loc: "Londrina", t: isPT ? "Delicadeza e força alternadas nos momentos exatos. Me senti viva de novo. Obrigada pelo carinho e respeito com meu corpo." : "Delicacy and strength alternated at the exact moments. I felt alive again. Thank you for the care and respect for my body." },
+    { n: "Paulo", loc: "São Paulo - Paulista", t: isPT ? "Uma experiência completa. Do toque inicial reconfortante até a explosão final de energia. Foi intenso e me deixou com as pernas bambas de tanto relaxamento." : "A complete experience. From the comforting initial touch to the final explosion of energy. It was intense and left me weak in the knees from so much relaxation." },
+    { n: "Vinícius", loc: "Jales", t: isPT ? "Tirou um peso das minhas costas que eu nem sabia que carregava. A finalização foi potente e necessária. Voltarei com certeza." : "Took a weight off my back I didn't know I was carrying. The finish was potent and necessary. I will definitely be back." },
+    { n: "Fernanda", loc: "Santa Fé", t: isPT ? "Super respeitoso com meu corpo. Foi uma troca de energia muito bonita, intensa e sem pressa. Me senti renovada." : "Super respectful with my body. It was a very beautiful, intense, and unhurried exchange of energy. I felt renewed." },
+    { n: "Eduardo", loc: "Rio Preto", t: isPT ? "Sensacional. A técnica dele para construir e depois liberar a energia é coisa de outro mundo. Foi um alívio físico e mental gigantesco." : "Sensational. His technique to build and then release energy is out of this world. It was a gigantic physical and mental relief." },
+    { n: "Caio", loc: isPT ? "SP - Consolação" : "SP - Consolação", t: isPT ? "Atendimento impecável no meu hotel. Pontual, discreto e com uma mão que sabe exatamente onde tocar para aliviar a tensão." : "Impeccable service at my hotel. Punctual, discreet, and with a hand that knows exactly where to touch to relieve tension." },
+    { n: "Larissa", loc: "Votuporanga", t: isPT ? "Relaxamento profundo. Esqueci de tudo lá fora. Recomendo para qualquer pessoa que precise se reconectar consigo mesma." : "Deep relaxation. I forgot everything outside. Recommend to anyone who needs to reconnect with themselves." },
+    { n: "Otávio", loc: "Londrina", t: isPT ? "Foi intenso do início ao fim. Uma descarga de energia que eu estava precisando desesperadamente. Me senti limpo por dentro." : "It was intense from start to finish. An energy discharge I desperately needed. I felt clean inside." },
+    { n: "Diego", loc: "Fernandópolis", t: isPT ? "A melhor parte foi não me sentir julgado. Pude ser eu mesmo, expressar meu prazer e aproveitar cada segundo de cuidado." : "The best part was not feeling judged. I could be myself, express my pleasure, and enjoy every second of care." }
+  ];
+
+  const finalMix = [...realReviews, ...seriousReviews];
+  return finalMix.map(r => ({ ...r, s: 5 }));
+};
+
 // ==================================================================================
 // 5. MAIN APP OTIMIZADO
 // ==================================================================================
@@ -311,64 +348,128 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [manualCouponInput, setManualCouponInput] = useState(''); 
   
-  // Dados com Copywriting Ajustado (Solução de Dores + Relaxamento Profundo + Acolhimento)
+  // Dados com Copywriting Ajustado e Novas Descrições
   const getData = useCallback((lang: string) => {
     const isPT = lang === 'pt';
     const USD_RATE = 5.75;
     const getPrice = (brl: number) => isPT ? brl : Math.round(brl / USD_RATE);
   
     const p = {
-      relax: getPrice(157), sens: getPrice(177), titan: getPrice(207), nuru: getPrice(317), depil: getPrice(107), 
-      packRelax: { v: getPrice(527), full: getPrice(628), save: getPrice(101) },
-      packTri: { v: getPrice(517), full: getPrice(621), save: getPrice(104) },
-      packMix: { v: getPrice(637), full: getPrice(768), save: getPrice(131) },
-      packSupreme: { v: getPrice(567), full: getPrice(681), save: getPrice(114) },
-      extras: { more_time: getPrice(77), touch: getPrice(77), aroma: getPrice(17), hair_trim: getPrice(57), pain_relief: getPrice(17) }
+      relax: getPrice(145),
+      sens: getPrice(175),
+      titan: getPrice(205),
+      nuru: getPrice(320),
+      depil: getPrice(110),
+      packRelax: { v: getPrice(490), full: getPrice(585), save: getPrice(95) },
+      packTri: { v: getPrice(525), full: getPrice(615), save: getPrice(90) },
+      packMix: { v: getPrice(640), full: getPrice(760), save: getPrice(120) },
+      packSupreme: { v: getPrice(550), full: getPrice(670), save: getPrice(120) },
+      extras: { more_time: getPrice(77), touch: getPrice(77), aroma: getPrice(10), hair_trim: getPrice(50), pain_relief: getPrice(10) }
     };
     
     return {
       levels: [
-        { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Iniciante no Cuidado" : "Beginner" },
-        { level: 2, xpNeeded: 100, reward: getPrice(15), title: isPT ? "Prioridade Certa" : "Priority" },
-        { level: 3, xpNeeded: 350, reward: getPrice(30), title: isPT ? "Corpo Consciente" : "Conscious Body" },
-        { level: 4, xpNeeded: 800, reward: getPrice(50), title: isPT ? "Plenitude Alcançada" : "Fullness" }
+        { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Bem-vindo" : "Welcome" },
+        { level: 2, xpNeeded: 100, reward: getPrice(15), title: isPT ? "Amigo" : "Friend" },
+        { level: 3, xpNeeded: 350, reward: getPrice(30), title: isPT ? "Conectado" : "Connected" },
+        { level: 4, xpNeeded: 800, reward: getPrice(50), title: isPT ? "Íntimo" : "Intimate" }
       ],
       services: [
-        { id: 'relaxante', min: 60, price: p.relax, icon: "user-check", tag: "SOLUÇÃO PARA DORES", title: "Descompressão Profunda", desc: "Suas costas estão travadas e a rotina está pesada? Essa é a sua escolha. Um alívio imediato para corpo e mente cansados.", details: "Mapeamento minucioso para desfazer nódulos de tensão\nFoco intensivo na lombar, ombros e pescoço pesado\nToque firme e acolhedor que devolve sua mobilidade\nMomento terapêutico puro para zerar a fadiga física" },
-        { id: 'sensitiva', min: 60, price: p.sens, icon: "sparkles", tag: "DESCONEXÃO MENTAL", title: "Jornada Sensorial", desc: "Quando sua mente não consegue desligar. Desperte a sensibilidade da pele e permita-se chegar a um clímax de puro relaxamento.", details: "Toques sutis e arrepiantes que tiram o foco dos pensamentos\nCondução fluida para um estado de entrega absoluta\nFinalização focada em uma intensa descarga de prazer e endorfina\nPara quem precisa esvaziar a mente sentindo o próprio corpo" },
-        { id: 'mista', min: 60, price: p.titan, icon: "zap", popular: true, tag: "RESTAURAÇÃO & PRAZER", title: "Experiência Fusion", desc: "O encontro perfeito: primeiro curamos suas dores nas costas, depois guiamos seu corpo a um estado de êxtase e paz profunda.", details: "Começa quebrando a rigidez das costas e ombros travados\nTransita naturalmente para um toque envolvente corpo a corpo\nCulmina em uma liberação orgânica de toda a tensão acumulada\nA jornada definitiva para sair flutuando da sessão" },
-        { id: 'nuru', min: 60, price: p.nuru, icon: "sparkles", tag: "IMERSÃO & CALOR", title: "Imersão Nuru", desc: "Ajoelhe-se diante do verdadeiro descanso. Calor orgânico e contato direto que derretem o estresse até a última gota.", details: "Aplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA experiência mais luxuosa e imersiva de gozo físico e mental\nFoco em soltar todo o controle e apenas receber o toque" },
-        { id: 'depilacao', min: 45, price: p.depil, icon: "scissors", tag: "CUIDADO PESSOAL", title: "Aparo Corporal", desc: "Manutenção higiênica e estética. Sentir-se leve e limpo é o primeiro passo para o conforto.", details: "Aparo uniforme com equipamento profissional\nFoco no peito, costas, abdômen e pernas\nAmbiente privado e extremamente respeitoso" }
+        {
+          id: 'depilacao',
+          min: 45,
+          price: p.depil,
+          icon: "scissors",
+          tag: isPT ? "NOVO" : "NEW",
+          title: isPT ? "Depilação (Maquininha)" : "Body Trimming",
+          desc: isPT ? "Higiene e estética em dia." : "Hygiene and aesthetics.",
+          details: isPT 
+            ? "Aparo completo com máquina (Zero ou Pente)\nPeito, pernas, braços e costas"
+            : "Full body trimming with machine\nChest, legs, arms, and back"
+        },
+        {
+          id: 'relaxante',
+          min: 60,
+          price: p.relax,
+          icon: "user-check",
+          tag: isPT ? "ALÍVIO & PAZ" : "RELIEF & PEACE",
+          title: isPT ? "Massagem Clássica" : "Classic Massage",
+          desc: isPT ? "Para quem carrega o peso do mundo. Relaxe profundamente." : "For those carrying the world's weight. Deep relaxation.",
+          details: isPT 
+            ? "Toque suave e acolhedor no corpo todo, foco nas costas, mãos, pernas e pés. \nAlivia o estresse e o cansaço mental\nUm momento só seu de relaxamento e paz\n(Modalidade terapêutica, sem toque íntimo)" 
+            : "Firm and welcoming touch on back and legs\nRelieves stress and mental fatigue\nA moment of peace just for you\n(Therapeutic mode, no intimate touch)"
+        },
+        {
+          id: 'sensitiva',
+          min: 60,
+          price: p.sens,
+          icon: "sparkles",
+          tag: isPT ? "DESPERTAR SENSORIAL" : "SENSORY AWAKENING",
+          title: isPT ? "Tântrica Sensorial" : "Sensory Tantra",
+          desc: isPT ? "Reconecte-se com seu corpo. Toques sutis que arrepiam." : "Reconnect with your body. Subtle touches that thrill.",
+          details: isPT 
+            ? "Toques leves para despertar a pele\nSensação de leveza e acolhimento\nFinalização especial (Lingam)\nPara quem busca sentir mais" 
+            : "Touches to awaken the skin\nFeeling of lightness and warmth\nSpecial finish (Lingam)\nFor those seeking to feel more"
+        },
+        {
+          id: 'mista',
+          min: 60,
+          price: p.titan,
+          icon: "zap",
+          popular: true,
+          tag: isPT ? "EXPERIÊNCIA COMPLETA" : "FULL EXPERIENCE",
+          title: isPT ? "Fusion Experience" : "Fusion Experience",
+          desc: isPT ? "A união perfeita: relaxamento muscular + energia intensa." : "The perfect union: muscle relaxation + intense energy.",
+          details: isPT 
+            ? "Começa tirando a tensão muscular\nEvolui para uma troca de energia corpo a corpo (Massagista de cueca)\nFinalização intensa e libertadora\nA escolha favorita de quem quer tudo" 
+            : "Starts removing muscle tension\nEvolves into body-to-body energy exchange\nIntense and liberating finish\nThe favorite choice for those who want it all"
+        },
+        {
+          id: 'nuru',
+          min: 60,
+          price: p.nuru,
+          icon: "sparkles",
+          tag: isPT ? "ENTREGA & ACOLHIMENTO" : "SURRENDER & WARMTH",
+          title: isPT ? "Massagem Nuru" : "Nuru Massage",
+          desc: isPT ? "Deslizamento corpo a corpo com gel aquecido. O ápice do relaxamento e cuidado." : "Body-to-body slide with heated gel. The peak of relaxation and care.",
+          details: isPT 
+            ? "Uso de gel Nuru aquecido que hidrata e relaxa\nContato intenso e acolhedor corpo a corpo\nAlivia o estresse profundo através do calor e fricção\nUma experiência de pura liberdade e conexão" 
+            : "Use of heated Nuru gel that hydrates and relaxes\nIntense and welcoming body-to-body contact\nRelieves deep stress through heat and friction\nAn experience of pure freedom and connection"
+        }
       ] as ServiceItem[],
       extras: [
-        { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: "Tempo Estendido (+30 min)", desc: "Porque quando está bom, não queremos que acabe." },
-        { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: "Interação Orgânica", desc: "Sinta-se livre para participar ativamente do momento." },
-        { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: "Aromaterapia Profunda", desc: "Óleos essenciais que baixam sua frequência mental." },
-        { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: "Foco Extra em Dores", desc: "Uso de pomada técnica para tratar dores crônicas." }
+        { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: isPT ? "Aparo (Extra)" : "Trim (Extra)", desc: isPT ? "Adicione aparo a sua massagem 2 partes do corpo" : "Add trim to your massage, 2 parts of body" },
+        { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Mais tempo para você relaxar" : "More time for you" },
+        { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: isPT ? "Troca Interativa" : "Interactive Touch", desc: isPT ? "Sinta a liberdade de tocar também" : "Feel free to touch too" },
+        { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Cheiro bom no ar" : "Essential oils to calm the mind" },
+        { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isPT ? "Pomada Dores" : "Pain Cream", desc: isPT ? "Alivia dores musculares fortes" : "Relieves strong muscle pain" }
       ],
       plans: [
-        { id: 'pack_mista', type: 'pack', title: "Ciclo Fusion (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: "3 Encontros de Desbloqueio e Prazer", details: "A rotina te consome toda semana. Tenha seu refúgio garantido.\nTrês imersões completas para alinhar o físico e o mental.", tag: "ACOLHIMENTO MENSAL", icon: "layers" },
-        { id: 'pack_relax', type: 'pack', title: "Ciclo Alívio (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: "4 Sessões Focadas na Dor", details: "Acabe com a dor lombar crônica de uma vez.\nUm cronograma de manutenções preventivas e curativas.", tag: "SAÚDE FÍSICA", icon: "package" },
-        { id: 'pack_supreme', type: 'pack', title: "Jornada Supreme (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: "O ápice de todas as técnicas", details: "Para quem quer provar tudo.\nUma sessão Terapêutica, uma Fusion e uma Nuru. O resgate absoluto.", tag: "✦ EXPERIÊNCIA PREMIUM", icon: "award" }
+        { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4x)" : "Relax Pack (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: isPT ? "4 Sessões Relaxantes" : "4 Relax Sessions", details: isPT ? "Garanta sua paz semanalmente.\nO cuidado constante que você merece." : "Ensure your weekly peace.\nThe constant care you deserve.", tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: "package" },
+        { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Fusion (3x)" : "Fusion Pack (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: isPT ? "3 Sessões Fusion" : "3 Fusion Sessions", details: isPT ? "Três encontros intensos.\nPara quem precisa escapar da rotina." : "Three intense encounters.\nFor those who need to escape routine.", tag: isPT ? "ESCAPE" : "ESCAPE", icon: "layers" },
+        { id: 'pack_supreme', type: 'pack', title: isPT ? "Pack Supreme (3x)" : "Supreme Pack (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: isPT ? "1 Nuru + 1 Relaxante + 1 Fusion" : "1 Nuru + 1 Relax + 1 Fusion", details: isPT ? "O cuidado máximo com o seu bem-estar.\nTrês momentos de fuga da rotina para você se renovar." : "The maximum care for your well-being.\nThree moments of escape from routine for you to renew yourself.", tag: "VIP", icon: "award" },
+        { id: 'pack_mix_4', type: 'pack', title: isPT ? "Ciclo Completo" : "Full Cycle", price: p.packMix.v, fullPrice: p.packMix.full, savings: p.packMix.save, desc: isPT ? "2 Sensoriais + 2 Fusion" : "2 Sensory + 2 Fusion", details: isPT ? "Explore todas as sensações.\nVariedade para cada momento seu." : "Explore all sensations.\nVariety for your every moment.", tag: "PREMIUM", icon: "star" }
       ] as ServiceItem[],
       faq: [
-        { q: "Estou travado de dor. A massagem vai resolver?", a: "Sim. A sessão inicia com foco direto nas suas queixas (geralmente lombar, trapézio e pescoço). Uso uma pressão firme e técnica para desfazer os nódulos e devolver o alívio. Você vai sair da cama sentindo o corpo muito mais leve e solto." },
-        { q: "Como funciona a parte sensitiva e a finalização?", a: "Tudo é conduzido com muito respeito e focado no seu prazer genuíno. Após o relaxamento muscular, transitamos para estímulos que acalmam a mente. A finalização (clímax/liberação) acontece de forma natural, uma descarga deliciosa para levar todo o seu estresse embora." },
-        { q: "Nunca fiz antes. Preciso me preparar de alguma forma?", a: "De forma alguma! Meu papel é te acolher e te guiar. A única coisa que peço é que você tome uma ducha morna relaxante antes do nosso encontro. O resto, você apenas deita, fecha os olhos e deixa eu cuidar de você." },
-        { q: "O atendimento tem garantia de sigilo e descrição?", a: "Total. O respeito e a sua privacidade são inegociáveis. Nosso encontro é um momento só seu, num ambiente seguro e livre de julgamentos." }
+        { q: isPT ? "Onde é o atendimento?" : "Where is the service?", a: isPT ? "Atendo exclusivamente a domicílio (sua residência, hotel ou motel). Não possuo local próprio, a sessão é realizada na sua cama ou sofá, garantindo seu conforto e privacidade total." : "I attend exclusively at your home, hotel or motel. I do not have my own place, the session is held on your bed or sofa, ensuring your comfort and total privacy." },
+        { q: isPT ? "É seguro e discreto?" : "Is it safe and discreet?", a: isPT ? "Absolutamente. Atendo homens casados, solteiros e pessoas públicas com total sigilo. Ninguém precisa saber do seu momento." : "Absolutely. I attend married men, singles and public figures with total secrecy. No one needs to know about your moment." },
+        { q: isPT ? "Como devo me preparar?" : "How should I prepare?", a: isPT ? "Apenas tome um banho e venha de coração aberto. Se preferir, separe um lençol, mas levo óleos de qualidade que não mancham." : "Just take a shower and come with an open heart. If you prefer, separate a sheet, but I bring quality oils that don't stain." },
+        { q: isPT ? "Tenho vergonha do meu corpo..." : "I'm ashamed of my body...", a: isPT ? "Não tenha. Aqui não há julgamentos, apenas acolhimento. Todos os corpos merecem toque e carinho." : "Don't be. There are no judgments here, only acceptance. All bodies deserve touch and care." }
       ],
-      rules: [
-        { icon: "shower", title: "A Ducha Preparatória", description: "O banho prévio é essencial. A água morna começa o relaxamento e garante a higiene para que o toque seja perfeito." },
-        { icon: "hand", title: "Ambiente de Respeito", description: "Eu cuido de você e do seu prazer, e espero reciprocidade no respeito ao meu trabalho. O conforto mútuo faz a mágica acontecer." },
-        { icon: "shield", title: "Privacidade Absoluta", description: "O que acontece na sessão, fica na sessão. Seu nome e suas preferências estão guardados a sete chaves." },
-        { icon: "clock", title: "Seu Tempo é Sagrado", description: "Chego pontualmente para garantir que você aproveite cada minuto. Temos uma margem de tolerância de 15 minutos para imprevistos." }
+      rules: isPT ? [
+        { icon: "shower", title: "Higiene & Conforto", description: "Um banho antes prepara seu corpo e alma para o relaxamento que você merece." },
+        { icon: "hand", title: "Respeito Mútuo", description: "Este é um espaço seguro. O respeito é a base da nossa conexão." },
+        { icon: "shield", title: "Sigilo Absoluto", description: "O que acontece na sessão, fica na sessão. Sua privacidade é sagrada aqui." },
+        { icon: "user-check", title: "Sem Julgamentos", description: "Aqui você pode ser você mesmo. Livre de rótulos ou pressões." },
+        { icon: "clock", title: "Seu Tempo", description: "Avisos de cancelamento com 2h de antecedência ajudam a manter a harmonia da agenda." }
+      ] : [
+        { icon: "shower", title: "Hygiene & Comfort", description: "A shower beforehand prepares your body and soul for the relaxation you deserve." },
+        { icon: "hand", title: "Mutual Respect", description: "This is a safe space. Respect is the foundation of our connection." },
+        { icon: "shield", title: "Absolute Privacy", description: "What happens in the session, stays in the session. Your privacy is sacred here." },
+        { icon: "user-check", title: "No Judgments", description: "Here you can be yourself. Free from labels or pressures." },
+        { icon: "clock", title: "Your Time", description: "Cancellation notices 2h in advance help keep the schedule in harmony." }
       ],
-      reviews: [
-        { n: "Gustavo C.", loc: "Bela Vista - SP", t: "Cheguei com as costas travadas e a cabeça a mil por causa do trabalho. O Thalyson tirou minha dor com mãos firmes e a finalização foi simplesmente surreal. Sensação de leveza absurda, dormi como uma criança.", s: 5 },
-        { n: "Ricardo M.", loc: "Jardins - SP", t: "Ambiente extremamente seguro. Eu precisava relaxar e gozar de paz, e a Experiência Fusion me deu exatamente isso. A transição do toque forte pro suave é uma obra de arte. Recomendo de olhos fechados.", s: 5 },
-        { n: "Felipe S.", loc: "Centro - SP", t: "Fui sem muita expectativa e saí flutuando. O respeito e o cuidado dele são diferenciais. A massagem sensitiva me levou pra outro lugar. Foi libertador demais.", s: 5 },
-        { n: "Bruno T.", loc: "Moema - SP", t: "Excelente profissional. Sabe exatamente onde apertar para aliviar a dor e a parte final da massagem garante aquela descarga de tensão que a gente precisa depois de uma semana pesada.", s: 5 }
-      ],
+      reviews: generateReviews(isPT),
       text: {
         welcome: "É muito bom ter você aqui,",
         choose_sub: "Sei o quanto a rotina está pesando nas suas costas. Escolha como quer ser cuidado hoje. Relaxe, a partir de agora é comigo.",
@@ -390,7 +491,7 @@ export default function App() {
         location_title: "Onde será nosso encontro de paz?",
         extras_title: "Quer deixar a experiência ainda melhor?",
         coupon_section: "Tem algum código especial?",
-        payment_title: "Como prefere acertar? (Pós-Sessão)",
+        payment_title: "Como prefere acertar? (Pagamento Pós-Sessão)",
         terms_title: "Nosso Acordo de Confiança",
         success_title: "Tudo pronto para o seu relaxamento!",
         success_sub: "Seu pedido foi montado. Agora, só falta você me mandar um 'Oi' no WhatsApp com esse resumo para eu validar na minha agenda oficial. Te espero lá!",
@@ -580,15 +681,25 @@ export default function App() {
     return days;
   }, []);
   
+  // Atualizado: Lógica de Sistema de Horários exigida pelo usuário
   const generateTimeSlots = useMemo(() => {
     if (!booking.date) return [];
     const slots = [];
-    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) slots.push(`${i < 10 ? '0' : ''}${i}:00`);
-    const now = new Date(); const selectedDate = new Date(booking.date);
+    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
+      slots.push(`${i < 10 ? '0' : ''}${i}:00`);
+    }
+
+    const now = new Date();
+    const selectedDate = new Date(booking.date);
     if (isNaN(selectedDate.getTime())) return [];
-    if (selectedDate.toDateString() === now.toDateString()) {
+
+    const isToday = selectedDate.toDateString() === now.toDateString();
+    if (isToday) {
       const currentHour = now.getHours();
-      return slots.filter(time => { const [hour] = time.split(':').map(Number); return hour > currentHour + 1; });
+      return slots.filter(time => {
+        const [hour] = time.split(':').map(Number);
+        return hour > currentHour; 
+      });
     }
     return slots;
   }, [booking.date]);
@@ -614,7 +725,7 @@ export default function App() {
   const estimatedXP = useMemo(() => Math.floor(financials.total * (booking.type === 'pack' ? 0.30 : 0.15)), [financials.total, booking.type]);
   
   const getNextLevelInfo = (currentXP: number) => {
-    if (currentXP >= 800) return { needed: 500 - ((currentXP - 800) % 500), reward: 50, title: "Plenitude Plus" };
+    if (currentXP >= 800) return { needed: 500 - ((currentXP - 800) % 500), reward: 50, title: "Íntimo Plus" };
     const nextLevel = DATA.levels.find(l => l.xpNeeded > currentXP);
     return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
   };
