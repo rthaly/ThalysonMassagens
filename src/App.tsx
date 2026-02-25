@@ -2,13 +2,13 @@ import * as React from 'react';
 import { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 
 // ==================================================================================
-// 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS
+// 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS (PERFORMANCE)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v20_optimized',
+  STORAGE_KEY: '@thaly_app_v20_optimized', // Mantida para não perder XP e histórico
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -18,6 +18,7 @@ const CONFIG = {
   MAX_STORAGE_SIZE: 5000 
 } as const;
 
+// Caminhos SVG movidos para fora para não serem recriados a cada renderização
 const ICON_PATHS: Record<string, string> = {
   'menu': 'M4 6h16M4 12h16M4 18h16',
   'chevron-left': 'M15 18l-6-6 6-6',
@@ -59,39 +60,56 @@ const ICON_PATHS: Record<string, string> = {
   'camera': 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
   'video': 'M23 7l-7 5 7 5V7z M14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z',
   'scissors': 'M6 9L12 15 18 9 M6 20a3 3 0 01-3-3v-6l6 6v3z M18 20a3 3 0 003-3v-6l-6 6v3z',
-  'copy': 'M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3'
+  'home': 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
 };
 
 // ==================================================================================
-// 2. DESIGN SYSTEM & ESTILOS GLOBAIS (UX/UI Limpo)
+// 2. DESIGN SYSTEM & ESTILOS GLOBAIS (Copy Sênior / Minimalista)
 // ==================================================================================
 
 const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   <style dangerouslySetInnerHTML={{ __html: `
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+    
     * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+    
     :root {
       --font-primary: 'Plus Jakarta Sans', sans-serif;
       --font-display: 'Playfair Display', serif;
     }
+
     html, body {
-      background-color: ${isDark ? '#09090b' : '#fafafa'};
-      color: ${isDark ? '#f4f4f5' : '#18181b'};
+      background-color: ${isDark ? '#09090b' : '#f8fafc'};
+      color: ${isDark ? '#ffffff' : '#0f172a'};
       transition: background-color 0.3s ease;
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
       font-family: var(--font-primary);
     }
+    
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    
+    @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    .animate-slide-in { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    
     .emoji-icon { font-style: normal; display: inline-block; line-height: 1; vertical-align: middle; text-align: center; }
+    
+    .glass-panel {
+      background: ${isDark ? 'rgba(9, 9, 11, 0.8)' : 'rgba(255, 255, 255, 0.9)'};
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-left: 1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
+    }
   `}} />
 ));
 
 const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
   if (isEmoji) return <span className={`emoji-icon ${className}`} style={{ fontSize: size }} role="img" aria-label={name}>{name}</span>;
+
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
       <path d={ICON_PATHS[name] || ''} />
@@ -99,8 +117,9 @@ const Icon = memo(({ name, size = 22, className = "", isEmoji = false }: { name:
   );
 });
 
-// Formatador Limpo e Profissional
-const formatMoney = (val: number, isPT: boolean = true) => {
+// Formatador Sênior e Seguro
+const formatMoney = (val: number | undefined, isPT: boolean = true) => {
+  if (val === undefined || isNaN(val)) return isPT ? 'R$ 0,00' : '$0.00';
   return isPT ? `R$ ${val.toFixed(2).replace('.', ',')}` : `$${val.toFixed(2)}`;
 };
 
@@ -113,15 +132,15 @@ interface BookingData { type: 'single' | 'pack'; item: ServiceItem | null; extra
 interface Rule { icon: string; title: string; description: string; }
 
 // ==================================================================================
-// 3. COMPONENTES DE UI MINIMALISTAS
+// 3. COMPONENTES DE UI (MEMORIZADOS PARA PERFORMANCE)
 // ==================================================================================
 
 const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon, className = '', loading = false, ariaLabel }: any) => {
-  const baseStyle = "inline-flex items-center justify-center font-medium transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed rounded-2xl select-none active:scale-[0.98] gap-2";
+  const baseStyle = "inline-flex items-center justify-center font-bold tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none active:scale-[0.97] font-poppins gap-2";
   const variants = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-900/10",
-    secondary: "bg-zinc-800 border border-zinc-700 text-zinc-200 hover:bg-zinc-700",
-    whatsapp: "bg-[#25D366] text-white hover:bg-[#20BD5A] shadow-md shadow-green-900/10",
+    primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/25",
+    secondary: "bg-zinc-800 border border-zinc-700 text-zinc-100 hover:bg-zinc-700",
+    whatsapp: "bg-[#25D366] text-white hover:bg-[#20BD5A] shadow-lg shadow-green-500/20",
     outline: "bg-transparent border border-zinc-600 text-zinc-300 hover:border-zinc-400",
     ghost: "bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white"
   };
@@ -138,36 +157,43 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang,
   if (!isOpen) return null;
   return (
     <>
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} role="presentation" />
-      <aside className={`fixed top-0 right-0 h-full w-[85%] max-w-sm z-[70] p-8 shadow-2xl animate-slide-in ${isDark ? 'bg-zinc-950 text-white border-l border-zinc-800' : 'bg-white text-slate-900 border-l border-slate-100'}`}>
-        <div className="flex justify-between items-center mb-10">
-          <h2 className="text-2xl font-playfair">Menu</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-zinc-500/10 transition-colors" aria-label="Fechar menu"><Icon name="x" size={24} /></button>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} role="presentation" />
+      <aside className={`fixed top-0 right-0 h-full w-[85%] max-w-sm z-[70] p-6 shadow-2xl animate-slide-in glass-panel ${isDark ? 'text-white' : 'text-slate-900'}`}>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-bold font-display">Menu</h2>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-500/10" aria-label="Fechar menu"><Icon name="x" size={24} /></button>
         </div>
         
-        <div className="mb-10 p-5 rounded-2xl bg-zinc-900 text-white">
-          <p className="text-xs opacity-70 uppercase tracking-widest mb-1">Seu Nível Atual</p>
-          <div className="flex justify-between items-end">
-             <span className="text-3xl font-light font-playfair">{user.xp} <span className="text-sm font-sans font-bold text-blue-400">XP</span></span>
-             <Icon name="award" className="text-blue-400" />
+        <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg">
+          <p className="text-xs opacity-80 uppercase font-bold tracking-wider">Histórico de Cuidado</p>
+          <div className="flex justify-between items-end mt-1">
+             <span className="text-2xl font-bold">{user.xp} XP</span>
+             <Icon name="award" />
           </div>
         </div>
 
-        <nav className="space-y-4">
-          <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
-            <div className="flex items-center gap-4">
-              <Icon name={isDark ? "moon" : "sun"} className={isDark ? "text-zinc-400" : "text-slate-400"} />
+        <nav className="space-y-3">
+          <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${isDark ? 'border-zinc-800 hover:bg-zinc-800' : 'border-slate-200 hover:bg-slate-50'}`}>
+            <div className="flex items-center gap-3">
+              <Icon name={isDark ? "moon" : "sun"} className="text-blue-500" />
               <span className="font-medium">Interface</span>
             </div>
-            <span className="text-xs opacity-50 uppercase tracking-wider">{isDark ? 'Escuro' : 'Claro'}</span>
+            <span className="text-xs font-bold opacity-50 uppercase">{isDark ? 'Noturna' : 'Clara'}</span>
           </button>
           
-          <button onClick={toggleLang} className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors ${isDark ? 'hover:bg-zinc-900 text-zinc-300' : 'hover:bg-slate-50 text-slate-700'}`}>
-            <div className="flex items-center gap-4">
-              <Icon name="globe" className={isDark ? "text-zinc-400" : "text-slate-400"} />
+          <button onClick={toggleLang} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${isDark ? 'border-zinc-800 hover:bg-zinc-800' : 'border-slate-200 hover:bg-slate-50'}`}>
+            <div className="flex items-center gap-3">
+              <Icon name="globe" className="text-purple-500" />
               <span className="font-medium">Idioma</span>
             </div>
-            <span className="text-xs opacity-50 uppercase tracking-wider">{lang}</span>
+            <span className="text-xs font-bold opacity-50 uppercase">{lang}</span>
+          </button>
+
+          <button onClick={() => { if(navigator.share) navigator.share({title: 'Thalyson Massagens', url: window.location.href}) }} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${isDark ? 'border-zinc-800 hover:bg-zinc-800' : 'border-slate-200 hover:bg-slate-50'}`}>
+            <div className="flex items-center gap-3">
+              <Icon name="share" className="text-emerald-500" />
+              <span className="font-medium">Compartilhar</span>
+            </div>
           </button>
         </nav>
       </aside>
@@ -176,10 +202,10 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang,
 });
 
 const Card = memo(({ children, className = '', onClick, active = false, isDark = true, popular = false }: any) => (
-  <div onClick={onClick} className={`relative p-8 rounded-3xl transition-all duration-300 flex flex-col h-full ${onClick ? 'cursor-pointer active:scale-[0.99] hover:-translate-y-1' : ''} ${active ? 'bg-blue-500/5 border border-blue-500/50 shadow-sm' : isDark ? 'bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700' : 'bg-white border border-slate-200 hover:border-slate-300 shadow-sm'} ${className}`}>
+  <div onClick={onClick} className={`relative p-8 rounded-3xl transition-all duration-300 flex flex-col h-full font-poppins ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-1' : ''} ${active ? 'bg-blue-900/10 border border-blue-500 shadow-lg shadow-blue-500/20' : isDark ? 'bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 hover:border-zinc-700' : 'bg-white border border-slate-200 shadow-sm hover:border-slate-300'} ${className}`}>
     {popular && (
-      <div className="absolute -top-3 left-8 bg-zinc-800 text-zinc-100 text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm border border-zinc-700">
-        ✦ Mais Escolhida
+      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-indigo-500 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full shadow-lg border border-white/20">
+        ✦ Jornada Assinatura
       </div>
     )}
     {children}
@@ -188,43 +214,43 @@ const Card = memo(({ children, className = '', onClick, active = false, isDark =
 
 const InputField = memo(({ label, value, onChange, placeholder, icon, type = "text", isDark = true, hasError = false }: any) => (
   <div className="space-y-2 w-full">
-    {label && <label className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{label}</label>}
+    {label && <label className={`text-xs font-bold uppercase tracking-wider font-poppins ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{label}</label>}
     <div className="relative">
-      {icon && <div className={`absolute left-4 top-1/2 -translate-y-1/2 ${hasError ? 'text-red-500' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name={icon} size={18} /></div>}
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-12 rounded-xl outline-none text-sm transition-all bg-transparent ${icon ? 'pl-11 pr-4' : 'px-4'} ${hasError ? 'border border-red-500/50 bg-red-500/5 text-red-500 placeholder:text-red-400' : isDark ? 'border border-zinc-800 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-700' : 'border border-slate-300 focus:border-slate-400 text-slate-900 placeholder:text-slate-400'}`} />
+      {icon && <div className={`absolute left-4 top-1/2 -translate-y-1/2 ${hasError ? 'text-red-500' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Icon name={icon} size={20} /></div>}
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-12 rounded-xl outline-none text-sm font-medium transition-all font-poppins bg-transparent ${icon ? 'pl-12 pr-4' : 'px-4'} ${hasError ? 'border border-red-500 bg-red-500/5 placeholder:text-red-400/50 text-red-500' : isDark ? 'border border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:border-blue-500' : 'border border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-blue-600'}`} />
     </div>
   </div>
 ));
 
 const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
-  <article className={`w-full h-full p-6 rounded-3xl transition-all duration-300 border ${isDark ? 'bg-zinc-900/30 border-zinc-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-    <div className="flex justify-between items-start mb-4">
+  <article className={`w-full h-full p-5 rounded-2xl transition-all duration-300 border ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+    <div className="flex justify-between items-start mb-3">
       <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>
-          {review.n.charAt(0)}
-        </div>
-        <div>
-          <span className={`text-sm font-medium block ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{review.n}</span>
-          <span className={`text-xs ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{review.loc}</span>
-        </div>
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold ${isDark ? 'bg-blue-600/20 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>{review.n.charAt(0)}</div>
+        <div><span className={`text-sm font-semibold block ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{review.n}</span><span className={`text-xs ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span></div>
       </div>
-      <div className="flex gap-0.5 mt-1" aria-label={`Avaliação: ${review.s} estrelas`}>{[...Array(5)].map((_, i) => <Icon key={i} name="star" size={12} className={i < review.s ? 'text-yellow-400 fill-yellow-400' : isDark ? 'text-zinc-800' : 'text-slate-200'} />)}</div>
+      <div className="flex gap-0.5" aria-label={`Avaliação: ${review.s} estrelas`}>{[...Array(5)].map((_, i) => <Icon key={i} name="star" size={14} className={i < review.s ? 'text-yellow-400 fill-yellow-400' : isDark ? 'text-zinc-700' : 'text-slate-400'} />)}</div>
     </div>
-    <p className={`text-sm leading-relaxed font-light ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>"{review.t}"</p>
+    <p className={`text-sm leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{review.t}</p>
   </article>
 ));
 
 const SmartTimer = memo(({ isDark, text }: any) => {
   const [time, setTime] = useState(600);
   useEffect(() => { 
-    const interval = setInterval(() => { setTime(prev => prev <= 0 ? 600 : prev - 1); }, 1000); 
+    const interval = setInterval(() => { 
+      setTime(prev => prev <= 0 ? 600 : prev - 1); 
+    }, 1000); 
     return () => clearInterval(interval); 
   }, []);
+  
   const format = (t: number) => { const m = Math.floor(t / 60); const s = t % 60; return `${m}:${s < 10 ? '0' : ''}${s}`; };
+  const isUrgent = time < 60;
+  
   return (
-    <div className={`flex items-center justify-center gap-2 p-3 rounded-xl transition-all ${isDark ? 'bg-zinc-900/50 text-zinc-400' : 'bg-slate-50 text-slate-500'}`}>
-      <Icon name="watch" size={16} />
-      <span className="text-xs font-medium uppercase tracking-widest">{text}: <span className="font-mono">{format(time)}</span></span>
+    <div className={`flex items-center justify-center gap-3 p-4 rounded-xl border transition-all font-inter ${isUrgent ? 'bg-red-500/10 border-red-500/30 text-red-400' : isDark ? 'bg-blue-500/5 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
+      <Icon name="watch" size={20} className={isUrgent ? 'animate-pulse' : ''} />
+      <span className="text-sm font-semibold">{text}: <span className="font-mono">{format(time)}</span></span>
     </div>
   );
 });
@@ -232,34 +258,30 @@ const SmartTimer = memo(({ isDark, text }: any) => {
 const FAQItem = memo(({ q, a, isDark }: { q: string; a: string; isDark: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className={`border-b ${isDark ? 'border-zinc-800/50' : 'border-slate-100'}`}>
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full py-6 flex items-center justify-between text-left group" aria-expanded={isOpen}>
-        <span className={`text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{q}</span>
-        <span className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-400' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="chevron-down" size={18} /></span>
+    <div className={`border-b ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full py-5 flex items-center justify-between text-left group font-inter" aria-expanded={isOpen}>
+        <span className={`text-sm font-semibold font-inter ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{q}</span>
+        <span className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-500' : isDark ? 'text-zinc-500' : 'text-slate-500'}`}><Icon name="chevron-down" size={20} /></span>
       </button>
-      <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 pb-6' : 'max-h-0'}`}>
-        <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{a}</p>
-      </div>
+      <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 pb-5' : 'max-h-0'}`}><p className={`text-sm font-inter ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p></div>
     </div>
   );
 });
 
 const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
-  <div className={`flex gap-4 p-5 rounded-2xl border border-transparent ${isDark ? 'hover:bg-zinc-900/30' : 'hover:bg-slate-50'}`}>
-    <div className={`flex-shrink-0 mt-1 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name={rule.icon} size={20} /></div>
-    <div>
-      <h4 className={`text-sm font-medium mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{rule.title}</h4>
-      <p className={`text-xs font-light leading-relaxed ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{rule.description}</p>
-    </div>
+  <div className={`flex gap-4 p-5 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-slate-200'}`}>
+    <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50 text-blue-600'}`}><Icon name={rule.icon} size={24} /></div>
+    <div><h4 className={`text-base font-bold mb-1 font-playfair ${isDark ? 'text-white' : 'text-slate-900'}`}>{rule.title}</h4><p className={`text-sm leading-relaxed font-inter ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{rule.description}</p></div>
   </div>
 ));
 
 // ==================================================================================
-// 4. LÓGICA DE DADOS E FUNÇÕES PURAS (Intacta, usando avaliações do código 1)
+// 4. LÓGICA DE DADOS E FUNÇÕES PURAS (Com Validação Segura)
 // ==================================================================================
 const sanitizeInput = (value: string): string => value.replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
 
+// Limpeza segura e silenciosa do cache
 const cleanupStorage = () => { 
   try { 
     const keys = Object.keys(localStorage);
@@ -284,7 +306,7 @@ const cleanupStorage = () => {
 // Exatas avaliações solicitadas baseadas no código 1 do usuário
 const generateReviews = (isPT: boolean): Review[] => {
   const realReviews = [
-    { n: "Gustavo", loc: "Bela Vista - SP", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões de início de ano e pós-Carnaval. Foi a primeira vez que contratei um massagista pra atender em minha casa e a experiência foi incrível. Ele consegue deixar a gente relaxado, tem mãos incríveis e os efeitos são imediatos, pois eu levantei e parecia que pesava 10kg a menos. Recomendo e já quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax after the tension of early year and post-Carnival. It was the first time I hired a massage therapist at my home and the experience was incredible. He leaves us relaxed, has amazing hands and the effects are immediate, because I stood up and felt 10kg lighter. Highly recommend and want it again." },
+    { n: "Cliente", loc: "Atendimento em Casa", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões de início de ano e pós-Carnaval. Foi a primeira vez que contratei um massagista pra atender em minha casa e a experiência foi incrível. Ele consegue deixar a gente relaxado, tem mãos incríveis e os efeitos são imediatos, pois eu levantei e parecia que pesava 10kg a menos. Recomendo e já quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax after the tension of early year and post-Carnival. It was the first time I hired a massage therapist at my home and the experience was incredible. He leaves us relaxed, has amazing hands and the effects are immediate, because I stood up and felt 10kg lighter. Highly recommend and want it again." },
     { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: isPT ? "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️" : "You have blessed hands and I soared! I really needed this rest, this peace. It was super respectful all the time and relaxed me a lot. Thank you! ❤️" },
     { n: "Osvaldo", loc: "Santa Fé do Sul", t: isPT ? "HOJE, 10/02/26 não poderia ter teminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS !!! Que delícia!\nOs 4 pilares essenciais do seu trabalho são bases para transformar o atendimento em uma SENSAÇÃO UNICA que gera valores pro corpo, combinando o aspecto de super EMPATIA com o cliente, sem esquecer da EFICIENCIA e agilidade, clareza durante a sessão, tornando ha, uma visão da PERFEIÇÃO de executar este trabalho de massagem com maestria! Thalyson foca sempre no propósito de servir bem o cliente, desde o início ao fim q é surpreendente! VALE A PENA. 👏👏👏" : "TODAY, 02/10/26, the day couldn’t have ended BETTER, being attended by Thalyson at home in a massage session with his MAGIC HANDS !!! What a delight!\nThe 4 essential pillars of his work are the foundation to turn the service into a UNIQUE SENSATION that brings value to the body, combining a super EMPATHY with the client, without forgetting about EFFICIENCY and agility, clarity throughout the session, giving a view of the PERFECTION of performing this massage work with mastery! Thalyson always focuses on the purpose of serving the client well, from start to finish, which is amazing! WORTH IT. 👏👏👏" },
     { n: "Bruno", loc: "SP - Bela Vista", t: isPT ? "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito." : "Thalyson, I want to say that your massage was very well executed. Highly recommend." },
@@ -345,10 +367,10 @@ const getData = (lang: string) => {
   
   return {
     levels: [
-      { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Bem-vindo" : "Welcome" },
-      { level: 2, xpNeeded: 100, reward: getPrice(15), title: isPT ? "Amigo" : "Friend" },
-      { level: 3, xpNeeded: 350, reward: getPrice(30), title: isPT ? "Conectado" : "Connected" },
-      { level: 4, xpNeeded: 800, reward: getPrice(50), title: isPT ? "Íntimo" : "Intimate" }
+      { level: 1, xpNeeded: 0, reward: 0, title: isPT ? "Iniciante no Autocuidado" : "Self-Care Beginner" },
+      { level: 2, xpNeeded: 100, reward: getPrice(15), title: isPT ? "Prioridade Certa" : "Right Priority" },
+      { level: 3, xpNeeded: 350, reward: getPrice(30), title: isPT ? "Corpo Consciente" : "Conscious Body" },
+      { level: 4, xpNeeded: 800, reward: getPrice(50), title: isPT ? "Plenitude Alcançada" : "Fullness Achieved" }
     ],
     services: [
       {
@@ -356,150 +378,161 @@ const getData = (lang: string) => {
         min: 45,
         price: p.depil,
         icon: "scissors",
-        tag: isPT ? "NOVO" : "NEW",
-        title: isPT ? "Depilação (Maquininha)" : "Body Trimming",
-        desc: isPT ? "Higiene e estética em dia." : "Hygiene and aesthetics.",
-        details: isPT ? "Aparo completo com máquina (Zero ou Pente)\nPeito, pernas, braços e costas" : "Full body trimming with machine\nChest, legs, arms, and back"
+        tag: isPT ? "CUIDADO PESSOAL" : "PERSONAL CARE",
+        title: isPT ? "Aparo Corporal" : "Body Trimming",
+        desc: isPT ? "Higiene e manutenção para quem valoriza a própria estética." : "Hygiene and maintenance for those who value aesthetics.",
+        details: isPT 
+          ? "Aparo uniforme com máquina profissional\nFoco em áreas extensas: peito, costas e pernas\nSensação de leveza e asseio corporal"
+          : "Uniform trimming with professional machine\nFocus on extensive areas: chest, back, and legs\nFeeling of lightness and body cleanliness"
       },
       {
         id: 'relaxante',
         min: 60,
         price: p.relax,
         icon: "user-check",
-        tag: isPT ? "ALÍVIO & PAZ" : "RELIEF & PEACE",
-        title: isPT ? "Massagem Clássica" : "Classic Massage",
-        desc: isPT ? "Para quem carrega o peso do mundo. Relaxe profundamente." : "For those carrying the world's weight. Deep relaxation.",
-        details: isPT ? "Toque suave e acolhedor no corpo todo, foco nas costas, mãos, pernas e pés. \nAlivia o estresse e o cansaço mental\nUm momento só seu de relaxamento e paz\n(Modalidade terapêutica, sem toque íntimo)" : "Firm and welcoming touch on back and legs\nRelieves stress and mental fatigue\nA moment of peace just for you\n(Therapeutic mode, no intimate touch)"
+        tag: isPT ? "ALÍVIO DE CARGA" : "LOAD RELIEF",
+        title: isPT ? "Massagem Terapêutica" : "Therapeutic Massage",
+        desc: isPT ? "Para quem carrega o estresse e o peso da rotina. Um respiro para corpo e mente." : "For those carrying the stress of routine. A breather for body and mind.",
+        details: isPT 
+          ? "Foco direto no desmanche de nódulos de tensão (lombar e cervical)\nPressão firme e acolhedora que devolve a mobilidade\nMomento de absoluto desligamento mental\n(Modalidade terapêutica muscular, sem apelo íntimo)" 
+          : "Direct focus on dismantling tension knots\nFirm pressure that restores mobility\nMoment of absolute mental shutdown\n(Therapeutic muscle mode, no intimate appeal)"
       },
       {
         id: 'sensitiva',
         min: 60,
         price: p.sens,
         icon: "sparkles",
-        tag: isPT ? "DESPERTAR SENSORIAL" : "SENSORY AWAKENING",
+        tag: isPT ? "DESCONEXÃO MENTAL" : "MENTAL DISCONNECT",
         title: isPT ? "Tântrica Sensorial" : "Sensory Tantra",
-        desc: isPT ? "Reconecte-se com seu corpo. Toques sutis que arrepiam." : "Reconnect with your body. Subtle touches that thrill.",
-        details: isPT ? "Toques leves para despertar a pele\nSensação de leveza e acolhimento\nFinalização especial (Lingam)\nPara quem busca sentir mais" : "Touches to awaken the skin\nFeeling of lightness and warmth\nSpecial finish (Lingam)\nFor those seeking to feel more"
+        desc: isPT ? "Quando a mente não desliga. Desperte seus sentidos e recupere a presença." : "When the mind won't turn off. Awaken your senses and recover presence.",
+        details: isPT 
+          ? "Estímulos sutis que redirecionam o fluxo de pensamento\nAcolhimento e liberação emocional gradativa\nFinalização focada em liberação de endorfina\nPara quem busca esvaziar a mente sentindo o corpo" 
+          : "Subtle stimuli that redirect thought flow\nWarmth and gradual emotional release\nFinish focused on endorphin release\nFor those seeking to empty the mind by feeling the body"
       },
       {
         id: 'mista',
         min: 60,
         price: p.titan,
         icon: "zap",
-        popular: true, 
-        tag: isPT ? "EXPERIÊNCIA COMPLETA" : "FULL EXPERIENCE",
+        popular: true, // Tag Visual Sênior
+        tag: isPT ? "RESTAURAÇÃO PROFUNDA" : "DEEP RESTORATION",
         title: isPT ? "Fusion Experience" : "Fusion Experience",
-        desc: isPT ? "A união perfeita: relaxamento muscular + energia intensa." : "The perfect union: muscle relaxation + intense energy.",
-        details: isPT ? "Começa tirando a tensão muscular\nEvolui para uma troca de energia corpo a corpo (Massagista de cueca)\nFinalização intensa e libertadora\nA escolha favorita de quem quer tudo" : "Starts removing muscle tension\nEvolves into body-to-body energy exchange\nIntense and liberating finish\nThe favorite choice for those who want it all"
+        desc: isPT ? "A combinação exata: destrava a musculatura densa e revitaliza sua energia." : "The exact combination: unlocks dense musculature and revitalizes energy.",
+        details: isPT 
+          ? "Inicia quebrando a rigidez muscular causada pelo estresse\nTransita para um deslizamento corpo a corpo terapêutico\nProporciona uma descarga orgânica de tensão e energia estagnada\nA jornada ideal para quem precisa de resultados completos" 
+          : "Starts breaking muscle stiffness caused by stress\nTransitions to a therapeutic body-to-body slide\nProvides an organic discharge of tension\nThe ideal journey for those needing complete results"
       },
       {
         id: 'nuru',
         min: 60,
         price: p.nuru,
         icon: "sparkles",
-        tag: isPT ? "ENTREGA & ACOLHIMENTO" : "SURRENDER & WARMTH",
-        title: isPT ? "Massagem Nuru" : "Nuru Massage",
-        desc: isPT ? "Deslizamento corpo a corpo com gel aquecido. O ápice do relaxamento e cuidado." : "Body-to-body slide with heated gel. The peak of relaxation and care.",
-        details: isPT ? "Uso de gel Nuru aquecido que hidrata e relaxa\nContato intenso e acolhedor corpo a corpo\nAlivia o estresse profundo através do calor e fricção\nUma experiência de pura liberdade e conexão" : "Use of heated Nuru gel that hydrates and relaxes\nIntense and welcoming body-to-body contact\nRelieves deep stress through heat and friction\nAn experience of pure freedom and connection"
+        tag: isPT ? "IMERSÃO & CALOR" : "IMMERSION & WARMTH",
+        title: isPT ? "Experiência Nuru" : "Nuru Experience",
+        desc: isPT ? "O nível máximo de acolhimento térmico. Um cuidado que derrete tensões." : "The maximum level of thermal warmth. Care that melts tensions.",
+        details: isPT 
+          ? "Aplicação de gel orgânico aquecido para relaxamento muscular imediato\nContato contínuo corpo a corpo, eliminando focos de estresse\nAumento do fluxo sanguíneo e liberação profunda de toxinas\nUma imersão rara focada em soltar o controle e apenas sentir" 
+          : "Application of heated organic gel for immediate muscle relaxation\nContinuous body-to-body contact, eliminating stress focus\nIncreased blood flow and deep toxin release\nA rare immersion focused on letting go of control"
       }
     ] as ServiceItem[],
     extras: [
-      { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: isPT ? "Aparo (Extra)" : "Trim (Extra)", desc: isPT ? "Adicione aparo a sua massagem 2 partes do corpo" : "Add trim to your massage, 2 parts of body" },
-      { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: isPT ? "+30 Minutos" : "+30 Minutes", desc: isPT ? "Mais tempo para você relaxar" : "More time for you" },
-      { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: isPT ? "Troca Interativa" : "Interactive Touch", desc: isPT ? "Sinta a liberdade de tocar também" : "Feel free to touch too" },
-      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Cheiro bom no ar" : "Essential oils to calm the mind" },
-      { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isPT ? "Pomada Dores" : "Pain Cream", desc: isPT ? "Alivia dores musculares fortes" : "Relieves strong muscle pain" }
+      { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: isPT ? "Extensão de Aparo" : "Trim Extension", desc: isPT ? "Manutenção de duas áreas adicionais" : "Maintenance of two additional areas" },
+      { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: isPT ? "Tempo Estendido" : "Extended Time", desc: isPT ? "+30 min para garantir a descompressão total" : "+30 min to ensure full decompression" },
+      { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: isPT ? "Liberação de Toque" : "Interactive Touch", desc: isPT ? "Liberdade para uma interação orgânica" : "Freedom for a more organic interaction" },
+      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isPT ? "Aromaterapia" : "Aromatherapy", desc: isPT ? "Óleos essenciais para baixar a frequência mental" : "Essential oils to lower mental frequency" },
+      { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isPT ? "Foco Analgésico" : "Pain Focus", desc: isPT ? "Pomada técnica para áreas de dor crônica" : "Technical cream for chronic pain areas" }
     ],
     plans: [
-      { id: 'pack_relax', type: 'pack', title: isPT ? "Pack Relax (4x)" : "Relax Pack (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: isPT ? "4 Sessões Relaxantes" : "4 Relax Sessions", details: isPT ? "Garanta sua paz semanalmente.\nO cuidado constante que você merece." : "Ensure your weekly peace.\nThe constant care you deserve.", tag: isPT ? "MANUTENÇÃO" : "MAINTENANCE", icon: "package" },
-      { id: 'pack_mista', type: 'pack', title: isPT ? "Pack Fusion (3x)" : "Fusion Pack (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: isPT ? "3 Sessões Fusion" : "3 Fusion Sessions", details: isPT ? "Três encontros intensos.\nPara quem precisa escapar da rotina." : "Three intense encounters.\nFor those who need to escape routine.", tag: isPT ? "ESCAPE" : "ESCAPE", icon: "layers" },
-      { id: 'pack_supreme', type: 'pack', title: isPT ? "Pack Supreme (3x)" : "Supreme Pack (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: isPT ? "1 Nuru + 1 Relaxante + 1 Fusion" : "1 Nuru + 1 Relax + 1 Fusion", details: isPT ? "O cuidado máximo com o seu bem-estar.\nTrês momentos de fuga da rotina para você se renovar." : "The maximum care for your well-being.\nThree moments of escape from routine for you to renew yourself.", tag: "VIP", icon: "award" },
-      { id: 'pack_mix_4', type: 'pack', title: isPT ? "Ciclo Completo" : "Full Cycle", price: p.packMix.v, fullPrice: p.packMix.full, savings: p.packMix.save, desc: isPT ? "2 Sensoriais + 2 Fusion" : "2 Sensory + 2 Fusion", details: isPT ? "Explore todas as sensações.\nVariedade para cada momento seu." : "Explore all sensations.\nVariety for your every moment.", tag: "PREMIUM", icon: "star" }
+      { id: 'pack_relax', type: 'pack', title: isPT ? "Ciclo Terapêutico (4x)" : "Therapeutic Cycle (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: isPT ? "4 Encontros de Manutenção" : "4 Maintenance Encounters", details: isPT ? "O estresse não tira férias. Seu corpo também não deveria.\nUm compromisso com a sua saúde física." : "Stress doesn't take vacations. Neither should your body.\nA commitment to your physical health.", tag: isPT ? "PREVENÇÃO" : "PREVENTION", icon: "package" },
+      { id: 'pack_mista', type: 'pack', title: isPT ? "Ciclo Fusion (3x)" : "Fusion Cycle (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: isPT ? "3 Sessões de Desbloqueio" : "3 Unblocking Sessions", details: isPT ? "Para períodos de alta demanda emocional.\nTrês imersões completas para zerar a fadiga mental." : "For periods of high emotional demand.\nThree complete immersions to reset mental fatigue.", tag: isPT ? "FOCO & EQUILÍBRIO" : "FOCUS & BALANCE", icon: "layers" },
+      { id: 'pack_supreme', type: 'pack', title: isPT ? "Jornada Supreme (3x)" : "Supreme Journey (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: isPT ? "A terapia completa das técnicas" : "The complete therapy", details: isPT ? "O resgate absoluto da sua vitalidade.\nUm cronograma (Terapêutica + Fusion + Nuru) desenhado para esgotar tensões extremas." : "The absolute rescue of your vitality.\nA schedule designed to exhaust extreme tensions.", tag: "✦ JORNADA PREMIUM", icon: "award" },
+      { id: 'pack_mix_4', type: 'pack', title: isPT ? "Jornada Completa" : "Full Journey", price: p.packMix.v, fullPrice: p.packMix.full, savings: p.packMix.save, desc: isPT ? "Estímulo e Relaxamento" : "Stimulus and Relaxation", details: isPT ? "Uma exploração cadenciada do seu próprio corpo.\nAlternando o sutil com o intenso." : "A rhythmic exploration of your own body.\nAlternating the subtle with the intense.", tag: "EXCELÊNCIA", icon: "star" }
     ] as ServiceItem[],
     faq: [
-      { q: isPT ? "Onde é o atendimento?" : "Where is the service?", a: isPT ? "Atendo exclusivamente a domicílio (sua residência, hotel ou motel). Não possuo local próprio e não levo maca: a sessão é realizada na sua cama ou sofá, garantindo seu conforto e privacidade total." : "I attend exclusively at your home, hotel or motel. I do not have my own place and I do not bring a massage table: the session is held on your bed or sofa, ensuring your comfort and total privacy." },
-      { q: isPT ? "É seguro e discreto?" : "Is it safe and discreet?", a: isPT ? "Absolutamente. Atendo homens casados, solteiros e pessoas públicas com total sigilo. Ninguém precisa saber do seu momento." : "Absolutely. I attend married men, singles and public figures with total secrecy. No one needs to know about your moment." },
-      { q: isPT ? "Como devo me preparar?" : "How should I prepare?", a: isPT ? "Apenas tome um banho e venha de coração aberto. Se preferir, separe um lençol, mas levo óleos de qualidade que não mancham." : "Just take a shower and come with an open heart. If you prefer, separate a sheet, but I bring quality oils that don't stain." },
-      { q: isPT ? "Tenho vergonha do meu corpo..." : "I'm ashamed of my body...", a: isPT ? "Não tenha. Aqui não há julgamentos, apenas acolhimento. Todos os corpos merecem toque e carinho." : "Don't be. There are no judgments here, only acceptance. All bodies deserve touch and care." }
+      { q: isPT ? "A sessão tem foco profissional?" : "Is the session professionally focused?", a: isPT ? "Totalmente. O atendimento é estruturado para entregar bem-estar, alívio de tensões físicas e descarga de estresse emocional, respeitando rigorosamente os limites do seu corpo." : "Absolutely. The service is structured to deliver well-being, relief from physical tension, and emotional stress discharge, strictly respecting your body's limits." },
+      { q: isPT ? "O sigilo do atendimento é garantido?" : "Is confidentiality guaranteed?", a: isPT ? "Ética é o pilar base do meu trabalho. Atendo pessoas de todas as esferas públicas e privadas sob um pacto de confidencialidade inegociável." : "Ethics is the foundational pillar of my work. I serve people from all public and private spheres under an unnegotiable confidentiality pact." },
+      { q: isPT ? "Como preparo meu ambiente?" : "How should I prepare my space?", a: isPT ? "Você só precisa do seu próprio chuveiro e da sua cama (ou do hotel). Uma ducha morna prévia é a melhor preparação orgânica que você pode oferecer à sua musculatura antes de começarmos." : "You only need your own shower and your bed. A warm shower beforehand is the best organic preparation you can offer your muscles." },
+      { q: isPT ? "Existe uma tolerância para a chegada?" : "Is there a time tolerance?", a: isPT ? "O respeito ao seu tempo e ao tempo dos próximos clientes exige uma tolerância técnica de 15 minutos. Atrasos superiores serão encurtados da sessão original." : "Respect for your time and next clients requires a 15-minute technical tolerance. Delays will be deducted from the session." },
+      { q: isPT ? "Tenho tensões com o formato do meu corpo..." : "I have tensions about my body shape...", a: isPT ? "O ambiente da massagem é uma zona livre de julgamentos estéticos. O foco do toque é puramente terapêutico e acolhedor. O respeito por você vem antes de qualquer técnica." : "The massage environment is an aesthetic judgment-free zone. The focus of the touch is purely therapeutic and welcoming." }
     ],
     rules: isPT ? [
-      { icon: "shower", title: "Higiene & Conforto", description: "Um banho antes prepara seu corpo e alma para o relaxamento que você merece." },
-      { icon: "hand", title: "Respeito Mútuo", description: "Este é um espaço seguro. O respeito é a base da nossa conexão." },
-      { icon: "shield", title: "Sigilo Absoluto", description: "O que acontece na sessão, fica na sessão. Sua privacidade é sagrada aqui." },
-      { icon: "user-check", title: "Sem Julgamentos", description: "Aqui você pode ser você mesmo. Livre de rótulos ou pressões." },
-      { icon: "clock", title: "Seu Tempo", description: "Avisos de cancelamento com 2h de antecedência ajudam a manter a harmonia da agenda." }
+      { icon: "shower", title: "Preparação Física", description: "O banho prévio remove impurezas da rotina e facilita a absorção do relaxamento cutâneo." },
+      { icon: "hand", title: "Limites e Respeito", description: "O conforto mútuo sustenta a qualidade do atendimento. O bom senso guia a sessão." },
+      { icon: "shield", title: "Blindagem de Sigilo", description: "O que compartilhamos no seu espaço, morre no seu espaço. Sua privacidade é absoluta." },
+      { icon: "user-check", title: "Sem Avaliações", description: "Você não está aqui para ser julgado, e sim para ser cuidado e restaurado." },
+      { icon: "clock", title: "Pontualidade Ética", description: "A fluidez da agenda depende do cumprimento dos horários. Avise alterações com 2h de recuo." }
     ] : [
-      { icon: "shower", title: "Hygiene & Comfort", description: "A shower beforehand prepares your body and soul for the relaxation you deserve." },
-      { icon: "hand", title: "Mutual Respect", description: "This is a safe space. Respect is the foundation of our connection." },
-      { icon: "shield", title: "Absolute Privacy", description: "What happens in the session, stays in the session. Your privacy is sacred here." },
-      { icon: "user-check", title: "No Judgments", description: "Here you can be yourself. Free from labels or pressures." },
-      { icon: "clock", title: "Your Time", description: "Cancellation notices 2h in advance help keep the schedule in harmony." }
+      { icon: "shower", title: "Physical Preparation", description: "A prior shower removes routine impurities and facilitates the absorption of skin relaxation." },
+      { icon: "hand", title: "Boundaries and Respect", description: "Mutual comfort sustains service quality. Common sense guides the session." },
+      { icon: "shield", title: "Secrecy Shield", description: "What we share in your space, stays in your space. Your privacy is absolute." },
+      { icon: "user-check", title: "No Evaluations", description: "You are not here to be judged, but to be cared for and restored." },
+      { icon: "clock", title: "Ethical Punctuality", description: "Schedule fluidity depends on keeping time. Notify changes 2 hours in advance." }
     ],
     reviews: generateReviews(isPT),
     text: {
       welcome: isPT ? "Olá," : "Hello,",
-      choose_sub: isPT ? "Como você quer se sentir hoje? Permita-se esse cuidado." : "How do you want to feel today? Allow yourself this care.",
-      level_label: isPT ? "Sua Jornada" : "Your Journey",
-      tab_packs: isPT ? "Pacotes" : "Packages",
-      tab_single: isPT ? "Sessão Avulsa" : "Single Session",
-      book_btn: isPT ? "Reservar" : "Book",
-      next_btn: isPT ? "Continuar" : "Continue",
-      finish_btn: isPT ? "Finalizar Pedido" : "Finish Order",
-      loading: isPT ? "Preparando seu espaço..." : "Preparing your space...",
-      toast_select_item: isPT ? "Selecione o que seu corpo pede" : "Select what your body needs",
-      toast_select_date: isPT ? "Escolha seu momento" : "Choose your moment",
-      toast_fill_name: isPT ? "Como prefere ser chamado?" : "How do you prefer to be called?",
-      toast_fill_addr: isPT ? "Onde levo o relaxamento?" : "Where should I bring relaxation?",
-      toast_fill_hotel: isPT ? "Qual hotel você está?" : "Which hotel are you at?",
-      toast_select_pay: isPT ? "Como prefere acertar?" : "How do you prefer to pay?",
-      toast_accept_terms: isPT ? "Por favor, aceite as regras de convivência" : "Please accept the coexistence rules",
-      toast_coupon_success: isPT ? "Presente aplicado com sucesso!" : "Gift applied successfully!",
-      toast_coupon_invalid: isPT ? "Código inválido ou expirado." : "Invalid or expired coupon.",
-      details_label: isPT ? "O que esperar" : "What to expect",
-      select_time_title: isPT ? "Seu Momento" : "Your Moment",
-      location_title: isPT ? "Onde nos encontramos?" : "Where do we meet?",
-      extras_title: isPT ? "Algo a mais para você?" : "Something more for you?",
-      coupon_section: isPT ? "Seus Presentes" : "Your Gifts",
-      no_coupons: isPT ? "Sem presentes no momento" : "No gifts at the moment",
-      payment_title: isPT ? "Facilidades de Pagamento" : "Payment Options",
-      terms_title: isPT ? "Regras de Convivência" : "Coexistence Rules",
-      success_title: isPT ? "Tudo Pronto!" : "All Set!",
-      success_sub: isPT ? "Seu momento de paz está quase garantido. Envie o resumo para eu confirmar sua reserva." : "Your moment of peace is almost guaranteed. Send the summary so I can confirm your booking.",
-      whatsapp_btn: isPT ? "Confirmar no WhatsApp" : "Confirm on WhatsApp",
-      back_home: isPT ? "Voltar ao Início" : "Back to Home",
-      timer_text: isPT ? "Segurando seu horário" : "Holding your slot",
-      motel_note: isPT ? "Em motéis, garantimos sua privacidade total. A suíte fica por sua conta." : "In motels, we ensure your total privacy. The suite fee is on you.",
-      upgrade_msg: isPT ? "💡 Dica: A Clássica é maravilhosa, mas a Tântrica toca a alma. Que tal experimentar?" : "💡 Tip: The Classic is wonderful, but the Tantra touches the soul. How about trying it?",
-      input_name: isPT ? "Como quer ser chamado?" : "How do you want to be called?",
-      input_addr: isPT ? "Endereço (Rua)" : "Address (Street)",
-      input_num: isPT ? "Número" : "Number",
-      input_district: isPT ? "Bairro" : "District",
-      input_city: isPT ? "Cidade" : "City",
-      input_comp: isPT ? "Complemento (Apto, Bloco)" : "Unit/Apt",
-      input_hotel: isPT ? "Nome do Hotel" : "Hotel Name",
-      input_room: isPT ? "Número do Quarto" : "Room Number",
-      agree_terms: isPT ? "Li e concordo com o sigilo e respeito" : "I read and agree with privacy and respect",
-      install_app: isPT ? "Tenha acesso fácil" : "Easy access",
-      install_desc: isPT ? "Adicione à tela inicial para agendar com privacidade quando quiser" : "Add to home screen to book with privacy whenever you want",
-      faq_title: isPT ? "Dúvidas Comuns" : "Common Questions",
-      reviews_title: isPT ? "Quem já experimentou" : "Who has tried it",
-      empty_date: isPT ? "Selecione um dia acima" : "Select a day above",
-      empty_slots: isPT ? "Agenda cheia neste dia" : "Full schedule this day",
-      total_label: isPT ? "Total" : "Total",
-      subtotal: isPT ? "Valor" : "Value",
-      discount: isPT ? "Desconto" : "Discount",
-      pix_discount: isPT ? "Desconto Pix (3%)" : "Pix Discount (3%)",
-      welcome_popup_title: isPT ? "Seja Bem-vindo!" : "Welcome!",
-      welcome_popup_msg: isPT ? "Fico feliz que você esteja aqui. Para começar nossa conexão com o pé direito, um presente especial." : "I'm happy you're here. To start our connection on the right foot, a special gift.",
-      levelup_popup_title: isPT ? "Você evoluiu!" : "You leveled up!",
-      levelup_popup_msg: isPT ? "Nossa conexão está mais forte. Aproveite seu reconhecimento." : "Our connection is stronger. Enjoy your recognition.",
-      get_coupon: isPT ? "Aceitar Presente" : "Accept Gift",
-      rules_complete: isPT ? "Nossas Regras de Ouro" : "Our Golden Rules",
-      media_discount: isPT ? "Desconto Mídia (1%)" : "Media Discount (1%)",
-      media_title: isPT ? "Autorização de Imagem" : "Image Rights",
-      media_desc: isPT ? "Autorizo uso de fotos/vídeos (sem rosto/partes íntimas) para divulgação responsável." : "I authorize photos/videos (no face/intimate parts) for responsible marketing.",
-      media_bonus: isPT ? "Ganhe 1% de desconto!" : "Get 1% OFF!",
-      uber_notice: isPT ? "Taxa de Deslocamento (Uber): Calculada e cobrada à parte no WhatsApp." : "Transport Fee (Uber): Calculated and charged separately on WhatsApp."
+      choose_sub: isPT ? "O peso da rotina esgota. Qual nível de descompressão seu corpo pede hoje?" : "The weight of routine exhausts. What level of decompression does your body ask for today?",
+      level_label: isPT ? "Nível de Constância" : "Consistency Level",
+      tab_packs: isPT ? "Jornadas de Cuidado" : "Care Journeys",
+      tab_single: isPT ? "Sessão Única" : "Single Session",
+      book_btn: isPT ? "Priorizar Momento" : "Prioritize Moment",
+      next_btn: isPT ? "Avançar Etapa" : "Next Step",
+      finish_btn: isPT ? "Confirmar Cuidado" : "Confirm Care",
+      loading: isPT ? "Preparando o sistema de reservas..." : "Preparing booking system...",
+      toast_select_item: isPT ? "Identifique a modalidade terapêutica desejada" : "Identify the therapeutic modality",
+      toast_select_date: isPT ? "Defina a melhor data e horário para a pausa" : "Set the best date and time for the pause",
+      toast_fill_name: isPT ? "Por favor, insira o nome de registro." : "Please enter your name.",
+      toast_fill_addr: isPT ? "O endereço completo garante a logística correta." : "Complete address ensures correct logistics.",
+      toast_fill_hotel: isPT ? "Identifique o hotel para o acesso corporativo." : "Identify the hotel for corporate access.",
+      toast_select_pay: isPT ? "Defina a modalidade de acerto." : "Define the payment method.",
+      toast_accept_terms: isPT ? "A validação do pacto de respeito é obrigatória." : "Validation of the respect pact is mandatory.",
+      toast_coupon_success: isPT ? "Benefício ativado com sucesso em sua jornada." : "Benefit successfully activated.",
+      toast_coupon_invalid: isPT ? "Código de benefício expirado ou inexistente." : "Benefit code expired or non-existent.",
+      details_label: isPT ? "Análise do Protocolo" : "Protocol Analysis",
+      select_time_title: isPT ? "Definição de Agenda" : "Schedule Definition",
+      location_title: isPT ? "Logística de Encontro" : "Encounter Logistics",
+      extras_title: isPT ? "Adicionais Clínicos e Sensoriais" : "Clinical and Sensory Add-ons",
+      coupon_section: isPT ? "Código de Benefício" : "Benefit Code",
+      no_coupons: isPT ? "Nenhum benefício retido na conta." : "No benefits retained in the account.",
+      payment_title: isPT ? "Liquidação do Honorário" : "Fee Settlement",
+      terms_title: isPT ? "Pacto de Tratamento e Sigilo" : "Treatment and Secrecy Pact",
+      success_title: isPT ? "Protocolo Gerado!" : "Protocol Generated!",
+      success_sub: isPT ? "Seu pedido de reserva está rascunhado. Direcione o sumário ao WhatsApp corporativo para averbação final." : "Your booking request is drafted. Direct the summary to corporate WhatsApp for final confirmation.",
+      whatsapp_btn: isPT ? "Submeter via WhatsApp" : "Submit via WhatsApp",
+      back_home: isPT ? "Retornar ao Painel" : "Return to Dashboard",
+      timer_text: isPT ? "Reserva sistêmica" : "System reservation",
+      motel_note: isPT ? "O deslocamento é garantido. A averbação do leito fica sob encargo do titular da reserva." : "Displacement is guaranteed. Suite booking is the responsibility of the reservation holder.",
+      upgrade_msg: isPT ? "Excelente escolha para alívio estrutural. Caso a tensão seja também mental, sugere-se observar a modalidade Tântrica." : "Excellent choice for structural relief. If tension is also mental, consider the Tantric modality.",
+      input_name: isPT ? "Nome de Identificação" : "Identification Name",
+      input_addr: isPT ? "Endereço Residencial (Rua)" : "Residential Address (Street)",
+      input_num: isPT ? "Número Residencial" : "Number",
+      input_district: isPT ? "Setor / Bairro" : "Sector / District",
+      input_city: isPT ? "Município" : "City",
+      input_comp: isPT ? "Dados Adicionais (Apto/Bloco)" : "Additional Data (Apt/Block)",
+      input_hotel: isPT ? "Hospedagem (Nome)" : "Accommodation (Name)",
+      input_room: isPT ? "Identificação da Suíte" : "Suite Identification",
+      agree_terms: isPT ? "Homologo a compreensão das normas de ética" : "I homologate understanding of the ethical norms",
+      install_app: isPT ? "Acesso Rápido" : "Quick Access",
+      install_desc: isPT ? "Firme o atalho corporativo na página inicial para discrição contínua." : "Fix the corporate shortcut to the home page for continuous discretion.",
+      faq_title: isPT ? "Esclarecimento de Políticas" : "Policy Clarification",
+      reviews_title: isPT ? "Registros de Transformação" : "Records of Transformation",
+      empty_date: isPT ? "Selecione uma janela viável" : "Select a viable window",
+      empty_slots: isPT ? "Grade profissional esgotada nesta data" : "Professional grid depleted on this date",
+      total_label: isPT ? "Custo Efetivo Final" : "Effective Final Cost",
+      subtotal: isPT ? "Base dos Honorários" : "Fee Base",
+      discount: isPT ? "Amortização" : "Amortization",
+      pix_discount: isPT ? "Liquidação Instantânea (PIX)" : "Instant Settlement (PIX)",
+      welcome_popup_title: isPT ? "Bem-vindo ao Autocuidado" : "Welcome to Self-Care",
+      welcome_popup_msg: isPT ? "É um prazer ter você aqui. Priorizar o próprio corpo é o primeiro passo de mudança. Ative seu benefício inaugural para darmos andamento." : "It's a pleasure to have you here. Prioritizing your own body is the first step of change. Activate your inaugural benefit to proceed.",
+      levelup_popup_title: isPT ? "Reconhecimento de Constância!" : "Consistency Recognition!",
+      levelup_popup_msg: isPT ? "Sua adesão ao autocuidado evoluiu as métricas do sistema. Esta é a consolidação de quem prioriza a saúde mental e física." : "Your adherence to self-care evolved the system's metrics. This is the consolidation of someone who prioritizes mental and physical health.",
+      get_coupon: isPT ? "Acoplar Benefício" : "Attach Benefit",
+      rules_complete: isPT ? "Declaração de Conformidade" : "Declaration of Compliance",
+      media_discount: isPT ? "Abatimento de Midia Integrada (1%)" : "Media Integrated Abatement (1%)",
+      media_title: isPT ? "Concessão Visual" : "Visual Concession",
+      media_desc: isPT ? "Autorizo a captura descaracterizada (ausência facial/áreas íntimas) para acervo de portfólio." : "I authorize uncharacterized capture (no facial/intimate areas) for portfolio collection.",
+      media_bonus: isPT ? "Habilitar para 1% de amortização" : "Enable for 1% amortization",
+      uber_notice: isPT ? "Logística (Uber): Indexada diretamente no escopo do WhatsApp." : "Logistics (Uber): Indexed directly in the WhatsApp scope."
     }
   };
 };
@@ -520,10 +553,12 @@ export default function App() {
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [manualCouponInput, setManualCouponInput] = useState(''); 
   
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
   
+  // ordersCount base = 0 aqui, mas será 69 na UI somado com esse 0 para evitar bugs no salvamento.
   const [user, setUser] = useState<UserData>({
     name: '', xp: 0, coupons: [], usedCoupons: [], hasSeenWelcome: false, ordersCount: 0, lastActivity: new Date().toISOString()
   });
@@ -535,67 +570,87 @@ export default function App() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const dateScrollRef = useRef<HTMLDivElement>(null);
   
+  // Title update
   useEffect(() => {
     if (isClient) {
-        document.title = step === 0 ? "Thalyson Massagens - Agende seu Relaxamento" : "Thalyson - Finalizar Reserva";
+        document.title = step === 0 ? "Thalyson Massagens - Protocolo de Relaxamento" : "Thalyson - Confirmação do Cuidado";
         const metaDesc = document.querySelector('meta[name="description"]');
         if (!metaDesc) {
             const meta = document.createElement('meta');
             meta.name = "description";
-            meta.content = "Agende massagens relaxantes, tântricas e depilação no conforto da sua casa ou hotel. Atendimento profissional e discreto.";
+            meta.content = "Atendimento terapêutico e descompressão tântrica focada no alívio severo de estresse. Logística domiciliar ou hoteleira. Agendamento em total sigilo.";
             document.head.appendChild(meta);
         }
     }
   }, [step, isClient]);
 
+  // Init cache and cleanup
   useEffect(() => {
     setIsClient(true);
     cleanupStorage();
   }, []);
   
+  // Safe Storage Loader
   useEffect(() => {
     if (!isClient) return;
+    
+    let loadedUser = { ...user };
+    let loadedBooking = { ...booking };
+    let loadedStep = 0;
+
     try {
       const stored = localStorage.getItem(CONFIG.STORAGE_KEY);
       if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (parsed.user && typeof parsed.user === 'object') {
-            setUser({
-              name: parsed.user.name || '',
-              xp: typeof parsed.user.xp === 'number' ? parsed.user.xp : 0,
-              coupons: Array.isArray(parsed.user.coupons) ? parsed.user.coupons : [],
-              usedCoupons: Array.isArray(parsed.user.usedCoupons) ? parsed.user.usedCoupons : [],
-              hasSeenWelcome: typeof parsed.user.hasSeenWelcome === 'boolean' ? parsed.user.hasSeenWelcome : false,
-              ordersCount: typeof parsed.user.ordersCount === 'number' ? parsed.user.ordersCount : 0,
-              lastActivity: parsed.user.lastActivity || new Date().toISOString()
-            });
+        const parsed = JSON.parse(stored);
+        
+        if (parsed.user && typeof parsed.user === 'object') {
+          loadedUser = {
+            name: parsed.user.name || '',
+            xp: typeof parsed.user.xp === 'number' ? parsed.user.xp : 0,
+            coupons: Array.isArray(parsed.user.coupons) ? parsed.user.coupons : [],
+            usedCoupons: Array.isArray(parsed.user.usedCoupons) ? parsed.user.usedCoupons : [],
+            hasSeenWelcome: typeof parsed.user.hasSeenWelcome === 'boolean' ? parsed.user.hasSeenWelcome : false,
+            ordersCount: typeof parsed.user.ordersCount === 'number' ? parsed.user.ordersCount : 0, // Garante número inteiro real da máquina
+            lastActivity: parsed.user.lastActivity || new Date().toISOString()
+          };
+        }
+        
+        if (parsed.bookingDraft && typeof parsed.bookingDraft === 'object') {
+          const draftDate = parsed.bookingDraft.date ? new Date(parsed.bookingDraft.date) : null;
+          if (draftDate && draftDate > new Date()) {
+            loadedBooking = {
+              ...booking,
+              ...parsed.bookingDraft,
+              mediaAllowed: parsed.bookingDraft.mediaAllowed || false,
+              address: { 
+                street: sanitizeInput(parsed.bookingDraft.address?.street || ''), 
+                number: sanitizeInput(parsed.bookingDraft.address?.number || ''), 
+                district: sanitizeInput(parsed.bookingDraft.address?.district || ''), 
+                city: sanitizeInput(parsed.bookingDraft.address?.city || ''), 
+                comp: sanitizeInput(parsed.bookingDraft.address?.comp || ''), 
+                placeName: sanitizeInput(parsed.bookingDraft.address?.placeName || '') 
+              }
+            };
           }
-          if (parsed.bookingDraft && typeof parsed.bookingDraft === 'object') {
-            const draftDate = new Date(parsed.bookingDraft.date);
-            if (draftDate > new Date()) {
-              setBooking({
-                ...parsed.bookingDraft,
-                mediaAllowed: parsed.bookingDraft.mediaAllowed || false,
-                address: { 
-                  street: sanitizeInput(parsed.bookingDraft.address?.street || ''), 
-                  number: sanitizeInput(parsed.bookingDraft.address?.number || ''), 
-                  district: sanitizeInput(parsed.bookingDraft.address?.district || ''), 
-                  city: sanitizeInput(parsed.bookingDraft.address?.city || ''), 
-                  comp: sanitizeInput(parsed.bookingDraft.address?.comp || ''), 
-                  placeName: sanitizeInput(parsed.bookingDraft.address?.placeName || '') 
-                }
-              });
-            }
-          }
-          if (typeof parsed.step === 'number' && parsed.step >= 0 && parsed.step <= 4) setStep(parsed.step);
-        } catch (e) { localStorage.removeItem(CONFIG.STORAGE_KEY); }
+        }
+        
+        if (typeof parsed.step === 'number' && parsed.step >= 0 && parsed.step <= 4) {
+          loadedStep = parsed.step;
+        }
       }
-    } catch (e) { localStorage.removeItem(CONFIG.STORAGE_KEY); }
+    } catch (e) { 
+      localStorage.removeItem(CONFIG.STORAGE_KEY); 
+    }
+    
+    setUser(loadedUser);
+    setBooking(loadedBooking);
+    setStep(loadedStep);
     setDataLoaded(true);
-    setTimeout(() => setLoading(false), 800);
+    setTimeout(() => setLoading(false), 1200);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient]);
   
+  // Safe Storage Saver
   useEffect(() => {
     if (isClient && dataLoaded) {
       try {
@@ -609,8 +664,12 @@ export default function App() {
           expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
         };
         const serialized = JSON.stringify(saveData);
-        if (serialized.length < CONFIG.MAX_STORAGE_SIZE * 1024) { localStorage.setItem(CONFIG.STORAGE_KEY, serialized); }
-      } catch (e) {}
+        if (serialized.length < CONFIG.MAX_STORAGE_SIZE * 1024) { 
+          localStorage.setItem(CONFIG.STORAGE_KEY, serialized); 
+        }
+      } catch (e) {
+        console.error('Storage error', e);
+      }
     }
   }, [user, booking, step, isClient, dataLoaded]);
   
@@ -621,7 +680,9 @@ export default function App() {
     }
   }, [loading, isClient, user.hasSeenWelcome, dataLoaded, welcomePopup]);
   
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
+  useEffect(() => { 
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  }, [step]);
   
   const addToast = useCallback((msg: string, type: "success" | "error" = "success") => {
     const id = Date.now();
@@ -631,10 +692,21 @@ export default function App() {
   
   const handleSelectItem = useCallback((type: 'single' | 'pack', item: ServiceItem) => {
     setBooking(prev => ({ ...prev, type, item, extras: {}, payment: '', termsAccepted: false, bookingId: `BOOK_${Date.now()}` }));
-    if (item.id === 'relaxante') addToast(DATA.text.upgrade_msg, "success");
+    if (item.id === 'relaxante') addToast(DATA.text.upgrade_msg, "success"); // Changed to success visual to match clean UI
     else addToast(item.title, "success");
-    setTimeout(() => setStep(1), 300);
+    setTimeout(() => setStep(1), 400);
   }, [addToast, DATA.text.upgrade_msg]);
+  
+  const applyManualCoupon = () => {
+    const code = manualCouponInput.toUpperCase().trim();
+    if (code === 'BEMVINDO10' || code === 'THALY10') {
+      setBooking(b => ({ ...b, appliedCoupon: { id: 'manual', val: 10, title: `🛡️ ${code}`, code } }));
+      addToast(T.toast_coupon_success, "success");
+      setManualCouponInput('');
+    } else {
+      addToast(T.toast_coupon_invalid, "error");
+    }
+  };
 
   const daysArray = useMemo(() => {
     const days = []; const today = new Date();
@@ -655,6 +727,7 @@ export default function App() {
     return slots;
   }, [booking.date]);
   
+  // Safe Financial Calculation
   const financials = useMemo(() => {
     if (!booking.item) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0 };
     let sub = booking.item.price;
@@ -676,7 +749,7 @@ export default function App() {
   const estimatedXP = useMemo(() => Math.floor(financials.total * (booking.type === 'pack' ? 0.30 : 0.15)), [financials.total, booking.type]);
   
   const getNextLevelInfo = (currentXP: number) => {
-    if (currentXP >= 800) return { needed: 500 - ((currentXP - 800) % 500), reward: 50, title: "Íntimo Plus" };
+    if (currentXP >= 800) return { needed: 500 - ((currentXP - 800) % 500), reward: 50, title: "Plenitude Alcançada Plus" };
     const nextLevel = DATA.levels.find(l => l.xpNeeded > currentXP);
     return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
   };
@@ -692,20 +765,20 @@ export default function App() {
   const generateWhatsAppMsg = () => {
     const f = financials; const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'pt' ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN) : '';
     const securityHash = btoa(`${f.total}-${dateStr}-${booking.item?.id || ''}-${CONFIG.SECRET_TOKEN}`).substring(0, 8).toUpperCase();
-    let serviceTitle = booking.item?.title || ''; if (booking.type !== 'single' && booking.item?.desc) serviceTitle += ` ${lang === 'pt' ? '(Pacote)' : '(Pack)'}`;
+    let serviceTitle = booking.item?.title || ''; if (booking.type !== 'single' && booking.item?.desc) serviceTitle += ` ${lang === 'pt' ? '(Jornada)' : '(Journey)'}`;
     
     let locTxt = ""; let mapQuery = "";
     if (booking.locationType === 'home') { 
       const fullAddr = `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}`; 
-      locTxt = `🏠 *${lang === 'pt' ? 'Residência' : 'Home'}*\n📍 ${fullAddr}\n📝 ${lang === 'pt' ? 'Comp' : 'Unit'}: ${booking.address.comp || '-'}`; 
+      locTxt = `🏠 *${lang === 'pt' ? 'Residência' : 'Home'}*\n📍 ${fullAddr}\n📝 ${lang === 'pt' ? 'Dados Extras' : 'Unit'}: ${booking.address.comp || '-'}`; 
       mapQuery = fullAddr; 
     }
     else if (booking.locationType === 'motel') { 
-      locTxt = `🏩 *Motel*\n⚠️ (${lang === 'pt' ? 'Local por conta do cliente' : 'Venue fee on client'})`; 
+      locTxt = `🏩 *Motel*\n⚠️ (${lang === 'pt' ? 'Averbação por conta do titular' : 'Venue fee on client'})`; 
     }
     else { 
       const fullAddr = `${booking.address.placeName}, ${booking.address.city}`; 
-      locTxt = `🏨 *Hotel: ${booking.address.placeName}*\n📍 ${booking.address.city}\n🚪 ${lang === 'pt' ? 'Quarto' : 'Room'}: ${booking.address.comp || '-'}`; 
+      locTxt = `🏨 *Hotel: ${booking.address.placeName}*\n📍 ${booking.address.city}\n🚪 ${lang === 'pt' ? 'Suíte' : 'Room'}: ${booking.address.comp || '-'}`; 
       mapQuery = fullAddr; 
     }
     
@@ -715,40 +788,45 @@ export default function App() {
       return `✅ ${ex.label} (+${formatMoney(booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price, lang === 'pt')})`; 
     }).filter(Boolean).join('\n');
     
-    let priceDetails = `💵 *${lang === 'pt' ? 'Base' : 'Base'} (${serviceTitle}):* ${formatMoney(booking.item?.price || 0, lang === 'pt')}`;
-    if (f.disc > 0) priceDetails += `\n📉 *${lang === 'pt' ? 'Cupom' : 'Coupon'} (${booking.appliedCoupon?.code}):* -${formatMoney(f.disc, lang === 'pt')}`;
-    if (f.mediaDisc > 0) priceDetails += `\n📸 *${lang === 'pt' ? 'Mídia (1%)' : 'Media (1%)'}:* -${formatMoney(f.mediaDisc, lang === 'pt')}`;
-    if (f.pixDisc > 0) priceDetails += `\n💸 *Pix (3%):* -${formatMoney(f.pixDisc, lang === 'pt')}`;
-    priceDetails += `\n\n💰 *TOTAL FINAL: ${formatMoney(f.total, lang === 'pt')}*`;
+    let priceDetails = `💵 *${lang === 'pt' ? 'Honorário Base' : 'Base'} (${serviceTitle}):* ${formatMoney(booking.item?.price || 0, lang === 'pt')}`;
+    if (f.disc > 0) priceDetails += `\n📉 *${lang === 'pt' ? 'Amortização' : 'Coupon'} (${booking.appliedCoupon?.code}):* -${formatMoney(f.disc, lang === 'pt')}`;
+    if (f.mediaDisc > 0) priceDetails += `\n📸 *${lang === 'pt' ? 'Mídia Integrada (1%)' : 'Media (1%)'}:* -${formatMoney(f.mediaDisc, lang === 'pt')}`;
+    if (f.pixDisc > 0) priceDetails += `\n💸 *PIX (3%):* -${formatMoney(f.pixDisc, lang === 'pt')}`;
+    priceDetails += `\n\n💰 *CUSTO EFETIVO: ${formatMoney(f.total, lang === 'pt')}*`;
     
     return `
-*${lang === 'pt' ? 'NOVA RESERVA' : 'NEW BOOKING'}* | #${securityHash}
+*${lang === 'pt' ? 'SUBMISSÃO DE PROTOCOLO' : 'NEW BOOKING'}* | #${securityHash}
 ──────────────────
-👤 *${lang === 'pt' ? 'Cliente' : 'Client'}:* ${sanitizeInput(user.name)}
-📅 *${lang === 'pt' ? 'Data' : 'Date'}:* ${dateStr}
-⏰ *${lang === 'pt' ? 'Horário' : 'Time'}:* ${booking.time}
+👤 *${lang === 'pt' ? 'Titular' : 'Client'}:* ${sanitizeInput(user.name)}
+📅 *${lang === 'pt' ? 'Agendamento' : 'Date'}:* ${dateStr}
+⏰ *${lang === 'pt' ? 'Janela de Tempo' : 'Time'}:* ${booking.time}
 
-💆‍♂️ *${lang === 'pt' ? 'SESSÃO' : 'SESSION'}:*
+💆‍♂️ *${lang === 'pt' ? 'PROJETO TERAPÊUTICO' : 'SESSION'}:*
 *${serviceTitle}*
-${extrasList ? `\n➕ *${lang === 'pt' ? 'ADICIONAIS' : 'ADD-ONS'}:*\n${extrasList}` : ''}
+${extrasList ? `\n➕ *${lang === 'pt' ? 'COMPLEMENTOS CLÍNICOS' : 'ADD-ONS'}:*\n${extrasList}` : ''}
 
-📍 *${lang === 'pt' ? 'LOCAL' : 'LOCATION'}:*
+📍 *${lang === 'pt' ? 'DIRETRIZ DE LOCAL' : 'LOCATION'}:*
 ${locTxt}
-${mapQuery ? `🔗 Mapa: https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}` : ''}
+${mapQuery ? `🔗 Rota Fixada: https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}` : ''}
 
-🚗 *${lang === 'pt' ? 'TRANSPORTE (UBER)' : 'TRANSPORT (UBER)'}:*
-*${lang === 'pt' ? 'Valor a combinar à parte' : 'Value to be agreed separately'}*
+🚗 *${lang === 'pt' ? 'TAXA DE MOBILIDADE (UBER)' : 'TRANSPORT (UBER)'}:*
+*${lang === 'pt' ? 'A ser indexada na aprovação' : 'To be agreed separately'}*
 
-💰 *${lang === 'pt' ? 'RESUMO FINANCEIRO' : 'FINANCIAL SUMMARY'}:*
+💰 *${lang === 'pt' ? 'ANÁLISE DE HONORÁRIOS' : 'FINANCIAL SUMMARY'}:*
 ${priceDetails}
 
-💳 *${lang === 'pt' ? 'Pagamento' : 'Payment'}:* ${booking.payment.toUpperCase()}
+💳 *${lang === 'pt' ? 'Modalidade de Acerto' : 'Payment'}:* ${booking.payment.toUpperCase()}
 ──────────────────
-*Aguardando confirmação e valor do Uber...*
+*Sessão condicionada à resposta da equipe de atendimento.*
     `.trim();
   };
 
   const generateWhatsAppLink = () => `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(generateWhatsAppMsg())}`;
+  
+  const copyToClipboard = () => { 
+    navigator.clipboard.writeText(generateWhatsAppMsg()); 
+    addToast(lang === 'pt' ? "Sumário averbado e copiado!" : "Summary copied!", "success"); 
+  };
   
   const isStepValid = () => {
     if (step === 0) return !!booking.item;
@@ -849,6 +927,7 @@ ${priceDetails}
     <>
       <GlobalStyles isDark={isDark} />
       
+      {/* Container de Background Limpo */}
       <div className={`fixed inset-0 z-[-1] pointer-events-none ${isDark ? 'bg-zinc-950' : 'bg-slate-50'}`} aria-hidden="true" />
       
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none px-4 w-full max-w-md">
@@ -866,22 +945,29 @@ ${priceDetails}
         {step !== 4 && (
           <header className="pt-10 pb-8 border-b border-transparent">
             <div className="flex items-start justify-between">
-              <div className="flex flex-col cursor-pointer transition-opacity" onClick={() => setStep(0)}>
+              <div className="flex flex-col cursor-pointer transition-opacity" onClick={() => setStep(0)} title="Voltar ao Início">
                 <h1 className={`text-3xl font-playfair tracking-tight ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                   Thalyson <br className="block md:hidden" /> Massagens
                 </h1>
                 <div className="flex items-center gap-2 text-[10px] text-zinc-500 uppercase tracking-widest mt-3 font-medium font-inter">
                   <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-zinc-500"></span></span>
-                  {69 + user.ordersCount} Sessões Realizadas
+                  {/* Corrigido o Bug do Contador -> soma base fake com reais */}
+                  {69 + user.ordersCount} Vidas Reestruturadas
                 </div>
               </div>
               <div className="flex items-center gap-4">
+                {step > 0 && (
+                  <button onClick={() => setStep(0)} className={`hidden md:flex items-center gap-2 text-xs font-semibold uppercase tracking-widest transition-colors ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-700'}`}>
+                    Painel Central
+                  </button>
+                )}
                 <button onClick={() => setMenuOpen(true)} className={`w-12 h-12 flex items-center justify-center rounded-full transition-all border ${isDark ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
                    <Icon name="menu" size={20} />
                 </button>
               </div>
             </div>
             
+            {/* Indicador de Progresso (UX Limpa) */}
             {step > 0 && step < 4 && (
               <div className="mt-12 flex items-center justify-between gap-4 max-w-sm mx-auto">
                 {[1, 2, 3].map(i => (
@@ -967,7 +1053,7 @@ ${priceDetails}
                         <div className="text-right">
                           {s.fullPrice && (
                             <span className={`text-[10px] block mb-1 font-inter uppercase tracking-widest ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
-                              De: <span className="line-through">{formatMoney(s.fullPrice, isPT)}</span>
+                              Base: <span className="line-through">{formatMoney(s.fullPrice, isPT)}</span>
                             </span>
                           )}
                           <span className={`text-2xl font-playfair font-medium ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
@@ -975,7 +1061,7 @@ ${priceDetails}
                           </span>
                           {s.savings && (
                             <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full block mt-2 border ${isDark ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>
-                              ECONOMIZE {formatMoney(s.savings, isPT)}
+                              BENEFÍCIO: {formatMoney(s.savings, isPT)}
                             </span>
                           )}
                         </div>
@@ -1006,6 +1092,7 @@ ${priceDetails}
                 ))}
               </div>
               
+              {/* Depoimentos */}
               <div className="py-16 relative">
                 <div className="flex items-center justify-between mb-10 px-2">
                   <h3 className={`text-2xl font-playfair ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
@@ -1025,6 +1112,7 @@ ${priceDetails}
                 </div>
               </div>
               
+              {/* FAQ Sênior */}
               <div className="max-w-3xl mx-auto py-16">
                 <h3 className={`text-2xl font-playfair text-center mb-10 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                   {T.faq_title}
@@ -1124,7 +1212,7 @@ ${priceDetails}
                 {booking.locationType === 'home' && (
                   <>
                     <div className="grid grid-cols-[1fr_100px] gap-4">
-                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder={isPT ? "Rua / Avenida" : "Street"} hasError={!booking.address.street} />
+                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder={isPT ? "Avenida / Rua" : "Street"} hasError={!booking.address.street} />
                       <InputField isDark={isDark} label={T.input_num} value={booking.address.number} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))} placeholder="Nº" type="tel" hasError={!booking.address.number} />
                     </div>
                     <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder={isPT ? "Bairro" : "District"} hasError={!booking.address.district} />
@@ -1137,7 +1225,7 @@ ${priceDetails}
                 
                 {booking.locationType === 'hotel' && (
                   <>
-                    <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder={isPT ? "Nome do hotel" : "Hotel name"} hasError={!booking.address.placeName} />
+                    <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder={isPT ? "Nome da Instalação" : "Hotel name"} hasError={!booking.address.placeName} />
                     <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={isPT ? "Cidade" : "City"} hasError={!booking.address.city} />
                     <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Nº do Quarto" />
                   </>
@@ -1190,7 +1278,7 @@ ${priceDetails}
               <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-10">
                 <div className={`p-8 md:p-10 rounded-[2.5rem] border ${isDark ? 'bg-zinc-900/20 border-zinc-800/60' : 'bg-white border-slate-100 shadow-sm'}`}>
                   <h3 className={`text-2xl font-playfair mb-8 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
-                    Resumo do Pedido
+                    Análise do Protocolo
                   </h3>
                   <div className="space-y-8">
                     <div className="flex justify-between items-start">
@@ -1214,7 +1302,7 @@ ${priceDetails}
                     {Object.keys(booking.extras).filter(k => booking.extras[k]).length > 0 && (
                       <div className={`pt-8 border-t ${isDark ? 'border-zinc-800/50' : 'border-slate-100'}`}>
                         <p className={`text-[10px] uppercase font-bold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
-                          ADICIONAIS
+                          EXTENSÕES CLÍNICAS
                         </p>
                         <div className="space-y-3">
                           {Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => {
@@ -1241,7 +1329,7 @@ ${priceDetails}
                       
                       {financials.disc > 0 && (
                         <div className="flex justify-between mb-3 text-emerald-500/80">
-                          <span className="text-sm font-light">{T.discount} ({booking.appliedCoupon?.code})</span>
+                          <span className="text-sm font-light">{T.discount} ({booking.appliedCoupon?.title})</span>
                           <span className="text-sm font-medium">- {formatMoney(financials.disc, isPT)}</span>
                         </div>
                       )}
@@ -1287,8 +1375,8 @@ ${priceDetails}
                     </h3>
                     
                     <div className="flex gap-2 mb-5">
-                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Código do Cupom" className={`flex-1 h-12 px-4 rounded-xl text-sm outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-700' : 'border-slate-300 focus:border-slate-400 text-slate-900 placeholder:text-slate-400'}`} />
-                      <button onClick={applyManualCoupon} className={`px-5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-slate-900 text-white hover:bg-slate-800'}`}>Aplicar</button>
+                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Validação Técnica" className={`flex-1 h-12 px-4 rounded-xl text-sm outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-700' : 'border-slate-300 focus:border-slate-400 text-slate-900 placeholder:text-slate-400'}`} />
+                      <button onClick={applyManualCoupon} className={`px-5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-slate-900 text-white hover:bg-slate-800'}`}>Ativar</button>
                     </div>
 
                     {user.coupons.length > 0 && (
@@ -1301,14 +1389,28 @@ ${priceDetails}
                       </div>
                     )}
                   </div>
+
+                  <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-zinc-900/20 border-zinc-800/60' : 'bg-white border-slate-100 shadow-sm'}`}>
+                      <div className="flex items-start gap-4">
+                        <div className={`mt-0.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={20} /></div>
+                        <div className="flex-1">
+                           <h3 className={`text-lg font-playfair mb-2 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.media_title}</h3>
+                           <p className={`text-xs font-light leading-relaxed mb-5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.media_desc}</p>
+                           <button onClick={() => setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed }))} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all text-xs font-bold uppercase tracking-widest ${booking.mediaAllowed ? isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-slate-100 border-slate-200 text-slate-800' : isDark ? 'bg-transparent border-zinc-800 text-zinc-500 hover:border-zinc-700' : 'bg-transparent border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                              <span>{booking.mediaAllowed ? 'Concedido' : 'Reter Autorização'}</span>
+                              {booking.mediaAllowed ? <div className="flex items-center gap-2"><span className={`text-[9px] px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-200 text-slate-600'}`}>-1%</span><Icon name="check" size={14} /></div> : <span className={`text-[9px] ${isDark ? 'text-zinc-400' : 'text-slate-400'}`}>{T.media_bonus}</span>}
+                           </button>
+                        </div>
+                      </div>
+                  </div>
                   
                   <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-zinc-900/20 border-zinc-800/60' : 'bg-white border-slate-100 shadow-sm'}`}>
                     <h3 className={`text-lg font-playfair mb-5 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.payment_title}</h3>
                     <div className="space-y-3">
                       {[
-                        { id: 'pix', label: 'Pix (3% OFF)', icon: 'smartphone' },
+                        { id: 'pix', label: 'Pix (3% de Amortização)', icon: 'smartphone' },
                         { id: 'card', label: isPT ? 'Cartão' : 'Card', icon: 'credit-card' },
-                        { id: 'money', label: isPT ? 'Dinheiro' : 'Cash', icon: 'banknote' }
+                        { id: 'money', label: isPT ? 'Espécie' : 'Cash', icon: 'banknote' }
                       ].map(p => (
                         <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))} className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${booking.payment === p.id ? isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-slate-100 border-slate-200 text-slate-800' : isDark ? 'bg-transparent border-zinc-800 text-zinc-500 hover:border-zinc-700' : 'bg-transparent border-slate-200 text-slate-500 hover:border-slate-300'}`}>
                           <Icon name={p.icon} size={20} />
@@ -1317,6 +1419,7 @@ ${priceDetails}
                         </button>
                       ))}
                     </div>
+                    <p className={`text-[10px] text-center mt-5 font-light flex items-center justify-center gap-1.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="shield" size={12} /> Exigência financeira exclusiva ao final da sessão.</p>
                   </div>
                   
                   <div onClick={() => setTermsOpen(true)} className={`flex items-center justify-between p-6 rounded-[2rem] border cursor-pointer transition-all ${booking.termsAccepted ? isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-100 border-slate-200' : isDark ? 'bg-zinc-900/20 border-zinc-800/60 hover:border-zinc-700' : 'bg-white border-slate-100 hover:border-slate-200 shadow-sm'}`}>
@@ -1324,7 +1427,7 @@ ${priceDetails}
                       <div className={`${booking.termsAccepted ? isDark ? 'text-zinc-300' : 'text-slate-700' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="shield" size={20} /></div>
                       <div>
                         <span className={`text-sm font-medium block mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.terms_title}</span>
-                        <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Regras e Acordos</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Revisão do código de ética</span>
                       </div>
                     </div>
                     <div onClick={(e) => { e.stopPropagation(); setBooking(b => ({ ...b, termsAccepted: !b.termsAccepted })); }} className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${booking.termsAccepted ? isDark ? 'bg-zinc-200 border-zinc-200 text-zinc-900' : 'bg-slate-900 border-slate-900 text-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
@@ -1346,6 +1449,7 @@ ${priceDetails}
               
               <div className="flex flex-col gap-4 w-full">
                 <Button variant="whatsapp" size="lg" full icon="message" onClick={() => window.open(generateWhatsAppLink(), '_blank')}>{T.whatsapp_btn}</Button>
+                <Button variant="secondary" size="lg" full icon="copy" onClick={copyToClipboard}>Copiar Rascunho Clínico</Button>
                 <button onClick={() => { setStep(0); setBooking({ ...booking, item: null, type: 'single', termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`mt-4 text-[10px] font-bold uppercase tracking-widest transition-colors ${isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-slate-400 hover:text-slate-600'}`}>
                   {T.back_home}
                 </button>
@@ -1355,7 +1459,7 @@ ${priceDetails}
         </div>
       </main>
       
-      {/* Navegação Inferior Despoluída */}
+      {/* Footer Navigation Clean com botão CANCELAR (VOLTAR PARA INÍCIO) */}
       {step > 0 && step < 4 && booking.item && (
         <nav className="fixed bottom-0 left-0 right-0 p-4 md:p-8 z-40 animate-fade-in pointer-events-none">
           <div className={`max-w-3xl mx-auto rounded-[2rem] p-4 border backdrop-blur-xl pointer-events-auto flex justify-between items-center transition-all ${isDark ? 'bg-zinc-950/80 border-zinc-800/50' : 'bg-white/80 border-slate-200/50 shadow-xl shadow-slate-200/20'}`}>
@@ -1368,13 +1472,18 @@ ${priceDetails}
               <p className={`text-lg font-playfair font-medium ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{step === 3 ? formatMoney(financials.total, isPT) : formatMoney(financials.sub, isPT)}</p>
             </div>
             
-            <button onClick={handleNextStep} disabled={!isStepValid()} className={`h-12 px-6 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'bg-zinc-200 text-zinc-900 hover:bg-white' : 'bg-slate-900 text-white hover:bg-black'}`}>
+            <button 
+              onClick={handleNextStep} 
+              disabled={!isStepValid()}
+              className={`h-12 px-6 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'bg-zinc-200 text-zinc-900 hover:bg-white' : 'bg-slate-900 text-white hover:bg-black'}`}
+            >
               {step === 3 ? T.finish_btn : T.next_btn} <Icon name="chevron-right" size={16} />
             </button>
           </div>
         </nav>
       )}
       
+      {/* Modais */}
       {termsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
           <div className={`relative w-full max-w-xl rounded-[2.5rem] p-8 md:p-10 flex flex-col border ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100 shadow-2xl'}`}>
@@ -1397,10 +1506,10 @@ ${priceDetails}
             <h3 className={`text-2xl font-playfair mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
             <p className={`text-sm font-light leading-relaxed mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.welcome_popup_msg}</p>
             <div className={`p-5 rounded-2xl border mb-8 ${isDark ? 'bg-zinc-900/50 border-zinc-800/50' : 'bg-slate-50 border-slate-100'}`}>
-              <p className={`text-[10px] font-bold uppercase tracking-widest mb-2 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>CUPOM</p>
+              <p className={`text-[10px] font-bold uppercase tracking-widest mb-2 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>CUPOM INAUGURAL</p>
               <p className={`text-2xl font-playfair tracking-wide ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>BEMVINDO10</p>
             </div>
-            <button onClick={() => { setWelcomePopup(false); setUser(u => ({ ...u, hasSeenWelcome: true })); const welcomeCoupon = { id: 'welcome', val: 10, title: '🎁 BEMVINDO10', code: 'BEMVINDO10' }; setBooking(b => ({ ...b, appliedCoupon: welcomeCoupon })); setUser(prev => ({ ...prev, coupons: [...prev.coupons, welcomeCoupon] })); addToast(T.toast_coupon_success, "success"); }} className={`w-full h-14 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all ${isDark ? 'bg-zinc-200 text-zinc-900 hover:bg-white' : 'bg-slate-900 text-white hover:bg-black'}`}>
+            <button onClick={() => { setWelcomePopup(false); setUser(u => ({ ...u, hasSeenWelcome: true })); const welcomeCoupon = { id: 'welcome', val: 10, title: '🛡️ BEMVINDO10', code: 'BEMVINDO10' }; setBooking(b => ({ ...b, appliedCoupon: welcomeCoupon })); setUser(prev => ({ ...prev, coupons: [...prev.coupons, welcomeCoupon] })); addToast(T.toast_coupon_success, "success"); }} className={`w-full h-14 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all ${isDark ? 'bg-zinc-200 text-zinc-900 hover:bg-white' : 'bg-slate-900 text-white hover:bg-black'}`}>
               {T.get_coupon}
             </button>
           </div>
@@ -1409,13 +1518,12 @@ ${priceDetails}
       
       {levelUpPopup && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-sm rounded-[2.5rem] p-10 text-center border ${isDark ? 'bg-zinc-950 border-amber-500/20' : 'bg-white border-slate-100 shadow-2xl'}`}>
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[2.5rem] pointer-events-none"><div className="absolute -top-24 -right-24 w-64 h-64 bg-amber-500/20 blur-3xl rounded-full" /></div>
-            <div className="w-20 h-20 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-amber-500/40 animate-bounce text-white"><Icon name="trophy" size={32} /></div>
-            <h3 className={`text-3xl font-playfair mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
+          <div className={`relative w-full max-w-sm rounded-[2.5rem] p-10 text-center border ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100 shadow-2xl'}`}>
+            <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-8 border ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}><Icon name="trophy" size={32} /></div>
+            <h3 className={`text-2xl font-playfair mb-4 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
             <p className={`text-sm font-light leading-relaxed mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.levelup_popup_msg}</p>
             <button onClick={() => setLevelUpPopup(false)} className={`w-full h-14 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all ${isDark ? 'bg-zinc-200 text-zinc-900 hover:bg-white' : 'bg-slate-900 text-white hover:bg-black'}`}>
-              Uhuul!
+              Confirmar Reconhecimento
             </button>
           </div>
         </div>
