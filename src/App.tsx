@@ -7,7 +7,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v26_premium', // Atualizado para limpar cache e aplicar o loop
+  STORAGE_KEY: '@thaly_app_v24_premium', // <- VOLTAMOS PARA A GAVETA ORIGINAL
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
