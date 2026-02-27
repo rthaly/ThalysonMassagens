@@ -374,7 +374,7 @@ const getData = (lang: string) => {
         title: isPT ? "Massagem Clássica" : "Classic Massage",
         desc: isPT ? "Costas travadas e rotina pesada? Um alívio profundo para curar o corpo e a mente." : "For those carrying the world's weight. Deep relaxation.",
         details: isPT 
-          ? "Uso de rolos de madeira para soltar a musculatura\nToques suaves e relaxantes com as mãos\nFoco intensivo na lombar, ombros e pescoço\nMomento terapêutico para zerar a fadiga do corpo" 
+          ? "Uso de rolos de madeira para soltar a musculatura\nToques suaves e relaxantes com as mãos\nFoco no corpo todo, costas, braços, mãos, pernas e pés\nMomento terapêutico para zerar a fadiga do corpo" 
           : "Firm and welcoming touch on back and legs\nRelieves stress and mental fatigue\nA moment of peace just for you"
       },
       {
@@ -399,7 +399,7 @@ const getData = (lang: string) => {
         title: isPT ? "Experiência Fusion" : "Fusion Experience",
         desc: isPT ? "Primeiro curamos suas dores, depois guiamos seu corpo a um estado de êxtase e gozo profundo." : "The perfect union: muscle relaxation + intense energy.",
         details: isPT 
-          ? "Inicia quebrando a rigidez das costas e ombros travados\nContato com a barba pelo corpo despertando novas sensações\nToque sensitivo transita para um toque envolvente corpo a corpo\nCulmina em uma liberação orgânica de toda a tensão" 
+          ? "Inicia quebrando a rigidez do corpo todo com a relaxante \nContato com a barba pelo corpo despertando novas sensações\nToque sensitivo transita para um toque envolvente corpo a corpo (Massagista de cueca) \nCulmina em uma liberação orgânica de toda a tensão" 
           : "Starts removing muscle tension\nEvolves into body-to-body energy exchange\nIntense and liberating finish"
       },
       {
