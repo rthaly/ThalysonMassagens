@@ -7,7 +7,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v24_premium', 
+  STORAGE_KEY: '@thaly_app_v25_premium', 
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -362,7 +362,7 @@ const getData = (lang: string) => {
         title: isPT ? "Aparo Corporal" : "Body Trimming",
         desc: isPT ? "Sinta-se leve e limpo. A manutenção estética é o primeiro passo para o conforto." : "Hygiene and aesthetics in day.",
         details: isPT 
-          ? "Aparo uniforme com equipamento profissional\nFoco no peito, costas, abdômen e pernas\nAmbiente privado com máximo acolhimento"
+          ? "Aparo uniforme com equipamento profissional\nFoco no peito, costas, abdômen e pernas\nNo conforto e privacidade do seu local"
           : "Full body trimming with machine\nChest, legs, arms, and back"
       },
       {
@@ -371,10 +371,10 @@ const getData = (lang: string) => {
         price: p.relax,
         icon: "user-check",
         tag: isPT ? "ALÍVIO IMEDIATO" : "PAIN RELIEF",
-        title: isPT ? "Descompressão Profunda" : "Classic Massage",
+        title: isPT ? "Massagem Clássica" : "Classic Massage",
         desc: isPT ? "Costas travadas e rotina pesada? Um alívio profundo para curar o corpo e a mente." : "For those carrying the world's weight. Deep relaxation.",
         details: isPT 
-          ? "Mapeamento minucioso para desfazer nódulos de tensão\nFoco intensivo na lombar, ombros e pescoço\nToque firme e acolhedor que devolve sua mobilidade\nMomento terapêutico para zerar a fadiga do seu corpo" 
+          ? "Uso de rolos de madeira para soltar a musculatura\nToques suaves e relaxantes com as mãos\nFoco intensivo na lombar, ombros e pescoço\nMomento terapêutico para zerar a fadiga do corpo" 
           : "Firm and welcoming touch on back and legs\nRelieves stress and mental fatigue\nA moment of peace just for you"
       },
       {
@@ -383,7 +383,7 @@ const getData = (lang: string) => {
         price: p.sens,
         icon: "sparkles",
         tag: isPT ? "DESPERTAR SENSORIAL" : "SENSORY AWAKENING",
-        title: isPT ? "Jornada Sensorial" : "Sensory Tantra",
+        title: isPT ? "Massagem Sensorial" : "Sensory Tantra",
         desc: isPT ? "Quando sua mente não desliga. Desperte a sensibilidade e permita-se chegar ao clímax do relaxamento." : "Reconnect with your body. Subtle touches that thrill.",
         details: isPT 
           ? "Toques sutis que tiram o foco dos pensamentos\nCondução fluida para um estado de entrega absoluta\nFinalização focada em uma intensa descarga de prazer\nPara quem precisa esvaziar a mente sentindo o próprio corpo" 
@@ -399,7 +399,7 @@ const getData = (lang: string) => {
         title: isPT ? "Experiência Fusion" : "Fusion Experience",
         desc: isPT ? "Primeiro curamos suas dores, depois guiamos seu corpo a um estado de êxtase e gozo profundo." : "The perfect union: muscle relaxation + intense energy.",
         details: isPT 
-          ? "Inicia quebrando a rigidez das costas e ombros travados\nTransita para um toque envolvente corpo a corpo\nCulmina em uma liberação orgânica de toda a tensão\nA jornada perfeita para sair flutuando de satisfação" 
+          ? "Inicia quebrando a rigidez das costas e ombros travados\nContato com a barba pelo corpo despertando novas sensações\nToque sensitivo transita para um toque envolvente corpo a corpo\nCulmina em uma liberação orgânica de toda a tensão" 
           : "Starts removing muscle tension\nEvolves into body-to-body energy exchange\nIntense and liberating finish"
       },
       {
@@ -408,10 +408,10 @@ const getData = (lang: string) => {
         price: p.nuru,
         icon: "sparkles",
         tag: isPT ? "ENTREGA & CALOR" : "SURRENDER & WARMTH",
-        title: isPT ? "Imersão Nuru" : "Nuru Massage",
+        title: isPT ? "Massagem Nuru" : "Nuru Massage",
         desc: isPT ? "Ajoelhe-se diante do prazer. Calor orgânico e contato direto que derretem o estresse até a última gota." : "Body-to-body slide with heated gel. The peak of relaxation and care.",
         details: isPT 
-          ? "Aplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA imersão mais profunda para o seu gozo físico e mental\nFoco em soltar todo o controle e apenas receber o toque" 
+          ? "Vivência de entrega total com ambos completamente nus\nAplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA imersão mais profunda para o seu gozo físico e mental" 
           : "Use of heated Nuru gel that hydrates and relaxes\nIntense and welcoming body-to-body contact\nRelieves deep stress through heat and friction"
       }
     ] as ServiceItem[],
@@ -486,7 +486,7 @@ const getData = (lang: string) => {
       discount: "Seu Presente",
       pix_discount: "Benefício Pix (3%)",
       welcome_popup_title: "Seja muito bem-vindo!",
-      welcome_popup_msg: "Fico feliz que você decidiu tirar um tempo para se cuidar e sentir prazer. A maioria dos homens esquece de si mesmo. Aqui está um presente para nossa primeira vez.",
+      welcome_popup_msg: "Fico feliz que você decidiu tirar um tempo para se cuidar e sentir prazer no conforto do seu local. A maioria dos homens esquece de si mesmo. Aqui está um presente para nossa primeira vez.",
       levelup_popup_title: "Evolução Alcançada!",
       levelup_popup_msg: "Sua constância gerou recompensas. Acabei de liberar um novo benefício exclusivo para o seu próximo agendamento.",
       get_coupon: "Resgatar Meu Presente",
@@ -498,7 +498,7 @@ const getData = (lang: string) => {
       uber_notice: "Deslocamento: Como vou até você cuidar do seu corpo, uma taxa de Uber será calculada e confirmada na nossa conversa do WhatsApp, ok?",
       motel_note: "Um ambiente para sua entrega absoluta. A escolha, reserva e os custos do local ficam por sua conta, o prazer e o relaxamento são minha missão."
     },
-    reviews: generateReviews(isPT) // <-- CORREÇÃO CRÍTICA DO BUG DE TELA BRANCA
+    reviews: generateReviews(isPT)
   };
 };
 
@@ -523,8 +523,9 @@ export default function App() {
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
   
+  // INICIALIZADO EM 92 SESSÕES CONFORME SOLICITADO
   const [user, setUser] = useState<UserData>({
-    name: '', xp: 0, coupons: [], usedCoupons: [], hasSeenWelcome: false, ordersCount: 142, lastActivity: new Date().toISOString()
+    name: '', xp: 0, coupons: [], usedCoupons: [], hasSeenWelcome: false, ordersCount: 92, lastActivity: new Date().toISOString()
   });
   
   const [booking, setBooking] = useState<BookingData>({
@@ -534,7 +535,6 @@ export default function App() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const dateScrollRef = useRef<HTMLDivElement>(null);
   
-  // Hydration Fix & Metadata
   useEffect(() => {
     setIsClient(true);
     cleanupStorage();
@@ -566,7 +566,8 @@ export default function App() {
             coupons: Array.isArray(parsed.user.coupons) ? parsed.user.coupons : [],
             usedCoupons: Array.isArray(parsed.user.usedCoupons) ? parsed.user.usedCoupons : [],
             hasSeenWelcome: typeof parsed.user.hasSeenWelcome === 'boolean' ? parsed.user.hasSeenWelcome : false,
-            ordersCount: typeof parsed.user.ordersCount === 'number' ? Math.max(parsed.user.ordersCount, 142) : 142,
+            // Mantém no mínimo 92 se por acaso perder o cache
+            ordersCount: typeof parsed.user.ordersCount === 'number' ? Math.max(parsed.user.ordersCount, 92) : 92,
             lastActivity: parsed.user.lastActivity || new Date().toISOString()
           };
         }
@@ -839,7 +840,8 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
       }
     });
     
-    const newOrdersCount = (user.ordersCount || 142) + 1;
+    // O CONTADOR FUNCIONA EXATAMENTE AQUI, NO FECHAMENTO E CLIQUE DO BOTÃO DO WHATSAPP
+    const newOrdersCount = (user.ordersCount || 92) + 1;
     
     setUser(prev => ({ 
       ...prev, 
@@ -855,6 +857,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
       setTimeout(() => addToast(`${T.levelup_popup_title} ${newLevelTitle}!`, "success"), 500); 
     }
     
+    // Abre o link do WhatsApp para fechar o agendamento
     window.open(generateWhatsAppLink(), '_blank');
     setStep(4);
   };
@@ -925,7 +928,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                 </h1>
                 <div className="flex items-center gap-2 text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest mt-2 md:mt-3 font-bold">
                   <span className="relative flex h-2 w-2 md:h-2.5 md:w-2.5 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-blue-500"></span></span>
-                  Mais de {user.ordersCount || 142} tensões resolvidas
+                  Mais de {user.ordersCount || 92} tensões resolvidas
                 </div>
               </div>
               <div className="flex items-center gap-4 shrink-0">
