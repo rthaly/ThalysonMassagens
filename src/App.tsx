@@ -211,7 +211,6 @@ const InputField = memo(({ label, value, onChange, placeholder, icon, type = "te
   </div>
 ));
 
-// Avaliações: Refatorado para altura 100% igual e respiro elegante
 const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
   <article className={`w-full h-full flex flex-col p-6 md:p-8 rounded-3xl transition-all duration-300 border gap-5 ${isDark ? 'bg-zinc-900/30 border-zinc-800/80 hover:bg-zinc-900/60' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}`}>
     <div className="flex justify-between items-start">
@@ -301,7 +300,6 @@ const cleanupStorage = () => {
   } catch (e) { console.error('Storage cleanup error:', e); } 
 };
 
-// Avaliações baseadas apenas em prazer, entrega e relaxamento
 const generateReviews = (isPT: boolean): Review[] => {
   const reviews = [
     { n: "Gustavo", loc: "Bela Vista - SP", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões do mês. A experiência em casa foi incrível. Ele consegue deixar a gente completamente relaxado, as mãos dele tem uma técnica sem igual. O alívio foi imediato, levantei parecendo 10kg mais leve. Quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax. The experience at home was incredible. The relief was immediate, felt 10kg lighter.", s: 5 },
@@ -326,7 +324,6 @@ const getData = (lang: string) => {
   const isPT = lang === 'pt';
   const USD_RATE = 5.75;
 
-  // Exatos valores solicitados (107, 157, 177, 207, 317)
   const getPrice = (brl: number) => isPT ? brl : Math.round(brl / USD_RATE);
 
   const p = {
@@ -500,7 +497,8 @@ const getData = (lang: string) => {
       media_bonus: "Liberar para ganhar 1% OFF",
       uber_notice: "Deslocamento: Como vou até você cuidar do seu corpo, uma taxa de Uber será calculada e confirmada na nossa conversa do WhatsApp, ok?",
       motel_note: "Um ambiente para sua entrega absoluta. A escolha, reserva e os custos do local ficam por sua conta, o prazer e o relaxamento são minha missão."
-    }
+    },
+    reviews: generateReviews(isPT) // <-- CORREÇÃO CRÍTICA DO BUG DE TELA BRANCA
   };
 };
 
