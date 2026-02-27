@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 
 // ==================================================================================
-// 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS (PERFORMANCE)
+// 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS (PERFORMANCE & SEGURANÇA)
 // ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v25_mobile_first', 
+  STORAGE_KEY: '@thaly_app_v24_premium', 
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
-  SECRET_TOKEN: 'THALY_SECURE_V8',
+  SECRET_TOKEN: 'THALY_SECURE_V7',
   START_HOUR: 9,
   END_HOUR: 20,
   MAX_STORAGE_SIZE: 5000 
@@ -155,9 +155,9 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, toggleLang, lang,
   return (
     <>
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} role="presentation" />
-      <aside className={`fixed top-0 right-0 h-full w-[85%] max-w-sm z-[70] p-6 shadow-2xl animate-slide-in flex flex-col ${isDark ? 'bg-zinc-950 text-white border-l border-zinc-800/50' : 'bg-white text-slate-900 border-l border-slate-100'}`}>
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-playfair font-medium">Menu</h2>
+      <aside className={`fixed top-0 right-0 h-full w-[85%] sm:w-[75%] max-w-sm z-[70] p-6 sm:p-8 md:p-10 shadow-2xl animate-slide-in flex flex-col ${isDark ? 'bg-zinc-950 text-white border-l border-zinc-800/50' : 'bg-white text-slate-900 border-l border-slate-100'}`}>
+        <div className="flex justify-between items-center mb-10 md:mb-12">
+          <h2 className="text-2xl font-playfair font-medium">Menu Central</h2>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-zinc-500/10 transition-colors" aria-label="Fechar menu"><Icon name="x" size={24} /></button>
         </div>
         
@@ -301,7 +301,7 @@ const cleanupStorage = () => {
   } catch (e) { console.error('Storage cleanup error:', e); } 
 };
 
-// Avaliações baseadas apenas em prazer, entrega e relaxamento (Sem "sigilo")
+// Avaliações baseadas apenas em prazer, entrega e relaxamento
 const generateReviews = (isPT: boolean): Review[] => {
   const reviews = [
     { n: "Gustavo", loc: "Bela Vista - SP", t: isPT ? "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões do mês. A experiência em casa foi incrível. Ele consegue deixar a gente completamente relaxado, as mãos dele tem uma técnica sem igual. O alívio foi imediato, levantei parecendo 10kg mais leve. Quero de novo." : "Thalyson arrived at the exact right time, when I needed to relax. The experience at home was incredible. The relief was immediate, felt 10kg lighter.", s: 5 },
@@ -324,10 +324,9 @@ const generateReviews = (isPT: boolean): Review[] => {
 
 const getData = (lang: string) => {
   const isPT = lang === 'pt';
-  const currency = isPT ? 'R$' : '$';
   const USD_RATE = 5.75;
 
-  // Exatos valores solicitados
+  // Exatos valores solicitados (107, 157, 177, 207, 317)
   const getPrice = (brl: number) => isPT ? brl : Math.round(brl / USD_RATE);
 
   const p = {
@@ -423,7 +422,7 @@ const getData = (lang: string) => {
       { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: isPT ? "Aparo (Extra)" : "Trim (Extra)", desc: isPT ? "Manutenção em 2 partes do corpo para ficar impecável." : "Add trim to your massage, 2 parts of body" },
       { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: isPT ? "Tempo Estendido (+30m)" : "+30 Minutes", desc: isPT ? "Porque quando está bom, não queremos que acabe." : "More time for you" },
       { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: isPT ? "Interação Orgânica" : "Interactive Touch", desc: isPT ? "Sinta-se livre para participar e tocar também." : "Feel free to touch too" },
-      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isPT ? "Aromaterapia Profunda" : "Aromatherapy", desc: isPT ? "Óleos essenciais que baixam a frequência mental." : "Essential oils to calm the mind" },
+      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isPT ? "Aromaterapia Profunda" : "Aromatherapy", desc: isPT ? "Óleos essenciais que baixam a sua frequência mental." : "Essential oils to calm the mind" },
       { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isPT ? "Foco Extra em Dores" : "Pain Cream", desc: isPT ? "Uso de pomada técnica para tratar dores fortes." : "Relieves strong muscle pain" }
     ],
     plans: [
@@ -443,7 +442,6 @@ const getData = (lang: string) => {
       { icon: "heart", title: "Entrega Absoluta", description: "Esqueça o mundo lá fora. Este tempo é seu para relaxar a mente, desmanchar as tensões e apenas gozar o momento." },
       { icon: "clock", title: "Seu Tempo é Sagrado", description: "Chego pontualmente para garantir que você aproveite cada minuto. Temos uma margem de tolerância de 15 minutos." }
     ],
-    currency,
     text: {
       welcome: "É muito bom ter você aqui,",
       choose_sub: "Sei o quanto a rotina está pesando. Escolha como quer ser cuidado e sentir prazer hoje. A partir de agora é comigo.",
@@ -498,15 +496,33 @@ const getData = (lang: string) => {
       rules_complete: "Acordo de Entrega Mútua",
       media_discount: "Desconto Portfólio (1%)",
       media_title: "Apoiar meu trabalho (Opcional)",
-      media_desc: "Se quiser, você pode permitir fotos estéticas anônimas (apenas do contorno do corpo, sem rosto e sem intimidade) para meu portfólio. Em troca, você ganha 1% OFF.",
+      media_desc: "Se quiser, você pode permitir fotos estéticas anônimas (apenas o contorno do corpo, sem rosto e sem intimidade) para meu portfólio. Em troca, você ganha 1% OFF.",
       media_bonus: "Liberar para ganhar 1% OFF",
       uber_notice: "Deslocamento: Como vou até você cuidar do seu corpo, uma taxa de Uber será calculada e confirmada na nossa conversa do WhatsApp, ok?",
       motel_note: "Um ambiente para sua entrega absoluta. A escolha, reserva e os custos do local ficam por sua conta, o prazer e o relaxamento são minha missão."
     }
   };
-}, []);
+};
 
-  const DATA = useMemo(() => getData(lang), [getData, lang]);
+// ==================================================================================
+// 5. MAIN APP OTIMIZADO
+// ==================================================================================
+export default function App() {
+  const [loading, setLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [step, setStep] = useState(0);
+  const [lang, setLang] = useState('pt');
+  const [isDark, setIsDark] = useState(true);
+  const [activeTab, setActiveTab] = useState('single'); 
+  const [toasts, setToasts] = useState<{id: number, msg: string, type: "success" | "error"}[]>([]);
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [welcomePopup, setWelcomePopup] = useState(false);
+  const [levelUpPopup, setLevelUpPopup] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [manualCouponInput, setManualCouponInput] = useState(''); 
+  
+  const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
   
   const [user, setUser] = useState<UserData>({
@@ -740,11 +756,11 @@ const getData = (lang: string) => {
       return `✅ ${ex.label}`; 
     }).filter(Boolean).join('\n');
     
-    let priceDetails = `💵 *Investimento (${serviceTitle}):* ${formatMoney(booking.item?.price || 0, lang === 'pt')}`;
-    if (f.disc > 0) priceDetails += `\n🎁 *Presente (${booking.appliedCoupon?.code}):* -${formatMoney(f.disc, lang === 'pt')}`;
-    if (f.mediaDisc > 0) priceDetails += `\n📸 *Desconto Portfólio:* -${formatMoney(f.mediaDisc, lang === 'pt')}`;
-    if (f.pixDisc > 0) priceDetails += `\n💸 *Desconto PIX (3%):* -${formatMoney(f.pixDisc, lang === 'pt')}`;
-    priceDetails += `\n\n💰 *VALOR FINAL A ACERTAR: ${formatMoney(f.total, lang === 'pt')}*`;
+    let priceDetails = `💵 *Investimento (${serviceTitle}):* R$ ${booking.item?.price.toFixed(2).replace('.', ',')}`;
+    if (f.disc > 0) priceDetails += `\n🎁 *Presente (${booking.appliedCoupon?.code}):* -R$ ${f.disc.toFixed(2).replace('.', ',')}`;
+    if (f.mediaDisc > 0) priceDetails += `\n📸 *Desconto Portfólio:* -R$ ${f.mediaDisc.toFixed(2).replace('.', ',')}`;
+    if (f.pixDisc > 0) priceDetails += `\n💸 *Desconto PIX (3%):* -R$ ${f.pixDisc.toFixed(2).replace('.', ',')}`;
+    priceDetails += `\n\n💰 *VALOR FINAL A ACERTAR: R$ ${f.total.toFixed(2).replace('.', ',')}*`;
     
     return `
 *RESERVA DE CUIDADO* | #${securityHash}
@@ -766,7 +782,7 @@ ${mapQuery ? `🔗 GPS: http://googleusercontent.com/maps.google.com/?q=${encode
 💰 *RESUMO:*
 ${priceDetails}
 
-💳 *Pagamento Pós-Sessão via:* ${booking.payment.toUpperCase()}
+💳 *Pagamento no encontro via:* ${booking.payment.toUpperCase()}
 ──────────────────
 _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
     `.trim();
@@ -941,7 +957,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
           {step === 0 && (
             <section className="space-y-12 md:space-y-16 animate-fade-in">
               {/* Seção de Boas Vindas Super Espaçada */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center py-2 md:py-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center py-2 md:py-6">
                 <div>
                   <h2 className={`text-3xl md:text-5xl font-playfair font-medium leading-[1.15] mb-4 md:mb-6 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
                     {T.welcome} <span className="italic text-blue-500">{user.name ? String(user.name).trim().split(' ')[0] : "permita-se"}.</span>
@@ -984,7 +1000,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                     </div>
                     {nextLevelInfo && (
                       <p className={`text-[11px] md:text-xs mt-4 text-center font-medium ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
-                        Mantenha o cuidado. Faltam <strong className={isDark ? 'text-zinc-300' : 'text-slate-700'}>{nextLevelInfo.needed} XP</strong> para seu próximo benefício de <span className="text-blue-500">+{formatMoney(nextLevelInfo.reward, isPT)}</span>.
+                        Mantenha o cuidado. Faltam <strong className={isDark ? 'text-zinc-300' : 'text-slate-700'}>{nextLevelInfo.needed} XP</strong> para seu próximo benefício de <span className="text-blue-500 break-words">+{formatMoney(nextLevelInfo.reward, isPT)}</span>.
                       </p>
                     )}
                   </div>
