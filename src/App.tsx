@@ -7,7 +7,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v25_premium', 
+  STORAGE_KEY: '@thaly_app_v26_premium', // Atualizado para limpar cache e aplicar o loop
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -566,7 +566,6 @@ export default function App() {
             coupons: Array.isArray(parsed.user.coupons) ? parsed.user.coupons : [],
             usedCoupons: Array.isArray(parsed.user.usedCoupons) ? parsed.user.usedCoupons : [],
             hasSeenWelcome: typeof parsed.user.hasSeenWelcome === 'boolean' ? parsed.user.hasSeenWelcome : false,
-            // Mantém no mínimo 92 se por acaso perder o cache
             ordersCount: typeof parsed.user.ordersCount === 'number' ? Math.max(parsed.user.ordersCount, 92) : 92,
             lastActivity: parsed.user.lastActivity || new Date().toISOString()
           };
@@ -714,7 +713,11 @@ export default function App() {
   const estimatedXP = useMemo(() => Math.floor(financials.total * (booking.type === 'pack' ? 0.30 : 0.15)), [financials.total, booking.type]);
   
   const getNextLevelInfo = (currentXP: number) => {
-    if (currentXP >= 800) return { needed: 500 - ((currentXP - 800) % 500), reward: 50, title: "Plenitude Plus" };
+    if (currentXP >= 800) {
+      // Loop infinito: Exibe quantos pontos faltam para o próximo bloco de 500
+      const needed = 500 - ((currentXP - 800) % 500);
+      return { needed, reward: DATA.levels[3].reward, title: "Plenitude Plus" };
+    }
     const nextLevel = DATA.levels.find(l => l.xpNeeded > currentXP);
     return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
   };
@@ -722,7 +725,9 @@ export default function App() {
   const nextLevelInfo = getNextLevelInfo(user.xp);
 
   const getCurrentLevelProgress = () => {
-    if (user.xp >= 800) return ((user.xp - 800) % 500 / 500) * 100;
+    // Se passar do nível máximo, o progresso fica em loop de 0 a 100% a cada 500 XP
+    if (user.xp >= 800) return (((user.xp - 800) % 500) / 500) * 100;
+    
     const currentLevelIndex = DATA.levels.slice().reverse().findIndex(l => user.xp >= l.xpNeeded);
     const realIndex = currentLevelIndex === -1 ? 0 : DATA.levels.length - 1 - currentLevelIndex;
     const currentLevel = DATA.levels[realIndex]; const nextLevel = DATA.levels[realIndex + 1];
@@ -832,6 +837,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
     let leveledUp = false; 
     let newLevelTitle = "";
     
+    // 1. Níveis padrões (até Nível 4 - 800 XP)
     DATA.levels.forEach(lvl => {
       if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) { 
         leveledUp = true; 
@@ -839,6 +845,29 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
         updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, title: `🏆 Recompensa: ${lvl.title}`, code: `LVLUP${lvl.level}` }); 
       }
     });
+
+    // 2. Loop infinito: Recompensa Plenitude Plus a cada 500 XP acima de 800
+    if (newXP > 800) {
+      const getLoops = (xp: number) => Math.floor(Math.max(0, xp - 800) / 500);
+      const oldLoops = getLoops(user.xp);
+      const newLoops = getLoops(newXP);
+      
+      // Se ele cruzou a barreira de 500 durante essa compra
+      if (newLoops > oldLoops) {
+        const loopRewardValue = DATA.levels[3].reward; // O benefício máximo
+        
+        for (let i = oldLoops + 1; i <= newLoops; i++) {
+          leveledUp = true;
+          newLevelTitle = "Plenitude Plus";
+          updatedCoupons.push({ 
+              id: `LOOP_${i}_${Date.now()}`, 
+              val: loopRewardValue, 
+              title: `🏆 Recompensa Especial: Plenitude Plus`, 
+              code: `PLUS${i}` 
+          });
+        }
+      }
+    }
     
     // O CONTADOR FUNCIONA EXATAMENTE AQUI, NO FECHAMENTO E CLIQUE DO BOTÃO DO WHATSAPP
     const newOrdersCount = (user.ordersCount || 92) + 1;
