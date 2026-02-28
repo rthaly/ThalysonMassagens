@@ -290,6 +290,13 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 const sanitizeInput = (value: string): string => String(value || '').replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
 
+// NOVO: Função para detectar Navegadores Embutidos (Instagram, FB, TikTok)
+const isWebViewUserAgent = () => {
+  if (typeof window === 'undefined') return false;
+  const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+  return (ua.indexOf('FBAN') > -1) || (ua.indexOf('FBAV') > -1) || (ua.indexOf('Instagram') > -1) || (ua.indexOf('Line') > -1) || (ua.indexOf('TikTok') > -1);
+};
+
 const cleanupStorage = () => { 
   try { 
     const keys = Object.keys(localStorage);
@@ -482,6 +489,9 @@ export default function App() {
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   
+  // ATENÇÃO UX: Controle da Tela Interceptadora do Navegador do Instagram
+  const [showBrowserPrompt, setShowBrowserPrompt] = useState(false);
+  
   const DATA = useMemo(() => getData(), []);
   const T = DATA.text;
   
@@ -495,17 +505,15 @@ export default function App() {
   
   const dateScrollRef = useRef<HTMLDivElement>(null);
 
-  // ATENÇÃO UX: HACK PARA FORÇAR ABERTURA EM NAVEGADORES EXTERNOS (BYPASS INSTAGRAM WEBVIEW)
+  // ATENÇÃO UX: Hack para driblar bloqueios de WebView
   const openExternal = useCallback((platform: 'whatsapp' | 'instagram', customText?: string) => {
     let url = '';
     if (platform === 'whatsapp') {
-      // Usar api.whatsapp que é redirecionado nativamente pelo Android e iOS
       url = `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(customText || '')}`;
     } else {
       url = CONFIG.INSTAGRAM_URL;
     }
 
-    // Criamos um link falso que força a abertura em nova aba (isso dribla bloqueios de popup do Safari e WebView)
     const link = document.createElement('a');
     link.href = url;
     link.target = '_blank';
@@ -515,16 +523,30 @@ export default function App() {
     setTimeout(() => { document.body.removeChild(link); }, 100);
   }, []);
   
+  const forceNativeBrowser = () => {
+    const url = window.location.href;
+    if (/android/i.test(navigator.userAgent)) {
+      // Intent nativo para forçar o Chrome no Android
+      window.location.href = `intent://${url.replace(/^https?:\/\//i, '')}#Intent;scheme=https;package=com.android.chrome;end`;
+    } else {
+      // Fallback para iOS
+      openExternal('instagram', url);
+    }
+  };
+  
   useEffect(() => {
     setIsClient(true);
     cleanupStorage();
+    if (isWebViewUserAgent()) {
+      setShowBrowserPrompt(true);
+    }
   }, []);
 
   useEffect(() => {
-    if (isClient) {
+    if (isClient && !showBrowserPrompt) {
         document.title = step === 0 ? "Thalyson Massagens - Conforto & Prazer" : "Seu Agendamento - Thalyson";
     }
-  }, [step, isClient]);
+  }, [step, isClient, showBrowserPrompt]);
   
   useEffect(() => {
     if (!isClient) return;
@@ -589,7 +611,7 @@ export default function App() {
   }, [isClient, DATA.services, DATA.plans]);
   
   useEffect(() => {
-    if (isClient && dataLoaded) {
+    if (isClient && dataLoaded && !showBrowserPrompt) {
       try {
         const saveData = {
           user: { ...user, lastActivity: new Date().toISOString() },
@@ -604,14 +626,14 @@ export default function App() {
         if (serialized.length < CONFIG.MAX_STORAGE_SIZE * 1024) { localStorage.setItem(CONFIG.STORAGE_KEY, serialized); }
       } catch (e) {}
     }
-  }, [user, booking, step, isClient, dataLoaded]);
+  }, [user, booking, step, isClient, dataLoaded, showBrowserPrompt]);
   
   useEffect(() => {
-    if (!loading && isClient && dataLoaded && !user.hasSeenWelcome && !welcomePopup) {
+    if (!loading && isClient && dataLoaded && !showBrowserPrompt && !user.hasSeenWelcome && !welcomePopup) {
       const timer = setTimeout(() => setWelcomePopup(true), 2000);
       return () => clearTimeout(timer);
     }
-  }, [loading, isClient, user.hasSeenWelcome, dataLoaded, welcomePopup]);
+  }, [loading, isClient, user.hasSeenWelcome, dataLoaded, welcomePopup, showBrowserPrompt]);
   
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
   
@@ -879,6 +901,40 @@ _Aceito os termos de entrega e aguardo sua confirmação. O meu WhatsApp para co
   
   if (!isClient) return <div className="min-h-screen w-full bg-zinc-950 flex items-center justify-center" />;
   
+  // ATENÇÃO UX: TELA INTERCEPTADORA DE INSTAGRAM/WEBVIEW
+  if (showBrowserPrompt) {
+    return (
+      <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center p-6 text-center ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
+         <div className="max-w-md w-full animate-fade-in flex flex-col items-center">
+            <div className="w-20 h-20 bg-amber-500/10 text-amber-500 flex items-center justify-center rounded-3xl mb-8 border border-amber-500/30">
+               <Icon name="alert-circle" size={40} />
+            </div>
+            <h2 className="text-3xl font-playfair font-medium mb-4">Atenção!</h2>
+            <p className={`text-sm font-light mb-8 leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+              Você está no navegador do Instagram/Facebook. Para que o envio para o WhatsApp funcione perfeitamente no final, precisamos que abra esta página no navegador do seu celular.
+            </p>
+            
+            <div className={`w-full p-6 rounded-3xl border text-left mb-8 ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-slate-200'}`}>
+               <p className={`text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-amber-500' : 'text-amber-600'}`}>Como fazer (iPhone/iOS):</p>
+               <p className={`text-sm mb-4 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                 1. Toque nos <strong className={isDark ? 'text-white' : 'text-black'}>3 pontinhos (...)</strong> no topo da tela.<br/>
+                 2. Escolha <strong className={isDark ? 'text-white' : 'text-black'}>"Abrir no navegador"</strong> ou <strong>"Abrir no Safari"</strong>.
+               </p>
+            </div>
+
+            <div className="w-full space-y-4">
+               {/android/i.test(navigator.userAgent) && (
+                 <Button full size="lg" onClick={forceNativeBrowser}>Tentar Forçar (Apenas Android)</Button>
+               )}
+               <button onClick={() => setShowBrowserPrompt(false)} className={`w-full h-14 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-colors ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-200 text-slate-500 hover:text-black'}`}>
+                 Ignorar e Continuar Aqui
+               </button>
+            </div>
+         </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className={`fixed inset-0 flex flex-col items-center justify-center z-[100] transition-colors duration-700 ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
