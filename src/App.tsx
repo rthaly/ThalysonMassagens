@@ -495,32 +495,24 @@ export default function App() {
   
   const dateScrollRef = useRef<HTMLDivElement>(null);
 
-  // ATENÇÃO UX: Função especial que força sair do WebView (Navegador Embutido)
+  // ATENÇÃO UX: HACK PARA FORÇAR ABERTURA EM NAVEGADORES EXTERNOS (BYPASS INSTAGRAM WEBVIEW)
   const openExternal = useCallback((platform: 'whatsapp' | 'instagram', customText?: string) => {
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    
+    let url = '';
     if (platform === 'whatsapp') {
-      const text = encodeURIComponent(customText || '');
-      if (isAndroid) {
-        window.location.href = `intent://send?phone=${CONFIG.PHONE}&text=${text}#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url=https://wa.me/${CONFIG.PHONE}?text=${text};end`;
-      } else if (isIOS) {
-        window.location.href = `whatsapp://send?phone=${CONFIG.PHONE}&text=${text}`;
-        setTimeout(() => { window.location.href = `https://wa.me/${CONFIG.PHONE}?text=${text}`; }, 500);
-      } else {
-        window.open(`https://wa.me/${CONFIG.PHONE}?text=${text}`, '_blank');
-      }
-    } else if (platform === 'instagram') {
-      const username = CONFIG.INSTAGRAM_URL.split('/').pop() || 'thalyson.massagens';
-      if (isAndroid) {
-        window.location.href = `intent://user?username=${username}#Intent;scheme=instagram;package=com.instagram.android;S.browser_fallback_url=${CONFIG.INSTAGRAM_URL};end`;
-      } else if (isIOS) {
-        window.location.href = `instagram://user?username=${username}`;
-        setTimeout(() => { window.location.href = CONFIG.INSTAGRAM_URL; }, 500);
-      } else {
-        window.open(CONFIG.INSTAGRAM_URL, '_blank');
-      }
+      // Usar api.whatsapp que é redirecionado nativamente pelo Android e iOS
+      url = `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(customText || '')}`;
+    } else {
+      url = CONFIG.INSTAGRAM_URL;
     }
+
+    // Criamos um link falso que força a abertura em nova aba (isso dribla bloqueios de popup do Safari e WebView)
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => { document.body.removeChild(link); }, 100);
   }, []);
   
   useEffect(() => {
