@@ -7,7 +7,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v27_premium', 
+  STORAGE_KEY: '@thaly_app_v24_premium', 
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   SECRET_TOKEN: 'THALY_SECURE_V7',
