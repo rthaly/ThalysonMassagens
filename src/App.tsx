@@ -7,37 +7,29 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v24_premium', 
+  STORAGE_KEY: '@thaly_app_v24_premium_plans', 
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
-  SECRET_TOKEN: 'THALY_SECURE_V7',
-  START_HOUR: 9,
-  END_HOUR: 20,
+  SECRET_TOKEN: 'THALY_SECURE_V8',
+  START_HOUR: 8,
+  END_HOUR: 22,
   MAX_STORAGE_SIZE: 5000 
 } as const;
 
 // Ícones Outline Otimizados
 const ICON_PATHS: Record<string, string> = {
-  'menu': 'M4 12h16 M4 6h16 M4 18h16',
-  'chevron-left': 'M15 18l-6-6 6-6',
-  'chevron-right': 'M9 18l6-6-6-6',
-  'chevron-down': 'M6 9l6 6 6-6',
-  'x': 'M18 6L6 18M6 6l12 12',
-  'check': 'M20 6L9 17l-5-5',
+  'menu': 'M4 12h16 M4 6h16 M4 18h16', 'chevron-left': 'M15 18l-6-6 6-6', 'chevron-right': 'M9 18l6-6-6-6',
+  'chevron-down': 'M6 9l6 6 6-6', 'x': 'M18 6L6 18M6 6l12 12', 'check': 'M20 6L9 17l-5-5',
   'alert-circle': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M12 8v4 M12 16h.01',
   'share': 'M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8 M16 6l-4-4-4 4 M12 2v13',
   'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
   'sun': 'M12 3v1 M12 20v1 M3 12h1 M20 12h1 M18.364 5.636l-.707.707 M6.343 17.657l-.707.707 M5.636 5.636l.707.707 M17.657 17.657l.707.707 M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z',
-  'moon': 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z',
-  'star': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+  'moon': 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z', 'star': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
   'user-check': 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M17 11l2 2 4-4',
   'sparkles': 'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z M20 3v4 M22 5h-4 M4 17v2 M5 18H3',
-  'zap': 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
-  'package': 'M16.5 9.4L7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96L12 12.01l8.73-5.05 M12 22.08V12',
-  'layers': 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
-  'user': 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
-  'home': 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10',
-  'bed': 'M2 4v16 M2 8h18a2 2 0 0 1 2 2v10 M2 17h20 M6 8v9',
+  'zap': 'M13 2L3 14h9l-1 8 10-12h-9l1-8z', 'package': 'M16.5 9.4L7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96L12 12.01l8.73-5.05 M12 22.08V12',
+  'layers': 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', 'user': 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+  'home': 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10', 'bed': 'M2 4v16 M2 8h18a2 2 0 0 1 2 2v10 M2 17h20 M6 8v9',
   'building': 'M4 22v-17a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17 M4 22h16 M10 22V10h4v12 M14 6h.01 M10 6h.01',
   'map-pin': 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
   'car': 'M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2 M7 17v4h2v-4 M15 17v4h2v-4',
@@ -59,7 +51,9 @@ const ICON_PATHS: Record<string, string> = {
   'scissors': 'M6 9L12 15 18 9 M6 20a3 3 0 0 1-3-3v-6l6 6v3z M18 20a3 3 0 0 0 3-3v-6l-6 6v3z',
   'copy': 'M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1 M16 3H10a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z',
   'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8',
-  'heart': 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'
+  'heart': 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
+  'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
+  'plus': 'M12 5v14 M5 12h14'
 };
 
 // ==================================================================================
@@ -119,11 +113,11 @@ interface Coupon { id: string; val: number; title: string; code: string; }
 interface Review { n: string; loc: string; t: string; s: number; }
 interface UserData { name: string; xp: number; coupons: Coupon[]; usedCoupons: string[]; hasSeenWelcome: boolean; ordersCount: number; lastActivity: string; }
 interface Address { street: string; number: string; district: string; city: string; comp: string; placeName: string; }
-interface BookingData { type: 'single' | 'pack'; item: ServiceItem | null; extras: Record<string, boolean>; date: string | null; time: string | null; locationType: 'home' | 'motel' | 'hotel'; address: Address; payment: string; appliedCoupon: Coupon | null; termsAccepted: boolean; bookingId: string; mediaAllowed: boolean; }
+interface BookingData { type: 'single' | 'pack'; cart: ServiceItem[]; extras: Record<string, boolean>; date: string | null; time: string | null; locationType: 'home' | 'motel' | 'hotel'; address: Address; payment: string; appliedCoupon: Coupon | null; termsAccepted: boolean; bookingId: string; mediaAllowed: boolean; }
 interface Rule { icon: string; title: string; description: string; }
 
 // ==================================================================================
-// 3. COMPONENTES DE UI (MOBILE-FIRST)
+// 3. COMPONENTES DE UI (MOBILE-FIRST MELHORADO)
 // ==================================================================================
 
 const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon, className = '', loading = false, ariaLabel }: any) => {
@@ -136,15 +130,15 @@ const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disa
     ghost: "bg-transparent text-zinc-500 hover:text-zinc-300"
   };
   const sizes = { 
-    sm: "h-10 text-[10px] px-4", 
-    md: "h-12 text-[11px] px-5", 
-    lg: "h-14 text-xs px-6", 
-    xl: "h-14 md:h-16 text-xs md:text-sm px-6" 
+    sm: "h-12 text-[10px] px-5", 
+    md: "h-14 text-[11px] px-6", 
+    lg: "h-16 text-xs px-8", 
+    xl: "h-16 md:h-18 text-xs md:text-sm px-8" 
   };
   
   return (
     <button type="button" onClick={onClick} disabled={disabled || loading} aria-label={ariaLabel} className={`${baseStyle} ${variants[variant as keyof typeof variants] || variants.primary} ${sizes[size as keyof typeof sizes]} ${full ? 'w-full' : ''} ${className}`}>
-      {loading ? <span className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0"></span> : <>{icon && <Icon name={icon} size={18} />}{children}</>}
+      {loading ? <span className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0"></span> : <>{icon && <Icon name={icon} size={20} />}{children}</>}
     </button>
   );
 });
@@ -189,23 +183,42 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user }: any) => {
   );
 });
 
-const Card = memo(({ children, className = '', onClick, active = false, isDark = true, popular = false }: any) => (
-  <div onClick={onClick} className={`relative p-5 md:p-8 rounded-2xl md:rounded-3xl transition-all duration-300 flex flex-col h-full ${onClick ? 'cursor-pointer active:scale-[0.98] hover:-translate-y-1 hover:shadow-xl' : ''} ${active ? 'bg-blue-600/5 border-2 border-blue-500 shadow-blue-500/20' : isDark ? 'bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700' : 'bg-white border border-slate-200 shadow-sm hover:border-slate-300'} ${className}`}>
-    {popular && (
-      <div className="absolute -top-3 left-5 md:left-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md border border-blue-400/30">
-        ✦ Mais Desejada
-      </div>
-    )}
-    {children}
-  </div>
-));
+// ATENÇÃO UX: Card preparado para ser "Premium" com bordas e fundos em tons de Ouro/Âmbar
+const Card = memo(({ children, className = '', onClick, active = false, isDark = true, popular = false, isPremium = false }: any) => {
+  const getStyle = () => {
+    if (active) {
+      return isPremium 
+        ? 'bg-amber-500/10 border-2 border-amber-500 shadow-amber-500/20 -translate-y-1' 
+        : 'bg-blue-600/10 border-2 border-blue-500 shadow-blue-500/20 -translate-y-1';
+    }
+    if (isDark) {
+      return isPremium 
+        ? 'bg-gradient-to-br from-zinc-900 to-zinc-900/50 border border-amber-500/30 hover:border-amber-500/60 hover:bg-zinc-900/80' 
+        : 'bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/80';
+    }
+    return isPremium 
+      ? 'bg-gradient-to-br from-amber-50 to-white border border-amber-200 hover:border-amber-400 shadow-sm' 
+      : 'bg-white border border-slate-200 hover:border-slate-300 shadow-sm hover:shadow-md';
+  };
+
+  return (
+    <div onClick={onClick} className={`relative p-6 md:p-8 rounded-3xl transition-all duration-300 flex flex-col h-full ${onClick ? 'cursor-pointer active:scale-[0.98] hover:shadow-xl' : ''} ${getStyle()} ${className}`}>
+      {popular && (
+        <div className={`absolute -top-3 left-6 md:left-8 text-white text-[9px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md ${isPremium ? 'bg-gradient-to-r from-amber-500 to-orange-500 border border-amber-400/30' : 'bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400/30'}`}>
+          ✦ Mais Desejada
+        </div>
+      )}
+      {children}
+    </div>
+  );
+});
 
 const InputField = memo(({ label, value, onChange, placeholder, icon, type = "text", isDark = true, hasError = false }: any) => (
   <div className="space-y-2 w-full min-w-0">
     {label && <label className={`text-[10px] font-bold uppercase tracking-widest pl-1 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{label}</label>}
     <div className="relative group">
       {icon && <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-500' : isDark ? 'text-zinc-500 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}><Icon name={icon} size={20} /></div>}
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-12 md:h-14 rounded-xl outline-none text-sm font-medium transition-all bg-transparent ${icon ? 'pl-11 pr-4' : 'px-4'} ${hasError ? 'border-2 border-red-500/50 bg-red-500/5 placeholder:text-red-400/50 text-red-500' : isDark ? 'border border-zinc-800 text-zinc-100 placeholder:text-zinc-700 focus:border-blue-500 focus:bg-zinc-900/80' : 'border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-blue-50/50'}`} />
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-14 rounded-2xl outline-none text-sm font-medium transition-all bg-transparent ${icon ? 'pl-11 pr-4' : 'px-4'} ${hasError ? 'border-2 border-red-500/50 bg-red-500/5 placeholder:text-red-400/50 text-red-500' : isDark ? 'border border-zinc-800 text-zinc-100 placeholder:text-zinc-700 focus:border-blue-500 focus:bg-zinc-900/80' : 'border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-blue-50/50'}`} />
     </div>
   </div>
 ));
@@ -213,20 +226,20 @@ const InputField = memo(({ label, value, onChange, placeholder, icon, type = "te
 const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
   <article className={`w-full h-full flex flex-col p-6 md:p-8 rounded-3xl transition-all duration-300 border gap-5 ${isDark ? 'bg-zinc-900/30 border-zinc-800/80 hover:bg-zinc-900/60' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}`}>
     <div className="flex justify-between items-start">
-      <div className="flex items-center gap-3 min-w-0">
-        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-lg font-bold font-playfair shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-200' : 'bg-slate-100 text-slate-700'}`}>
+      <div className="flex items-center gap-4 min-w-0">
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold font-playfair shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-200' : 'bg-slate-100 text-slate-700'}`}>
           {review.n.charAt(0)}
         </div>
-        <div className="min-w-0">
-          <span className={`text-sm md:text-base font-semibold block mb-0.5 truncate ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{review.n}</span>
-          <span className={`text-[9px] md:text-[10px] block tracking-widest uppercase font-bold truncate ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span>
+        <div className="min-w-0 flex-1 pr-2">
+          <span className={`text-sm md:text-base font-semibold block mb-0.5 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{review.n}</span>
+          <span className={`text-[9px] md:text-[10px] block tracking-widest uppercase font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span>
         </div>
       </div>
-      <div className="flex gap-0.5 md:gap-1 px-2 py-1 rounded-full shrink-0">
-        {[...Array(5)].map((_, i) => <Icon key={i} name="star" size={12} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />)}
+      <div className="flex gap-1 px-2 py-1 rounded-full shrink-0">
+        {[...Array(5)].map((_, i) => <Icon key={i} name="star" size={14} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />)}
       </div>
     </div>
-    <p className={`text-xs md:text-sm leading-relaxed md:leading-loose font-light italic flex-1 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{review.t}"</p>
+    <p className={`text-sm leading-relaxed md:leading-loose font-light italic flex-1 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{review.t}"</p>
   </article>
 ));
 
@@ -240,9 +253,9 @@ const SmartTimer = memo(({ isDark, text }: any) => {
   const format = (t: number) => { const m = Math.floor(t / 60); const s = t % 60; return `${m}:${s < 10 ? '0' : ''}${s}`; };
   
   return (
-    <div className={`flex items-center justify-center gap-3 p-4 rounded-xl transition-all border shadow-sm ${isDark ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
+    <div className={`flex items-center justify-center gap-3 p-5 rounded-2xl transition-all border shadow-sm ${isDark ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
       <Icon name="watch" size={20} className="animate-pulse shrink-0" />
-      <span className="text-[10px] font-bold uppercase tracking-widest break-words text-center">{text}: <span className="font-mono text-sm ml-1 bg-blue-500/20 px-2 py-1 rounded-md">{format(time)}</span></span>
+      <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest break-words text-center">{text}: <span className="font-mono text-sm ml-1 bg-blue-500/20 px-3 py-1.5 rounded-md">{format(time)}</span></span>
     </div>
   );
 });
@@ -256,24 +269,24 @@ const FAQItem = memo(({ q, a, isDark }: { q: string; a: string; isDark: boolean 
         <span className={`transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-blue-500' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}><Icon name="chevron-down" size={20} /></span>
       </button>
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
+        <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
       </div>
     </div>
   );
 });
 
 const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
-  <div className={`flex gap-4 p-5 md:p-6 rounded-2xl border border-transparent transition-colors ${isDark ? 'hover:bg-zinc-900/60' : 'hover:bg-slate-50'}`}>
+  <div className={`flex gap-4 p-5 md:p-6 rounded-3xl border border-transparent transition-colors ${isDark ? 'hover:bg-zinc-900/60' : 'hover:bg-slate-50'}`}>
     <div className={`shrink-0 mt-0.5 ${isDark ? 'text-blue-500' : 'text-blue-600'}`}><Icon name={rule.icon} size={24} /></div>
     <div>
-      <h4 className={`text-sm md:text-base font-bold mb-1 font-playfair ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{rule.title}</h4>
-      <p className={`text-[11px] md:text-xs font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{rule.description}</p>
+      <h4 className={`text-sm md:text-base font-bold mb-2 font-playfair ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>{rule.title}</h4>
+      <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{rule.description}</p>
     </div>
   </div>
 ));
 
 // ==================================================================================
-// 4. LÓGICA DE DADOS E GERAÇÃO DE TEXTOS
+// 4. LÓGICA DE DADOS E GERAÇÃO DE TEXTOS (COMPLETAMENTE PRESERVADO)
 // ==================================================================================
 const sanitizeInput = (value: string): string => String(value || '').replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
@@ -338,22 +351,9 @@ const getFullReviews = (): Review[] => {
 
 const getData = () => {
   const p = {
-    relax: 157,
-    sens: 177,
-    titan: 207,
-    nuru: 317, 
-    depil: 107,
-    packRelax: { v: 527, full: 628, save: 101 },
-    packTri: { v: 517, full: 621, save: 104 },
-    packMix: { v: 637, full: 768, save: 131 },
-    packSupreme: { v: 567, full: 681, save: 114 },
-    extras: {
-      more_time: 77,
-      touch: 77,
-      aroma: 17,
-      hair_trim: 57,
-      pain_relief: 17
-    }
+    relax: 157, sens: 177, titan: 207, nuru: 317, depil: 107,
+    packRelax: { v: 527, full: 628, save: 101 }, packTri: { v: 517, full: 621, save: 104 }, packMix: { v: 637, full: 768, save: 131 }, packSupreme: { v: 567, full: 681, save: 114 },
+    extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
   };
   
   return {
@@ -365,56 +365,26 @@ const getData = () => {
     ],
     services: [
       {
-        id: 'depilacao',
-        min: 45,
-        price: p.depil,
-        icon: "scissors",
-        tag: "CUIDADO PESSOAL",
-        title: "Aparo Corporal",
-        desc: "Sinta-se leve e limpo. A manutenção estética é o primeiro passo para o conforto.",
-        details: "Aparo uniforme com Máquina de aparar\nFoco no peito, costas, abdômen e pernas\nNo conforto e privacidade do seu local"
+        id: 'depilacao', min: 45, price: p.depil, icon: "scissors", tag: "CUIDADO PESSOAL", title: "Aparo Corporal", desc: "Sinta-se leve e limpo. A manutenção estética é o primeiro passo para o conforto.", details: "Aparo uniforme com Máquina de aparar\nFoco no peito, costas, abdômen e pernas\nNo conforto e privacidade do seu local"
       },
       {
-        id: 'relaxante',
-        min: 60,
-        price: p.relax,
-        icon: "user-check",
-        tag: "ALÍVIO IMEDIATO",
-        title: "Massagem Clássica",
-        desc: "Costas travadas e rotina pesada? Um alívio profundo para curar o corpo e a mente.",
-        details: "Uso de rolos de madeira para soltar a musculatura\nToques suaves e relaxantes com as mãos\nFoco no corpo todo, costas, braços, mãos, pernas e pés. ( sem toques íntimos )\nMomento terapêutico para zerar a fadiga do corpo" 
+        id: 'relaxante', min: 60, price: p.relax, icon: "user-check", tag: "ALÍVIO IMEDIATO", title: "Massagem Clássica", desc: "Costas travadas e rotina pesada? Um alívio profundo para curar o corpo e a mente.", details: "Uso de rolos de madeira para soltar a musculatura\nToques suaves e relaxantes com as mãos\nFoco no corpo todo, costas, braços, mãos, pernas e pés. ( sem toques íntimos )\nMomento terapêutico para zerar a fadiga do corpo" 
       },
       {
-        id: 'sensitiva',
-        min: 60,
-        price: p.sens,
-        icon: "sparkles",
-        tag: "DESPERTAR SENSORIAL",
-        title: "Massagem Sensorial",
-        desc: "Quando sua mente não desliga. Desperte a sensibilidade e permita-se chegar ao clímax do relaxamento.",
-        details: "Toques sutis que tiram o foco dos pensamentos\nCondução fluida com toques leves que arrepiam o corpo todo\nFinalização focada em uma intensa descarga de prazer\nPara quem precisa esvaziar a mente sentindo o próprio corpo" 
+        id: 'sensitiva', min: 60, price: p.sens, icon: "sparkles", tag: "DESPERTAR SENSORIAL", title: "Massagem Sensorial", desc: "Quando sua mente não desliga. Desperte a sensibilidade e permita-se chegar ao clímax do relaxamento.", details: "Toques sutis que tiram o foco dos pensamentos\nCondução fluida com toques leves que arrepiam o corpo todo\nFinalização focada em uma intensa descarga de prazer\nPara quem precisa esvaziar a mente sentindo o próprio corpo" 
       },
       {
-        id: 'mista',
-        min: 60,
-        price: p.titan,
-        icon: "zap",
-        popular: true,
-        tag: "RESTAURAÇÃO & PRAZER",
-        title: "Experiência Fusion",
-        desc: "Primeiro curamos suas dores, depois guiamos seu corpo a um estado de êxtase e gozo profundo.",
-        details: "Inicia quebrando a rigidez do corpo todo\nContato com a barba pelo corpo despertando novas sensações\nToque sensitivo transita para um toque envolvente corpo a corpo (Massagista de cueca) \n Foco em uma liberação orgânica de toda a tensão" 
+        id: 'mista', min: 60, price: p.titan, icon: "zap", popular: true, tag: "RESTAURAÇÃO & PRAZER", title: "Experiência Fusion", desc: "Primeiro curamos suas dores, depois guiamos seu corpo a um estado de êxtase e gozo profundo.", details: "Inicia quebrando a rigidez do corpo todo\nContato com a barba pelo corpo despertando novas sensações\nToque sensitivo transita para um toque envolvente corpo a corpo (Massagista de cueca) \n Foco em uma liberação orgânica de toda a tensão" 
       },
       {
-        id: 'nuru',
-        min: 60,
-        price: p.nuru,
-        icon: "sparkles",
-        tag: "ENTREGA & CALOR",
-        title: "Massagem Nuru",
-        desc: "Ajoelhe-se diante do prazer. Calor orgânico e contato direto que derretem o estresse até a última gota.",
-        details: "Vivência de entrega total com ambos completamente nus\nAplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA imersão mais profunda para o seu gozo físico e mental" 
+        id: 'nuru', min: 60, price: p.nuru, icon: "sparkles", tag: "ENTREGA & CALOR", title: "Massagem Nuru", desc: "Ajoelhe-se diante do prazer. Calor orgânico e contato direto que derretem o estresse até a última gota.", details: "Vivência de entrega total com ambos completamente nus\nAplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA imersão mais profunda para o seu gozo físico e mental" 
       }
+    ] as ServiceItem[],
+    // ATENÇÃO UX: Descrições dos planos ajustadas para refletirem o que o usuário fará
+    plans: [
+      { id: 'pack_relax', type: 'pack', title: "Ciclo Alívio (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: "4 sessões completas da Massagem Clássica para acabar com a fadiga e dores crônicas.", details: "4x Massagens Clássicas (60min cada)\nUso de rolos de madeira e toques manuais terapêuticos\nFoco intensivo no alívio de costas, pernas e corpo todo\nUm cronograma de manutenções preventivas e curativas", tag: "SAÚDE FÍSICA", icon: "package" },
+      { id: 'pack_mista', type: 'pack', title: "Ciclo Fusion (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: "3 encontros da Experiência Fusion combinando alívio muscular e muito prazer.", details: "3x Experiências Fusion (60min cada)\nInicia quebrando a rigidez muscular de todo o corpo\nTransita para um toque sensitivo e contato corpo a corpo\nFoco na liberação orgânica e esvaziamento mental", tag: "ACOLHIMENTO MENSAL", icon: "layers" },
+      { id: 'pack_supreme', type: 'pack', title: "Jornada Supreme (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: "Para quem quer provar tudo. Uma sessão de cada especialidade ao longo do mês.", details: "1x Massagem Clássica (Alívio profundo das dores)\n1x Experiência Fusion (Restauração e Prazer)\n1x Massagem Nuru (Entrega total corpo a corpo)\nO cronograma definitivo para provar de tudo", tag: "EXPERIÊNCIA PREMIUM", icon: "award" }
     ] as ServiceItem[],
     extras: [
       { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: "Aparo (Extra)", desc: "Manutenção em 2 partes do corpo para ficar impecável." },
@@ -423,11 +393,6 @@ const getData = () => {
       { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: "Aromaterapia Profunda", desc: "Óleos essenciais que baixam a sua frequência mental." },
       { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: "Foco Extra em Dores", desc: "Uso de pomada técnica para tratar dores fortes." }
     ],
-    plans: [
-      { id: 'pack_relax', type: 'pack', title: "Ciclo Alívio (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: "4 Sessões de Descompressão", details: "Acabe com a dor lombar crônica de uma vez.\nUm cronograma de manutenções preventivas e curativas.", tag: "SAÚDE FÍSICA", icon: "package" },
-      { id: 'pack_mista', type: 'pack', title: "Ciclo Fusion (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: "3 Encontros de Desbloqueio e Prazer", details: "A rotina te consome. Tenha seu refúgio garantido.\nTrês imersões completas para alinhar o físico e o mental.", tag: "ACOLHIMENTO MENSAL", icon: "layers" },
-      { id: 'pack_supreme', type: 'pack', title: "Jornada Supreme (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: "O ápice de todas as técnicas juntas", details: "Para quem quer provar e gozar de tudo.\nUma sessão Terapêutica, uma Fusion e uma Nuru.", tag: "EXPERIÊNCIA PREMIUM", icon: "award" }
-    ] as ServiceItem[],
     faq: [
       { q: "Como o toque e a finalização funcionam?", a: "Tudo é conduzido com extremo respeito, focado inteiramente no seu conforto e prazer. O objetivo é criar um espaço seguro para que você possa se entregar, relaxar a mente e alcançar um gozo libertador que zera o estresse." },
       { q: "Onde é o local do nosso encontro?", a: "Vou até você, no conforto da sua residência ou hotel. Chego no horário marcado e transformo o ambiente (seja sua cama ou sofá) em um verdadeiro refúgio de paz para cuidarmos de você." },
@@ -442,14 +407,14 @@ const getData = () => {
     ],
     text: {
       welcome: "É muito bom ter você aqui,",
-      choose_sub: "Sei o quanto a rotina está pesando. Escolha como quer ser cuidado e sentir prazer hoje. A partir de agora é comigo.",
+      choose_sub: "Sei o quanto a rotina está pesando. Escolha como quer ser cuidado e sentir prazer hoje. Selecione os itens que desejar e avance pelo carrinho.",
       level_label: "Sua Jornada de Cuidado",
       tab_packs: "Planos Mensais",
-      tab_single: "Sessão Avulsa",
-      next_btn: "Avançar para Agendamento",
-      finish_btn: "Confirmar pelo WhatsApp",
+      tab_single: "Sessões Avulsas",
+      next_btn: "Avançar",
+      finish_btn: "Realizar Agendamento",
       loading: "Preparando um espaço de relaxamento para você...",
-      toast_select_item: "Por favor, escolha uma das experiências abaixo para continuarmos.",
+      toast_select_item: "Por favor, adicione ao menos um serviço no carrinho para continuarmos.",
       toast_select_date: "Toque na melhor data e selecione o horário para o nosso encontro.",
       toast_fill_name: "Preciso saber como te chamar, preencha seu nome.",
       toast_fill_addr: "Por favor, preencha o local para eu ir cuidar de você.",
@@ -459,16 +424,16 @@ const getData = () => {
       details_label: "O QUE VOCÊ VAI VIVENCIAR:",
       select_time_title: "Qual o melhor momento para o seu prazer?",
       location_title: "Onde será nosso encontro de paz?",
-      extras_title: "Quer deixar a experiência ainda mais gostosa?",
-      coupon_section: "Tem algum presente ou cupom?",
-      payment_title: "Como prefere acertar? (Pagamento no encontro)",
+      extras_title: "Quer adicionar mais coisas ao carrinho?",
+      coupon_section: "Seus Benefícios Disponíveis",
+      payment_title: "Como prefere acertar? (No encontro)",
       terms_title: "Nosso Acordo de Entrega",
-      success_title: "Tudo pronto para o seu relaxamento!",
-      success_sub: "Seu pedido foi montado. Agora, basta me mandar um 'Oi' no WhatsApp com esse resumo para eu confirmar nosso momento na minha agenda. Te espero!",
-      whatsapp_btn: "Enviar Reserva no WhatsApp",
+      success_title: "Quase lá!",
+      success_sub: "O WhatsApp está sendo aberto automaticamente para confirmarmos a sua reserva. Caso não abra, utilize o botão abaixo.",
+      whatsapp_btn: "Tentar Abrir WhatsApp Novamente",
       back_home: "Voltar e refazer escolhas",
-      timer_text: "Seu horário está garantido por",
-      upgrade_msg: "Excelente! Para uma experiência de entrega e prazer ainda maior, sugiro depois olhar a Experiência Fusion.",
+      timer_text: "Seu carrinho está salvo por",
+      upgrade_msg: "Excelente escolha adicionada ao carrinho!",
       input_name: "Qual é o seu nome ou apelido?",
       input_addr: "Nome da Rua ou Avenida",
       input_num: "Número",
@@ -482,9 +447,9 @@ const getData = () => {
       reviews_title: "Quem já se permitiu relaxar:",
       empty_date: "Toque num dia acima para ver meus horários.",
       empty_slots: "Poxa, minha agenda já encheu para este dia. Pode tentar o próximo?",
-      total_label: "Investimento Final",
-      subtotal: "Valor do Cuidado",
-      discount: "Seu Presente",
+      total_label: "Total do Carrinho",
+      subtotal: "Soma dos Serviços",
+      discount: "Desconto Aplicado",
       pix_discount: "Benefício Pix (3%)",
       welcome_popup_title: "Seja muito bem-vindo!",
       welcome_popup_msg: "Fico feliz que você decidiu tirar um tempo para se cuidar e sentir prazer no conforto do seu local. A maioria dos homens esquece de si mesmo. Aqui está um presente para nossa primeira vez.",
@@ -494,7 +459,7 @@ const getData = () => {
       rules_complete: "Acordo de Entrega Mútua",
       media_discount: "Desconto Portfólio (1%)",
       media_title: "Apoiar meu trabalho (Opcional)",
-      media_desc: "Se quiser, você pode permitir fotos estéticas anônimas (apenas o contorno do corpo, sem rosto e sem intimidade) para meu portfólio. Em troca, você ganha 1% OFF.",
+      media_desc: "Se quiser, você pode permitir fotos estéticas anônimas (apenas o contorno do corpo, sem rosto e sem intimidade) para meu portfólio. Em troca, você ganha 1% OFF no valor do carrinho.",
       media_bonus: "Liberar para ganhar 1% OFF",
       uber_notice: "Deslocamento: Como vou até você cuidar do seu corpo, uma taxa de Uber será calculada e confirmada na nossa conversa do WhatsApp, ok?",
       motel_note: "Um ambiente para sua entrega absoluta. A escolha, reserva e os custos do local ficam por sua conta, o prazer e o relaxamento são minha missão."
@@ -504,7 +469,7 @@ const getData = () => {
 };
 
 // ==================================================================================
-// 5. MAIN APP OTIMIZADO
+// 5. MAIN APP OTIMIZADO PARA MÚLTIPLAS ESCOLHAS E NOVO FLUXO
 // ==================================================================================
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -512,13 +477,13 @@ export default function App() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [step, setStep] = useState(0);
   const [isDark, setIsDark] = useState(true);
-  const [activeTab, setActiveTab] = useState('single'); 
+  // ATENÇÃO UX: Aba 'packs' (Planos Mensais) sendo a primeria a aparecer como gatilho de preço/venda
+  const [activeTab, setActiveTab] = useState('packs'); 
   const [toasts, setToasts] = useState<{id: number, msg: string, type: "success" | "error"}[]>([]);
   const [termsOpen, setTermsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [manualCouponInput, setManualCouponInput] = useState(''); 
   
   const DATA = useMemo(() => getData(), []);
   const T = DATA.text;
@@ -528,10 +493,9 @@ export default function App() {
   });
   
   const [booking, setBooking] = useState<BookingData>({
-    type: 'single', item: null, extras: {}, date: null, time: null, locationType: 'home', address: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, payment: '', appliedCoupon: null, termsAccepted: false, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false
+    type: 'single', cart: [], extras: {}, date: null, time: null, locationType: 'home', address: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, payment: '', appliedCoupon: null, termsAccepted: false, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false
   });
   
-  const scrollRef = useRef<HTMLDivElement>(null);
   const dateScrollRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -569,18 +533,13 @@ export default function App() {
           };
         }
         
-        let draftItemExists = false;
-        if (parsed.bookingDraft && parsed.bookingDraft.item && parsed.bookingDraft.item.id) {
-           const allServices = [...DATA.services, ...DATA.plans];
-           draftItemExists = allServices.some(s => s.id === parsed.bookingDraft.item.id);
-        }
-
-        if (draftItemExists && parsed.bookingDraft) {
+        if (parsed.bookingDraft && Array.isArray(parsed.bookingDraft.cart)) {
           const draftDate = parsed.bookingDraft.date ? new Date(parsed.bookingDraft.date) : null;
-          if (draftDate && draftDate > new Date()) {
+          if (!draftDate || draftDate > new Date()) {
             loadedBooking = {
               ...booking,
               ...parsed.bookingDraft,
+              cart: parsed.bookingDraft.cart || [],
               extras: typeof parsed.bookingDraft.extras === 'object' && parsed.bookingDraft.extras !== null ? parsed.bookingDraft.extras : {},
               mediaAllowed: parsed.bookingDraft.mediaAllowed || false,
               address: { 
@@ -645,22 +604,19 @@ export default function App() {
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 5000);
   }, []);
   
-  const handleSelectItem = useCallback((type: 'single' | 'pack', item: ServiceItem) => {
-    setBooking(prev => ({ ...prev, type, item, extras: {}, payment: '', termsAccepted: false, bookingId: `BOOK_${Date.now()}` }));
-    if (item.id === 'relaxante') addToast(DATA.text.upgrade_msg, "success");
-    setTimeout(() => setStep(1), 300);
-  }, [addToast, DATA.text.upgrade_msg]);
-  
-  const applyManualCoupon = () => {
-    const code = manualCouponInput.toUpperCase().trim();
-    if (code === 'BEMVINDO10' || code === 'THALY10') {
-      setBooking(b => ({ ...b, appliedCoupon: { id: 'manual', val: 10, title: `🛡️ CÓDIGO: ${code}`, code } }));
-      addToast(T.toast_coupon_success, "success");
-      setManualCouponInput('');
-    } else {
-      addToast(T.toast_coupon_invalid, "error");
-    }
-  };
+  const handleToggleCartItem = useCallback((item: ServiceItem) => {
+    setBooking(prev => {
+      const exists = prev.cart.find(c => c.id === item.id);
+      let newCart;
+      if (exists) {
+        newCart = prev.cart.filter(c => c.id !== item.id);
+      } else {
+        newCart = [...prev.cart, item];
+      }
+      return { ...prev, cart: newCart, payment: '', termsAccepted: false, bookingId: prev.bookingId || `BOOK_${Date.now()}` };
+    });
+    addToast(`Item adicionado/removido do carrinho.`, "success");
+  }, [addToast]);
 
   const daysArray = useMemo(() => {
     const days = []; const today = new Date();
@@ -691,24 +647,34 @@ export default function App() {
   }, [booking.date]);
   
   const financials = useMemo(() => {
-    if (!booking.item) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0 };
-    let sub = booking.item.price;
+    if (booking.cart.length === 0) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0 };
+    
+    let sub = booking.cart.reduce((acc, item) => acc + item.price, 0);
+    const hasPack = booking.cart.some(item => item.type === 'pack');
+
     Object.keys(booking.extras || {}).forEach(k => { 
       if (booking.extras[k]) { 
         const extData = DATA.extras.find(e => e.id === k); 
-        if (extData) sub += booking.type !== 'single' ? Math.floor(extData.price * 0.8) : extData.price; 
+        if (extData) sub += hasPack ? Math.floor(extData.price * 0.8) : extData.price; 
       } 
     });
+
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
     let runningTotal = Math.max(0, sub - disc);
+    
     let mediaDisc = 0;
     if (booking.mediaAllowed) { mediaDisc = Math.ceil(runningTotal * 0.01); runningTotal = Math.max(0, runningTotal - mediaDisc); }
+    
     let pixDisc = 0;
     if (booking.payment === 'pix') { pixDisc = Math.ceil(runningTotal * 0.03); }
+    
     return { sub, disc, pixDisc, mediaDisc, total: Math.max(0, runningTotal - pixDisc) };
-  }, [booking.item, booking.extras, booking.appliedCoupon, booking.type, DATA.extras, booking.payment, booking.mediaAllowed]);
+  }, [booking.cart, booking.extras, booking.appliedCoupon, DATA.extras, booking.payment, booking.mediaAllowed]);
   
-  const estimatedXP = useMemo(() => Math.floor(financials.total * (booking.type === 'pack' ? 0.30 : 0.15)), [financials.total, booking.type]);
+  const estimatedXP = useMemo(() => {
+    const hasPack = booking.cart.some(item => item.type === 'pack');
+    return Math.floor(financials.total * (hasPack ? 0.30 : 0.15));
+  }, [financials.total, booking.cart]);
   
   const getNextLevelInfo = (currentXP: number) => {
     if (currentXP >= 800) {
@@ -731,8 +697,9 @@ export default function App() {
   
   const generateWhatsAppMsg = () => {
     const f = financials; const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(CONFIG.LOCALE_PT) : '';
-    const securityHash = btoa(encodeURIComponent(`${f.total}-${dateStr}-${booking.item?.id || ''}-${CONFIG.SECRET_TOKEN}`)).substring(0, 8).toUpperCase();
-    let serviceTitle = booking.item?.title || ''; if (booking.type !== 'single' && booking.item?.desc) serviceTitle += ` (Plano de Tratamento)`;
+    const securityHash = btoa(encodeURIComponent(`${f.total}-${dateStr}-${booking.cart[0]?.id || ''}-${CONFIG.SECRET_TOKEN}`)).substring(0, 8).toUpperCase();
+    
+    const servicesListText = booking.cart.map(item => `✅ *${item.title}*`).join('\n');
     
     let locTxt = ""; let mapQuery = "";
     if (booking.locationType === 'home') { 
@@ -745,46 +712,44 @@ export default function App() {
     }
     else { 
       const fullAddr = `${booking.address.placeName}, ${booking.address.city}`; 
-      locTxt = `🏨 *Hotel: ${booking.address.placeName}*\n📍 ${booking.address.city}\n🚪 Quarto/Reserva: ${booking.address.comp || '-'}`; 
+      locTxt = `🏨 *Hotel: ${booking.address.placeName}*\n📍 ${booking.address.city}\n🚪 Quarto: ${booking.address.comp || '-'}`; 
       mapQuery = fullAddr; 
     }
     
     const extrasList = Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).map(k => { 
       const ex = DATA.extras.find(e => e.id === k); 
-      if (!ex) return ''; 
-      return `✅ ${ex.label}`; 
+      return ex ? `➕ ${ex.label}` : ''; 
     }).filter(Boolean).join('\n');
     
-    let priceDetails = `💵 *Investimento (${serviceTitle}):* R$ ${booking.item?.price.toFixed(2).replace('.', ',')}`;
+    let priceDetails = `💵 *Soma dos Cuidados:* R$ ${f.sub.toFixed(2).replace('.', ',')}`;
     if (f.disc > 0) priceDetails += `\n🎁 *Presente (${booking.appliedCoupon?.code}):* -R$ ${f.disc.toFixed(2).replace('.', ',')}`;
     if (f.mediaDisc > 0) priceDetails += `\n📸 *Desconto Portfólio:* -R$ ${f.mediaDisc.toFixed(2).replace('.', ',')}`;
     if (f.pixDisc > 0) priceDetails += `\n💸 *Desconto PIX (3%):* -R$ ${f.pixDisc.toFixed(2).replace('.', ',')}`;
-    priceDetails += `\n\n💰 *VALOR FINAL A ACERTAR: R$ ${f.total.toFixed(2).replace('.', ',')}*`;
+    priceDetails += `\n\n💰 *VALOR FINAL: R$ ${f.total.toFixed(2).replace('.', ',')}*`;
     
-    return `
+    let msg = `
 *RESERVA DE CUIDADO* | #${securityHash}
 ──────────────────
+Olá Thalyson! Gostaria de agendar meu momento.
+
 👤 *Nome:* ${sanitizeInput(user.name)}
-📅 *Data do Encontro:* ${dateStr}
-⏰ *Horário:* ${booking.time}
+📅 *Data:* ${dateStr} às ${booking.time}
 
-💆‍♂️ *EXPERIÊNCIA ESCOLHIDA:*
-*${serviceTitle}*
-${extrasList ? `\n➕ *Detalhes Extras:*\n${extrasList}` : ''}
-
-📍 *ONDE VAMOS NOS ENCONTRAR:*
-${locTxt}
+💆‍♂️ *O QUE ESCOLHI:*
+${servicesListText}
+${extrasList ? `\n*Extras Adicionados:*\n${extrasList}\n` : ''}
+📍 *ONDE:*\n${locTxt}
 ${mapQuery ? `🔗 GPS: http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
 
-🚗 *Deslocamento:* A combinar.
-
-💰 *RESUMO:*
+💰 *RESUMO DO INVESTIMENTO:*
 ${priceDetails}
 
-💳 *Pagamento no encontro via:* ${booking.payment.toUpperCase()}
+💳 *Forma de Pagamento:* ${booking.payment.toUpperCase()}
 ──────────────────
-_Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
+_Aceito os termos de entrega e aguardo sua confirmação. O meu WhatsApp para contato é este mesmo!_
     `.trim();
+
+    return msg;
   };
 
   const generateWhatsAppLink = () => `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(generateWhatsAppMsg())}`;
@@ -795,7 +760,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
   };
   
   const isStepValid = useCallback(() => {
-    if (step === 0) return !!booking.item;
+    if (step === 0) return booking.cart.length > 0;
     if (step === 1) return !!(booking.date && booking.time);
     if (step === 2) {
       if (!user.name || String(user.name).trim().length < 3) return false;
@@ -948,14 +913,16 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                   Mais de {user.ordersCount || 92} tensões resolvidas
                 </div>
               </div>
-              <div className="flex items-center gap-4 shrink-0">
-                <button onClick={() => setMenuOpen(true)} className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:shadow-md'}`}>
+              <div className="flex items-center gap-3 shrink-0">
+                <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Acessar Instagram" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/60 border-zinc-800 text-pink-500 hover:bg-zinc-800 hover:text-pink-400 hover:border-zinc-700' : 'bg-white border-slate-200 text-pink-600 hover:bg-slate-50 hover:shadow-md'}`}>
+                   <Icon name="instagram" size={20} />
+                </a>
+                <button onClick={() => setMenuOpen(true)} aria-label="Abrir Menu" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:shadow-md'}`}>
                    <Icon name="menu" size={20} />
                 </button>
               </div>
             </div>
             
-            {/* Progressão Visual Elegante e Espaçada */}
             {step > 0 && step < 4 && (
               <div className="mt-8 md:mt-12 flex items-center justify-between gap-3 max-w-sm mx-auto">
                 {[1, 2, 3].map(i => (
@@ -974,7 +941,6 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
         <div className="space-y-12 md:space-y-16">
           {step === 0 && (
             <section className="space-y-12 md:space-y-16 animate-fade-in">
-              {/* Seção de Boas Vindas Super Espaçada */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center py-2 md:py-6">
                 <div>
                   <h2 className={`text-3xl md:text-5xl font-playfair font-medium leading-[1.15] mb-4 md:mb-6 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
@@ -985,7 +951,6 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                   </p>
                 </div>
                 
-                {/* Cartão de XP / Cuidado */}
                 <div className={`p-6 md:p-8 rounded-3xl border transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-100 shadow-lg shadow-slate-200/50 hover:border-slate-300'}`}>
                   <div className="flex justify-between items-start mb-8">
                     <div className="flex items-center gap-4">
@@ -1025,32 +990,40 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                 </div>
               </div>
               
-              {/* Abas */}
               <div className={`flex p-1.5 md:p-2 rounded-2xl md:rounded-3xl border max-w-sm mx-auto shadow-inner ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-slate-100/80 border-slate-200'}`} role="tablist">
+                <button role="tab" aria-selected={activeTab === 'packs'} onClick={() => setActiveTab('packs')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'packs' ? 'bg-amber-500 text-white shadow-lg shadow-amber-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
+                  <Icon name="package" size={16} /> {T.tab_packs}
+                </button>
                 <button role="tab" aria-selected={activeTab === 'single'} onClick={() => setActiveTab('single')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'single' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
                   <Icon name="user" size={16} /> {T.tab_single}
                 </button>
-                <button role="tab" aria-selected={activeTab === 'packs'} onClick={() => setActiveTab('packs')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'packs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
-                  <Icon name="package" size={16} /> {T.tab_packs}
-                </button>
               </div>
               
-              {/* Grid de Serviços Otimizado */}
+              {/* Grid de Serviços */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                {(activeTab === 'single' ? DATA.services : DATA.plans).map((s: ServiceItem) => (
-                  <Card key={s.id} active={booking.item?.id === s.id} onClick={() => handleSelectItem(activeTab === 'single' ? 'single' : 'pack', s)} isDark={isDark} popular={s.popular}>
+                {(activeTab === 'single' ? DATA.services : DATA.plans).map((s: ServiceItem) => {
+                  const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
+                  const isPremiumCard = s.type === 'pack' || activeTab === 'packs';
+                  
+                  return (
+                  <Card key={s.id} active={isInCart} onClick={() => handleToggleCartItem(s)} isDark={isDark} popular={s.popular} isPremium={isPremiumCard}>
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-6 gap-3">
-                        <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-slate-200 text-slate-700'}`}>
+                        <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? (isPremiumCard ? 'bg-zinc-900 border-amber-500/30 text-amber-500' : 'bg-zinc-800 border-zinc-700 text-zinc-200') : (isPremiumCard ? 'bg-amber-100 border-amber-200 text-amber-600' : 'bg-white border-slate-200 text-slate-700')}`}>
                           <Icon name={s.icon} size={24} isEmoji={s.isEmoji} />
                         </div>
-                        <div className="text-right min-w-0 flex-1 flex flex-col items-end">
+                        <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
+                          {isInCart && (
+                            <div className={`absolute -top-2 -right-2 text-white w-6 h-6 flex items-center justify-center rounded-full animate-fade-in shadow-md ${isPremiumCard ? 'bg-amber-500' : 'bg-blue-500'}`}>
+                              <Icon name="check" size={14} />
+                            </div>
+                          )}
                           {s.fullPrice && (
-                            <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold truncate w-full ${isDark ? 'text-red-400/80' : 'text-red-500/80'}`}>
+                            <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold w-full ${isDark ? 'text-red-400/80' : 'text-red-500/80'}`}>
                               De: <span className="line-through">{formatMoney(s.fullPrice)}</span>
                             </span>
                           )}
-                          <span className={`text-xl md:text-2xl font-playfair font-semibold truncate w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          <span className={`text-xl md:text-2xl font-playfair font-semibold w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
                             {formatMoney(s.price)}
                           </span>
                           {s.savings && (
@@ -1062,7 +1035,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                       </div>
                       
                       <div className="mb-6">
-                        <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
+                        <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? (isPremiumCard ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-zinc-800/80 border-zinc-700 text-blue-400') : (isPremiumCard ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-blue-50 border-blue-200 text-blue-700')}`}>
                           {s.tag}
                         </span>
                         <h3 className={`text-lg md:text-xl font-playfair font-medium mb-2 md:mb-3 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
@@ -1074,19 +1047,18 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                       </div>
                     </div>
                     
-                    <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
+                    <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? (isPremiumCard ? 'border-amber-500/20' : 'border-zinc-800/60') : (isPremiumCard ? 'border-amber-200' : 'border-slate-200')}`}>
                       <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-zinc-300' : 'text-slate-500'}`}>
-                        <Icon name="check" size={14} className="text-emerald-500 shrink-0" /> {T.details_label}
+                        <Icon name="check" size={14} className={`${isPremiumCard ? 'text-amber-500' : 'text-emerald-500'} shrink-0`} /> {T.details_label}
                       </div>
                       <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                        {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className="text-blue-500 mt-1 text-[10px] shrink-0">•</span> <span>{line}</span></p>)}
+                        {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className={`${isPremiumCard ? 'text-amber-500' : 'text-blue-500'} mt-1 text-[10px] shrink-0`}>•</span> <span>{line}</span></p>)}
                       </div>
                     </div>
                   </Card>
-                ))}
+                )})}
               </div>
               
-              {/* Seção de Social Proof (Reviews) Refatorada - Mobile First com Altura Flexível */}
               <div className="py-12 md:py-16 relative border-t border-b border-dashed border-zinc-800/50 mt-12 md:mt-16">
                 <div className="flex items-center justify-between mb-8 md:mb-10">
                   <h3 className={`text-2xl md:text-3xl font-playfair font-medium ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
@@ -1098,7 +1070,6 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                   </div>
                 </div>
                 
-                {/* Container do Carrossel usando flex com items-stretch para forçar os cards a terem a mesma altura */}
                 <div id="reviews-slider" className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth pb-6 pt-2 -mx-4 md:-mx-8 px-4 md:px-8 gap-4 md:gap-6 items-stretch" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {DATA.reviews.map((r, i) => (
                     <div key={i} className="snap-center shrink-0 w-[85vw] sm:w-[320px] md:w-[360px] flex h-auto">
@@ -1108,7 +1079,6 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                 </div>
               </div>
               
-              {/* FAQ */}
               <div className="max-w-2xl mx-auto py-10 md:py-12">
                 <h3 className={`text-2xl md:text-3xl font-playfair font-medium text-center mb-8 md:mb-10 ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
                   {T.faq_title}
@@ -1131,13 +1101,17 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                 </p>
               </div>
               
-              {/* Resumo da Escolha Atual */}
-              <div className={`p-5 md:p-6 rounded-2xl flex items-center justify-between border shadow-sm ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-slate-200'}`}>
-                 <div className="flex flex-col gap-1 min-w-0 pr-2">
-                   <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Sua Escolha</span>
-                   <span className={`text-base md:text-lg font-semibold font-playfair truncate ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{booking.item?.title}</span>
+              <div className={`p-6 md:p-8 rounded-3xl flex flex-col gap-4 border shadow-sm ${isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-slate-200'}`}>
+                 <div className="flex items-center justify-between">
+                   <span className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>Seu Carrinho:</span>
+                   <button onClick={() => setStep(0)} className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest px-4 py-2 rounded-full transition-colors border shrink-0 ${isDark ? 'border-zinc-700 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800' : 'border-slate-300 text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}>Editar</button>
                  </div>
-                 <button onClick={() => setStep(0)} className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest px-4 py-2 rounded-full transition-colors border shrink-0 ${isDark ? 'border-zinc-700 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800' : 'border-slate-300 text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}>Alterar</button>
+                 {booking.cart.map(item => (
+                   <div key={item.id} className="flex justify-between items-center text-sm md:text-base border-b pb-2 last:border-0 last:pb-0 border-zinc-800/50">
+                     <span className={`font-semibold font-playfair ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{item.title}</span>
+                     <span className={isDark ? 'text-zinc-400' : 'text-slate-500'}>{formatMoney(item.price)}</span>
+                   </div>
+                 ))}
               </div>
 
               <div className="relative mt-10">
@@ -1212,7 +1186,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                 ))}
               </div>
               
-              <div className={`p-5 md:p-8 rounded-3xl border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'} space-y-6 md:space-y-8`}>
+              <div className={`p-6 md:p-8 rounded-3xl border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'} space-y-6 md:space-y-8`}>
                 <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder="Seu nome" hasError={!user.name || String(user.name).trim().length < 3} />
                 
                 {booking.locationType === 'home' && (
@@ -1255,15 +1229,15 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                 </h3>
                 <div className="space-y-3">
                   {DATA.extras.map((ex) => {
-                    const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
+                    const price = booking.cart.some(item => item.type === 'pack') ? Math.floor(ex.price * 0.8) : ex.price;
                     const isActive = booking.extras[ex.id];
                     return (
                       <div key={ex.id} onClick={() => setBooking(b => ({ ...b, extras: { ...b.extras, [ex.id]: !b.extras[ex.id] } }))} className={`flex items-center justify-between p-4 md:p-5 rounded-2xl border cursor-pointer transition-all duration-300 ${isActive ? 'bg-blue-600/10 border-blue-500 shadow-sm' : isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'} group`} role="checkbox" aria-checked={isActive}>
                         <div className="flex items-center gap-4 min-w-0 pr-2">
                           <div className={`transition-transform duration-300 shrink-0 ${isActive ? 'scale-110' : ''}`}><Icon name={ex.icon} size={24} isEmoji={ex.isEmoji} /></div>
                           <div className="min-w-0">
-                            <p className={`text-sm font-semibold truncate ${isActive ? isDark ? 'text-blue-400' : 'text-blue-700' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{ex.label}</p>
-                            <p className={`text-[10px] md:text-xs font-light mt-0.5 truncate ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p>
+                            <p className={`text-sm font-semibold ${isActive ? isDark ? 'text-blue-400' : 'text-blue-700' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{ex.label}</p>
+                            <p className={`text-[10px] md:text-xs font-light mt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{ex.desc}</p>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
@@ -1284,45 +1258,44 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
               <SmartTimer isDark={isDark} text={T.timer_text} />
               
               <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6 md:gap-8">
-                <div className={`p-6 md:p-10 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
+                <div className={`p-6 md:p-10 rounded-3xl border shadow-sm flex flex-col ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
                   <h3 className={`text-xl md:text-2xl font-playfair font-medium mb-6 md:mb-8 flex items-center gap-3 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
-                    <Icon name="file-text" size={24} className="text-blue-500" /> Resumo
+                    <Icon name="file-text" size={24} className="text-blue-500" /> Resumo do Pedido
                   </h3>
-                  <div className="space-y-6 md:space-y-8">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1 min-w-0 pr-4">
-                        <p className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest mb-1.5 md:mb-2 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
-                          MODALIDADE ESCOLHIDA
-                        </p>
-                        <h4 className={`text-base md:text-lg font-playfair font-semibold truncate ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
-                          {booking.item ? (DATA.services.find(s => s.id === booking.item?.id) || DATA.plans.find(p => p.id === booking.item?.id))?.title : ''}
-                        </h4>
-                        <div className={`flex items-center gap-2 text-[10px] md:text-xs font-medium mt-3 border px-3 py-1.5 rounded-full w-fit shadow-sm truncate ${isDark ? 'bg-zinc-800/80 border-zinc-700 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
-                          <Icon name="calendar" size={12} className="text-blue-500 shrink-0" />
-                          {booking.date ? new Date(booking.date).toLocaleDateString(CONFIG.LOCALE_PT) : ''} às {booking.time}
-                        </div>
+                  
+                  <div className="flex-1 space-y-6">
+                    <div>
+                      <p className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                        CUIDADOS ESCOLHIDOS
+                      </p>
+                      <div className="space-y-3">
+                        {booking.cart.map((cartItem, idx) => (
+                           <div key={idx} className="flex justify-between items-center text-sm md:text-base border-b border-zinc-800/30 pb-3 last:border-0 last:pb-0">
+                             <h4 className={`font-playfair font-semibold ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                                {cartItem.title}
+                             </h4>
+                             <span className={`font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{formatMoney(cartItem.price)}</span>
+                           </div>
+                        ))}
                       </div>
-                      <span className={`text-lg md:text-xl font-medium font-playfair shrink-0 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
-                        {formatMoney(financials.sub)}
-                      </span>
                     </div>
                     
                     {Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).length > 0 && (
-                      <div className={`pt-6 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
-                        <p className={`text-[9px] uppercase font-bold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
-                          POTENCIALIZADORES INCLUÍDOS
+                      <div className={`pt-4 border-t border-zinc-800/30`}>
+                        <p className={`text-[9px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                          EXTRAS
                         </p>
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                           {Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).map(k => {
                             const ex = DATA.extras.find(e => e.id === k);
                             if (!ex) return null;
-                            const price = booking.type !== 'single' ? Math.floor(ex.price * 0.8) : ex.price;
+                            const price = booking.cart.some(item => item.type === 'pack') ? Math.floor(ex.price * 0.8) : ex.price;
                             return (
-                              <div key={k} className="flex justify-between text-sm font-medium">
-                                <span className={`flex items-center gap-2 truncate pr-2 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                                   <Icon name="check" size={14} className="text-blue-500 shrink-0" /> <span className="truncate">{ex.label}</span>
+                              <div key={k} className="flex justify-between text-sm font-light">
+                                <span className={`flex items-center gap-2 pr-2 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                                   <Icon name="plus" size={14} className="text-blue-500 shrink-0" /> <span>{ex.label}</span>
                                 </span>
-                                <span className={`shrink-0 ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>+ {formatMoney(price)}</span>
+                                <span className={`${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>+ {formatMoney(price)}</span>
                               </div>
                             );
                           })}
@@ -1330,6 +1303,23 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                       </div>
                     )}
                     
+                    <div className={`pt-4 mt-auto border-t border-zinc-800/30`}>
+                       <p className={`text-[9px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                          INFORMAÇÕES DO ENCONTRO
+                       </p>
+                       <div className="flex flex-col gap-2 text-sm font-medium">
+                          <div className={`flex items-center gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
+                            <Icon name="calendar" size={16} className="text-blue-500 shrink-0" />
+                            {booking.date ? new Date(booking.date).toLocaleDateString(CONFIG.LOCALE_PT) : ''} às {booking.time}
+                          </div>
+                          <div className={`flex items-center gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
+                            <Icon name="map-pin" size={16} className="text-blue-500 shrink-0" />
+                            {booking.locationType === 'home' ? 'Em sua residência' : booking.locationType === 'motel' ? 'Em suíte/motel' : 'Em hotel'}
+                          </div>
+                       </div>
+                    </div>
+                    
+                    {/* ATENÇÃO UX: Demonstração Matemática do Cupom Super Visual */}
                     <div className={`pt-6 border-t border-dashed ${isDark ? 'border-zinc-800' : 'border-slate-300'}`}>
                       <div className="flex justify-between mb-3 text-sm">
                         <span className={`font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.subtotal}</span>
@@ -1338,23 +1328,31 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                         </span>
                       </div>
                       
-                      {financials.disc > 0 && (
-                        <div className="flex justify-between mb-3 text-emerald-500 font-medium text-sm">
-                          <span className="truncate pr-2">{T.discount} ({booking.appliedCoupon?.code})</span>
-                          <span className="shrink-0">- {formatMoney(financials.disc)}</span>
+                      {booking.appliedCoupon && (
+                        <div className={`my-4 p-4 rounded-2xl flex items-center justify-between border-dashed border-2 ${isDark ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-emerald-50 border-emerald-300'}`}>
+                           <div className="flex items-center gap-3">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-200 text-emerald-700'}`}>
+                                 <Icon name="gift" size={20} />
+                              </div>
+                              <div>
+                                 <p className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Cupom Aplicado</p>
+                                 <p className={`text-sm font-bold ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{booking.appliedCoupon.code}</p>
+                              </div>
+                           </div>
+                           <span className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>- {formatMoney(booking.appliedCoupon.val)}</span>
                         </div>
                       )}
 
                       {financials.mediaDisc > 0 && (
                         <div className="flex justify-between mb-3 text-blue-400 font-medium text-sm">
-                          <span className="truncate pr-2">{T.media_discount}</span>
+                          <span className="pr-2">{T.media_discount}</span>
                           <span className="shrink-0">- {formatMoney(financials.mediaDisc)}</span>
                         </div>
                       )}
                       
                       {financials.pixDisc > 0 && (
                         <div className={`flex justify-between mb-3 font-medium text-sm ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                          <span className="truncate pr-2">{T.pix_discount}</span>
+                          <span className="pr-2">{T.pix_discount}</span>
                           <span className="shrink-0">- {formatMoney(financials.pixDisc)}</span>
                         </div>
                       )}
@@ -1382,29 +1380,21 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                 </div>
                 
                 <div className="space-y-6 md:space-y-8">
-                  {/* Cupom Section */}
-                  <div className={`p-6 md:p-8 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
-                    <h3 className={`text-base font-playfair font-medium mb-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
-                      {T.coupon_section}
-                    </h3>
-                    
-                    <div className="flex gap-2 mb-4">
-                      <input type="text" value={manualCouponInput} onChange={(e) => setManualCouponInput(e.target.value)} placeholder="Cupom" className={`flex-1 min-w-0 h-12 px-4 rounded-xl text-sm outline-none font-mono uppercase transition-all bg-transparent border ${isDark ? 'border-zinc-800 focus:border-blue-500 text-zinc-100 placeholder:text-zinc-600' : 'border-slate-300 focus:border-blue-500 text-slate-900 placeholder:text-slate-400'}`} />
-                      <button onClick={applyManualCoupon} className={`px-5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shrink-0 ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-md' : 'bg-slate-900 text-white hover:bg-black shadow-md'}`}>Aplicar</button>
-                    </div>
-
-                    {user.coupons.length > 0 && (
-                      <div className={`flex flex-wrap gap-2 pt-4 border-t ${isDark ? 'border-zinc-800/60' : 'border-slate-200'}`}>
+                  {user.coupons.length > 0 && (
+                    <div className={`p-6 md:p-8 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
+                      <h3 className={`text-base font-playfair font-medium mb-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                        {T.coupon_section}
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
                         {user.coupons.map(c => (
-                          <button key={c.id} onClick={() => setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c }))} className={`px-3 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all border ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : isDark ? 'bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 shadow-sm'}`}>
-                            {c.title}
+                          <button key={c.id} onClick={() => setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c }))} className={`px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border flex items-center gap-2 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 text-white border-emerald-500 shadow-md' : isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500' : 'bg-slate-100 border-slate-300 text-slate-700 hover:border-slate-400 shadow-sm'}`}>
+                            {booking.appliedCoupon?.id === c.id && <Icon name="check" size={14} />} {c.title}
                           </button>
                         ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
-                  {/* Media Permission */}
                   <div className={`p-6 md:p-8 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
                       <div className="flex items-start gap-4">
                         <div className={`mt-0.5 p-2.5 rounded-full shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}><Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={20} /></div>
@@ -1412,14 +1402,13 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                            <h3 className={`text-base font-playfair font-medium mb-2 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.media_title}</h3>
                            <p className={`text-[11px] md:text-xs font-light leading-relaxed mb-4 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.media_desc}</p>
                            <button onClick={() => setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed }))} className={`w-full flex items-center justify-between p-3 md:p-4 rounded-xl border transition-all text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${booking.mediaAllowed ? 'bg-blue-600/10 border-blue-500 text-blue-500' : isDark ? 'bg-transparent border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 shadow-sm'}`}>
-                              <span className="truncate pr-2">{booking.mediaAllowed ? 'Autorização Concedida' : 'Apoiar o Trabalho'}</span>
+                              <span className="pr-2">{booking.mediaAllowed ? 'Autorização Concedida' : 'Apoiar o Trabalho'}</span>
                               {booking.mediaAllowed ? <div className="flex items-center gap-1 shrink-0"><Icon name="check" size={14} /></div> : <span className={`text-[8px] md:text-[9px] px-2 py-1 rounded-full whitespace-nowrap shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{T.media_bonus}</span>}
                            </button>
                         </div>
                       </div>
                   </div>
                   
-                  {/* Payment */}
                   <div className={`p-6 md:p-8 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/40 border-zinc-800/80' : 'bg-white border-slate-100'}`}>
                     <h3 className={`text-base font-playfair font-medium mb-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.payment_title}</h3>
                     <div className="space-y-3">
@@ -1428,7 +1417,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                         { id: 'card', label: 'Cartão', icon: 'credit-card' },
                         { id: 'money', label: 'Dinheiro', icon: 'banknote' }
                       ].map(p => (
-                        <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))} className={`w-full flex items-center gap-3 p-4 rounded-xl border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-md scale-[1.01]' : isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm'}`}>
+                        <button key={p.id} onClick={() => setBooking(b => ({ ...b, payment: p.id }))} className={`w-full flex items-center gap-3 p-4 h-16 rounded-2xl border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-md scale-[1.01]' : isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm'}`}>
                           <Icon name={p.icon} size={20} className="shrink-0" />
                           <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest flex-1 text-left truncate">{p.label}</span>
                           <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${booking.payment === p.id ? 'border-white bg-blue-500' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
@@ -1439,7 +1428,6 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
                     </div>
                   </div>
                   
-                  {/* Terms */}
                   <div onClick={() => setTermsOpen(true)} className={`flex items-center justify-between p-5 md:p-6 rounded-3xl border cursor-pointer transition-all duration-300 ${booking.termsAccepted ? 'bg-emerald-500/10 border-emerald-500/50' : isDark ? 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`}>
                     <div className="flex items-center gap-4 min-w-0 pr-2">
                       <div className={`shrink-0 ${booking.termsAccepted ? 'text-emerald-500' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Icon name="heart" size={24} /></div>
@@ -1460,8 +1448,8 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
           {step === 4 && (
             <section className="min-h-[60vh] flex flex-col items-center justify-center text-center animate-fade-in max-w-md mx-auto px-4">
               <div className="relative mb-10">
-                <div className="absolute inset-0 bg-blue-500/20 blur-[40px] rounded-full scale-[1.5] animate-pulse" />
-                <div className={`relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center border-[4px] shadow-xl shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-blue-500' : 'bg-white border-slate-100 text-blue-600'}`}>
+                <div className="absolute inset-0 bg-emerald-500/20 blur-[40px] rounded-full scale-[1.5] animate-pulse" />
+                <div className={`relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center border-[4px] shadow-xl shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-emerald-500' : 'bg-white border-slate-100 text-emerald-600'}`}>
                   <Icon name="check" size={36} />
                 </div>
               </div>
@@ -1470,8 +1458,7 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
               
               <div className="flex flex-col gap-4 w-full">
                 <Button variant="whatsapp" size="lg" full icon="message" onClick={() => window.open(generateWhatsAppLink(), '_blank')}>{T.whatsapp_btn}</Button>
-                <Button variant="secondary" size="lg" full icon="copy" onClick={copyToClipboard}>Copiar Resumo</Button>
-                <button onClick={() => { setStep(0); setBooking({ ...booking, item: null, type: 'single', termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`mt-4 text-[10px] font-bold uppercase tracking-widest transition-colors py-3 ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600'}`}>
+                <button onClick={() => { setStep(0); setBooking({ ...booking, cart: [], termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`mt-4 text-[10px] font-bold uppercase tracking-widest transition-colors py-3 ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600'}`}>
                   {T.back_home}
                 </button>
               </div>
@@ -1480,29 +1467,34 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
         </div>
       </main>
       
-      {/* Footer Navigation Premium Mobile-First */}
-      {step > 0 && step < 4 && booking.item && (
+      {step >= 0 && step < 4 && booking.cart.length > 0 && (
         <nav className="fixed bottom-0 left-0 right-0 p-3 md:p-6 z-40 animate-fade-in pointer-events-none">
-          <div className={`max-w-2xl mx-auto rounded-full p-2 md:p-3 border backdrop-blur-3xl pointer-events-auto flex justify-between items-center transition-all shadow-2xl ${isDark ? 'bg-zinc-950/90 border-zinc-800/80 shadow-black/80' : 'bg-white/95 border-slate-200/80 shadow-slate-300/60'}`}>
-            <button onClick={() => { setStep(s => s - 1); }} className={`w-12 h-12 flex items-center justify-center rounded-full transition-colors border border-transparent shrink-0 ${isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-700' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100 hover:border-slate-200'}`} aria-label="Voltar Etapa">
-              <Icon name="chevron-left" size={20} />
-            </button>
+          <div className={`max-w-3xl mx-auto rounded-[2rem] p-3 md:p-4 border backdrop-blur-3xl pointer-events-auto flex justify-between items-center transition-all shadow-2xl ${isDark ? 'bg-zinc-950/90 border-zinc-800/80 shadow-black/80' : 'bg-white/95 border-slate-200/80 shadow-slate-300/60'}`}>
             
-            <div className="flex-1 flex flex-col items-center justify-center min-w-0 px-2">
-              <p className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest mb-0.5 truncate w-full text-center ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{step === 3 ? T.total_label : T.subtotal}</p>
-              <p className={`text-lg md:text-xl font-playfair font-semibold truncate w-full text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>{step === 3 ? formatMoney(financials.total) : formatMoney(financials.sub)}</p>
+            {step > 0 && (
+               <button onClick={() => { setStep(s => s - 1); }} className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-colors border border-transparent shrink-0 ${isDark ? 'bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-700' : 'bg-slate-100 text-slate-500 hover:text-slate-900 hover:border-slate-200'}`} aria-label="Voltar Etapa">
+                 <Icon name="chevron-left" size={24} />
+               </button>
+            )}
+            
+            <div className={`flex-1 flex flex-col items-start justify-center min-w-0 px-4 ${step === 0 ? 'pl-6' : ''}`}>
+              <p className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-0.5 w-full ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                {step === 0 ? `${booking.cart.length} item(s) selecionado(s)` : step === 3 ? T.total_label : T.subtotal}
+              </p>
+              <p className={`text-xl md:text-2xl font-playfair font-semibold truncate w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                {step === 3 ? formatMoney(financials.total) : formatMoney(financials.sub)}
+              </p>
             </div>
             
-            <Button onClick={handleNextStep} disabled={!isStepValid()} size="sm" className="!h-12 !px-5 md:!px-6 !text-[10px] md:!text-xs shrink-0 rounded-full" ariaLabel={step === 3 ? T.finish_btn : T.next_btn}>
+            <Button onClick={handleNextStep} disabled={!isStepValid()} size="lg" className="!h-14 !px-6 md:!px-8 !text-[11px] md:!text-xs shrink-0 !rounded-2xl" ariaLabel={step === 3 ? T.finish_btn : T.next_btn}>
               <span className="hidden sm:inline">{step === 3 ? T.finish_btn : T.next_btn}</span>
-              <span className="inline sm:hidden">{step === 3 ? 'Confirmar' : 'Avançar'}</span>
-              <Icon name="chevron-right" size={16} className="ml-1 md:ml-2" />
+              <span className="inline sm:hidden">{step === 3 ? 'Finalizar' : 'Avançar'}</span>
+              {step !== 3 && <Icon name="chevron-right" size={18} className="ml-1" />}
             </Button>
           </div>
         </nav>
       )}
       
-      {/* Modal Termos */}
       {termsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
           <div className={`relative w-full max-w-xl max-h-[85vh] rounded-3xl p-6 md:p-10 flex flex-col border shadow-2xl ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100'}`}>
@@ -1518,7 +1510,6 @@ _Olá Thalyson, aceito os termos de entrega e aguardo sua confirmação!_
         </div>
       )}
       
-      {/* Popups de Boas-Vindas */}
       {welcomePopup && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
           <div className={`relative w-full max-w-sm rounded-3xl p-8 md:p-10 text-center border shadow-2xl ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-slate-100'}`}>
