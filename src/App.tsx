@@ -7,12 +7,12 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v24_premium_plans', 
+  STORAGE_KEY: '@thaly_app_v27_premium_plans', 
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   SECRET_TOKEN: 'THALY_SECURE_V8',
-  START_HOUR: 8,
-  END_HOUR: 22,
+  START_HOUR: 9,
+  END_HOUR: 20,
   MAX_STORAGE_SIZE: 5000 
 } as const;
 
@@ -183,7 +183,6 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user }: any) => {
   );
 });
 
-// ATENÇÃO UX: Card preparado para ser "Premium" com bordas e fundos em tons de Ouro/Âmbar
 const Card = memo(({ children, className = '', onClick, active = false, isDark = true, popular = false, isPremium = false }: any) => {
   const getStyle = () => {
     if (active) {
@@ -380,7 +379,6 @@ const getData = () => {
         id: 'nuru', min: 60, price: p.nuru, icon: "sparkles", tag: "ENTREGA & CALOR", title: "Massagem Nuru", desc: "Ajoelhe-se diante do prazer. Calor orgânico e contato direto que derretem o estresse até a última gota.", details: "Vivência de entrega total com ambos completamente nus\nAplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA imersão mais profunda para o seu gozo físico e mental" 
       }
     ] as ServiceItem[],
-    // ATENÇÃO UX: Descrições dos planos ajustadas para refletirem o que o usuário fará
     plans: [
       { id: 'pack_relax', type: 'pack', title: "Ciclo Alívio (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: "4 sessões completas da Massagem Clássica para acabar com a fadiga e dores crônicas.", details: "4x Massagens Clássicas (60min cada)\nUso de rolos de madeira e toques manuais terapêuticos\nFoco intensivo no alívio de costas, pernas e corpo todo\nUm cronograma de manutenções preventivas e curativas", tag: "SAÚDE FÍSICA", icon: "package" },
       { id: 'pack_mista', type: 'pack', title: "Ciclo Fusion (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: "3 encontros da Experiência Fusion combinando alívio muscular e muito prazer.", details: "3x Experiências Fusion (60min cada)\nInicia quebrando a rigidez muscular de todo o corpo\nTransita para um toque sensitivo e contato corpo a corpo\nFoco na liberação orgânica e esvaziamento mental", tag: "ACOLHIMENTO MENSAL", icon: "layers" },
@@ -477,7 +475,6 @@ export default function App() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [step, setStep] = useState(0);
   const [isDark, setIsDark] = useState(true);
-  // ATENÇÃO UX: Aba 'packs' (Planos Mensais) sendo a primeria a aparecer como gatilho de preço/venda
   const [activeTab, setActiveTab] = useState('packs'); 
   const [toasts, setToasts] = useState<{id: number, msg: string, type: "success" | "error"}[]>([]);
   const [termsOpen, setTermsOpen] = useState(false);
@@ -497,6 +494,34 @@ export default function App() {
   });
   
   const dateScrollRef = useRef<HTMLDivElement>(null);
+
+  // ATENÇÃO UX: Função especial que força sair do WebView (Navegador Embutido)
+  const openExternal = useCallback((platform: 'whatsapp' | 'instagram', customText?: string) => {
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+    if (platform === 'whatsapp') {
+      const text = encodeURIComponent(customText || '');
+      if (isAndroid) {
+        window.location.href = `intent://send?phone=${CONFIG.PHONE}&text=${text}#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url=https://wa.me/${CONFIG.PHONE}?text=${text};end`;
+      } else if (isIOS) {
+        window.location.href = `whatsapp://send?phone=${CONFIG.PHONE}&text=${text}`;
+        setTimeout(() => { window.location.href = `https://wa.me/${CONFIG.PHONE}?text=${text}`; }, 500);
+      } else {
+        window.open(`https://wa.me/${CONFIG.PHONE}?text=${text}`, '_blank');
+      }
+    } else if (platform === 'instagram') {
+      const username = CONFIG.INSTAGRAM_URL.split('/').pop() || 'thalyson.massagens';
+      if (isAndroid) {
+        window.location.href = `intent://user?username=${username}#Intent;scheme=instagram;package=com.instagram.android;S.browser_fallback_url=${CONFIG.INSTAGRAM_URL};end`;
+      } else if (isIOS) {
+        window.location.href = `instagram://user?username=${username}`;
+        setTimeout(() => { window.location.href = CONFIG.INSTAGRAM_URL; }, 500);
+      } else {
+        window.open(CONFIG.INSTAGRAM_URL, '_blank');
+      }
+    }
+  }, []);
   
   useEffect(() => {
     setIsClient(true);
@@ -751,8 +776,6 @@ _Aceito os termos de entrega e aguardo sua confirmação. O meu WhatsApp para co
 
     return msg;
   };
-
-  const generateWhatsAppLink = () => `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(generateWhatsAppMsg())}`;
   
   const copyToClipboard = () => { 
     navigator.clipboard.writeText(generateWhatsAppMsg()); 
@@ -842,7 +865,7 @@ _Aceito os termos de entrega e aguardo sua confirmação. O meu WhatsApp para co
       setTimeout(() => addToast(`${T.levelup_popup_title} ${newLevelTitle}!`, "success"), 500); 
     }
     
-    window.open(generateWhatsAppLink(), '_blank');
+    openExternal('whatsapp', generateWhatsAppMsg());
     setStep(4);
   };
   
@@ -914,9 +937,9 @@ _Aceito os termos de entrega e aguardo sua confirmação. O meu WhatsApp para co
                 </div>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Acessar Instagram" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/60 border-zinc-800 text-pink-500 hover:bg-zinc-800 hover:text-pink-400 hover:border-zinc-700' : 'bg-white border-slate-200 text-pink-600 hover:bg-slate-50 hover:shadow-md'}`}>
+                <button onClick={() => openExternal('instagram')} aria-label="Acessar Instagram" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/60 border-zinc-800 text-pink-500 hover:bg-zinc-800 hover:text-pink-400 hover:border-zinc-700' : 'bg-white border-slate-200 text-pink-600 hover:bg-slate-50 hover:shadow-md'}`}>
                    <Icon name="instagram" size={20} />
-                </a>
+                </button>
                 <button onClick={() => setMenuOpen(true)} aria-label="Abrir Menu" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:shadow-md'}`}>
                    <Icon name="menu" size={20} />
                 </button>
@@ -1319,7 +1342,6 @@ _Aceito os termos de entrega e aguardo sua confirmação. O meu WhatsApp para co
                        </div>
                     </div>
                     
-                    {/* ATENÇÃO UX: Demonstração Matemática do Cupom Super Visual */}
                     <div className={`pt-6 border-t border-dashed ${isDark ? 'border-zinc-800' : 'border-slate-300'}`}>
                       <div className="flex justify-between mb-3 text-sm">
                         <span className={`font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.subtotal}</span>
@@ -1457,7 +1479,7 @@ _Aceito os termos de entrega e aguardo sua confirmação. O meu WhatsApp para co
               <p className={`text-sm md:text-base font-light leading-relaxed mb-10 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
               
               <div className="flex flex-col gap-4 w-full">
-                <Button variant="whatsapp" size="lg" full icon="message" onClick={() => window.open(generateWhatsAppLink(), '_blank')}>{T.whatsapp_btn}</Button>
+                <Button variant="whatsapp" size="lg" full icon="message" onClick={() => openExternal('whatsapp', generateWhatsAppMsg())}>{T.whatsapp_btn}</Button>
                 <button onClick={() => { setStep(0); setBooking({ ...booking, cart: [], termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`mt-4 text-[10px] font-bold uppercase tracking-widest transition-colors py-3 ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600'}`}>
                   {T.back_home}
                 </button>
