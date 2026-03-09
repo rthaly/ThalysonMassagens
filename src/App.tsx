@@ -53,7 +53,8 @@ const ICON_PATHS: Record<string, string> = {
   'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8',
   'heart': 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
-  'plus': 'M12 5v14 M5 12h14'
+  'plus': 'M12 5v14 M5 12h14',
+  'refresh-cw': 'M23 4v6h-6 M1 20v-6h6 M3.51 9a9 9 0 0 1 14.85-3.36L23 10 M1 14l4.64 4.36A9 9 0 0 0 20.49 15'
 };
 
 // ==================================================================================
@@ -369,10 +370,9 @@ const getData = () => {
     titan: 207, 
     reversa: 227, 
     nuru: 317,
-    // NOVOS PACOTES MIXADOS
-    pack1: { v: 297, full: 334, save: 37 }, // Relaxante + Sensorial
-    pack2: { v: 387, full: 434, save: 47 }, // Fusion + Reversa
-    pack3: { v: 637, full: 721, save: 84 }, // Naturista + Fusion + Nuru
+    pack1: { v: 297, full: 334, save: 37 }, 
+    pack2: { v: 387, full: 434, save: 47 }, 
+    pack3: { v: 637, full: 721, save: 84 }, 
     extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
   };
   
@@ -383,35 +383,33 @@ const getData = () => {
       { level: 3, xpNeeded: 350, reward: 30, title: "Corpo Consciente" },
       { level: 4, xpNeeded: 800, reward: 50, title: "Plenitude Alcançada" }
     ],
-    // SERVIÇOS ORDENADOS DO MENOR PARA O MAIOR VALOR
     services: [
       {
-        id: 'depilacao', min: 45, price: p.depil, icon: "scissors", tag: "CUIDADO PESSOAL", title: "Aparo Corporal", desc: "Sinta-se leve e limpo. A manutenção estética é o primeiro passo para o conforto.", details: "Aparo uniforme com Máquina de aparar\nFoco no peito, costas, abdômen e pernas\nNo conforto e privacidade do seu local"
+        id: 'depilacao', min: 45, price: p.depil, icon: "scissors", tag: "PRATICIDADE", title: "Aparo Corporal Completo", desc: "A correria não te deixa cuidar de si mesmo? Eu resolvo. Fique com o corpo limpo, leve e preparado para a semana, sem dores de cabeça.", details: "Aparo higiênico com máquina profissional\nFoco no peito, costas, abdômen e pernas\nNo conforto e total sigilo do seu espaço\nMenos suor e muito mais confiança no dia a dia"
       },
       {
-        id: 'relaxante', min: 60, price: p.relax, icon: "user-check", tag: "ALÍVIO IMEDIATO", title: "Massagem Clássica", desc: "Costas travadas e rotina pesada? Um alívio profundo para curar o corpo e a mente.", details: "Uso de rolos de madeira para soltar a musculatura\nToques suaves e relaxantes com as mãos\nFoco no corpo todo, costas, braços, mãos, pernas e pés. ( sem toques íntimos )\nMomento terapêutico para zerar a fadiga do corpo" 
+        id: 'relaxante', min: 60, price: p.relax, icon: "user-check", tag: "ALÍVIO MUSCULAR", title: "Massagem Clássica (Alívio Rápido)", desc: "Costas travadas da cadeira do escritório? Pescoço tenso? Essa é para tirar com as mãos aquele peso gigante que você carrega e te fazer dormir como um anjo.", details: "Uso de rolos de madeira para amassar os nós de tensão\nToque firme para soltar a musculatura dura\nFoco onde mais dói: costas, pescoço e pernas (sem toque íntimo)\nO botão de 'reiniciar' para quem trabalha demais" 
       },
       {
-        id: 'sensitiva', min: 60, price: p.sens, icon: "sparkles", tag: "DESPERTAR SENSORIAL", title: "Massagem Sensorial", desc: "Quando sua mente não desliga. Desperte a sensibilidade e permita-se chegar ao clímax do relaxamento.", details: "Toques sutis que tiram o foco dos pensamentos\nCondução fluida com toques leves que arrepiam o corpo todo\nFinalização focada em uma intensa descarga de prazer\nPara quem precisa esvaziar a mente sentindo o próprio corpo" 
+        id: 'sensitiva', min: 60, price: p.sens, icon: "sparkles", tag: "REDUZ ANSIEDADE", title: "Massagem Sensorial (Reset Mental)", desc: "A cabeça não desliga na hora de dormir? Feche os olhos e deixe toques sutis arrepiarem seu corpo inteiro, culminando numa explosão de prazer que zera a ansiedade.", details: "Desconecta sua mente dos problemas do trabalho\nToques leves e estímulos que arrepiam a pele\nFinalização focada numa liberação intensa de prazer\nPerfeito para quem sofre com estresse pesado e insônia" 
       },
       {
-        id: 'naturista', min: 60, price: p.naturista, icon: "sun", tag: "LIBERDADE & ALÍVIO", title: "Relaxante Clássica Naturista", desc: "O alívio da massagem clássica aliado à filosofia naturista. Total liberdade e conforto pele na pele para dissolver o estresse.", details: "Acolhimento e preparo com ambos totalmente despidos (prática naturista)\nDeslizamentos manuais profundos e uso de rolos de madeira\nFoco intensivo na quebra de nódulos de tensão nas costas, pernas e braços\nUma vivência de liberdade absoluta, zero amarras e relaxamento profundo"
+        id: 'naturista', min: 60, price: p.naturista, icon: "sun", tag: "ZERO AMARRAS", title: "Clássica Naturista (Liberdade)", desc: "Chegar em casa e tirar a roupa do trabalho é bom, né? Aqui elevamos isso. Liberdade total, sem roupas, pele na pele, para soltar cada músculo do seu corpo.", details: "Sessão feita com ambos totalmente despidos\nPressão exata para desmanchar a rigidez do dia a dia\nAlívio nas costas, pescoço e braços com muito conforto\nSensação de leveza e aceitação, sem julgamentos"
       },
       {
-        id: 'mista', min: 60, price: p.titan, icon: "zap", tag: "RESTAURAÇÃO & PRAZER", title: "Experiência Fusion", desc: "Primeiro curamos suas dores, depois guiamos seu corpo a um estado de êxtase e gozo profundo.", details: "Inicia quebrando a rigidez do corpo todo\nContato com a barba pelo corpo despertando novas sensações\nToque sensitivo transita para um toque envolvente corpo a corpo (Massagista de cueca) \n Foco em uma liberação orgânica de toda a tensão" 
+        id: 'mista', min: 60, price: p.titan, icon: "zap", tag: "O MELHOR DOS 2 MUNDOS", title: "Experiência Fusion (A Mais Completa)", desc: "Por que escolher se você pode ter tudo? Primeiro eu tiro a dor das suas costas, depois te levo a um clímax que faz qualquer problema da semana desaparecer.", details: "Começa forte: quebrando a tensão muscular do pescoço e costas\nMuda o ritmo: contato íntimo corpo a corpo e roçar de barba\nEnvolve seus sentidos numa crescente de calor e desejo\nTermina com um gozo libertador que recarrega suas baterias" 
       },
       {
-        id: 'reversa', min: 60, price: p.reversa, icon: "refresh-cw", tag: "TROCA MÚTUA", title: "Massagem Reversa Clássica", desc: "Uma experiência imersiva onde a via de mão dupla é liberada. Sinta-se livre para me tocar, explorar e compartilhar a condução do nosso momento.", details: "Inicia com toques relaxantes para criar conexão\nAvança para uma dinâmica mútua, onde você também me toca\nSem regras rígidas de 'quem faz e quem recebe'\nFinalização orgânica baseada na troca de energia e calor entre nós"
+        id: 'reversa', min: 60, price: p.reversa, icon: "refresh-cw", tag: "CONTATO REAL", title: "Massagem Reversa (Troca e Toque)", desc: "Sente falta de calor humano e intimidade? Aqui você não é passivo. Você relaxa, mas tem total liberdade para colocar as mãos, me explorar e ditar o ritmo.", details: "Eu quebro o gelo inicial e relaxo seu corpo\nDepois o controle é seu: sinta-se à vontade para me tocar\nSem a frieza de 'cliente e profissional', pura conexão real\nUma dinâmica deliciosa de reciprocidade que te deixa realizado"
       },
       {
-        id: 'nuru', min: 60, price: p.nuru, icon: "star", popular: true, tag: "ENTREGA & CALOR", title: "Massagem Nuru", desc: "Ajoelhe-se diante do prazer. Calor orgânico e contato direto que derretem o estresse até a última gota.", details: "Vivência de entrega total com ambos completamente nus\nAplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA imersão mais profunda para o seu gozo físico e mental" 
+        id: 'nuru', min: 60, price: p.nuru, icon: "star", popular: true, tag: "ENTREGA TOTAL", title: "Massagem Nuru (A Mais Desejada)", desc: "Quando o nível de estresse está no limite, só isso resolve. Gel quente, meu corpo inteiro deslizando sobre o seu, e uma entrega tão profunda que suas pernas vão tremer.", details: "Vivência de altíssima intimidade, ambos completamente nus\nMuito gel aquecido para um deslizamento perfeito e contínuo\nPele na pele do início ao fim: eu uso meu corpo para relaxar o seu\nA viagem mais suada e intensa para você gozar e apagar de relaxamento" 
       }
     ] as ServiceItem[],
-    // NOVOS PACOTES TOTALMENTE REFEITOS
     plans: [
-      { id: 'pack_essencial', type: 'pack', title: "Ciclo Essencial (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: "A combinação perfeita para iniciar. O alívio profundo das tensões seguido pelo despertar dos seus sentidos.", details: "1x Massagem Clássica (Zerar a fadiga e dores musculares)\n1x Massagem Sensorial (Desligar a mente e focar no prazer)\nIdeal para ser usado em duas semanas seguidas\nCusto-benefício perfeito para sua manutenção de bem-estar", tag: "CORPO & MENTE", icon: "layers" },
-      { id: 'pack_interativo', type: 'pack', title: "Combo Interativo (2x)", price: p.pack2.v, fullPrice: p.pack2.full, savings: p.pack2.save, desc: "Para quem quer participar ativamente. Duas sessões focadas na troca de energia, intimidade e toque mútuo.", details: "1x Experiência Fusion (Restauração física e prazer intenso)\n1x Massagem Reversa (Liberdade total para me tocar também)\nFoco na quebra de barreiras e entrega absoluta\nRecomendado para quem busca mais calor, conexão e proximidade", tag: "TROCA MÚTUA", icon: "heart" },
-      { id: 'pack_premium', type: 'pack', title: "Jornada Premium (3x)", price: p.pack3.v, fullPrice: p.pack3.full, savings: p.pack3.save, desc: "A verdadeira evolução do prazer e relaxamento. Um pacote imersivo passando pelas minhas 3 melhores técnicas.", details: "1x Clássica Naturista (Liberdade absoluta e alívio de tensões)\n1x Experiência Fusion (O meio-termo perfeito de corpo a corpo)\n1x Massagem Nuru (O ápice do deslizamento orgânico e quente)\nO cronograma definitivo e luxuoso para o seu mês inteiro", tag: "EXPERIÊNCIA VIP", icon: "award" }
+      { id: 'pack_essencial', type: 'pack', title: "Kit Sobrevivência (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: "A dobradinha perfeita para quem tem uma rotina pesada. Um dia para curar a dor no corpo, outro para curar a ansiedade da mente.", details: "1x Clássica (para destravar as costas e o pescoço)\n1x Sensorial (para esvaziar a cabeça e ter prazer intenso)\nIdeal para garantir pelo menos duas noites de sono perfeito no mês\nSeu corpo não é máquina, ele precisa dessa manutenção", tag: "SONO PERFEITO", icon: "layers" },
+      { id: 'pack_interativo', type: 'pack', title: "Combo Conexão Real (2x)", price: p.pack2.v, fullPrice: p.pack2.full, savings: p.pack2.save, desc: "Sente falta daquele contato mais quente e recíproco? Duas sessões para esquecer a solidão da semana e ter troca, pele e liberdade.", details: "1x Fusion (o meio-termo perfeito entre curar a dor e gozar)\n1x Reversa (o dia que você mata a vontade de tocar e explorar)\nFoco total em quebrar a rotina fria com muito calor humano\nVocê volta a se sentir vivo e desejado", tag: "FIM DA SOLIDÃO", icon: "heart" },
+      { id: 'pack_premium', type: 'pack', title: "Mensalidade do Chefe (3x)", price: p.pack3.v, fullPrice: p.pack3.full, savings: p.pack3.save, desc: "Você rala o mês inteiro, merece ser tratado como rei. O pacote definitivo com as minhas três melhores experiências para garantir que seu estresse seja zero.", details: "1x Naturista (liberdade e quebra de tensão muscular)\n1x Fusion (relaxamento e prazer sob medida)\n1x Nuru (o êxtase absoluto com gel quente e deslizamento)\nTrês semanas do mês com a garantia de relaxamento total", tag: "O REWARD DO MÊS", icon: "award" }
     ] as ServiceItem[],
     extras: [
       { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: "Aparo (Extra)", desc: "Manutenção em 2 partes do corpo para ficar impecável." },
