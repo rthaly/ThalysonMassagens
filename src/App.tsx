@@ -291,7 +291,7 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 ));
 
 // ==================================================================================
-// 4. LÓGICA DE DADOS E GERAÇÃO DE TEXTOS (COMPLETAMENTE PRESERVADO)
+// 4. LÓGICA DE DADOS E GERAÇÃO DE TEXTOS
 // ==================================================================================
 const sanitizeInput = (value: string): string => String(value || '').replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
@@ -336,25 +336,25 @@ const getFullReviews = (): Review[] => {
 
   const seriousReviews = [
     { n: "Roberto", loc: "São Paulo - Jardins", t: "A sensação de vazio e paz que senti após a sessão foi indescritível. A finalização foi extremamente potente, liberando uma carga de tensão que eu carregava há meses. Profissionalismo impecável.", serv: "Experiência Fusion" },
-    { n: "Carla", loc: "Rio Preto", t: "Me senti acolhida em um nível que não esperava. Ele tem uma pegada firme que relaxa a musculatura e ao mesmo tempo desperta sensações adormecidas. O alívio no final foi total.", serv: "Massagem Clássica" },
+    { n: "Carla", loc: "Rio Preto", t: "Me senti acolhida em um nível que não esperava. Ele tem uma pegada firme que relaxa a musculatura e ao mesmo tempo desperta sensações adormecidas. O alívio no final foi total.", serv: "Relaxante Clássica Naturista" },
     { n: "Lucas", loc: "Londrina", t: "Sendo casado, a discrição era minha prioridade e fui atendido com total sigilo. A massagem tântrica me permitiu redescobrir meu próprio corpo. A descarga de energia no final foi intensa.", serv: "Massagem Nuru" },
     { n: "Felipe", loc: "Votuporanga", t: "Uma experiência de conexão rara. Fiquei trêmulo após a sessão, de uma forma boa. Foi um momento de esvaziar a mente completamente. Recomendo para quem busca algo além do físico.", serv: "Massagem Sensorial" },
     { n: "Mariana", loc: "Jales", t: "Toque respeitoso, mas com a intensidade certa. Consegui me desligar dos problemas do trabalho e focar apenas no meu prazer e bem-estar. Foi libertador.", serv: "Massagem Clássica" },
     { n: "Gustavo", loc: "Hotel Ibis - SP", t: "A combinação da massagem relaxante com a sensitiva criou uma jornada perfeita. O ápice da sessão foi vigoroso e restaurador. Sensação de leveza absurda ao final.", serv: "Experiência Fusion" },
-    { n: "Ricardo", loc: "Fernandópolis", t: "Encontrei um profissionalismo raro. Me senti à vontade para soltar minhas travas. Saí de lá me sentindo 10kg mais leve, física e emocionalmente.", serv: "Massagem Sensorial" },
+    { n: "Ricardo", loc: "Fernandópolis", t: "Encontrei um profissionalismo raro. Me senti à vontade para soltar minhas travas. Saí de lá me sentindo 10kg mais leve, física e emocionalmente.", serv: "Massagem Reversa Clássica" },
     { n: "Sérgio", loc: "Santa Fé", t: "Sofro de ansiedade e essa sessão foi mais eficaz que muitas terapias. A conexão humana foi real, e o clímax final foi o mais forte e libertador que já experimentei.", serv: "Massagem Nuru" },
-    { n: "Beatriz", loc: "Rio Preto", t: "Mãos quentes e presença firme. O ambiente ficou carregado de uma energia positiva. Consegui relaxar profundamente e esquecer o caos lá fora.", serv: "Massagem Clássica" },
+    { n: "Beatriz", loc: "Rio Preto", t: "Mãos quentes e presença firme. O ambiente ficou carregado de uma energia positiva. Consegui relaxar profundamente e esquecer o caos lá fora.", serv: "Relaxante Clássica Naturista" },
     { n: "Marcelo", loc: "SP - Centro", t: "Fui sem expectativa e saí surpreendido. A massagem lingam foi executada com uma técnica precisa e respeitosa. O prazer foi intenso e genuíno.", serv: "Experiência Fusion" },
-    { n: "André", loc: "Motel K2", t: "Discrição absoluta. O Thalyson é uma pessoa de energia muito boa e sabe o que faz. Foi um escape necessário e revitalizante da minha rotina.", serv: "Massagem Sensorial" },
+    { n: "André", loc: "Motel K2", t: "Discrição absoluta. O Thalyson é uma pessoa de energia muito boa e sabe o que faz. Foi um escape necessário e revitalizante da minha rotina.", serv: "Massagem Reversa Clássica" },
     { n: "Juliana", loc: "Londrina", t: "Delicadeza e força alternadas nos momentos exatos. Me senti viva de novo. Obrigada pelo carinho e respeito com meu corpo.", serv: "Massagem Clássica" },
     { n: "Paulo", loc: "São Paulo - Paulista", t: "Uma experiência completa. Do toque inicial reconfortante até a explosão final de energia. Foi intenso e me deixou com as pernas bambas de tanto relaxamento.", serv: "Experiência Fusion" },
     { n: "Vinícius", loc: "Jales", t: "Tirou um peso das minhas costas que eu nem sabia que carregava. A finalização foi potente e necessária. Voltarei com certeza.", serv: "Massagem Sensorial" },
     { n: "Fernanda", loc: "Santa Fé", t: "Super respeitoso com meu corpo. Foi uma troca de energia muito bonita, intensa e sem pressa. Me senti renovada.", serv: "Massagem Nuru" },
     { n: "Eduardo", loc: "Rio Preto", t: "Sensacional. A técnica dele para construir e depois liberar a energia é coisa de outro mundo. Foi um alívio físico e mental gigantesco.", serv: "Experiência Fusion" },
     { n: "Caio", loc: "SP - Consolação", t: "Atendimento impecável no meu hotel. Pontual, discreto e com uma mão que sabe exatamente onde tocar para aliviar a tensão.", serv: "Massagem Clássica" },
-    { n: "Larissa", loc: "Votuporanga", t: "Relaxamento profundo. Esqueci de tudo lá fora. Recomendo para qualquer pessoa que precise se reconectar consigo mesma.", serv: "Massagem Sensorial" },
+    { n: "Larissa", loc: "Votuporanga", t: "Relaxamento profundo. Esqueci de tudo lá fora. Recomendo para qualquer pessoa que precise se reconectar consigo mesma.", serv: "Relaxante Clássica Naturista" },
     { n: "Otávio", loc: "Londrina", t: "Foi intenso do início ao fim. Uma descarga de energia que eu estava precisando desesperadamente. Me senti limpo por dentro.", serv: "Massagem Nuru" },
-    { n: "Diego", loc: "Fernandópolis", t: "A melhor parte foi não me sentir julgado. Pude ser eu mesmo, expressar meu prazer e aproveitar cada segundo de cuidado.", serv: "Experiência Fusion" }
+    { n: "Diego", loc: "Fernandópolis", t: "A melhor parte foi não me sentir julgado. Pude ser eu mesmo, expressar meu prazer e aproveitar cada segundo de cuidado.", serv: "Massagem Reversa Clássica" }
   ];
 
   return [originalGustavo, ...realReviews, ...seriousReviews].map(r => ({ ...r, s: 5 }));
@@ -362,8 +362,17 @@ const getFullReviews = (): Review[] => {
 
 const getData = () => {
   const p = {
-    relax: 157, sens: 177, naturista: 197, titan: 207, nuru: 317, depil: 107, reversa: 227,
-    packRelax: { v: 527, full: 628, save: 101 }, packTri: { v: 517, full: 621, save: 104 }, packMix: { v: 637, full: 768, save: 131 }, packSupreme: { v: 567, full: 681, save: 114 },
+    depil: 107,
+    relax: 157, 
+    sens: 177, 
+    naturista: 197, 
+    titan: 207, 
+    reversa: 227, 
+    nuru: 317,
+    // NOVOS PACOTES MIXADOS
+    pack1: { v: 297, full: 334, save: 37 }, // Relaxante + Sensorial
+    pack2: { v: 387, full: 434, save: 47 }, // Fusion + Reversa
+    pack3: { v: 637, full: 721, save: 84 }, // Naturista + Fusion + Nuru
     extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
   };
   
@@ -374,6 +383,7 @@ const getData = () => {
       { level: 3, xpNeeded: 350, reward: 30, title: "Corpo Consciente" },
       { level: 4, xpNeeded: 800, reward: 50, title: "Plenitude Alcançada" }
     ],
+    // SERVIÇOS ORDENADOS DO MENOR PARA O MAIOR VALOR
     services: [
       {
         id: 'depilacao', min: 45, price: p.depil, icon: "scissors", tag: "CUIDADO PESSOAL", title: "Aparo Corporal", desc: "Sinta-se leve e limpo. A manutenção estética é o primeiro passo para o conforto.", details: "Aparo uniforme com Máquina de aparar\nFoco no peito, costas, abdômen e pernas\nNo conforto e privacidade do seu local"
@@ -382,25 +392,26 @@ const getData = () => {
         id: 'relaxante', min: 60, price: p.relax, icon: "user-check", tag: "ALÍVIO IMEDIATO", title: "Massagem Clássica", desc: "Costas travadas e rotina pesada? Um alívio profundo para curar o corpo e a mente.", details: "Uso de rolos de madeira para soltar a musculatura\nToques suaves e relaxantes com as mãos\nFoco no corpo todo, costas, braços, mãos, pernas e pés. ( sem toques íntimos )\nMomento terapêutico para zerar a fadiga do corpo" 
       },
       {
-        id: 'naturista', min: 60, price: p.naturista, icon: "sun", tag: "LIBERDADE & ALÍVIO", title: "Relaxante Clássica Naturista", desc: "O alívio da massagem clássica aliado à filosofia naturista. Total liberdade e conforto pele na pele para dissolver o estresse.", details: "Acolhimento e preparo com ambos totalmente despidos (prática naturista)\nDeslizamentos manuais profundos e uso de rolos de madeira\nFoco intensivo na quebra de nódulos de tensão nas costas, pernas e braços\nUma vivência de liberdade absoluta, zero amarras e relaxamento profundo"
-      },
-      {
         id: 'sensitiva', min: 60, price: p.sens, icon: "sparkles", tag: "DESPERTAR SENSORIAL", title: "Massagem Sensorial", desc: "Quando sua mente não desliga. Desperte a sensibilidade e permita-se chegar ao clímax do relaxamento.", details: "Toques sutis que tiram o foco dos pensamentos\nCondução fluida com toques leves que arrepiam o corpo todo\nFinalização focada em uma intensa descarga de prazer\nPara quem precisa esvaziar a mente sentindo o próprio corpo" 
       },
       {
-        id: 'mista', min: 60, price: p.titan, icon: "zap", popular: true, tag: "RESTAURAÇÃO & PRAZER", title: "Experiência Fusion", desc: "Primeiro curamos suas dores, depois guiamos seu corpo a um estado de êxtase e gozo profundo.", details: "Inicia quebrando a rigidez do corpo todo\nContato com a barba pelo corpo despertando novas sensações\nToque sensitivo transita para um toque envolvente corpo a corpo (Massagista de cueca) \n Foco em uma liberação orgânica de toda a tensão" 
+        id: 'naturista', min: 60, price: p.naturista, icon: "sun", tag: "LIBERDADE & ALÍVIO", title: "Relaxante Clássica Naturista", desc: "O alívio da massagem clássica aliado à filosofia naturista. Total liberdade e conforto pele na pele para dissolver o estresse.", details: "Acolhimento e preparo com ambos totalmente despidos (prática naturista)\nDeslizamentos manuais profundos e uso de rolos de madeira\nFoco intensivo na quebra de nódulos de tensão nas costas, pernas e braços\nUma vivência de liberdade absoluta, zero amarras e relaxamento profundo"
       },
       {
-        id: 'nuru', min: 60, price: p.nuru, icon: "sparkles", tag: "ENTREGA & CALOR", title: "Massagem Nuru", desc: "Ajoelhe-se diante do prazer. Calor orgânico e contato direto que derretem o estresse até a última gota.", details: "Vivência de entrega total com ambos completamente nus\nAplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA imersão mais profunda para o seu gozo físico e mental" 
+        id: 'mista', min: 60, price: p.titan, icon: "zap", tag: "RESTAURAÇÃO & PRAZER", title: "Experiência Fusion", desc: "Primeiro curamos suas dores, depois guiamos seu corpo a um estado de êxtase e gozo profundo.", details: "Inicia quebrando a rigidez do corpo todo\nContato com a barba pelo corpo despertando novas sensações\nToque sensitivo transita para um toque envolvente corpo a corpo (Massagista de cueca) \n Foco em uma liberação orgânica de toda a tensão" 
       },
       {
-        id: 'reversa', min: 120, price: p.reversa, icon: "star", tag: "EXPERIÊNCIA EXCLUSIVA", title: "Massagem Reversa Clássica", desc: "A experiência definitiva de inversão. Troque de lugar e descubra a arte do toque conduzindo a sessão do início ao fim com exclusividade.", details: "Início com alinhamento energético e respiração guiada\nVocê assume o controle: conduza os toques sob minha orientação profissional\nInteração completa e imersiva para despertar seus instintos e confiança\nFinalização com troca orgânica, proporcionando um êxtase físico e mental único"
+        id: 'reversa', min: 60, price: p.reversa, icon: "refresh-cw", tag: "TROCA MÚTUA", title: "Massagem Reversa Clássica", desc: "Uma experiência imersiva onde a via de mão dupla é liberada. Sinta-se livre para me tocar, explorar e compartilhar a condução do nosso momento.", details: "Inicia com toques relaxantes para criar conexão\nAvança para uma dinâmica mútua, onde você também me toca\nSem regras rígidas de 'quem faz e quem recebe'\nFinalização orgânica baseada na troca de energia e calor entre nós"
+      },
+      {
+        id: 'nuru', min: 60, price: p.nuru, icon: "star", popular: true, tag: "ENTREGA & CALOR", title: "Massagem Nuru", desc: "Ajoelhe-se diante do prazer. Calor orgânico e contato direto que derretem o estresse até a última gota.", details: "Vivência de entrega total com ambos completamente nus\nAplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA imersão mais profunda para o seu gozo físico e mental" 
       }
     ] as ServiceItem[],
+    // NOVOS PACOTES TOTALMENTE REFEITOS
     plans: [
-      { id: 'pack_relax', type: 'pack', title: "Ciclo Alívio (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: "4 sessões completas da Massagem Clássica para acabar com a fadiga e dores crônicas.", details: "4x Massagens Clássicas (60min cada)\nUso de rolos de madeira e toques manuais terapêuticos\nFoco intensivo no alívio de costas, pernas e corpo todo\nUm cronograma de manutenções preventivas e curativas", tag: "SAÚDE FÍSICA", icon: "package" },
-      { id: 'pack_mista', type: 'pack', title: "Ciclo Fusion (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: "3 encontros da Experiência Fusion combinando alívio muscular e muito prazer.", details: "3x Experiências Fusion (60min cada)\nInicia quebrando a rigidez muscular de todo o corpo\nTransita para um toque sensitivo e contato corpo a corpo\nFoco na liberação orgânica e esvaziamento mental", tag: "ACOLHIMENTO MENSAL", icon: "layers" },
-      { id: 'pack_supreme', type: 'pack', title: "Jornada Supreme (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: "Para quem quer provar tudo. Uma sessão de cada especialidade ao longo do mês.", details: "1x Massagem Clássica (Alívio profundo das dores)\n1x Experiência Fusion (Restauração e Prazer)\n1x Massagem Nuru (Entrega total corpo a corpo)\nO cronograma definitivo para provar de tudo", tag: "EXPERIÊNCIA PREMIUM", icon: "award" }
+      { id: 'pack_essencial', type: 'pack', title: "Ciclo Essencial (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: "A combinação perfeita para iniciar. O alívio profundo das tensões seguido pelo despertar dos seus sentidos.", details: "1x Massagem Clássica (Zerar a fadiga e dores musculares)\n1x Massagem Sensorial (Desligar a mente e focar no prazer)\nIdeal para ser usado em duas semanas seguidas\nCusto-benefício perfeito para sua manutenção de bem-estar", tag: "CORPO & MENTE", icon: "layers" },
+      { id: 'pack_interativo', type: 'pack', title: "Combo Interativo (2x)", price: p.pack2.v, fullPrice: p.pack2.full, savings: p.pack2.save, desc: "Para quem quer participar ativamente. Duas sessões focadas na troca de energia, intimidade e toque mútuo.", details: "1x Experiência Fusion (Restauração física e prazer intenso)\n1x Massagem Reversa (Liberdade total para me tocar também)\nFoco na quebra de barreiras e entrega absoluta\nRecomendado para quem busca mais calor, conexão e proximidade", tag: "TROCA MÚTUA", icon: "heart" },
+      { id: 'pack_premium', type: 'pack', title: "Jornada Premium (3x)", price: p.pack3.v, fullPrice: p.pack3.full, savings: p.pack3.save, desc: "A verdadeira evolução do prazer e relaxamento. Um pacote imersivo passando pelas minhas 3 melhores técnicas.", details: "1x Clássica Naturista (Liberdade absoluta e alívio de tensões)\n1x Experiência Fusion (O meio-termo perfeito de corpo a corpo)\n1x Massagem Nuru (O ápice do deslizamento orgânico e quente)\nO cronograma definitivo e luxuoso para o seu mês inteiro", tag: "EXPERIÊNCIA VIP", icon: "award" }
     ] as ServiceItem[],
     extras: [
       { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: "Aparo (Extra)", desc: "Manutenção em 2 partes do corpo para ficar impecável." },
