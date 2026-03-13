@@ -7,7 +7,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v27_premium_plans', // Atualizado para invalidar cache antigo com erro
+  STORAGE_KEY: '@thaly_app_v27_premium_plans', // Cache atualizado
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   SECRET_TOKEN: 'THALY_SECURE_V8',
@@ -16,7 +16,10 @@ const CONFIG = {
   MAX_STORAGE_SIZE: 5000 
 } as const;
 
-// Ícones Outline Otimizados (Mantidos exatamente os mesmos para manter o seu design)
+const RUSH_HOURS = ['12:00', '13:00', '17:00', '18:00'];
+const RUSH_FEE = 15;
+
+// Ícones Outline Otimizados
 const ICON_PATHS: Record<string, string> = {
   'menu': 'M4 12h16 M4 6h16 M4 18h16', 'chevron-left': 'M15 18l-6-6 6-6', 'chevron-right': 'M9 18l6-6-6-6',
   'chevron-down': 'M6 9l6 6 6-6', 'x': 'M18 6L6 18M6 6l12 12', 'check': 'M20 6L9 17l-5-5',
@@ -475,11 +478,9 @@ export default function App() {
   
   const dateScrollRef = useRef<HTMLDivElement>(null);
 
-  // MUDANÇA CRÍTICA: Melhoria na abertura de links externos
   const openExternal = useCallback((platform: 'whatsapp' | 'instagram', customText?: string) => {
     let url = '';
     if (platform === 'whatsapp') {
-      // Usando wa.me é muito mais confiável para smartphones modernos
       url = `https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(customText || '')}`;
     } else {
       url = CONFIG.INSTAGRAM_URL;
@@ -632,15 +633,13 @@ export default function App() {
     return days;
   }, []);
   
+  // MUDANÇA: Agora geramos todos os horários e não mais escondemos o 12h, 13h, 17h, 18h
   const generateTimeSlots = useMemo(() => {
     if (!booking.date) return [];
     const slots = [];
-    const excludedHours = [12, 13, 17, 18];
     
     for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
-      if (!excludedHours.includes(i)) {
-        slots.push(`${i < 10 ? '0' : ''}:00`);
-      }
+      slots.push(`${i < 10 ? '0' : ''}${i}:00`);
     }
 
     const now = new Date();
@@ -658,9 +657,9 @@ export default function App() {
     return slots;
   }, [booking.date]);
   
-  // Melhoria: Adicionado tempo total estimado
+  // MUDANÇA: Inclusão da taxa de pico (rushFee) nos cálculos financeiros
   const financials = useMemo(() => {
-    if (booking.cart.length === 0) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0, duration: 0 };
+    if (booking.cart.length === 0) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0, rushFee: 0, duration: 0 };
     
     let sub = booking.cart.reduce((acc, item) => acc + item.price, 0);
     let totalDuration = booking.cart.reduce((acc, item) => acc + (item.min || 60), 0);
@@ -677,6 +676,10 @@ export default function App() {
       } 
     });
 
+    // Lógica da Taxa de Pico
+    const isRushHour = RUSH_HOURS.includes(booking.time || '');
+    const rushFee = isRushHour ? RUSH_FEE : 0;
+
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
     let runningTotal = Math.max(0, sub - disc);
     
@@ -686,8 +689,11 @@ export default function App() {
     let pixDisc = 0;
     if (booking.payment === 'pix') { pixDisc = Math.ceil(runningTotal * 0.03); }
     
-    return { sub, disc, pixDisc, mediaDisc, total: Math.max(0, runningTotal - pixDisc), duration: totalDuration };
-  }, [booking.cart, booking.extras, booking.appliedCoupon, DATA.extras, booking.payment, booking.mediaAllowed]);
+    // A taxa de pico é adicionada no final, não entra em descontos de serviços.
+    const finalTotal = Math.max(0, runningTotal - pixDisc) + rushFee;
+    
+    return { sub, disc, pixDisc, mediaDisc, rushFee, total: finalTotal, duration: totalDuration };
+  }, [booking.cart, booking.extras, booking.appliedCoupon, DATA.extras, booking.payment, booking.mediaAllowed, booking.time]);
   
   const estimatedXP = useMemo(() => {
     const hasPack = booking.cart.some(item => item.type === 'pack');
@@ -743,10 +749,11 @@ export default function App() {
     if (f.disc > 0) priceDetails += `\n🎁 *Presente (${booking.appliedCoupon?.code}):* -R$ ${f.disc.toFixed(2).replace('.', ',')}`;
     if (f.mediaDisc > 0) priceDetails += `\n📸 *Desconto Portfólio:* -R$ ${f.mediaDisc.toFixed(2).replace('.', ',')}`;
     if (f.pixDisc > 0) priceDetails += `\n💸 *Desconto PIX (3%):* -R$ ${f.pixDisc.toFixed(2).replace('.', ',')}`;
+    // MUDANÇA: Mostra a taxa de pico no whatsapp se houver
+    if (f.rushFee > 0) priceDetails += `\n🚗 *Taxa de Pico (Deslocamento):* +R$ ${f.rushFee.toFixed(2).replace('.', ',')}`;
     priceDetails += `\n\n💰 *VALOR FINAL: R$ ${f.total.toFixed(2).replace('.', ',')}*`;
 
-    // MUDANÇA CRÍTICA: Link do Google Maps gerado com a API oficial correta
-    const finalMapLink = mapQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}` : '';
+    const finalMapLink = mapQuery ? `http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(mapQuery)}` : '';
     
     let msg = `
 *RESERVA DE CUIDADO* | #${securityHash}
@@ -1200,15 +1207,36 @@ _Aceito os termos de entrega e aguardo sua confirmação. O meu WhatsApp para co
                 <div className="mt-10 md:mt-12 animate-fade-in">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
                     <h4 className={`text-sm font-bold uppercase tracking-widest ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>Escolha o Horário</h4>
-                    <span className="text-[9px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/30 px-3 py-1 rounded-full animate-pulse self-start sm:self-auto">Alta Procura</span>
                   </div>
+                  
+                  {/* MUDANÇA: Grid de botões com estilo de PICO */}
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 md:gap-4">
-                    {generateTimeSlots.map((t) => (
-                      <button key={t} onClick={() => setBooking(b => ({ ...b, time: t }))} className={`py-3 md:py-4 rounded-xl md:rounded-2xl text-sm font-bold transition-all duration-300 border ${booking.time === t ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/30 scale-105' : isDark ? 'bg-zinc-900/40 border-zinc-800 text-zinc-300 hover:border-zinc-600' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm'}`}>
-                        {t}
-                      </button>
-                    ))}
+                    {generateTimeSlots.map((t) => {
+                      const isRush = RUSH_HOURS.includes(t);
+                      return (
+                        <button key={t} onClick={() => setBooking(b => ({ ...b, time: t }))} 
+                          className={`relative flex flex-col items-center justify-center py-2 md:py-3 rounded-xl md:rounded-2xl text-sm font-bold transition-all duration-300 border
+                            ${booking.time === t 
+                              ? (isRush ? 'bg-amber-600 border-amber-500 text-white shadow-lg shadow-amber-900/30 scale-105' : 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/30 scale-105') 
+                              : isDark 
+                                ? (isRush ? 'bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20' : 'bg-zinc-900/40 border-zinc-800 text-zinc-300 hover:border-zinc-600') 
+                                : (isRush ? 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm')
+                            }`}
+                        >
+                          <span>{t}</span>
+                          {isRush && <span className={`text-[8px] uppercase tracking-wider mt-0.5 ${booking.time === t ? 'text-amber-100' : isDark ? 'text-amber-500/70' : 'text-amber-600/70'}`}>Pico (+15)</span>}
+                        </button>
+                      );
+                    })}
                   </div>
+
+                  {/* MUDANÇA: Aviso bonitinho explicando a taxa */}
+                  {generateTimeSlots.some(t => RUSH_HOURS.includes(t)) && (
+                    <div className={`mt-6 p-4 rounded-xl flex items-start gap-3 text-[11px] md:text-xs font-medium leading-relaxed border ${isDark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-700'}`}>
+                      <Icon name="alert-circle" size={16} className="shrink-0 mt-0.5" />
+                      <p><strong>Horários de Pico:</strong> Períodos com alto tráfego (meio-dia ou fim de tarde) possuem um pequeno acréscimo de R$ 15 na taxa de deslocamento para garantir que eu chegue até você com pontualidade.</p>
+                    </div>
+                  )}
                 </div>
               )}
               
@@ -1406,6 +1434,14 @@ _Aceito os termos de entrega e aguardo sua confirmação. O meu WhatsApp para co
                         <div className={`flex justify-between mb-3 font-medium text-sm ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                           <span className="pr-2">{T.pix_discount}</span>
                           <span className="shrink-0">- {formatMoney(financials.pixDisc)}</span>
+                        </div>
+                      )}
+
+                      {/* MUDANÇA: Exibe a taxa de pico no resumo caso o cliente tenha selecionado */}
+                      {financials.rushFee > 0 && (
+                        <div className={`flex justify-between mb-3 font-medium text-sm ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
+                          <span className="pr-2 flex items-center gap-2"><Icon name="car" size={14} /> Taxa de Deslocamento (Pico)</span>
+                          <span className="shrink-0">+ {formatMoney(financials.rushFee)}</span>
                         </div>
                       )}
                       
