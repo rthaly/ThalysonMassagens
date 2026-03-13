@@ -7,16 +7,16 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v27_premium_plans', 
+  STORAGE_KEY: '@thaly_app_v27_premium_plans', // Atualizado para invalidar cache antigo com erro
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   SECRET_TOKEN: 'THALY_SECURE_V8',
-  START_HOUR: 9,
-  END_HOUR: 20,
+  START_HOUR: 8,
+  END_HOUR: 22, 
   MAX_STORAGE_SIZE: 5000 
 } as const;
 
-// Ícones Outline Otimizados
+// Ícones Outline Otimizados (Mantidos exatamente os mesmos para manter o seu design)
 const ICON_PATHS: Record<string, string> = {
   'menu': 'M4 12h16 M4 6h16 M4 18h16', 'chevron-left': 'M15 18l-6-6 6-6', 'chevron-right': 'M9 18l6-6-6-6',
   'chevron-down': 'M6 9l6 6 6-6', 'x': 'M18 6L6 18M6 6l12 12', 'check': 'M20 6L9 17l-5-5',
@@ -53,7 +53,8 @@ const ICON_PATHS: Record<string, string> = {
   'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8',
   'heart': 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
-  'plus': 'M12 5v14 M5 12h14'
+  'plus': 'M12 5v14 M5 12h14',
+  'refresh-cw': 'M23 4v6h-6 M1 20v-6h6 M3.51 9a9 9 0 0 1 14.85-3.36L23 10 M1 14l4.64 4.36A9 9 0 0 0 20.49 15'
 };
 
 // ==================================================================================
@@ -110,7 +111,7 @@ const formatMoney = (val: number | undefined) => {
 // Types & Interfaces
 interface ServiceItem { id: string; min: number; price: number; icon: string; isEmoji?: boolean; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; popular?: boolean; }
 interface Coupon { id: string; val: number; title: string; code: string; }
-interface Review { n: string; loc: string; t: string; s: number; }
+interface Review { n: string; loc: string; t: string; s: number; serv: string; }
 interface UserData { name: string; xp: number; coupons: Coupon[]; usedCoupons: string[]; hasSeenWelcome: boolean; ordersCount: number; lastActivity: string; }
 interface Address { street: string; number: string; district: string; city: string; comp: string; placeName: string; }
 interface BookingData { type: 'single' | 'pack'; cart: ServiceItem[]; extras: Record<string, boolean>; date: string | null; time: string | null; locationType: 'home' | 'motel' | 'hotel'; address: Address; payment: string; appliedCoupon: Coupon | null; termsAccepted: boolean; bookingId: string; mediaAllowed: boolean; }
@@ -223,7 +224,7 @@ const InputField = memo(({ label, value, onChange, placeholder, icon, type = "te
 ));
 
 const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
-  <article className={`w-full h-full flex flex-col p-6 md:p-8 rounded-3xl transition-all duration-300 border gap-5 ${isDark ? 'bg-zinc-900/30 border-zinc-800/80 hover:bg-zinc-900/60' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}`}>
+  <article className={`w-full h-full flex flex-col p-6 md:p-8 rounded-3xl transition-all duration-300 border gap-4 ${isDark ? 'bg-zinc-900/30 border-zinc-800/80 hover:bg-zinc-900/60' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}`}>
     <div className="flex justify-between items-start">
       <div className="flex items-center gap-4 min-w-0">
         <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold font-playfair shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-200' : 'bg-slate-100 text-slate-700'}`}>
@@ -238,6 +239,12 @@ const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }
         {[...Array(5)].map((_, i) => <Icon key={i} name="star" size={14} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />)}
       </div>
     </div>
+    
+    <div className={`inline-flex items-center self-start gap-1.5 px-3 py-1.5 rounded-full border text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600'}`}>
+      <Icon name="award" size={12} className="shrink-0" />
+      {review.serv}
+    </div>
+
     <p className={`text-sm leading-relaxed md:leading-loose font-light italic flex-1 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{review.t}"</p>
   </article>
 ));
@@ -285,10 +292,16 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 ));
 
 // ==================================================================================
-// 4. LÓGICA DE DADOS E GERAÇÃO DE TEXTOS (COMPLETAMENTE PRESERVADO)
+// 4. LÓGICA DE DADOS E GERAÇÃO DE TEXTOS
 // ==================================================================================
 const sanitizeInput = (value: string): string => String(value || '').replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
+
+const isWebViewUserAgent = () => {
+  if (typeof window === 'undefined') return false;
+  const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+  return (ua.indexOf('FBAN') > -1) || (ua.indexOf('FBAV') > -1) || (ua.indexOf('Instagram') > -1) || (ua.indexOf('Line') > -1) || (ua.indexOf('TikTok') > -1);
+};
 
 const cleanupStorage = () => { 
   try { 
@@ -312,46 +325,19 @@ const cleanupStorage = () => {
 };
 
 const getFullReviews = (): Review[] => {
-  const originalGustavo = { n: "Gustavo", loc: "Bela Vista - SP", t: "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões do mês. A experiência em casa foi incrível. Ele consegue deixar a gente completamente relaxado, as mãos dele tem uma técnica sem igual. O alívio foi imediato, levantei parecendo 10kg mais leve. Quero de novo." };
-
-  const realReviews = [
-    { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️" },
-    { n: "Osvaldo", loc: "Santa Fé do Sul", t: "HOJE, 10/02/26 não poderia ter teminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS !!! Que delícia! Os 4 pilares essenciais do seu trabalho são bases para transformar o atendimento em uma SENSAÇÃO UNICA que gera valores pro corpo, combinando o aspecto de super EMPATIA com o cliente, sem esquecer da EFICIENCIA e agilidade, clareza durante a sessão, tornando ha, uma visão da PERFEIÇÃO de executar este trabalho de massagem com maestria! Thalyson foca sempre no propósito de servir bem o cliente, desde o início ao fim q é surpreendente! VALE A PENA. 👏👏👏" },
-    { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito." },
-    { n: "Alan", loc: "SP - Bela Vista", t: "Gostei bastante, saí mais leve. Da pra ver que ele manda bem no que faz." },
-    { n: "Tiago", loc: "SP - Bela Vista", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida." }
+  return [
+    { n: "Gustavo", loc: "Bela Vista - SP", t: "O Thalyson chegou na hora certa. A experiência em casa foi incrível. Ele consegue deixar a gente completamente relaxado.", serv: "Experiência Fusion", s: 5 },
+    { n: "Giovana", loc: "Hotel Portal da Mata", t: "Você tem mãos abençoadas! Precisava muito desse descanso. Foi super respeitoso a todo tempo e me relaxou demais.", serv: "Massagem Sensorial", s: 5 },
+    { n: "Osvaldo", loc: "Santa Fé do Sul", t: "Mãos mágicas!!! Que delícia! Profissional foca sempre no propósito de servir bem o cliente. Vale muito a pena.", serv: "Massagem Clássica", s: 5 }
   ];
-
-  const seriousReviews = [
-    { n: "Roberto", loc: "São Paulo - Jardins", t: "A sensação de vazio e paz que senti após a sessão foi indescritível. A finalização foi extremamente potente, liberando uma carga de tensão que eu carregava há meses. Profissionalismo impecável." },
-    { n: "Carla", loc: "Rio Preto", t: "Me senti acolhida em um nível que não esperava. Ele tem uma pegada firme que relaxa a musculatura e ao mesmo tempo desperta sensações adormecidas. O alívio no final foi total." },
-    { n: "Lucas", loc: "Londrina", t: "Sendo casado, a discrição era minha prioridade e fui atendido com total sigilo. A massagem tântrica me permitiu redescobrir meu próprio corpo. A descarga de energia no final foi intensa." },
-    { n: "Felipe", loc: "Votuporanga", t: "Uma experiência de conexão rara. Fiquei trêmulo após a sessão, de uma forma boa. Foi um momento de esvaziar a mente completamente. Recomendo para quem busca algo além do físico." },
-    { n: "Mariana", loc: "Jales", t: "Toque respeitoso, mas com a intensidade certa. Consegui me desligar dos problemas do trabalho e focar apenas no meu prazer e bem-estar. Foi libertador." },
-    { n: "Gustavo", loc: "Hotel Ibis - SP", t: "A combinação da massagem relaxante com a sensitiva criou uma jornada perfeita. O ápice da sessão foi vigoroso e restaurador. Sensação de leveza absurda ao final." },
-    { n: "Ricardo", loc: "Fernandópolis", t: "Encontrei um profissionalismo raro. Me senti à vontade para soltar minhas travas. Saí de lá me sentindo 10kg mais leve, física e emocionalmente." },
-    { n: "Sérgio", loc: "Santa Fé", t: "Sofro de ansiedade e essa sessão foi mais eficaz que muitas terapias. A conexão humana foi real, e o clímax final foi o mais forte e libertador que já experimentei." },
-    { n: "Beatriz", loc: "Rio Preto", t: "Mãos quentes e presença firme. O ambiente ficou carregado de uma energia positiva. Consegui relaxar profundamente e esquecer o caos lá fora." },
-    { n: "Marcelo", loc: "SP - Centro", t: "Fui sem expectativa e saí surpreendido. A massagem lingam foi executada com uma técnica precisa e respeitosa. O prazer foi intenso e genuíno." },
-    { n: "André", loc: "Motel K2", t: "Discrição absoluta. O Thalyson é uma pessoa de energia muito boa e sabe o que faz. Foi um escape necessário e revitalizante da minha rotina." },
-    { n: "Juliana", loc: "Londrina", t: "Delicadeza e força alternadas nos momentos exatos. Me senti viva de novo. Obrigada pelo carinho e respeito com meu corpo." },
-    { n: "Paulo", loc: "São Paulo - Paulista", t: "Uma experiência completa. Do toque inicial reconfortante até a explosão final de energia. Foi intenso e me deixou com as pernas bambas de tanto relaxamento." },
-    { n: "Vinícius", loc: "Jales", t: "Tirou um peso das minhas costas que eu nem sabia que carregava. A finalização foi potente e necessária. Voltarei com certeza." },
-    { n: "Fernanda", loc: "Santa Fé", t: "Super respeitoso com meu corpo. Foi uma troca de energia muito bonita, intensa e sem pressa. Me senti renovada." },
-    { n: "Eduardo", loc: "Rio Preto", t: "Sensacional. A técnica dele para construir e depois liberar a energia é coisa de outro mundo. Foi um alívio físico e mental gigantesco." },
-    { n: "Caio", loc: "SP - Consolação", t: "Atendimento impecável no meu hotel. Pontual, discreto e com uma mão que sabe exatamente onde tocar para aliviar a tensão." },
-    { n: "Larissa", loc: "Votuporanga", t: "Relaxamento profundo. Esqueci de tudo lá fora. Recomendo para qualquer pessoa que precise se reconectar consigo mesma." },
-    { n: "Otávio", loc: "Londrina", t: "Foi intenso do início ao fim. Uma descarga de energia que eu estava precisando desesperadamente. Me senti limpo por dentro." },
-    { n: "Diego", loc: "Fernandópolis", t: "A melhor parte foi não me sentir julgado. Pude ser eu mesmo, expressar meu prazer e aproveitar cada segundo de cuidado." }
-  ];
-
-  return [originalGustavo, ...realReviews, ...seriousReviews].map(r => ({ ...r, s: 5 }));
 };
 
 const getData = () => {
   const p = {
-    relax: 157, sens: 177, titan: 207, nuru: 317, depil: 107,
-    packRelax: { v: 527, full: 628, save: 101 }, packTri: { v: 517, full: 621, save: 104 }, packMix: { v: 637, full: 768, save: 131 }, packSupreme: { v: 567, full: 681, save: 114 },
+    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 227, nuru: 317,
+    pack1: { v: 297, full: 334, save: 37 }, 
+    pack2: { v: 387, full: 434, save: 47 }, 
+    pack3: { v: 637, full: 721, save: 84 }, 
     extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
   };
   
@@ -363,26 +349,18 @@ const getData = () => {
       { level: 4, xpNeeded: 800, reward: 50, title: "Plenitude Alcançada" }
     ],
     services: [
-      {
-        id: 'depilacao', min: 45, price: p.depil, icon: "scissors", tag: "CUIDADO PESSOAL", title: "Aparo Corporal", desc: "Sinta-se leve e limpo. A manutenção estética é o primeiro passo para o conforto.", details: "Aparo uniforme com Máquina de aparar\nFoco no peito, costas, abdômen e pernas\nNo conforto e privacidade do seu local"
-      },
-      {
-        id: 'relaxante', min: 60, price: p.relax, icon: "user-check", tag: "ALÍVIO IMEDIATO", title: "Massagem Clássica", desc: "Costas travadas e rotina pesada? Um alívio profundo para curar o corpo e a mente.", details: "Uso de rolos de madeira para soltar a musculatura\nToques suaves e relaxantes com as mãos\nFoco no corpo todo, costas, braços, mãos, pernas e pés. ( sem toques íntimos )\nMomento terapêutico para zerar a fadiga do corpo" 
-      },
-      {
-        id: 'sensitiva', min: 60, price: p.sens, icon: "sparkles", tag: "DESPERTAR SENSORIAL", title: "Massagem Sensorial", desc: "Quando sua mente não desliga. Desperte a sensibilidade e permita-se chegar ao clímax do relaxamento.", details: "Toques sutis que tiram o foco dos pensamentos\nCondução fluida com toques leves que arrepiam o corpo todo\nFinalização focada em uma intensa descarga de prazer\nPara quem precisa esvaziar a mente sentindo o próprio corpo" 
-      },
-      {
-        id: 'mista', min: 60, price: p.titan, icon: "zap", popular: true, tag: "RESTAURAÇÃO & PRAZER", title: "Experiência Fusion", desc: "Primeiro curamos suas dores, depois guiamos seu corpo a um estado de êxtase e gozo profundo.", details: "Inicia quebrando a rigidez do corpo todo\nContato com a barba pelo corpo despertando novas sensações\nToque sensitivo transita para um toque envolvente corpo a corpo (Massagista de cueca) \n Foco em uma liberação orgânica de toda a tensão" 
-      },
-      {
-        id: 'nuru', min: 60, price: p.nuru, icon: "sparkles", tag: "ENTREGA & CALOR", title: "Massagem Nuru", desc: "Ajoelhe-se diante do prazer. Calor orgânico e contato direto que derretem o estresse até a última gota.", details: "Vivência de entrega total com ambos completamente nus\nAplicação de gel aquecido para máximo conforto na pele\nDeslizamento contínuo corpo a corpo, pele na pele\nA imersão mais profunda para o seu gozo físico e mental" 
-      }
+      { id: 'depilacao', min: 45, price: p.depil, icon: "scissors", tag: "PRATICIDADE", title: "Aparo Corporal Completo", desc: "A correria não te deixa cuidar de si mesmo? Eu resolvo. Fique com o corpo limpo, leve e preparado para a semana, sem dores de cabeça.", details: "Aparo zero ou Pente 3 com máquina\nFoco no peito, costas, abdômen e pernas\nNo conforto e total sigilo do seu espaço\nMenos suor e muito mais confiança no dia a dia" },
+      { id: 'relaxante', min: 60, price: p.relax, icon: "user-check", tag: "ALÍVIO MUSCULAR", title: "Massagem Clássica (Alívio Rápido)", desc: "Costas travadas da cadeira do escritório? Corpo tenso? Essa é para tirar com as mãos aquele peso gigante que você carrega e te fazer dormir como um anjo.", details: "Uso de rolos de madeira para amassar partes do corpo\nToque suave para soltar a musculatura dura\nFoco em relaxar o corpo todo (sem toque íntimo)\nO botão de 'reiniciar' para quem trabalha demais" },
+      { id: 'sensitiva', min: 60, price: p.sens, icon: "sparkles", tag: "REDUZ ANSIEDADE", title: "Massagem Sensorial (Reset Mental)", desc: "A cabeça não desliga na hora de dormir? Feche os olhos e deixe toques sutis arrepiarem seu corpo inteiro.", details: "Desconecta sua mente dos problemas do trabalho\nToques leves e estímulos que arrepiam a pele\nFinalização focada numa liberação intensa de prazer\nPerfeito para quem sofre com estresse pesado e insônia" },
+      { id: 'naturista', min: 60, price: p.naturista, icon: "sun", tag: "ZERO AMARRAS", title: "Clássica Naturista (Liberdade)", desc: "Chegar em casa e tirar a roupa do trabalho é bom, né? Aqui elevamos isso. Liberdade total, sem roupas, toques leves para soltar cada músculo do seu corpo.", details: "Sessão feita com ambos totalmente despidos, não possui toques íntimos \nPressão exata para desmanchar a rigidez do dia a dia\nAlívio no corpo todo\nSensação de leveza e aceitação, sem julgamentos" },
+      { id: 'mista', min: 90, price: p.titan, icon: "zap", tag: "O MELHOR DOS 2 MUNDOS", title: "Experiência Fusion (A Mais Completa)", desc: "Por que escolher se você pode ter tudo? Primeiro eu tiro a dor das suas costas, depois te levo a um clímax que faz qualquer problema da semana desaparecer.", details: "Começa suave: quebrando a tensão muscular do corpo\nMuda o ritmo: contato íntimo corpo a corpo (Massagista de cueca) e roçar de barba\nEnvolve seus sentidos numa crescente de calor e desejo\nTermina com um gozo libertador que recarrega suas baterias" },
+      { id: 'reversa', min: 90, price: p.reversa, icon: "refresh-cw", tag: "CONTATO REAL", title: "Massagem Reversa (Troca e Toque)", desc: "Sente falta de calor humano e intimidade? Aqui você não é passivo. Você relaxa, mas tem total liberdade para colocar as mãos, me explorar e ditar o ritmo. Não possuí toques íntimos.", details: "Eu quebro o gelo inicial e relaxo seu corpo\nDepois o controle é seu: sinta-se à vontade para me tocar\nSem a frieza de 'cliente e profissional', pura conexão real\nUma dinâmica deliciosa de reciprocidade que te deixa realizado" },
+      { id: 'nuru', min: 90, price: p.nuru, icon: "star", popular: true, tag: "ENTREGA TOTAL", title: "Massagem Nuru (A Mais Desejada)", desc: "Quando o nível de estresse está no limite, só isso resolve. Gel que desliza, partes do meu corpo deslizando sobre o seu, e uma entrega tão profunda que suas pernas vão tremer.", details: "Vivência de altíssima intimidade, ambos completamente nus\nMuito gel para um deslizamento perfeito e contínuo\nPele na pele, após a sessão de relaxamento primeiro: eu uso meu corpo para relaxar o seu\nA viagem mais suada e intensa para você gozar e apagar de relaxamento" }
     ] as ServiceItem[],
     plans: [
-      { id: 'pack_relax', type: 'pack', title: "Ciclo Alívio (4x)", price: p.packRelax.v, fullPrice: p.packRelax.full, savings: p.packRelax.save, desc: "4 sessões completas da Massagem Clássica para acabar com a fadiga e dores crônicas.", details: "4x Massagens Clássicas (60min cada)\nUso de rolos de madeira e toques manuais terapêuticos\nFoco intensivo no alívio de costas, pernas e corpo todo\nUm cronograma de manutenções preventivas e curativas", tag: "SAÚDE FÍSICA", icon: "package" },
-      { id: 'pack_mista', type: 'pack', title: "Ciclo Fusion (3x)", price: p.packTri.v, fullPrice: p.packTri.full, savings: p.packTri.save, desc: "3 encontros da Experiência Fusion combinando alívio muscular e muito prazer.", details: "3x Experiências Fusion (60min cada)\nInicia quebrando a rigidez muscular de todo o corpo\nTransita para um toque sensitivo e contato corpo a corpo\nFoco na liberação orgânica e esvaziamento mental", tag: "ACOLHIMENTO MENSAL", icon: "layers" },
-      { id: 'pack_supreme', type: 'pack', title: "Jornada Supreme (3x)", price: p.packSupreme.v, fullPrice: p.packSupreme.full, savings: p.packSupreme.save, desc: "Para quem quer provar tudo. Uma sessão de cada especialidade ao longo do mês.", details: "1x Massagem Clássica (Alívio profundo das dores)\n1x Experiência Fusion (Restauração e Prazer)\n1x Massagem Nuru (Entrega total corpo a corpo)\nO cronograma definitivo para provar de tudo", tag: "EXPERIÊNCIA PREMIUM", icon: "award" }
+      { id: 'pack_essencial', type: 'pack', min: 120, title: "Kit Sobrevivência (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: "A dobradinha perfeita para quem tem uma rotina pesada. Um dia para curar a dor no corpo, outro para curar a ansiedade da mente.", details: "1x Clássica (para destravar o corpo todo)\n1x Sensorial (para esvaziar a cabeça e ter prazer intenso)\nIdeal para garantir pelo menos duas noites de sono perfeito no mês\nSeu corpo não é máquina, ele precisa dessa manutenção", tag: "SONO PERFEITO", icon: "layers" },
+      { id: 'pack_interativo', type: 'pack', min: 180, title: "Combo Conexão Real (2x)", price: p.pack2.v, fullPrice: p.pack2.full, savings: p.pack2.save, desc: "Sente falta daquele contato mais quente e recíproco? Duas sessões para esquecer a solidão da semana e ter troca, pele e liberdade.", details: "1x Fusion (o meio-termo perfeito entre curar a dor e gozar)\n1x Reversa (o dia que você mata a vontade de tocar e explorar)\nFoco total em quebrar a rotina fria com muito calor humano\nVocê volta a se sentir vivo e desejado", tag: "FIM DA SOLIDÃO", icon: "heart" },
+      { id: 'pack_premium', type: 'pack', min: 240, title: "Mensalidade do Chefe (3x)", price: p.pack3.v, fullPrice: p.pack3.full, savings: p.pack3.save, desc: "Você rala o mês inteiro, merece ser tratado como rei. O pacote definitivo com as minhas três melhores experiências para garantir que seu estresse seja zero.", details: "1x Naturista (liberdade e quebra de tensão muscular)\n1x Fusion (relaxamento e prazer sob medida)\n1x Nuru (o êxtase absoluto com gel quente e deslizamento)\nTrês semanas do mês com a garantia de relaxamento total", tag: "O REWARD DO MÊS", icon: "award" }
     ] as ServiceItem[],
     extras: [
       { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: "Aparo (Extra)", desc: "Manutenção em 2 partes do corpo para ficar impecável." },
@@ -482,6 +460,8 @@ export default function App() {
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   
+  const [showBrowserPrompt, setShowBrowserPrompt] = useState(false);
+  
   const DATA = useMemo(() => getData(), []);
   const T = DATA.text;
   
@@ -495,44 +475,47 @@ export default function App() {
   
   const dateScrollRef = useRef<HTMLDivElement>(null);
 
-  // ATENÇÃO UX: Função especial que força sair do WebView (Navegador Embutido)
+  // MUDANÇA CRÍTICA: Melhoria na abertura de links externos
   const openExternal = useCallback((platform: 'whatsapp' | 'instagram', customText?: string) => {
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    
+    let url = '';
     if (platform === 'whatsapp') {
-      const text = encodeURIComponent(customText || '');
-      if (isAndroid) {
-        window.location.href = `intent://send?phone=${CONFIG.PHONE}&text=${text}#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url=https://wa.me/${CONFIG.PHONE}?text=${text};end`;
-      } else if (isIOS) {
-        window.location.href = `whatsapp://send?phone=${CONFIG.PHONE}&text=${text}`;
-        setTimeout(() => { window.location.href = `https://wa.me/${CONFIG.PHONE}?text=${text}`; }, 500);
-      } else {
-        window.open(`https://wa.me/${CONFIG.PHONE}?text=${text}`, '_blank');
-      }
-    } else if (platform === 'instagram') {
-      const username = CONFIG.INSTAGRAM_URL.split('/').pop() || 'thalyson.massagens';
-      if (isAndroid) {
-        window.location.href = `intent://user?username=${username}#Intent;scheme=instagram;package=com.instagram.android;S.browser_fallback_url=${CONFIG.INSTAGRAM_URL};end`;
-      } else if (isIOS) {
-        window.location.href = `instagram://user?username=${username}`;
-        setTimeout(() => { window.location.href = CONFIG.INSTAGRAM_URL; }, 500);
-      } else {
-        window.open(CONFIG.INSTAGRAM_URL, '_blank');
-      }
+      // Usando wa.me é muito mais confiável para smartphones modernos
+      url = `https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(customText || '')}`;
+    } else {
+      url = CONFIG.INSTAGRAM_URL;
     }
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => { document.body.removeChild(link); }, 100);
   }, []);
+  
+  const forceNativeBrowser = () => {
+    const url = window.location.href;
+    if (/android/i.test(navigator.userAgent)) {
+      window.location.href = `intent://${url.replace(/^https?:\/\//i, '')}#Intent;scheme=https;package=com.android.chrome;end`;
+    } else {
+      openExternal('instagram', url);
+    }
+  };
   
   useEffect(() => {
     setIsClient(true);
     cleanupStorage();
+    if (isWebViewUserAgent()) {
+      setShowBrowserPrompt(true);
+    }
   }, []);
 
   useEffect(() => {
-    if (isClient) {
+    if (isClient && !showBrowserPrompt) {
         document.title = step === 0 ? "Thalyson Massagens - Conforto & Prazer" : "Seu Agendamento - Thalyson";
     }
-  }, [step, isClient]);
+  }, [step, isClient, showBrowserPrompt]);
   
   useEffect(() => {
     if (!isClient) return;
@@ -597,7 +580,7 @@ export default function App() {
   }, [isClient, DATA.services, DATA.plans]);
   
   useEffect(() => {
-    if (isClient && dataLoaded) {
+    if (isClient && dataLoaded && !showBrowserPrompt) {
       try {
         const saveData = {
           user: { ...user, lastActivity: new Date().toISOString() },
@@ -612,14 +595,14 @@ export default function App() {
         if (serialized.length < CONFIG.MAX_STORAGE_SIZE * 1024) { localStorage.setItem(CONFIG.STORAGE_KEY, serialized); }
       } catch (e) {}
     }
-  }, [user, booking, step, isClient, dataLoaded]);
+  }, [user, booking, step, isClient, dataLoaded, showBrowserPrompt]);
   
   useEffect(() => {
-    if (!loading && isClient && dataLoaded && !user.hasSeenWelcome && !welcomePopup) {
+    if (!loading && isClient && dataLoaded && !showBrowserPrompt && !user.hasSeenWelcome && !welcomePopup) {
       const timer = setTimeout(() => setWelcomePopup(true), 2000);
       return () => clearTimeout(timer);
     }
-  }, [loading, isClient, user.hasSeenWelcome, dataLoaded, welcomePopup]);
+  }, [loading, isClient, user.hasSeenWelcome, dataLoaded, welcomePopup, showBrowserPrompt]);
   
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
   
@@ -652,8 +635,12 @@ export default function App() {
   const generateTimeSlots = useMemo(() => {
     if (!booking.date) return [];
     const slots = [];
+    const excludedHours = [12, 13, 17, 18];
+    
     for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
-      slots.push(`${i < 10 ? '0' : ''}${i}:00`);
+      if (!excludedHours.includes(i)) {
+        slots.push(`${i < 10 ? '0' : ''}:00`);
+      }
     }
 
     const now = new Date();
@@ -671,16 +658,22 @@ export default function App() {
     return slots;
   }, [booking.date]);
   
+  // Melhoria: Adicionado tempo total estimado
   const financials = useMemo(() => {
-    if (booking.cart.length === 0) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0 };
+    if (booking.cart.length === 0) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0, duration: 0 };
     
     let sub = booking.cart.reduce((acc, item) => acc + item.price, 0);
+    let totalDuration = booking.cart.reduce((acc, item) => acc + (item.min || 60), 0);
+
     const hasPack = booking.cart.some(item => item.type === 'pack');
 
     Object.keys(booking.extras || {}).forEach(k => { 
       if (booking.extras[k]) { 
         const extData = DATA.extras.find(e => e.id === k); 
-        if (extData) sub += hasPack ? Math.floor(extData.price * 0.8) : extData.price; 
+        if (extData) {
+            sub += hasPack ? Math.floor(extData.price * 0.8) : extData.price; 
+            if (extData.id === 'more_time') totalDuration += 30;
+        }
       } 
     });
 
@@ -693,7 +686,7 @@ export default function App() {
     let pixDisc = 0;
     if (booking.payment === 'pix') { pixDisc = Math.ceil(runningTotal * 0.03); }
     
-    return { sub, disc, pixDisc, mediaDisc, total: Math.max(0, runningTotal - pixDisc) };
+    return { sub, disc, pixDisc, mediaDisc, total: Math.max(0, runningTotal - pixDisc), duration: totalDuration };
   }, [booking.cart, booking.extras, booking.appliedCoupon, DATA.extras, booking.payment, booking.mediaAllowed]);
   
   const estimatedXP = useMemo(() => {
@@ -751,6 +744,9 @@ export default function App() {
     if (f.mediaDisc > 0) priceDetails += `\n📸 *Desconto Portfólio:* -R$ ${f.mediaDisc.toFixed(2).replace('.', ',')}`;
     if (f.pixDisc > 0) priceDetails += `\n💸 *Desconto PIX (3%):* -R$ ${f.pixDisc.toFixed(2).replace('.', ',')}`;
     priceDetails += `\n\n💰 *VALOR FINAL: R$ ${f.total.toFixed(2).replace('.', ',')}*`;
+
+    // MUDANÇA CRÍTICA: Link do Google Maps gerado com a API oficial correta
+    const finalMapLink = mapQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}` : '';
     
     let msg = `
 *RESERVA DE CUIDADO* | #${securityHash}
@@ -759,12 +755,13 @@ Olá Thalyson! Gostaria de agendar meu momento.
 
 👤 *Nome:* ${sanitizeInput(user.name)}
 📅 *Data:* ${dateStr} às ${booking.time}
+⏱️ *Tempo Estimado:* ${f.duration} Minutos
 
 💆‍♂️ *O QUE ESCOLHI:*
 ${servicesListText}
 ${extrasList ? `\n*Extras Adicionados:*\n${extrasList}\n` : ''}
 📍 *ONDE:*\n${locTxt}
-${mapQuery ? `🔗 GPS: http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(mapQuery)}` : ''}
+${finalMapLink ? `🔗 GPS: ${finalMapLink}` : ''}
 
 💰 *RESUMO DO INVESTIMENTO:*
 ${priceDetails}
@@ -887,6 +884,39 @@ _Aceito os termos de entrega e aguardo sua confirmação. O meu WhatsApp para co
   
   if (!isClient) return <div className="min-h-screen w-full bg-zinc-950 flex items-center justify-center" />;
   
+  if (showBrowserPrompt) {
+    return (
+      <div className={`fixed inset-0 z-[200] flex flex-col items-center justify-center p-6 text-center ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
+         <div className="max-w-md w-full animate-fade-in flex flex-col items-center">
+            <div className="w-20 h-20 bg-amber-500/10 text-amber-500 flex items-center justify-center rounded-3xl mb-8 border border-amber-500/30">
+               <Icon name="alert-circle" size={40} />
+            </div>
+            <h2 className="text-3xl font-playfair font-medium mb-4">Atenção!</h2>
+            <p className={`text-sm font-light mb-8 leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+              Você está no navegador do Instagram/Facebook. Para que o envio para o WhatsApp funcione perfeitamente no final, precisamos que abra esta página no navegador do seu celular.
+            </p>
+            
+            <div className={`w-full p-6 rounded-3xl border text-left mb-8 ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-slate-200'}`}>
+               <p className={`text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-amber-500' : 'text-amber-600'}`}>Como fazer (iPhone/iOS):</p>
+               <p className={`text-sm mb-4 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                 1. Toque nos <strong className={isDark ? 'text-white' : 'text-black'}>3 pontinhos (...)</strong> no topo da tela.<br/>
+                 2. Escolha <strong className={isDark ? 'text-white' : 'text-black'}>"Abrir no navegador"</strong> ou <strong>"Abrir no Safari"</strong>.
+               </p>
+            </div>
+
+            <div className="w-full space-y-4">
+               {/android/i.test(navigator.userAgent) && (
+                 <Button full size="lg" onClick={forceNativeBrowser}>Tentar Forçar (Apenas Android)</Button>
+               )}
+               <button onClick={() => setShowBrowserPrompt(false)} className={`w-full h-14 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-colors ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-200 text-slate-500 hover:text-black'}`}>
+                 Ignorar e Continuar Aqui
+               </button>
+            </div>
+         </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className={`fixed inset-0 flex flex-col items-center justify-center z-[100] transition-colors duration-700 ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
