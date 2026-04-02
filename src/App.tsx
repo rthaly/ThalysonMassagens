@@ -183,6 +183,10 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user }: any) => {
              <span className="text-3xl font-light font-playfair text-white">{user.xp} <span className="text-[10px] font-bold text-blue-400 font-sans tracking-widest uppercase">XP</span></span>
              <Icon name="award" size={28} className="text-blue-400" />
           </div>
+          {/* AVISO NO MENU CENTRAL */}
+          <p className="text-[9px] text-zinc-400 mt-4 font-light leading-snug border-t border-zinc-700/50 pt-3">
+            * Seu progresso é salvo no navegador deste aparelho. Evite limpar os dados (cache) para não perder seus benefícios.
+          </p>
         </div>
 
         <nav className="space-y-3 flex-1">
@@ -333,12 +337,10 @@ const cleanupStorage = () => {
              try {
                  const item = localStorage.getItem(key);
                  if (item) {
-                     const parsed = JSON.parse(item);
-                     if (parsed.expires && new Date(parsed.expires) < new Date()) {
-                         localStorage.removeItem(key);
-                     }
+                     JSON.parse(item); // Apenas valida se o JSON não está corrompido
                  }
              } catch (e) {
+                 // Remove apenas se o dado estiver quebrado/corrompido
                  localStorage.removeItem(key);
              }
         }
@@ -425,13 +427,14 @@ const getData = () => {
       { q: "Como o toque e a finalização funcionam?", a: "Tudo é conduzido com extremo respeito, focado inteiramente no seu conforto e prazer. O objetivo é criar um espaço seguro para que você possa se entregar, relaxar a mente e alcançar um gozo libertador que zera o estresse." },
       { q: "Onde é o local do nosso encontro?", a: "Vou até você, no conforto da sua residência ou hotel. Chego no horário marcado e transformo o ambiente (seja sua cama ou sofá) em um verdadeiro refúgio de paz para cuidarmos de você." },
       { q: "Como devo me preparar para a sessão?", a: "De coração aberto! O mais importante é que você tome um banho relaxante antes da minha chegada. O banho ajuda a soltar os músculos iniciais e deixa seu corpo pronto para a entrega total." },
-      { q: "Tenho vergonha do meu corpo, e agora?", a: "Esqueça isso. Meu trabalho é puro acolhimento. Durante a sessão, não existe julgamento, existe apenas a vontade de proporcionar alívio, relaxamento profundo e muito prazer." }
+      { q: "Tenho vergonha do meu corpo, e agora?", a: "Esqueça isso. Meu trabalho é puro acolhimento. Durante a sessão, não existe julgamento, existe apenas a vontade de proporcionar alívio, relaxamento profundo e muito prazer." },
+      // NOVA PERGUNTA ADICIONADA AO FAQ AQUI:
+      { q: "Meus pontos e nível ficam salvos no aplicativo?", a: "Sim! Para facilitar seu acesso sem exigir senhas, seu progresso (XP) fica salvo automaticamente no seu celular. Apenas lembre-se: se você limpar o histórico de navegação do seu aparelho ou trocar de celular, esses dados recomeçarão do zero." }
     ],
     rules: [
       { icon: "shower", title: "A Ducha Preparatória", description: "O banho prévio é essencial. A água morna começa o relaxamento e prepara sua pele para o toque perfeito e intenso." },
       { icon: "hand", title: "Acolhimento e Respeito", description: "Eu cuido de você e do seu prazer. O respeito mútuo é a chave para que a magia aconteça de forma livre e natural." },
       { icon: "heart", title: "Entrega Absoluta", description: "Esqueça o mundo lá fora. Este tempo é seu para relaxar a mente, desmanchar as tensões e apenas gozar o momento." },
-      // REGRA DE SAÚDE ATUALIZADA AQUI:
       { icon: "shield", title: "Saúde e Integridade", description: "Declaro que estou saudável, liberado para receber a massagem." }
     ],
     text: {
@@ -482,6 +485,8 @@ const getData = () => {
       pix_discount: "Benefício Pix (3%)",
       welcome_popup_title: "Seja muito bem-vindo!",
       welcome_popup_msg: "Fico feliz que você decidiu tirar um tempo para se cuidar e sentir prazer no conforto do seu local. A maioria dos homens esquece de si mesmo. Aqui está um presente para nossa primeira vez.",
+      // AVISO DO POP-UP INICIAL ADICIONADO AQUI:
+      welcome_popup_warning: "⚠️ Atenção: Seu progresso, pontos (XP) e benefícios ficam salvos no navegador deste celular. Evite limpar os dados de navegação (cache) para não perder seu histórico!",
       levelup_popup_title: "Evolução Alcançada!",
       levelup_popup_msg: "Sua constância gerou recompensas. Acabei de liberar um novo benefício exclusivo para o seu próximo agendamento.",
       get_coupon: "Resgatar Meu Presente",
@@ -506,7 +511,7 @@ export default function App() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [step, setStep] = useState(0);
   const [isDark, setIsDark] = useState(true);
-  const [activeTab, setActiveTab] = useState('single'); // Inicializando em Single a pedido para ver o destaque
+  const [activeTab, setActiveTab] = useState('single');
   const [toasts, setToasts] = useState<{id: number, msg: string, type: "success" | "error"}[]>([]);
   const [termsOpen, setTermsOpen] = useState(false);
   const [welcomePopup, setWelcomePopup] = useState(false);
@@ -525,6 +530,12 @@ export default function App() {
   });
   
   const dateScrollRef = useRef<HTMLDivElement>(null);
+
+  const addToast = useCallback((msg: string, type: "success" | "error" = "success") => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, msg, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 5000);
+  }, []);
 
   const openExternal = useCallback((platform: 'whatsapp' | 'instagram', customText?: string) => {
     let url = '';
@@ -553,7 +564,6 @@ export default function App() {
          // Tenta forçar o Chrome no Android via intent
          window.location.href = `intent://${url.replace(/^https?:\/\//i, '')}#Intent;scheme=https;package=com.android.chrome;end`;
       }
-      // Se não for Android ou o intent falhar, ele apenas ignora e permite o uso na WebView normalmente
     }
   }, []);
 
@@ -634,8 +644,7 @@ export default function App() {
             ...booking, 
             appliedCoupon: booking.appliedCoupon ? { id: booking.appliedCoupon.id, val: booking.appliedCoupon.val, title: booking.appliedCoupon.title, code: booking.appliedCoupon.code } : null 
           },
-          step, 
-          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+          step
         };
         const serialized = JSON.stringify(saveData);
         if (serialized.length < CONFIG.MAX_STORAGE_SIZE * 1024) { localStorage.setItem(CONFIG.STORAGE_KEY, serialized); }
@@ -644,19 +653,21 @@ export default function App() {
   }, [user, booking, step, isClient, dataLoaded]);
   
   useEffect(() => {
-    if (!loading && isClient && dataLoaded && !user.hasSeenWelcome && !welcomePopup) {
-      const timer = setTimeout(() => setWelcomePopup(true), 2000);
-      return () => clearTimeout(timer);
+    if (!loading && isClient && dataLoaded) {
+      // Se for a primeira vez na vida dele no app, abre o modal de boas-vindas
+      if (!user.hasSeenWelcome && !welcomePopup) {
+        const timer = setTimeout(() => setWelcomePopup(true), 2000);
+        return () => clearTimeout(timer);
+      } 
+      // TOAST ADICIONADO AQUI: Se ele já for um cliente que retornou ao app (tem dados salvos)
+      else if (user.hasSeenWelcome) {
+        addToast("Seu progresso salvo foi carregado com sucesso! 💾", "success");
+      }
     }
-  }, [loading, isClient, user.hasSeenWelcome, dataLoaded, welcomePopup]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, isClient, dataLoaded]);
   
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
-  
-  const addToast = useCallback((msg: string, type: "success" | "error" = "success") => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, msg, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 5000);
-  }, []);
   
   const handleToggleCartItem = useCallback((item: ServiceItem) => {
     setBooking(prev => {
@@ -1649,7 +1660,12 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
           <div className={`relative w-full max-w-sm rounded-3xl p-8 md:p-10 text-center border shadow-2xl ${isDark ? 'bg-zinc-950 border-zinc-700' : 'bg-white border-slate-200'}`}>
             <div className={`w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full flex items-center justify-center mb-6 border-[4px] shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-700 text-blue-400' : 'bg-slate-50 border-slate-100 text-blue-600'}`}><Icon name="gift" size={32} /></div>
             <h3 className={`text-2xl md:text-3xl font-playfair font-medium mb-3 leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
-            <p className={`text-xs md:text-sm font-light leading-relaxed mb-6 ${isDark ? 'text-zinc-200' : 'text-slate-600'}`}>{T.welcome_popup_msg}</p>
+            <p className={`text-xs md:text-sm font-light leading-relaxed mb-4 ${isDark ? 'text-zinc-200' : 'text-slate-600'}`}>{T.welcome_popup_msg}</p>
+            
+            <div className={`text-[10px] md:text-xs text-left p-3 mb-6 rounded-xl border ${isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
+                {T.welcome_popup_warning}
+            </div>
+
             <div className={`p-4 md:p-5 rounded-2xl border mb-6 border-dashed ${isDark ? 'bg-blue-900/20 border-blue-500/50' : 'bg-blue-50 border-blue-300'}`}>
               <p className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-1 md:mb-2 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>SEU PRESENTE INAUGURAL</p>
               <p className={`text-2xl md:text-3xl font-playfair font-semibold tracking-wide break-all ${isDark ? 'text-white' : 'text-slate-900'}`}>BEMVINDO10</p>
