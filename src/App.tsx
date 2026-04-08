@@ -390,7 +390,7 @@ const getData = () => {
   const p = {
     depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317,
     pack1: { v: 297, full: 334, save: 37 }, 
-    pack2: { v: 387, full: 434, save: 47 }, 
+    pack2: { v: 387, full: 467, save: 80 }, 
     pack3: { v: 637, full: 721, save: 84 }, 
     extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
   };
