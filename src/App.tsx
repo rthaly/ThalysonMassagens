@@ -417,11 +417,11 @@ const getData = () => {
       { id: 'pack_premium', type: 'pack', title: "Mensalidade do Chefe (3x)", price: p.pack3.v, fullPrice: p.pack3.full, savings: p.pack3.save, desc: "Você rala o mês inteiro, merece ser tratado como rei. Três semanas do mês garantidas com o melhor relaxamento.", details: "1x Naturista (liberdade e quebra de tensão muscular)\n1x Fusion (relaxamento e prazer sob medida)\n1x Nuru (o êxtase absoluto com gel quente e deslizamento)\nTrês encontros separados garantindo seu mês livre de estresse", tag: "O REWARD DO MÊS", icon: "award" }
     ] as ServiceItem[],
     extras: [
-      { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: "Aparo (Extra)", desc: "Manutenção em 2 partes do corpo para ficar impecável." },
+      { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: "Aparo Máquina", desc: "Manutenção com aparo de pêlos em 2 partes do corpo para ficar impecável." },
       { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: "Tempo Estendido (+30m)", desc: "Porque quando está bom, não queremos que acabe." },
-      { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: "Interação Orgânica", desc: "Sinta-se livre para participar e tocar também." },
-      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: "Aromaterapia Profunda", desc: "Óleos essenciais que baixam a sua frequência mental." },
-      { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: "Foco Extra em Dores", desc: "Uso de pomada técnica para tratar dores fortes." }
+      { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: "Interação Orgânica", desc: "Sinta-se livre para participar, pode me tocar também." },
+      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: "Cheiro bom no Ar", desc: "Aplico na sessão um cheiro para o ambiente" },
+      { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: "Foco Extra em Dores", desc: "Levo uma pomada para aliviar dores fortes." }
     ],
     faq: [
       { q: "Como o toque e a finalização funcionam?", a: "Tudo é conduzido com extremo respeito, focado inteiramente no seu conforto e prazer. O objetivo é criar um espaço seguro para que você possa se entregar, relaxar a mente e alcançar um gozo libertador que zera o estresse." },
