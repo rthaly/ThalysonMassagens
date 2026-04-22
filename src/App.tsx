@@ -439,7 +439,7 @@ const getData = (lang: 'pt' | 'en') => {
     faq: [
       { q: isEn ? "How do the touch and the ending work?" : "Como o toque e a finalização funcionam?", a: isEn ? "Everything is conducted with extreme respect, entirely focused on your comfort and pleasure. The goal is to create a safe space for you to surrender, relax your mind, and reach a liberating climax that zeroes out stress." : "Tudo é conduzido com extremo respeito, focado inteiramente no seu conforto e prazer. O objetivo é criar um espaço seguro para que você possa se entregar, relaxar a mente e alcançar um gozo libertador que zera o estresse." },
       { q: isEn ? "Where is our meeting location?" : "Onde é o local do nosso encontro?", a: isEn ? "I come to you, in the comfort of your home or hotel. I arrive at the scheduled time and transform the environment (be it your bed or sofa) into a true refuge of peace to take care of you." : "Vou até você, no conforto da sua residência ou hotel. Chego no horário marcado e transformo o ambiente (seja sua cama ou sofá) em um verdadeiro refúgio de paz para cuidarmos de você." },
-      { q: isEn ? "How should I prepare for the session?" : "Como devo me preparar para a sessão?", a: isEn ? "With an open heart! The most important thing is that you take a relaxing shower before my arrival. The shower helps loosen initial muscles and gets your body ready for total surrender." : "De coração aberto! O mais importante é que você tome um banho relaxante antes da minha chegada. O banho ajuda a soltar os músculos iniciais e deixa seu corpo pronto para a entrega total." },
+      { q: isEn ? "How should I prepare for the session?" : "Como devo me prepare para a sessão?", a: isEn ? "With an open heart! The most important thing is that you take a relaxing shower before my arrival. The shower helps loosen initial muscles and gets your body ready for total surrender." : "De coração aberto! O mais importante é que você tome um banho relaxante antes da minha chegada. O banho ajuda a soltar os músculos iniciais e deixa seu corpo pronto para a entrega total." },
       { q: isEn ? "I'm ashamed of my body, what now?" : "Tenho vergonha do meu corpo, e agora?", a: isEn ? "Forget about that. My work is pure welcoming. During the session, there is no judgment, only the desire to provide relief, deep relaxation, and lots of pleasure." : "Esqueça isso. Meu trabalho é puro acolhimento. Durante a sessão, não existe julgamento, existe apenas a vontade de proporcionar alívio, relaxamento profundo e muito prazer." },
       { q: isEn ? "Are my points and level saved in the app?" : "Meus pontos e nível ficam salvos no aplicativo?", a: isEn ? "Yes! To facilitate your access without requiring passwords, your progress (XP) is saved automatically on your phone. Just remember: if you clear your device's browsing history (cache) or change phones, this data will restart from zero." : "Sim! Para facilitar seu acesso sem exigir senhas, seu progresso (XP) fica salvo automaticamente no seu celular. Apenas lembre-se: se você limpar o histórico de navegação do seu aparelho ou trocar de celular, esses dados recomeçarão do zero." }
     ],
@@ -948,13 +948,13 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
   
   const isStepValid = useCallback(() => {
     if (step === 0) return booking.cart.length > 0;
-    if (step === 1) return !!(booking.date && booking.time);
-    if (step === 2) {
+    if (step === 1) {
       if (!user.name || String(user.name).trim().length < 3) return false;
       if (booking.locationType === 'home') return validateAddress(booking.address);
       if (booking.locationType === 'hotel') return !!(booking.address.placeName && booking.address.city);
       return true;
     }
+    if (step === 2) return !!(booking.date && booking.time);
     if (step === 3) return !!(booking.payment && booking.termsAccepted);
     return true;
   }, [step, booking, user.name]);
@@ -962,8 +962,11 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
   const handleNextStep = useCallback(() => {
     if (!isStepValid()) {
       if (step === 0) addToast(T.toast_select_item, "error");
-      if (step === 1) addToast(T.toast_select_date, "error");
-      if (step === 2) addToast(T.toast_fill_addr, "error");
+      if (step === 1) {
+        if (!user.name || String(user.name).trim().length < 3) addToast(T.toast_fill_name, "error");
+        else addToast(T.toast_fill_addr, "error");
+      }
+      if (step === 2) addToast(T.toast_select_date, "error");
       if (step === 3) addToast(T.toast_accept_terms, "error");
       return;
     }
@@ -1121,7 +1124,7 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                   <div key={i} className="flex-1 flex flex-col items-center gap-2 md:gap-3">
                     <div className={`w-full h-1 md:h-1.5 rounded-full transition-all duration-700 ${step >= i ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : isDark ? 'bg-zinc-800' : 'bg-slate-200'}`} />
                     <span className={`text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-colors duration-500 ${step >= i ? isDark ? 'text-white' : 'text-slate-900' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
-                      {i === 1 ? T.step_when : i === 2 ? T.step_where : T.step_summary}
+                      {i === 1 ? T.step_where : i === 2 ? T.step_when : T.step_summary}
                     </span>
                   </div>
                 ))}
@@ -1487,6 +1490,64 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
           )}
           
           {step === 1 && (
+            <section className="space-y-10 md:space-y-12 animate-fade-in max-w-2xl mx-auto">
+              <h2 className={`text-2xl md:text-4xl font-playfair font-medium text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                {T.location_title}
+              </h2>
+              
+              <div className="grid grid-cols-3 gap-2 md:gap-4">
+                {[
+                  { id: 'home', label: T.loc_home, icon: 'home' },
+                  { id: 'motel', label: T.loc_motel, icon: 'bed' },
+                  { id: 'hotel', label: T.loc_hotel, icon: 'building' }
+                ].map(x => (
+                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} className={`py-4 md:py-6 px-2 rounded-2xl flex flex-col items-center gap-2 md:gap-3 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] -translate-y-1' : isDark ? 'bg-zinc-900/60 border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800' : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400 shadow-sm'}`}>
+                    <Icon name={x.icon} size={24} />
+                    <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-center">{x.label}</span>
+                  </button>
+                ))}
+              </div>
+              
+              <div className={`p-6 md:p-8 rounded-3xl border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-white border-slate-200'} space-y-6 md:space-y-8`}>
+                <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder={lang === 'en' ? "Your name" : "Seu nome"} hasError={!user.name || String(user.name).trim().length < 3} />
+                
+                {booking.locationType === 'home' && (
+                  <div className="space-y-5 animate-fade-in">
+                    <div className="grid grid-cols-1 sm:grid-cols-[1fr_100px] gap-4">
+                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder={lang === 'en' ? "Street / Avenue" : "Rua / Avenida"} hasError={!booking.address.street} />
+                      <InputField isDark={isDark} label={T.input_num} value={booking.address.number} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))} placeholder="Nº" type="tel" hasError={!booking.address.number} />
+                    </div>
+                    <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Neighborhood" : "Seu Bairro"} hasError={!booking.address.district} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "City" : "Sua Cidade"} hasError={!booking.address.city} />
+                      <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Apt, Block (Optional)" : "Apto, Bloco (Opcional)"} />
+                    </div>
+                  </div>
+                )}
+                
+                {booking.locationType === 'hotel' && (
+                  <div className="space-y-5 animate-fade-in">
+                    <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder={lang === 'en' ? "Hotel Name" : "Nome do Hotel"} hasError={!booking.address.placeName} />
+                    <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "City" : "Cidade"} hasError={!booking.address.city} />
+                    <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Room Nº" : "Nº do Quarto"} />
+                  </div>
+                )}
+                
+                {booking.locationType === 'motel' && (
+                  <div className={`p-6 rounded-2xl border text-center animate-fade-in ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-slate-300'} flex flex-col items-center gap-4`}>
+                    <div className={`p-3 rounded-full ${isDark ? 'bg-zinc-700 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                      <Icon name="heart" size={24} />
+                    </div>
+                    <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
+                      {T.motel_note}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {step === 2 && (
             <section className="space-y-10 animate-fade-in max-w-3xl mx-auto">
               <div className="text-center mb-10 md:mb-12">
                 <h2 className={`text-2xl md:text-4xl font-playfair font-medium mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -1579,64 +1640,6 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                   <p className="text-sm font-medium tracking-wide leading-relaxed px-4">{T.empty_slots}</p>
                 </div>
               )}
-            </section>
-          )}
-          
-          {step === 2 && (
-            <section className="space-y-10 md:space-y-12 animate-fade-in max-w-2xl mx-auto">
-              <h2 className={`text-2xl md:text-4xl font-playfair font-medium text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {T.location_title}
-              </h2>
-              
-              <div className="grid grid-cols-3 gap-2 md:gap-4">
-                {[
-                  { id: 'home', label: T.loc_home, icon: 'home' },
-                  { id: 'motel', label: T.loc_motel, icon: 'bed' },
-                  { id: 'hotel', label: T.loc_hotel, icon: 'building' }
-                ].map(x => (
-                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} className={`py-4 md:py-6 px-2 rounded-2xl flex flex-col items-center gap-2 md:gap-3 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] -translate-y-1' : isDark ? 'bg-zinc-900/60 border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800' : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400 shadow-sm'}`}>
-                    <Icon name={x.icon} size={24} />
-                    <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-center">{x.label}</span>
-                  </button>
-                ))}
-              </div>
-              
-              <div className={`p-6 md:p-8 rounded-3xl border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-white border-slate-200'} space-y-6 md:space-y-8`}>
-                <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder={lang === 'en' ? "Your name" : "Seu nome"} hasError={!user.name || String(user.name).trim().length < 3} />
-                
-                {booking.locationType === 'home' && (
-                  <div className="space-y-5 animate-fade-in">
-                    <div className="grid grid-cols-1 sm:grid-cols-[1fr_100px] gap-4">
-                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder={lang === 'en' ? "Street / Avenue" : "Rua / Avenida"} hasError={!booking.address.street} />
-                      <InputField isDark={isDark} label={T.input_num} value={booking.address.number} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))} placeholder="Nº" type="tel" hasError={!booking.address.number} />
-                    </div>
-                    <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Neighborhood" : "Seu Bairro"} hasError={!booking.address.district} />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "City" : "Sua Cidade"} hasError={!booking.address.city} />
-                      <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Apt, Block (Optional)" : "Apto, Bloco (Opcional)"} />
-                    </div>
-                  </div>
-                )}
-                
-                {booking.locationType === 'hotel' && (
-                  <div className="space-y-5 animate-fade-in">
-                    <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder={lang === 'en' ? "Hotel Name" : "Nome do Hotel"} hasError={!booking.address.placeName} />
-                    <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "City" : "Cidade"} hasError={!booking.address.city} />
-                    <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Room Nº" : "Nº do Quarto"} />
-                  </div>
-                )}
-                
-                {booking.locationType === 'motel' && (
-                  <div className={`p-6 rounded-2xl border text-center animate-fade-in ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-slate-300'} flex flex-col items-center gap-4`}>
-                    <div className={`p-3 rounded-full ${isDark ? 'bg-zinc-700 text-white' : 'bg-slate-200 text-slate-700'}`}>
-                      <Icon name="heart" size={24} />
-                    </div>
-                    <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
-                      {T.motel_note}
-                    </p>
-                  </div>
-                )}
-              </div>
             </section>
           )}
           
