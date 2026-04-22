@@ -422,7 +422,7 @@ const getData = (lang: 'pt' | 'en') => {
       { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "REDUCES ANXIETY" : "REDUZ ANSIEDADE", title: isEn ? "Sensory Massage (Mental Reset)" : "Massagem Sensorial (Reset Mental)", desc: isEn ? "Mind won't turn off at bedtime? Close your eyes and let subtle touches give you full-body shivers." : "A cabeça não desliga na hora de dormir? Feche os olhos e deixe toques sutis arrepiarem seu corpo inteiro.", details: isEn ? "Step 1: Starts with a classic massage to release initial tension\nStep 2: Subtle stimuli across the body that give goosebumps\nStep 3: Energy buildup focused on emptying your mind\nStep 4: Climax focused on an intense release of pleasure" : "Passo 1: Início com massagem clássica para soltar as tensões corporais\nPasso 2: Estímulos sutis pelo corpo que arrepiam a pele\nPasso 3: Construção da energia com foco em esvaziar a cabeça\nPasso 4: Finalização focada numa liberação intensa de prazer" },
       { id: 'mista', category: 'final', min: 60, price: p.titan, icon: "zap", tag: isEn ? "BEST OF BOTH WORLDS" : "O MELHOR DOS 2 MUNDOS", title: isEn ? "Fusion Experience (Most Complete)" : "Experiência Fusion (A Mais Completa)", desc: isEn ? "Why choose when you can have it all? First I take the pain from your back, then I take you to a climax that makes any weekly problem disappear." : "Por que escolher se você pode ter tudo? Primeiro eu tiro a dor das suas costas, depois te levo a um clímax que faz qualquer problema da semana desaparecer.", details: isEn ? "Step 1: Starts with a classic massage breaking muscle tension\nStep 2: Changes rhythm to intimate body-to-body contact\nStep 3: Involves your senses in a crescendo of heat and desire\nStep 4: Ends with a liberating release that recharges your batteries" : "Passo 1: Início com massagem clássica para quebrar a tensão muscular\nPasso 2: Muda o ritmo para contato íntimo corpo a corpo e roçar de barba\nPasso 3: Envolve seus sentidos numa crescente de calor e desejo\nPasso 4: Termina com um gozo libertador que recarrega suas baterias" },
       { id: 'reversa', category: 'final', min: 60, price: p.reversa, icon: "refresh-cw", tag: isEn ? "REAL CONTACT" : "CONTATO REAL", title: isEn ? "Reverse Massage (Classic + Lingam)" : "Massagem Reversa (Clássica com Lingam)", desc: isEn ? "Miss human warmth and intimacy? I do a 30-min massage on you, relaxing your body, and then you take control and do it on me." : "Sente falta de calor humano e intimidade? Eu faço aproximadamente 30 minutos de massagem em você, relaxando seu corpo, e depois você assume o controle e faz em mim.", details: isEn ? "Step 1: Starts with a relaxing classic massage for approx 30min\nStep 2: Then you take control, feel free to touch me\nStep 3: No cold 'client and professional' vibe, pure real connection\nStep 4: A delicious dynamic of reciprocity that fulfills you" : "Passo 1: Inicia com massagem clássica relaxante por aprox. 30min\nPasso 2: O controle passa a ser seu, sinta-se à vontade para me tocar\nPasso 3: Quebra da frieza de 'cliente/profissional', pura conexão real\nPasso 4: Finalização mútua e dinâmica de reciprocidade que te realiza" },
-      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "TOTAL SURRENDER" : "ENTREGA TOTAL", title: isEn ? "Nuru Massage (Most Desired)" : "Massagem Nuru (A Mais Desejada)", desc: isEn ? "When stress is at its limit, only this solves it. Gliding gel, parts of my body sliding over yours, and a surrender so deep your legs will shake." : "Quando o nível de estresse está no limite, só isso resolve. Gel que desliza, partes do meu corpo deslizando sobre o seu, e uma entrega tão profunda que suas pernas vão tremer.", details: isEn ? "Step 1: Starts with a full classic massage to loosen the body\nStep 2: Lots of warm gel for perfect continuous sliding\nStep 3: Skin on skin, I use my body to relax yours\nStep 4: The sweatiest and most intense journey for you to release" : "Passo 1: Início com massagem clássica completa para soltar o corpo\nPasso 2: Aplicação de gel quente para um deslizamento perfeito\nPasso 3: Pele na pele, uso meu corpo inteiro para relaxar o seu\nPasso 4: A viagem final mais intensa para você gozar e apagar" }
+      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "TOTAL SURRENDER" : "ENTREGA TOTAL", title: isEn ? "Nuru Massage (Most Desired)" : "Massagem Nuru (A Mais Desejada)", desc: isEn ? "When stress is at its limit, only this solves it. Gliding gel, parts of my body sliding over yours, and a surrender so deep your legs will shake." : "Quando o nível de estresse está no limite, só isso resolve. Gel que desliza, partes do meu corpo deslizando sobre o seu, e uma entrega tão profunda que suas pernas vão tremer.", details: isEn ? "Step 1: Starts with a full classic massage to loosen the body\nStep 2: Lots of warm gel for perfect continuous sliding\nStep 3: Skin on skin, I use my body to relax yours\nStep 4: The sweatiest and most intense journey for you to release" : "Passo 1: Início com massagem clássica completa para soltar o corpo\nPasso 2: Aplicação de gel para um deslizamento perfeito\nPasso 3: Pele na pele, uso meu corpo para relaxar o seu\nPasso 4: A viagem final mais intensa para você gozar e apagar" }
     ] as ServiceItem[],
     plans: [
       { id: 'pack_essencial', type: 'pack', title: isEn ? "Survival Kit (2x)" : "Kit Sobrevivência (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: isEn ? "The perfect combo, scheduled on different days. One day to cure pain, another for the mind." : "A dobradinha perfeita, com sessões agendadas em dias diferentes na semana. Um dia para curar a dor, outro para a mente.", details: isEn ? "1x Classic (to unlock the whole body)\n1x Sensory (to empty the head and have intense pleasure)\nSessions scheduled separately (e.g., one per week)\nIdeal to guarantee perfect sleep nights in the month" : "1x Clássica (para destravar o corpo todo)\n1x Sensorial (para esvaziar a cabeça e ter prazer intenso)\nSessões agendadas separadamente (ex: uma por semana)\nIdeal para garantir noites de sono perfeito no mês", tag: isEn ? "PERFECT SLEEP" : "SONO PERFEITO", icon: "layers" },
@@ -439,7 +439,7 @@ const getData = (lang: 'pt' | 'en') => {
     faq: [
       { q: isEn ? "How do the touch and the ending work?" : "Como o toque e a finalização funcionam?", a: isEn ? "Everything is conducted with extreme respect, entirely focused on your comfort and pleasure. The goal is to create a safe space for you to surrender, relax your mind, and reach a liberating climax that zeroes out stress." : "Tudo é conduzido com extremo respeito, focado inteiramente no seu conforto e prazer. O objetivo é criar um espaço seguro para que você possa se entregar, relaxar a mente e alcançar um gozo libertador que zera o estresse." },
       { q: isEn ? "Where is our meeting location?" : "Onde é o local do nosso encontro?", a: isEn ? "I come to you, in the comfort of your home or hotel. I arrive at the scheduled time and transform the environment (be it your bed or sofa) into a true refuge of peace to take care of you." : "Vou até você, no conforto da sua residência ou hotel. Chego no horário marcado e transformo o ambiente (seja sua cama ou sofá) em um verdadeiro refúgio de paz para cuidarmos de você." },
-      { q: isEn ? "How should I prepare for the session?" : "Como devo me preparar para a sessão?", a: isEn ? "With an open heart! The most important thing is that you take a relaxing shower before my arrival. The shower helps loosen initial muscles and gets your body ready for total surrender." : "De coração aberto! O mais importante é que você tome um banho relaxante antes da minha chegada. O banho ajuda a soltar os músculos iniciais e deixa seu corpo pronto para a entrega total." },
+      { q: isEn ? "How should I prepare for the session?" : "Como devo me prepare para a sessão?", a: isEn ? "With an open heart! The most important thing is that you take a relaxing shower before my arrival. The shower helps loosen initial muscles and gets your body ready for total surrender." : "De coração aberto! O mais importante é que você tome um banho relaxante antes da minha chegada. O banho ajuda a soltar os músculos iniciais e deixa seu corpo pronto para a entrega total." },
       { q: isEn ? "I'm ashamed of my body, what now?" : "Tenho vergonha do meu corpo, e agora?", a: isEn ? "Forget about that. My work is pure welcoming. During the session, there is no judgment, only the desire to provide relief, deep relaxation, and lots of pleasure." : "Esqueça isso. Meu trabalho é puro acolhimento. Durante a sessão, não existe julgamento, existe apenas a vontade de proporcionar alívio, relaxamento profundo e muito prazer." },
       { q: isEn ? "Are my points and level saved in the app?" : "Meus pontos e nível ficam salvos no aplicativo?", a: isEn ? "Yes! To facilitate your access without requiring passwords, your progress (XP) is saved automatically on your phone. Just remember: if you clear your device's browsing history (cache) or change phones, this data will restart from zero." : "Sim! Para facilitar seu acesso sem exigir senhas, seu progresso (XP) fica salvo automaticamente no seu celular. Apenas lembre-se: se você limpar o histórico de navegação do seu aparelho ou trocar de celular, esses dados recomeçarão do zero." }
     ],
@@ -948,13 +948,13 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
   
   const isStepValid = useCallback(() => {
     if (step === 0) return booking.cart.length > 0;
-    if (step === 1) return !!(booking.date && booking.time);
-    if (step === 2) {
+    if (step === 1) {
       if (!user.name || String(user.name).trim().length < 3) return false;
       if (booking.locationType === 'home') return validateAddress(booking.address);
       if (booking.locationType === 'hotel') return !!(booking.address.placeName && booking.address.city);
       return true;
     }
+    if (step === 2) return !!(booking.date && booking.time);
     if (step === 3) return !!(booking.payment && booking.termsAccepted);
     return true;
   }, [step, booking, user.name]);
@@ -962,8 +962,11 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
   const handleNextStep = useCallback(() => {
     if (!isStepValid()) {
       if (step === 0) addToast(T.toast_select_item, "error");
-      if (step === 1) addToast(T.toast_select_date, "error");
-      if (step === 2) addToast(T.toast_fill_addr, "error");
+      if (step === 1) {
+        if (!user.name || String(user.name).trim().length < 3) addToast(T.toast_fill_name, "error");
+        else addToast(T.toast_fill_addr, "error");
+      }
+      if (step === 2) addToast(T.toast_select_date, "error");
       if (step === 3) addToast(T.toast_accept_terms, "error");
       return;
     }
@@ -1121,7 +1124,7 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                   <div key={i} className="flex-1 flex flex-col items-center gap-2 md:gap-3">
                     <div className={`w-full h-1 md:h-1.5 rounded-full transition-all duration-700 ${step >= i ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : isDark ? 'bg-zinc-800' : 'bg-slate-200'}`} />
                     <span className={`text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-colors duration-500 ${step >= i ? isDark ? 'text-white' : 'text-slate-900' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
-                      {i === 1 ? T.step_when : i === 2 ? T.step_where : T.step_summary}
+                      {i === 1 ? T.step_where : i === 2 ? T.step_when : T.step_summary}
                     </span>
                   </div>
                 ))}
@@ -1487,6 +1490,64 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
           )}
           
           {step === 1 && (
+            <section className="space-y-10 md:space-y-12 animate-fade-in max-w-2xl mx-auto">
+              <h2 className={`text-2xl md:text-4xl font-playfair font-medium text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                {T.location_title}
+              </h2>
+              
+              <div className="grid grid-cols-3 gap-2 md:gap-4">
+                {[
+                  { id: 'home', label: T.loc_home, icon: 'home' },
+                  { id: 'motel', label: T.loc_motel, icon: 'bed' },
+                  { id: 'hotel', label: T.loc_hotel, icon: 'building' }
+                ].map(x => (
+                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} className={`py-4 md:py-6 px-2 rounded-2xl flex flex-col items-center gap-2 md:gap-3 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] -translate-y-1' : isDark ? 'bg-zinc-900/60 border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800' : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400 shadow-sm'}`}>
+                    <Icon name={x.icon} size={24} />
+                    <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-center">{x.label}</span>
+                  </button>
+                ))}
+              </div>
+              
+              <div className={`p-6 md:p-8 rounded-3xl border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-white border-slate-200'} space-y-6 md:space-y-8`}>
+                <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder={lang === 'en' ? "Your name" : "Seu nome"} hasError={!user.name || String(user.name).trim().length < 3} />
+                
+                {booking.locationType === 'home' && (
+                  <div className="space-y-5 animate-fade-in">
+                    <div className="grid grid-cols-1 sm:grid-cols-[1fr_100px] gap-4">
+                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder={lang === 'en' ? "Street / Avenue" : "Rua / Avenida"} hasError={!booking.address.street} />
+                      <InputField isDark={isDark} label={T.input_num} value={booking.address.number} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))} placeholder="Nº" type="tel" hasError={!booking.address.number} />
+                    </div>
+                    <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Neighborhood" : "Seu Bairro"} hasError={!booking.address.district} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "City" : "Sua Cidade"} hasError={!booking.address.city} />
+                      <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Apt, Block (Optional)" : "Apto, Bloco (Opcional)"} />
+                    </div>
+                  </div>
+                )}
+                
+                {booking.locationType === 'hotel' && (
+                  <div className="space-y-5 animate-fade-in">
+                    <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder={lang === 'en' ? "Hotel Name" : "Nome do Hotel"} hasError={!booking.address.placeName} />
+                    <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "City" : "Cidade"} hasError={!booking.address.city} />
+                    <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Room Nº" : "Nº do Quarto"} />
+                  </div>
+                )}
+                
+                {booking.locationType === 'motel' && (
+                  <div className={`p-6 rounded-2xl border text-center animate-fade-in ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-slate-300'} flex flex-col items-center gap-4`}>
+                    <div className={`p-3 rounded-full ${isDark ? 'bg-zinc-700 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                      <Icon name="heart" size={24} />
+                    </div>
+                    <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
+                      {T.motel_note}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {step === 2 && (
             <section className="space-y-10 animate-fade-in max-w-3xl mx-auto">
               <div className="text-center mb-10 md:mb-12">
                 <h2 className={`text-2xl md:text-4xl font-playfair font-medium mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -1579,64 +1640,6 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                   <p className="text-sm font-medium tracking-wide leading-relaxed px-4">{T.empty_slots}</p>
                 </div>
               )}
-            </section>
-          )}
-          
-          {step === 2 && (
-            <section className="space-y-10 md:space-y-12 animate-fade-in max-w-2xl mx-auto">
-              <h2 className={`text-2xl md:text-4xl font-playfair font-medium text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {T.location_title}
-              </h2>
-              
-              <div className="grid grid-cols-3 gap-2 md:gap-4">
-                {[
-                  { id: 'home', label: T.loc_home, icon: 'home' },
-                  { id: 'motel', label: T.loc_motel, icon: 'bed' },
-                  { id: 'hotel', label: T.loc_hotel, icon: 'building' }
-                ].map(x => (
-                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} className={`py-4 md:py-6 px-2 rounded-2xl flex flex-col items-center gap-2 md:gap-3 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] -translate-y-1' : isDark ? 'bg-zinc-900/60 border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800' : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400 shadow-sm'}`}>
-                    <Icon name={x.icon} size={24} />
-                    <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-center">{x.label}</span>
-                  </button>
-                ))}
-              </div>
-              
-              <div className={`p-6 md:p-8 rounded-3xl border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-white border-slate-200'} space-y-6 md:space-y-8`}>
-                <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder={lang === 'en' ? "Your name" : "Seu nome"} hasError={!user.name || String(user.name).trim().length < 3} />
-                
-                {booking.locationType === 'home' && (
-                  <div className="space-y-5 animate-fade-in">
-                    <div className="grid grid-cols-1 sm:grid-cols-[1fr_100px] gap-4">
-                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder={lang === 'en' ? "Street / Avenue" : "Rua / Avenida"} hasError={!booking.address.street} />
-                      <InputField isDark={isDark} label={T.input_num} value={booking.address.number} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))} placeholder="Nº" type="tel" hasError={!booking.address.number} />
-                    </div>
-                    <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Neighborhood" : "Seu Bairro"} hasError={!booking.address.district} />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "City" : "Sua Cidade"} hasError={!booking.address.city} />
-                      <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Apt, Block (Optional)" : "Apto, Bloco (Opcional)"} />
-                    </div>
-                  </div>
-                )}
-                
-                {booking.locationType === 'hotel' && (
-                  <div className="space-y-5 animate-fade-in">
-                    <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder={lang === 'en' ? "Hotel Name" : "Nome do Hotel"} hasError={!booking.address.placeName} />
-                    <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "City" : "Cidade"} hasError={!booking.address.city} />
-                    <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Room Nº" : "Nº do Quarto"} />
-                  </div>
-                )}
-                
-                {booking.locationType === 'motel' && (
-                  <div className={`p-6 rounded-2xl border text-center animate-fade-in ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-slate-300'} flex flex-col items-center gap-4`}>
-                    <div className={`p-3 rounded-full ${isDark ? 'bg-zinc-700 text-white' : 'bg-slate-200 text-slate-700'}`}>
-                      <Icon name="heart" size={24} />
-                    </div>
-                    <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
-                      {T.motel_note}
-                    </p>
-                  </div>
-                )}
-              </div>
             </section>
           )}
           
