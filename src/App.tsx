@@ -24,7 +24,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v27_premium_plans', 
+  STORAGE_KEY: '@thaly_app_v28_premium_plans', 
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -94,8 +94,8 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     }
 
     html, body {
-      background-color: ${isDark ? '#09090b' : '#fafafa'};
-      color: ${isDark ? '#FFFFFF' : '#18181b'};
+      background-color: ${isDark ? '#09090b' : '#f0f4f8'}; /* Fundo azul bem clarinho no tema claro */
+      color: ${isDark ? '#FFFFFF' : '#0f172a'};
       transition: background-color 0.3s ease, color 0.3s ease;
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
@@ -133,7 +133,7 @@ const formatMoney = (val: number | undefined, lang: 'pt' | 'en') => {
 };
 
 // Types & Interfaces
-interface ServiceItem { id: string; min: number; price: number; icon: string; isEmoji?: boolean; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; popular?: boolean; category?: 'relax' | 'final' | 'care'; }
+interface ServiceItem { id: string; min: number; price: number; icon: string; isEmoji?: boolean; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; popular?: boolean; category?: 'relax' | 'express' | 'final' | 'care'; }
 interface Coupon { id: string; val: number; title: string; code: string; }
 interface Review { n: string; loc: string; t: string; s: number; serv: string; }
 interface UserData { name: string; xp: number; coupons: Coupon[]; usedCoupons: string[]; hasSeenWelcome: boolean; ordersCount: number; lastActivity: string; }
@@ -215,7 +215,7 @@ const Card = memo(({ children, className = '', onClick, active = false, isDark =
   const getStyle = () => {
     if (active) return isPremium ? 'bg-amber-500/10 border-2 border-amber-500 shadow-amber-500/30 -translate-y-2' : 'bg-blue-600/10 border-2 border-blue-500 shadow-blue-500/30 -translate-y-2';
     if (isDark) return isPremium ? 'bg-gradient-to-br from-zinc-900 to-zinc-900/50 border border-amber-500/40 hover:border-amber-500/80 hover:bg-zinc-800/80 hover:-translate-y-1' : 'bg-zinc-900/60 border border-zinc-700 hover:border-zinc-500 hover:bg-zinc-800/80 hover:-translate-y-1';
-    return isPremium ? 'bg-gradient-to-br from-amber-50 to-white border border-amber-300 hover:border-amber-500 shadow-sm hover:-translate-y-1' : 'bg-white border border-slate-300 hover:border-slate-400 shadow-sm hover:shadow-md hover:-translate-y-1';
+    return isPremium ? 'bg-gradient-to-br from-amber-50 to-white border border-amber-300 hover:border-amber-500 shadow-sm hover:-translate-y-1' : 'bg-white border border-blue-200/50 hover:border-blue-300 shadow-sm hover:shadow-md hover:-translate-y-1';
   };
 
   return (
@@ -402,6 +402,7 @@ const getData = (lang: 'pt' | 'en') => {
   // Os preços base ficam em BRL. A formatação converte para USD se for 'en'
   const p = {
     depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317,
+    pes: 110, maos: 110, combo_pm: 190, // NOVOS VALORES
     pack1: { v: 297, full: 334, save: 37 }, 
     pack2: { v: 387, full: 467, save: 80 }, 
     pack3: { v: 637, full: 721, save: 84 }, 
@@ -416,13 +417,23 @@ const getData = (lang: 'pt' | 'en') => {
       { level: 4, xpNeeded: 800, reward: 50, title: isEn ? "Plenitude Reached" : "Plenitude Alcançada" }
     ],
     services: [
-      { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "PRACTICALITY" : "PRATICIDADE", title: isEn ? "Full Body Trim" : "Aparo Corporal Completo", desc: isEn ? "Rush doesn't let you take care of yourself? I'll solve it. Leave with a clean, light body ready for the week." : "A correria não te deixa cuidar de si mesmo? Eu resolvo. Fique com o corpo limpo, leve e preparado para a semana.", details: isEn ? "Step 1: Zero or Guard 3 trim with clippers\nStep 2: Focus on chest, back, abdomen, and legs\nStep 3: Done in the comfort and total secrecy of your space\nStep 4: Leaves you with less sweat and much more confidence daily" : "Passo 1: Aparo zero ou Pente 3 com máquina profissional\nPasso 2: Foco detalhado no peito, costas, abdômen e pernas\nPasso 3: Feito no conforto e total sigilo do seu espaço\nPasso 4: Finalização para um corpo com menos suor e mais confiança" },
+      // CATEGORIA CUIDADOS RÁPIDOS (EXPRESS) - NOVOS
+      { id: 'pes', category: 'express', min: 40, price: p.pes, icon: "🦶", isEmoji: true, tag: isEn ? "FOOT RELIEF" : "ALÍVIO NOS PÉS", title: isEn ? "Foot Massage" : "Sessão nos Pés", desc: isEn ? "Complete relief for tired feet after a long day." : "Alívio completo para pés cansados após longas jornadas de trabalho.", details: isEn ? "Step 1: Foot reflexology\nStep 2: Deep pressure points\nStep 3: Plantar fascia release" : "Passo 1: Reflexologia podal focada\nPasso 2: Pressão profunda em pontos de tensão\nPasso 3: Liberação de fáscia plantar" },
+      { id: 'maos', category: 'express', min: 40, price: p.maos, icon: "🖐️", isEmoji: true, tag: isEn ? "HAND RELIEF" : "ALÍVIO NAS MÃOS", title: isEn ? "Hand Massage" : "Sessão nas Mãos", desc: isEn ? "Release tension from typing and working with your hands." : "Libere a tensão acumulada de digitar e trabalhar excessivamente com as mãos.", details: isEn ? "Step 1: Joint stretching\nStep 2: Deep palm massage\nStep 3: Forearm and wrist relief" : "Passo 1: Alongamento articular inicial\nPasso 2: Massagem profunda nas palmas e dedos\nPasso 3: Alívio para punhos e antebraço" },
+      { id: 'combo_pm', category: 'express', min: 40, price: p.combo_pm, icon: "✨", isEmoji: true, tag: isEn ? "COMBO" : "COMBO", title: isEn ? "Hands & Feet Combo" : "Combo Mãos e Pés", desc: isEn ? "The ultimate extremity relaxation, combining the best of both." : "O relaxamento definitivo para as extremidades do corpo, unindo o melhor dos dois mundos.", details: isEn ? "Step 1: Deep hand massage\nStep 2: Foot reflexology\nStep 3: Total extremity relief" : "Passo 1: Massagem profunda e detalhada nas mãos\nPasso 2: Reflexologia podal focada\nPasso 3: Alívio total de tensões periféricas" },
+
+      // CATEGORIA RELAXAR
       { id: 'relaxante', category: 'relax', min: 40, price: p.relax, icon: "user-check", tag: isEn ? "MUSCLE RELIEF" : "ALÍVIO MUSCULAR", title: isEn ? "Classic Massage (Quick Relief)" : "Massagem Clássica (Alívio Rápido)", desc: isEn ? "Stiff back from the office chair? Tense body? This takes that giant weight off your shoulders and makes you sleep like an angel." : "Costas travadas da cadeira do escritório? Corpo tenso? Essa é para tirar com as mãos aquele peso gigante que você carrega e te fazer dormir como um anjo.", details: isEn ? "Step 1: Use of wooden rollers to start kneading body parts\nStep 2: Soft touch manually to release hard muscles\nStep 3: Focus on full body relaxation (no intimate touch)\nStep 4: The 'restart' button for those who work too hard" : "Passo 1: Uso de rolos de madeira para preparar e amassar as tensões\nPasso 2: Toque manual e suave para soltar a musculatura dura\nPasso 3: Foco no relaxamento do corpo todo (sem toques íntimos)\nPasso 4: Sensação de 'reiniciar', voltando a dormir como um anjo" },
       { id: 'naturista', category: 'relax', min: 40, price: p.naturista, icon: "sun", tag: isEn ? "ZERO TIES" : "ZERO AMARRAS", title: isEn ? "Naturist Classic (Freedom)" : "Clássica Naturista (Liberdade)", desc: isEn ? "Coming home and taking off work clothes is good, right? Here we elevate that. Total freedom, no clothes, light touches to loosen every muscle." : "Chegar em casa e tirar a roupa do trabalho é bom, né? Aqui elevamos isso. Liberdade total, sem roupas, toques leves para soltar cada músculo do seu corpo.", details: isEn ? "Step 1: Starts with a full classic massage (both undressed)\nStep 2: Exact pressure applied to dismantle daily rigidity\nStep 3: Deep full body relief without any intimate touches\nStep 4: Ends with a deep feeling of lightness and acceptance" : "Passo 1: Início com massagem clássica completa (ambos despidos)\nPasso 2: Pressão exata para desmanchar a rigidez do dia a dia\nPasso 3: Alívio profundo no corpo todo (não possui toques íntimos)\nPasso 4: Finaliza com sensação de leveza e aceitação, sem julgamentos" },
+      
+      // CATEGORIA FINALIZAÇÃO
       { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "REDUCES ANXIETY" : "REDUZ ANSIEDADE", title: isEn ? "Sensory Massage (Mental Reset)" : "Massagem Sensorial (Reset Mental)", desc: isEn ? "Mind won't turn off at bedtime? Close your eyes and let subtle touches give you full-body shivers." : "A cabeça não desliga na hora de dormir? Feche os olhos e deixe toques sutis arrepiarem seu corpo inteiro.", details: isEn ? "Step 1: Starts with a classic massage to release initial tension\nStep 2: Subtle stimuli across the body that give goosebumps\nStep 3: Energy buildup focused on emptying your mind\nStep 4: Climax focused on an intense release of pleasure" : "Passo 1: Início com massagem clássica para soltar as tensões corporais\nPasso 2: Estímulos sutis pelo corpo que arrepiam a pele\nPasso 3: Construção da energia com foco em esvaziar a cabeça\nPasso 4: Finalização focada numa liberação intensa de prazer" },
       { id: 'mista', category: 'final', min: 60, price: p.titan, icon: "zap", tag: isEn ? "BEST OF BOTH WORLDS" : "O MELHOR DOS 2 MUNDOS", title: isEn ? "Fusion Experience (Most Complete)" : "Experiência Fusion (A Mais Completa)", desc: isEn ? "Why choose when you can have it all? First I take the pain from your back, then I take you to a climax that makes any weekly problem disappear." : "Por que escolher se você pode ter tudo? Primeiro eu tiro a dor das suas costas, depois te levo a um clímax que faz qualquer problema da semana desaparecer.", details: isEn ? "Step 1: Starts with a classic massage breaking muscle tension\nStep 2: Changes rhythm to intimate body-to-body contact\nStep 3: Involves your senses in a crescendo of heat and desire\nStep 4: Ends with a liberating release that recharges your batteries" : "Passo 1: Início com massagem clássica para quebrar a tensão muscular\nPasso 2: Muda o ritmo para contato íntimo corpo a corpo e roçar de barba\nPasso 3: Envolve seus sentidos numa crescente de calor e desejo\nPasso 4: Termina com um gozo libertador que recarrega suas baterias" },
       { id: 'reversa', category: 'final', min: 60, price: p.reversa, icon: "refresh-cw", tag: isEn ? "REAL CONTACT" : "CONTATO REAL", title: isEn ? "Reverse Massage (Classic + Lingam)" : "Massagem Reversa (Clássica com Lingam)", desc: isEn ? "Miss human warmth and intimacy? I do a 30-min massage on you, relaxing your body, and then you take control and do it on me." : "Sente falta de calor humano e intimidade? Eu faço aproximadamente 30 minutos de massagem em você, relaxando seu corpo, e depois você assume o controle e faz em mim.", details: isEn ? "Step 1: Starts with a relaxing classic massage for approx 30min\nStep 2: Then you take control, feel free to touch me\nStep 3: No cold 'client and professional' vibe, pure real connection\nStep 4: A delicious dynamic of reciprocity that fulfills you" : "Passo 1: Inicia com massagem clássica relaxante por aprox. 30min\nPasso 2: O controle passa a ser seu, sinta-se à vontade para me tocar\nPasso 3: Quebra da frieza de 'cliente/profissional', pura conexão real\nPasso 4: Finalização mútua e dinâmica de reciprocidade que te realiza" },
-      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "TOTAL SURRENDER" : "ENTREGA TOTAL", title: isEn ? "Nuru Massage (Most Desired)" : "Massagem Nuru (A Mais Desejada)", desc: isEn ? "When stress is at its limit, only this solves it. Gliding gel, parts of my body sliding over yours, and a surrender so deep your legs will shake." : "Quando o nível de estresse está no limite, só isso resolve. Gel que desliza, partes do meu corpo deslizando sobre o seu, e uma entrega tão profunda que suas pernas vão tremer.", details: isEn ? "Step 1: Starts with a full classic massage to loosen the body\nStep 2: Lots of warm gel for perfect continuous sliding\nStep 3: Skin on skin, I use my body to relax yours\nStep 4: The sweatiest and most intense journey for you to release" : "Passo 1: Início com massagem clássica completa para soltar o corpo\nPasso 2: Aplicação de gel para um deslizamento perfeito\nPasso 3: Pele na pele, uso meu corpo para relaxar o seu\nPasso 4: A viagem final mais intensa para você gozar e apagar" }
+      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "TOTAL SURRENDER" : "ENTREGA TOTAL", title: isEn ? "Nuru Massage (Most Desired)" : "Massagem Nuru (A Mais Desejada)", desc: isEn ? "When stress is at its limit, only this solves it. Gliding gel, parts of my body sliding over yours, and a surrender so deep your legs will shake." : "Quando o nível de estresse está no limite, só isso resolve. Gel que desliza, partes do meu corpo deslizando sobre o seu, e uma entrega tão profunda que suas pernas vão tremer.", details: isEn ? "Step 1: Starts with a full classic massage to loosen the body\nStep 2: Lots of warm gel for perfect continuous sliding\nStep 3: Skin on skin, I use my body to relax yours\nStep 4: The sweatiest and most intense journey for you to release" : "Passo 1: Início com massagem clássica completa para soltar o corpo\nPasso 2: Aplicação de gel para um deslizamento perfeito\nPasso 3: Pele na pele, uso meu corpo para relaxar o seu\nPasso 4: A viagem final mais intensa para você gozar e apagar" },
+      
+      // CATEGORIA CUIDADOS PESSOAIS
+      { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "PRACTICALITY" : "PRATICIDADE", title: isEn ? "Full Body Trim" : "Aparo Corporal Completo", desc: isEn ? "Rush doesn't let you take care of yourself? I'll solve it. Leave with a clean, light body ready for the week." : "A correria não te deixa cuidar de si mesmo? Eu resolvo. Fique com o corpo limpo, leve e preparado para a semana.", details: isEn ? "Step 1: Zero or Guard 3 trim with clippers\nStep 2: Focus on chest, back, abdomen, and legs\nStep 3: Done in the comfort and total secrecy of your space\nStep 4: Leaves you with less sweat and much more confidence daily" : "Passo 1: Aparo zero ou Pente 3 com máquina profissional\nPasso 2: Foco detalhado no peito, costas, abdômen e pernas\nPasso 3: Feito no conforto e total sigilo do seu espaço\nPasso 4: Finalização para um corpo com menos suor e mais confiança" }
     ] as ServiceItem[],
     plans: [
       { id: 'pack_essencial', type: 'pack', title: isEn ? "Survival Kit (2x)" : "Kit Sobrevivência (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: isEn ? "The perfect combo, scheduled on different days. One day to cure pain, another for the mind." : "A dobradinha perfeita, com sessões agendadas em dias diferentes na semana. Um dia para curar a dor, outro para a mente.", details: isEn ? "1x Classic (to unlock the whole body)\n1x Sensory (to empty the head and have intense pleasure)\nSessions scheduled separately (e.g., one per week)\nIdeal to guarantee perfect sleep nights in the month" : "1x Clássica (para destravar o corpo todo)\n1x Sensorial (para esvaziar a cabeça e ter prazer intenso)\nSessões agendadas separadamente (ex: uma por semana)\nIdeal para garantir noites de sono perfeito no mês", tag: isEn ? "PERFECT SLEEP" : "SONO PERFEITO", icon: "layers" },
@@ -566,7 +577,7 @@ const getData = (lang: 'pt' | 'en') => {
 };
 
 // ==================================================================================
-// 5. MAIN APP OTIMIZADO PARA MÚLTIPLAS ESCOLHAS E NOVO FLUXO
+// 5. MAIN APP OTIMIZADO PARA MÚLTIPLAS ESCOLHAS E NOVO FLUXO DE UX/UI
 // ==================================================================================
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -574,7 +585,7 @@ export default function App() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [step, setStep] = useState(0);
   const [isDark, setIsDark] = useState(true);
-  const [lang, setLang] = useState<'pt'|'en'>('pt'); // STATE DE IDIOMA ADICIONADO
+  const [lang, setLang] = useState<'pt'|'en'>('pt'); 
   const [activeTab, setActiveTab] = useState('single');
   const [toasts, setToasts] = useState<{id: number, msg: string, type: "success" | "error"}[]>([]);
   const [termsOpen, setTermsOpen] = useState(false);
@@ -582,7 +593,6 @@ export default function App() {
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   
-  // Recalcula todos os textos se o idioma mudar
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
   
@@ -822,7 +832,7 @@ export default function App() {
   
   const estimatedXP = useMemo(() => {
     const hasPack = booking.cart.some(item => item.type === 'pack');
-    return Math.floor(financials.total * (hasPack ? 0.30 : 0.15)); // XP é calculado em cima da moeda base (BRL) para consistência
+    return Math.floor(financials.total * (hasPack ? 0.30 : 0.15));
   }, [financials.total, booking.cart]);
   
   const getNextLevelInfo = (currentXP: number) => {
@@ -844,7 +854,6 @@ export default function App() {
     if (!nextLevel) return 100; return Math.min(100, Math.max(0, ((user.xp - currentLevel.xpNeeded) / (nextLevel.xpNeeded - currentLevel.xpNeeded)) * 100));
   };
   
-  // GERAÇÃO DO WHATSAPP TRADUZIDA PARA O IDIOMA ATUAL
   const generateWhatsAppMsg = () => {
     const f = financials; 
     const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : '';
@@ -939,11 +948,6 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
     `.trim();
 
     return msg;
-  };
-  
-  const copyToClipboard = () => { 
-    navigator.clipboard.writeText(generateWhatsAppMsg()); 
-    addToast(T.toast_copy, "success"); 
   };
   
   const isStepValid = useCallback(() => {
@@ -1051,6 +1055,42 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
     if (d.toDateString() === tomorrow.toDateString()) return T.tomorrow;
     return d.toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { weekday: 'short' }).slice(0, 3).toUpperCase();
   };
+
+  // DEFINIÇÃO DAS CATEGORIAS COM UX/UI APERFEIÇOADA
+  const categoriesRenderData = [
+    { 
+      id: 'relax', 
+      title: lang === 'en' ? "Just Relax" : "Apenas Relaxar", 
+      icon: "sun", 
+      colorClass: "bg-blue-500",
+      accent: isDark ? "border-blue-500/30" : "border-blue-100 shadow-blue-900/5",
+      desc: lang === 'en' ? "Therapeutic body work to relieve stress." : "Trabalho corporal terapêutico focado em aliviar totalmente o estresse." 
+    },
+    { 
+      id: 'express', 
+      title: lang === 'en' ? "Express Care" : "Cuidados Rápidos", 
+      icon: "watch", 
+      colorClass: "bg-emerald-500",
+      accent: isDark ? "border-emerald-500/30" : "border-emerald-100 shadow-emerald-900/5",
+      desc: lang === 'en' ? "Quick localized relief for hands and feet." : "Soluções pontuais de alívio rápido focado nas mãos e pés." 
+    },
+    { 
+      id: 'final', 
+      title: lang === 'en' ? "With Ending" : "Com Finalização", 
+      icon: "sparkles", 
+      colorClass: "bg-amber-500",
+      accent: isDark ? "border-amber-500/30" : "border-amber-100 shadow-amber-900/5",
+      desc: lang === 'en' ? "A complete and intense sensory journey." : "A verdadeira jornada sensorial de alívio profundo e prazer." 
+    },
+    { 
+      id: 'care', 
+      title: lang === 'en' ? "Personal Care" : "Cuidados Pessoais", 
+      icon: "scissors", 
+      colorClass: "bg-pink-500",
+      accent: isDark ? "border-pink-500/30" : "border-pink-100 shadow-pink-900/5",
+      desc: lang === 'en' ? "Aesthetic body maintenance." : "Sessões focadas na estética e higiene do seu corpo." 
+    }
+  ];
   
   if (!isClient) return <div className="min-h-screen w-full bg-zinc-950 flex items-center justify-center" />;
 
@@ -1104,7 +1144,6 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                 </div>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                {/* BOTÃO DE IDIOMA ADICIONADO AQUI */}
                 <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} aria-label="Alterar Idioma / Change Language" className={`relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700 text-blue-400 hover:bg-zinc-800 hover:text-blue-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-blue-600 hover:bg-slate-50 hover:shadow-md'}`}>
                    <Icon name="globe" size={20} />
                    <span className="absolute -bottom-1 -right-1 text-[8px] font-bold bg-blue-500 text-white px-1.5 py-0.5 rounded shadow-sm">{lang.toUpperCase()}</span>
@@ -1207,198 +1246,93 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
               </div>
               
               {activeTab === 'single' ? (
-                <div className="space-y-12">
-                  <div>
-                    <h3 className={`text-xl md:text-2xl font-playfair font-medium mb-6 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      <Icon name="sun" size={24} className="text-blue-500" /> {lang === 'en' ? "Just Relax" : "Apenas Relaxar"}
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                      {DATA.services.filter((s: ServiceItem) => s.category === 'relax').map((s: ServiceItem) => {
-                        const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
-                        return (
-                          <Card key={s.id} active={isInCart} onClick={() => handleToggleCartItem(s)} isDark={isDark} popular={s.popular} T={T}>
-                            <div className="flex-1">
-                              <div className="flex justify-between items-start mb-6 gap-3">
-                                <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-white border-slate-300 text-slate-800'}`}>
-                                  <Icon name={s.icon} size={24} isEmoji={s.isEmoji} />
-                                </div>
-                                <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
-                                  {isInCart && (
-                                    <div className={`absolute -top-2 -right-2 text-white w-6 h-6 flex items-center justify-center rounded-full animate-fade-in shadow-md bg-blue-500`}>
-                                      <Icon name="check" size={14} />
-                                    </div>
-                                  )}
-                                  {s.fullPrice && (
-                                    <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold w-full ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-                                      {T.from} <span className="line-through">{formatMoney(s.fullPrice, lang)}</span>
-                                    </span>
-                                  )}
-                                  <span className={`text-xl md:text-2xl font-playfair font-semibold w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                    {formatMoney(s.price, lang)}
-                                  </span>
-                                  {s.savings && (
-                                    <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full block mt-2 border max-w-fit ${isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-50 text-emerald-700 border-emerald-300'}`}>
-                                      {T.savings} {formatMoney(s.savings, lang)}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              <div className="mb-6">
-                                <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? 'bg-zinc-800 border-zinc-600 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-800'}`}>
-                                  {s.tag}
-                                </span>
-                                <h3 className={`text-lg md:text-xl font-playfair font-medium mb-2 md:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                  {s.title}
-                                </h3>
-                                <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>
-                                  {s.desc}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
-                              <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                                <Icon name="check" size={14} className={`text-emerald-400 shrink-0`} /> {T.details_label}
-                              </div>
-                              <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                                {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className={`text-blue-400 mt-1 text-[10px] shrink-0`}>•</span> <span>{line}</span></p>)}
-                              </div>
-                            </div>
-                          </Card>
-                        )
-                      })}
-                    </div>
-                  </div>
+                <div className="space-y-16">
+                  {categoriesRenderData.map(cat => {
+                    const servicesInCategory = DATA.services.filter((s: ServiceItem) => s.category === cat.id);
+                    if (servicesInCategory.length === 0) return null;
 
-                  <div className="mt-12">
-                    <h3 className={`text-xl md:text-2xl font-playfair font-medium mb-6 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      <Icon name="sparkles" size={24} className="text-amber-500" /> {lang === 'en' ? "With Ending" : "Com Finalização"}
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                      {DATA.services.filter((s: ServiceItem) => s.category === 'final').map((s: ServiceItem) => {
-                        const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
-                        return (
-                          <Card key={s.id} active={isInCart} onClick={() => handleToggleCartItem(s)} isDark={isDark} popular={s.popular} T={T}>
-                            <div className="flex-1">
-                              <div className="flex justify-between items-start mb-6 gap-3">
-                                <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-white border-slate-300 text-slate-800'}`}>
-                                  <Icon name={s.icon} size={24} isEmoji={s.isEmoji} />
-                                </div>
-                                <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
-                                  {isInCart && (
-                                    <div className={`absolute -top-2 -right-2 text-white w-6 h-6 flex items-center justify-center rounded-full animate-fade-in shadow-md bg-blue-500`}>
-                                      <Icon name="check" size={14} />
-                                    </div>
-                                  )}
-                                  {s.fullPrice && (
-                                    <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold w-full ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-                                      {T.from} <span className="line-through">{formatMoney(s.fullPrice, lang)}</span>
-                                    </span>
-                                  )}
-                                  <span className={`text-xl md:text-2xl font-playfair font-semibold w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                    {formatMoney(s.price, lang)}
-                                  </span>
-                                  {s.savings && (
-                                    <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full block mt-2 border max-w-fit ${isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-50 text-emerald-700 border-emerald-300'}`}>
-                                      {T.savings} {formatMoney(s.savings, lang)}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              <div className="mb-6">
-                                <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? 'bg-zinc-800 border-zinc-600 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-800'}`}>
-                                  {s.tag}
-                                </span>
-                                <h3 className={`text-lg md:text-xl font-playfair font-medium mb-2 md:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                  {s.title}
-                                </h3>
-                                <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>
-                                  {s.desc}
-                                </p>
-                              </div>
+                    return (
+                      <div key={cat.id} className={`p-6 md:p-10 rounded-[2.5rem] border-2 shadow-lg relative overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-900/40' : 'bg-white'} ${cat.accent}`}>
+                        {/* Decorador de Fundo Colorido com Desfoque */}
+                        <div className={`absolute top-0 right-0 w-64 h-64 opacity-[0.03] md:opacity-[0.05] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none ${cat.colorClass}`} />
+                        
+                        <div className="relative z-10">
+                          {/* Header da Categoria */}
+                          <div className="flex items-center gap-4 mb-8 md:mb-10">
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-xl shrink-0 ${cat.colorClass}`}>
+                              <Icon name={cat.icon} size={28} />
                             </div>
-                            
-                            <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
-                              <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                                <Icon name="check" size={14} className={`text-emerald-400 shrink-0`} /> {T.details_label}
-                              </div>
-                              <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                                {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className={`text-blue-400 mt-1 text-[10px] shrink-0`}>•</span> <span>{line}</span></p>)}
-                              </div>
+                            <div>
+                              <h3 className={`text-2xl md:text-3xl font-playfair font-medium leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{cat.title}</h3>
+                              <p className={`text-xs md:text-sm font-light mt-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{cat.desc}</p>
                             </div>
-                          </Card>
-                        )
-                      })}
-                    </div>
-                  </div>
+                          </div>
 
-                  <div className="mt-12">
-                    <h3 className={`text-xl md:text-2xl font-playfair font-medium mb-6 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      <Icon name="scissors" size={24} className="text-pink-500" /> {lang === 'en' ? "Personal Care" : "Cuidados Pessoais"}
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                      {DATA.services.filter((s: ServiceItem) => s.category === 'care').map((s: ServiceItem) => {
-                        const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
-                        return (
-                          <Card key={s.id} active={isInCart} onClick={() => handleToggleCartItem(s)} isDark={isDark} popular={s.popular} T={T}>
-                            <div className="flex-1">
-                              <div className="flex justify-between items-start mb-6 gap-3">
-                                <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-white border-slate-300 text-slate-800'}`}>
-                                  <Icon name={s.icon} size={24} isEmoji={s.isEmoji} />
-                                </div>
-                                <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
-                                  {isInCart && (
-                                    <div className={`absolute -top-2 -right-2 text-white w-6 h-6 flex items-center justify-center rounded-full animate-fade-in shadow-md bg-blue-500`}>
-                                      <Icon name="check" size={14} />
+                          {/* Lista de Serviços da Categoria */}
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                            {servicesInCategory.map((s: ServiceItem) => {
+                              const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
+                              return (
+                                <Card key={s.id} active={isInCart} onClick={() => handleToggleCartItem(s)} isDark={isDark} popular={s.popular} T={T}>
+                                  <div className="flex-1">
+                                    <div className="flex justify-between items-start mb-6 gap-3">
+                                      <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-white border-slate-300 text-slate-800'}`}>
+                                        <Icon name={s.icon} size={24} isEmoji={s.isEmoji} />
+                                      </div>
+                                      <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
+                                        {isInCart && (
+                                          <div className={`absolute -top-2 -right-2 text-white w-6 h-6 flex items-center justify-center rounded-full animate-fade-in shadow-md bg-blue-500`}>
+                                            <Icon name="check" size={14} />
+                                          </div>
+                                        )}
+                                        {s.fullPrice && (
+                                          <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold w-full ${isDark ? 'text-red-400' : 'text-red-600'}`}>
+                                            {T.from} <span className="line-through">{formatMoney(s.fullPrice, lang)}</span>
+                                          </span>
+                                        )}
+                                        <span className={`text-xl md:text-2xl font-playfair font-semibold w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                          {formatMoney(s.price, lang)}
+                                        </span>
+                                        {s.savings && (
+                                          <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full block mt-2 border max-w-fit ${isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-50 text-emerald-700 border-emerald-300'}`}>
+                                            {T.savings} {formatMoney(s.savings, lang)}
+                                          </span>
+                                        )}
+                                      </div>
                                     </div>
-                                  )}
-                                  {s.fullPrice && (
-                                    <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold w-full ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-                                      {T.from} <span className="line-through">{formatMoney(s.fullPrice, lang)}</span>
-                                    </span>
-                                  )}
-                                  <span className={`text-xl md:text-2xl font-playfair font-semibold w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                    {formatMoney(s.price, lang)}
-                                  </span>
-                                  {s.savings && (
-                                    <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full block mt-2 border max-w-fit ${isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-50 text-emerald-700 border-emerald-300'}`}>
-                                      {T.savings} {formatMoney(s.savings, lang)}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              <div className="mb-6">
-                                <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? 'bg-zinc-800 border-zinc-600 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-800'}`}>
-                                  {s.tag}
-                                </span>
-                                <h3 className={`text-lg md:text-xl font-playfair font-medium mb-2 md:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                  {s.title}
-                                </h3>
-                                <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>
-                                  {s.desc}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
-                              <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                                <Icon name="check" size={14} className={`text-emerald-400 shrink-0`} /> {T.details_label}
-                              </div>
-                              <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                                {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className={`text-blue-400 mt-1 text-[10px] shrink-0`}>•</span> <span>{line}</span></p>)}
-                              </div>
-                            </div>
-                          </Card>
-                        )
-                      })}
-                    </div>
-                  </div>
+                                    
+                                    <div className="mb-6">
+                                      <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? 'bg-zinc-800 border-zinc-600 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-800'}`}>
+                                        {s.tag}
+                                      </span>
+                                      <h3 className={`text-lg md:text-xl font-playfair font-medium mb-2 md:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                        {s.title}
+                                      </h3>
+                                      <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>
+                                        {s.desc}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
+                                    <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
+                                      <Icon name="check" size={14} className={`text-emerald-400 shrink-0`} /> {T.details_label}
+                                    </div>
+                                    <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                                      {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className={`text-blue-400 mt-1 text-[10px] shrink-0`}>•</span> <span>{line}</span></p>)}
+                                    </div>
+                                  </div>
+                                </Card>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                   {DATA.plans.map((s: ServiceItem) => {
                     const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
                     const isPremiumCard = true;
