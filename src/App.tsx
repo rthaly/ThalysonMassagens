@@ -24,7 +24,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v28_premium_plans', 
+  STORAGE_KEY: '@thaly_app_v27_premium_plans', // Versão mantida no 27 conforme solicitado
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -401,12 +401,12 @@ const getData = (lang: 'pt' | 'en') => {
   const isEn = lang === 'en';
   // Os preços base ficam em BRL. A formatação converte para USD se for 'en'
   const p = {
-    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317,
-    pes: 110, maos: 110, combo_pm: 190, // NOVOS VALORES
+    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317, crossfit: 187,
+    pes: 110, maos: 110, combo_pm: 190,
     pack1: { v: 297, full: 334, save: 37 }, 
     pack2: { v: 387, full: 467, save: 80 }, 
     pack3: { v: 637, full: 721, save: 84 }, 
-    extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
+    extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17, dominador: 160, oral: 120, beijos: 77, prostatico: 120 }
   };
   
   return {
@@ -417,7 +417,7 @@ const getData = (lang: 'pt' | 'en') => {
       { level: 4, xpNeeded: 800, reward: 50, title: isEn ? "Plenitude Reached" : "Plenitude Alcançada" }
     ],
     services: [
-      // CATEGORIA CUIDADOS RÁPIDOS (EXPRESS) - NOVOS
+      // CATEGORIA CUIDADOS RÁPIDOS (EXPRESS)
       { id: 'pes', category: 'express', min: 40, price: p.pes, icon: "🦶", isEmoji: true, tag: isEn ? "FOOT RELIEF" : "ALÍVIO NOS PÉS", title: isEn ? "Foot Massage" : "Sessão nos Pés", desc: isEn ? "Complete relief for tired feet after a long day." : "Alívio completo para pés cansados após longas jornadas de trabalho.", details: isEn ? "Step 1: Foot reflexology\nStep 2: Deep pressure points\nStep 3: Plantar fascia release" : "Passo 1: Reflexologia podal focada\nPasso 2: Pressão profunda em pontos de tensão\nPasso 3: Liberação de fáscia plantar" },
       { id: 'maos', category: 'express', min: 40, price: p.maos, icon: "🖐️", isEmoji: true, tag: isEn ? "HAND RELIEF" : "ALÍVIO NAS MÃOS", title: isEn ? "Hand Massage" : "Sessão nas Mãos", desc: isEn ? "Release tension from typing and working with your hands." : "Libere a tensão acumulada de digitar e trabalhar excessivamente com as mãos.", details: isEn ? "Step 1: Joint stretching\nStep 2: Deep palm massage\nStep 3: Forearm and wrist relief" : "Passo 1: Alongamento articular inicial\nPasso 2: Massagem profunda nas palmas e dedos\nPasso 3: Alívio para punhos e antebraço" },
       { id: 'combo_pm', category: 'express', min: 40, price: p.combo_pm, icon: "✨", isEmoji: true, tag: isEn ? "COMBO" : "COMBO", title: isEn ? "Hands & Feet Combo" : "Combo Mãos e Pés", desc: isEn ? "The ultimate extremity relaxation, combining the best of both." : "O relaxamento definitivo para as extremidades do corpo, unindo o melhor dos dois mundos.", details: isEn ? "Step 1: Deep hand massage\nStep 2: Foot reflexology\nStep 3: Total extremity relief" : "Passo 1: Massagem profunda e detalhada nas mãos\nPasso 2: Reflexologia podal focada\nPasso 3: Alívio total de tensões periféricas" },
@@ -425,6 +425,7 @@ const getData = (lang: 'pt' | 'en') => {
       // CATEGORIA RELAXAR
       { id: 'relaxante', category: 'relax', min: 40, price: p.relax, icon: "user-check", tag: isEn ? "MUSCLE RELIEF" : "ALÍVIO MUSCULAR", title: isEn ? "Classic Massage (Quick Relief)" : "Massagem Clássica (Alívio Rápido)", desc: isEn ? "Stiff back from the office chair? Tense body? This takes that giant weight off your shoulders and makes you sleep like an angel." : "Costas travadas da cadeira do escritório? Corpo tenso? Essa é para tirar com as mãos aquele peso gigante que você carrega e te fazer dormir como um anjo.", details: isEn ? "Step 1: Use of wooden rollers to start kneading body parts\nStep 2: Soft touch manually to release hard muscles\nStep 3: Focus on full body relaxation (no intimate touch)\nStep 4: The 'restart' button for those who work too hard" : "Passo 1: Uso de rolos de madeira para preparar e amassar as tensões\nPasso 2: Toque manual e suave para soltar a musculatura dura\nPasso 3: Foco no relaxamento do corpo todo (sem toques íntimos)\nPasso 4: Sensação de 'reiniciar', voltando a dormir como um anjo" },
       { id: 'naturista', category: 'relax', min: 40, price: p.naturista, icon: "sun", tag: isEn ? "ZERO TIES" : "ZERO AMARRAS", title: isEn ? "Naturist Classic (Freedom)" : "Clássica Naturista (Liberdade)", desc: isEn ? "Coming home and taking off work clothes is good, right? Here we elevate that. Total freedom, no clothes, light touches to loosen every muscle." : "Chegar em casa e tirar a roupa do trabalho é bom, né? Aqui elevamos isso. Liberdade total, sem roupas, toques leves para soltar cada músculo do seu corpo.", details: isEn ? "Step 1: Starts with a full classic massage (both undressed)\nStep 2: Exact pressure applied to dismantle daily rigidity\nStep 3: Deep full body relief without any intimate touches\nStep 4: Ends with a deep feeling of lightness and acceptance" : "Passo 1: Início com massagem clássica completa (ambos despidos)\nPasso 2: Pressão exata para desmanchar a rigidez do dia a dia\nPasso 3: Alívio profundo no corpo todo (não possui toques íntimos)\nPasso 4: Finaliza com sensação de leveza e aceitação, sem julgamentos" },
+      { id: 'crossfit', category: 'relax', min: 60, price: p.crossfit, icon: "🏋️‍♂️", isEmoji: true, tag: isEn ? "DEEP RECOVERY" : "RECUPERAÇÃO PROFUNDA", title: isEn ? "Crossfit Lovers" : "Massagem Crossfiteiro", desc: isEn ? "Heavy workouts demand deep recovery. Firm sports-style grip to untie WOD knots, finishing with an intense and well-deserved sensual relaxation." : "Treino pesado exige uma recuperação à altura. Uma pegada firme e profunda de esportista para esportista, desmanchando os nós de tensão do WOD, terminando com um relaxamento sensual intenso e merecido.", details: isEn ? "Step 1: Deep friction to warm up fatigued muscles\nStep 2: Myofascial release on back, shoulders, and legs\nStep 3: Stretching to relieve joint compression\nStep 4: A relaxing and intense final touch to zero your stress" : "Passo 1: Fricção e deslizamento profundo para aquecer a musculatura fadigada\nPasso 2: Liberação miofascial pesada com foco em pernas, costas e ombros\nPasso 3: Alongamentos guiados para descompressão articular\nPasso 4: Finalização relaxante e sensual para zerar o estresse pós-treino" },
       
       // CATEGORIA FINALIZAÇÃO
       { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "REDUCES ANXIETY" : "REDUZ ANSIEDADE", title: isEn ? "Sensory Massage (Mental Reset)" : "Massagem Sensorial (Reset Mental)", desc: isEn ? "Mind won't turn off at bedtime? Close your eyes and let subtle touches give you full-body shivers." : "A cabeça não desliga na hora de dormir? Feche os olhos e deixe toques sutis arrepiarem seu corpo inteiro.", details: isEn ? "Step 1: Starts with a classic massage to release initial tension\nStep 2: Subtle stimuli across the body that give goosebumps\nStep 3: Energy buildup focused on emptying your mind\nStep 4: Climax focused on an intense release of pleasure" : "Passo 1: Início com massagem clássica para soltar as tensões corporais\nPasso 2: Estímulos sutis pelo corpo que arrepiam a pele\nPasso 3: Construção da energia com foco em esvaziar a cabeça\nPasso 4: Finalização focada numa liberação intensa de prazer" },
@@ -445,7 +446,12 @@ const getData = (lang: 'pt' | 'en') => {
       { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: isEn ? "Extended Time (+30m)" : "Tempo Estendido (+30m)", desc: isEn ? "Because when it's good, we don't want it to end." : "Porque quando está bom, não queremos que acabe." },
       { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: isEn ? "Organic Interaction" : "Interação Orgânica", desc: isEn ? "Feel free to participate and touch as well." : "Sinta-se livre para participar e tocar também." },
       { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isEn ? "Deep Aromatherapy" : "Cheiro bom no ar", desc: isEn ? "Essential oils that lower your mental frequency." : "Óleos essenciais que baixam a sua frequência mental." },
-      { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isEn ? "Extra Focus on Pain" : "Foco Extra em Dores", desc: isEn ? "Use of technical ointment to treat strong pain." : "Uso de pomada técnica para tratar dores fortes." }
+      { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isEn ? "Extra Focus on Pain" : "Foco Extra em Dores", desc: isEn ? "Use of technical ointment to treat strong pain." : "Uso de pomada técnica para tratar dores fortes." },
+      // NOVOS EXTRAS PICANTES SOLICITADOS
+      { id: 'dominador', price: p.extras.dominador, icon: "🔥", isEmoji: true, label: isEn ? "Active & Dominant" : "Massagista Ativo e Dominador", desc: isEn ? "I take full control at the end of the session." : "Eu assumo o controle total e ativo na finalização." },
+      { id: 'oral', price: p.extras.oral, icon: "👅", isEmoji: true, label: isEn ? "Oral Included" : "Oral na Sessão", desc: isEn ? "Oral intimacy included in the experience." : "Estímulo oral íntimo incluído na nossa experiência." },
+      { id: 'beijos', price: p.extras.beijos, icon: "💋", isEmoji: true, label: isEn ? "Kisses Included" : "Beijos Liberados", desc: isEn ? "Kisses and affection allowed during the session." : "Carinho e beijos completamente liberados no atendimento." },
+      { id: 'prostatico', price: p.extras.prostatico, icon: "💦", isEmoji: true, label: isEn ? "Prostatic Massage" : "Prostático Manual", desc: isEn ? "Manual prostatic stimulation with lube." : "Estimulação prostática manual intensa com dedos e lubrificante." }
     ],
     faq: [
       { q: isEn ? "How do the touch and the ending work?" : "Como o toque e a finalização funcionam?", a: isEn ? "Everything is conducted with extreme respect, entirely focused on your comfort and pleasure. The goal is to create a safe space for you to surrender, relax your mind, and reach a liberating climax that zeroes out stress." : "Tudo é conduzido com extremo respeito, focado inteiramente no seu conforto e prazer. O objetivo é criar um espaço seguro para que você possa se entregar, relaxar a mente e alcançar um gozo libertador que zera o estresse." },
