@@ -1,34 +1,21 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 
 // ==================================================================================
-// 0. GUIA DE CORES E ESTILOS (PARA VOCÊ ENTENDER E MUDAR)
+// 0. GUIA DE CORES E ESTILOS
 // ==================================================================================
 /*
-  Este projeto usa "Tailwind CSS" para as cores. As cores são definidas por classes no formato:
-  [propriedade]-[cor]-[intensidade]. 
-  
-  COMO MUDAR AS CORES PRINCIPAIS:
-  1. Cor de Fundo Principal (Modo Escuro): Procure por `bg-zinc-950` (preto/cinza muito escuro). Pode mudar para `bg-black`.
-  2. Textos Brancos (Maior Contraste): Usei `text-white`, `text-zinc-100` e `text-zinc-200`. 
-     Se quiser puramente branco em tudo, troque `text-zinc-200` por `text-white`.
-  3. Cor Azul Padrão (Botões e Seleções): Procure por `blue-600` e `blue-500`. 
-     Se quiser vermelho, troque por `red-600`. Se quiser verde, `emerald-600`.
-  4. Cor Dourada/Premium (Planos): Procure por `amber-500`.
-  5. Bordas: Usam `border-zinc-800` (um cinza bem escuro para dividir elementos sem chamar muita atenção).
+  Este projeto usa "Tailwind CSS". Foco em alto contraste, tons escuros e dourado/azul para premium.
+  Para mudar sua foto de perfil, procure por "URL_DA_SUA_FOTO_AQUI" no código abaixo.
 */
-
-// ==================================================================================
-// 1. CONSTANTES E CONFIGURAÇÕES ESTÁTICAS (PERFORMANCE & SEGURANÇA)
-// ==================================================================================
 
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v27_premium_plans', // Versão mantida no 27
+  STORAGE_KEY: '@thaly_app_v27_premium_plans',
   PIX_KEY: "62.922.530/0001-14", 
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
-  EXCHANGE_RATE: 5.0, // Taxa de conversão BRL -> USD (1 USD = 5 BRL). Altere aqui se o dólar mudar.
+  EXCHANGE_RATE: 5.0,
   SECRET_TOKEN: 'THALY_SECURE_V8',
   START_HOUR: 8,
   END_HOUR: 22, 
@@ -36,7 +23,7 @@ const CONFIG = {
 } as const;
 
 const RUSH_HOURS = ['12:00', '13:00', '17:00', '18:00'];
-const RUSH_FEE = 15; // Valor em BRL. O sistema converterá para USD automaticamente.
+const RUSH_FEE = 15;
 
 const ICON_PATHS: Record<string, string> = {
   'menu': 'M4 12h16 M4 6h16 M4 18h16', 'chevron-left': 'M15 18l-6-6 6-6', 'chevron-right': 'M9 18l6-6-6-6',
@@ -75,12 +62,9 @@ const ICON_PATHS: Record<string, string> = {
   'heart': 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
   'plus': 'M12 5v14 M5 12h14',
-  'refresh-cw': 'M23 4v6h-6 M1 20v-6h6 M3.51 9a9 9 0 0 1 14.85-3.36L23 10 M1 14l4.64 4.36A9 9 0 0 0 20.49 15'
+  'refresh-cw': 'M23 4v6h-6 M1 20v-6h6 M3.51 9a9 9 0 0 1 14.85-3.36L23 10 M1 14l4.64 4.36A9 9 0 0 0 20.49 15',
+  'settings': 'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'
 };
-
-// ==================================================================================
-// 2. DESIGN SYSTEM & ESTILOS GLOBAIS (FOCO EM ALTO CONTRASTE E TEXTO BRANCO)
-// ==================================================================================
 
 const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -94,7 +78,7 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     }
 
     html, body {
-      background-color: ${isDark ? '#09090b' : '#f0f4f8'}; /* Fundo azul bem clarinho no tema claro */
+      background-color: ${isDark ? '#09090b' : '#f8fafc'};
       color: ${isDark ? '#FFFFFF' : '#0f172a'};
       transition: background-color 0.3s ease, color 0.3s ease;
       overscroll-behavior-y: none;
@@ -112,13 +96,10 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     .animate-slide-in { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-pulse-slow { animation: subtlePulse 2s ease-in-out infinite; }
-    
-    .emoji-icon { font-style: normal; display: inline-block; line-height: 1; vertical-align: middle; text-align: center; }
   `}} />
 ));
 
-const Icon = memo(({ name, size = 20, className = "", isEmoji = false }: { name: string, size?: number, className?: string, isEmoji?: boolean }) => {
-  if (isEmoji) return <span className={`emoji-icon shrink-0 ${className}`} style={{ fontSize: size }} role="img" aria-label={name}>{name}</span>;
+const Icon = memo(({ name, size = 20, className = "" }: { name: string, size?: number, className?: string }) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true">
       <path d={ICON_PATHS[name] || ''} />
@@ -132,17 +113,16 @@ const formatMoney = (val: number | undefined, lang: 'pt' | 'en') => {
   return lang === 'pt' ? `R$ ${converted.toFixed(2).replace('.', ',')}` : `$ ${converted.toFixed(2)}`;
 };
 
-// Types & Interfaces
-interface ServiceItem { id: string; min: number; price: number; icon: string; isEmoji?: boolean; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; popular?: boolean; category?: 'relax' | 'express' | 'final' | 'care'; }
+interface ServiceItem { id: string; min: number; price: number; icon: string; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; popular?: boolean; category?: 'relax' | 'express' | 'final' | 'care' | 'custom'; }
 interface Coupon { id: string; val: number; title: string; code: string; }
 interface Review { n: string; loc: string; t: string; s: number; serv: string; }
 interface UserData { name: string; xp: number; coupons: Coupon[]; usedCoupons: string[]; hasSeenWelcome: boolean; ordersCount: number; lastActivity: string; }
 interface Address { street: string; number: string; district: string; city: string; comp: string; placeName: string; }
-interface BookingData { type: 'single' | 'pack'; cart: ServiceItem[]; extras: Record<string, boolean>; date: string | null; time: string | null; locationType: 'home' | 'motel' | 'hotel'; address: Address; payment: string; appliedCoupon: Coupon | null; termsAccepted: boolean; bookingId: string; mediaAllowed: boolean; }
+interface BookingData { type: 'single' | 'pack' | 'custom'; cart: ServiceItem[]; extras: Record<string, boolean>; date: string | null; time: string | null; locationType: 'home' | 'motel' | 'hotel'; address: Address; payment: string; appliedCoupon: Coupon | null; termsAccepted: boolean; bookingId: string; mediaAllowed: boolean; }
 interface Rule { icon: string; title: string; description: string; }
 
 // ==================================================================================
-// 3. COMPONENTES DE UI (MOBILE-FIRST MELHORADO COM ALTO CONTRASTE)
+// 3. COMPONENTES DE UI
 // ==================================================================================
 
 const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon, className = '', loading = false, ariaLabel }: any) => {
@@ -309,7 +289,7 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 ));
 
 // ==================================================================================
-// 4. LÓGICA DE DADOS E GERAÇÃO DE TEXTOS COM I18N E CATEGORIAS
+// 4. LÓGICA DE DADOS E I18N
 // ==================================================================================
 const sanitizeInput = (value: string): string => String(value || '').replace(/[<>&"']/g, '');
 const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
@@ -338,70 +318,30 @@ const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
   if (lang === 'en') {
     return [
       { n: "Gustavo", loc: "Bela Vista - SP", t: "Thalyson arrived on time when I needed to relax after a tense month. The at-home experience was incredible. He manages to leave us completely relaxed, his hands have an unparalleled technique. The relief was immediate, I got up feeling 20lbs lighter. I want it again.", serv: "Fusion Experience", s: 5 },
-      { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: "You have blessed hands and I flew! I really needed this rest, this peace. You were super respectful the whole time and relaxed me so much. Thank you! ❤️", serv: "Sensory Massage", s: 5 },
-      { n: "Osvaldo", loc: "Santa Fé do Sul", t: "TODAY couldn't end BETTER, being attended by Thalyson at home in a massage session by his MAGIC HANDS!!! What a delight! The 4 essential pillars of his work are bases to transform the service into a UNIQUE SENSATION that generates value for the body, combining super EMPATHY with the client, without forgetting EFFICIENCY, agility, and clarity. Thalyson always focuses on serving the client well, from beginning to end it is surprising! TOTALLY WORTH IT. 👏👏👏", serv: "Classic Massage", s: 5 },
-      { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, I want to say your massage was very well executed. I highly recommend it.", serv: "Classic Massage", s: 5 },
-      { n: "Alan", loc: "SP - Bela Vista", t: "I liked it a lot, I left feeling lighter. You can tell he is great at what he does.", serv: "Sensory Massage", s: 5 },
+      { n: "Osvaldo", loc: "Santa Fé do Sul", t: "TODAY couldn't end BETTER, being attended by Thalyson at home in a massage session by his MAGIC HANDS!!! What a delight! Thalyson always focuses on serving the client well, from beginning to end it is surprising! TOTALLY WORTH IT.", serv: "Classic Massage", s: 5 },
       { n: "Tiago", loc: "SP - Bela Vista", t: "Thalyson has surreal energy. The massage was perfect, best of my life.", serv: "Fusion Experience", s: 5 },
       { n: "Roberto", loc: "São Paulo - Jardins", t: "The feeling of emptiness and peace I felt after the session was indescribable. The ending was extremely powerful, releasing a load of tension I'd carried for months. Impeccable professionalism.", serv: "Fusion Experience", s: 5 },
-      { n: "Carla", loc: "Rio Preto", t: "I felt welcomed on a level I didn't expect. He has a firm grip that relaxes the muscles and at the same time awakens dormant sensations. Total relief at the end.", serv: "Naturist Classic", s: 5 },
       { n: "Lucas", loc: "Londrina", t: "Being married, discretion was my priority and I was attended with total secrecy. The tantric massage allowed me to rediscover my own body. The energy discharge at the end was intense.", serv: "Nuru Massage", s: 5 },
-      { n: "Felipe", loc: "Votuporanga", t: "A rare connection experience. I was shaking after the session, in a good way. It was a moment to completely empty my mind. Highly recommended for something beyond the physical.", serv: "Sensory Massage", s: 5 },
-      { n: "Mariana", loc: "Jales", t: "Respectful touch, but with the right intensity. I was able to disconnect from work problems and focus only on my pleasure and well-being. It was liberating.", serv: "Classic Massage", s: 5 },
-      { n: "Gustavo", loc: "Hotel Ibis - SP", t: "The combination of relaxing and sensory massage created a perfect journey. The climax of the session was vigorous and restorative. Absurd feeling of lightness at the end.", serv: "Fusion Experience", s: 5 },
-      { n: "Ricardo", loc: "Fernandópolis", t: "I found a rare professionalism. I felt comfortable to let go of my blocks. I left there feeling 20lbs lighter, physically and emotionally.", serv: "Reverse Massage", s: 5 },
       { n: "Sérgio", loc: "Santa Fé", t: "I suffer from anxiety and this session was more effective than many therapies. The human connection was real, and the final climax was the strongest and most liberating I've ever experienced.", serv: "Nuru Massage", s: 5 },
-      { n: "Beatriz", loc: "Rio Preto", t: "Warm hands and firm presence. The environment was charged with positive energy. I was able to deeply relax and forget the chaos outside.", serv: "Naturist Classic", s: 5 },
-      { n: "Marcelo", loc: "SP - Centro", t: "I went with no expectations and left surprised. The lingam massage was executed with precise and respectful technique. The pleasure was intense and genuine.", serv: "Fusion Experience", s: 5 },
-      { n: "André", loc: "Motel K2", t: "Absolute discretion. Thalyson is a person with very good energy and knows what he's doing. It was a necessary and revitalizing escape from my routine.", serv: "Reverse Massage", s: 5 },
-      { n: "Juliana", loc: "Londrina", t: "Delicadeza e força alternadas nos momentos exatos. Me senti viva de novo. Obrigada pelo carinho e respeito com meu corpo.", serv: "Classic Massage", s: 5 },
-      { n: "Paulo", loc: "São Paulo - Paulista", t: "A complete experience. From the comforting initial touch to the final explosion of energy. It was intense and left my legs trembling from so much relaxation.", serv: "Fusion Experience", s: 5 },
-      { n: "Vinícius", loc: "Jales", t: "Took a weight off my shoulders I didn't even know I was carrying. The ending was powerful and necessary. Will definitely return.", serv: "Sensory Massage", s: 5 },
-      { n: "Fernanda", loc: "Santa Fé", t: "Super respectful with my body. It was a very beautiful energy exchange, intense and unhurried. I felt renewed.", serv: "Nuru Massage", s: 5 },
-      { n: "Eduardo", loc: "Rio Preto", t: "Sensational. His technique to build and then release energy is out of this world. It was a massive physical and mental relief.", serv: "Fusion Experience", s: 5 },
-      { n: "Caio", loc: "SP - Consolação", t: "Impeccable service at my hotel. Punctual, discreet, and with hands that know exactly where to touch to relieve tension.", serv: "Classic Massage", s: 5 },
-      { n: "Larissa", loc: "Votuporanga", t: "Deep relaxation. I forgot everything outside. I recommend it to anyone who needs to reconnect with themselves.", serv: "Naturist Classic", s: 5 },
-      { n: "Otávio", loc: "Londrina", t: "It was intense from start to finish. An energy discharge I desperately needed. I felt clean inside.", serv: "Nuru Massage", s: 5 },
-      { n: "Diego", loc: "Fernandópolis", t: "The best part was not feeling judged. I could be myself, express my pleasure, and enjoy every second of care.", serv: "Reverse Massage", s: 5 }
+      { n: "Marcelo", loc: "SP - Centro", t: "I went with no expectations and left surprised. The massage was executed with precise and respectful technique. The pleasure was intense and genuine.", serv: "Fusion Experience", s: 5 }
     ];
   }
 
-  // PORTUGUÊS (ORIGINAL)
   return [
     { n: "Gustavo", loc: "Bela Vista - SP", t: "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões do mês. A experiência em casa foi incrível. Ele consegue deixar a gente completamente relaxado, as mãos dele tem uma técnica sem igual. O alívio foi imediato, levantei parecendo 10kg mais leve. Quero de novo.", serv: "Experiência Fusion", s: 5 },
-    { n: "Giovana", loc: "Hotel Portal da Mata, Santa Fé", t: "Você tem mãos abençoadas e eu voeeei! Precisava muito desse descanso, dessa paz. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada! ❤️", serv: "Massagem Sensorial", s: 5 },
-    { n: "Osvaldo", loc: "Santa Fé do Sul", t: "HOJE, 10/02/26 não poderia ter teminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS !!! Que delícia! Os 4 pilares essenciais do seu trabalho são bases para transformar o atendimento em uma SENSAÇÃO UNICA que gera valores pro corpo, combinando o aspecto de super EMPATIA com o cliente, sem esquecer da EFICIENCIA e agilidade, clareza durante a sessão, tornando ha, uma visão da PERFEIÇÃO de executar este trabalho de massagem com maestria! Thalyson foca sempre no propósito de servir bem o cliente, desde o início ao fim q é surpreendente! VALE A PENA. 👏👏👏", serv: "Massagem Clássica", s: 5 },
-    { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito.", serv: "Massagem Clássica", s: 5 },
-    { n: "Alan", loc: "SP - Bela Vista", t: "Gostei bastante, saí mais leve. Da pra ver que ele manda bem no que faz.", serv: "Massagem Sensorial", s: 5 },
+    { n: "Osvaldo", loc: "Santa Fé do Sul", t: "HOJE não poderia ter terminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS!!! Que delícia! O atendimento gera valor pro corpo, combinando super EMPATIA com o cliente. Thalyson foca sempre no propósito de servir bem o cliente, desde o início ao fim q é surpreendente! VALE A PENA.", serv: "Massagem Clássica", s: 5 },
     { n: "Tiago", loc: "SP - Bela Vista", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", serv: "Experiência Fusion", s: 5 },
     { n: "Roberto", loc: "São Paulo - Jardins", t: "A sensação de vazio e paz que senti após a sessão foi indescritível. A finalização foi extremamente potente, liberando uma carga de tensão que eu carregava há meses. Profissionalismo impecável.", serv: "Experiência Fusion", s: 5 },
-    { n: "Carla", loc: "Rio Preto", t: "Me senti acolhida em um nível que não esperava. Ele tem uma pegada firme que relaxa a musculatura e ao mesmo tempo desperta sensações adormecidas. O alívio no final foi total.", serv: "Relaxante Clássica Naturista", s: 5 },
-    { n: "Lucas", loc: "Londrina", t: "Sendo casado, a discrição era minha prioridade e fui atendido com total sigilo. A massagem tântrica me permitiu redescobrir meu próprio corpo. A descarga de energia no final foi intensa.", serv: "Massagem Nuru", s: 5 },
-    { n: "Felipe", loc: "Votuporanga", t: "Uma experiência de conexão rara. Fiquei trêmulo após a sessão, de uma forma boa. Foi um momento de esvaziar a mente completamente. Recomendo para quem busca algo além do físico.", serv: "Massagem Sensorial", s: 5 },
-    { n: "Mariana", loc: "Jales", t: "Toque respeitoso, mas com a intensidade certa. Consegui me desligar dos problemas do trabalho e focar apenas no meu prazer e bem-estar. Foi libertador.", serv: "Massagem Clássica", s: 5 },
-    { n: "Gustavo", loc: "Hotel Ibis - SP", t: "A combinação da massagem relaxante com a sensitiva criou uma jornada perfeita. O ápice da sessão foi vigoroso e restaurador. Sensação de leveza absurda ao final.", serv: "Experiência Fusion", s: 5 },
-    { n: "Ricardo", loc: "Fernandópolis", t: "Encontrei um profissionalismo raro. Me senti à vontade para soltar minhas travas. Saí de lá me sentindo 10kg mais leve, física e emocionalmente.", serv: "Massagem Reversa Clássica", s: 5 },
+    { n: "Lucas", loc: "Londrina", t: "A discrição era minha prioridade e fui atendido com total sigilo. A massagem me permitiu redescobrir meu próprio corpo. A descarga de energia no final foi intensa.", serv: "Massagem Nuru", s: 5 },
     { n: "Sérgio", loc: "Santa Fé", t: "Sofro de ansiedade e essa sessão foi mais eficaz que muitas terapias. A conexão humana foi real, e o clímax final foi o mais forte e libertador que já experimentei.", serv: "Massagem Nuru", s: 5 },
-    { n: "Beatriz", loc: "Rio Preto", t: "Mãos quentes e presença firme. O ambiente ficou carregado de uma energia positiva. Consegui relaxar profundamente e esquecer o caos lá fora.", serv: "Relaxante Clássica Naturista", s: 5 },
-    { n: "Marcelo", loc: "SP - Centro", t: "Fui sem expectativa e saí surpreendido. A massagem lingam foi executada com uma técnica precisa e respeitosa. O prazer foi intenso e genuíno.", serv: "Experiência Fusion", s: 5 },
-    { n: "André", loc: "Motel K2", t: "Discrição absoluta. O Thalyson é uma pessoa de energia muito boa e sabe o que faz. Foi um escape necessário e revitalizante da minha rotina.", serv: "Massagem Reversa Clássica", s: 5 },
-    { n: "Juliana", loc: "Londrina", t: "Delicadeza e força alternadas nos momentos exatos. Me senti viva de novo. Obrigada pelo carinho e respeito com meu corpo.", serv: "Massagem Clássica", s: 5 },
-    { n: "Paulo", loc: "São Paulo - Paulista", t: "Uma experiência completa. Do toque inicial reconfortante até a explosão final de energia. Foi intenso e me deixou com as pernas bambas de tanto relaxamento.", serv: "Experiência Fusion", s: 5 },
-    { n: "Vinícius", loc: "Jales", t: "Tirou um peso das minhas costas que eu nem sabia que carregava. A finalização foi potente e necessária. Voltarei com certeza.", serv: "Massagem Sensorial", s: 5 },
-    { n: "Fernanda", loc: "Santa Fé", t: "Super respeitoso com meu corpo. Foi uma troca de energia muito bonita, intensa e sem pressa. Me senti renovada.", serv: "Massagem Nuru", s: 5 },
-    { n: "Eduardo", loc: "Rio Preto", t: "Sensacional. A técnica dele para construir e depois liberar a energia é coisa de outro mundo. Foi um alívio físico e mental gigantesco.", serv: "Experiência Fusion", s: 5 },
-    { n: "Caio", loc: "SP - Consolação", t: "Atendimento impecável no meu hotel. Pontual, discreto e com uma mão que sabe exatamente onde tocar para aliviar a tensão.", serv: "Massagem Clássica", s: 5 },
-    { n: "Larissa", loc: "Votuporanga", t: "Relaxamento profundo. Esqueci de tudo lá fora. Recomendo para qualquer pessoa que precise se reconectar consigo mesma.", serv: "Relaxante Clássica Naturista", s: 5 },
-    { n: "Otávio", loc: "Londrina", t: "Foi intenso do início ao fim. Uma descarga de energia que eu estava precisando desesperadamente. Me senti limpo por dentro.", serv: "Massagem Nuru", s: 5 },
-    { n: "Diego", loc: "Fernandópolis", t: "A melhor parte foi não me sentir julgado. Pude ser eu mesmo, expressar meu prazer e aproveitar cada segundo de cuidado.", serv: "Massagem Reversa Clássica", s: 5 }
+    { n: "Marcelo", loc: "SP - Centro", t: "Fui sem expectativa e saí surpreendido. A massagem foi executada com uma técnica precisa e respeitosa. O prazer foi intenso e genuíno.", serv: "Experiência Fusion", s: 5 }
   ];
 };
 
 const getData = (lang: 'pt' | 'en') => {
   const isEn = lang === 'en';
-  // Os preços base ficam em BRL. A formatação converte para USD se for 'en'
   const p = {
-    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317, crossfit: 187,
+    custom: 180, depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317, crossfit: 187,
     pes: 110, maos: 110, combo_pm: 190,
     pack1: { v: 297, full: 334, save: 37 }, 
     pack2: { v: 387, full: 467, save: 80 }, 
@@ -417,172 +357,175 @@ const getData = (lang: 'pt' | 'en') => {
       { level: 4, xpNeeded: 800, reward: 50, title: isEn ? "Plenitude Reached" : "Plenitude Alcançada" }
     ],
     services: [
+      // CUSTOM / SOB MEDIDA
+      { id: 'custom', category: 'custom', min: 60, price: p.custom, icon: "settings", tag: isEn ? "TAILOR MADE" : "SOB MEDIDA", title: isEn ? "Custom Experience" : "Pedido Personalizado", desc: isEn ? "A session tailored exactly to your specific needs and desires." : "Uma sessão montada exatamente para as suas necessidades e desejos específicos.", details: isEn ? "Step 1: Consultation\nStep 2: Custom techniques\nStep 3: Total satisfaction" : "Passo 1: Alinhamento prévio e escolhas conjuntas\nPasso 2: Técnicas combinadas sob medida para seu corpo\nPasso 3: Foco absoluto na sua satisfação total" },
+
       // CATEGORIA CUIDADOS RÁPIDOS (EXPRESS)
-      { id: 'pes', category: 'express', min: 40, price: p.pes, icon: "🦶", isEmoji: true, tag: isEn ? "FOOT RELIEF" : "ALÍVIO NOS PÉS", title: isEn ? "Foot Massage" : "Sessão nos Pés", desc: isEn ? "Complete relief for tired feet after a long day." : "Alívio completo para pés cansados após longas jornadas de trabalho.", details: isEn ? "Step 1: Foot reflexology\nStep 2: Deep pressure points\nStep 3: Plantar fascia release" : "Passo 1: Reflexologia podal focada\nPasso 2: Pressão profunda em pontos de tensão\nPasso 3: Liberação de fáscia plantar" },
-      { id: 'maos', category: 'express', min: 40, price: p.maos, icon: "🖐️", isEmoji: true, tag: isEn ? "HAND RELIEF" : "ALÍVIO NAS MÃOS", title: isEn ? "Hand Massage" : "Sessão nas Mãos", desc: isEn ? "Release tension from typing and working with your hands." : "Libere a tensão acumulada de digitar e trabalhar excessivamente com as mãos.", details: isEn ? "Step 1: Joint stretching\nStep 2: Deep palm massage\nStep 3: Forearm and wrist relief" : "Passo 1: Alongamento articular inicial\nPasso 2: Massagem profunda nas palmas e dedos\nPasso 3: Alívio para punhos e antebraço" },
-      { id: 'combo_pm', category: 'express', min: 40, price: p.combo_pm, icon: "✨", isEmoji: true, tag: isEn ? "COMBO" : "COMBO", title: isEn ? "Hands & Feet Combo" : "Combo Mãos e Pés", desc: isEn ? "The ultimate extremity relaxation, combining the best of both." : "O relaxamento definitivo para as extremidades do corpo, unindo o melhor dos dois mundos.", details: isEn ? "Step 1: Deep hand massage\nStep 2: Foot reflexology\nStep 3: Total extremity relief" : "Passo 1: Massagem profunda e detalhada nas mãos\nPasso 2: Reflexologia podal focada\nPasso 3: Alívio total de tensões periféricas" },
+      { id: 'pes', category: 'express', min: 40, price: p.pes, icon: "user", tag: isEn ? "FOOT RELIEF" : "ALÍVIO NOS PÉS", title: isEn ? "Foot Massage" : "Sessão nos Pés", desc: isEn ? "Complete relief for tired feet after a long day." : "Alívio completo para pés cansados após longas jornadas de trabalho.", details: isEn ? "Step 1: Foot reflexology\nStep 2: Deep pressure points\nStep 3: Plantar fascia release" : "Passo 1: Reflexologia podal focada\nPasso 2: Pressão profunda em pontos de tensão\nPasso 3: Liberação de fáscia plantar" },
+      { id: 'maos', category: 'express', min: 40, price: p.maos, icon: "hand", tag: isEn ? "HAND RELIEF" : "ALÍVIO NAS MÃOS", title: isEn ? "Hand Massage" : "Sessão nas Mãos", desc: isEn ? "Release tension from typing and working with your hands." : "Libere a tensão acumulada de digitar e trabalhar excessivamente com as mãos.", details: isEn ? "Step 1: Joint stretching\nStep 2: Deep palm massage\nStep 3: Forearm and wrist relief" : "Passo 1: Alongamento articular inicial\nPasso 2: Massagem profunda nas palmas e dedos\nPasso 3: Alívio para punhos e antebraço" },
+      { id: 'combo_pm', category: 'express', min: 40, price: p.combo_pm, icon: "layers", tag: isEn ? "COMBO" : "COMBO", title: isEn ? "Hands & Feet Combo" : "Combo Mãos e Pés", desc: isEn ? "The ultimate extremity relaxation, combining the best of both." : "O relaxamento definitivo para as extremidades do corpo, unindo o melhor dos dois mundos.", details: isEn ? "Step 1: Deep hand massage\nStep 2: Foot reflexology\nStep 3: Total extremity relief" : "Passo 1: Massagem profunda e detalhada nas mãos\nPasso 2: Reflexologia podal focada\nPasso 3: Alívio total de tensões periféricas" },
 
       // CATEGORIA RELAXAR
-      { id: 'relaxante', category: 'relax', min: 40, price: p.relax, icon: "user-check", tag: isEn ? "MUSCLE RELIEF" : "ALÍVIO MUSCULAR", title: isEn ? "Classic Massage (Quick Relief)" : "Massagem Clássica (Alívio Rápido)", desc: isEn ? "Stiff back from the office chair? Tense body? This takes that giant weight off your shoulders and makes you sleep like an angel." : "Costas travadas da cadeira do escritório? Corpo tenso? Essa é para tirar com as mãos aquele peso gigante que você carrega e te fazer dormir como um anjo.", details: isEn ? "Step 1: Use of wooden rollers to start kneading body parts\nStep 2: Soft touch manually to release hard muscles\nStep 3: Focus on full body relaxation (no intimate touch)\nStep 4: The 'restart' button for those who work too hard" : "Passo 1: Uso de rolos de madeira para preparar e amassar as tensões\nPasso 2: Toque manual e suave para soltar a musculatura dura\nPasso 3: Foco no relaxamento do corpo todo (sem toques íntimos)\nPasso 4: Sensação de 'reiniciar', voltando a dormir como um anjo" },
-      { id: 'naturista', category: 'relax', min: 40, price: p.naturista, icon: "sun", tag: isEn ? "ZERO TIES" : "ZERO AMARRAS", title: isEn ? "Naturist Classic (Freedom)" : "Clássica Naturista (Liberdade)", desc: isEn ? "Coming home and taking off work clothes is good, right? Here we elevate that. Total freedom, no clothes, light touches to loosen every muscle." : "Chegar em casa e tirar a roupa do trabalho é bom, né? Aqui elevamos isso. Liberdade total, sem roupas, toques leves para soltar cada músculo do seu corpo.", details: isEn ? "Step 1: Starts with a full classic massage (both undressed)\nStep 2: Exact pressure applied to dismantle daily rigidity\nStep 3: Deep full body relief without any intimate touches\nStep 4: Ends with a deep feeling of lightness and acceptance" : "Passo 1: Início com massagem clássica completa (ambos despidos)\nPasso 2: Pressão exata para desmanchar a rigidez do dia a dia\nPasso 3: Alívio profundo no corpo todo (não possui toques íntimos)\nPasso 4: Finaliza com sensação de leveza e aceitação, sem julgamentos" },
-      { id: 'crossfit', category: 'relax', min: 60, price: p.crossfit, icon: "🏋️‍♂️", isEmoji: true, tag: isEn ? "DEEP RECOVERY" : "RECUPERAÇÃO PROFUNDA", title: isEn ? "Crossfit Lovers" : "Massagem Crossfiteiro", desc: isEn ? "Heavy workouts demand deep recovery. A sports massage with a firm and deep grip, focused on untying tension knots and releasing stiff muscles after training." : "Treino pesado exige uma recuperação à altura. Uma massagem desportiva com pegada firme e profunda, focada em desmanchar os nós de tensão e liberar a musculatura travada após os treinos.", details: isEn ? "Step 1: Vigorous friction to warm up fatigued muscles\nStep 2: Heavy myofascial release focusing on legs, back, and shoulders\nStep 3: Use of thermal ointments for direct pain relief\nStep 4: Guided stretching to restore body mobility" : "Passo 1: Fricção vigorosa para aquecer a musculatura fadigada\nPasso 2: Liberação miofascial pesada com foco em pernas, costas e ombros\nPasso 3: Uso de pomadas térmicas para alívio direto da dor\nPasso 4: Alongamentos guiados para devolver a mobilidade do corpo" },
+      { id: 'relaxante', category: 'relax', min: 40, price: p.relax, icon: "user-check", tag: isEn ? "MUSCLE RELIEF" : "ALÍVIO MUSCULAR", title: isEn ? "Classic Massage" : "Massagem Clássica (Alívio Rápido)", desc: isEn ? "Stiff back from the office chair? This takes that giant weight off your shoulders." : "Costas travadas da cadeira do escritório? Corpo tenso? Essa é para tirar com as mãos aquele peso gigante que você carrega.", details: isEn ? "Step 1: Use of wooden rollers\nStep 2: Soft touch manually to release hard muscles\nStep 3: Focus on full body relaxation (no intimate touch)" : "Passo 1: Uso de rolos de madeira para preparar e amassar as tensões\nPasso 2: Toque manual e suave para soltar a musculatura dura\nPasso 3: Foco no relaxamento do corpo todo (sem toques íntimos)" },
+      { id: 'naturista', category: 'relax', min: 40, price: p.naturista, icon: "sun", tag: isEn ? "ZERO TIES" : "ZERO AMARRAS", title: isEn ? "Naturist Classic" : "Clássica Naturista (Liberdade)", desc: isEn ? "Total freedom, no clothes, light touches to loosen every muscle." : "Liberdade total, sem roupas, toques leves para soltar cada músculo do seu corpo.", details: isEn ? "Step 1: Starts with a full classic massage\nStep 2: Exact pressure applied to dismantle daily rigidity\nStep 3: Deep full body relief without intimate touches" : "Passo 1: Início com massagem clássica completa (ambos despidos)\nPasso 2: Pressão exata para desmanchar a rigidez\nPasso 3: Alívio profundo no corpo todo (não possui toques íntimos)" },
+      { id: 'crossfit', category: 'relax', min: 60, price: p.crossfit, icon: "zap", tag: isEn ? "DEEP RECOVERY" : "RECUPERAÇÃO PROFUNDA", title: isEn ? "Crossfit Lovers" : "Massagem Crossfiteiro", desc: isEn ? "Heavy workouts demand deep recovery. Firm and deep grip to release stiff muscles." : "Treino pesado exige uma recuperação à altura. Pegada firme e profunda focada em liberar a musculatura.", details: isEn ? "Step 1: Vigorous friction\nStep 2: Heavy myofascial release\nStep 3: Use of thermal ointments" : "Passo 1: Massagem com toques mais fortes\nPasso 2: Liberação relaxante com foco em pernas e costas\nPasso 3: Uso de pomadas térmicas para alívio da dor" },
       
       // CATEGORIA FINALIZAÇÃO
-      { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "REDUCES ANXIETY" : "REDUZ ANSIEDADE", title: isEn ? "Sensory Massage (Mental Reset)" : "Massagem Sensorial (Reset Mental)", desc: isEn ? "Mind won't turn off at bedtime? Close your eyes and let subtle touches give you full-body shivers." : "A cabeça não desliga na hora de dormir? Feche os olhos e deixe toques sutis arrepiarem seu corpo inteiro.", details: isEn ? "Step 1: Starts with a classic massage to release initial tension\nStep 2: Subtle stimuli across the body that give goosebumps\nStep 3: Energy buildup focused on emptying your mind\nStep 4: Climax focused on an intense release of pleasure" : "Passo 1: Início com massagem clássica para soltar as tensões corporais\nPasso 2: Estímulos sutis pelo corpo que arrepiam a pele\nPasso 3: Construção da energia com foco em esvaziar a cabeça\nPasso 4: Finalização focada numa liberação intensa de prazer" },
-      { id: 'mista', category: 'final', min: 60, price: p.titan, icon: "zap", tag: isEn ? "BEST OF BOTH WORLDS" : "O MELHOR DOS 2 MUNDOS", title: isEn ? "Fusion Experience (Most Complete)" : "Experiência Fusion (A Mais Completa)", desc: isEn ? "Why choose when you can have it all? First I take the pain from your back, then I take you to a climax that makes any weekly problem disappear." : "Por que escolher se você pode ter tudo? Primeiro eu tiro a dor das suas costas, depois te levo a um clímax que faz qualquer problema da semana desaparecer.", details: isEn ? "Step 1: Starts with a classic massage breaking muscle tension\nStep 2: Changes rhythm to intimate body-to-body contact\nStep 3: Involves your senses in a crescendo of heat and desire\nStep 4: Ends with a liberating release that recharges your batteries" : "Passo 1: Início com massagem clássica para quebrar a tensão muscular\nPasso 2: Muda o ritmo para contato íntimo corpo a corpo e roçar de barba\nPasso 3: Envolve seus sentidos numa crescente de calor e desejo\nPasso 4: Termina com um gozo libertador que recarrega suas baterias" },
-      { id: 'reversa', category: 'final', min: 60, price: p.reversa, icon: "refresh-cw", tag: isEn ? "REAL CONTACT" : "CONTATO REAL", title: isEn ? "Reverse Massage (Classic + Lingam)" : "Massagem Reversa (Clássica com Lingam)", desc: isEn ? "Miss human warmth and intimacy? I do a 30-min massage on you, relaxing your body, and then you take control and do it on me." : "Sente falta de calor humano e intimidade? Eu faço aproximadamente 30 minutos de massagem em você, relaxando seu corpo, e depois você assume o controle e faz em mim.", details: isEn ? "Step 1: Starts with a relaxing classic massage for approx 30min\nStep 2: Then you take control, feel free to touch me\nStep 3: No cold 'client and professional' vibe, pure real connection\nStep 4: A delicious dynamic of reciprocity that fulfills you" : "Passo 1: Inicia com massagem clássica relaxante por aprox. 30min\nPasso 2: O controle passa a ser seu, sinta-se à vontade para me tocar\nPasso 3: Quebra da frieza de 'cliente/profissional', pura conexão real\nPasso 4: Finalização mútua e dinâmica de reciprocidade que te realiza" },
-      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "TOTAL SURRENDER" : "ENTREGA TOTAL", title: isEn ? "Nuru Massage (Most Desired)" : "Massagem Nuru (A Mais Desejada)", desc: isEn ? "When stress is at its limit, only this solves it. Gliding gel, parts of my body sliding over yours, and a surrender so deep your legs will shake." : "Quando o nível de estresse está no limite, só isso resolve. Gel que desliza, partes do meu corpo deslizando sobre o seu, e uma entrega tão profunda que suas pernas vão tremer.", details: isEn ? "Step 1: Starts with a full classic massage to loosen the body\nStep 2: Lots of warm gel for perfect continuous sliding\nStep 3: Skin on skin, I use my body to relax yours\nStep 4: The sweatiest and most intense journey for you to release" : "Passo 1: Início com massagem clássica completa para soltar o corpo\nPasso 2: Aplicação de gel para um deslizamento perfeito\nPasso 3: Pele na pele, uso meu corpo para relaxar o seu\nPasso 4: A viagem final mais intensa para você gozar e apagar" },
+      { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "REDUCES ANXIETY" : "REDUZ ANSIEDADE", title: isEn ? "Sensory Massage" : "Massagem Sensorial (Reset Mental)", desc: isEn ? "Close your eyes and let subtle touches give you full-body shivers." : "A cabeça não desliga? Feche os olhos e deixe toques sutis arrepiarem seu corpo inteiro.", details: isEn ? "Step 1: Classic massage\nStep 2: Subtle stimuli across the body\nStep 3: Climax focused on release" : "Passo 1: Início com massagem clássica\nPasso 2: Estímulos sutis pelo corpo que arrepiam a pele\nPasso 3: Finalização focada numa liberação intensa" },
+      { id: 'mista', category: 'final', min: 60, price: p.titan, icon: "zap", tag: isEn ? "BEST OF BOTH WORLDS" : "O MELHOR DOS 2 MUNDOS", title: isEn ? "Fusion Experience" : "Experiência Fusion (Mais Completa)", desc: isEn ? "First I take the pain from your back, then I take you to a climax." : "Primeiro eu tiro a dor das suas costas, depois te levo a um clímax que faz qualquer problema desaparecer.", details: isEn ? "Step 1: Classic massage\nStep 2: Intimate body-to-body contact\nStep 3: Ends with a liberating release" : "Passo 1: Início com massagem clássica\nPasso 2: Contato íntimo corpo a corpo\nPasso 3: Termina com um gozo libertador" },
+      { id: 'reversa', category: 'final', min: 60, price: p.reversa, icon: "refresh-cw", tag: isEn ? "REAL CONTACT" : "CONTATO REAL", title: isEn ? "Reverse Massage" : "Massagem Reversa", desc: isEn ? "I do a 30-min massage on you, and then you take control." : "Eu faço aproximadamente 30 minutos de massagem em você, relaxando seu corpo, e depois você assume o controle.", details: isEn ? "Step 1: Relaxing classic massage\nStep 2: You take control\nStep 3: A delicious dynamic of reciprocity" : "Passo 1: Inicia com massagem clássica relaxante\nPasso 2: O controle passa a ser seu\nPasso 3: Finalização mútua e dinâmica de reciprocidade" },
+      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "TOTAL SURRENDER" : "ENTREGA TOTAL", title: isEn ? "Nuru Massage" : "Massagem Nuru (A Mais Desejada)", desc: isEn ? "Gliding gel, my body over yours, and a surrender so deep your legs will shake." : "Gel que desliza, partes do meu corpo deslizando sobre o seu, e uma entrega tão profunda que suas pernas vão tremer.", details: isEn ? "Step 1: Full classic massage\nStep 2: Warm gel application\nStep 3: Skin on skin relaxation" : "Passo 1: Massagem clássica completa\nPasso 2: Aplicação de gel para deslizamento perfeito\nPasso 3: Viagem intensa para você gozar e apagar" },
       
       // CATEGORIA CUIDADOS PESSOAIS
-      { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "PRACTICALITY" : "PRATICIDADE", title: isEn ? "Full Body Trim" : "Aparo Corporal Completo", desc: isEn ? "Rush doesn't let you take care of yourself? I'll solve it. Leave with a clean, light body ready for the week." : "A correria não te deixa cuidar de si mesmo? Eu resolvo. Fique com o corpo limpo, leve e preparado para a semana.", details: isEn ? "Step 1: Zero or Guard 3 trim with clippers\nStep 2: Focus on chest, back, abdomen, and legs\nStep 3: Done in the comfort and total secrecy of your space\nStep 4: Leaves you with less sweat and much more confidence daily" : "Passo 1: Aparo zero ou Pente 3 com máquina profissional\nPasso 2: Foco detalhado no peito, costas, abdômen e pernas\nPasso 3: Feito no conforto e total sigilo do seu espaço\nPasso 4: Finalização para um corpo com menos suor e mais confiança" }
+      { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "PRACTICALITY" : "PRATICIDADE", title: isEn ? "Full Body Trim" : "Aparo Corporal Completo", desc: isEn ? "Leave with a clean, light body ready for the week." : "Fique com o corpo limpo, leve e preparado para a semana. Manutenção e estética essencial.", details: isEn ? "Step 1: Zero or Guard 3 trim\nStep 2: Focus on chest, back, abdomen\nStep 3: Done in total secrecy" : "Passo 1: Aparo zero ou Pente 3 com máquina profissional\nPasso 2: Foco detalhado no peito, costas e pernas\nPasso 3: Finalização estética completa" }
     ] as ServiceItem[],
     plans: [
-      { id: 'pack_essencial', type: 'pack', title: isEn ? "Survival Kit (2x)" : "Kit Sobrevivência (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: isEn ? "The perfect combo, scheduled on different days. One day to cure pain, another for the mind." : "A dobradinha perfeita, com sessões agendadas em dias diferentes na semana. Um dia para curar a dor, outro para a mente.", details: isEn ? "1x Classic (to unlock the whole body)\n1x Sensory (to empty the head and have intense pleasure)\nSessions scheduled separately (e.g., one per week)\nIdeal to guarantee perfect sleep nights in the month" : "1x Clássica (para destravar o corpo todo)\n1x Sensorial (para esvaziar a cabeça e ter prazer intenso)\nSessões agendadas separadamente (ex: uma por semana)\nIdeal para garantir noites de sono perfeito no mês", tag: isEn ? "PERFECT SLEEP" : "SONO PERFEITO", icon: "layers" },
-      { id: 'pack_interativo', type: 'pack', title: isEn ? "Real Connection Combo (2x)" : "Combo Conexão Real (2x)", price: p.pack2.v, fullPrice: p.pack2.full, savings: p.pack2.save, desc: isEn ? "Missing human contact? Two encounters scheduled separately in the month to forget loneliness." : "Sente falta de contato humano? Dois encontros agendados separadamente no mês para esquecer a solidão e ter troca.", details: isEn ? "1x Fusion (the perfect middle ground between pain relief and pleasure)\n1x Reverse (the day you satisfy the urge to touch and explore)\nSessions scheduled separately in your month\nTotal focus on breaking the cold routine with human warmth" : "1x Fusion (o meio-termo perfeito entre curar a dor e gozar)\n1x Reversa (o dia que você mata a vontade de tocar e explorar)\nSessões agendadas separadamente no seu mês\nFoco total em quebrar a rotina fria com muito calor humano", tag: isEn ? "END OF LONELINESS" : "FIM DA SOLIDÃO", icon: "heart" },
-      { id: 'pack_premium', type: 'pack', title: isEn ? "Boss Monthly Plan (3x)" : "Mensalidade do Chefe (3x)", price: p.pack3.v, fullPrice: p.pack3.full, savings: p.pack3.save, desc: isEn ? "You grind all month, you deserve to be treated like a king. Three weeks guaranteed with the best relaxation." : "Você rala o mês inteiro, merece ser tratado como rei. Três semanas do mês garantidas com o melhor relaxamento.", details: isEn ? "1x Naturist (freedom and muscle tension release)\n1x Fusion (custom-made relaxation and pleasure)\n1x Nuru (absolute ecstasy with hot gel and sliding)\nThree separate encounters ensuring your month is stress-free" : "1x Naturista (liberdade e quebra de tensão muscular)\n1x Fusion (relaxamento e prazer sob medida)\n1x Nuru (o êxtase absoluto com gel quente e deslizamento)\nTrês encontros separados garantindo seu mês livre de estresse", tag: isEn ? "MONTH'S REWARD" : "O REWARD DO MÊS", icon: "award" }
+      { id: 'pack_essencial', type: 'pack', title: isEn ? "Survival Kit (2x)" : "Kit Sobrevivência (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: isEn ? "The perfect combo, scheduled on different days. One day to cure pain, another for the mind." : "A dobradinha perfeita, com sessões agendadas em dias diferentes na semana. Um dia para curar a dor, outro para a mente.", details: isEn ? "1x Classic\n1x Sensory\nSessions scheduled separately" : "1x Clássica (para destravar o corpo todo)\n1x Sensorial (para esvaziar a cabeça)\nSessões agendadas separadamente", tag: isEn ? "PERFECT SLEEP" : "SONO PERFEITO", icon: "layers" },
+      { id: 'pack_interativo', type: 'pack', title: isEn ? "Real Connection (2x)" : "Combo Conexão Real (2x)", price: p.pack2.v, fullPrice: p.pack2.full, savings: p.pack2.save, desc: isEn ? "Two encounters scheduled separately in the month to forget loneliness." : "Dois encontros agendados separadamente no mês para esquecer a solidão e ter troca mútua.", details: isEn ? "1x Fusion\n1x Reverse\nSessions scheduled separately" : "1x Fusion (alívio e prazer)\n1x Reversa (você explora e toca)\nSessões agendadas separadamente", tag: isEn ? "END OF LONELINESS" : "FIM DA SOLIDÃO", icon: "heart" },
+      { id: 'pack_premium', type: 'pack', title: isEn ? "Boss Monthly Plan (3x)" : "Mensalidade do Chefe (3x)", price: p.pack3.v, fullPrice: p.pack3.full, savings: p.pack3.save, desc: isEn ? "You grind all month, you deserve to be treated like a king." : "Você rala o mês inteiro, merece ser tratado como rei. Três semanas do mês garantidas com o melhor relaxamento.", details: isEn ? "1x Naturist\n1x Fusion\n1x Nuru\nThree separate encounters" : "1x Naturista (liberdade e quebra de tensão)\n1x Fusion (relaxamento e prazer)\n1x Nuru (êxtase absoluto)\nTrês encontros separados no mês", tag: isEn ? "MONTH'S REWARD" : "O REWARD DO MÊS", icon: "award" }
     ] as ServiceItem[],
     extras: [
-      { id: 'hair_trim', price: p.extras.hair_trim, icon: "✂️", isEmoji: true, label: isEn ? "Trim (Extra)" : "Aparo (Extra)", desc: isEn ? "Maintenance in 2 body parts to look flawless." : "Manutenção em 2 partes do corpo para ficar impecável." },
-      { id: 'more_time', price: p.extras.more_time, icon: "⏱️", isEmoji: true, label: isEn ? "Extended Time (+30m)" : "Tempo Estendido (+30m)", desc: isEn ? "Because when it's good, we don't want it to end." : "Porque quando está bom, não queremos que acabe." },
-      { id: 'touch', price: p.extras.touch, icon: "🖐️", isEmoji: true, label: isEn ? "Organic Interaction" : "Interação Orgânica", desc: isEn ? "Feel free to participate and touch as well." : "Sinta-se livre para participar e tocar também." },
-      { id: 'aroma', price: p.extras.aroma, icon: "🌸", isEmoji: true, label: isEn ? "Deep Aromatherapy" : "Cheiro bom no ar", desc: isEn ? "Essential oils that lower your mental frequency." : "Óleos essenciais que baixam a sua frequência mental." },
-      { id: 'pain_relief', price: p.extras.pain_relief, icon: "💊", isEmoji: true, label: isEn ? "Extra Focus on Pain" : "Foco Extra em Dores", desc: isEn ? "Use of technical ointment to treat strong pain." : "Uso de pomada técnica para tratar dores fortes." },
-      { id: 'dominador', price: p.extras.dominador, icon: "🔥", isEmoji: true, label: isEn ? "Active & Dominant" : "Massagista Ativo e Dominador", desc: isEn ? "I take full control at the end of the session." : "Eu assumo o controle total e ativo na finalização." },
-      { id: 'oral', price: p.extras.oral, icon: "👅", isEmoji: true, label: isEn ? "Oral Included" : "Oral na Sessão", desc: isEn ? "Oral intimacy included in the experience." : "Estímulo oral íntimo incluído na nossa experiência." },
-      { id: 'beijos', price: p.extras.beijos, icon: "💋", isEmoji: true, label: isEn ? "Kisses Included" : "Beijos Liberados", desc: isEn ? "Kisses and affection allowed during the session." : "Carinho e beijos completamente liberados no atendimento." },
-      { id: 'prostatico', price: p.extras.prostatico, icon: "💦", isEmoji: true, label: isEn ? "Prostatic Massage" : "Prostático Manual", desc: isEn ? "Manual prostatic stimulation with lube." : "Estimulação prostática manual intensa com dedos e lubrificante." }
+      { id: 'hair_trim', price: p.extras.hair_trim, icon: "scissors", label: isEn ? "Trim (Extra)" : "Aparo (Extra)", desc: isEn ? "Maintenance in 2 body parts to look flawless." : "Manutenção em 2 partes do corpo para estética." },
+      { id: 'more_time', price: p.extras.more_time, icon: "clock", label: isEn ? "Extended Time (+30m)" : "Tempo Estendido (+30m)", desc: isEn ? "Because when it's good, we don't want it to end." : "Tempo adicional para um momento sem pressa." },
+      { id: 'touch', price: p.extras.touch, icon: "hand", label: isEn ? "Organic Interaction" : "Interação Orgânica", desc: isEn ? "Feel free to participate and touch as well." : "Sinta-se livre para participar e interagir mutuamente." },
+      { id: 'aroma', price: p.extras.aroma, icon: "sparkles", label: isEn ? "Deep Aromatherapy" : "Aromaterapia Focada", desc: isEn ? "Essential oils that lower your mental frequency." : "Óleos essenciais para baixar a frequência mental." },
+      { id: 'pain_relief', price: p.extras.pain_relief, icon: "plus", label: isEn ? "Extra Focus on Pain" : "Foco Extra em Dores", desc: isEn ? "Use of technical ointment to treat strong pain." : "Uso de ativos potentes para tratar dores fortes." },
+      { id: 'dominador', price: p.extras.dominador, icon: "zap", label: isEn ? "Active & Dominant" : "Massagista Ativo", desc: isEn ? "I take full control at the end of the session." : "Eu assumo o controle total e ativo na finalização." },
+      { id: 'oral', price: p.extras.oral, icon: "user", label: isEn ? "Oral Included" : "Oral na Sessão", desc: isEn ? "Oral intimacy included in the experience." : "Inclusão de estímulo oral na experiência." },
+      { id: 'beijos', price: p.extras.beijos, icon: "heart", label: isEn ? "Kisses Included" : "Beijos Liberados", desc: isEn ? "Kisses and affection allowed during the session." : "Carinho e beijos completamente liberados." },
+      { id: 'prostatico', price: p.extras.prostatico, icon: "check", label: isEn ? "Prostatic Massage" : "Prostático Manual", desc: isEn ? "Manual prostatic stimulation with lube." : "Estimulação prostática manual intensa e focada." }
     ],
     faq: [
-      { q: isEn ? "How do the touch and the ending work?" : "Como o toque e a finalização funcionam?", a: isEn ? "Everything is conducted with extreme respect, entirely focused on your comfort and pleasure. The goal is to create a safe space for you to surrender, relax your mind, and reach a liberating climax that zeroes out stress." : "Tudo é conduzido com extremo respeito, focado inteiramente no seu conforto e prazer. O objetivo é criar um espaço seguro para que você possa se entregar, relaxar a mente e alcançar um gozo libertador que zera o estresse." },
-      { q: isEn ? "Where is our meeting location?" : "Onde é o local do nosso encontro?", a: isEn ? "I come to you, in the comfort of your home or hotel. I arrive at the scheduled time and transform the environment (be it your bed or sofa) into a true refuge of peace to take care of you." : "Vou até você, no conforto da sua residência ou hotel. Chego no horário marcado e transformo o ambiente (seja sua cama ou sofá) em um verdadeiro refúgio de paz para cuidarmos de você." },
-      { q: isEn ? "How should I prepare for the session?" : "Como devo me prepare para a sessão?", a: isEn ? "With an open heart! The most important thing is that you take a relaxing shower before my arrival. The shower helps loosen initial muscles and gets your body ready for total surrender." : "De coração aberto! O mais importante é que você tome um banho relaxante antes da minha chegada. O banho ajuda a soltar os músculos iniciais e deixa seu corpo pronto para a entrega total." },
-      { q: isEn ? "I'm ashamed of my body, what now?" : "Tenho vergonha do meu corpo, e agora?", a: isEn ? "Forget about that. My work is pure welcoming. During the session, there is no judgment, only the desire to provide relief, deep relaxation, and lots of pleasure." : "Esqueça isso. Meu trabalho é puro acolhimento. Durante a sessão, não existe julgamento, existe apenas a vontade de proporcionar alívio, relaxamento profundo e muito prazer." },
-      { q: isEn ? "Are my points and level saved in the app?" : "Meus pontos e nível ficam salvos no aplicativo?", a: isEn ? "Yes! To facilitate your access without requiring passwords, your progress (XP) is saved automatically on your phone. Just remember: if you clear your device's browsing history (cache) or change phones, this data will restart from zero." : "Sim! Para facilitar seu acesso sem exigir senhas, seu progresso (XP) fica salvo automaticamente no seu celular. Apenas lembre-se: se você limpar o histórico de navegação do seu aparelho ou trocar de celular, esses dados recomeçarão do zero." }
+      { q: isEn ? "How do the touch and the ending work?" : "Como o toque e a finalização funcionam?", a: isEn ? "Everything is conducted with extreme respect, entirely focused on your comfort and pleasure. The goal is to create a safe space for you to surrender, relax your mind, and reach a liberating climax that zeroes out stress." : "Tudo é conduzido com extremo respeito, focado inteiramente no seu conforto e prazer. O objetivo é criar um espaço seguro para que você possa se entregar, relaxar a mente e alcançar um gozo libertador." },
+      { q: isEn ? "Where is our meeting location?" : "Onde é o local do nosso encontro?", a: isEn ? "I come to you, in the comfort of your home or hotel. I arrive at the scheduled time and transform the environment into a true refuge of peace." : "Vou até você, no conforto da sua residência ou hotel. Transformo o ambiente em um verdadeiro refúgio de paz para cuidarmos de você." },
+      { q: isEn ? "How should I prepare for the session?" : "Como devo me preparar para a sessão?", a: isEn ? "With an open heart! The most important thing is that you take a relaxing shower before my arrival. The shower helps loosen initial muscles." : "De coração aberto! O mais importante é que você tome um banho relaxante antes da minha chegada para iniciar o relaxamento." },
+      { q: isEn ? "I'm ashamed of my body, what now?" : "Tenho vergonha do meu corpo, e agora?", a: isEn ? "Forget about that. My work is pure welcoming. During the session, there is no judgment, only the desire to provide relief." : "Esqueça isso. Meu trabalho é puro acolhimento. Não existe julgamento, existe apenas a vontade de proporcionar alívio profundo." },
+      { q: isEn ? "Are my points and level saved in the app?" : "Meus pontos e nível ficam salvos no aplicativo?", a: isEn ? "Yes! Your progress (XP) is saved automatically on your phone. Just remember: if you clear your device's browsing history (cache), this data will restart." : "Sim! Seu progresso (XP) fica salvo automaticamente no seu celular. Não limpe o histórico (cache) para não perder as conquistas." }
     ],
     rules: [
-      { icon: "shower", title: isEn ? "The Prep Shower" : "A Ducha Preparatória", description: isEn ? "A prior shower is essential. The warm water starts the relaxation and prepares your skin for the perfect, intense touch." : "O banho prévio é essencial. A água morna começa o relaxamento e prepara sua pele para o toque perfeito e intenso." },
-      { icon: "hand", title: isEn ? "Welcoming and Respect" : "Acolhimento e Respeito", description: isEn ? "I take care of you and your pleasure. Mutual respect is key for the magic to happen freely and naturally." : "Eu cuido de você e do seu prazer. O respeito mútuo é a chave para que a magia aconteça de forma livre e natural." },
-      { icon: "heart", title: isEn ? "Absolute Surrender" : "Entrega Absoluta", description: isEn ? "Forget the outside world. This time is yours to relax your mind, melt tensions, and just enjoy the moment." : "Esqueça o mundo lá fora. Este tempo é seu para relaxar a mente, desmanchar as tensões e apenas gozar o momento." },
-      { icon: "shield", title: isEn ? "Health and Integrity" : "Saúde e Integridade", description: isEn ? "I declare that I am healthy and cleared to receive a massage." : "Declaro que estou saudável, liberado para receber a massagem." }
+      { icon: "shower", title: isEn ? "The Prep Shower" : "A Ducha Preparatória", description: isEn ? "A prior shower is essential. The warm water starts the relaxation and prepares your skin for the perfect, intense touch." : "O banho prévio é essencial para começar o relaxamento e preparar a pele." },
+      { icon: "hand", title: isEn ? "Welcoming and Respect" : "Acolhimento e Respeito", description: isEn ? "I take care of you and your pleasure. Mutual respect is key for the magic to happen freely and naturally." : "O respeito mútuo é a chave para que a magia aconteça de forma natural e profunda." },
+      { icon: "heart", title: isEn ? "Absolute Surrender" : "Entrega Absoluta", description: isEn ? "Forget the outside world. This time is yours to relax your mind, melt tensions, and just enjoy the moment." : "Esqueça o mundo lá fora. Este tempo é seu para relaxar a mente e desmanchar as tensões." },
+      { icon: "shield", title: isEn ? "Health and Integrity" : "Saúde e Integridade", description: isEn ? "I declare that I am healthy and cleared to receive a massage." : "Atesto que estou saudável, livre de condições contagiosas e liberado para massagem." }
     ],
     text: {
-      welcome: isEn ? "It's great to have you here," : "É muito bom ter você aqui,",
-      choose_sub: isEn ? "I know how heavy the routine is. Choose how you want to be cared for and feel pleasure today. Select what you desire and proceed to checkout." : "Sei o quanto a rotina está pesando. Escolha como quer ser cuidado e sentir prazer hoje. Selecione os itens que desejar e avance pelo carrinho.",
-      level_label: isEn ? "Your Care Journey" : "Sua Jornada de Cuidado",
+      welcome: isEn ? "Welcome," : "Bem-vindo,",
+      choose_sub: isEn ? "Choose your desired service and elevate your routine." : "Escolha o serviço desejado e eleve sua rotina de cuidados.",
+      level_label: isEn ? "Your Care Journey" : "Sua Jornada",
       tab_packs: isEn ? "Monthly Plans" : "Planos Mensais",
       tab_single: isEn ? "Single Sessions" : "Sessões Avulsas",
+      tab_custom: isEn ? "Custom Request" : "Pedido Personalizado",
       next_btn: isEn ? "Next" : "Avançar",
       finish_btn: isEn ? "Complete Booking" : "Realizar Agendamento",
-      loading: isEn ? "Preparing a relaxation space for you..." : "Preparando um espaço de relaxamento para você...",
-      toast_select_item: isEn ? "Please add at least one service to the cart to continue." : "Por favor, adicione ao menos um serviço no carrinho para continuarmos.",
-      toast_select_date: isEn ? "Tap the best date and select the time for our encounter." : "Toque na melhor data e selecione o horário para o nosso encontro.",
-      toast_fill_name: isEn ? "I need to know what to call you, fill in your name." : "Preciso saber como te chamar, preencha seu nome.",
-      toast_fill_addr: isEn ? "Please fill in the location so I can come take care of you." : "Por favor, preencha o local para eu ir cuidar de você.",
-      toast_accept_terms: isEn ? "Read and accept our delivery and health agreement." : "Leia e aceite nosso acordo de entrega e saúde.",
-      toast_coupon_success: isEn ? "Gift applied! Discount activated." : "Presente aplicado! Desconto ativado.",
-      toast_coupon_invalid: isEn ? "Oops, this code is invalid or has expired." : "Poxa, esse código não é válido ou já expirou.",
-      details_label: isEn ? "WHAT YOU WILL EXPERIENCE:" : "COMO É O PASSO A PASSO:",
-      select_time_title: isEn ? "What's the best time for your pleasure?" : "Qual o melhor momento para o seu prazer?",
-      location_title: isEn ? "Where will our peaceful encounter be?" : "Onde será nosso encontro de paz?",
-      extras_title: isEn ? "Want to add more treats to your cart?" : "Quer adicionar mais coisas ao carrinho?",
-      coupon_section: isEn ? "Your Available Benefits" : "Seus Benefícios Disponíveis",
-      payment_title: isEn ? "How do you prefer to settle? (At the meeting)" : "Como prefere acertar? (No encontro)",
-      terms_title: isEn ? "Our Delivery Agreement" : "Nosso Acordo de Entrega",
+      loading: isEn ? "Loading environment..." : "Carregando ambiente...",
+      toast_select_item: isEn ? "Please add at least one service to the cart." : "Por favor, adicione ao menos um serviço no carrinho.",
+      toast_select_date: isEn ? "Select the date and time for our encounter." : "Selecione data e horário para prosseguir.",
+      toast_fill_name: isEn ? "Please fill in your name." : "Por favor, informe seu nome.",
+      toast_fill_addr: isEn ? "Please fill in the location." : "Por favor, preencha o local do encontro.",
+      toast_accept_terms: isEn ? "Accept our delivery agreement to continue." : "Aceite o acordo de entrega para continuar.",
+      toast_coupon_success: isEn ? "Discount activated." : "Desconto ativado com sucesso.",
+      toast_coupon_invalid: isEn ? "Invalid or expired code." : "Código inválido ou já expirado.",
+      details_label: isEn ? "WHAT YOU WILL EXPERIENCE:" : "O QUE ESTÁ INCLUSO:",
+      select_time_title: isEn ? "Select your preferred time" : "Escolha o melhor horário",
+      location_title: isEn ? "Where will our encounter be?" : "Onde será nosso encontro?",
+      extras_title: isEn ? "Additional Treats" : "Toques Adicionais",
+      coupon_section: isEn ? "Your Benefits" : "Seus Benefícios",
+      payment_title: isEn ? "Payment Method (At the meeting)" : "Forma de Pagamento (No Local)",
+      terms_title: isEn ? "Delivery Agreement" : "Acordo de Entrega",
       success_title: isEn ? "Almost there!" : "Quase lá!",
-      success_sub: isEn ? "WhatsApp is opening automatically to confirm your booking. If it doesn't open, use the button below." : "O WhatsApp está sendo aberto automaticamente para confirmarmos a sua reserva. Caso não abra, utilize o botão abaixo.",
-      whatsapp_btn: isEn ? "Try Opening WhatsApp Again" : "Tentar Abrir WhatsApp Novamente",
-      back_home: isEn ? "Go back and remake choices" : "Voltar e refazer escolhas",
-      timer_text: isEn ? "Your cart is saved for" : "Seu carrinho está salvo por",
-      upgrade_msg: isEn ? "Excellent choice added to cart!" : "Excelente escolha adicionada ao carrinho!",
-      input_name: isEn ? "What is your name or nickname?" : "Qual é o seu nome ou apelido?",
-      input_addr: isEn ? "Street or Avenue Name" : "Nome da Rua ou Avenida",
+      success_sub: isEn ? "WhatsApp is opening to confirm your booking." : "O WhatsApp será aberto para confirmarmos seu agendamento.",
+      whatsapp_btn: isEn ? "Open WhatsApp" : "Abrir WhatsApp Agora",
+      back_home: isEn ? "Go back" : "Voltar e editar",
+      timer_text: isEn ? "Cart saved for" : "Carrinho salvo por",
+      input_name: isEn ? "What is your name?" : "Seu Nome",
+      input_addr: isEn ? "Street or Avenue" : "Rua ou Avenida",
       input_num: isEn ? "Number" : "Número",
-      input_district: isEn ? "Your Neighborhood" : "Seu Bairro",
-      input_city: isEn ? "Your City" : "Sua Cidade",
-      input_comp: isEn ? "Apt, Block, etc (Optional)" : "Apto, Bloco, etc (Opcional)",
-      input_hotel: isEn ? "What's the Hotel name?" : "Qual o nome do Hotel?",
-      input_room: isEn ? "Room / Suite Number" : "Número do Quarto / Suíte",
-      agree_terms: isEn ? "I have read and am aware of the health and delivery rules" : "Eu li e declaro que estou ciente das regras de saúde e entrega",
+      input_district: isEn ? "Neighborhood" : "Bairro",
+      input_city: isEn ? "City" : "Cidade",
+      input_comp: isEn ? "Apt, Block (Optional)" : "Complemento (Opcional)",
+      input_hotel: isEn ? "Hotel name" : "Nome do Hotel",
+      input_room: isEn ? "Room / Suite Number" : "Número do Quarto",
+      agree_terms: isEn ? "I agree to the terms" : "Eu aceito as regras da sessão",
       faq_title: isEn ? "Frequently Asked Questions" : "Dúvidas Frequentes",
-      reviews_title: isEn ? "Those who allowed themselves to relax:" : "Quem já se permitiu relaxar:",
-      empty_date: isEn ? "Tap a day above to see my schedule." : "Toque num dia acima para ver meus horários.",
-      empty_slots: isEn ? "Aw, my schedule is already full for this day. Can you try the next?" : "Poxa, minha agenda já encheu para este dia. Pode tentar o próximo?",
-      total_label: isEn ? "Cart Total" : "Total do Carrinho",
-      subtotal: isEn ? "Services Sum" : "Soma dos Serviços",
-      discount: isEn ? "Discount Applied" : "Desconto Aplicado",
+      reviews_title: isEn ? "Client Feedback" : "O Que Dizem os Clientes",
+      empty_date: isEn ? "Select a date above." : "Selecione uma data acima para visualizar horários.",
+      empty_slots: isEn ? "My schedule is full for this day. Try another." : "Agenda cheia para este dia. Selecione o próximo disponível.",
+      total_label: isEn ? "Total" : "Investimento Total",
+      subtotal: isEn ? "Subtotal" : "Subtotal",
+      discount: isEn ? "Discount" : "Desconto",
       pix_discount: isEn ? "Pix Benefit (3%)" : "Benefício Pix (3%)",
-      welcome_popup_title: isEn ? "Welcome aboard!" : "Seja muito bem-vindo!",
-      welcome_popup_msg: isEn ? "I'm glad you decided to take time to care for yourself and feel pleasure in the comfort of your place. Most men forget about themselves. Here is a gift for our first time." : "Fico feliz que você decidiu tirar um tempo para se cuidar e sentir prazer no conforto do seu local. A maioria dos homens esquece de si mesmo. Aqui está um presente para nossa primeira vez.",
-      welcome_popup_warning: isEn ? "⚠️ Attention: Your progress, points (XP), and benefits are saved in this phone's browser. Avoid clearing browsing data (cache) so you don't lose your history!" : "⚠️ Atenção: Seu progresso, pontos (XP) e benefícios ficam salvos no navegador deste celular. Evite limpar os dados de navegação (cache) para não perder seu histórico!",
+      welcome_popup_title: isEn ? "Welcome!" : "Seja muito bem-vindo!",
+      welcome_popup_msg: isEn ? "Here is a gift for our first time." : "Aqui está um presente para nossa primeira experiência.",
+      welcome_popup_warning: isEn ? "⚠️ Progress is saved on this device. Do not clear cache." : "⚠️ O progresso é salvo no navegador. Evite limpar o cache.",
       levelup_popup_title: isEn ? "Evolution Reached!" : "Evolução Alcançada!",
-      levelup_popup_msg: isEn ? "Your consistency generated rewards. I just unlocked an exclusive new benefit for your next booking." : "Sua constância gerou recompensas. Acabei de liberar um novo benefício exclusivo para o seu próximo agendamento.",
-      get_coupon: isEn ? "Redeem My Gift" : "Resgatar Meu Presente",
-      rules_complete: isEn ? "Mutual Delivery Agreement" : "Acordo de Entrega Mútua",
+      levelup_popup_msg: isEn ? "You unlocked an exclusive new benefit." : "Você acaba de desbloquear um benefício exclusivo.",
+      get_coupon: isEn ? "Redeem Gift" : "Resgatar Presente",
+      rules_complete: isEn ? "Mutual Agreement" : "Acordo Mútuo de Entrega",
       media_discount: isEn ? "Portfolio Discount (1%)" : "Desconto Portfólio (1%)",
-      media_title: isEn ? "Support my work (Optional)" : "Apoiar meu trabalho (Opcional)",
-      media_desc: isEn ? "If you want, you can allow anonymous aesthetic photos (only body outline, no face, no intimacy) for my portfolio. In return, you get 1% OFF your cart value." : "Se quiser, você pode permitir fotos estéticas anônimas (apenas o contorno do corpo, sem rosto e sem intimidade) para meu portfólio. Em troca, você ganha 1% OFF no valor do carrinho.",
-      media_bonus: isEn ? "Allow to get 1% OFF" : "Liberar para ganhar 1% OFF",
-      uber_notice: isEn ? "The travel fee (Uber) will be calculated and confirmed in our WhatsApp chat." : "A taxa de deslocamento (Uber) será calculada e confirmada na nossa conversa do WhatsApp.",
-      motel_note: isEn ? "An environment for your absolute surrender. The address of my private suite will be sent and agreed upon with you via WhatsApp after the reservation." : "Um ambiente para sua entrega absoluta. O endereço da minha suíte privada será enviado e combinado com você pelo WhatsApp após a reserva.",
-      menu_title: isEn ? "Main Menu" : "Menu Central",
+      media_title: isEn ? "Support my work" : "Apoiar o Trabalho (Opcional)",
+      media_desc: isEn ? "Allow anonymous aesthetic photos for 1% OFF." : "Permitir fotos estéticas anônimas (sem rosto/intimidade) e ganhar 1% OFF.",
+      media_bonus: isEn ? "Get 1% OFF" : "Liberar e ganhar 1% OFF",
+      uber_notice: isEn ? "Travel fee (Uber) will be confirmed on WhatsApp." : "A taxa de deslocamento será calculada e informada no WhatsApp.",
+      motel_note: isEn ? "Address of my suite sent via WhatsApp." : "O endereço da minha suíte será enviado via WhatsApp após a reserva.",
+      menu_title: isEn ? "Menu" : "Menu",
       level_yours: isEn ? "Your Level" : "Seu Nível",
-      level_current: isEn ? "Current Level" : "Nível Atual",
-      level_journey: isEn ? "Your Journey" : "Sua Jornada",
-      menu_warning: isEn ? "* Your progress is saved in this device's browser. Avoid clearing data (cache) so you don't lose your benefits." : "* Seu progresso é salvo no navegador deste aparelho. Evite limpar os dados (cache) para não perder seus benefícios.",
+      level_current: isEn ? "Current" : "Atual",
+      level_journey: isEn ? "Journey" : "Jornada",
+      menu_warning: isEn ? "* Progress saved locally." : "* Progresso salvo no seu aparelho.",
       theme_title: isEn ? "Appearance" : "Aparência",
-      theme_dark: isEn ? "Dark" : "Noturna",
-      theme_light: isEn ? "Light" : "Clara",
-      refer_btn: isEn ? "Refer Someone" : "Indicar Alguém",
-      share_text: isEn ? 'I found the best massage to relieve all stress.' : 'Encontrei a melhor massagem para tirar todo o estresse.',
-      header_tensions: isEn ? "tensions resolved" : "tensões resolvidas",
+      theme_dark: isEn ? "Dark" : "Escuro",
+      theme_light: isEn ? "Light" : "Claro",
+      refer_btn: isEn ? "Refer Someone" : "Indicar Amigo",
+      share_text: isEn ? 'The best massage.' : 'A melhor experiência em massagem.',
+      header_tensions: isEn ? "sessions completed" : "atendimentos realizados",
       step_when: isEn ? "When" : "Quando",
       step_where: isEn ? "Where" : "Onde",
       step_summary: isEn ? "Summary" : "Resumo",
-      cart_title: isEn ? "Your Cart:" : "Seu Carrinho:",
+      cart_title: isEn ? "Cart" : "Carrinho",
       cart_edit: isEn ? "Edit" : "Editar",
-      time_choose: isEn ? "Choose the Time" : "Escolha o Horário",
+      time_choose: isEn ? "Choose Time" : "Escolher Horário",
       time_rush: isEn ? "Rush (+15)" : "Pico (+15)",
-      loc_home: isEn ? "Your Home" : "Sua Casa",
+      loc_home: isEn ? "Home" : "Residência",
       loc_motel: isEn ? "My Suite" : "Minha Suíte",
       loc_hotel: isEn ? "Hotel" : "Hotel",
       summary_title: isEn ? "Order Summary" : "Resumo do Pedido",
-      summary_items: isEn ? "CHOSEN SERVICES" : "CUIDADOS ESCOLHIDOS",
+      summary_items: isEn ? "SERVICES" : "SERVIÇOS",
       summary_extras: isEn ? "EXTRAS" : "EXTRAS",
-      summary_info: isEn ? "TODAY'S SESSION INFO" : "INFORMAÇÕES DA SESSÃO DE HOJE",
-      summary_loc_home: isEn ? "At your residence" : "Em sua residência",
-      summary_loc_motel: isEn ? "At my private suite" : "Na minha suíte",
-      summary_loc_hotel: isEn ? "At a hotel" : "Em hotel",
-      coupon_applied: isEn ? "Coupon Applied" : "Cupom Aplicado",
-      xp_guaranteed: isEn ? "GUARANTEED XP" : "XP GARANTIDOS",
-      media_granted: isEn ? "Authorization Granted" : "Autorização Concedida",
-      media_support: isEn ? "Support the Work" : "Apoiar o Trabalho",
+      summary_info: isEn ? "INFO" : "INFORMAÇÕES",
+      summary_loc_home: isEn ? "At residence" : "Atendimento em domicílio",
+      summary_loc_motel: isEn ? "At my suite" : "Atendimento na minha suíte",
+      summary_loc_hotel: isEn ? "At hotel" : "Atendimento em hotel",
+      coupon_applied: isEn ? "Coupon Applied" : "Cupom Ativo",
+      xp_guaranteed: isEn ? "XP" : "XP",
+      media_granted: isEn ? "Granted" : "Concedido",
+      media_support: isEn ? "Support" : "Apoiar",
       pay_pix: isEn ? "Pix (3% OFF)" : "Pix (3% OFF)",
       pay_card: isEn ? "Card" : "Cartão",
       pay_cash: isEn ? "Cash" : "Dinheiro",
-      terms_read: isEn ? "Read Health Rules" : "Ler Regras de Saúde",
-      level_redeem: isEn ? "Redeem Achievement" : "Resgatar Conquista",
+      terms_read: isEn ? "Read Terms" : "Ler Termos",
+      level_redeem: isEn ? "Redeem" : "Resgatar",
       today: isEn ? "TODAY" : "HOJE",
       tomorrow: isEn ? "TOMORROW" : "AMANHÃ",
-      popular_badge: isEn ? "✦ Most Desired" : "✦ Mais Desejada",
+      popular_badge: isEn ? "✦ Best Seller" : "✦ O Mais Escalonado",
       from: isEn ? "From:" : "De:",
       savings: isEn ? "SAVINGS:" : "ECONOMIA:",
-      items_selected: isEn ? "item(s) selected" : "item(s) selecionado(s)",
+      items_selected: isEn ? "item(s)" : "item(ns)",
       btn_finish_short: isEn ? "Finish" : "Finalizar",
       btn_next_short: isEn ? "Next" : "Avançar",
-      msg_level_keep1: isEn ? "Keep caring. You need" : "Mantenha o cuidado. Faltam",
-      msg_level_keep2: isEn ? "XP for your next benefit of" : "XP para seu próximo benefício de",
-      msg_rush_fee: isEn ? "Rush Fee" : "Taxa de Deslocamento (Pico)",
-      toast_loaded: isEn ? "Your saved progress loaded successfully! 💾" : "Seu progresso salvo foi carregado com sucesso! 💾",
-      toast_cart_toggle: isEn ? "Item added/removed from cart." : "Item adicionado/removido do carrinho.",
-      toast_pix_copied: isEn ? "PIX Key copied successfully!" : "Chave PIX (CNPJ) copiada com sucesso!",
-      toast_copy: isEn ? "Summary copied successfully!" : "Resumo copiado com sucesso!"
+      msg_level_keep1: isEn ? "Keep caring. You need" : "Mantenha a frequência. Faltam",
+      msg_level_keep2: isEn ? "XP for your next benefit of" : "XP para o próximo benefício de",
+      msg_rush_fee: isEn ? "Rush Fee" : "Taxa de Pico (Deslocamento)",
+      toast_loaded: isEn ? "Progress loaded!" : "Dados recuperados com sucesso.",
+      toast_cart_toggle: isEn ? "Cart updated." : "Carrinho atualizado.",
+      toast_pix_copied: isEn ? "PIX copied!" : "Chave PIX copiada.",
+      toast_copy: isEn ? "Copied!" : "Copiado!"
     },
     reviews: getFullReviews(lang)
   };
 };
 
 // ==================================================================================
-// 5. MAIN APP OTIMIZADO PARA MÚLTIPLAS ESCOLHAS E NOVO FLUXO DE UX/UI
+// 5. MAIN APP
 // ==================================================================================
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -624,7 +567,6 @@ export default function App() {
     } else {
       url = CONFIG.INSTAGRAM_URL;
     }
-
     const link = document.createElement('a');
     link.href = url;
     link.target = '_blank';
@@ -646,9 +588,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (isClient) {
-        document.title = step === 0 ? "Thalyson Massagens" : (lang === 'en' ? "Your Booking - Thalyson" : "Seu Agendamento - Thalyson");
-    }
+    if (isClient) { document.title = "Thalyson Massagens"; }
   }, [step, isClient, lang]);
   
   useEffect(() => {
@@ -693,23 +633,17 @@ export default function App() {
                 placeName: sanitizeInput(parsed.bookingDraft.address?.placeName || '') 
               }
             };
-            
-            if (typeof parsed.step === 'number' && parsed.step >= 0 && parsed.step <= 4) {
-              loadedStep = parsed.step;
-            }
+            if (typeof parsed.step === 'number' && parsed.step >= 0 && parsed.step <= 4) { loadedStep = parsed.step; }
           }
         }
       }
-    } catch (e) {
-      loadedStep = 0;
-    }
+    } catch (e) { loadedStep = 0; }
     
     setUser(loadedUser);
     setBooking(loadedBooking);
     setStep(loadedStep);
     setDataLoaded(true);
     setTimeout(() => setLoading(false), 800);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient]);
   
   useEffect(() => {
@@ -735,11 +669,7 @@ export default function App() {
         const timer = setTimeout(() => setWelcomePopup(true), 2000);
         return () => clearTimeout(timer);
       } 
-      else if (user.hasSeenWelcome) {
-        addToast(T.toast_loaded, "success");
-      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, isClient, dataLoaded]);
   
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
@@ -767,15 +697,10 @@ export default function App() {
   const generateTimeSlots = useMemo(() => {
     if (!booking.date) return [];
     const slots = [];
-    
-    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
-      slots.push(`${i < 10 ? '0' : ''}${i}:00`);
-    }
-
+    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) { slots.push(`${i < 10 ? '0' : ''}${i}:00`); }
     const now = new Date();
     const selectedDate = new Date(booking.date);
     if (isNaN(selectedDate.getTime())) return [];
-
     const isToday = selectedDate.toDateString() === now.toDateString();
     if (isToday) {
       const currentHour = now.getHours();
@@ -790,20 +715,14 @@ export default function App() {
   const financials = useMemo(() => {
     if (booking.cart.length === 0) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0, rushFee: 0, duration: 0 };
     
-    let sub = 0;
-    let baseDuration = 0;
-    let isPackage = booking.cart.some(item => item.type === 'pack');
+    let sub = 0; let baseDuration = 0; let isPackage = booking.cart.some(item => item.type === 'pack');
 
     booking.cart.forEach(item => {
         sub += item.price;
-        if (!isPackage) {
-            baseDuration += (item.min || 60);
-        }
+        if (!isPackage) { baseDuration += (item.min || 60); }
     });
 
-    if (isPackage) {
-        baseDuration = 60;
-    }
+    if (isPackage) { baseDuration = 60; }
 
     let addedTime = 0;
     Object.keys(booking.extras || {}).forEach(k => { 
@@ -817,10 +736,8 @@ export default function App() {
     });
 
     const totalDuration = baseDuration + addedTime;
-
     const isRushHour = RUSH_HOURS.includes(booking.time || '');
     const rushFee = (isRushHour && booking.locationType !== 'motel') ? RUSH_FEE : 0;
-
     const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
     let runningTotal = Math.max(0, sub - disc);
     
@@ -831,7 +748,6 @@ export default function App() {
     if (booking.payment === 'pix') { pixDisc = Math.ceil(runningTotal * 0.03); }
     
     const finalTotal = Math.max(0, runningTotal - pixDisc) + rushFee;
-    
     return { sub, disc, pixDisc, mediaDisc, rushFee, total: finalTotal, duration: totalDuration };
   }, [booking.cart, booking.extras, booking.appliedCoupon, DATA.extras, booking.payment, booking.mediaAllowed, booking.time, booking.locationType]);
   
@@ -863,7 +779,6 @@ export default function App() {
     const f = financials; 
     const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : '';
     const securityHash = btoa(encodeURIComponent(`${f.total}-${dateStr}-${booking.cart[0]?.id || ''}-${CONFIG.SECRET_TOKEN}`)).substring(0, 8).toUpperCase();
-    
     const isEn = lang === 'en';
 
     const servicesListText = booking.cart.map(item => {
@@ -891,12 +806,12 @@ export default function App() {
       return ex ? `➕ ${ex.label}` : ''; 
     }).filter(Boolean).join('\n');
     
-    let priceDetails = `💵 *${isEn ? 'Services Sum' : 'Soma dos Cuidados'}:* ${formatMoney(f.sub, lang)}`;
-    if (f.disc > 0) priceDetails += `\n🎁 *${isEn ? 'Gift' : 'Presente'} (${booking.appliedCoupon?.code}):* -${formatMoney(f.disc, lang)}`;
-    if (f.mediaDisc > 0) priceDetails += `\n📸 *${isEn ? 'Portfolio Discount' : 'Desconto Portfólio'}:* -${formatMoney(f.mediaDisc, lang)}`;
-    if (f.pixDisc > 0) priceDetails += `\n💸 *${isEn ? 'PIX Discount' : 'Desconto PIX'} (3%):* -${formatMoney(f.pixDisc, lang)}`;
-    if (f.rushFee > 0) priceDetails += `\n🚗 *${isEn ? 'Rush Fee' : 'Taxa de Pico'} (${isEn ? 'Time' : 'Horário'}):* +${formatMoney(f.rushFee, lang)}`;
-    priceDetails += `\n\n💰 *${isEn ? 'FINAL BOOKING VALUE' : 'VALOR FINAL DO AGENDAMENTO'}: ${formatMoney(f.total, lang)}*`;
+    let priceDetails = `💵 *${isEn ? 'Services Sum' : 'Subtotal'}:* ${formatMoney(f.sub, lang)}`;
+    if (f.disc > 0) priceDetails += `\n🎁 *${isEn ? 'Gift' : 'Desconto'} (${booking.appliedCoupon?.code}):* -${formatMoney(f.disc, lang)}`;
+    if (f.mediaDisc > 0) priceDetails += `\n📸 *${isEn ? 'Portfolio Discount' : 'Apoio Portfólio'}:* -${formatMoney(f.mediaDisc, lang)}`;
+    if (f.pixDisc > 0) priceDetails += `\n💸 *${isEn ? 'PIX Discount' : 'Desconto PIX'}:* -${formatMoney(f.pixDisc, lang)}`;
+    if (f.rushFee > 0) priceDetails += `\n🚗 *${isEn ? 'Rush Fee' : 'Taxa de Deslocamento'}:* +${formatMoney(f.rushFee, lang)}`;
+    priceDetails += `\n\n💰 *${isEn ? 'FINAL VALUE' : 'VALOR FINAL DO INVESTIMENTO'}: ${formatMoney(f.total, lang)}*`;
 
     const finalMapLink = mapQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}` : '';
     
@@ -915,41 +830,39 @@ ${servicesListText}
 ${extrasList ? `*Added Extras:*\n${extrasList}\n` : ''}
 📍 *WHERE:*
 ${locTxt}
-${finalMapLink ? `🔗 Direct GPS: ${finalMapLink}` : ''}
+${finalMapLink ? `🔗 GPS: ${finalMapLink}` : ''}
 
-${booking.locationType !== 'motel' ? `⚠️ *Notice:* Aware that the travel fee (Uber) will be calculated and confirmed by you in the chat.\n` : ''}🩺 *Health:* I declare that I am 100% healthy and cleared for massage.
-
+${booking.locationType !== 'motel' ? `⚠️ Aware that the travel fee (Uber) will be calculated and confirmed in chat.\n` : ''}
 💰 *INVESTMENT SUMMARY:*
 ${priceDetails}
 
-💳 *Payment Method:* ${booking.payment.toUpperCase()}
+💳 *Payment:* ${booking.payment.toUpperCase()}
 ──────────────────
-_I accept the health/delivery terms and await your confirmation. My contact WhatsApp is this one!_
+_I accept the agreement and await confirmation._
     `.trim() : `
 *RESERVA DE CUIDADO* | #${securityHash}
 ──────────────────
 Olá Thalyson! Gostaria de agendar meu momento.
 
 👤 *Nome:* ${sanitizeInput(user.name)}
-📅 *Data (Sessão de Hoje):* ${dateStr} às ${booking.time}
-⏱️ *Tempo Estimado (Hoje):* ${f.duration} Minutos
+📅 *Data:* ${dateStr} às ${booking.time}
+⏱️ *Duração Estimada:* ${f.duration} Minutos
 
 💆‍♂️ *O QUE ESCOLHI:*
 ${servicesListText}
 
-${extrasList ? `*Extras Adicionados:*\n${extrasList}\n` : ''}
+${extrasList ? `*Adicionais:*\n${extrasList}\n` : ''}
 📍 *ONDE:*
 ${locTxt}
 ${finalMapLink ? `🔗 GPS Direto: ${finalMapLink}` : ''}
 
-${booking.locationType !== 'motel' ? `⚠️ *Aviso:* Ciente de que a taxa de deslocamento (Uber) será calculada e confirmada por você no chat.\n` : ''}🩺 *Saúde:* Declaro que estou 100% saudável e liberado para massagem.
-
+${booking.locationType !== 'motel' ? `⚠️ Ciente de que a taxa de deslocamento será calculada e confirmada por você.\n` : ''}
 💰 *RESUMO DO INVESTIMENTO:*
 ${priceDetails}
 
-💳 *Forma de Pagamento:* ${booking.payment.toUpperCase()}
+💳 *Pagamento:* ${booking.payment.toUpperCase()}
 ──────────────────
-_Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp para contato é este mesmo!_
+_Aceito o acordo de entrega e aguardo sua confirmação._
     `.trim();
 
     return msg;
@@ -1004,27 +917,6 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
       }
     });
 
-    if (newXP > 800) {
-      const getLoops = (xp: number) => Math.floor(Math.max(0, xp - 800) / 500);
-      const oldLoops = getLoops(user.xp);
-      const newLoops = getLoops(newXP);
-      
-      if (newLoops > oldLoops) {
-        const loopRewardValue = DATA.levels[3].reward; 
-        
-        for (let i = oldLoops + 1; i <= newLoops; i++) {
-          leveledUp = true;
-          newLevelTitle = "Plenitude Plus";
-          updatedCoupons.push({ 
-              id: `LOOP_${i}_${Date.now()}`, 
-              val: loopRewardValue, 
-              title: `🏆 Recompensa Especial: Plenitude Plus`, 
-              code: `PLUS${i}` 
-          });
-        }
-      }
-    }
-    
     const newOrdersCount = (user.ordersCount || 92) + 1;
     
     setUser(prev => ({ 
@@ -1055,13 +947,11 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
     const today = new Date(); 
     const tomorrow = new Date(today); 
     tomorrow.setDate(tomorrow.getDate() + 1);
-    
     if (d.toDateString() === today.toDateString()) return T.today;
     if (d.toDateString() === tomorrow.toDateString()) return T.tomorrow;
     return d.toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { weekday: 'short' }).slice(0, 3).toUpperCase();
   };
 
-  // DEFINIÇÃO DAS CATEGORIAS COM UX/UI APERFEIÇOADA
   const categoriesRenderData = [
     { 
       id: 'relax', 
@@ -1089,7 +979,7 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
     },
     { 
       id: 'care', 
-      title: lang === 'en' ? "Personal Care" : "Cuidados Pessoais", 
+      title: lang === 'en' ? "Personal Care" : "Estética e Higiene", 
       icon: "scissors", 
       colorClass: "bg-pink-500",
       accent: isDark ? "border-pink-500/30" : "border-pink-100 shadow-pink-900/5",
@@ -1120,10 +1010,8 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
     <>
       <GlobalStyles isDark={isDark} />
       
-      {/* Background Container App */}
       <div className={`fixed inset-0 z-[-1] pointer-events-none transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-slate-50'}`} aria-hidden="true" />
       
-      {/* Toasts / Notifications */}
       <div className="fixed top-6 md:top-8 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-3 pointer-events-none px-4 w-full max-w-md">
         {toasts.map(t => (
           <div key={t.id} role="alert" className={`pointer-events-auto flex items-center gap-3 px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl border backdrop-blur-2xl shadow-2xl animate-fade-in ${t.type === 'success' ? isDark ? 'bg-zinc-800/90 border-zinc-700 text-white' : 'bg-white/95 border-slate-200 text-slate-800' : 'bg-red-500/95 border-red-500 text-white'}`}>
@@ -1139,24 +1027,34 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
         {step !== 4 && (
           <header className="pt-10 md:pt-16 pb-8 md:pb-12">
             <div className="flex items-start justify-between">
-              <div className="flex flex-col cursor-pointer transition-opacity hover:opacity-80" onClick={() => setStep(0)} title={T.back_home}>
-                <h1 className={`text-2xl md:text-4xl font-playfair tracking-tight font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  Thalyson <br className="block sm:hidden" /> Massagens
-                </h1>
-                <div className={`flex items-center gap-2 text-[9px] md:text-[10px] uppercase tracking-widest mt-2 md:mt-3 font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                  <span className="relative flex h-2 w-2 md:h-2.5 md:w-2.5 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-blue-500"></span></span>
-                  {lang === 'en' ? `Over ${user.ordersCount || 92} ${T.header_tensions}` : `Mais de ${user.ordersCount || 92} ${T.header_tensions}`}
+              
+              <div className="flex items-center gap-4">
+                {/* O avatar. Troque o SRC abaixo pela URL real da foto se quiser */}
+                <img 
+                  src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80" 
+                  alt="Thalyson" 
+                  className={`w-14 h-14 md:w-16 md:h-16 rounded-full object-cover border-2 shadow-lg ${isDark ? 'border-zinc-800 shadow-black/50' : 'border-white shadow-slate-300'}`} 
+                />
+                <div className="flex flex-col cursor-pointer transition-opacity hover:opacity-80" onClick={() => setStep(0)} title={T.back_home}>
+                  <h1 className={`text-2xl md:text-4xl font-playfair tracking-tight font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    Thalyson <br className="block sm:hidden" /> Massagens
+                  </h1>
+                  <div className={`flex items-center gap-2 text-[9px] md:text-[10px] uppercase tracking-widest mt-2 md:mt-3 font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                    <span className="relative flex h-2 w-2 md:h-2.5 md:w-2.5 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-blue-500"></span></span>
+                    {lang === 'en' ? `Over ${user.ordersCount || 92} ${T.header_tensions}` : `Mais de ${user.ordersCount || 92} ${T.header_tensions}`}
+                  </div>
                 </div>
               </div>
+
               <div className="flex items-center gap-3 shrink-0">
-                <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} aria-label="Alterar Idioma / Change Language" className={`relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700 text-blue-400 hover:bg-zinc-800 hover:text-blue-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-blue-600 hover:bg-slate-50 hover:shadow-md'}`}>
+                <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} aria-label="Alterar Idioma" className={`relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700 text-blue-400 hover:bg-zinc-800 hover:text-blue-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-blue-600 hover:bg-slate-50 hover:shadow-md'}`}>
                    <Icon name="globe" size={20} />
                    <span className="absolute -bottom-1 -right-1 text-[8px] font-bold bg-blue-500 text-white px-1.5 py-0.5 rounded shadow-sm">{lang.toUpperCase()}</span>
                 </button>
-                <button onClick={() => openExternal('instagram')} aria-label="Acessar Instagram" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700 text-pink-400 hover:bg-zinc-800 hover:text-pink-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-pink-600 hover:bg-slate-50 hover:shadow-md'}`}>
+                <button onClick={() => openExternal('instagram')} aria-label="Instagram" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700 text-pink-400 hover:bg-zinc-800 hover:text-pink-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-pink-600 hover:bg-slate-50 hover:shadow-md'}`}>
                    <Icon name="instagram" size={20} />
                 </button>
-                <button onClick={() => setMenuOpen(true)} aria-label="Abrir Menu" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900/80 border-zinc-700 text-white hover:bg-zinc-800 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50 hover:shadow-md'}`}>
+                <button onClick={() => setMenuOpen(true)} aria-label="Menu" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900/80 border-zinc-700 text-white hover:bg-zinc-800 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50 hover:shadow-md'}`}>
                    <Icon name="menu" size={20} />
                 </button>
               </div>
@@ -1229,28 +1127,89 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                 </div>
               </div>
               
-              <div className={`flex p-1.5 md:p-2 rounded-2xl md:rounded-3xl border max-w-sm mx-auto shadow-inner ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-slate-100/80 border-slate-200'}`} role="tablist">
+              <div className={`flex p-1.5 md:p-2 rounded-2xl md:rounded-3xl border max-w-lg mx-auto shadow-inner ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-slate-100/80 border-slate-200'}`} role="tablist">
                 
                 <button role="tab" aria-selected={activeTab === 'packs'} onClick={() => setActiveTab('packs')} 
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[9px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 
                   ${activeTab === 'packs' 
                     ? 'bg-amber-500 text-white shadow-lg shadow-amber-900/30' 
                     : isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'}`}>
-                  <Icon name="package" size={16} /> {T.tab_packs}
+                  <Icon name="package" size={16} /> <span className="hidden sm:inline">{T.tab_packs}</span><span className="sm:hidden">Mensal</span>
                 </button>
                 
                 <button role="tab" aria-selected={activeTab === 'single'} onClick={() => setActiveTab('single')} 
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 relative overflow-hidden
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[9px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 relative overflow-hidden
                   ${activeTab === 'single' 
-                    ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] scale-[1.03] border border-blue-400'
-                    : isDark ? 'text-zinc-100 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/50 animate-pulse-slow' : 'text-blue-700 bg-blue-100 hover:bg-blue-200 border border-blue-300 animate-pulse-slow'
+                    ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] border border-blue-400'
+                    : isDark ? 'text-zinc-100 bg-blue-600/20 hover:bg-blue-600/40 border border-transparent' : 'text-blue-700 bg-blue-100 hover:bg-blue-200 border border-transparent'
                   }`}>
-                  <Icon name="user" size={16} /> {T.tab_single}
+                  <Icon name="user" size={16} /> <span className="hidden sm:inline">{T.tab_single}</span><span className="sm:hidden">Avulsa</span>
+                </button>
+
+                <button role="tab" aria-selected={activeTab === 'custom'} onClick={() => setActiveTab('custom')} 
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[9px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 relative overflow-hidden
+                  ${activeTab === 'custom' 
+                    ? 'bg-emerald-600 text-white shadow-[0_0_20px_rgba(5,150,105,0.4)] border border-emerald-400'
+                    : isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'
+                  }`}>
+                  <Icon name="settings" size={16} /> <span className="hidden sm:inline">{T.tab_custom}</span><span className="sm:hidden">A Pedido</span>
                 </button>
 
               </div>
               
-              {activeTab === 'single' ? (
+              {activeTab === 'custom' && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 justify-center">
+                  {DATA.services.filter(s => s.category === 'custom').map(s => {
+                    const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
+                    return (
+                    <Card key={s.id} active={isInCart} onClick={() => handleToggleCartItem(s)} isDark={isDark} popular={s.popular} T={T}>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start mb-6 gap-3">
+                          <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-white border-slate-300 text-slate-800'}`}>
+                            <Icon name={s.icon} size={24} />
+                          </div>
+                          <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
+                            {isInCart && (
+                              <div className={`absolute -top-2 -right-2 text-white w-6 h-6 flex items-center justify-center rounded-full animate-fade-in shadow-md bg-emerald-500`}>
+                                <Icon name="check" size={14} />
+                              </div>
+                            )}
+                            <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold w-full ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                              {T.from}
+                            </span>
+                            <span className={`text-xl md:text-2xl font-playfair font-semibold w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                              {formatMoney(s.price, lang)}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="mb-6">
+                          <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? 'bg-emerald-900/40 border-emerald-600/50 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800'}`}>
+                            {s.tag}
+                          </span>
+                          <h3 className={`text-lg md:text-xl font-playfair font-medium mb-2 md:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {s.title}
+                          </h3>
+                          <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>
+                            {s.desc}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
+                        <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
+                          <Icon name="check" size={14} className={`text-emerald-400 shrink-0`} /> {T.details_label}
+                        </div>
+                        <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                          {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className={`text-emerald-400 mt-1 text-[10px] shrink-0`}>•</span> <span>{line}</span></p>)}
+                        </div>
+                      </div>
+                    </Card>
+                  )})}
+                </div>
+              )}
+
+              {activeTab === 'single' && (
                 <div className="space-y-16">
                   {categoriesRenderData.map(cat => {
                     const servicesInCategory = DATA.services.filter((s: ServiceItem) => s.category === cat.id);
@@ -1258,11 +1217,9 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
 
                     return (
                       <div key={cat.id} className={`p-6 md:p-10 rounded-[2.5rem] border-2 shadow-lg relative overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-900/40' : 'bg-white'} ${cat.accent}`}>
-                        {/* Decorador de Fundo Colorido com Desfoque */}
                         <div className={`absolute top-0 right-0 w-64 h-64 opacity-[0.03] md:opacity-[0.05] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none ${cat.colorClass}`} />
                         
                         <div className="relative z-10">
-                          {/* Header da Categoria */}
                           <div className="flex items-center gap-4 mb-8 md:mb-10">
                             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-xl shrink-0 ${cat.colorClass}`}>
                               <Icon name={cat.icon} size={28} />
@@ -1273,7 +1230,6 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                             </div>
                           </div>
 
-                          {/* Lista de Serviços da Categoria */}
                           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                             {servicesInCategory.map((s: ServiceItem) => {
                               const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
@@ -1282,7 +1238,7 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                                   <div className="flex-1">
                                     <div className="flex justify-between items-start mb-6 gap-3">
                                       <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-white border-slate-300 text-slate-800'}`}>
-                                        <Icon name={s.icon} size={24} isEmoji={s.isEmoji} />
+                                        <Icon name={s.icon} size={24} />
                                       </div>
                                       <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
                                         {isInCart && (
@@ -1321,7 +1277,7 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                                   
                                   <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
                                     <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                                      <Icon name="check" size={14} className={`text-emerald-400 shrink-0`} /> {T.details_label}
+                                      <Icon name="check" size={14} className={`text-blue-400 shrink-0`} /> {T.details_label}
                                     </div>
                                     <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                                       {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className={`text-blue-400 mt-1 text-[10px] shrink-0`}>•</span> <span>{line}</span></p>)}
@@ -1336,7 +1292,9 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                     );
                   })}
                 </div>
-              ) : (
+              )}
+              
+              {activeTab === 'packs' && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                   {DATA.plans.map((s: ServiceItem) => {
                     const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
@@ -1347,7 +1305,7 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                       <div className="flex-1">
                         <div className="flex justify-between items-start mb-6 gap-3">
                           <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900 border-amber-500/50 text-amber-400' : 'bg-amber-100 border-amber-300 text-amber-700'}`}>
-                            <Icon name={s.icon} size={24} isEmoji={s.isEmoji} />
+                            <Icon name={s.icon} size={24} />
                           </div>
                           <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
                             {isInCart && (
@@ -1568,7 +1526,7 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                   {generateTimeSlots.some(t => RUSH_HOURS.includes(t)) && booking.locationType !== 'motel' && (
                     <div className={`mt-6 p-4 rounded-xl flex items-start gap-3 text-[11px] md:text-xs font-medium leading-relaxed border ${isDark ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800'}`}>
                       <Icon name="alert-circle" size={16} className="shrink-0 mt-0.5" />
-                      <p><strong>{lang === 'en' ? 'Rush Hours:' : 'Horários de Pico:'}</strong> {lang === 'en' ? 'High traffic periods (noon or late afternoon) have a small R$ 15 addition to the travel fee to ensure I reach you on time.' : 'Períodos com alto tráfego (meio-dia ou fim de tarde) possuem um pequeno acréscimo de R$ 15 na taxa de deslocamento para garantir que eu chegue até você com pontualidade.'}</p>
+                      <p><strong>{lang === 'en' ? 'Rush Hours:' : 'Horários de Pico:'}</strong> {lang === 'en' ? 'High traffic periods (noon or late afternoon) have a small R$ 15 addition to the travel fee to ensure I reach you on time.' : 'Períodos com alto tráfego possuem um pequeno acréscimo de R$ 15 na taxa de deslocamento para garantir que eu chegue até você com pontualidade.'}</p>
                     </div>
                   )}
                 </div>
@@ -1592,7 +1550,7 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                     <Icon name="sparkles" size={24} className="text-blue-500 animate-pulse" /> {T.extras_title}
                   </h3>
                   <p className={`text-xs md:text-sm font-light ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
-                    {lang === 'en' ? 'Take the opportunity to add a special touch to your experience before finishing your order.' : 'Aproveite para adicionar um toque especial à sua experiência antes de finalizar o pedido.'}
+                    {lang === 'en' ? 'Add a special touch to your experience.' : 'Adicione um toque especial à sua experiência.'}
                   </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
@@ -1602,7 +1560,7 @@ _Aceito os termos de saúde/entrega e aguardo sua confirmação. O meu WhatsApp 
                     return (
                       <div key={ex.id} onClick={() => setBooking(b => ({ ...b, extras: { ...b.extras, [ex.id]: !b.extras[ex.id] } }))} className={`flex items-center justify-between p-4 md:p-5 rounded-2xl border cursor-pointer transition-all duration-300 ${isActive ? 'bg-blue-600/20 border-blue-500 shadow-sm' : isDark ? 'bg-zinc-900/60 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-500' : 'bg-white border-slate-300 hover:border-slate-400 shadow-sm'} group`} role="checkbox" aria-checked={isActive}>
                         <div className="flex items-center gap-4 min-w-0 pr-2">
-                          <div className={`transition-transform duration-300 shrink-0 ${isActive ? 'scale-110' : ''}`}><Icon name={ex.icon} size={24} isEmoji={ex.isEmoji} /></div>
+                          <div className={`transition-transform duration-300 shrink-0 ${isActive ? 'scale-110' : ''}`}><Icon name={ex.icon} size={24} /></div>
                           <div className="min-w-0">
                             <p className={`text-sm font-semibold ${isActive ? isDark ? 'text-blue-300' : 'text-blue-800' : isDark ? 'text-white' : 'text-slate-900'}`}>{ex.label}</p>
                             <p className={`text-[10px] md:text-xs font-light mt-0.5 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{ex.desc}</p>
