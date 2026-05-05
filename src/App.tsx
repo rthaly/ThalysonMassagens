@@ -288,7 +288,7 @@ const getData = (lang: 'pt' | 'en') => {
     pack1: { v: 297, full: 334, save: 37 },
     pack2: { v: 387, full: 467, save: 80 },
     pack3: { v: 637, full: 721, save: 84 },
-    extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17, dominador: 160, oral: 120, beijos: 77, prostatico: 120 }
+    extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17, dominador: 180, oral: 120, beijos: 77, prostatico: 120 }
   };
 
   return {
