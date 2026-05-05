@@ -1,1891 +1,432 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
 
 // ==================================================================================
-// 0. GUIA DE CORES E ESTILOS
+// 0. DESIGN SYSTEM & TIPOGRAFIA (PREMIUM, MINIMALISTA, ZERO EMOJIS)
 // ==================================================================================
-/*
-  Este projeto usa "Tailwind CSS". Foco em alto contraste, tons escuros e dourado/azul para premium.
-  Para mudar sua foto de perfil, procure por "URL_DA_SUA_FOTO_AQUI" no código abaixo.
-*/
-
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v27_premium_plans',
+  STORAGE_KEY: '@thaly_app_v27_premium',
   PIX_KEY: "62.922.530/0001-14", 
-  LOCALE_PT: 'pt-BR',
-  LOCALE_EN: 'en-US',
-  EXCHANGE_RATE: 5.0,
-  SECRET_TOKEN: 'THALY_SECURE_V8',
   START_HOUR: 8,
   END_HOUR: 22, 
-  MAX_STORAGE_SIZE: 5000 
+  BASE_LOCATION: 'Bela Vista, SP'
 } as const;
 
-const RUSH_HOURS = ['12:00', '13:00', '17:00', '18:00'];
-const RUSH_FEE = 15;
+const RUSH_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
+const RUSH_FEE = 20; 
 
 const ICON_PATHS: Record<string, string> = {
   'menu': 'M4 12h16 M4 6h16 M4 18h16', 'chevron-left': 'M15 18l-6-6 6-6', 'chevron-right': 'M9 18l6-6-6-6',
   'chevron-down': 'M6 9l6 6 6-6', 'x': 'M18 6L6 18M6 6l12 12', 'check': 'M20 6L9 17l-5-5',
-  'alert-circle': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M12 8v4 M12 16h.01',
-  'share': 'M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8 M16 6l-4-4-4 4 M12 2v13',
-  'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
-  'sun': 'M12 3v1 M12 20v1 M3 12h1 M20 12h1 M18.364 5.636l-.707.707 M6.343 17.657l-.707.707 M5.636 5.636l.707.707 M17.657 17.657l.707.707 M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z',
-  'moon': 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z', 'star': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
-  'user-check': 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M17 11l2 2 4-4',
-  'sparkles': 'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z M20 3v4 M22 5h-4 M4 17v2 M5 18H3',
-  'zap': 'M13 2L3 14h9l-1 8 10-12h-9l1-8z', 'package': 'M16.5 9.4L7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96L12 12.01l8.73-5.05 M12 22.08V12',
-  'layers': 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', 'user': 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
-  'home': 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10', 'bed': 'M2 4v16 M2 8h18a2 2 0 0 1 2 2v10 M2 17h20 M6 8v9',
-  'building': 'M4 22v-17a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17 M4 22h16 M10 22V10h4v12 M14 6h.01 M10 6h.01',
+  'alert': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M12 8v4 M12 16h.01',
+  'moon': 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z', 'sun': 'M12 3v1 M12 20v1 M3 12h1 M20 12h1 M18.364 5.636l-.707.707 M6.343 17.657l-.707.707 M5.636 5.636l.707.707 M17.657 17.657l.707.707 M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z',
+  'star': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+  'zap': 'M13 2L3 14h9l-1 8 10-12h-9l1-8z', 'package': 'M16.5 9.4L7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',
+  'user': 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+  'home': 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10', 'building': 'M4 22v-17a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17 M4 22h16 M10 22V10h4v12 M14 6h.01 M10 6h.01',
   'map-pin': 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
-  'car': 'M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2 M7 17v4h2v-4 M15 17v4h2v-4',
   'calendar': 'M8 2v4 M16 2v4 M3 10h18 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
-  'smartphone': 'M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z M12 18h.01',
-  'message': 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8.9h.5a8.48 8.48 0 0 1 8 8v.5z',
-  'watch': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 6v6l4 2',
-  'credit-card': 'M3 10h18 M7 15h.01 M11 15h2 M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
-  'banknote': 'M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z M5 8h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z',
-  'shield': 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
-  'shower': 'M12 4v4 M12 8l-2 2 M12 8l2 2 M7.5 12.5L5 15 M14 12.5L21.5 15 M10 15l-1 4 M16 15l1 4 M4 8h16',
-  'hand': 'M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3',
   'clock': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M12 6v6l4 2',
-  'award': 'M12 15l-2 5-9-9 9-9 9 9-9 9-2-5',
-  'trophy': 'M8 21h8M12 17v4m9-13.5a2.5 2.5 0 0 0-5 0v3a2.5 2.5 0 0 0 5 0v-3zM3 7.5a2.5 2.5 0 0 1 5 0v3a2.5 2.5 0 0 1-5 0v-3zM9 4.5h6',
-  'gift': 'M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7 M16 8h-4 M4 8h16a2 2 0 0 1 2 2v2H2v-2a2 2 0 0 1 2-2z M12 8V4 M12 8V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v4 M12 8V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4',
-  'camera': 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
-  'video': 'M23 7l-7 5 7 5V7z M14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z',
+  'credit-card': 'M3 10h18 M7 15h.01 M11 15h2 M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
+  'shield': 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
   'scissors': 'M6 9L12 15 18 9 M6 20a3 3 0 0 1-3-3v-6l6 6v3z M18 20a3 3 0 0 0 3-3v-6l-6 6v3z',
-  'copy': 'M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1 M16 3H10a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z',
-  'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8',
   'heart': 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
-  'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
-  'plus': 'M12 5v14 M5 12h14',
-  'refresh-cw': 'M23 4v6h-6 M1 20v-6h6 M3.51 9a9 9 0 0 1 14.85-3.36L23 10 M1 14l4.64 4.36A9 9 0 0 0 20.49 15',
-  'settings': 'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'
+  'plus': 'M12 5v14 M5 12h14', 'wind': 'M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2'
 };
 
-const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
+const GlobalStyles = memo(() => (
   <style dangerouslySetInnerHTML={{ __html: `
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-    
-    * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap');
     
     :root {
-      --font-primary: 'Plus Jakarta Sans', sans-serif;
-      --font-display: 'Playfair Display', serif;
+      --bg-dark: #0a0a0c;
+      --surface-dark: #121214;
+      --border-dark: #27272a;
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --accent: #3b82f6;
     }
 
+    * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+    
     html, body {
-      background-color: ${isDark ? '#09090b' : '#f8fafc'};
-      color: ${isDark ? '#FFFFFF' : '#0f172a'};
-      transition: background-color 0.3s ease, color 0.3s ease;
+      background-color: var(--bg-dark); 
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
-      font-family: var(--font-primary);
     }
+    
+    h1, h2, h3, h4, .font-playfair { font-family: 'Playfair Display', serif; }
     
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     
-    @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes subtlePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.02); } }
-    
-    .animate-slide-in { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .animate-pulse-slow { animation: subtlePulse 2s ease-in-out infinite; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   `}} />
 ));
 
-const Icon = memo(({ name, size = 20, className = "" }: { name: string, size?: number, className?: string }) => {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true">
-      <path d={ICON_PATHS[name] || ''} />
-    </svg>
-  );
-});
+const Icon = memo(({ name, size = 20, className = "" }: { name: string, size?: number, className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`}>
+    <path d={ICON_PATHS[name] || ''} />
+  </svg>
+));
 
-const formatMoney = (val: number | undefined, lang: 'pt' | 'en') => {
-  if (val === undefined || isNaN(val)) return lang === 'pt' ? 'R$ 0,00' : '$ 0.00';
-  const converted = lang === 'pt' ? val : val / CONFIG.EXCHANGE_RATE;
-  return lang === 'pt' ? `R$ ${converted.toFixed(2).replace('.', ',')}` : `$ ${converted.toFixed(2)}`;
+const formatMoney = (val: number) => `R$ ${val.toFixed(2).replace('.', ',')}`;
+
+// ==================================================================================
+// 1. CONTEÚDO PROFISSIONAL E COPY ACOLHEDORA
+// ==================================================================================
+const DATA = {
+  services: [
+    { id: 'relaxante', category: 'relax', min: 60, price: 157, icon: "wind", tag: "Alívio Muscular", title: "Massagem Clássica", desc: "Técnica focada em desfazer nós de tensão e aliviar o peso da rotina pesada. Pressão ajustada ao seu limite.", details: "Foco no relaxamento total do corpo.\nSem toques íntimos." },
+    { id: 'desportiva', category: 'relax', min: 60, price: 187, icon: "zap", tag: "Recuperação", title: "Massagem Desportiva", desc: "Liberação miofascial profunda com pegada firme. Ideal para quem treina ou acumula muita tensão física.", details: "Foco em áreas de dor agudas.\nToque preciso e anatômico." },
+    { id: 'sensitiva', category: 'sensory', min: 60, price: 177, icon: "moon", tag: "Descompressão Mental", title: "Massagem Sensorial", desc: "A sessão é construída como uma jornada. Toques muito sutis projetados para baixar a frequência do seu cérebro e combater a ansiedade.", details: "Ritmo lento e envolvente.\nFoco no relaxamento mental e sensitivo." },
+    { id: 'nuru', category: 'sensory', min: 60, price: 317, icon: "star", popular: true, tag: "Experiência Completa", title: "Massagem Nuru", desc: "A entrega definitiva. Deslizamento corporal completo utilizando gel específico para uma experiência fluida e sem atritos.", details: "Jornada intensa e imersiva.\nRequer ducha prévia obrigatória." },
+    { id: 'depilacao', category: 'aesthetics', min: 40, price: 107, icon: "scissors", tag: "Estética", title: "Aparo Corporal", desc: "Manutenção estética corporal utilizando máquina profissional. Fique com o corpo limpo e preparado para a semana.", details: "Aparo na zero ou pente 3.\n(Atenção: Este serviço é estético, não inclui massagem)." }
+  ],
+  packs: [
+    { id: 'pack_essencial', type: 'pack', title: "Plano Sobrevivência (2x)", price: 297, fullPrice: 334, desc: "Sessões agendadas para garantir o seu equilíbrio durante o mês.", details: "1x Clássica\n1x Sensorial", tag: "Custo-Benefício", icon: "calendar" },
+    { id: 'pack_premium', type: 'pack', title: "Assinatura Executiva (3x)", price: 637, fullPrice: 721, desc: "O nível máximo de cuidado com três encontros estruturados para sua saúde física e mental.", details: "1x Desportiva\n1x Sensorial\n1x Nuru", tag: "Premium", icon: "shield" }
+  ],
+  faq: [
+    { q: "Onde o atendimento é realizado?", a: `Vou até a sua residência ou hotel. Se preferir, possuo uma base de apoio discreta na região da ${CONFIG.BASE_LOCATION}.` },
+    { q: "Como devo me preparar?", a: "Uma ducha prévia é obrigatória para ambas as partes. Além disso, reserve um ambiente tranquilo." }
+  ]
 };
 
-interface ServiceItem { id: string; min: number; price: number; icon: string; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; popular?: boolean; category?: 'relax' | 'express' | 'final' | 'care' | 'custom'; }
-interface Coupon { id: string; val: number; title: string; code: string; }
-interface Review { n: string; loc: string; t: string; s: number; serv: string; }
-interface UserData { name: string; xp: number; coupons: Coupon[]; usedCoupons: string[]; hasSeenWelcome: boolean; ordersCount: number; lastActivity: string; }
-interface Address { street: string; number: string; district: string; city: string; comp: string; placeName: string; }
-interface BookingData { type: 'single' | 'pack' | 'custom'; cart: ServiceItem[]; extras: Record<string, boolean>; date: string | null; time: string | null; locationType: 'home' | 'motel' | 'hotel'; address: Address; payment: string; appliedCoupon: Coupon | null; termsAccepted: boolean; bookingId: string; mediaAllowed: boolean; }
-interface Rule { icon: string; title: string; description: string; }
-
 // ==================================================================================
-// 3. COMPONENTES DE UI
+// 2. COMPONENTES DE UI
 // ==================================================================================
-
-const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disabled = false, full = false, icon, className = '', loading = false, ariaLabel }: any) => {
-  const baseStyle = "inline-flex items-center justify-center font-bold tracking-widest uppercase transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl select-none active:scale-[0.98] gap-2 shrink-0";
-  const variants = {
-    primary: "bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-900/20 hover:-translate-y-1",
-    secondary: "bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700",
-    whatsapp: "bg-[#25D366] text-white hover:bg-[#20BD5A] shadow-xl shadow-green-900/20 hover:-translate-y-1",
-    outline: "bg-transparent border border-zinc-500 text-white hover:border-white",
-    ghost: "bg-transparent text-zinc-300 hover:text-white"
+const Button = memo(({ children, onClick, disabled = false, full = false, variant = 'primary', icon }: any) => {
+  const styles = {
+    primary: "bg-white text-black hover:bg-zinc-200",
+    secondary: "bg-[#18181b] border border-[#27272a] text-white hover:bg-[#27272a]",
+    accent: "bg-blue-600 text-white hover:bg-blue-500"
   };
-  const sizes = { 
-    sm: "h-12 text-[10px] px-5", 
-    md: "h-14 text-[11px] px-6", 
-    lg: "h-16 text-xs px-8", 
-    xl: "h-16 md:h-18 text-xs md:text-sm px-8" 
-  };
-  
   return (
-    <button type="button" onClick={onClick} disabled={disabled || loading} aria-label={ariaLabel} className={`${baseStyle} ${variants[variant as keyof typeof variants] || variants.primary} ${sizes[size as keyof typeof sizes]} ${full ? 'w-full' : ''} ${className}`}>
-      {loading ? <span className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0"></span> : <>{icon && <Icon name={icon} size={20} />}{children}</>}
+    <button onClick={onClick} disabled={disabled} className={`flex items-center justify-center gap-2 h-14 px-8 font-medium tracking-wide transition-all rounded-xl disabled:opacity-50 disabled:cursor-not-allowed ${styles[variant as keyof typeof styles]} ${full ? 'w-full' : ''}`}>
+      {icon && <Icon name={icon} size={18} />} {children}
     </button>
   );
 });
 
-const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user, T }: any) => {
-  if (!isOpen) return null;
-  return (
-    <>
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} role="presentation" />
-      <aside className={`fixed top-0 right-0 h-full w-[85%] sm:w-[75%] max-w-sm z-[70] p-6 sm:p-8 md:p-10 shadow-2xl animate-slide-in flex flex-col ${isDark ? 'bg-zinc-950 text-white border-l border-zinc-800/50' : 'bg-white text-slate-900 border-l border-slate-100'}`}>
-        <div className="flex justify-between items-center mb-10 md:mb-12">
-          <h2 className="text-2xl font-playfair font-medium">{T.menu_title}</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-zinc-500/20 transition-colors" aria-label="Fechar menu"><Icon name="x" size={24} /></button>
-        </div>
-        
-        <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 text-white shadow-xl border border-zinc-700/50">
-          <p className="text-[10px] opacity-90 uppercase font-bold tracking-widest mb-2 text-white">{T.level_yours}</p>
-          <div className="flex justify-between items-end">
-             <span className="text-3xl font-light font-playfair text-white">{user.xp} <span className="text-[10px] font-bold text-blue-400 font-sans tracking-widest uppercase">XP</span></span>
-             <Icon name="award" size={28} className="text-blue-400" />
-          </div>
-          <p className="text-[9px] text-zinc-400 mt-4 font-light leading-snug border-t border-zinc-700/50 pt-3">
-            {T.menu_warning}
-          </p>
-        </div>
-
-        <nav className="space-y-3 flex-1">
-          <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors ${isDark ? 'hover:bg-zinc-800 text-white' : 'hover:bg-slate-100 text-slate-900'}`}>
-            <div className="flex items-center gap-4">
-              <Icon name={isDark ? "moon" : "sun"} size={20} className={isDark ? "text-blue-400" : "text-blue-600"} />
-              <span className="font-semibold text-sm">{T.theme_title}</span>
-            </div>
-            <span className="text-[9px] font-bold opacity-70 uppercase tracking-widest">{isDark ? T.theme_dark : T.theme_light}</span>
-          </button>
-          
-          <button onClick={() => { if(navigator.share) navigator.share({title: 'Thalyson Massagens', text: T.share_text, url: window.location.href}) }} className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors mt-2 ${isDark ? 'hover:bg-zinc-800 text-white' : 'hover:bg-slate-100 text-slate-900'}`}>
-            <div className="flex items-center gap-4">
-              <Icon name="share" size={20} className="text-emerald-400" />
-              <span className="font-semibold text-sm">{T.refer_btn}</span>
-            </div>
-          </button>
-        </nav>
-      </aside>
-    </>
-  );
-});
-
-const Card = memo(({ children, className = '', onClick, active = false, isDark = true, popular = false, isPremium = false, T }: any) => {
-  const getStyle = () => {
-    if (active) return isPremium ? 'bg-amber-500/10 border-2 border-amber-500 shadow-amber-500/30 -translate-y-2' : 'bg-blue-600/10 border-2 border-blue-500 shadow-blue-500/30 -translate-y-2';
-    if (isDark) return isPremium ? 'bg-gradient-to-br from-zinc-900 to-zinc-900/50 border border-amber-500/40 hover:border-amber-500/80 hover:bg-zinc-800/80 hover:-translate-y-1' : 'bg-zinc-900/60 border border-zinc-700 hover:border-zinc-500 hover:bg-zinc-800/80 hover:-translate-y-1';
-    return isPremium ? 'bg-gradient-to-br from-amber-50 to-white border border-amber-300 hover:border-amber-500 shadow-sm hover:-translate-y-1' : 'bg-white border border-blue-200/50 hover:border-blue-300 shadow-sm hover:shadow-md hover:-translate-y-1';
-  };
-
-  return (
-    <div onClick={onClick} className={`relative p-6 md:p-8 rounded-3xl transition-all duration-300 flex flex-col h-full ${onClick ? 'cursor-pointer' : ''} ${getStyle()} ${className}`}>
-      {popular && (
-        <div className={`absolute -top-3 left-6 md:left-8 text-white text-[9px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md ${isPremium ? 'bg-gradient-to-r from-amber-500 to-orange-500 border border-amber-400/30' : 'bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400/30'}`}>
-          {T.popular_badge}
-        </div>
-      )}
-      {children}
-    </div>
-  );
-});
-
-const InputField = memo(({ label, value, onChange, placeholder, icon, type = "text", isDark = true, hasError = false }: any) => (
-  <div className="space-y-2 w-full min-w-0">
-    {label && <label className={`text-[10px] font-bold uppercase tracking-widest pl-1 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{label}</label>}
+const InputField = memo(({ label, value, onChange, placeholder, icon, type = "text" }: any) => (
+  <div className="space-y-2 w-full">
+    {label && <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 pl-1">{label}</label>}
     <div className="relative group">
-      {icon && <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-500' : isDark ? 'text-zinc-400 group-focus-within:text-blue-400' : 'text-slate-500 group-focus-within:text-blue-600'}`}><Icon name={icon} size={20} /></div>}
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-14 rounded-2xl outline-none text-sm font-medium transition-all bg-transparent ${icon ? 'pl-11 pr-4' : 'px-4'} ${hasError ? 'border-2 border-red-500/50 bg-red-500/5 placeholder:text-red-400/50 text-red-500' : isDark ? 'border border-zinc-700 text-white placeholder:text-zinc-500 focus:border-blue-500 focus:bg-zinc-900/80' : 'border border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-blue-600 focus:bg-blue-50/50'}`} />
+      {icon && <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-white transition-colors"><Icon name={icon} size={18} /></div>}
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={`w-full h-14 rounded-xl outline-none text-sm transition-all bg-[#121214] border border-[#27272a] text-white placeholder:text-zinc-600 focus:border-zinc-400 focus:bg-[#18181b] ${icon ? 'pl-11 pr-4' : 'px-4'}`} />
     </div>
   </div>
 ));
 
-const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
-  <article className={`w-full h-full flex flex-col p-6 md:p-8 rounded-3xl transition-all duration-300 border gap-4 ${isDark ? 'bg-zinc-900/50 border-zinc-700 hover:bg-zinc-800/80 hover:-translate-y-1' : 'bg-white border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-1'}`}>
-    <div className="flex justify-between items-start">
-      <div className="flex items-center gap-4 min-w-0">
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold font-playfair shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 text-white border border-zinc-600' : 'bg-slate-100 text-slate-800'}`}>
-          {review.n.charAt(0)}
-        </div>
-        <div className="min-w-0 flex-1 pr-2">
-          <span className={`text-sm md:text-base font-semibold block mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{review.n}</span>
-          <span className={`text-[9px] md:text-[10px] block tracking-widest uppercase font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{review.loc}</span>
-        </div>
+const ServiceCard = memo(({ service, active, onClick }: any) => (
+  <div onClick={onClick} className={`relative p-6 rounded-2xl cursor-pointer transition-all duration-300 border ${active ? 'bg-[#18181b] border-white' : 'bg-[#121214] border-[#27272a] hover:border-zinc-500'}`}>
+    {service.popular && <div className="absolute -top-3 left-6 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Recomendado</div>}
+    {active && <div className="absolute top-6 right-6 text-black bg-white w-6 h-6 rounded-full flex items-center justify-center"><Icon name="check" size={14} /></div>}
+    
+    <div className="flex items-start gap-4 mb-4">
+      <div className={`w-12 h-12 flex items-center justify-center rounded-xl shrink-0 ${active ? 'bg-white text-black' : 'bg-[#18181b] text-zinc-400 border border-[#27272a]'}`}>
+        <Icon name={service.icon} size={24} />
       </div>
-      <div className="flex gap-1 px-2 py-1 rounded-full shrink-0">
-        {[...Array(5)].map((_, i) => <Icon key={i} name="star" size={14} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />)}
+      <div className="pt-1 pr-6">
+        <h3 className="text-lg font-playfair font-medium text-white mb-1">{service.title}</h3>
+        <span className="text-xl font-medium text-white">{formatMoney(service.price)}</span>
       </div>
     </div>
     
-    <div className={`inline-flex items-center self-start gap-1.5 px-3 py-1.5 rounded-full border text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${isDark ? 'bg-amber-500/10 border-amber-500/40 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-600'}`}>
-      <Icon name="award" size={12} className="shrink-0" />
-      {review.serv}
-    </div>
-
-    <p className={`text-sm leading-relaxed md:leading-loose font-light italic flex-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>"{review.t}"</p>
-  </article>
-));
-
-const SmartTimer = memo(({ isDark, text }: any) => {
-  const [time, setTime] = useState(600);
-  useEffect(() => { 
-    const interval = setInterval(() => setTime(prev => prev <= 0 ? 600 : prev - 1), 1000); 
-    return () => clearInterval(interval); 
-  }, []);
-  
-  const format = (t: number) => { const m = Math.floor(t / 60); const s = t % 60; return `${m}:${s < 10 ? '0' : ''}${s}`; };
-  
-  return (
-    <div className={`flex items-center justify-center gap-3 p-5 rounded-2xl transition-all border shadow-sm ${isDark ? 'bg-blue-600/20 border-blue-500/40 text-blue-300' : 'bg-blue-50 border-blue-300 text-blue-800'}`}>
-      <Icon name="watch" size={20} className="animate-pulse shrink-0" />
-      <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest break-words text-center">{text}: <span className="font-mono text-sm ml-1 bg-blue-500/30 px-3 py-1.5 rounded-md text-white">{format(time)}</span></span>
-    </div>
-  );
-});
-
-const FAQItem = memo(({ q, a, isDark }: { q: string; a: string; isDark: boolean }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <div className={`border-b ${isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full py-5 md:py-6 flex items-center justify-between text-left group" aria-expanded={isOpen}>
-        <span className={`text-sm md:text-base font-medium pr-4 leading-snug ${isDark ? 'text-white group-hover:text-blue-300' : 'text-slate-900 group-hover:text-blue-700'}`}>{q}</span>
-        <span className={`transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-blue-400' : isDark ? 'text-zinc-400' : 'text-slate-500'}`}><Icon name="chevron-down" size={20} /></span>
-      </button>
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{a}</p>
-      </div>
-    </div>
-  );
-});
-
-const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
-  <div className={`flex gap-4 p-5 md:p-6 rounded-3xl border border-transparent transition-colors ${isDark ? 'hover:bg-zinc-800/80 hover:border-zinc-700' : 'hover:bg-slate-50 hover:border-slate-200'}`}>
-    <div className={`shrink-0 mt-0.5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}><Icon name={rule.icon} size={24} /></div>
-    <div>
-      <h4 className={`text-sm md:text-base font-bold mb-2 font-playfair ${isDark ? 'text-white' : 'text-slate-900'}`}>{rule.title}</h4>
-      <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{rule.description}</p>
-    </div>
-  </div>
-));
-
-// ==================================================================================
-// 4. LÓGICA DE DADOS E I18N
-// ==================================================================================
-const sanitizeInput = (value: string): string => String(value || '').replace(/[<>&"']/g, '');
-const validateAddress = (address: Address): boolean => !!(address.street && address.number && address.district && address.city);
-
-const isWebViewUserAgent = () => {
-  if (typeof window === 'undefined') return false;
-  const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
-  return (ua.indexOf('FBAN') > -1) || (ua.indexOf('FBAV') > -1) || (ua.indexOf('Instagram') > -1) || (ua.indexOf('Line') > -1) || (ua.indexOf('TikTok') > -1);
-};
-
-const cleanupStorage = () => { 
-  try { 
-    const keys = Object.keys(localStorage);
-    keys.forEach(key => {
-        if (key && key.startsWith('@thaly_app')) {
-             try {
-                 const item = localStorage.getItem(key);
-                 if (item) { JSON.parse(item); }
-             } catch (e) { localStorage.removeItem(key); }
-        }
-    });
-  } catch (e) {} 
-};
-
-const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
-  if (lang === 'en') {
-    return [
-      { n: "Gustavo", loc: "Bela Vista - SP", t: "Thalyson arrived on time when I needed to relax after a tense month. The at-home experience was incredible. He manages to leave us completely relaxed, his hands have an unparalleled technique. The relief was immediate, I got up feeling 20lbs lighter. I want it again.", serv: "Fusion Experience", s: 5 },
-      { n: "Osvaldo", loc: "Santa Fé do Sul", t: "TODAY couldn't end BETTER, being attended by Thalyson at home in a massage session by his MAGIC HANDS!!! What a delight! Thalyson always focuses on serving the client well, from beginning to end it is surprising! TOTALLY WORTH IT.", serv: "Classic Massage", s: 5 },
-      { n: "Tiago", loc: "SP - Bela Vista", t: "Thalyson has surreal energy. The massage was perfect, best of my life.", serv: "Fusion Experience", s: 5 },
-      { n: "Roberto", loc: "São Paulo - Jardins", t: "The feeling of emptiness and peace I felt after the session was indescribable. The ending was extremely powerful, releasing a load of tension I'd carried for months. Impeccable professionalism.", serv: "Fusion Experience", s: 5 },
-      { n: "Lucas", loc: "Londrina", t: "Being married, discretion was my priority and I was attended with total secrecy. The tantric massage allowed me to rediscover my own body. The energy discharge at the end was intense.", serv: "Nuru Massage", s: 5 },
-      { n: "Sérgio", loc: "Santa Fé", t: "I suffer from anxiety and this session was more effective than many therapies. The human connection was real, and the final climax was the strongest and most liberating I've ever experienced.", serv: "Nuru Massage", s: 5 },
-      { n: "Marcelo", loc: "SP - Centro", t: "I went with no expectations and left surprised. The massage was executed with precise and respectful technique. The pleasure was intense and genuine.", serv: "Fusion Experience", s: 5 }
-    ];
-  }
-
-  return [
-    { n: "Gustavo", loc: "Bela Vista - SP", t: "O Thalyson chegou na hora certa, quando eu precisava relaxar após as tensões do mês. A experiência em casa foi incrível. Ele consegue deixar a gente completamente relaxado, as mãos dele tem uma técnica sem igual. O alívio foi imediato, levantei parecendo 10kg mais leve. Quero de novo.", serv: "Experiência Fusion", s: 5 },
-    { n: "Osvaldo", loc: "Santa Fé do Sul", t: "HOJE não poderia ter terminado MELHOR o dia, sendo atendido por Thalyson em casa numa sessão de massagem por suas MÃOS MÁGICAS!!! Que delícia! O atendimento gera valor pro corpo, combinando super EMPATIA com o cliente. Thalyson foca sempre no propósito de servir bem o cliente, desde o início ao fim q é surpreendente! VALE A PENA.", serv: "Massagem Clássica", s: 5 },
-    { n: "Tiago", loc: "SP - Bela Vista", t: "O Thalyson tem uma energia surreal. A massagem foi perfeita, melhor da minha vida.", serv: "Experiência Fusion", s: 5 },
-    { n: "Roberto", loc: "São Paulo - Jardins", t: "A sensação de vazio e paz que senti após a sessão foi indescritível. A finalização foi extremamente potente, liberando uma carga de tensão que eu carregava há meses. Profissionalismo impecável.", serv: "Experiência Fusion", s: 5 },
-    { n: "Lucas", loc: "Londrina", t: "A discrição era minha prioridade e fui atendido com total sigilo. A massagem me permitiu redescobrir meu próprio corpo. A descarga de energia no final foi intensa.", serv: "Massagem Nuru", s: 5 },
-    { n: "Sérgio", loc: "Santa Fé", t: "Sofro de ansiedade e essa sessão foi mais eficaz que muitas terapias. A conexão humana foi real, e o clímax final foi o mais forte e libertador que já experimentei.", serv: "Massagem Nuru", s: 5 },
-    { n: "Marcelo", loc: "SP - Centro", t: "Fui sem expectativa e saí surpreendido. A massagem foi executada com uma técnica precisa e respeitosa. O prazer foi intenso e genuíno.", serv: "Experiência Fusion", s: 5 }
-  ];
-};
-
-const getData = (lang: 'pt' | 'en') => {
-  const isEn = lang === 'en';
-  const p = {
-    custom: 180, depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317, crossfit: 187,
-    pes: 110, maos: 110, combo_pm: 190,
-    pack1: { v: 297, full: 334, save: 37 }, 
-    pack2: { v: 387, full: 467, save: 80 }, 
-    pack3: { v: 637, full: 721, save: 84 }, 
-    extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17, dominador: 160, oral: 120, beijos: 77, prostatico: 120 }
-  };
-  
-  return {
-    levels: [
-      { level: 1, xpNeeded: 0, reward: 0, title: isEn ? "Care Beginner" : "Iniciante no Cuidado" },
-      { level: 2, xpNeeded: 100, reward: 15, title: isEn ? "Right Priority" : "Prioridade Certa" },
-      { level: 3, xpNeeded: 350, reward: 30, title: isEn ? "Conscious Body" : "Corpo Consciente" },
-      { level: 4, xpNeeded: 800, reward: 50, title: isEn ? "Plenitude Reached" : "Plenitude Alcançada" }
-    ],
-    services: [
-      // CUSTOM / SOB MEDIDA
-      { id: 'custom', category: 'custom', min: 60, price: p.custom, icon: "settings", tag: isEn ? "TAILOR MADE" : "SOB MEDIDA", title: isEn ? "Custom Experience" : "Pedido Personalizado", desc: isEn ? "A session tailored exactly to your specific needs and desires." : "Uma sessão montada exatamente para as suas necessidades e desejos específicos.", details: isEn ? "Step 1: Consultation\nStep 2: Custom techniques\nStep 3: Total satisfaction" : "Passo 1: Alinhamento prévio e escolhas conjuntas\nPasso 2: Técnicas combinadas sob medida para seu corpo\nPasso 3: Foco absoluto na sua satisfação total" },
-
-      // CATEGORIA CUIDADOS RÁPIDOS (EXPRESS)
-      { id: 'pes', category: 'express', min: 40, price: p.pes, icon: "user", tag: isEn ? "FOOT RELIEF" : "ALÍVIO NOS PÉS", title: isEn ? "Foot Massage" : "Sessão nos Pés", desc: isEn ? "Complete relief for tired feet after a long day." : "Alívio completo para pés cansados após longas jornadas de trabalho.", details: isEn ? "Step 1: Foot reflexology\nStep 2: Deep pressure points\nStep 3: Plantar fascia release" : "Passo 1: Reflexologia podal focada\nPasso 2: Pressão profunda em pontos de tensão\nPasso 3: Liberação de fáscia plantar" },
-      { id: 'maos', category: 'express', min: 40, price: p.maos, icon: "hand", tag: isEn ? "HAND RELIEF" : "ALÍVIO NAS MÃOS", title: isEn ? "Hand Massage" : "Sessão nas Mãos", desc: isEn ? "Release tension from typing and working with your hands." : "Libere a tensão acumulada de digitar e trabalhar excessivamente com as mãos.", details: isEn ? "Step 1: Joint stretching\nStep 2: Deep palm massage\nStep 3: Forearm and wrist relief" : "Passo 1: Alongamento articular inicial\nPasso 2: Massagem profunda nas palmas e dedos\nPasso 3: Alívio para punhos e antebraço" },
-      { id: 'combo_pm', category: 'express', min: 40, price: p.combo_pm, icon: "layers", tag: isEn ? "COMBO" : "COMBO", title: isEn ? "Hands & Feet Combo" : "Combo Mãos e Pés", desc: isEn ? "The ultimate extremity relaxation, combining the best of both." : "O relaxamento definitivo para as extremidades do corpo, unindo o melhor dos dois mundos.", details: isEn ? "Step 1: Deep hand massage\nStep 2: Foot reflexology\nStep 3: Total extremity relief" : "Passo 1: Massagem profunda e detalhada nas mãos\nPasso 2: Reflexologia podal focada\nPasso 3: Alívio total de tensões periféricas" },
-
-      // CATEGORIA RELAXAR
-      { id: 'relaxante', category: 'relax', min: 40, price: p.relax, icon: "user-check", tag: isEn ? "MUSCLE RELIEF" : "ALÍVIO MUSCULAR", title: isEn ? "Classic Massage" : "Massagem Clássica (Alívio Rápido)", desc: isEn ? "Stiff back from the office chair? This takes that giant weight off your shoulders." : "Costas travadas da cadeira do escritório? Corpo tenso? Essa é para tirar com as mãos aquele peso gigante que você carrega.", details: isEn ? "Step 1: Use of wooden rollers\nStep 2: Soft touch manually to release hard muscles\nStep 3: Focus on full body relaxation (no intimate touch)" : "Passo 1: Uso de rolos de madeira para preparar e amassar as tensões\nPasso 2: Toque manual e suave para soltar a musculatura dura\nPasso 3: Foco no relaxamento do corpo todo (sem toques íntimos)" },
-      { id: 'naturista', category: 'relax', min: 40, price: p.naturista, icon: "sun", tag: isEn ? "ZERO TIES" : "ZERO AMARRAS", title: isEn ? "Naturist Classic" : "Clássica Naturista (Liberdade)", desc: isEn ? "Total freedom, no clothes, light touches to loosen every muscle." : "Liberdade total, sem roupas, toques leves para soltar cada músculo do seu corpo.", details: isEn ? "Step 1: Starts with a full classic massage\nStep 2: Exact pressure applied to dismantle daily rigidity\nStep 3: Deep full body relief without intimate touches" : "Passo 1: Início com massagem clássica completa (ambos despidos)\nPasso 2: Pressão exata para desmanchar a rigidez\nPasso 3: Alívio profundo no corpo todo (não possui toques íntimos)" },
-      { id: 'crossfit', category: 'relax', min: 60, price: p.crossfit, icon: "zap", tag: isEn ? "DEEP RECOVERY" : "RECUPERAÇÃO PROFUNDA", title: isEn ? "Crossfit Lovers" : "Massagem Crossfiteiro", desc: isEn ? "Heavy workouts demand deep recovery. Firm and deep grip to release stiff muscles." : "Treino pesado exige uma recuperação à altura. Pegada firme e profunda focada em liberar a musculatura.", details: isEn ? "Step 1: Vigorous friction\nStep 2: Heavy myofascial release\nStep 3: Use of thermal ointments" : "Passo 1: Massagem com toques mais fortes\nPasso 2: Liberação relaxante com foco em pernas e costas\nPasso 3: Uso de pomadas térmicas para alívio da dor" },
-      
-      // CATEGORIA FINALIZAÇÃO
-      { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "REDUCES ANXIETY" : "REDUZ ANSIEDADE", title: isEn ? "Sensory Massage" : "Massagem Sensorial (Reset Mental)", desc: isEn ? "Close your eyes and let subtle touches give you full-body shivers." : "A cabeça não desliga? Feche os olhos e deixe toques sutis arrepiarem seu corpo inteiro.", details: isEn ? "Step 1: Classic massage\nStep 2: Subtle stimuli across the body\nStep 3: Climax focused on release" : "Passo 1: Início com massagem clássica\nPasso 2: Estímulos sutis pelo corpo que arrepiam a pele\nPasso 3: Finalização focada numa liberação intensa" },
-      { id: 'mista', category: 'final', min: 60, price: p.titan, icon: "zap", tag: isEn ? "BEST OF BOTH WORLDS" : "O MELHOR DOS 2 MUNDOS", title: isEn ? "Fusion Experience" : "Experiência Fusion (Mais Completa)", desc: isEn ? "First I take the pain from your back, then I take you to a climax." : "Primeiro eu tiro a dor das suas costas, depois te levo a um clímax que faz qualquer problema desaparecer.", details: isEn ? "Step 1: Classic massage\nStep 2: Intimate body-to-body contact\nStep 3: Ends with a liberating release" : "Passo 1: Início com massagem clássica\nPasso 2: Contato íntimo corpo a corpo\nPasso 3: Termina com um gozo libertador" },
-      { id: 'reversa', category: 'final', min: 60, price: p.reversa, icon: "refresh-cw", tag: isEn ? "REAL CONTACT" : "CONTATO REAL", title: isEn ? "Reverse Massage" : "Massagem Reversa", desc: isEn ? "I do a 30-min massage on you, and then you take control." : "Eu faço aproximadamente 30 minutos de massagem em você, relaxando seu corpo, e depois você assume o controle.", details: isEn ? "Step 1: Relaxing classic massage\nStep 2: You take control\nStep 3: A delicious dynamic of reciprocity" : "Passo 1: Inicia com massagem clássica relaxante\nPasso 2: O controle passa a ser seu\nPasso 3: Finalização mútua e dinâmica de reciprocidade" },
-      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "TOTAL SURRENDER" : "ENTREGA TOTAL", title: isEn ? "Nuru Massage" : "Massagem Nuru (A Mais Desejada)", desc: isEn ? "Gliding gel, my body over yours, and a surrender so deep your legs will shake." : "Gel que desliza, partes do meu corpo deslizando sobre o seu, e uma entrega tão profunda que suas pernas vão tremer.", details: isEn ? "Step 1: Full classic massage\nStep 2: Warm gel application\nStep 3: Skin on skin relaxation" : "Passo 1: Massagem clássica completa\nPasso 2: Aplicação de gel para deslizamento perfeito\nPasso 3: Viagem intensa para você gozar e apagar" },
-      
-      // CATEGORIA CUIDADOS PESSOAIS
-      { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "PRACTICALITY" : "PRATICIDADE", title: isEn ? "Full Body Trim" : "Aparo Corporal Completo", desc: isEn ? "Leave with a clean, light body ready for the week." : "Fique com o corpo limpo, leve e preparado para a semana. Manutenção e estética essencial.", details: isEn ? "Step 1: Zero or Guard 3 trim\nStep 2: Focus on chest, back, abdomen\nStep 3: Done in total secrecy" : "Passo 1: Aparo zero ou Pente 3 com máquina profissional\nPasso 2: Foco detalhado no peito, costas e pernas\nPasso 3: Finalização estética completa" }
-    ] as ServiceItem[],
-    plans: [
-      { id: 'pack_essencial', type: 'pack', title: isEn ? "Survival Kit (2x)" : "Kit Sobrevivência (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: isEn ? "The perfect combo, scheduled on different days. One day to cure pain, another for the mind." : "A dobradinha perfeita, com sessões agendadas em dias diferentes na semana. Um dia para curar a dor, outro para a mente.", details: isEn ? "1x Classic\n1x Sensory\nSessions scheduled separately" : "1x Clássica (para destravar o corpo todo)\n1x Sensorial (para esvaziar a cabeça)\nSessões agendadas separadamente", tag: isEn ? "PERFECT SLEEP" : "SONO PERFEITO", icon: "layers" },
-      { id: 'pack_interativo', type: 'pack', title: isEn ? "Real Connection (2x)" : "Combo Conexão Real (2x)", price: p.pack2.v, fullPrice: p.pack2.full, savings: p.pack2.save, desc: isEn ? "Two encounters scheduled separately in the month to forget loneliness." : "Dois encontros agendados separadamente no mês para esquecer a solidão e ter troca mútua.", details: isEn ? "1x Fusion\n1x Reverse\nSessions scheduled separately" : "1x Fusion (alívio e prazer)\n1x Reversa (você explora e toca)\nSessões agendadas separadamente", tag: isEn ? "END OF LONELINESS" : "FIM DA SOLIDÃO", icon: "heart" },
-      { id: 'pack_premium', type: 'pack', title: isEn ? "Boss Monthly Plan (3x)" : "Mensalidade do Chefe (3x)", price: p.pack3.v, fullPrice: p.pack3.full, savings: p.pack3.save, desc: isEn ? "You grind all month, you deserve to be treated like a king." : "Você rala o mês inteiro, merece ser tratado como rei. Três semanas do mês garantidas com o melhor relaxamento.", details: isEn ? "1x Naturist\n1x Fusion\n1x Nuru\nThree separate encounters" : "1x Naturista (liberdade e quebra de tensão)\n1x Fusion (relaxamento e prazer)\n1x Nuru (êxtase absoluto)\nTrês encontros separados no mês", tag: isEn ? "MONTH'S REWARD" : "O REWARD DO MÊS", icon: "award" }
-    ] as ServiceItem[],
-    extras: [
-      { id: 'hair_trim', price: p.extras.hair_trim, icon: "scissors", label: isEn ? "Trim (Extra)" : "Aparo (Extra)", desc: isEn ? "Maintenance in 2 body parts to look flawless." : "Manutenção em 2 partes do corpo para estética." },
-      { id: 'more_time', price: p.extras.more_time, icon: "clock", label: isEn ? "Extended Time (+30m)" : "Tempo Estendido (+30m)", desc: isEn ? "Because when it's good, we don't want it to end." : "Tempo adicional para um momento sem pressa." },
-      { id: 'touch', price: p.extras.touch, icon: "hand", label: isEn ? "Organic Interaction" : "Interação Orgânica", desc: isEn ? "Feel free to participate and touch as well." : "Sinta-se livre para participar e interagir mutuamente." },
-      { id: 'aroma', price: p.extras.aroma, icon: "sparkles", label: isEn ? "Deep Aromatherapy" : "Aromaterapia Focada", desc: isEn ? "Essential oils that lower your mental frequency." : "Óleos essenciais para baixar a frequência mental." },
-      { id: 'pain_relief', price: p.extras.pain_relief, icon: "plus", label: isEn ? "Extra Focus on Pain" : "Foco Extra em Dores", desc: isEn ? "Use of technical ointment to treat strong pain." : "Uso de ativos potentes para tratar dores fortes." },
-      { id: 'dominador', price: p.extras.dominador, icon: "zap", label: isEn ? "Active & Dominant" : "Massagista Ativo", desc: isEn ? "I take full control at the end of the session." : "Eu assumo o controle total e ativo na finalização." },
-      { id: 'oral', price: p.extras.oral, icon: "user", label: isEn ? "Oral Included" : "Oral na Sessão", desc: isEn ? "Oral intimacy included in the experience." : "Inclusão de estímulo oral na experiência." },
-      { id: 'beijos', price: p.extras.beijos, icon: "heart", label: isEn ? "Kisses Included" : "Beijos Liberados", desc: isEn ? "Kisses and affection allowed during the session." : "Carinho e beijos completamente liberados." },
-      { id: 'prostatico', price: p.extras.prostatico, icon: "check", label: isEn ? "Prostatic Massage" : "Prostático Manual", desc: isEn ? "Manual prostatic stimulation with lube." : "Estimulação prostática manual intensa e focada." }
-    ],
-    faq: [
-      { q: isEn ? "How do the touch and the ending work?" : "Como o toque e a finalização funcionam?", a: isEn ? "Everything is conducted with extreme respect, entirely focused on your comfort and pleasure. The goal is to create a safe space for you to surrender, relax your mind, and reach a liberating climax that zeroes out stress." : "Tudo é conduzido com extremo respeito, focado inteiramente no seu conforto e prazer. O objetivo é criar um espaço seguro para que você possa se entregar, relaxar a mente e alcançar um gozo libertador." },
-      { q: isEn ? "Where is our meeting location?" : "Onde é o local do nosso encontro?", a: isEn ? "I come to you, in the comfort of your home or hotel. I arrive at the scheduled time and transform the environment into a true refuge of peace." : "Vou até você, no conforto da sua residência ou hotel. Transformo o ambiente em um verdadeiro refúgio de paz para cuidarmos de você." },
-      { q: isEn ? "How should I prepare for the session?" : "Como devo me preparar para a sessão?", a: isEn ? "With an open heart! The most important thing is that you take a relaxing shower before my arrival. The shower helps loosen initial muscles." : "De coração aberto! O mais importante é que você tome um banho relaxante antes da minha chegada para iniciar o relaxamento." },
-      { q: isEn ? "I'm ashamed of my body, what now?" : "Tenho vergonha do meu corpo, e agora?", a: isEn ? "Forget about that. My work is pure welcoming. During the session, there is no judgment, only the desire to provide relief." : "Esqueça isso. Meu trabalho é puro acolhimento. Não existe julgamento, existe apenas a vontade de proporcionar alívio profundo." },
-      { q: isEn ? "Are my points and level saved in the app?" : "Meus pontos e nível ficam salvos no aplicativo?", a: isEn ? "Yes! Your progress (XP) is saved automatically on your phone. Just remember: if you clear your device's browsing history (cache), this data will restart." : "Sim! Seu progresso (XP) fica salvo automaticamente no seu celular. Não limpe o histórico (cache) para não perder as conquistas." }
-    ],
-    rules: [
-      { icon: "shower", title: isEn ? "The Prep Shower" : "A Ducha Preparatória", description: isEn ? "A prior shower is essential. The warm water starts the relaxation and prepares your skin for the perfect, intense touch." : "O banho prévio é essencial para começar o relaxamento e preparar a pele." },
-      { icon: "hand", title: isEn ? "Welcoming and Respect" : "Acolhimento e Respeito", description: isEn ? "I take care of you and your pleasure. Mutual respect is key for the magic to happen freely and naturally." : "O respeito mútuo é a chave para que a magia aconteça de forma natural e profunda." },
-      { icon: "heart", title: isEn ? "Absolute Surrender" : "Entrega Absoluta", description: isEn ? "Forget the outside world. This time is yours to relax your mind, melt tensions, and just enjoy the moment." : "Esqueça o mundo lá fora. Este tempo é seu para relaxar a mente e desmanchar as tensões." },
-      { icon: "shield", title: isEn ? "Health and Integrity" : "Saúde e Integridade", description: isEn ? "I declare that I am healthy and cleared to receive a massage." : "Atesto que estou saudável, livre de condições contagiosas e liberado para massagem." }
-    ],
-    text: {
-      welcome: isEn ? "Welcome," : "Bem-vindo,",
-      choose_sub: isEn ? "Choose your desired service and elevate your routine." : "Escolha o serviço desejado e eleve sua rotina de cuidados.",
-      level_label: isEn ? "Your Care Journey" : "Sua Jornada",
-      tab_packs: isEn ? "Monthly Plans" : "Planos Mensais",
-      tab_single: isEn ? "Single Sessions" : "Sessões Avulsas",
-      tab_custom: isEn ? "Custom Request" : "Pedido Personalizado",
-      next_btn: isEn ? "Next" : "Avançar",
-      finish_btn: isEn ? "Complete Booking" : "Realizar Agendamento",
-      loading: isEn ? "Loading environment..." : "Carregando ambiente...",
-      toast_select_item: isEn ? "Please add at least one service to the cart." : "Por favor, adicione ao menos um serviço no carrinho.",
-      toast_select_date: isEn ? "Select the date and time for our encounter." : "Selecione data e horário para prosseguir.",
-      toast_fill_name: isEn ? "Please fill in your name." : "Por favor, informe seu nome.",
-      toast_fill_addr: isEn ? "Please fill in the location." : "Por favor, preencha o local do encontro.",
-      toast_accept_terms: isEn ? "Accept our delivery agreement to continue." : "Aceite o acordo de entrega para continuar.",
-      toast_coupon_success: isEn ? "Discount activated." : "Desconto ativado com sucesso.",
-      toast_coupon_invalid: isEn ? "Invalid or expired code." : "Código inválido ou já expirado.",
-      details_label: isEn ? "WHAT YOU WILL EXPERIENCE:" : "O QUE ESTÁ INCLUSO:",
-      select_time_title: isEn ? "Select your preferred time" : "Escolha o melhor horário",
-      location_title: isEn ? "Where will our encounter be?" : "Onde será nosso encontro?",
-      extras_title: isEn ? "Additional Treats" : "Toques Adicionais",
-      coupon_section: isEn ? "Your Benefits" : "Seus Benefícios",
-      payment_title: isEn ? "Payment Method (At the meeting)" : "Forma de Pagamento (No Local)",
-      terms_title: isEn ? "Delivery Agreement" : "Acordo de Entrega",
-      success_title: isEn ? "Almost there!" : "Quase lá!",
-      success_sub: isEn ? "WhatsApp is opening to confirm your booking." : "O WhatsApp será aberto para confirmarmos seu agendamento.",
-      whatsapp_btn: isEn ? "Open WhatsApp" : "Abrir WhatsApp Agora",
-      back_home: isEn ? "Go back" : "Voltar e editar",
-      timer_text: isEn ? "Cart saved for" : "Carrinho salvo por",
-      input_name: isEn ? "What is your name?" : "Seu Nome",
-      input_addr: isEn ? "Street or Avenue" : "Rua ou Avenida",
-      input_num: isEn ? "Number" : "Número",
-      input_district: isEn ? "Neighborhood" : "Bairro",
-      input_city: isEn ? "City" : "Cidade",
-      input_comp: isEn ? "Apt, Block (Optional)" : "Complemento (Opcional)",
-      input_hotel: isEn ? "Hotel name" : "Nome do Hotel",
-      input_room: isEn ? "Room / Suite Number" : "Número do Quarto",
-      agree_terms: isEn ? "I agree to the terms" : "Eu aceito as regras da sessão",
-      faq_title: isEn ? "Frequently Asked Questions" : "Dúvidas Frequentes",
-      reviews_title: isEn ? "Client Feedback" : "O Que Dizem os Clientes",
-      empty_date: isEn ? "Select a date above." : "Selecione uma data acima para visualizar horários.",
-      empty_slots: isEn ? "My schedule is full for this day. Try another." : "Agenda cheia para este dia. Selecione o próximo disponível.",
-      total_label: isEn ? "Total" : "Investimento Total",
-      subtotal: isEn ? "Subtotal" : "Subtotal",
-      discount: isEn ? "Discount" : "Desconto",
-      pix_discount: isEn ? "Pix Benefit (3%)" : "Benefício Pix (3%)",
-      welcome_popup_title: isEn ? "Welcome!" : "Seja muito bem-vindo!",
-      welcome_popup_msg: isEn ? "Here is a gift for our first time." : "Aqui está um presente para nossa primeira experiência.",
-      welcome_popup_warning: isEn ? "⚠️ Progress is saved on this device. Do not clear cache." : "⚠️ O progresso é salvo no navegador. Evite limpar o cache.",
-      levelup_popup_title: isEn ? "Evolution Reached!" : "Evolução Alcançada!",
-      levelup_popup_msg: isEn ? "You unlocked an exclusive new benefit." : "Você acaba de desbloquear um benefício exclusivo.",
-      get_coupon: isEn ? "Redeem Gift" : "Resgatar Presente",
-      rules_complete: isEn ? "Mutual Agreement" : "Acordo Mútuo de Entrega",
-      media_discount: isEn ? "Portfolio Discount (1%)" : "Desconto Portfólio (1%)",
-      media_title: isEn ? "Support my work" : "Apoiar o Trabalho (Opcional)",
-      media_desc: isEn ? "Allow anonymous aesthetic photos for 1% OFF." : "Permitir fotos estéticas anônimas (sem rosto/intimidade) e ganhar 1% OFF.",
-      media_bonus: isEn ? "Get 1% OFF" : "Liberar e ganhar 1% OFF",
-      uber_notice: isEn ? "Travel fee (Uber) will be confirmed on WhatsApp." : "A taxa de deslocamento será calculada e informada no WhatsApp.",
-      motel_note: isEn ? "Address of my suite sent via WhatsApp." : "O endereço da minha suíte será enviado via WhatsApp após a reserva.",
-      menu_title: isEn ? "Menu" : "Menu",
-      level_yours: isEn ? "Your Level" : "Seu Nível",
-      level_current: isEn ? "Current" : "Atual",
-      level_journey: isEn ? "Journey" : "Jornada",
-      menu_warning: isEn ? "* Progress saved locally." : "* Progresso salvo no seu aparelho.",
-      theme_title: isEn ? "Appearance" : "Aparência",
-      theme_dark: isEn ? "Dark" : "Escuro",
-      theme_light: isEn ? "Light" : "Claro",
-      refer_btn: isEn ? "Refer Someone" : "Indicar Amigo",
-      share_text: isEn ? 'The best massage.' : 'A melhor experiência em massagem.',
-      header_tensions: isEn ? "sessions completed" : "atendimentos realizados",
-      step_when: isEn ? "When" : "Quando",
-      step_where: isEn ? "Where" : "Onde",
-      step_summary: isEn ? "Summary" : "Resumo",
-      cart_title: isEn ? "Cart" : "Carrinho",
-      cart_edit: isEn ? "Edit" : "Editar",
-      time_choose: isEn ? "Choose Time" : "Escolher Horário",
-      time_rush: isEn ? "Rush (+15)" : "Pico (+15)",
-      loc_home: isEn ? "Home" : "Residência",
-      loc_motel: isEn ? "My Suite" : "Minha Suíte",
-      loc_hotel: isEn ? "Hotel" : "Hotel",
-      summary_title: isEn ? "Order Summary" : "Resumo do Pedido",
-      summary_items: isEn ? "SERVICES" : "SERVIÇOS",
-      summary_extras: isEn ? "EXTRAS" : "EXTRAS",
-      summary_info: isEn ? "INFO" : "INFORMAÇÕES",
-      summary_loc_home: isEn ? "At residence" : "Atendimento em domicílio",
-      summary_loc_motel: isEn ? "At my suite" : "Atendimento na minha suíte",
-      summary_loc_hotel: isEn ? "At hotel" : "Atendimento em hotel",
-      coupon_applied: isEn ? "Coupon Applied" : "Cupom Ativo",
-      xp_guaranteed: isEn ? "XP" : "XP",
-      media_granted: isEn ? "Granted" : "Concedido",
-      media_support: isEn ? "Support" : "Apoiar",
-      pay_pix: isEn ? "Pix (3% OFF)" : "Pix (3% OFF)",
-      pay_card: isEn ? "Card" : "Cartão",
-      pay_cash: isEn ? "Cash" : "Dinheiro",
-      terms_read: isEn ? "Read Terms" : "Ler Termos",
-      level_redeem: isEn ? "Redeem" : "Resgatar",
-      today: isEn ? "TODAY" : "HOJE",
-      tomorrow: isEn ? "TOMORROW" : "AMANHÃ",
-      popular_badge: isEn ? "✦ Best Seller" : "✦ O Mais Escalonado",
-      from: isEn ? "From:" : "De:",
-      savings: isEn ? "SAVINGS:" : "ECONOMIA:",
-      items_selected: isEn ? "item(s)" : "item(ns)",
-      btn_finish_short: isEn ? "Finish" : "Finalizar",
-      btn_next_short: isEn ? "Next" : "Avançar",
-      msg_level_keep1: isEn ? "Keep caring. You need" : "Mantenha a frequência. Faltam",
-      msg_level_keep2: isEn ? "XP for your next benefit of" : "XP para o próximo benefício de",
-      msg_rush_fee: isEn ? "Rush Fee" : "Taxa de Pico (Deslocamento)",
-      toast_loaded: isEn ? "Progress loaded!" : "Dados recuperados com sucesso.",
-      toast_cart_toggle: isEn ? "Cart updated." : "Carrinho atualizado.",
-      toast_pix_copied: isEn ? "PIX copied!" : "Chave PIX copiada.",
-      toast_copy: isEn ? "Copied!" : "Copiado!"
-    },
-    reviews: getFullReviews(lang)
-  };
-};
-
-// ==================================================================================
-// 5. MAIN APP
-// ==================================================================================
-export default function App() {
-  const [loading, setLoading] = useState(true);
-  const [isClient, setIsClient] = useState(false);
-  const [dataLoaded, setDataLoaded] = useState(false);
-  const [step, setStep] = useState(0);
-  const [isDark, setIsDark] = useState(true);
-  const [lang, setLang] = useState<'pt'|'en'>('pt'); 
-  const [activeTab, setActiveTab] = useState('single');
-  const [toasts, setToasts] = useState<{id: number, msg: string, type: "success" | "error"}[]>([]);
-  const [termsOpen, setTermsOpen] = useState(false);
-  const [welcomePopup, setWelcomePopup] = useState(false);
-  const [levelUpPopup, setLevelUpPopup] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  
-  const DATA = useMemo(() => getData(lang), [lang]);
-  const T = DATA.text;
-  
-  const [user, setUser] = useState<UserData>({
-    name: '', xp: 0, coupons: [], usedCoupons: [], hasSeenWelcome: false, ordersCount: 92, lastActivity: new Date().toISOString()
-  });
-  
-  const [booking, setBooking] = useState<BookingData>({
-    type: 'single', cart: [], extras: {}, date: null, time: null, locationType: 'home', address: { street: '', number: '', district: '', city: '', comp: '', placeName: '' }, payment: '', appliedCoupon: null, termsAccepted: false, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false
-  });
-  
-  const dateScrollRef = useRef<HTMLDivElement>(null);
-
-  const addToast = useCallback((msg: string, type: "success" | "error" = "success") => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, msg, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 5000);
-  }, []);
-
-  const openExternal = useCallback((platform: 'whatsapp' | 'instagram', customText?: string) => {
-    let url = '';
-    if (platform === 'whatsapp') {
-      url = `https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(customText || '')}`;
-    } else {
-      url = CONFIG.INSTAGRAM_URL;
-    }
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    setTimeout(() => { document.body.removeChild(link); }, 100);
-  }, []);
-  
-  useEffect(() => {
-    setIsClient(true);
-    cleanupStorage();
-    if (isWebViewUserAgent()) {
-      const url = window.location.href;
-      if (/android/i.test(navigator.userAgent)) {
-         window.location.href = `intent://${url.replace(/^https?:\/\//i, '')}#Intent;scheme=https;package=com.android.chrome;end`;
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isClient) { document.title = "Thalyson Massagens"; }
-  }, [step, isClient, lang]);
-  
-  useEffect(() => {
-    if (!isClient) return;
+    <p className="text-sm text-zinc-400 font-light leading-relaxed mb-4">{service.desc}</p>
     
-    let loadedUser = { ...user };
-    let loadedBooking = { ...booking };
-    let loadedStep = 0;
-
-    try {
-      const stored = localStorage.getItem(CONFIG.STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        
-        if (parsed.user && typeof parsed.user === 'object') {
-          loadedUser = {
-            name: parsed.user.name || '',
-            xp: typeof parsed.user.xp === 'number' ? parsed.user.xp : 0,
-            coupons: Array.isArray(parsed.user.coupons) ? parsed.user.coupons : [],
-            usedCoupons: Array.isArray(parsed.user.usedCoupons) ? parsed.user.usedCoupons : [],
-            hasSeenWelcome: typeof parsed.user.hasSeenWelcome === 'boolean' ? parsed.user.hasSeenWelcome : false,
-            ordersCount: typeof parsed.user.ordersCount === 'number' ? Math.max(parsed.user.ordersCount, 92) : 92,
-            lastActivity: parsed.user.lastActivity || new Date().toISOString()
-          };
-        }
-        
-        if (parsed.bookingDraft && Array.isArray(parsed.bookingDraft.cart)) {
-          const draftDate = parsed.bookingDraft.date ? new Date(parsed.bookingDraft.date) : null;
-          if (!draftDate || draftDate > new Date()) {
-            loadedBooking = {
-              ...booking,
-              ...parsed.bookingDraft,
-              cart: parsed.bookingDraft.cart || [],
-              extras: typeof parsed.bookingDraft.extras === 'object' && parsed.bookingDraft.extras !== null ? parsed.bookingDraft.extras : {},
-              mediaAllowed: parsed.bookingDraft.mediaAllowed || false,
-              address: { 
-                street: sanitizeInput(parsed.bookingDraft.address?.street || ''), 
-                number: sanitizeInput(parsed.bookingDraft.address?.number || ''), 
-                district: sanitizeInput(parsed.bookingDraft.address?.district || ''), 
-                city: sanitizeInput(parsed.bookingDraft.address?.city || ''), 
-                comp: sanitizeInput(parsed.bookingDraft.address?.comp || ''), 
-                placeName: sanitizeInput(parsed.bookingDraft.address?.placeName || '') 
-              }
-            };
-            if (typeof parsed.step === 'number' && parsed.step >= 0 && parsed.step <= 4) { loadedStep = parsed.step; }
-          }
-        }
-      }
-    } catch (e) { loadedStep = 0; }
-    
-    setUser(loadedUser);
-    setBooking(loadedBooking);
-    setStep(loadedStep);
-    setDataLoaded(true);
-    setTimeout(() => setLoading(false), 800);
-  }, [isClient]);
-  
-  useEffect(() => {
-    if (isClient && dataLoaded) {
-      try {
-        const saveData = {
-          user: { ...user, lastActivity: new Date().toISOString() },
-          bookingDraft: { 
-            ...booking, 
-            appliedCoupon: booking.appliedCoupon ? { id: booking.appliedCoupon.id, val: booking.appliedCoupon.val, title: booking.appliedCoupon.title, code: booking.appliedCoupon.code } : null 
-          },
-          step
-        };
-        const serialized = JSON.stringify(saveData);
-        if (serialized.length < CONFIG.MAX_STORAGE_SIZE * 1024) { localStorage.setItem(CONFIG.STORAGE_KEY, serialized); }
-      } catch (e) {}
-    }
-  }, [user, booking, step, isClient, dataLoaded]);
-  
-  useEffect(() => {
-    if (!loading && isClient && dataLoaded) {
-      if (!user.hasSeenWelcome && !welcomePopup) {
-        const timer = setTimeout(() => setWelcomePopup(true), 2000);
-        return () => clearTimeout(timer);
-      } 
-    }
-  }, [loading, isClient, dataLoaded]);
-  
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
-  
-  const handleToggleCartItem = useCallback((item: ServiceItem) => {
-    setBooking(prev => {
-      const exists = prev.cart.find(c => c.id === item.id);
-      let newCart;
-      if (exists) {
-        newCart = prev.cart.filter(c => c.id !== item.id);
-      } else {
-        newCart = [...prev.cart, item];
-      }
-      return { ...prev, cart: newCart, payment: '', termsAccepted: false, bookingId: prev.bookingId || `BOOK_${Date.now()}` };
-    });
-    addToast(T.toast_cart_toggle, "success");
-  }, [addToast, T]);
-
-  const daysArray = useMemo(() => {
-    const days = []; const today = new Date();
-    for (let i = 0; i < 30; i++) { const d = new Date(today); d.setDate(today.getDate() + i); days.push(d); }
-    return days;
-  }, []);
-  
-  const generateTimeSlots = useMemo(() => {
-    if (!booking.date) return [];
-    const slots = [];
-    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) { slots.push(`${i < 10 ? '0' : ''}${i}:00`); }
-    const now = new Date();
-    const selectedDate = new Date(booking.date);
-    if (isNaN(selectedDate.getTime())) return [];
-    const isToday = selectedDate.toDateString() === now.toDateString();
-    if (isToday) {
-      const currentHour = now.getHours();
-      return slots.filter(time => {
-        const [hour] = time.split(':').map(Number);
-        return hour > currentHour; 
-      });
-    }
-    return slots;
-  }, [booking.date]);
-  
-  const financials = useMemo(() => {
-    if (booking.cart.length === 0) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0, rushFee: 0, duration: 0 };
-    
-    let sub = 0; let baseDuration = 0; let isPackage = booking.cart.some(item => item.type === 'pack');
-
-    booking.cart.forEach(item => {
-        sub += item.price;
-        if (!isPackage) { baseDuration += (item.min || 60); }
-    });
-
-    if (isPackage) { baseDuration = 60; }
-
-    let addedTime = 0;
-    Object.keys(booking.extras || {}).forEach(k => { 
-      if (booking.extras[k]) { 
-        const extData = DATA.extras.find(e => e.id === k); 
-        if (extData) {
-            sub += isPackage ? Math.floor(extData.price * 0.8) : extData.price; 
-            if (extData.id === 'more_time') addedTime += 30; 
-        }
-      } 
-    });
-
-    const totalDuration = baseDuration + addedTime;
-    const isRushHour = RUSH_HOURS.includes(booking.time || '');
-    const rushFee = (isRushHour && booking.locationType !== 'motel') ? RUSH_FEE : 0;
-    const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
-    let runningTotal = Math.max(0, sub - disc);
-    
-    let mediaDisc = 0;
-    if (booking.mediaAllowed) { mediaDisc = Math.ceil(runningTotal * 0.01); runningTotal = Math.max(0, runningTotal - mediaDisc); }
-    
-    let pixDisc = 0;
-    if (booking.payment === 'pix') { pixDisc = Math.ceil(runningTotal * 0.03); }
-    
-    const finalTotal = Math.max(0, runningTotal - pixDisc) + rushFee;
-    return { sub, disc, pixDisc, mediaDisc, rushFee, total: finalTotal, duration: totalDuration };
-  }, [booking.cart, booking.extras, booking.appliedCoupon, DATA.extras, booking.payment, booking.mediaAllowed, booking.time, booking.locationType]);
-  
-  const estimatedXP = useMemo(() => {
-    const hasPack = booking.cart.some(item => item.type === 'pack');
-    return Math.floor(financials.total * (hasPack ? 0.30 : 0.15));
-  }, [financials.total, booking.cart]);
-  
-  const getNextLevelInfo = (currentXP: number) => {
-    if (currentXP >= 800) {
-      const needed = 500 - ((currentXP - 800) % 500);
-      return { needed, reward: DATA.levels[3].reward, title: "Plenitude Plus" };
-    }
-    const nextLevel = DATA.levels.find(l => l.xpNeeded > currentXP);
-    return nextLevel ? { needed: nextLevel.xpNeeded - currentXP, reward: nextLevel.reward, title: nextLevel.title } : null;
-  };
-  
-  const nextLevelInfo = getNextLevelInfo(user.xp);
-
-  const getCurrentLevelProgress = () => {
-    if (user.xp >= 800) return (((user.xp - 800) % 500) / 500) * 100;
-    const currentLevelIndex = DATA.levels.slice().reverse().findIndex(l => user.xp >= l.xpNeeded);
-    const realIndex = currentLevelIndex === -1 ? 0 : DATA.levels.length - 1 - currentLevelIndex;
-    const currentLevel = DATA.levels[realIndex]; const nextLevel = DATA.levels[realIndex + 1];
-    if (!nextLevel) return 100; return Math.min(100, Math.max(0, ((user.xp - currentLevel.xpNeeded) / (nextLevel.xpNeeded - currentLevel.xpNeeded)) * 100));
-  };
-  
-  const generateWhatsAppMsg = () => {
-    const f = financials; 
-    const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : '';
-    const securityHash = btoa(encodeURIComponent(`${f.total}-${dateStr}-${booking.cart[0]?.id || ''}-${CONFIG.SECRET_TOKEN}`)).substring(0, 8).toUpperCase();
-    const isEn = lang === 'en';
-
-    const servicesListText = booking.cart.map(item => {
-      const detailLines = item.details.split('\n').map(line => `  • ${line}`).join('\n');
-      return `✅ *${item.title}*\n_${item.desc}_\n*${isEn ? 'Details' : 'Detalhes'}:*\n${detailLines}`;
-    }).join('\n\n');
-    
-    let locTxt = ""; let mapQuery = "";
-    if (booking.locationType === 'home') { 
-      const fullAddr = `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}`; 
-      locTxt = `🏠 *${isEn ? 'Residence' : 'Residência'}*\n📍 ${fullAddr}\n📝 ${isEn ? 'Complement' : 'Complemento'}: ${booking.address.comp || '-'}`; 
-      mapQuery = fullAddr; 
-    }
-    else if (booking.locationType === 'motel') { 
-      locTxt = `🏩 *${isEn ? 'Your Suite' : 'Sua Suíte'}*\n⚠️ (${isEn ? 'Address will be agreed upon on WhatsApp' : 'Endereço será combinado no WhatsApp'})`; 
-    }
-    else { 
-      const fullAddr = `${booking.address.placeName}, ${booking.address.city}`; 
-      locTxt = `🏨 *Hotel: ${booking.address.placeName}*\n📍 ${booking.address.city}\n🚪 ${isEn ? 'Room' : 'Quarto'}: ${booking.address.comp || '-'}`; 
-      mapQuery = fullAddr; 
-    }
-    
-    const extrasList = Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).map(k => { 
-      const ex = DATA.extras.find(e => e.id === k); 
-      return ex ? `➕ ${ex.label}` : ''; 
-    }).filter(Boolean).join('\n');
-    
-    let priceDetails = `💵 *${isEn ? 'Services Sum' : 'Subtotal'}:* ${formatMoney(f.sub, lang)}`;
-    if (f.disc > 0) priceDetails += `\n🎁 *${isEn ? 'Gift' : 'Desconto'} (${booking.appliedCoupon?.code}):* -${formatMoney(f.disc, lang)}`;
-    if (f.mediaDisc > 0) priceDetails += `\n📸 *${isEn ? 'Portfolio Discount' : 'Apoio Portfólio'}:* -${formatMoney(f.mediaDisc, lang)}`;
-    if (f.pixDisc > 0) priceDetails += `\n💸 *${isEn ? 'PIX Discount' : 'Desconto PIX'}:* -${formatMoney(f.pixDisc, lang)}`;
-    if (f.rushFee > 0) priceDetails += `\n🚗 *${isEn ? 'Rush Fee' : 'Taxa de Deslocamento'}:* +${formatMoney(f.rushFee, lang)}`;
-    priceDetails += `\n\n💰 *${isEn ? 'FINAL VALUE' : 'VALOR FINAL DO INVESTIMENTO'}: ${formatMoney(f.total, lang)}*`;
-
-    const finalMapLink = mapQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}` : '';
-    
-    let msg = isEn ? `
-*CARE RESERVATION* | #${securityHash}
-──────────────────
-Hello Thalyson! I would like to schedule my moment.
-
-👤 *Name:* ${sanitizeInput(user.name)}
-📅 *Date:* ${dateStr} at ${booking.time}
-⏱️ *Estimated Time:* ${f.duration} Minutes
-
-💆‍♂️ *WHAT I CHOSE:*
-${servicesListText}
-
-${extrasList ? `*Added Extras:*\n${extrasList}\n` : ''}
-📍 *WHERE:*
-${locTxt}
-${finalMapLink ? `🔗 GPS: ${finalMapLink}` : ''}
-
-${booking.locationType !== 'motel' ? `⚠️ Aware that the travel fee (Uber) will be calculated and confirmed in chat.\n` : ''}
-💰 *INVESTMENT SUMMARY:*
-${priceDetails}
-
-💳 *Payment:* ${booking.payment.toUpperCase()}
-──────────────────
-_I accept the agreement and await confirmation._
-    `.trim() : `
-*RESERVA DE CUIDADO* | #${securityHash}
-──────────────────
-Olá Thalyson! Gostaria de agendar meu momento.
-
-👤 *Nome:* ${sanitizeInput(user.name)}
-📅 *Data:* ${dateStr} às ${booking.time}
-⏱️ *Duração Estimada:* ${f.duration} Minutos
-
-💆‍♂️ *O QUE ESCOLHI:*
-${servicesListText}
-
-${extrasList ? `*Adicionais:*\n${extrasList}\n` : ''}
-📍 *ONDE:*
-${locTxt}
-${finalMapLink ? `🔗 GPS Direto: ${finalMapLink}` : ''}
-
-${booking.locationType !== 'motel' ? `⚠️ Ciente de que a taxa de deslocamento será calculada e confirmada por você.\n` : ''}
-💰 *RESUMO DO INVESTIMENTO:*
-${priceDetails}
-
-💳 *Pagamento:* ${booking.payment.toUpperCase()}
-──────────────────
-_Aceito o acordo de entrega e aguardo sua confirmação._
-    `.trim();
-
-    return msg;
-  };
-  
-  const isStepValid = useCallback(() => {
-    if (step === 0) return booking.cart.length > 0;
-    if (step === 1) {
-      if (!user.name || String(user.name).trim().length < 3) return false;
-      if (booking.locationType === 'home') return validateAddress(booking.address);
-      if (booking.locationType === 'hotel') return !!(booking.address.placeName && booking.address.city);
-      return true;
-    }
-    if (step === 2) return !!(booking.date && booking.time);
-    if (step === 3) return !!(booking.payment && booking.termsAccepted);
-    return true;
-  }, [step, booking, user.name]);
-  
-  const handleNextStep = useCallback(() => {
-    if (!isStepValid()) {
-      if (step === 0) addToast(T.toast_select_item, "error");
-      if (step === 1) {
-        if (!user.name || String(user.name).trim().length < 3) addToast(T.toast_fill_name, "error");
-        else addToast(T.toast_fill_addr, "error");
-      }
-      if (step === 2) addToast(T.toast_select_date, "error");
-      if (step === 3) addToast(T.toast_accept_terms, "error");
-      return;
-    }
-    if (step === 3) finishBooking(); 
-    else setStep(s => s + 1);
-  }, [step, booking, user.name, T, addToast, isStepValid]);
-  
-  const finishBooking = () => {
-    let updatedCoupons = [...user.coupons]; 
-    let updatedHistory = [...user.usedCoupons];
-    
-    if (booking.appliedCoupon && booking.appliedCoupon.id !== 'manual') {
-      if (!updatedHistory.includes(booking.appliedCoupon.code)) updatedHistory.push(booking.appliedCoupon.code);
-      updatedCoupons = updatedCoupons.filter(c => c.code !== booking.appliedCoupon?.code);
-    }
-    
-    const newXP = user.xp + estimatedXP; 
-    let leveledUp = false; 
-    let newLevelTitle = "";
-    
-    DATA.levels.forEach(lvl => {
-      if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) { 
-        leveledUp = true; 
-        newLevelTitle = lvl.title; 
-        updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, title: `🏆 Recompensa: ${lvl.title}`, code: `LVLUP${lvl.level}` }); 
-      }
-    });
-
-    const newOrdersCount = (user.ordersCount || 92) + 1;
-    
-    setUser(prev => ({ 
-      ...prev, 
-      xp: newXP, 
-      coupons: updatedCoupons, 
-      usedCoupons: updatedHistory, 
-      ordersCount: newOrdersCount, 
-      lastActivity: new Date().toISOString() 
-    }));
-    
-    if (leveledUp) { 
-      setLevelUpPopup(true); 
-      setTimeout(() => addToast(`${T.levelup_popup_title} ${newLevelTitle}!`, "success"), 500); 
-    }
-    
-    openExternal('whatsapp', generateWhatsAppMsg());
-    setStep(4);
-  };
-  
-  const scrollDates = (dir: 'left' | 'right') => { 
-    if (dateScrollRef.current) {
-      dateScrollRef.current.scrollBy({ left: dir === 'left' ? -250 : 250, behavior: 'smooth' }); 
-    }
-  };
-  
-  const getDayLabel = (d: Date) => {
-    const today = new Date(); 
-    const tomorrow = new Date(today); 
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    if (d.toDateString() === today.toDateString()) return T.today;
-    if (d.toDateString() === tomorrow.toDateString()) return T.tomorrow;
-    return d.toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { weekday: 'short' }).slice(0, 3).toUpperCase();
-  };
-
-  const categoriesRenderData = [
-    { 
-      id: 'relax', 
-      title: lang === 'en' ? "Just Relax" : "Apenas Relaxar", 
-      icon: "sun", 
-      colorClass: "bg-blue-500",
-      accent: isDark ? "border-blue-500/30" : "border-blue-100 shadow-blue-900/5",
-      desc: lang === 'en' ? "Therapeutic body work to relieve stress." : "Trabalho corporal terapêutico focado em aliviar totalmente o estresse." 
-    },
-    { 
-      id: 'express', 
-      title: lang === 'en' ? "Express Care" : "Cuidados Rápidos", 
-      icon: "watch", 
-      colorClass: "bg-emerald-500",
-      accent: isDark ? "border-emerald-500/30" : "border-emerald-100 shadow-emerald-900/5",
-      desc: lang === 'en' ? "Quick localized relief for hands and feet." : "Soluções pontuais de alívio rápido focado nas mãos e pés." 
-    },
-    { 
-      id: 'final', 
-      title: lang === 'en' ? "With Ending" : "Com Finalização", 
-      icon: "sparkles", 
-      colorClass: "bg-amber-500",
-      accent: isDark ? "border-amber-500/30" : "border-amber-100 shadow-amber-900/5",
-      desc: lang === 'en' ? "A complete and intense sensory journey." : "A verdadeira jornada sensorial de alívio profundo e prazer." 
-    },
-    { 
-      id: 'care', 
-      title: lang === 'en' ? "Personal Care" : "Estética e Higiene", 
-      icon: "scissors", 
-      colorClass: "bg-pink-500",
-      accent: isDark ? "border-pink-500/30" : "border-pink-100 shadow-pink-900/5",
-      desc: lang === 'en' ? "Aesthetic body maintenance." : "Sessões focadas na estética e higiene do seu corpo." 
-    }
-  ];
-  
-  if (!isClient) return <div className="min-h-screen w-full bg-zinc-950 flex items-center justify-center" />;
-
-  if (loading) {
-    return (
-      <div className={`fixed inset-0 flex flex-col items-center justify-center z-[100] transition-colors duration-700 ${isDark ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
-        <div className="flex flex-col items-center max-w-sm w-full px-8">
-          <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-4xl md:text-5xl font-playfair mb-8 md:mb-10 animate-pulse shadow-2xl shadow-blue-500/20 border border-blue-400/20">
-            T
-          </div>
-          <div className="w-full h-1.5 md:h-2 bg-zinc-800/50 overflow-hidden mb-4 md:mb-6 rounded-full">
-            <div className="h-full bg-blue-500 rounded-full" style={{ width: '100%', animation: 'loading-bar 2s ease-in-out infinite' }}></div>
-          </div>
-          <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest opacity-70 text-white">{T.loading}</p>
-        </div>
-        <style dangerouslySetInnerHTML={{ __html: `@keyframes loading-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }`}} />
-      </div>
-    );
-  }
-  
-  return (
-    <>
-      <GlobalStyles isDark={isDark} />
-      
-      <div className={`fixed inset-0 z-[-1] pointer-events-none transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-slate-50'}`} aria-hidden="true" />
-      
-      <div className="fixed top-6 md:top-8 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-3 pointer-events-none px-4 w-full max-w-md">
-        {toasts.map(t => (
-          <div key={t.id} role="alert" className={`pointer-events-auto flex items-center gap-3 px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl border backdrop-blur-2xl shadow-2xl animate-fade-in ${t.type === 'success' ? isDark ? 'bg-zinc-800/90 border-zinc-700 text-white' : 'bg-white/95 border-slate-200 text-slate-800' : 'bg-red-500/95 border-red-500 text-white'}`}>
-            <Icon name={t.type === 'success' ? 'check' : 'alert-circle'} size={20} className="shrink-0" />
-            <span className="text-xs md:text-sm font-semibold tracking-wide leading-snug">{t.msg}</span>
-          </div>
+    <div className="pt-4 border-t border-[#27272a]">
+      <div className="text-[11px] text-zinc-500 space-y-1.5">
+        {service.details.split('\n').map((line: string, i: number) => (
+          <p key={i} className="flex items-start gap-2"><span className="text-zinc-600">•</span> {line}</p>
         ))}
       </div>
+    </div>
+  </div>
+));
+
+// ==================================================================================
+// 3. FLUXO PRINCIPAL DE AGENDAMENTO
+// ==================================================================================
+export default function BookingFlow() {
+  const [step, setStep] = useState(0);
+  const [cart, setCart] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('relax');
+  
+  const [form, setForm] = useState({
+    name: '',
+    locationType: 'home',
+    address: { street: '', number: '', district: '', comp: '' },
+    date: null as Date | null,
+    time: '',
+    payment: 'pix'
+  });
+
+  const toggleCart = (item: any) => {
+    setCart(prev => prev.some(c => c.id === item.id) ? prev.filter(c => c.id !== item.id) : [...prev, item]);
+  };
+
+  const getSubtotal = () => cart.reduce((acc, item) => acc + item.price, 0);
+  const getTotal = () => {
+    let total = getSubtotal();
+    if (RUSH_HOURS.includes(form.time) && form.locationType !== 'suite') total += RUSH_FEE;
+    if (form.payment === 'pix') total = total * 0.97; // 3% OFF
+    return total;
+  };
+
+  const generateDates = () => {
+    const dates = []; const today = new Date();
+    for (let i = 0; i < 14; i++) { const d = new Date(today); d.setDate(today.getDate() + i); dates.push(d); }
+    return dates;
+  };
+
+  const times = []; for(let i=CONFIG.START_HOUR; i<=CONFIG.END_HOUR; i++) times.push(`${i}:00`);
+
+  const generateWhatsAppMessage = () => {
+    const dStr = form.date ? form.date.toLocaleDateString('pt-BR') : '';
+    const itemsStr = cart.map(i => `• ${i.title}`).join('\n');
+    const locStr = form.locationType === 'suite' ? `Sua suíte na ${CONFIG.BASE_LOCATION}` : `${form.address.street}, ${form.address.number} - ${form.address.district}`;
+    
+    const msg = `*Reserva de Horário*\n\n` +
+      `*Nome:* ${form.name}\n` +
+      `*Data:* ${dStr} às ${form.time}\n` +
+      `*Serviços:*\n${itemsStr}\n\n` +
+      `*Local:* ${locStr}\n` +
+      `*Pagamento:* ${form.payment.toUpperCase()} (${formatMoney(getTotal())})`;
       
-      <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} isDark={isDark} toggleTheme={() => setIsDark(!isDark)} user={user} T={T} />
+    return `https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(msg)}`;
+  };
 
-      <main className="min-h-screen relative z-10 pb-40 md:pb-48 px-4 md:px-8 max-w-5xl mx-auto selection:bg-blue-500/30 selection:text-blue-200">
-        {step !== 4 && (
-          <header className="pt-10 md:pt-16 pb-8 md:pb-12">
-            <div className="flex items-start justify-between">
-              
-              <div className="flex items-center gap-4">
-                {/* O avatar. Troque o SRC abaixo pela URL real da foto se quiser */}
-                <img 
-                  src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80" 
-                  alt="Thalyson" 
-                  className={`w-14 h-14 md:w-16 md:h-16 rounded-full object-cover border-2 shadow-lg ${isDark ? 'border-zinc-800 shadow-black/50' : 'border-white shadow-slate-300'}`} 
-                />
-                <div className="flex flex-col cursor-pointer transition-opacity hover:opacity-80" onClick={() => setStep(0)} title={T.back_home}>
-                  <h1 className={`text-2xl md:text-4xl font-playfair tracking-tight font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    Thalyson <br className="block sm:hidden" /> Massagens
-                  </h1>
-                  <div className={`flex items-center gap-2 text-[9px] md:text-[10px] uppercase tracking-widest mt-2 md:mt-3 font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                    <span className="relative flex h-2 w-2 md:h-2.5 md:w-2.5 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-blue-500"></span></span>
-                    {lang === 'en' ? `Over ${user.ordersCount || 92} ${T.header_tensions}` : `Mais de ${user.ordersCount || 92} ${T.header_tensions}`}
-                  </div>
-                </div>
-              </div>
+  const isStepValid = () => {
+    if (step === 0) return cart.length > 0;
+    if (step === 1) {
+      if (form.name.length < 3) return false;
+      if (form.locationType === 'home') return !!(form.address.street && form.address.number && form.address.district);
+      return true;
+    }
+    if (step === 2) return !!(form.date && form.time);
+    return true;
+  };
 
-              <div className="flex items-center gap-3 shrink-0">
-                <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} aria-label="Alterar Idioma" className={`relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700 text-blue-400 hover:bg-zinc-800 hover:text-blue-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-blue-600 hover:bg-slate-50 hover:shadow-md'}`}>
-                   <Icon name="globe" size={20} />
-                   <span className="absolute -bottom-1 -right-1 text-[8px] font-bold bg-blue-500 text-white px-1.5 py-0.5 rounded shadow-sm">{lang.toUpperCase()}</span>
-                </button>
-                <button onClick={() => openExternal('instagram')} aria-label="Instagram" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700 text-pink-400 hover:bg-zinc-800 hover:text-pink-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-pink-600 hover:bg-slate-50 hover:shadow-md'}`}>
-                   <Icon name="instagram" size={20} />
-                </button>
-                <button onClick={() => setMenuOpen(true)} aria-label="Menu" className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full transition-all border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900/80 border-zinc-700 text-white hover:bg-zinc-800 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50 hover:shadow-md'}`}>
-                   <Icon name="menu" size={20} />
-                </button>
-              </div>
-            </div>
-            
-            {step > 0 && step < 4 && (
-              <div className="mt-8 md:mt-12 flex items-center justify-between gap-3 max-w-sm mx-auto">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-2 md:gap-3">
-                    <div className={`w-full h-1 md:h-1.5 rounded-full transition-all duration-700 ${step >= i ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : isDark ? 'bg-zinc-800' : 'bg-slate-200'}`} />
-                    <span className={`text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-colors duration-500 ${step >= i ? isDark ? 'text-white' : 'text-slate-900' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
-                      {i === 1 ? T.step_where : i === 2 ? T.step_when : T.step_summary}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </header>
-        )}
+  return (
+    <>
+      <GlobalStyles />
+      <div className="min-h-screen bg-[var(--bg-dark)] pb-32 font-sans text-zinc-200">
         
-        <div className="space-y-12 md:space-y-16">
-          {step === 0 && (
-            <section className="space-y-12 md:space-y-16 animate-fade-in">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center py-2 md:py-6">
-                <div>
-                  <h2 className={`text-3xl md:text-5xl font-playfair font-medium leading-[1.15] mb-4 md:mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {T.welcome} <span className="italic text-blue-500">{user.name ? String(user.name).trim().split(' ')[0] : (lang === 'en' ? "allow yourself" : "permita-se")}.</span>
-                  </h2>
-                  <p className={`text-sm md:text-lg font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>
-                    {T.choose_sub}
-                  </p>
-                </div>
-                
-                <div className={`p-6 md:p-8 rounded-3xl border transition-colors ${isDark ? 'bg-zinc-900/60 border-zinc-700 hover:border-zinc-500' : 'bg-white border-slate-200 shadow-lg shadow-slate-200/50 hover:border-slate-300'}`}>
-                  <div className="flex justify-between items-start mb-8">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border shadow-inner shrink-0 ${isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-600 text-amber-400' : 'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 text-amber-600'}`}>
-                        <Icon name="award" size={24} />
-                      </div>
-                      <div className="min-w-0">
-                        <span className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest block mb-1 truncate ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                          {T.level_label}
-                        </span>
-                        <h3 className={`text-lg md:text-xl font-playfair font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                          {user.xp >= 800 ? "Plenitude Plus" : (DATA.levels.find(l => user.xp >= l.xpNeeded && (!DATA.levels.find(nl => nl.xpNeeded > l.xpNeeded && user.xp >= nl.xpNeeded)))?.title || DATA.levels[0].title)}
-                        </h3>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className={`text-3xl md:text-4xl font-playfair font-semibold bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-white to-zinc-400' : 'from-slate-700 to-slate-900'}`}>{user.xp}</span>
-                      <span className="text-[9px] font-bold text-blue-500 uppercase tracking-widest block mt-1 md:mt-2">{T.level_current}</span>
-                    </div>
-                  </div>
-                  <div>
-                    <div className={`flex justify-between text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
-                      <span>{T.level_journey}</span>
-                      <span>{Math.floor(getCurrentLevelProgress())}%</span>
-                    </div>
-                    <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-200'}`} role="progressbar" aria-valuenow={getCurrentLevelProgress()} aria-valuemin={0} aria-valuemax={100}>
-                      <div className="h-full bg-blue-500 transition-all duration-1000 ease-out relative" style={{ width: `${getCurrentLevelProgress()}%` }}>
-                        <div className="absolute top-0 right-0 bottom-0 left-0 bg-white/30 animate-pulse"></div>
-                      </div>
-                    </div>
-                    {nextLevelInfo && (
-                      <p className={`text-[11px] md:text-xs mt-4 text-center font-medium ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
-                        {T.msg_level_keep1} <strong className={isDark ? 'text-white' : 'text-slate-900'}>{nextLevelInfo.needed} XP</strong> {T.msg_level_keep2} <span className="text-blue-500 break-words">+{formatMoney(nextLevelInfo.reward, lang)}</span>.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              <div className={`flex p-1.5 md:p-2 rounded-2xl md:rounded-3xl border max-w-lg mx-auto shadow-inner ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-slate-100/80 border-slate-200'}`} role="tablist">
-                
-                <button role="tab" aria-selected={activeTab === 'packs'} onClick={() => setActiveTab('packs')} 
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[9px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 
-                  ${activeTab === 'packs' 
-                    ? 'bg-amber-500 text-white shadow-lg shadow-amber-900/30' 
-                    : isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'}`}>
-                  <Icon name="package" size={16} /> <span className="hidden sm:inline">{T.tab_packs}</span><span className="sm:hidden">Mensal</span>
-                </button>
-                
-                <button role="tab" aria-selected={activeTab === 'single'} onClick={() => setActiveTab('single')} 
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[9px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 relative overflow-hidden
-                  ${activeTab === 'single' 
-                    ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] border border-blue-400'
-                    : isDark ? 'text-zinc-100 bg-blue-600/20 hover:bg-blue-600/40 border border-transparent' : 'text-blue-700 bg-blue-100 hover:bg-blue-200 border border-transparent'
-                  }`}>
-                  <Icon name="user" size={16} /> <span className="hidden sm:inline">{T.tab_single}</span><span className="sm:hidden">Avulsa</span>
-                </button>
-
-                <button role="tab" aria-selected={activeTab === 'custom'} onClick={() => setActiveTab('custom')} 
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl md:rounded-2xl text-[9px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 relative overflow-hidden
-                  ${activeTab === 'custom' 
-                    ? 'bg-emerald-600 text-white shadow-[0_0_20px_rgba(5,150,105,0.4)] border border-emerald-400'
-                    : isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'
-                  }`}>
-                  <Icon name="settings" size={16} /> <span className="hidden sm:inline">{T.tab_custom}</span><span className="sm:hidden">A Pedido</span>
-                </button>
-
-              </div>
-              
-              {activeTab === 'custom' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 justify-center">
-                  {DATA.services.filter(s => s.category === 'custom').map(s => {
-                    const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
-                    return (
-                    <Card key={s.id} active={isInCart} onClick={() => handleToggleCartItem(s)} isDark={isDark} popular={s.popular} T={T}>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start mb-6 gap-3">
-                          <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-white border-slate-300 text-slate-800'}`}>
-                            <Icon name={s.icon} size={24} />
-                          </div>
-                          <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
-                            {isInCart && (
-                              <div className={`absolute -top-2 -right-2 text-white w-6 h-6 flex items-center justify-center rounded-full animate-fade-in shadow-md bg-emerald-500`}>
-                                <Icon name="check" size={14} />
-                              </div>
-                            )}
-                            <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold w-full ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                              {T.from}
-                            </span>
-                            <span className={`text-xl md:text-2xl font-playfair font-semibold w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                              {formatMoney(s.price, lang)}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <div className="mb-6">
-                          <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? 'bg-emerald-900/40 border-emerald-600/50 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800'}`}>
-                            {s.tag}
-                          </span>
-                          <h3 className={`text-lg md:text-xl font-playfair font-medium mb-2 md:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                            {s.title}
-                          </h3>
-                          <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>
-                            {s.desc}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
-                        <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                          <Icon name="check" size={14} className={`text-emerald-400 shrink-0`} /> {T.details_label}
-                        </div>
-                        <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                          {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className={`text-emerald-400 mt-1 text-[10px] shrink-0`}>•</span> <span>{line}</span></p>)}
-                        </div>
-                      </div>
-                    </Card>
-                  )})}
-                </div>
-              )}
-
-              {activeTab === 'single' && (
-                <div className="space-y-16">
-                  {categoriesRenderData.map(cat => {
-                    const servicesInCategory = DATA.services.filter((s: ServiceItem) => s.category === cat.id);
-                    if (servicesInCategory.length === 0) return null;
-
-                    return (
-                      <div key={cat.id} className={`p-6 md:p-10 rounded-[2.5rem] border-2 shadow-lg relative overflow-hidden transition-colors duration-500 ${isDark ? 'bg-zinc-900/40' : 'bg-white'} ${cat.accent}`}>
-                        <div className={`absolute top-0 right-0 w-64 h-64 opacity-[0.03] md:opacity-[0.05] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none ${cat.colorClass}`} />
-                        
-                        <div className="relative z-10">
-                          <div className="flex items-center gap-4 mb-8 md:mb-10">
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-xl shrink-0 ${cat.colorClass}`}>
-                              <Icon name={cat.icon} size={28} />
-                            </div>
-                            <div>
-                              <h3 className={`text-2xl md:text-3xl font-playfair font-medium leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{cat.title}</h3>
-                              <p className={`text-xs md:text-sm font-light mt-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{cat.desc}</p>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                            {servicesInCategory.map((s: ServiceItem) => {
-                              const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
-                              return (
-                                <Card key={s.id} active={isInCart} onClick={() => handleToggleCartItem(s)} isDark={isDark} popular={s.popular} T={T}>
-                                  <div className="flex-1">
-                                    <div className="flex justify-between items-start mb-6 gap-3">
-                                      <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-white border-slate-300 text-slate-800'}`}>
-                                        <Icon name={s.icon} size={24} />
-                                      </div>
-                                      <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
-                                        {isInCart && (
-                                          <div className={`absolute -top-2 -right-2 text-white w-6 h-6 flex items-center justify-center rounded-full animate-fade-in shadow-md bg-blue-500`}>
-                                            <Icon name="check" size={14} />
-                                          </div>
-                                        )}
-                                        {s.fullPrice && (
-                                          <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold w-full ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-                                            {T.from} <span className="line-through">{formatMoney(s.fullPrice, lang)}</span>
-                                          </span>
-                                        )}
-                                        <span className={`text-xl md:text-2xl font-playfair font-semibold w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                          {formatMoney(s.price, lang)}
-                                        </span>
-                                        {s.savings && (
-                                          <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full block mt-2 border max-w-fit ${isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-50 text-emerald-700 border-emerald-300'}`}>
-                                            {T.savings} {formatMoney(s.savings, lang)}
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                    
-                                    <div className="mb-6">
-                                      <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? 'bg-zinc-800 border-zinc-600 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-800'}`}>
-                                        {s.tag}
-                                      </span>
-                                      <h3 className={`text-lg md:text-xl font-playfair font-medium mb-2 md:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                        {s.title}
-                                      </h3>
-                                      <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>
-                                        {s.desc}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
-                                    <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                                      <Icon name="check" size={14} className={`text-blue-400 shrink-0`} /> {T.details_label}
-                                    </div>
-                                    <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                                      {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className={`text-blue-400 mt-1 text-[10px] shrink-0`}>•</span> <span>{line}</span></p>)}
-                                    </div>
-                                  </div>
-                                </Card>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-              
-              {activeTab === 'packs' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                  {DATA.plans.map((s: ServiceItem) => {
-                    const isInCart = booking.cart.some(cartItem => cartItem.id === s.id);
-                    const isPremiumCard = true;
-                    
-                    return (
-                    <Card key={s.id} active={isInCart} onClick={() => handleToggleCartItem(s)} isDark={isDark} popular={s.popular} isPremium={isPremiumCard} T={T}>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start mb-6 gap-3">
-                          <div className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full border shadow-sm shrink-0 ${isDark ? 'bg-zinc-900 border-amber-500/50 text-amber-400' : 'bg-amber-100 border-amber-300 text-amber-700'}`}>
-                            <Icon name={s.icon} size={24} />
-                          </div>
-                          <div className="text-right min-w-0 flex-1 flex flex-col items-end relative">
-                            {isInCart && (
-                              <div className={`absolute -top-2 -right-2 text-white w-6 h-6 flex items-center justify-center rounded-full animate-fade-in shadow-md bg-amber-500`}>
-                                <Icon name="check" size={14} />
-                              </div>
-                            )}
-                            {s.fullPrice && (
-                              <span className={`text-[9px] md:text-[10px] block mb-1 font-inter uppercase tracking-widest font-bold w-full ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-                                {T.from} <span className="line-through">{formatMoney(s.fullPrice, lang)}</span>
-                              </span>
-                            )}
-                            <span className={`text-xl md:text-2xl font-playfair font-semibold w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                              {formatMoney(s.price, lang)}
-                            </span>
-                            {s.savings && (
-                              <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full block mt-2 border max-w-fit ${isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-50 text-emerald-700 border-emerald-300'}`}>
-                                {T.savings} {formatMoney(s.savings, lang)}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="mb-6">
-                          <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest border px-3 py-1.5 rounded-full inline-block mb-3 md:mb-4 ${isDark ? 'bg-amber-500/20 border-amber-500/50 text-amber-300' : 'bg-amber-100 border-amber-300 text-amber-800'}`}>
-                            {s.tag}
-                          </span>
-                          <h3 className={`text-lg md:text-xl font-playfair font-medium mb-2 md:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                            {s.title}
-                          </h3>
-                          <p className={`text-xs md:text-sm font-light leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>
-                            {s.desc}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className={`pt-4 md:pt-5 mt-auto border-t ${isDark ? 'border-amber-500/40' : 'border-amber-200'}`}>
-                        <div className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                          <Icon name="check" size={14} className={`text-amber-400 shrink-0`} /> {T.details_label}
-                        </div>
-                        <div className={`text-[11px] md:text-xs space-y-2 font-light leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                          {s.details.split('\n').map((line, i) => <p key={i} className="flex items-start gap-2"><span className={`text-amber-400 mt-1 text-[10px] shrink-0`}>•</span> <span>{line}</span></p>)}
-                        </div>
-                      </div>
-                    </Card>
-                  )})}
-                </div>
-              )}
-              
-              <div className="py-12 md:py-16 relative border-t border-b border-dashed border-zinc-700 mt-12 md:mt-16">
-                <div className="flex items-center justify-between mb-8 md:mb-10">
-                  <h3 className={`text-2xl md:text-3xl font-playfair font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {T.reviews_title}
-                  </h3>
-                  <div className="hidden md:flex gap-3">
-                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: -320, behavior: 'smooth' })} className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-800 border-zinc-600 text-white hover:bg-zinc-700' : 'bg-white border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm'} hover:-translate-y-1`}><Icon name="chevron-left" size={20} /></button>
-                    <button onClick={() => document.getElementById('reviews-slider')?.scrollBy({ left: 320, behavior: 'smooth' })} className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all ${isDark ? 'bg-zinc-800 border-zinc-600 text-white hover:bg-zinc-700' : 'bg-white border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm'} hover:-translate-y-1`}><Icon name="chevron-right" size={20} /></button>
-                  </div>
-                </div>
-                
-                <div id="reviews-slider" className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth pb-6 pt-2 -mx-4 md:-mx-8 px-4 md:px-8 gap-4 md:gap-6 items-stretch" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                  {DATA.reviews.map((r, i) => (
-                    <div key={i} className="snap-center shrink-0 w-[85vw] sm:w-[320px] md:w-[360px] flex h-auto">
-                      <ReviewCard review={r} isDark={isDark} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="max-w-2xl mx-auto py-10 md:py-12">
-                <h3 className={`text-2xl md:text-3xl font-playfair font-medium text-center mb-8 md:mb-10 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {T.faq_title}
-                </h3>
-                <div className={`border-t border-b ${isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
-                  {DATA.faq.map((item, idx) => <FAQItem key={idx} q={item.q} a={item.a} isDark={isDark} />)}
-                </div>
-              </div>
-            </section>
-          )}
+        {/* Header Premium */}
+        <header className="pt-12 pb-8 px-6 max-w-3xl mx-auto">
+          <div className="flex items-center gap-4 mb-8">
+            <img src="https://ui-avatars.com/api/?name=Thalyson&background=18181b&color=fff&size=120" alt="Thalyson" className="w-14 h-14 rounded-full border border-zinc-800" />
+            <div>
+              <h1 className="text-2xl font-playfair font-medium text-white tracking-tight">Thalyson Rodrigo</h1>
+              <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold mt-1">Terapia Corporal & Bem-estar</p>
+            </div>
+          </div>
           
-          {step === 1 && (
-            <section className="space-y-10 md:space-y-12 animate-fade-in max-w-2xl mx-auto">
-              <h2 className={`text-2xl md:text-4xl font-playfair font-medium text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {T.location_title}
-              </h2>
-              
-              <div className="grid grid-cols-3 gap-2 md:gap-4">
+          {/* Barra de Progresso Sutíl */}
+          <div className="flex gap-2 h-1">
+            {[0,1,2,3].map(i => (
+              <div key={i} className={`flex-1 rounded-full transition-colors duration-500 ${step >= i ? 'bg-white' : 'bg-[#27272a]'}`} />
+            ))}
+          </div>
+        </header>
+
+        <main className="max-w-3xl mx-auto px-6">
+          
+          {/* PASSO 0: Seleção de Serviços */}
+          {step === 0 && (
+            <div className="animate-fade-in space-y-8">
+              <div>
+                <h2 className="text-3xl font-playfair text-white mb-3">Como você quer ser cuidado hoje?</h2>
+                <p className="text-zinc-400 font-light text-sm">Selecione as terapias ou planos que melhor atendem sua necessidade atual.</p>
+              </div>
+
+              {/* Categorias Tabs (Sem Emojis, design tipográfico) */}
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
                 {[
-                  { id: 'home', label: T.loc_home, icon: 'home' },
-                  { id: 'motel', label: T.loc_motel, icon: 'bed' },
-                  { id: 'hotel', label: T.loc_hotel, icon: 'building' }
-                ].map(x => (
-                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} className={`py-4 md:py-6 px-2 rounded-2xl flex flex-col items-center gap-2 md:gap-3 transition-all duration-300 border ${booking.locationType === x.id ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] -translate-y-1' : isDark ? 'bg-zinc-900/60 border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800' : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400 shadow-sm'}`}>
-                    <Icon name={x.icon} size={24} />
-                    <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-center">{x.label}</span>
+                  { id: 'relax', label: 'Terapia Física' },
+                  { id: 'sensory', label: 'Jornada Sensorial' },
+                  { id: 'pack', label: 'Planos Mensais' },
+                  { id: 'aesthetics', label: 'Estética Pessoal' }
+                ].map(tab => (
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap transition-colors ${activeTab === tab.id ? 'bg-white text-black' : 'bg-[#18181b] text-zinc-400 border border-[#27272a]'}`}>
+                    {tab.label}
                   </button>
                 ))}
               </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {(activeTab === 'pack' ? DATA.packs : DATA.services.filter(s => s.category === activeTab)).map((item: any) => (
+                  <ServiceCard key={item.id} service={item} active={cart.some(c => c.id === item.id)} onClick={() => toggleCart(item)} />
+                ))}
+              </div>
               
-              <div className={`p-6 md:p-8 rounded-3xl border shadow-sm transition-colors ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-white border-slate-200'} space-y-6 md:space-y-8`}>
-                <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder={lang === 'en' ? "Your name" : "Seu nome"} hasError={!user.name || String(user.name).trim().length < 3} />
+              {activeTab === 'aesthetics' && (
+                 <p className="text-xs text-zinc-500 italic mt-4">* Os serviços de estética envolvem apenas o aparo dos pelos com máquina. Não constituem e não incluem massagem relaxante.</p>
+              )}
+            </div>
+          )}
+
+          {/* PASSO 1: Identificação e Local */}
+          {step === 1 && (
+            <div className="animate-fade-in space-y-8">
+              <h2 className="text-3xl font-playfair text-white">Sobre o encontro</h2>
+              
+              <div className="space-y-6 bg-[#121214] p-6 rounded-2xl border border-[#27272a]">
+                <InputField label="Como devo te chamar?" value={form.name} onChange={(e:any) => setForm({...form, name: e.target.value})} icon="user" placeholder="Seu nome" />
                 
-                {booking.locationType === 'home' && (
-                  <div className="space-y-5 animate-fade-in">
-                    <div className="grid grid-cols-1 sm:grid-cols-[1fr_100px] gap-4">
-                      <InputField isDark={isDark} label={T.input_addr} value={booking.address.street} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, street: sanitizeInput(e.target.value) } }))} icon="map-pin" placeholder={lang === 'en' ? "Street / Avenue" : "Rua / Avenida"} hasError={!booking.address.street} />
-                      <InputField isDark={isDark} label={T.input_num} value={booking.address.number} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))} placeholder="Nº" type="tel" hasError={!booking.address.number} />
-                    </div>
-                    <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Neighborhood" : "Seu Bairro"} hasError={!booking.address.district} />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "City" : "Sua Cidade"} hasError={!booking.address.city} />
-                      <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Apt, Block (Optional)" : "Apto, Bloco (Opcional)"} />
-                    </div>
+                <div className="pt-4">
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 pl-1 block mb-3">Onde será o atendimento?</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button onClick={() => setForm({...form, locationType: 'home'})} className={`py-4 rounded-xl border flex gap-2 justify-center items-center text-sm transition-colors ${form.locationType === 'home' ? 'bg-white text-black border-white' : 'bg-transparent border-[#27272a] text-zinc-400 hover:border-zinc-500'}`}>
+                      <Icon name="home" size={18} /> Sua Residência
+                    </button>
+                    <button onClick={() => setForm({...form, locationType: 'suite'})} className={`py-4 rounded-xl border flex gap-2 justify-center items-center text-sm transition-colors ${form.locationType === 'suite' ? 'bg-white text-black border-white' : 'bg-transparent border-[#27272a] text-zinc-400 hover:border-zinc-500'}`}>
+                      <Icon name="building" size={18} /> Minha Suíte
+                    </button>
                   </div>
-                )}
-                
-                {booking.locationType === 'hotel' && (
-                  <div className="space-y-5 animate-fade-in">
-                    <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder={lang === 'en' ? "Hotel Name" : "Nome do Hotel"} hasError={!booking.address.placeName} />
-                    <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "City" : "Cidade"} hasError={!booking.address.city} />
-                    <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder={lang === 'en' ? "Room Nº" : "Nº do Quarto"} />
+                </div>
+
+                {form.locationType === 'home' ? (
+                  <div className="space-y-4 pt-4 border-t border-[#27272a] animate-fade-in">
+                     <InputField label="Endereço (Rua/Av)" value={form.address.street} onChange={(e:any) => setForm(f=>({...f, address: {...f.address, street: e.target.value}}))} placeholder="Nome da rua" />
+                     <div className="grid grid-cols-2 gap-4">
+                       <InputField label="Número" value={form.address.number} onChange={(e:any) => setForm(f=>({...f, address: {...f.address, number: e.target.value}}))} placeholder="Nº" />
+                       <InputField label="Bairro" value={form.address.district} onChange={(e:any) => setForm(f=>({...f, address: {...f.address, district: e.target.value}}))} placeholder="Bairro" />
+                     </div>
                   </div>
-                )}
-                
-                {booking.locationType === 'motel' && (
-                  <div className={`p-6 rounded-2xl border text-center animate-fade-in ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-slate-300'} flex flex-col items-center gap-4`}>
-                    <div className={`p-3 rounded-full ${isDark ? 'bg-zinc-700 text-white' : 'bg-slate-200 text-slate-700'}`}>
-                      <Icon name="heart" size={24} />
-                    </div>
-                    <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-100' : 'text-slate-800'}`}>
-                      {T.motel_note}
+                ) : (
+                  <div className="pt-4 border-t border-[#27272a] animate-fade-in">
+                    <p className="text-sm text-zinc-400 flex items-start gap-3 bg-[#18181b] p-4 rounded-xl">
+                      <Icon name="map-pin" className="text-zinc-500 mt-0.5" size={16} />
+                      O endereço exato da suíte na Bela Vista será fornecido via WhatsApp após a confirmação.
                     </p>
                   </div>
                 )}
               </div>
-            </section>
+            </div>
           )}
 
+          {/* PASSO 2: Data e Hora */}
           {step === 2 && (
-            <section className="space-y-10 animate-fade-in max-w-3xl mx-auto">
-              <div className="text-center mb-10 md:mb-12">
-                <h2 className={`text-2xl md:text-4xl font-playfair font-medium mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {T.select_time_title}
-                </h2>
-                <p className={`text-sm font-light ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
-                  {T.toast_select_date}
-                </p>
-              </div>
+            <div className="animate-fade-in space-y-8">
+              <h2 className="text-3xl font-playfair text-white">Quando?</h2>
               
-              <div className={`p-6 md:p-8 rounded-3xl flex flex-col gap-4 border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-white border-slate-200'}`}>
-                 <div className="flex items-center justify-between">
-                   <span className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.cart_title}</span>
-                   <button onClick={() => setStep(0)} className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest px-4 py-2 rounded-full transition-colors border shrink-0 ${isDark ? 'border-zinc-600 text-white hover:bg-zinc-800' : 'border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}>{T.cart_edit}</button>
-                 </div>
-                 {booking.cart.map(item => (
-                   <div key={item.id} className="flex justify-between items-center text-sm md:text-base border-b pb-2 last:border-0 last:pb-0 border-zinc-700/50">
-                     <span className={`font-semibold font-playfair ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.title}</span>
-                     <span className={isDark ? 'text-zinc-300' : 'text-slate-600'}>{formatMoney(item.price, lang)}</span>
-                   </div>
-                 ))}
-              </div>
-
-              <div className="relative mt-10">
-                <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full transition-all border shadow-lg shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-600 text-white hover:bg-zinc-700 hover:-translate-y-2' : 'bg-white border-slate-300 text-slate-600 hover:text-slate-900 hover:-translate-y-2'}`}><Icon name="chevron-left" size={20} /></button>
-                
-                <div ref={dateScrollRef} className="flex gap-3 md:gap-4 overflow-x-auto px-2 py-4 snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                  {daysArray.map((d, idx) => {
-                    const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
-                    const monthName = d.toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { month: 'short' }).replace('.', '');
-                    return (
-                      <div key={idx} className="snap-center shrink-0">
-                        <button onClick={() => setBooking(b => ({ ...b, date: d.toISOString(), time: null }))} className={`w-[72px] h-[96px] md:w-[85px] md:h-[110px] rounded-2xl flex flex-col items-center justify-center gap-1.5 transition-all duration-300 border ${isSel ? 'bg-blue-600 border-blue-400 text-white scale-[1.05] shadow-[0_0_15px_rgba(59,130,246,0.5)]' : isDark ? 'bg-zinc-900/60 border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800' : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50 shadow-sm'}`}>
-                          <span className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest ${isSel ? 'text-blue-100' : 'opacity-80'}`}>{monthName}</span>
-                          <span className="text-xl md:text-2xl font-bold font-playfair">{d.getDate()}</span>
-                          <span className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest ${isSel ? 'text-blue-200' : isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{getDayLabel(d)}</span>
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full transition-all border shadow-lg shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-600 text-white hover:bg-zinc-700 hover:-translate-y-2' : 'bg-white border-slate-300 text-slate-600 hover:text-slate-900 hover:-translate-y-2'}`}><Icon name="chevron-right" size={20} /></button>
-              </div>
-              
-              {!booking.date && (
-                <div className={`text-center py-16 md:py-20 rounded-3xl border border-dashed flex flex-col items-center justify-center gap-4 mt-8 transition-colors px-4 ${isDark ? 'border-zinc-700 bg-zinc-900/50 text-zinc-400' : 'border-slate-300 bg-slate-50/50 text-slate-500'}`}>
-                  <Icon name="calendar" size={36} className="opacity-50" />
-                  <p className="text-xs font-bold uppercase tracking-widest text-white">{T.empty_date}</p>
-                </div>
-              )}
-              
-              {booking.date && generateTimeSlots.length > 0 && (
-                <div className="mt-10 md:mt-12 animate-fade-in">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-                    <h4 className={`text-sm font-bold uppercase tracking-widest ${isDark ? 'text-white' : 'text-slate-800'}`}>{T.time_choose}</h4>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 md:gap-4">
-                    {generateTimeSlots.map((t) => {
-                      const isRush = RUSH_HOURS.includes(t);
+              <div className="bg-[#121214] p-6 rounded-2xl border border-[#27272a]">
+                 <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 pl-1 block mb-4">Escolha a Data</label>
+                 <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-2 px-2">
+                    {generateDates().map((d, i) => {
+                      const isSel = form.date?.toDateString() === d.toDateString();
                       return (
-                        <button key={t} onClick={() => setBooking(b => ({ ...b, time: t }))} 
-                          className={`relative flex flex-col items-center justify-center py-2 md:py-3 rounded-xl md:rounded-2xl text-sm font-bold transition-all duration-300 border
-                            ${booking.time === t 
-                              ? (isRush && booking.locationType !== 'motel' ? 'bg-amber-600 border-amber-400 text-white shadow-[0_0_15px_rgba(217,119,6,0.5)] scale-105' : 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] scale-105') 
-                              : isDark 
-                                ? (isRush && booking.locationType !== 'motel' ? 'bg-amber-500/20 border-amber-500/50 text-amber-300 hover:bg-amber-500/30' : 'bg-zinc-900/60 border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800') 
-                                : (isRush && booking.locationType !== 'motel' ? 'bg-amber-100 border-amber-300 text-amber-800 hover:bg-amber-200' : 'bg-white border-slate-300 text-slate-800 hover:border-slate-400 shadow-sm')
-                            }`}
-                        >
-                          <span>{t}</span>
-                          {isRush && booking.locationType !== 'motel' && <span className={`text-[8px] uppercase tracking-wider mt-0.5 ${booking.time === t ? 'text-amber-100' : isDark ? 'text-amber-400' : 'text-amber-700'}`}>{T.time_rush}</span>}
+                        <button key={i} onClick={() => setForm({...form, date: d, time: ''})} className={`shrink-0 w-[70px] h-[90px] rounded-xl flex flex-col items-center justify-center gap-1 border transition-all ${isSel ? 'bg-white border-white text-black' : 'bg-[#18181b] border-[#27272a] text-zinc-400 hover:border-zinc-500'}`}>
+                          <span className="text-[10px] uppercase font-semibold">{d.toLocaleDateString('pt-BR', {weekday: 'short'}).replace('.','')}</span>
+                          <span className="text-2xl font-playfair">{d.getDate()}</span>
                         </button>
-                      );
+                      )
                     })}
-                  </div>
+                 </div>
 
-                  {generateTimeSlots.some(t => RUSH_HOURS.includes(t)) && booking.locationType !== 'motel' && (
-                    <div className={`mt-6 p-4 rounded-xl flex items-start gap-3 text-[11px] md:text-xs font-medium leading-relaxed border ${isDark ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800'}`}>
-                      <Icon name="alert-circle" size={16} className="shrink-0 mt-0.5" />
-                      <p><strong>{lang === 'en' ? 'Rush Hours:' : 'Horários de Pico:'}</strong> {lang === 'en' ? 'High traffic periods (noon or late afternoon) have a small R$ 15 addition to the travel fee to ensure I reach you on time.' : 'Períodos com alto tráfego possuem um pequeno acréscimo de R$ 15 na taxa de deslocamento para garantir que eu chegue até você com pontualidade.'}</p>
+                 {form.date && (
+                   <div className="mt-8 animate-fade-in">
+                     <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 pl-1 block mb-4">Escolha o Horário</label>
+                     <div className="grid grid-cols-4 gap-3">
+                       {times.map(t => {
+                         const isRush = RUSH_HOURS.includes(t);
+                         const isSel = form.time === t;
+                         return (
+                           <button key={t} onClick={() => setForm({...form, time: t})} className={`relative py-3 rounded-xl text-sm font-medium border transition-all ${isSel ? 'bg-white border-white text-black' : isRush ? 'bg-[#18181b] border-[#27272a] text-zinc-300' : 'bg-transparent border-[#27272a] text-zinc-400 hover:border-zinc-500'}`}>
+                             {t}
+                             {isRush && form.locationType !== 'suite' && <span className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-zinc-600 rounded-full border-2 border-[#121214]" title="Horário de Pico" />}
+                           </button>
+                         )
+                       })}
+                     </div>
+                   </div>
+                 )}
+              </div>
+            </div>
+          )}
+
+          {/* PASSO 3: Resumo e Pagamento */}
+          {step === 3 && (
+            <div className="animate-fade-in space-y-8">
+              <h2 className="text-3xl font-playfair text-white">Resumo do Encontro</h2>
+              
+              <div className="bg-[#121214] p-6 rounded-2xl border border-[#27272a] space-y-6">
+                
+                {/* Resumo Itens */}
+                <div className="space-y-4">
+                  {cart.map((item, i) => (
+                    <div key={i} className="flex justify-between items-center pb-4 border-b border-[#27272a]">
+                      <div>
+                        <p className="font-playfair text-white text-lg">{item.title}</p>
+                        <p className="text-xs text-zinc-500">{item.tag}</p>
+                      </div>
+                      <span className="text-white font-medium">{formatMoney(item.price)}</span>
+                    </div>
+                  ))}
+                  
+                  {RUSH_HOURS.includes(form.time) && form.locationType !== 'suite' && (
+                    <div className="flex justify-between items-center pb-4 border-b border-[#27272a] text-sm text-zinc-400">
+                      <span>Taxa de Deslocamento (Pico)</span>
+                      <span>{formatMoney(RUSH_FEE)}</span>
                     </div>
                   )}
                 </div>
-              )}
-              
-              {booking.date && generateTimeSlots.length === 0 && (
-                <div className={`text-center py-16 rounded-3xl border mt-8 ${isDark ? 'bg-zinc-900/60 border-zinc-700 text-zinc-400' : 'bg-slate-50 border-slate-300 text-slate-600'}`}>
-                  <p className="text-sm font-medium tracking-wide leading-relaxed px-4">{T.empty_slots}</p>
-                </div>
-              )}
-            </section>
-          )}
-          
-          {step === 3 && (
-            <section className="space-y-8 md:space-y-12 animate-fade-in max-w-4xl mx-auto">
-              <SmartTimer isDark={isDark} text={T.timer_text} />
 
-              <div className={`p-6 md:p-8 rounded-3xl border-2 shadow-lg transition-all duration-300 ${isDark ? 'bg-gradient-to-br from-zinc-900/80 to-zinc-950 border-blue-500/30' : 'bg-gradient-to-br from-blue-50/50 to-white border-blue-200'}`}>
-                <div className="mb-6 md:mb-8">
-                  <h3 className={`text-xl md:text-2xl font-playfair font-medium mb-2 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    <Icon name="sparkles" size={24} className="text-blue-500 animate-pulse" /> {T.extras_title}
-                  </h3>
-                  <p className={`text-xs md:text-sm font-light ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
-                    {lang === 'en' ? 'Add a special touch to your experience.' : 'Adicione um toque especial à sua experiência.'}
+                {/* Forma de Pagamento */}
+                <div>
+                   <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 pl-1 block mb-3">Forma de Pagamento (No Local)</label>
+                   <div className="flex gap-3">
+                     <button onClick={() => setForm({...form, payment: 'pix'})} className={`flex-1 py-3 border rounded-xl text-sm transition-colors ${form.payment === 'pix' ? 'bg-white text-black border-white' : 'border-[#27272a] text-zinc-400 hover:border-zinc-500'}`}>Pix (3% OFF)</button>
+                     <button onClick={() => setForm({...form, payment: 'card'})} className={`flex-1 py-3 border rounded-xl text-sm transition-colors ${form.payment === 'card' ? 'bg-white text-black border-white' : 'border-[#27272a] text-zinc-400 hover:border-zinc-500'}`}>Cartão</button>
+                   </div>
+                </div>
+
+                {/* Total */}
+                <div className="pt-4 flex justify-between items-end">
+                  <span className="text-zinc-500 text-sm">Valor Final</span>
+                  <span className="text-3xl font-playfair text-white">{formatMoney(getTotal())}</span>
+                </div>
+
+                <div className="bg-[#18181b] p-4 rounded-xl border border-[#27272a] flex gap-3 items-start mt-4">
+                  <Icon name="shield" className="text-zinc-500 shrink-0" size={18} />
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    Ao prosseguir, você concorda com o respeito mútuo. Declara estar saudável para a prática corporal e ciente de que o serviço será prestado com profissionalismo.
                   </p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                  {DATA.extras.map((ex) => {
-                    const price = booking.cart.some(item => item.type === 'pack') ? Math.floor(ex.price * 0.8) : ex.price;
-                    const isActive = booking.extras[ex.id];
-                    return (
-                      <div key={ex.id} onClick={() => setBooking(b => ({ ...b, extras: { ...b.extras, [ex.id]: !b.extras[ex.id] } }))} className={`flex items-center justify-between p-4 md:p-5 rounded-2xl border cursor-pointer transition-all duration-300 ${isActive ? 'bg-blue-600/20 border-blue-500 shadow-sm' : isDark ? 'bg-zinc-900/60 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-500' : 'bg-white border-slate-300 hover:border-slate-400 shadow-sm'} group`} role="checkbox" aria-checked={isActive}>
-                        <div className="flex items-center gap-4 min-w-0 pr-2">
-                          <div className={`transition-transform duration-300 shrink-0 ${isActive ? 'scale-110' : ''}`}><Icon name={ex.icon} size={24} /></div>
-                          <div className="min-w-0">
-                            <p className={`text-sm font-semibold ${isActive ? isDark ? 'text-blue-300' : 'text-blue-800' : isDark ? 'text-white' : 'text-slate-900'}`}>{ex.label}</p>
-                            <p className={`text-[10px] md:text-xs font-light mt-0.5 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{ex.desc}</p>
-                          </div>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <span className={`text-[9px] md:text-[10px] font-bold tracking-widest px-3 py-1.5 rounded-full transition-colors ${isActive ? 'bg-blue-500 text-white' : isDark ? 'bg-zinc-700 text-white' : 'bg-slate-200 text-slate-800'}`}>
-                            + {formatMoney(price, lang)}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+
               </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6 md:gap-8">
-                <div className={`p-6 md:p-10 rounded-3xl border shadow-sm flex flex-col ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-white border-slate-200'}`}>
-                  <h3 className={`text-xl md:text-2xl font-playfair font-medium mb-6 md:mb-8 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    <Icon name="file-text" size={24} className="text-blue-500" /> {T.summary_title}
-                  </h3>
-                  
-                  <div className="flex-1 space-y-6">
-                    <div>
-                      <p className={`text-[9px] md:text-[10px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                        {T.summary_items}
-                      </p>
-                      <div className="space-y-3">
-                        {booking.cart.map((cartItem, idx) => (
-                           <div key={idx} className="flex justify-between items-center text-sm md:text-base border-b border-zinc-700 pb-3 last:border-0 last:pb-0">
-                             <h4 className={`font-playfair font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                {cartItem.title}
-                             </h4>
-                             <span className={`font-medium ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{formatMoney(cartItem.price, lang)}</span>
-                           </div>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    {Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).length > 0 && (
-                      <div className={`pt-4 border-t border-zinc-700`}>
-                        <p className={`text-[9px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                          {T.summary_extras}
-                        </p>
-                        <div className="space-y-2">
-                          {Object.keys(booking.extras || {}).filter(k => (booking.extras || {})[k]).map(k => {
-                            const ex = DATA.extras.find(e => e.id === k);
-                            if (!ex) return null;
-                            const price = booking.cart.some(item => item.type === 'pack') ? Math.floor(ex.price * 0.8) : ex.price;
-                            return (
-                              <div key={k} className="flex justify-between text-sm font-light">
-                                <span className={`flex items-center gap-2 pr-2 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                                   <Icon name="plus" size={14} className="text-blue-500 shrink-0" /> <span>{ex.label}</span>
-                                </span>
-                                <span className={`${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>+ {formatMoney(price, lang)}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className={`pt-4 mt-auto border-t border-zinc-700`}>
-                       <p className={`text-[9px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                          {T.summary_info}
-                       </p>
-                       <div className="flex flex-col gap-2 text-sm font-medium">
-                          <div className={`flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                            <Icon name="calendar" size={16} className="text-blue-500 shrink-0" />
-                            {booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : ''} {lang === 'en' ? 'at' : 'às'} {booking.time}
-                          </div>
-                          <div className={`flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                            <Icon name="map-pin" size={16} className="text-blue-500 shrink-0" />
-                            {booking.locationType === 'home' ? T.summary_loc_home : booking.locationType === 'motel' ? T.summary_loc_motel : T.summary_loc_hotel}
-                          </div>
-                       </div>
-                    </div>
-                    
-                    <div className={`pt-6 border-t border-dashed ${isDark ? 'border-zinc-600' : 'border-slate-300'}`}>
-                      <div className="flex justify-between mb-3 text-sm">
-                        <span className={`font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.subtotal}</span>
-                        <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                          {formatMoney(financials.sub, lang)}
-                        </span>
-                      </div>
-                      
-                      {booking.appliedCoupon && (
-                        <div className={`my-4 p-4 rounded-2xl flex items-center justify-between border-dashed border-2 ${isDark ? 'bg-emerald-500/20 border-emerald-500/40' : 'bg-emerald-50 border-emerald-300'}`}>
-                           <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDark ? 'bg-emerald-500/30 text-emerald-300' : 'bg-emerald-200 text-emerald-800'}`}>
-                                 <Icon name="gift" size={20} />
-                              </div>
-                              <div>
-                                 <p className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{T.coupon_applied}</p>
-                                 <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{booking.appliedCoupon.code}</p>
-                              </div>
-                           </div>
-                           <span className={`text-lg font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>- {formatMoney(booking.appliedCoupon.val, lang)}</span>
-                        </div>
-                      )}
-
-                      {financials.mediaDisc > 0 && (
-                        <div className="flex justify-between mb-3 text-blue-400 font-medium text-sm">
-                          <span className="pr-2">{T.media_discount}</span>
-                          <span className="shrink-0">- {formatMoney(financials.mediaDisc, lang)}</span>
-                        </div>
-                      )}
-                      
-                      {financials.pixDisc > 0 && (
-                        <div className={`flex justify-between mb-3 font-medium text-sm ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
-                          <span className="pr-2">{T.pix_discount}</span>
-                          <span className="shrink-0">- {formatMoney(financials.pixDisc, lang)}</span>
-                        </div>
-                      )}
-
-                      {financials.rushFee > 0 && (
-                        <div className={`flex justify-between mb-3 font-medium text-sm ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
-                          <span className="pr-2 flex items-center gap-2"><Icon name="car" size={14} /> {T.msg_rush_fee}</span>
-                          <span className="shrink-0">+ {formatMoney(financials.rushFee, lang)}</span>
-                        </div>
-                      )}
-                      
-                      <div className="flex justify-between items-end pt-6 mt-4 border-t border-solid border-blue-500/30">
-                        <span className={`text-[10px] md:text-xs uppercase tracking-widest font-bold pb-1 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.total_label}</span>
-                        <div className="text-right">
-                          <span className={`text-3xl md:text-4xl font-playfair font-semibold bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-700'}`}>
-                            {formatMoney(financials.total, lang)}
-                          </span>
-                          <div className={`flex items-center justify-end gap-1 text-[8px] md:text-[9px] uppercase tracking-widest font-bold mt-1.5 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
-                            <Icon name="sparkles" size={10} /> +{estimatedXP} {T.xp_guaranteed}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {booking.locationType !== 'motel' && (
-                        <div className={`mt-6 p-4 rounded-xl border flex items-start gap-3 text-[11px] font-medium leading-relaxed ${isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-blue-50/50 border-blue-200 text-blue-900'}`}>
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isDark ? 'bg-zinc-700 text-white' : 'bg-blue-200 text-blue-700'}`}>
-                              <Icon name="car" size={16} />
-                            </div>
-                            <span>{T.uber_notice}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-6 md:space-y-8">
-                  {user.coupons.length > 0 && (
-                    <div className={`p-6 md:p-8 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-white border-slate-200'}`}>
-                      <h3 className={`text-base font-playfair font-medium mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        {T.coupon_section}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {user.coupons.map(c => (
-                          <button key={c.id} onClick={() => setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c }))} className={`px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border flex items-center gap-2 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-600 text-white border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : isDark ? 'bg-zinc-800 border-zinc-600 text-white hover:bg-zinc-700' : 'bg-slate-100 border-slate-300 text-slate-800 hover:border-slate-400 shadow-sm'}`}>
-                            {booking.appliedCoupon?.id === c.id && <Icon name="check" size={14} />} {c.title}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className={`p-6 md:p-8 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-white border-slate-200'}`}>
-                      <div className="flex items-start gap-4">
-                        <div className={`mt-0.5 p-2.5 rounded-full shrink-0 ${isDark ? 'bg-zinc-800 text-white' : 'bg-slate-100 text-slate-600'}`}><Icon name={booking.mediaAllowed ? 'camera' : 'video'} size={20} /></div>
-                        <div className="flex-1 min-w-0">
-                           <h3 className={`text-base font-playfair font-medium mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.media_title}</h3>
-                           <p className={`text-[11px] md:text-xs font-light leading-relaxed mb-4 ${isDark ? 'text-zinc-200' : 'text-slate-600'}`}>{T.media_desc}</p>
-                           <button onClick={() => setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed }))} className={`w-full flex items-center justify-between p-3 md:p-4 rounded-xl border transition-all text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${booking.mediaAllowed ? 'bg-blue-600/20 border-blue-500 text-blue-300' : isDark ? 'bg-transparent border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800' : 'bg-white border-slate-300 text-slate-700 hover:border-slate-500 shadow-sm'}`}>
-                              <span className="pr-2">{booking.mediaAllowed ? T.media_granted : T.media_support}</span>
-                              {booking.mediaAllowed ? <div className="flex items-center gap-1 shrink-0"><Icon name="check" size={14} /></div> : <span className={`text-[8px] md:text-[9px] px-2 py-1 rounded-full whitespace-nowrap shrink-0 ${isDark ? 'bg-zinc-700 text-white' : 'bg-slate-100 text-slate-700'}`}>{T.media_bonus}</span>}
-                           </button>
-                        </div>
-                      </div>
-                  </div>
-                  
-                  <div className={`p-6 md:p-8 rounded-3xl border shadow-sm ${isDark ? 'bg-zinc-900/80 border-zinc-700' : 'bg-white border-slate-200'}`}>
-                    <h3 className={`text-base font-playfair font-medium mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.payment_title}</h3>
-                    <div className="space-y-3">
-                      {[
-                        { id: 'pix', label: T.pay_pix, icon: 'smartphone' },
-                        { id: 'card', label: T.pay_card, icon: 'credit-card' },
-                        { id: 'money', label: T.pay_cash, icon: 'banknote' }
-                      ].map(p => (
-                        <button key={p.id} onClick={() => {
-                          setBooking(b => ({ ...b, payment: p.id }));
-                          if (p.id === 'pix') {
-                            navigator.clipboard.writeText(CONFIG.PIX_KEY);
-                            addToast(T.toast_pix_copied, "success");
-                          }
-                        }} className={`w-full flex items-center gap-3 p-4 h-16 rounded-2xl border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] scale-[1.02]' : isDark ? 'bg-zinc-900/80 border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800' : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400 shadow-sm'}`}>
-                          <Icon name={p.icon} size={20} className="shrink-0" />
-                          <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest flex-1 text-left truncate">{p.label}</span>
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${booking.payment === p.id ? 'border-white bg-blue-500' : isDark ? 'border-zinc-600' : 'border-slate-400'}`}>
-                             {booking.payment === p.id && <div className="w-2 h-2 rounded-full bg-white" />}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div onClick={() => setTermsOpen(true)} className={`flex items-center justify-between p-5 md:p-6 rounded-3xl border cursor-pointer transition-all duration-300 ${booking.termsAccepted ? 'bg-emerald-600/20 border-emerald-500/60' : isDark ? 'bg-zinc-900/80 border-zinc-700 hover:border-zinc-500 hover:bg-zinc-800' : 'bg-white border-slate-300 hover:border-slate-400 shadow-sm'}`}>
-                    <div className="flex items-center gap-4 min-w-0 pr-2">
-                      <div className={`shrink-0 ${booking.termsAccepted ? 'text-emerald-400' : isDark ? 'text-white' : 'text-slate-600'}`}><Icon name="heart" size={24} /></div>
-                      <div className="min-w-0">
-                        <span className={`text-sm font-semibold block mb-0.5 truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</span>
-                        <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest truncate block ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.terms_read}</span>
-                      </div>
-                    </div>
-                    <div onClick={(e) => { e.stopPropagation(); setBooking(b => ({ ...b, termsAccepted: !b.termsAccepted })); }} className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.termsAccepted ? 'bg-emerald-600 border-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.5)]' : isDark ? 'border-zinc-600' : 'border-slate-400'}`}>
-                      {booking.termsAccepted && <Icon name="check" size={16} />}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
+            </div>
           )}
-          
-          {step === 4 && (
-            <section className="min-h-[60vh] flex flex-col items-center justify-center text-center animate-fade-in max-w-md mx-auto px-4">
-              <div className="relative mb-10">
-                <div className="absolute inset-0 bg-emerald-500/30 blur-[50px] rounded-full scale-[1.5] animate-pulse-slow" />
-                <div className={`relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center border-[4px] shadow-xl shrink-0 ${isDark ? 'bg-zinc-900 border-zinc-800 text-emerald-400' : 'bg-white border-slate-200 text-emerald-600'}`}>
-                  <Icon name="check" size={36} />
-                </div>
-              </div>
-              <h2 className={`text-3xl md:text-4xl font-playfair font-medium mb-4 leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h2>
-              <p className={`text-sm md:text-base font-light leading-relaxed mb-10 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{T.success_sub}</p>
-              
-              <div className="flex flex-col gap-4 w-full">
-                <Button variant="whatsapp" size="lg" full icon="message" onClick={() => openExternal('whatsapp', generateWhatsAppMsg())}>{T.whatsapp_btn}</Button>
-                <button onClick={() => { setStep(0); setBooking({ ...booking, cart: [], termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`mt-4 text-[10px] font-bold uppercase tracking-widest transition-colors py-3 ${isDark ? 'text-white hover:text-zinc-300' : 'text-slate-600 hover:text-slate-800'}`}>
-                  {T.back_home}
-                </button>
-              </div>
-            </section>
-          )}
-        </div>
-      </main>
-      
-      {step >= 0 && step < 4 && booking.cart.length > 0 && (
-        <nav className="fixed bottom-0 left-0 right-0 p-3 md:p-6 z-40 animate-fade-in pointer-events-none">
-          <div className={`max-w-3xl mx-auto rounded-[2rem] p-3 md:p-4 border backdrop-blur-3xl pointer-events-auto flex justify-between items-center transition-all shadow-2xl ${isDark ? 'bg-zinc-950/95 border-zinc-700 shadow-black/90' : 'bg-white/95 border-slate-300 shadow-slate-300/80'}`}>
-            
+
+        </main>
+
+        {/* Floating Action Bar */}
+        <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--bg-dark)] via-[var(--bg-dark)] to-transparent pointer-events-none">
+          <div className="max-w-3xl mx-auto flex gap-4 pointer-events-auto">
             {step > 0 && (
-               <button onClick={() => { setStep(s => s - 1); }} className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-colors border border-transparent shrink-0 ${isDark ? 'bg-zinc-800 text-white hover:bg-zinc-700 hover:border-zinc-500' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:border-slate-300'}`} aria-label="Voltar Etapa">
-                 <Icon name="chevron-left" size={24} />
-               </button>
+              <Button variant="secondary" onClick={() => setStep(s=>s-1)} icon="chevron-left" />
             )}
             
-            <div className={`flex-1 flex flex-col items-start justify-center min-w-0 px-4 ${step === 0 ? 'pl-6' : ''}`}>
-              <p className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-0.5 w-full ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
-                {step === 0 ? `${booking.cart.length} ${T.items_selected}` : step === 3 ? T.total_label : T.subtotal}
-              </p>
-              <p className={`text-xl md:text-2xl font-playfair font-semibold truncate w-full ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {step === 3 ? formatMoney(financials.total, lang) : formatMoney(financials.sub, lang)}
-              </p>
-            </div>
-            
-            <Button onClick={handleNextStep} disabled={!isStepValid()} size="lg" className="!h-14 !px-6 md:!px-8 !text-[11px] md:!text-xs shrink-0 !rounded-2xl" ariaLabel={step === 3 ? T.finish_btn : T.next_btn}>
-              <span className="hidden sm:inline">{step === 3 ? T.finish_btn : T.next_btn}</span>
-              <span className="inline sm:hidden">{step === 3 ? T.btn_finish_short : T.btn_next_short}</span>
-              {step !== 3 && <Icon name="chevron-right" size={18} className="ml-1" />}
-            </Button>
-          </div>
-        </nav>
-      )}
-      
-      {termsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-xl max-h-[85vh] rounded-3xl p-6 md:p-10 flex flex-col border shadow-2xl ${isDark ? 'bg-zinc-950 border-zinc-700' : 'bg-white border-slate-200'}`}>
-            <button onClick={() => setTermsOpen(false)} className={`absolute top-4 right-4 p-2 rounded-full transition-colors shrink-0 ${isDark ? 'hover:bg-zinc-800 text-white' : 'hover:bg-slate-100 text-slate-600'}`} aria-label="Fechar"><Icon name="x" size={20} /></button>
-            <h3 className={`text-xl md:text-2xl font-playfair font-medium mb-6 md:mb-8 text-center shrink-0 pr-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.rules_complete}</h3>
-            <div className="space-y-3 overflow-y-auto scrollbar-hide mb-6">
-              {DATA.rules.map((rule, i) => <RuleItem key={i} rule={rule} isDark={isDark} />)}
-            </div>
-            <div className="shrink-0 pt-4 border-t border-zinc-700">
-              <Button full size="lg" onClick={() => { setBooking(b => ({ ...b, termsAccepted: true })); setTermsOpen(false); }}>{T.agree_terms}</Button>
-            </div>
+            {step < 3 ? (
+               <Button full disabled={!isStepValid()} onClick={() => setStep(s=>s+1)}>
+                 Continuar
+               </Button>
+            ) : (
+               <Button full variant="accent" onClick={() => window.open(generateWhatsAppMessage(), '_blank')}>
+                 Confirmar Reserva no WhatsApp
+               </Button>
+            )}
           </div>
         </div>
-      )}
-      
-      {welcomePopup && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-sm rounded-3xl p-8 md:p-10 text-center border shadow-2xl ${isDark ? 'bg-zinc-950 border-zinc-700' : 'bg-white border-slate-200'}`}>
-            <div className={`w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full flex items-center justify-center mb-6 border-[4px] shadow-inner shrink-0 ${isDark ? 'bg-zinc-800 border-zinc-700 text-blue-400' : 'bg-slate-50 border-slate-100 text-blue-600'}`}><Icon name="gift" size={32} /></div>
-            <h3 className={`text-2xl md:text-3xl font-playfair font-medium mb-3 leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
-            <p className={`text-xs md:text-sm font-light leading-relaxed mb-4 ${isDark ? 'text-zinc-200' : 'text-slate-600'}`}>{T.welcome_popup_msg}</p>
-            
-            <div className={`text-[10px] md:text-xs text-left p-3 mb-6 rounded-xl border ${isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
-                {T.welcome_popup_warning}
-            </div>
 
-            <div className={`p-4 md:p-5 rounded-2xl border mb-6 border-dashed ${isDark ? 'bg-blue-900/20 border-blue-500/50' : 'bg-blue-50 border-blue-300'}`}>
-              <p className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-1 md:mb-2 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{lang === 'en' ? 'YOUR INAUGURAL GIFT' : 'SEU PRESENTE INAUGURAL'}</p>
-              <p className={`text-2xl md:text-3xl font-playfair font-semibold tracking-wide break-all ${isDark ? 'text-white' : 'text-slate-900'}`}>BEMVINDO10</p>
-            </div>
-            <Button full size="lg" onClick={() => {
-              setWelcomePopup(false);
-              setUser(u => ({ ...u, hasSeenWelcome: true }));
-              const welcomeCoupon = { id: 'welcome', val: 10, title: '🎁 BEMVINDO10', code: 'BEMVINDO10' };
-              setBooking(b => ({ ...b, appliedCoupon: welcomeCoupon }));
-              setUser(prev => ({ ...prev, coupons: [...prev.coupons, welcomeCoupon] }));
-              addToast(T.toast_coupon_success, "success");
-            }}>
-              {T.get_coupon}
-            </Button>
-          </div>
-        </div>
-      )}
-      
-      {levelUpPopup && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-sm rounded-3xl p-8 md:p-10 text-center border shadow-2xl overflow-hidden ${isDark ? 'bg-zinc-950 border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.2)]' : 'bg-white border-amber-200 shadow-[0_0_40px_rgba(245,158,11,0.3)]'}`}>
-            <div className="absolute -top-20 -right-20 w-48 h-48 bg-amber-500/30 blur-[60px] rounded-full pointer-events-none" />
-            <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-amber-500/50 animate-bounce shrink-0 relative z-10 text-white"><Icon name="trophy" size={36} /></div>
-            <h3 className={`text-3xl md:text-4xl font-playfair font-medium mb-3 relative z-10 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
-            <p className={`text-sm md:text-base font-light leading-relaxed mb-8 relative z-10 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{T.levelup_popup_msg}</p>
-            <button onClick={() => setLevelUpPopup(false)} className={`w-full h-14 rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all shadow-xl hover:-translate-y-1 relative z-10 shrink-0 ${isDark ? 'bg-amber-500 text-zinc-950 hover:bg-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.4)]' : 'bg-amber-500 text-white hover:bg-amber-600 shadow-[0_0_20px_rgba(245,158,11,0.5)]'}`}>
-              {T.level_redeem}
-            </button>
-          </div>
-        </div>
-      )}
+      </div>
     </>
   );
 }
