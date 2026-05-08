@@ -227,7 +227,6 @@ const getData = (lang: 'pt' | 'en') => {
   const p = {
     depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317, crossfit: 187,
     pes: 110, maos: 110, combo_pm: 190,
-    // Planos antigos e novos organizados para facilitar
     pack_basic: { v: 247, full: 284, save: 37 },
     pack1: { v: 297, full: 334, save: 37 },
     pack_glow: { v: 327, full: 391, save: 64 },
@@ -258,7 +257,6 @@ const getData = (lang: 'pt' | 'en') => {
       { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "PRACTICALITY" : "ESTÉTICA", title: isEn ? "Full Body Trim" : "Aparo de Pelos do Corpo", desc: isEn ? "Leave with a clean, light body ready for the week." : "Sem tempo para se cuidar? Eu aparo os pelos do seu corpo com máquina profissional para você ficar impecável e limpo para a semana.", details: isEn ? "Step 1: Trim with clippers\nStep 2: Focus on body parts" : "1. Aparo com máquina (pente zero ou três) feito de forma cuidadosa.\n2. Foco nas regiões que você escolher (peito, costas, abdômen ou pernas).\n3. Feito no conforto da sua casa ou hotel, sem a frieza de salões.\n4. Resultado: Corpo mais limpo, menos suor e visual muito mais agradável." }
     ] as ServiceItem[],
     
-    // Lista ordenada do mais barato ao mais caro de forma transparente
     plans: [
       { id: 'pack_basic', type: 'pack', title: isEn ? "Routine Relief (2x)" : "Alívio de Rotina (2x)", price: p.pack_basic.v, fullPrice: p.pack_basic.full, savings: p.pack_basic.save, desc: isEn ? "For those who stand or type a lot. Includes a relaxing bonus." : "Para quem trabalha de pé ou digitando. Inclui um bônus relaxante grátis.", details: isEn ? "1x Foot Massage\n1x Classic\n🎁 Bonus: Free Aromatherapy" : "1x Massagem nos Pés\n1x Massagem Clássica\n🎁 Bônus: Aromaterapia grátis em ambas as sessões\nDuas semanas garantidas de alívio rápido e aromático.", tag: isEn ? "RELAX" : "RELAX", icon: "watch" },
       { id: 'pack_essencial', type: 'pack', title: isEn ? "Survival Kit (2x)" : "Kit Sobrevivência (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: isEn ? "Two sessions to cure pain and mind." : "O básico essencial. Duas sessões agendadas no mês: um dia para tirar dores, outro para aliviar a mente.", details: isEn ? "1x Classic\n1x Sensory" : "1x Massagem Clássica (para tirar as dores e nós musculares)\n1x Massagem Sensorial (para esvaziar a cabeça com toques e prazer)\nSessões agendadas separadamente no mês\nIdeal para garantir que você não surte com a rotina.", tag: isEn ? "PERFECT SLEEP" : "DURMA BEM", icon: "layers" },
@@ -947,6 +945,17 @@ export default function App() {
     }
   };
 
+  // Safe getDayLabel with useCallback so it updates safely
+  const getDayLabel = useCallback((d: Date) => {
+    const today = new Date(); 
+    const tmrw = new Date(today); 
+    tmrw.setDate(today.getDate() + 1); // FIXED: i is no longer causing a crash
+    
+    if (d.toDateString() === today.toDateString()) return T.today;
+    if (d.toDateString() === tmrw.toDateString()) return T.tomorrow;
+    return d.toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { weekday: 'short' }).slice(0, 3).toUpperCase();
+  }, [T.today, T.tomorrow, lang]);
+
   const daysArray = useMemo(() => {
     const days = []; const today = new Date();
     for (let i = 0; i < 30; i++) { const d = new Date(today); d.setDate(today.getDate() + i); days.push(d); }
@@ -1106,14 +1115,6 @@ export default function App() {
     dateScrollRef.current?.scrollBy({ left: dir === 'left' ? -260 : 260, behavior: 'smooth' });
   };
 
-  const getDayLabel = (d: Date) => {
-    const today = new Date(); const tmrw = new Date(today); tmrw.setDate(today.getDate() + i);
-    if (d.toDateString() === today.toDateString()) return T.today;
-    if (d.toDateString() === tmrw.toDateString()) return T.tomorrow;
-    return d.toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { weekday: 'short' }).slice(0, 3).toUpperCase();
-  };
-
-  const nextLevel = getNextLevelInfo();
   const categoryConfig = [
     { id: 'relax', title: lang === 'en' ? "Just Relax" : "Apenas Relaxar", icon: 'sun', desc: lang === 'en' ? "Therapeutic body work to relieve stress." : "Tire a dor muscular e todo o estresse das costas." },
     { id: 'express', title: lang === 'en' ? "Express Care" : "Cuidados Rápidos", icon: 'watch', desc: lang === 'en' ? "Quick localized relief for hands and feet." : "Alívio rápido e localizado nas mãos e pés cansados." },
