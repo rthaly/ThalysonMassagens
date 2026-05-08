@@ -76,7 +76,7 @@ const ICON_PATHS: Record<string, string> = {
 };
 
 // ==================================================================================
-// GLOBAL STYLES
+// GLOBAL STYLES — Otimizado para Astigmatismo & UI Premium
 // ==================================================================================
 const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -87,6 +87,7 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     :root {
       --font-sans: 'Poppins', sans-serif;
       --font-display: 'Poppins', sans-serif;
+      /* Ajuste de contraste para astigmatismo: Evitar branco/preto puros */
       --c-bg: ${isDark ? '#11141a' : '#f9f8f6'};
       --c-surface: ${isDark ? '#181c25' : '#ffffff'};
       --c-border: ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'};
@@ -226,9 +227,14 @@ const getData = (lang: 'pt' | 'en') => {
   const p = {
     depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317, crossfit: 187,
     pes: 110, maos: 110, combo_pm: 190,
+    // Planos antigos e novos organizados para facilitar
+    pack_basic: { v: 247, full: 284, save: 37 },
     pack1: { v: 297, full: 334, save: 37 },
+    pack_glow: { v: 327, full: 391, save: 64 },
+    pack_muscle: { v: 347, full: 408, save: 61 },
     pack2: { v: 387, full: 467, save: 80 },
     pack3: { v: 637, full: 721, save: 84 },
+    pack_ultimate: { v: 657, full: 778, save: 121 },
     extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17, dominador: 180, oral: 120, beijos: 77, prostatico: 120 }
   };
 
@@ -251,11 +257,18 @@ const getData = (lang: 'pt' | 'en') => {
       { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "TOTAL SURRENDER" : "ENTREGA TOTAL", title: isEn ? "Nuru Massage" : "Massagem Nuru", desc: isEn ? "Gliding gel, parts of my body sliding over yours." : "Para quando você está no limite. Muito gel deslizando, contato extremo pele com pele e uma experiência que vai fazer suas pernas tremerem.", details: isEn ? "Step 1: Full massage\nStep 2: Warm gel\nStep 3: Skin on skin" : "1. Massagem inicial rápida para aquecer e soltar o corpo.\n2. Aplicação de bastante gel e especial em nós dois.\n3. Contato total pele na pele: uso partes do meu corpo deslizando sobre o seu.\n4. A viagem final mais prazerosa e intensa para você relaxar e apagar." },
       { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "PRACTICALITY" : "ESTÉTICA", title: isEn ? "Full Body Trim" : "Aparo de Pelos do Corpo", desc: isEn ? "Leave with a clean, light body ready for the week." : "Sem tempo para se cuidar? Eu aparo os pelos do seu corpo com máquina profissional para você ficar impecável e limpo para a semana.", details: isEn ? "Step 1: Trim with clippers\nStep 2: Focus on body parts" : "1. Aparo com máquina (pente zero ou três) feito de forma cuidadosa.\n2. Foco nas regiões que você escolher (peito, costas, abdômen ou pernas).\n3. Feito no conforto da sua casa ou hotel, sem a frieza de salões.\n4. Resultado: Corpo mais limpo, menos suor e visual muito mais agradável." }
     ] as ServiceItem[],
+    
+    // Lista ordenada do mais barato ao mais caro de forma transparente
     plans: [
-      { id: 'pack_essencial', type: 'pack', title: isEn ? "Survival Kit (2x)" : "Kit Sobrevivência (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: isEn ? "Two sessions to cure pain and mind." : "O básico essencial. Duas sessões agendadas no mês: um dia para tirar dores, outro para aliviar a mente.", details: isEn ? "1x Classic\n1x Sensory" : "1x Massagem Clássica (para tirar as dores e nós musculares)\n1x Massagem Sensorial (para esvaziar a cabeça com toques e prazer)\nSessões agendadas separadamente no mês\nIdeal para garantir que você não surte com a rotina", tag: isEn ? "PERFECT SLEEP" : "DURMA BEM", icon: "layers" },
-      { id: 'pack_interativo', type: 'pack', title: isEn ? "Real Connection (2x)" : "Combo Conexão (2x)", price: p.pack2.v, fullPrice: p.pack2.full, savings: p.pack2.save, desc: isEn ? "Missing human contact? Two encounters to forget loneliness." : "Para quem precisa de contato humano real e intimidade. Dois encontros separados no mês para você não se sentir sozinho.", details: isEn ? "1x Fusion\n1x Reverse" : "1x Experiência Fusion (relaxamento que termina de forma completa)\n1x Massagem Reversa (o dia para você matar a vontade de tocar e explorar)\nSessões marcadas em dias diferentes para você ter o que esperar no mês\nFoco 100% em te dar calor humano e atenção exclusiva", tag: isEn ? "END OF LONELINESS" : "MAIS CALOR HUMANO", icon: "heart" },
-      { id: 'pack_premium', type: 'pack', title: isEn ? "Boss Plan (3x)" : "Mensalidade do Chefe (3x)", price: p.pack3.v, fullPrice: p.pack3.full, savings: p.pack3.save, desc: isEn ? "You deserve to be treated like a king. Three weeks guaranteed." : "Você trabalha demais, merece um tratamento VIP. Três semanas do mês garantidas com as minhas melhores e mais intensas massagens.", details: isEn ? "1x Naturist\n1x Fusion\n1x Nuru" : "1x Naturista (liberdade sem roupas para soltar as amarras)\n1x Fusion (equilíbrio perfeito entre massagem forte e clímax quente)\n1x Nuru (contato extremo com gel para o maior relaxamento possível)\nTrês encontros VIP para garantir que seu mês seja um sucesso sem estresse", tag: isEn ? "MONTH'S REWARD" : "TRATAMENTO DE REI", icon: "award" }
+      { id: 'pack_basic', type: 'pack', title: isEn ? "Routine Relief (2x)" : "Alívio de Rotina (2x)", price: p.pack_basic.v, fullPrice: p.pack_basic.full, savings: p.pack_basic.save, desc: isEn ? "For those who stand or type a lot. Includes a relaxing bonus." : "Para quem trabalha de pé ou digitando. Inclui um bônus relaxante grátis.", details: isEn ? "1x Foot Massage\n1x Classic\n🎁 Bonus: Free Aromatherapy" : "1x Massagem nos Pés\n1x Massagem Clássica\n🎁 Bônus: Aromaterapia grátis em ambas as sessões\nDuas semanas garantidas de alívio rápido e aromático.", tag: isEn ? "RELAX" : "RELAX", icon: "watch" },
+      { id: 'pack_essencial', type: 'pack', title: isEn ? "Survival Kit (2x)" : "Kit Sobrevivência (2x)", price: p.pack1.v, fullPrice: p.pack1.full, savings: p.pack1.save, desc: isEn ? "Two sessions to cure pain and mind." : "O básico essencial. Duas sessões agendadas no mês: um dia para tirar dores, outro para aliviar a mente.", details: isEn ? "1x Classic\n1x Sensory" : "1x Massagem Clássica (para tirar as dores e nós musculares)\n1x Massagem Sensorial (para esvaziar a cabeça com toques e prazer)\nSessões agendadas separadamente no mês\nIdeal para garantir que você não surte com a rotina.", tag: isEn ? "PERFECT SLEEP" : "DURMA BEM", icon: "layers" },
+      { id: 'pack_glow', type: 'pack', title: isEn ? "Full Renewal (2x)" : "Renovação Completa (2x)", price: p.pack_glow.v, fullPrice: p.pack_glow.full, savings: p.pack_glow.save, desc: isEn ? "A day for aesthetics and a day for pleasure. With a time bonus." : "Dia de cuidar da estética e dia de ter muito prazer. Com bônus de tempo.", details: isEn ? "1x Trim\n1x Fusion\n🎁 Bonus: +30 min free on Fusion" : "1x Aparo de Pelos do Corpo\n1x Experiência Fusion\n🎁 Bônus: +30 minutos extras grátis na sessão Fusion\nIdeal para elevar a autoestima, ficar limpo e aliviar o estresse.", tag: isEn ? "GLOW UP" : "GLOW UP", icon: "sparkles" },
+      { id: 'pack_muscle', type: 'pack', title: isEn ? "Recovery Combo (2x)" : "Combo Recuperação (2x)", price: p.pack_muscle.v, fullPrice: p.pack_muscle.full, savings: p.pack_muscle.save, desc: isEn ? "Focused on those who train hard and suffer from intense muscle pain." : "Focado em quem treina pesado e sofre com dores musculares intensas.", details: isEn ? "2x Crossfit\n🎁 Bonus: Extra Pain Focus free" : "2x Massagem para Atletas (Crossfit)\n🎁 Bônus: Foco Extra em Dores (Pomadas potentes) grátis\nDuas sessões totalmente dedicadas à sua recuperação física pesada.", tag: isEn ? "MUSCLE" : "MÚSCULOS", icon: "zap" },
+      { id: 'pack_interativo', type: 'pack', title: isEn ? "Real Connection (2x)" : "Combo Conexão (2x)", price: p.pack2.v, fullPrice: p.pack2.full, savings: p.pack2.save, desc: isEn ? "Missing human contact? Two encounters to forget loneliness." : "Para quem precisa de contato humano real e intimidade. Dois encontros separados no mês para você não se sentir sozinho.", details: isEn ? "1x Fusion\n1x Reverse" : "1x Experiência Fusion (relaxamento que termina de forma completa)\n1x Massagem Reversa (o dia para você matar a vontade de tocar e explorar)\nSessões marcadas em dias diferentes para você ter o que esperar no mês\nFoco 100% em te dar calor humano e atenção exclusiva.", tag: isEn ? "END OF LONELINESS" : "MAIS CALOR HUMANO", icon: "heart" },
+      { id: 'pack_premium', type: 'pack', title: isEn ? "Boss Plan (3x)" : "Mensalidade do Chefe (3x)", price: p.pack3.v, fullPrice: p.pack3.full, savings: p.pack3.save, desc: isEn ? "You deserve to be treated like a king. Three weeks guaranteed." : "Você trabalha demais, merece um tratamento VIP. Três semanas do mês garantidas com as minhas melhores e mais intensas massagens.", details: isEn ? "1x Naturist\n1x Fusion\n1x Nuru" : "1x Naturista (liberdade sem roupas para soltar as amarras)\n1x Fusion (equilíbrio perfeito entre massagem forte e clímax quente)\n1x Nuru (contato extremo com gel para o maior relaxamento possível)\nTrês encontros VIP para garantir que seu mês seja um sucesso sem estresse.", tag: isEn ? "MONTH'S REWARD" : "TRATAMENTO DE REI", icon: "award" },
+      { id: 'pack_ultimate', type: 'pack', title: isEn ? "Pleasure Journey (3x)" : "Jornada do Prazer (3x)", price: p.pack_ultimate.v, fullPrice: p.pack_ultimate.full, savings: p.pack_ultimate.save, desc: isEn ? "Total immersion. Three weeks escalating the level of intimacy." : "A imersão total. Três semanas escalando o nível de intimidade e calor.", details: isEn ? "1x Sensory\n1x Fusion\n1x Nuru\n🎁 Bonus: Touch allowed free" : "1x Massagem Sensorial\n1x Experiência Fusion\n1x Massagem Nuru\n🎁 Bônus: Liberdade para Tocar grátis liberada nos 3 encontros\nA forma definitiva de desligar a mente e explorar sensações.", tag: isEn ? "PREMIUM" : "PREMIUM", icon: "heart" }
     ] as ServiceItem[],
+
     extras: [
       { id: 'hair_trim', price: p.extras.hair_trim, icon: "scissors", label: isEn ? "Trim (Extra)" : "Aparo de Pelos", desc: isEn ? "Maintenance in 2 body parts to look flawless." : "Aparo de pelos com máquina em até 2 áreas do corpo. Fique limpo e com o visual em dia." },
       { id: 'more_time', price: p.extras.more_time, icon: "clock", label: isEn ? "Extended Time (+30m)" : "Mais 30 Minutos", desc: isEn ? "Because when it's good, we don't want it to end." : "Adicione mais 30 minutos na sua sessão. Ideal para curtir sem pressa e relaxar muito mais." },
@@ -303,7 +316,7 @@ const getData = (lang: 'pt' | 'en') => {
       select_time_title: isEn ? "Choose the perfect moment" : "Escolha a data do nosso encontro",
       location_title: isEn ? "Where will our encounter be?" : "Onde nós vamos nos ver?",
       extras_title: isEn ? "Add something special" : "Adicione complementos opcionais",
-      coupon_section: isEn ? "Your Benefits" : "Seus Benefícios e Cupons",
+      coupon_section: isEn ? "Your Benefits" : "Seus Benefícios Disponíveis",
       coupon_empty: isEn ? "No benefits available at the moment." : "Nenhum benefício disponível no momento.",
       payment_title: isEn ? "Payment method (at the meeting)" : "Forma de pagamento (você paga no local)",
       terms_title: isEn ? "Delivery Agreement" : "Regras e Acordos",
@@ -314,7 +327,7 @@ const getData = (lang: 'pt' | 'en') => {
       timer_text: isEn ? "Cart saved for" : "Sua reserva salva por",
       input_name: isEn ? "Your name or nickname" : "Qual o seu nome ou apelido?",
       input_cep: isEn ? "ZIP Code (CEP)" : "Digite o CEP do local",
-      input_addr: isEn ? "Street or Avenue" : "Qual a Rua ou Avenida?",
+      input_addr: isEn ? "Street or Avenue" : "Qual a Rua ou Avenida completa?",
       input_num: isEn ? "Number" : "Número do local",
       input_district: isEn ? "Neighborhood" : "Bairro",
       input_city: isEn ? "City" : "Cidade",
@@ -448,7 +461,7 @@ const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disa
   );
 });
 
-// Refined Input
+// Refined Input - Agora 100% Linear
 const InputField = memo(({ label, value, onChange, placeholder, icon, type = 'text', isDark = true, hasError = false, disabled = false, maxLength }: any) => (
   <div className={`space-y-2 w-full ${hasError ? 'animate-shake' : ''}`}>
     {label && (
@@ -1094,7 +1107,7 @@ export default function App() {
   };
 
   const getDayLabel = (d: Date) => {
-    const today = new Date(); const tmrw = new Date(today); tmrw.setDate(today.getDate() + 1);
+    const today = new Date(); const tmrw = new Date(today); tmrw.setDate(today.getDate() + i);
     if (d.toDateString() === today.toDateString()) return T.today;
     if (d.toDateString() === tmrw.toDateString()) return T.tomorrow;
     return d.toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { weekday: 'short' }).slice(0, 3).toUpperCase();
@@ -1310,7 +1323,7 @@ export default function App() {
                     })}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {DATA.plans.map((s: ServiceItem) => (
                       <ServiceCard key={s.id} service={s} isInCart={booking.cart.some(c => c.id === s.id)} onToggle={handleToggleCartItem} isDark={isDark} T={T} isPremium={true} onOpenModal={setSelectedServiceForModal} />
                     ))}
@@ -1356,7 +1369,7 @@ export default function App() {
               STEP 1 — WHERE
           ═══════════════════════════════════════════════════════ */}
           {step === 1 && (
-            <section className="animate-fade-up max-w-2xl mx-auto space-y-10">
+            <section className="animate-fade-up max-w-xl mx-auto space-y-10">
               <div className="text-center">
                 <h2 className={`font-display text-4xl md:text-5xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
               </div>
@@ -1691,7 +1704,7 @@ export default function App() {
                       <div className={`flex justify-between gap-4 items-end pt-5 mt-2 border-t ${isDark ? 'border-white/8' : 'border-slate-100'}`}>
                         <span className={`text-sm uppercase font-semibold tracking-widest mb-1 shrink-0 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.total_label}</span>
                         <div className="text-right min-w-0">
-                          <p className="font-display text-3xl sm:text-4xl text-gradient-blue whitespace-nowrap">{formatMoney(financials.total, lang)}</p>
+                          <p className="font-display text-4xl text-gradient-blue whitespace-nowrap">{formatMoney(financials.total, lang)}</p>
                           <p className={`text-[10px] uppercase font-bold tracking-widest mt-1 flex items-center justify-end gap-1.5 whitespace-nowrap ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                             <Icon name="sparkles" size={11} /> +{estimatedXP} {T.xp_guaranteed}
                           </p>
@@ -1864,6 +1877,7 @@ export default function App() {
       {/* ── STICKY BOTTOM NAV ── */}
       {step >= 0 && step < 4 && booking.cart.length > 0 && (
         <nav className="fixed bottom-0 inset-x-0 px-4 sm:px-5 pb-5 pt-3 z-40 animate-slide-up pointer-events-none">
+          {/* Removido backdrop-blur e cores translúcidas para melhorar a acessibilidade e contraste puro */}
           <div className={`max-w-5xl mx-auto pointer-events-auto rounded-[2rem] overflow-hidden border shadow-[0_-10px_40px_rgba(0,0,0,0.25)] ${isDark ? 'bg-[#181c25] border-zinc-700' : 'bg-white border-slate-300'}`}>
             <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
               
