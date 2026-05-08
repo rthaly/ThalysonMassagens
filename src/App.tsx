@@ -76,7 +76,7 @@ const ICON_PATHS: Record<string, string> = {
 };
 
 // ==================================================================================
-// GLOBAL STYLES — Otimizado para Astigmatismo & UI Premium
+// GLOBAL STYLES — Otimizado e completado (Com Animações em Falta Corrigidas)
 // ==================================================================================
 const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -87,7 +87,6 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     :root {
       --font-sans: 'Poppins', sans-serif;
       --font-display: 'Poppins', sans-serif;
-      /* Ajuste de contraste para astigmatismo: Evitar branco/preto puros */
       --c-bg: ${isDark ? '#11141a' : '#f9f8f6'};
       --c-surface: ${isDark ? '#181c25' : '#ffffff'};
       --c-border: ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'};
@@ -118,13 +117,19 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
 
-    /* Animations */
+    /* Animations (MISSING KEYFRAMES ADDED) */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes scaleIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     @keyframes checkPop { 0% { transform: scale(0); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
     @keyframes toast-in { from { transform: translateY(-20px) scale(0.94); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
     @keyframes modal-backdrop { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+    @keyframes slideRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes loadingBar { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
+    @keyframes bounceSlow { 0%, 100% { transform: translateY(-5%); } 50% { transform: translateY(0); } }
     
     .animate-fade-up { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-fade-in { animation: fadeIn 0.3s ease forwards; }
@@ -133,7 +138,11 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     .animate-toast-in { animation: toast-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
     .animate-modal-backdrop { animation: modal-backdrop 0.3s ease-out forwards; }
     .animate-spin { animation: spin 0.7s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .animate-shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+    .animate-slide-right { animation: slideRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .loading-bar-anim { animation: loadingBar 1.5s infinite linear; }
+    .animate-bounce-slow { animation: bounceSlow 3s infinite ease-in-out; }
 
     /* Interactivity */
     .card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; }
@@ -418,7 +427,7 @@ const getData = (lang: 'pt' | 'en') => {
 // REFINED COMPONENTS
 // ==================================================================================
 
-// Toast Notification - Cor Sólida para Contraste Máximo
+// Toast Notification
 const ToastContainer = memo(({ toasts, isDark }: { toasts: any[]; isDark: boolean }) => (
   <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-3 pointer-events-none w-full max-w-sm px-4">
     {toasts.map(t => (
@@ -459,7 +468,7 @@ const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disa
   );
 });
 
-// Refined Input - Agora 100% Linear
+// Refined Input
 const InputField = memo(({ label, value, onChange, placeholder, icon, type = 'text', isDark = true, hasError = false, disabled = false, maxLength }: any) => (
   <div className={`space-y-2 w-full ${hasError ? 'animate-shake' : ''}`}>
     {label && (
@@ -620,7 +629,8 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
 ));
 
 // Modal de Serviço
-const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDark, T, isPremium }: any) => {
+// CORRIGIDO: Aceita `lang` para converter moeda dinamicamente em ambas as views.
+const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDark, T, lang, isPremium }: any) => {
   if (!isOpen || !service) return null;
 
   return (
@@ -654,10 +664,10 @@ const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDar
           <div className="flex items-baseline gap-2 mt-4">
             {service.fullPrice && (
               <span className={`text-sm font-medium line-through whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
-                {T.from} {formatMoney(service.fullPrice, 'pt')}
+                {T.from} {formatMoney(service.fullPrice, lang)}
               </span>
             )}
-            <span className={`font-display text-2xl whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, 'pt')}</span>
+            <span className={`font-display text-2xl whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, lang)}</span>
           </div>
         </div>
 
@@ -694,7 +704,8 @@ const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDar
 });
 
 // Service Card
-const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, isPremium = false, onOpenModal }: any) => {
+// CORRIGIDO: Usa `lang` para formatar os preços ao invés de fixar `'pt'`
+const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, lang, isPremium = false, onOpenModal }: any) => {
   return (
     <div
       className={`relative rounded-[2rem] border transition-all duration-300 overflow-hidden card-hover cursor-pointer flex flex-col ${isInCart
@@ -734,10 +745,10 @@ const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, isPremium = 
           <div className="text-right shrink-0">
             {service.fullPrice && (
               <p className={`text-[11px] font-medium line-through mb-0.5 whitespace-nowrap ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
-                {formatMoney(service.fullPrice, 'pt')}
+                {formatMoney(service.fullPrice, lang)}
               </p>
             )}
-            <p className={`font-display text-xl leading-none whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, 'pt')}</p>
+            <p className={`font-display text-xl leading-none whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, lang)}</p>
           </div>
         </div>
       </div>
@@ -945,11 +956,10 @@ export default function App() {
     }
   };
 
-  // Safe getDayLabel with useCallback so it updates safely
   const getDayLabel = useCallback((d: Date) => {
     const today = new Date(); 
     const tmrw = new Date(today); 
-    tmrw.setDate(today.getDate() + 1); // FIXED: i is no longer causing a crash
+    tmrw.setDate(today.getDate() + 1); 
     
     if (d.toDateString() === today.toDateString()) return T.today;
     if (d.toDateString() === tmrw.toDateString()) return T.tomorrow;
@@ -1013,6 +1023,18 @@ export default function App() {
     return Math.floor(financials.total * (isPack ? 0.30 : 0.15));
   }, [financials.total, booking.cart]);
 
+  // CORRIGIDO: O crash acontecia porque nextLevel era invocado por uma helper,
+  // mas não estava declarada como variável global no render e o JSX tentava renderizar.
+  // Memoized pra garantir que renderize e não quebre a aplicação.
+  const nextLevel = useMemo(() => {
+    if (user.xp >= 800) {
+      const need = 500 - ((user.xp - 800) % 500); 
+      return { needed: need, reward: DATA.levels[3].reward }; 
+    }
+    const next = DATA.levels.find(l => l.xpNeeded > user.xp);
+    return next ? { needed: next.xpNeeded - user.xp, reward: next.reward } : null;
+  }, [user.xp, DATA.levels]);
+
   const getCurrentLevelProgress = () => {
     if (user.xp >= 800) return (((user.xp - 800) % 500) / 500) * 100;
     const rev = DATA.levels.slice().reverse().findIndex(l => user.xp >= l.xpNeeded);
@@ -1025,12 +1047,6 @@ export default function App() {
   const getCurrentLevelTitle = () => {
     if (user.xp >= 800) return "Plenitude Plus";
     return DATA.levels.slice().reverse().find(l => user.xp >= l.xpNeeded)?.title || DATA.levels[0].title;
-  };
-
-  const getNextLevelInfo = () => {
-    if (user.xp >= 800) { const need = 500 - ((user.xp - 800) % 500); return { needed: need, reward: DATA.levels[3].reward }; }
-    const next = DATA.levels.find(l => l.xpNeeded > user.xp);
-    return next ? { needed: next.xpNeeded - user.xp, reward: next.reward } : null;
   };
 
   const isStepValid = useCallback(() => {
@@ -1147,7 +1163,6 @@ export default function App() {
     <>
       <GlobalStyles isDark={isDark} />
 
-      {/* Glows de Fundo Melhorados */}
       {isDark && (
         <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
           <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[120px]" />
@@ -1158,7 +1173,6 @@ export default function App() {
       <ToastContainer toasts={toasts} isDark={isDark} />
       <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} isDark={isDark} toggleTheme={() => setIsDark(p => !p)} user={user} T={T} />
       
-      {/* O Pop-up Central de Seleção de Serviço */}
       <ServiceModal 
         service={selectedServiceForModal}
         isOpen={!!selectedServiceForModal}
@@ -1167,12 +1181,12 @@ export default function App() {
         isInCart={selectedServiceForModal ? booking.cart.some(c => c.id === selectedServiceForModal.id) : false}
         isDark={isDark}
         T={T}
+        lang={lang}
         isPremium={selectedServiceForModal?.type === 'pack'}
       />
 
       <main className={`min-h-screen relative z-10 pb-44 px-5 md:px-8 max-w-5xl mx-auto`}>
 
-        {/* ── HEADER ── */}
         {step !== 4 && (
           <header className="pt-10 pb-8 md:pt-14 md:pb-12">
             <div className="flex items-start justify-between gap-5">
@@ -1203,7 +1217,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Step progress */}
             {step > 0 && step < 4 && (
               <div className="mt-10 flex items-center gap-3">
                 {[1, 2, 3].map(i => (
@@ -1226,7 +1239,6 @@ export default function App() {
           {step === 0 && (
             <section className="animate-fade-up space-y-16">
 
-              {/* Hero + XP card */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div>
                   <h2 className={`font-display text-4xl md:text-5xl leading-[1.15] mb-5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -1235,7 +1247,6 @@ export default function App() {
                   <p className={`text-base md:text-lg leading-relaxed max-w-md ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.choose_sub}</p>
                 </div>
 
-                {/* XP Level Card */}
                 <div className={`p-8 rounded-[2rem] border relative overflow-hidden ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                   <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/6 rounded-full blur-2xl -translate-y-1/3 translate-x-1/3 pointer-events-none" />
                   <div className="flex items-start justify-between mb-8 relative">
@@ -1271,7 +1282,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Tab switcher */}
               <div className={`flex p-2 rounded-2xl border w-fit mx-auto shadow-sm ${isDark ? 'bg-white/4 border-white/8' : 'bg-slate-50 border-slate-200'}`}>
                 {[
                   { id: 'single', label: T.tab_single, icon: 'user' },
@@ -1287,7 +1297,6 @@ export default function App() {
                 ))}
               </div>
 
-              {/* Content */}
               <div className="tab-content">
                 {activeTab === 'single' ? (
                   <div className="space-y-14">
@@ -1297,7 +1306,6 @@ export default function App() {
                       const cfg = CATEGORY_CONFIG[cat.id];
                       return (
                         <div key={cat.id} className="rounded-[2.5rem] overflow-hidden border" style={{ borderColor: cfg.borderColor, background: isDark ? cfg.bg : cfg.lightBg }}>
-                          {/* Category header */}
                           <div className="px-8 py-6 flex items-center gap-5 border-b" style={{ borderColor: cfg.borderColor }}>
                             <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm" style={{ background: `${cfg.color}15`, border: `1px solid ${cfg.color}30` }}>
                               <Icon name={cat.icon} size={28} style={{ color: cfg.color }} />
@@ -1313,10 +1321,9 @@ export default function App() {
                             )}
                           </div>
 
-                          {/* Services grid */}
                           <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-5">
                             {services.map((s: ServiceItem) => (
-                              <ServiceCard key={s.id} service={s} isInCart={booking.cart.some(c => c.id === s.id)} onToggle={handleToggleCartItem} isDark={isDark} T={T} onOpenModal={setSelectedServiceForModal} />
+                              <ServiceCard key={s.id} service={s} isInCart={booking.cart.some(c => c.id === s.id)} onToggle={handleToggleCartItem} isDark={isDark} T={T} lang={lang} onOpenModal={setSelectedServiceForModal} />
                             ))}
                           </div>
                         </div>
@@ -1326,13 +1333,12 @@ export default function App() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {DATA.plans.map((s: ServiceItem) => (
-                      <ServiceCard key={s.id} service={s} isInCart={booking.cart.some(c => c.id === s.id)} onToggle={handleToggleCartItem} isDark={isDark} T={T} isPremium={true} onOpenModal={setSelectedServiceForModal} />
+                      <ServiceCard key={s.id} service={s} isInCart={booking.cart.some(c => c.id === s.id)} onToggle={handleToggleCartItem} isDark={isDark} T={T} lang={lang} isPremium={true} onOpenModal={setSelectedServiceForModal} />
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Reviews */}
               <div className="py-12 border-t border-b" style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
                 <div className="flex items-center justify-between mb-8">
                   <h3 className={`font-display text-3xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title}</h3>
@@ -1354,7 +1360,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* FAQ */}
               <div className="max-w-3xl mx-auto pb-8">
                 <h3 className={`font-display text-3xl text-center mb-10 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.faq_title}</h3>
                 <div className={`rounded-[2rem] border overflow-hidden ${isDark ? 'bg-white/3 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
@@ -1375,7 +1380,6 @@ export default function App() {
                 <h2 className={`font-display text-4xl md:text-5xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
               </div>
 
-              {/* Location type */}
               <div className="grid grid-cols-3 gap-4">
                 {[
                   { id: 'home', label: T.loc_home, icon: 'home', desc: lang === 'en' ? 'I come to you' : 'Vou até você' },
@@ -1393,7 +1397,6 @@ export default function App() {
                 ))}
               </div>
 
-              {/* Form - Empilhado verticalmente conforme feedback */}
               <div className={`p-8 rounded-[2rem] border space-y-6 ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <InputField isDark={isDark} label={T.input_name} value={user.name}
                   onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))}
@@ -1474,7 +1477,6 @@ export default function App() {
                 <h2 className={`font-display text-4xl md:text-5xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.select_time_title}</h2>
               </div>
 
-              {/* Cart mini summary */}
               <div className={`p-5 rounded-3xl border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <div className="flex items-center justify-between mb-4">
                   <span className={`text-[11px] uppercase font-semibold tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.cart_title}</span>
@@ -1490,7 +1492,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Date scroll */}
               <div className="relative">
                 <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'} shadow-lg`}><Icon name="chevron-left" size={20} /></button>
                 <div ref={dateScrollRef} className="flex gap-3 overflow-x-auto snap-x px-2 py-4 scrollbar-hide">
@@ -1510,7 +1511,6 @@ export default function App() {
                 <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'} shadow-lg`}><Icon name="chevron-right" size={20} /></button>
               </div>
 
-              {/* No date selected */}
               {!booking.date && (
                 <div className={`text-center py-20 rounded-[2rem] border border-dashed flex flex-col items-center gap-4 ${hasErrorGlobal ? 'animate-shake' : ''} ${isDark ? 'border-white/10 text-zinc-600' : 'border-slate-300 text-slate-400'}`}>
                   <Icon name="calendar" size={40} className="opacity-40" />
@@ -1518,7 +1518,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* Time slots grouped by period */}
               {booking.date && generateTimeSlots.length > 0 && (
                 <div className={`space-y-6 animate-fade-up ${hasErrorGlobal && !booking.time ? 'animate-shake' : ''}`}>
                   {[
@@ -1551,7 +1550,6 @@ export default function App() {
                     </div>
                   ))}
 
-                  {/* Rush notice */}
                   {Object.values(groupedTimeSlots).flat().some(t => RUSH_HOURS.includes(t)) && booking.locationType !== 'motel' && (
                     <div className={`flex items-start gap-4 p-5 rounded-2xl border text-sm leading-relaxed font-medium mt-6 ${isDark ? 'bg-amber-500/8 border-amber-500/20 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
                       <Icon name="alert-circle" size={20} className="shrink-0 mt-0.5" />
@@ -1576,7 +1574,6 @@ export default function App() {
             <section className="animate-fade-up space-y-8 max-w-5xl mx-auto">
               <SmartTimer isDark={isDark} text={T.timer_text} />
 
-              {/* Extras */}
               <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <h3 className={`font-display text-2xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.extras_title}</h3>
                 <p className={`text-sm mb-6 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{lang === 'en' ? 'Optional add-ons for your experience.' : 'Deseja adicionar algo extra para deixar a experiência mais completa?'}</p>
@@ -1606,10 +1603,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Main grid: summary + right column */}
               <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8">
-
-                {/* Order summary */}
                 <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                   <h3 className={`font-display text-2xl mb-8 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     <Icon name="file-text" size={24} className={isDark ? 'text-zinc-500' : 'text-slate-400'} />
@@ -1617,7 +1611,6 @@ export default function App() {
                   </h3>
 
                   <div className="space-y-6">
-                    {/* Services */}
                     <div>
                       <p className={`text-[11px] uppercase font-semibold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_items}</p>
                       <div className="space-y-3">
@@ -1630,7 +1623,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Extras */}
                     {Object.keys(booking.extras || {}).filter(k => booking.extras[k]).length > 0 && (
                       <div className={`border-t pt-6 ${isDark ? 'border-white/6' : 'border-slate-100'}`}>
                         <p className={`text-[11px] uppercase font-semibold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_extras}</p>
@@ -1650,7 +1642,6 @@ export default function App() {
                       </div>
                     )}
 
-                    {/* Session info */}
                     <div className={`border-t pt-6 ${isDark ? 'border-white/6' : 'border-slate-100'}`}>
                       <p className={`text-[11px] uppercase font-semibold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_info}</p>
                       <div className="space-y-3 text-base font-medium">
@@ -1671,7 +1662,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Price breakdown */}
                     <div className={`border-t pt-6 space-y-3 ${isDark ? 'border-white/8' : 'border-slate-200'}`}>
                       <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                         <span>{T.subtotal}</span>
@@ -1713,7 +1703,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Uber notice */}
                     {booking.locationType !== 'motel' && (
                       <div className={`flex items-start gap-4 p-4 rounded-xl text-xs font-medium leading-relaxed border ${isDark ? 'bg-white/4 border-white/8 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
                         <Icon name="car" size={18} className="shrink-0 mt-0.5" />
@@ -1723,9 +1712,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Right column */}
                 <div className="space-y-6">
-                  {/* Coupon section (Without Manual Input) */}
                   <div className={`p-6 rounded-[2rem] border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                     <h4 className={`text-base font-semibold mb-5 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                       <Icon name="ticket" size={20} className={isDark ? 'text-zinc-500' : 'text-slate-400'} />
@@ -1756,7 +1743,6 @@ export default function App() {
                     )}
                   </div>
 
-                  {/* Portfolio */}
                   <div className={`p-6 rounded-[2rem] border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                     <div className="flex items-start gap-4 mb-5">
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/8 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
@@ -1774,7 +1760,6 @@ export default function App() {
                     </button>
                   </div>
 
-                  {/* Payment */}
                   <div className={`p-6 rounded-[2rem] border ${hasErrorGlobal && !booking.payment ? 'animate-shake' : ''} ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                     <h4 className={`text-base font-semibold mb-5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.payment_title}</h4>
                     <div className="space-y-3">
@@ -1802,7 +1787,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Terms */}
                   <div className={hasErrorGlobal && !booking.termsAccepted ? 'animate-shake' : ''}>
                     <button onClick={() => setTermsOpen(true)}
                       className={`w-full flex items-center justify-between p-6 rounded-[2rem] border cursor-pointer transition-all duration-300 ${booking.termsAccepted ? isDark ? 'bg-emerald-600/15 border-emerald-500/50' : 'bg-emerald-50 border-emerald-300' : isDark ? 'bg-white/4 border-white/8 hover:bg-white/8 hover:border-white/14' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`}>
@@ -1831,7 +1815,6 @@ export default function App() {
           ═══════════════════════════════════════════════════════ */}
           {step === 4 && (
             <section className="min-h-[80vh] flex flex-col items-center justify-center text-center animate-scale-in max-w-md mx-auto px-5 pt-12">
-              {/* Success animation */}
               <div className="relative mb-12">
                 <div className="absolute inset-0 rounded-full animate-ping" style={{ background: 'rgba(16,185,129,0.2)', animationDuration: '1.8s' }} />
                 <div className="absolute inset-0 rounded-full" style={{ boxShadow: '0 0 80px 30px rgba(16,185,129,0.15)' }} />
@@ -1843,7 +1826,6 @@ export default function App() {
               <h2 className={`font-display text-4xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h2>
               <p className={`text-base leading-relaxed mb-10 max-w-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
 
-              {/* Booking details card */}
               <div className={`w-full p-6 rounded-[2rem] border mb-10 text-left space-y-3 ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <div className={`flex items-center gap-3 text-base font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                   <Icon name="user" size={18} className="text-blue-400 shrink-0" />
@@ -1878,11 +1860,9 @@ export default function App() {
       {/* ── STICKY BOTTOM NAV ── */}
       {step >= 0 && step < 4 && booking.cart.length > 0 && (
         <nav className="fixed bottom-0 inset-x-0 px-4 sm:px-5 pb-5 pt-3 z-40 animate-slide-up pointer-events-none">
-          {/* Removido backdrop-blur e cores translúcidas para melhorar a acessibilidade e contraste puro */}
           <div className={`max-w-5xl mx-auto pointer-events-auto rounded-[2rem] overflow-hidden border shadow-[0_-10px_40px_rgba(0,0,0,0.25)] ${isDark ? 'bg-[#181c25] border-zinc-700' : 'bg-white border-slate-300'}`}>
             <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
               
-              {/* Back btn */}
               {step > 0 && (
                 <button onClick={() => { setStep(s => s - 1); vibrate(30); }}
                   className={`w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-xl border transition-all shrink-0 ${isDark ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-700' : 'border-slate-300 bg-slate-100 text-slate-600 hover:text-slate-900'}`}>
@@ -1890,7 +1870,6 @@ export default function App() {
                 </button>
               )}
 
-              {/* Price info - Ajustado para não cortar (font-size padronizado 16px) */}
               <div className="flex-1 min-w-0 pl-1">
                 <p className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest mb-0.5 truncate ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                   {step === 0 ? `${booking.cart.length} ${T.items_selected}` : step === 3 ? T.total_label : T.subtotal}
@@ -1900,7 +1879,6 @@ export default function App() {
                 </p>
               </div>
 
-              {/* Primary CTA - Tamanho responsivo no botão para caber perfeitamente */}
               <button onClick={handleNextStep}
                 className={`relative h-12 sm:h-14 flex items-center gap-2 px-5 sm:px-8 rounded-xl font-bold text-[13px] sm:text-sm uppercase tracking-wider transition-all duration-200 shrink-0 overflow-hidden ${isStepValid()
                   ? step === 3
