@@ -87,10 +87,10 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     :root {
       --font-sans: 'Poppins', sans-serif;
       --font-display: 'Poppins', sans-serif;
-      /* Ajuste de contraste para astigmatismo: Evitar branco/preto puros */
+      /* Ajuste de contraste: Evitar branco/preto puros para reduzir "halation" */
       --c-bg: ${isDark ? '#11141a' : '#f9f8f6'};
       --c-surface: ${isDark ? '#181c25' : '#ffffff'};
-      --c-border: ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'};
+      --c-border: ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'};
       --c-text: ${isDark ? '#e8e5df' : '#222222'};
       --c-text-muted: ${isDark ? '#a1a09d' : '#6b6560'};
       --c-blue: #3b82f6;
@@ -104,7 +104,7 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
       transition: background-color 0.4s ease, color 0.4s ease;
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
-      letter-spacing: 0.015em; /* Melhor espaçamento para astigmatismo */
+      letter-spacing: 0.015em; 
       line-height: 1.6;
     }
 
@@ -133,7 +133,10 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     .animate-toast-in { animation: toast-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
     .animate-modal-backdrop { animation: modal-backdrop 0.3s ease-out forwards; }
     .animate-spin { animation: spin 0.7s linear infinite; }
+    .animate-shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+    
     @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 
     /* Cartões & Interações */
     .card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; }
@@ -210,7 +213,7 @@ interface BookingData { type: 'single' | 'pack'; cart: ServiceItem[]; extras: Re
 interface Rule { icon: string; title: string; description: string; }
 
 // ==================================================================================
-// DATA & TRANSLATIONS (Sem emojis, texto limpo)
+// DATA & TRANSLATIONS 
 // ==================================================================================
 const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
   return [
@@ -289,7 +292,7 @@ const getData = (lang: 'pt' | 'en') => {
       tab_packs: isEn ? "Monthly Plans" : "Planos Mensais",
       tab_single: isEn ? "Single Sessions" : "Sessões Avulsas",
       next_btn: isEn ? "Continue" : "Continuar",
-      finish_btn: isEn ? "Complete Booking" : "Finalizar o Agendamento",
+      finish_btn: isEn ? "Complete Booking" : "Finalizar Agendamento",
       loading: isEn ? "Preparing your space..." : "Preparando o seu ambiente...",
       toast_select_item: isEn ? "Add at least one service to continue." : "Escolha pelo menos um serviço para continuar.",
       toast_select_date: isEn ? "Choose a date and time for our encounter." : "Selecione uma data e horário válidos para nos vermos.",
@@ -305,7 +308,6 @@ const getData = (lang: 'pt' | 'en') => {
       location_title: isEn ? "Where will our encounter be?" : "Onde nós vamos nos ver?",
       extras_title: isEn ? "Add something special" : "Adicione complementos opcionais",
       coupon_section: isEn ? "Your Benefits" : "Seus Benefícios e Cupons",
-      coupon_empty: isEn ? "No benefits available at the moment." : "Nenhum benefício disponível no momento.",
       payment_title: isEn ? "Payment method (at the meeting)" : "Forma de pagamento (você paga no local)",
       terms_title: isEn ? "Delivery Agreement" : "Regras e Acordos",
       success_title: isEn ? "Almost there!" : "Tudo Certo! Falta Pouco",
@@ -391,7 +393,7 @@ const getData = (lang: 'pt' | 'en') => {
       btn_next_short: isEn ? "Next" : "Próximo",
       msg_level_keep1: isEn ? "Only" : "Faltam apenas",
       msg_level_keep2: isEn ? "XP to unlock" : "XP para você desbloquear",
-      msg_rush_fee: isEn ? "Rush Fee" : "Taxa de Pico",
+      msg_rush_fee: isEn ? "Rush Fee" : "Taxa de Deslocamento de Pico",
       toast_loaded: isEn ? "Progress loaded!" : "Seus pontos foram carregados!",
       toast_cart_toggle: isEn ? "Cart updated." : "Serviço alterado.",
       toast_pix_copied: isEn ? "PIX key copied!" : "Minha chave PIX foi copiada!",
@@ -408,12 +410,12 @@ const getData = (lang: 'pt' | 'en') => {
 // REFINED COMPONENTS
 // ==================================================================================
 
-// Toast Notification - Cor Sólida para Contraste Máximo
+// Toast Notification - Corrigido Acessibilidade / Contraste (Fundo Sólido)
 const ToastContainer = memo(({ toasts, isDark }: { toasts: any[]; isDark: boolean }) => (
-  <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-3 pointer-events-none w-full max-w-sm px-4">
+  <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 pointer-events-none w-full max-w-sm px-4">
     {toasts.map(t => (
-      <div key={t.id} role="alert" className={`animate-toast-in pointer-events-auto flex items-center gap-4 px-5 py-4 rounded-2xl border shadow-2xl ${t.type === 'error' ? 'bg-red-950 border-red-500 text-red-100 shadow-[0_8px_30px_rgba(220,38,38,0.3)]' : isDark ? 'bg-[#181c25] border-zinc-600 text-white shadow-[0_8px_30px_rgba(0,0,0,0.8)]' : 'bg-white border-slate-300 text-slate-900 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'}`}>
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${t.type === 'error' ? 'bg-red-800 text-red-200' : 'bg-emerald-500/20 text-emerald-400'}`}>
+      <div key={t.id} role="alert" className={`animate-toast-in pointer-events-auto flex items-center gap-3 px-5 py-4 rounded-2xl border shadow-2xl ${t.type === 'error' ? 'bg-[#3b1219] border-red-800 text-red-100' : isDark ? 'bg-[#1e232d] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${t.type === 'error' ? 'bg-red-700 text-white' : 'bg-emerald-500 text-white'}`}>
           <Icon name={t.type === 'error' ? 'alert-circle' : 'check'} size={16} />
         </div>
         <span className="text-sm font-semibold leading-snug">{t.msg}</span>
@@ -497,7 +499,7 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user, T }: any) =
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
           <p className={`text-[10px] uppercase font-semibold tracking-widest mb-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{T.level_yours}</p>
           <div className="flex items-baseline gap-2">
-            <span className="font-display text-5xl whitespace-nowrap">{user.xp}</span>
+            <span className="font-display text-5xl">{user.xp}</span>
             <span className={`text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>XP</span>
           </div>
           <p className={`text-xs mt-4 font-medium leading-relaxed border-t pt-4 ${isDark ? 'border-white/8 text-zinc-500' : 'border-black/8 text-slate-500'}`}>{T.menu_warning}</p>
@@ -590,7 +592,7 @@ const SmartTimer = memo(({ isDark, text }: any) => {
       </div>
       <div>
         <p className={`text-[11px] font-semibold uppercase tracking-widest mb-1 ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>{text}</p>
-        <p className={`font-display text-2xl whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{fmt(time)}</p>
+        <p className={`font-display text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{fmt(time)}</p>
       </div>
     </div>
   );
@@ -609,7 +611,7 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
   </div>
 ));
 
-// Modal de Serviço
+// Modals Inteligentes Centrais
 const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDark, T, isPremium }: any) => {
   if (!isOpen || !service) return null;
 
@@ -639,9 +641,9 @@ const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDar
             )}
           </div>
 
-          <h3 className={`font-display text-3xl leading-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{service.title}</h3>
+          <h3 className={`font-display text-3xl leading-tight mb-2 pr-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{service.title}</h3>
           
-          <div className="flex items-baseline gap-2 mt-4">
+          <div className="flex items-baseline gap-2 mt-4 flex-wrap">
             {service.fullPrice && (
               <span className={`text-sm font-medium line-through whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                 {T.from} {formatMoney(service.fullPrice, 'pt')}
@@ -683,11 +685,11 @@ const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDar
   );
 });
 
-// Service Card refatorado para abrir Modal
+// Service Card 
 const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, isPremium = false, onOpenModal }: any) => {
   return (
     <div
-      className={`relative rounded-[2rem] border transition-all duration-300 overflow-hidden card-hover cursor-pointer flex flex-col ${isInCart
+      className={`relative rounded-[2rem] border transition-all duration-300 overflow-hidden card-hover cursor-pointer ${isInCart
         ? isPremium
           ? 'service-card-selected-amber border-amber-500/70 bg-amber-500/6'
           : 'service-card-selected border-blue-500/70 bg-blue-500/6'
@@ -703,7 +705,7 @@ const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, isPremium = 
         </div>
       )}
 
-      <div className="p-7 flex-1 flex flex-col">
+      <div className="p-7">
         <div className="flex items-start gap-4 mb-5">
           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border shrink-0 ${isPremium ? isDark ? 'bg-amber-500/12 border-amber-500/25 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600' : isDark ? 'bg-white/8 border-white/10 text-zinc-200' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
             <Icon name={service.icon} size={26} />
@@ -714,20 +716,20 @@ const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, isPremium = 
           </div>
         </div>
 
-        <div className="flex items-end justify-between mt-auto pt-6">
-          <div className="flex items-center gap-2">
-            <div className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border ${isPremium ? isDark ? 'bg-amber-500/10 border-amber-500/25 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-700' : isDark ? 'bg-white/6 border-white/10 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+        <div className="flex items-end justify-between mt-6">
+          <div className="flex flex-wrap items-center gap-2 min-w-0 pr-2">
+            <div className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border truncate ${isPremium ? isDark ? 'bg-amber-500/10 border-amber-500/25 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-700' : isDark ? 'bg-white/6 border-white/10 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
               {service.tag}
             </div>
           </div>
           
-          <div className="text-right shrink-0">
+          <div className="text-right flex-shrink-0 ml-2">
             {service.fullPrice && (
               <p className={`text-[11px] font-medium line-through mb-0.5 whitespace-nowrap ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
                 {formatMoney(service.fullPrice, 'pt')}
               </p>
             )}
-            <p className={`font-display text-2xl leading-none whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, 'pt')}</p>
+            <p className={`font-display text-xl sm:text-2xl leading-none whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, 'pt')}</p>
           </div>
         </div>
       </div>
@@ -763,6 +765,7 @@ export default function App() {
   const [isFetchingCep, setIsFetchingCep] = useState(false);
   const [hasErrorGlobal, setHasErrorGlobal] = useState(false);
   
+  // Controle do Modal de Serviço
   const [selectedServiceForModal, setSelectedServiceForModal] = useState<ServiceItem | null>(null);
 
   const DATA = useMemo(() => getData(lang), [lang]);
@@ -1236,7 +1239,7 @@ export default function App() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="font-display text-4xl text-gradient-blue whitespace-nowrap">{user.xp}</span>
+                      <span className="font-display text-4xl text-gradient-blue">{user.xp}</span>
                       <span className={`text-[10px] uppercase font-bold tracking-widest block ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.level_current}</span>
                     </div>
                   </div>
@@ -1251,7 +1254,7 @@ export default function App() {
                     </div>
                     {nextLevel && (
                       <p className={`text-xs mt-4 text-center font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                        {T.msg_level_keep1} <strong className={isDark ? 'text-white' : 'text-slate-800'}>{nextLevel.needed} XP</strong> {T.msg_level_keep2} <span className="text-blue-400 whitespace-nowrap">{formatMoney(nextLevel.reward, lang)}</span>
+                        {T.msg_level_keep1} <strong className={isDark ? 'text-white' : 'text-slate-800'}>{nextLevel.needed} XP</strong> {T.msg_level_keep2} <span className="text-blue-400">{formatMoney(nextLevel.reward, lang)}</span>
                       </p>
                     )}
                   </div>
@@ -1610,9 +1613,9 @@ export default function App() {
                       <p className={`text-[11px] uppercase font-semibold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_items}</p>
                       <div className="space-y-3">
                         {booking.cart.map((item, i) => (
-                          <div key={i} className={`flex justify-between items-center gap-4 text-base font-medium border-b pb-3 last:border-0 last:pb-0 ${isDark ? 'border-white/6 text-white' : 'border-slate-100 text-slate-900'}`}>
-                            <span className="min-w-0 truncate">{item.title}</span>
-                            <span className={`shrink-0 whitespace-nowrap ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{formatMoney(item.price, lang)}</span>
+                          <div key={i} className={`flex justify-between items-center text-base font-medium border-b pb-3 last:border-0 last:pb-0 ${isDark ? 'border-white/6 text-white' : 'border-slate-100 text-slate-900'}`}>
+                            <span className="truncate pr-4">{item.title}</span>
+                            <span className={`whitespace-nowrap ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{formatMoney(item.price, lang)}</span>
                           </div>
                         ))}
                       </div>
@@ -1628,9 +1631,9 @@ export default function App() {
                             if (!ex) return null;
                             const price = booking.cart.some(i => i.type === 'pack') ? Math.floor(ex.price * 0.8) : ex.price;
                             return (
-                              <div key={k} className={`flex justify-between gap-4 text-base font-medium mb-1.5 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                                <span className="min-w-0 truncate">{ex.label}</span>
-                                <span className="shrink-0 whitespace-nowrap">+{formatMoney(price, lang)}</span>
+                              <div key={k} className={`flex justify-between text-base font-medium mb-1.5 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                                <span className="truncate pr-4">{ex.label}</span>
+                                <span className="whitespace-nowrap">+{formatMoney(price, lang)}</span>
                               </div>
                             );
                           })}
@@ -1644,13 +1647,15 @@ export default function App() {
                       <div className="space-y-3 text-base font-medium">
                         <div className={`flex items-center gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                           <Icon name="calendar" size={18} className="text-blue-500 shrink-0" />
-                          <span className="whitespace-nowrap">
+                          <span className="truncate">
                             {booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : ''} {lang === 'en' ? 'at' : 'às'} {booking.time}
                           </span>
                         </div>
                         <div className={`flex items-center gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                           <Icon name="map-pin" size={18} className="text-blue-500 shrink-0" />
-                          {booking.locationType === 'home' ? T.summary_loc_home : booking.locationType === 'motel' ? T.summary_loc_motel : T.summary_loc_hotel}
+                          <span className="truncate">
+                            {booking.locationType === 'home' ? T.summary_loc_home : booking.locationType === 'motel' ? T.summary_loc_motel : T.summary_loc_hotel}
+                          </span>
                         </div>
                         <div className={`flex items-center gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                           <Icon name="clock" size={18} className="text-blue-500 shrink-0" />
@@ -1661,40 +1666,40 @@ export default function App() {
 
                     {/* Price breakdown */}
                     <div className={`border-t pt-6 space-y-3 ${isDark ? 'border-white/8' : 'border-slate-200'}`}>
-                      <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                      <div className={`flex justify-between text-base font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                         <span>{T.subtotal}</span>
-                        <span className="shrink-0 whitespace-nowrap">{formatMoney(financials.sub, lang)}</span>
+                        <span className="whitespace-nowrap">{formatMoney(financials.sub, lang)}</span>
                       </div>
                       {booking.appliedCoupon && (
-                        <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                          <span className="flex items-center gap-2 min-w-0 truncate"><Icon name="gift" size={16} className="shrink-0" />{booking.appliedCoupon.title}</span>
-                          <span className="shrink-0 whitespace-nowrap">-{formatMoney(financials.disc, lang)}</span>
+                        <div className={`flex justify-between text-base font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                          <span className="flex items-center gap-2 truncate pr-4"><Icon name="gift" size={16} />{booking.appliedCoupon.code}</span>
+                          <span className="whitespace-nowrap">-{formatMoney(financials.disc, lang)}</span>
                         </div>
                       )}
                       {financials.mediaDisc > 0 && (
-                        <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
-                          <span>{T.media_discount}</span>
-                          <span className="shrink-0 whitespace-nowrap">-{formatMoney(financials.mediaDisc, lang)}</span>
+                        <div className={`flex justify-between text-base font-medium ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                          <span className="truncate pr-4">{T.media_discount}</span>
+                          <span className="whitespace-nowrap">-{formatMoney(financials.mediaDisc, lang)}</span>
                         </div>
                       )}
                       {financials.pixDisc > 0 && (
-                        <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                          <span>{T.pix_discount}</span>
-                          <span className="shrink-0 whitespace-nowrap">-{formatMoney(financials.pixDisc, lang)}</span>
+                        <div className={`flex justify-between text-base font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                          <span className="truncate pr-4">{T.pix_discount}</span>
+                          <span className="whitespace-nowrap">-{formatMoney(financials.pixDisc, lang)}</span>
                         </div>
                       )}
                       {financials.rushFee > 0 && (
-                        <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
-                          <span className="flex items-center gap-2 min-w-0 truncate"><Icon name="car" size={16} className="shrink-0" />{T.msg_rush_fee}</span>
-                          <span className="shrink-0 whitespace-nowrap">+{formatMoney(financials.rushFee, lang)}</span>
+                        <div className={`flex justify-between text-base font-medium ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
+                          <span className="flex items-center gap-2 truncate pr-4"><Icon name="car" size={16} />{T.msg_rush_fee}</span>
+                          <span className="whitespace-nowrap">+{formatMoney(financials.rushFee, lang)}</span>
                         </div>
                       )}
 
-                      <div className={`flex justify-between gap-4 items-end pt-5 mt-2 border-t ${isDark ? 'border-white/8' : 'border-slate-100'}`}>
-                        <span className={`text-sm uppercase font-semibold tracking-widest mb-1 shrink-0 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.total_label}</span>
-                        <div className="text-right min-w-0">
+                      <div className={`flex justify-between items-end pt-5 mt-2 border-t ${isDark ? 'border-white/8' : 'border-slate-100'}`}>
+                        <span className={`text-sm uppercase font-semibold tracking-widest mb-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.total_label}</span>
+                        <div className="text-right">
                           <p className="font-display text-4xl text-gradient-blue whitespace-nowrap">{formatMoney(financials.total, lang)}</p>
-                          <p className={`text-[10px] uppercase font-bold tracking-widest mt-1 flex items-center justify-end gap-1.5 whitespace-nowrap ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                          <p className={`text-[10px] uppercase font-bold tracking-widest mt-1 flex items-center justify-end gap-1.5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                             <Icon name="sparkles" size={11} /> +{estimatedXP} {T.xp_guaranteed}
                           </p>
                         </div>
@@ -1713,7 +1718,7 @@ export default function App() {
 
                 {/* Right column */}
                 <div className="space-y-6">
-                  {/* Coupon section (Without Manual Input) */}
+                  {/* Coupon section (Apenas cupons ganhos/automáticos) */}
                   <div className={`p-6 rounded-[2rem] border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                     <h4 className={`text-base font-semibold mb-5 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                       <Icon name="ticket" size={20} className={isDark ? 'text-zinc-500' : 'text-slate-400'} />
@@ -1721,25 +1726,18 @@ export default function App() {
                     </h4>
 
                     {user.coupons.length > 0 ? (
-                      <div className="flex flex-col gap-3">
+                      <div className="flex flex-wrap gap-2.5">
                         {user.coupons.map(c => (
                           <button key={c.id} onClick={() => { setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c })); vibrate(30); }}
-                            className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-600/10 border-emerald-500 text-emerald-400' : isDark ? 'bg-white/4 border-white/10 text-zinc-300 hover:bg-white/8' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'}`}>
-                            <div className="flex items-center gap-3">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 text-white' : isDark ? 'bg-white/10' : 'bg-slate-200'}`}>
-                                <Icon name="gift" size={14} />
-                              </div>
-                              <span className="text-sm font-bold tracking-wide text-left">{c.title}</span>
-                            </div>
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-white/20' : 'border-slate-300'}`}>
-                              {booking.appliedCoupon?.id === c.id && <Icon name="check" size={14} />}
-                            </div>
+                            className={`px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all flex items-center gap-2 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-900/20' : isDark ? 'bg-white/6 border-white/10 text-zinc-300 hover:bg-white/10' : 'bg-slate-100 border-slate-200 text-slate-700 hover:border-slate-300'}`}>
+                            {booking.appliedCoupon?.id === c.id && <Icon name="check" size={16} />}
+                            {c.code}
                           </button>
                         ))}
                       </div>
                     ) : (
-                      <div className={`p-5 rounded-2xl border border-dashed text-center text-sm font-medium ${isDark ? 'border-white/10 text-zinc-500' : 'border-slate-300 text-slate-400'}`}>
-                        {T.coupon_empty}
+                      <div className={`p-4 rounded-xl border border-dashed text-center ${isDark ? 'border-white/10 text-zinc-500' : 'border-slate-300 text-slate-400'}`}>
+                        <p className="text-sm font-medium">{lang === 'en' ? 'No coupons available right now.' : 'Nenhum cupom disponível no momento.'}</p>
                       </div>
                     )}
                   </div>
@@ -1758,7 +1756,7 @@ export default function App() {
                     <button onClick={() => { setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed })); vibrate(30); }}
                       className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all text-[11px] font-bold uppercase tracking-widest ${booking.mediaAllowed ? 'bg-blue-600/15 border-blue-500/50 text-blue-400' : isDark ? 'bg-white/4 border-white/10 text-zinc-500 hover:bg-white/8 hover:text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300'}`}>
                       <span>{booking.mediaAllowed ? T.media_granted : T.media_support}</span>
-                      <span className={`px-3 py-1 rounded-lg whitespace-nowrap ${booking.mediaAllowed ? 'bg-blue-600 text-white' : isDark ? 'bg-white/8' : 'bg-slate-200'}`}>{T.media_bonus}</span>
+                      <span className={`px-3 py-1 rounded-lg whitespace-nowrap ml-2 ${booking.mediaAllowed ? 'bg-blue-600 text-white' : isDark ? 'bg-white/8' : 'bg-slate-200'}`}>{T.media_bonus}</span>
                     </button>
                   </div>
 
@@ -1799,8 +1797,8 @@ export default function App() {
                           <Icon name="heart" size={24} />
                         </div>
                         <div className="min-w-0 text-left">
-                          <p className={`text-base font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</p>
-                          <p className={`text-xs mt-1 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.terms_read}</p>
+                          <p className={`text-base font-semibold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</p>
+                          <p className={`text-xs mt-1 font-medium truncate ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.terms_read}</p>
                         </div>
                       </div>
                       <div onClick={e => { e.stopPropagation(); vibrate(30); setBooking(b => ({ ...b, termsAccepted: !b.termsAccepted })); }}
@@ -1839,12 +1837,12 @@ export default function App() {
                 </div>
                 <div className={`flex items-center gap-3 text-base font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                   <Icon name="calendar" size={18} className="text-blue-400 shrink-0" />
-                  <span className="whitespace-nowrap">
+                  <span className="truncate">
                     {booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : ''} {lang === 'en' ? 'at' : 'às'} {booking.time}
                   </span>
                 </div>
                 <div className={`flex items-center justify-between text-base pt-3 border-t ${isDark ? 'border-white/6 text-white' : 'border-slate-100 text-slate-900'}`}>
-                  <span className="font-semibold uppercase tracking-widest text-xs shrink-0">{T.total_label}</span>
+                  <span className="font-semibold uppercase tracking-widest text-xs">{T.total_label}</span>
                   <span className="font-display text-2xl text-gradient-blue whitespace-nowrap">{formatMoney(financials.total, lang)}</span>
                 </div>
               </div>
@@ -1866,34 +1864,33 @@ export default function App() {
       {/* ── STICKY BOTTOM NAV ── */}
       {step >= 0 && step < 4 && booking.cart.length > 0 && (
         <nav className="fixed bottom-0 inset-x-0 px-5 pb-5 pt-3 z-40 animate-slide-up pointer-events-none">
-          {/* Removido backdrop-blur e cores translúcidas para melhorar a acessibilidade e contraste puro */}
-          <div className={`max-w-5xl mx-auto pointer-events-auto rounded-[2rem] overflow-hidden border shadow-[0_-10px_40px_rgba(0,0,0,0.2)] ${isDark ? 'bg-[#181c25] border-zinc-700' : 'bg-white border-slate-300'}`}>
+          <div className={`max-w-5xl mx-auto backdrop-blur-xl pointer-events-auto rounded-[2rem] overflow-hidden border shadow-2xl ${isDark ? 'bg-black/60 shadow-black/80 border-white/10' : 'bg-white/80 shadow-slate-300/80 border-black/8'}`}>
             <div className="flex items-center gap-4 px-5 py-4">
               {/* Back btn */}
               {step > 0 && (
                 <button onClick={() => { setStep(s => s - 1); vibrate(30); }}
-                  className={`w-14 h-14 flex items-center justify-center rounded-xl border transition-all shrink-0 ${isDark ? 'border-zinc-600 bg-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-700' : 'border-slate-300 bg-slate-100 text-slate-600 hover:text-slate-900'}`}>
+                  className={`w-14 h-14 flex items-center justify-center rounded-xl border transition-all shrink-0 ${isDark ? 'border-white/10 bg-white/6 text-zinc-400 hover:text-white hover:bg-white/12' : 'border-slate-200 bg-slate-100 text-slate-500 hover:text-slate-800'}`}>
                   <Icon name="chevron-left" size={24} />
                 </button>
               )}
 
               {/* Price info */}
-              <div className={`flex-1 min-w-0 pl-${step === 0 ? '3' : '1'}`}>
+              <div className={`flex-1 min-w-0 pl-${step === 0 ? '3' : '1'} pr-2`}>
                 <p className={`text-[10px] uppercase font-bold tracking-widest mb-1 truncate ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                   {step === 0 ? `${booking.cart.length} ${T.items_selected}` : step === 3 ? T.total_label : T.subtotal}
                 </p>
-                <p className={`font-display text-2xl leading-none whitespace-nowrap truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                <p className={`font-display text-xl sm:text-2xl leading-none truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {step === 3 ? formatMoney(financials.total, lang) : formatMoney(financials.sub, lang)}
                 </p>
               </div>
 
               {/* Primary CTA */}
               <button onClick={handleNextStep}
-                className={`relative h-14 flex items-center gap-2 px-8 rounded-xl font-bold text-sm uppercase tracking-wider transition-all duration-200 shrink-0 overflow-hidden ${isStepValid()
+                className={`relative h-14 flex items-center gap-2 px-8 rounded-xl font-semibold text-sm uppercase tracking-wider transition-all duration-200 shrink-0 overflow-hidden ${isStepValid()
                   ? step === 3
-                    ? 'bg-[#25D366] text-white hover:bg-[#22c55e] shadow-lg shadow-green-900/40 hover:-translate-y-0.5 active:scale-95'
-                    : 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-900/40 hover:-translate-y-0.5 active:scale-95'
-                  : isDark ? 'bg-zinc-800 border border-zinc-700 text-zinc-500' : 'bg-slate-100 border border-slate-200 text-slate-400'}`}>
+                    ? 'bg-[#25D366] text-white hover:bg-[#22c55e] shadow-lg shadow-green-900/30 hover:-translate-y-0.5 active:scale-95'
+                    : 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-900/25 hover:-translate-y-0.5 active:scale-95'
+                  : isDark ? 'bg-white/8 border border-white/10 text-zinc-600' : 'bg-slate-100 border border-slate-200 text-slate-400'}`}>
                 {step === 3 ? (
                   <><Icon name="message" size={20} /><span className="hidden sm:inline">{T.finish_btn}</span><span className="sm:hidden">{T.btn_finish_short}</span></>
                 ) : (
@@ -1907,18 +1904,18 @@ export default function App() {
 
       {/* ── TERMS MODAL ── */}
       {termsOpen && (
-        <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-xl max-h-[85vh] rounded-[2.5rem] flex flex-col border shadow-2xl animate-slide-up ${isDark ? 'bg-[#11141a] border-zinc-700' : 'bg-white border-slate-300'}`}>
-            <div className={`flex items-center justify-between p-8 border-b shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+        <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
+          <div className={`relative w-full max-w-xl max-h-[85vh] rounded-[2.5rem] flex flex-col border shadow-2xl animate-slide-up ${isDark ? 'bg-[#11141a] border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className={`flex items-center justify-between p-8 border-b shrink-0 ${isDark ? 'border-white/8' : 'border-slate-100'}`}>
               <h3 className={`font-display text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.rules_complete}</h3>
-              <button onClick={() => setTermsOpen(false)} className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${isDark ? 'text-zinc-400 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'}`}>
+              <button onClick={() => setTermsOpen(false)} className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${isDark ? 'text-zinc-500 hover:text-white hover:bg-white/8' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'}`}>
                 <Icon name="x" size={22} />
               </button>
             </div>
             <div className="overflow-y-auto flex-1 p-8 space-y-4">
               {DATA.rules.map((rule: Rule, i: number) => <RuleItem key={i} rule={rule} isDark={isDark} />)}
             </div>
-            <div className={`p-6 border-t shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+            <div className={`p-6 border-t shrink-0 ${isDark ? 'border-white/8' : 'border-slate-100'}`}>
               <Button full size="xl" onClick={() => { setBooking(b => ({ ...b, termsAccepted: true })); vibrate(30); setTermsOpen(false); }}>{T.agree_terms}</Button>
             </div>
           </div>
@@ -1927,22 +1924,22 @@ export default function App() {
 
       {/* ── WELCOME POPUP ── */}
       {welcomePopup && (
-        <div className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center p-5 bg-black/95 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-md rounded-[2.5rem] p-10 border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#11141a] border-zinc-700' : 'bg-white border-slate-300'}`}>
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+        <div className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center p-5 bg-black/90 backdrop-blur-md animate-fade-in">
+          <div className={`relative w-full max-w-md rounded-[2.5rem] p-10 border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#11141a] border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/6 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
 
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${isDark ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${isDark ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
               <Icon name="gift" size={30} />
             </div>
             <h3 className={`font-display text-3xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
-            <p className={`text-base leading-relaxed mb-6 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.welcome_popup_msg}</p>
+            <p className={`text-base leading-relaxed mb-6 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.welcome_popup_msg}</p>
 
-            <div className={`text-xs font-medium p-4 rounded-xl border mb-6 ${isDark ? 'bg-amber-900/30 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800'}`}>
+            <div className={`text-xs font-medium p-4 rounded-xl border mb-6 ${isDark ? 'bg-amber-500/8 border-amber-500/20 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-700'}`}>
               {T.welcome_popup_warning}
             </div>
 
-            <div className={`p-5 rounded-2xl border border-dashed mb-8 text-center ${isDark ? 'border-blue-500/40 bg-blue-500/10' : 'border-blue-300 bg-blue-50/50'}`}>
-              <p className={`text-[10px] uppercase font-bold tracking-widest mb-2 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{lang === 'en' ? 'Your first gift' : 'Seu presente inaugural'}</p>
+            <div className={`p-5 rounded-2xl border border-dashed mb-8 text-center ${isDark ? 'border-blue-500/30 bg-blue-500/6' : 'border-blue-200 bg-blue-50/50'}`}>
+              <p className={`text-[10px] uppercase font-bold tracking-widest mb-2 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{lang === 'en' ? 'Your first gift' : 'Seu presente inaugural'}</p>
               <p className={`font-display text-4xl tracking-widest ${isDark ? 'text-white' : 'text-slate-900'}`}>BEMVINDO10</p>
             </div>
 
@@ -1961,15 +1958,15 @@ export default function App() {
       {/* ── LEVEL UP POPUP ── */}
       {levelUpPopup && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center p-5 bg-black/95 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-md rounded-[2.5rem] p-10 text-center border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#11141a] border-amber-700/50' : 'bg-white border-amber-300'}`}>
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
+          <div className={`relative w-full max-w-md rounded-[2.5rem] p-10 text-center border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#11141a] border-amber-500/30' : 'bg-white border-amber-200'}`}>
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
 
             <div className={`w-20 h-20 mx-auto rounded-3xl flex items-center justify-center mb-6 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 shadow-xl shadow-amber-500/30 animate-bounce-slow relative z-10`}>
               <Icon name="trophy" size={36} />
             </div>
 
             <h3 className={`font-display text-4xl mb-3 relative z-10 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
-            <p className={`text-base leading-relaxed font-medium mb-8 relative z-10 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.levelup_popup_msg}</p>
+            <p className={`text-base leading-relaxed font-medium mb-8 relative z-10 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.levelup_popup_msg}</p>
 
             <Button full size="xl" variant="amber" onClick={() => { setLevelUpPopup(false); vibrate(50); }} className="relative z-10">
               {T.level_redeem}
