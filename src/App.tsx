@@ -1,9 +1,8 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 // =====================================================================================
-// THALY MASSAGENS — V27 PREMIUM PLANS / VERTICAL CLEAN
-// UX/UI Senior + Copy Senior + Full Stack Senior
-// Fluxo: Hero → Sessões → Planos Premium → Agenda → Local → Extras → Confirmar
+// THALY MASSAGENS — AGENDAMENTO PROGRESSIVO E ACOLHEDOR
+// Fluxo: Boas-vindas → Sessão → Agenda → Local → Extras → Confirmar
 // =====================================================================================
 
 type Category = 'all' | 'express' | 'relax' | 'final' | 'care';
@@ -23,7 +22,6 @@ type IconName =
   | 'package'
   | 'layers'
   | 'user'
-  | 'user-check'
   | 'home'
   | 'bed'
   | 'building'
@@ -42,8 +40,7 @@ type IconName =
   | 'gift'
   | 'tag'
   | 'send'
-  | 'clock'
-  | 'refresh-cw';
+  | 'clock';
 
 type ServiceItem = {
   id: string;
@@ -122,7 +119,6 @@ type BookingData = {
   mediaAllowed: boolean;
   bookingId: string;
   customerName: string;
-  customerPhone: string;
 };
 
 type Toast = {
@@ -134,9 +130,9 @@ type Toast = {
 const CONFIG = {
   PHONE: '5517991360413',
   INSTAGRAM_URL: 'https://instagram.com/thalyson.massagens',
-  STORAGE_KEY: '@thaly_app_v27_premium_plans',
+  STORAGE_KEY: '@thaly_app_v28_acolhedor',
   PIX_KEY: '62.922.530/0001-14',
-  VERSION: 'v27_premium_plans_vertical_clean',
+  VERSION: 'v28_progressivo_acolhedor',
   START_HOUR: 9,
   END_HOUR: 22,
   RUSH_HOURS: ['12:00', '13:00', '17:00', '18:00'],
@@ -155,7 +151,6 @@ const ICON_PATHS: Record<IconName, string> = {
   package: 'M16.5 9.4L7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96L12 12.01l8.73-5.05 M12 22.08V12',
   layers: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
   user: 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
-  'user-check': 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M17 11l2 2 4-4',
   home: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10',
   bed: 'M2 4v16 M2 8h18a2 2 0 0 1 2 2v10 M2 17h20 M6 8v9',
   building: 'M4 22v-17a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17 M4 22h16 M10 22V10h4v12 M14 6h.01 M10 6h.01',
@@ -175,20 +170,19 @@ const ICON_PATHS: Record<IconName, string> = {
   tag: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z M7 7h.01',
   send: 'M22 2L11 13 M22 2L15 22l-4-9-9-4 22-7z',
   clock: 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M12 6v6l4 2',
-  'refresh-cw': 'M23 4v6h-6 M1 20v-6h6 M3.51 9a9 9 0 0 1 14.85-3.36L23 10 M1 14l4.64 4.36A9 9 0 0 0 20.49 15',
 };
 
 const PRICES = {
-  pes: 110,
-  maos: 110,
+  depil: 107,
   relax: 157,
-  naturista: 197,
-  crossfit: 187,
   sens: 177,
+  naturista: 197,
   titan: 207,
   reversa: 260,
   nuru: 317,
-  depil: 107,
+  crossfit: 187,
+  pes: 110,
+  maos: 110,
   packs: {
     basic: { v: 247, full: 284, save: 37 },
     essencial: { v: 297, full: 334, save: 37 },
@@ -217,15 +211,11 @@ const SERVICES: ServiceItem[] = [
     category: 'express',
     min: 40,
     price: PRICES.pes,
-    icon: 'user-check',
+    icon: 'user',
     tag: 'ALÍVIO NOS PÉS',
     title: 'Massagem nos Pés',
     desc: 'Alívio completo e direto para pés cansados após um dia longo de trabalho.',
-    details: [
-      'Reflexologia focada na sola dos pés.',
-      'Pressão profunda em pontos de tensão.',
-      'Liberação completa para você pisar mais leve.'
-    ],
+    details: ['Reflexologia focada na sola dos pés.', 'Pressão profunda em pontos de tensão.', 'Liberação completa para você pisar mais leve.'],
     result: 'Pés mais leves e corpo menos tenso.',
   },
   {
@@ -237,11 +227,7 @@ const SERVICES: ServiceItem[] = [
     tag: 'ALÍVIO NAS MÃOS',
     title: 'Massagem nas Mãos',
     desc: 'Libere a tensão acumulada de digitar ou usar muito as mãos no trabalho.',
-    details: [
-      'Alongamento das articulações dos dedos.',
-      'Massagem profunda na palma da mão.',
-      'Alívio de dores nos punhos e antebraço.'
-    ],
+    details: ['Alongamento das articulações dos dedos.', 'Massagem profunda na palma da mão.', 'Alívio de dores nos punhos e antebraço.'],
     result: 'Mãos mais leves e menos rigidez.',
   },
   {
@@ -249,16 +235,11 @@ const SERVICES: ServiceItem[] = [
     category: 'relax',
     min: 40,
     price: PRICES.relax,
-    icon: 'user-check',
+    icon: 'user',
     tag: 'ALÍVIO MUSCULAR',
     title: 'Massagem Clássica',
     desc: 'Ideal para quem está com as costas travadas e o corpo rígido. Foco total em soltar os músculos para você voltar a dormir bem.',
-    details: [
-      'Uso de rolos de madeira para quebrar os nós musculares.',
-      'Massagem manual profunda para soltar tensões fortes.',
-      'Foco em relaxamento e saúde (Sem toques íntimos).',
-      'Você sai da sessão parecendo que tirou 10kg das costas.'
-    ],
+    details: ['Uso de rolos de madeira para quebrar nós.', 'Massagem manual profunda para soltar tensões fortes.', 'Você sai da sessão parecendo que tirou 10kg das costas.'],
     result: 'Corpo mais solto e sensação de descanso.',
   },
   {
@@ -270,12 +251,7 @@ const SERVICES: ServiceItem[] = [
     tag: 'ZERO ROUPAS',
     title: 'Clássica Naturista',
     desc: 'Massagem de corpo inteiro, completamente sem roupas (nós dois). Perfeita para quem busca liberdade total e quebra de estresse.',
-    details: [
-      'Massagem feita com ambos completamente nus.',
-      'Pressão exata para desmanchar a rigidez do corpo.',
-      'Alívio profundo sem bloqueios ou amarras de roupas.',
-      'Atenção: Foco terapêutico e relaxante (Sem toques íntimos).'
-    ],
+    details: ['Massagem feita com ambos completamente nus.', 'Pressão exata para desmanchar a rigidez do corpo.', 'Alívio profundo sem bloqueios ou amarras de roupas.'],
     result: 'Mais presença no corpo e relaxamento profundo.',
   },
   {
@@ -287,12 +263,7 @@ const SERVICES: ServiceItem[] = [
     tag: 'RECUPERAÇÃO',
     title: 'Massagem para Atletas',
     desc: 'Massagem com pegada forte, feita especialmente para quem treina pesado e precisa aliviar as dores musculares pós-treino.',
-    details: [
-      'Fricção forte para aquecer os músculos cansados.',
-      'Liberação miofascial com foco em pernas, costas e ombros.',
-      'Uso de pomadas que esquentam e aliviam a dor na hora.',
-      'Alongamentos para destravar e devolver a mobilidade.'
-    ],
+    details: ['Fricção forte para aquecer os músculos cansados.', 'Liberação miofascial (pernas, costas e ombros).', 'Uso de pomadas térmicas e alongamentos.'],
     result: 'Mais mobilidade e recuperação muscular.',
   },
   {
@@ -304,13 +275,8 @@ const SERVICES: ServiceItem[] = [
     tag: 'TIRA A ANSIEDADE',
     title: 'Massagem Sensorial',
     desc: 'Toques muito suaves pelo corpo todo que causam arrepios e desligam a sua mente acelerada. Termina com muito prazer.',
-    details: [
-      'Início com massagem clássica para aquecer a pele.',
-      'Estímulos super leves usando as mãos e a respiração que arrepiam o corpo.',
-      'Construção do prazer aos poucos, focada em esvaziar sua mente.',
-      'Finalização manual focada numa liberação intensa de tensão (gozo).'
-    ],
-    result: 'Mente mais quieta e corpo relaxado.',
+    details: ['Aquecimento com massagem clássica inicial.', 'Estímulos super leves e respiração que arrepiam o corpo.', 'Finalização manual focada numa liberação intensa (gozo).'],
+    result: 'Mente mais quieta e relaxamento intenso.',
   },
   {
     id: 'mista',
@@ -321,30 +287,20 @@ const SERVICES: ServiceItem[] = [
     tag: 'O MELHOR DOS 2',
     title: 'Experiência Fusion',
     desc: 'A mais completa: primeiro eu tiro toda a dor das suas costas, depois eu mudo o ritmo e te levo a um prazer que zera o seu estresse da semana.',
-    details: [
-      'Começa como massagem clássica para soltar todos os músculos travados.',
-      'Muda o ritmo: contato corpo a corpo íntimo (eu atendo apenas de cueca).',
-      'O calor aumenta, envolvendo todos os seus sentidos.',
-      'Termina com uma estimulação e gozo intenso para recarregar as baterias.'
-    ],
-    result: 'Alívio físico com uma experiência mais completa.',
+    details: ['Massagem clássica firme para soltar músculos travados.', 'Muda o ritmo: contato corpo a corpo (atendo de cueca).', 'Termina com estimulação e gozo para recarregar baterias.'],
+    result: 'Alívio físico profundo com experiência completa.',
   },
   {
     id: 'reversa',
     category: 'final',
     min: 60,
     price: PRICES.reversa,
-    icon: 'refresh-cw',
+    icon: 'heart',
     tag: 'CONTATO REAL',
     title: 'Massagem Reversa',
     desc: 'Sente falta de intimidade de verdade? Metade do tempo eu cuido de você, depois você assume o controle, toca em mim e nós dois aproveitamos.',
-    details: [
-      'Eu faço uma massagem relaxante completa em você (aprox. 30 minutos).',
-      'O controle passa para você: sinta-se à vontade para me tocar e explorar.',
-      'Quebra da frieza cliente-profissional: é pura conexão humana.',
-      'Finalização mútua e troca de carinho que realiza qualquer vontade.'
-    ],
-    result: 'Mais conexão e menos sensação de atendimento mecânico.',
+    details: ['Eu faço uma massagem relaxante completa em você.', 'Você assume o controle: à vontade para me tocar e explorar.', 'Finalização mútua com carinho e conexão humana real.'],
+    result: 'Mais conexão e sem sensação de atendimento mecânico.',
   },
   {
     id: 'nuru',
@@ -355,13 +311,8 @@ const SERVICES: ServiceItem[] = [
     tag: 'ENTREGA TOTAL',
     title: 'Massagem Nuru',
     desc: 'Para quando você está no limite. Muito gel deslizando, contato extremo pele com pele e uma experiência que vai fazer suas pernas tremerem.',
-    details: [
-      'Massagem inicial rápida para aquecer e soltar o corpo.',
-      'Aplicação de bastante gel e especial em nós dois.',
-      'Contato total pele na pele: uso partes do meu corpo deslizando sobre o seu.',
-      'A viagem final mais prazerosa e intensa para você relaxar e apagar.'
-    ],
-    result: 'Corpo solto e relaxamento profundo.',
+    details: ['Massagem inicial rápida para aquecer o corpo.', 'Aplicação de bastante gel corporal em nós dois.', 'Contato total pele na pele (deslizando o corpo sobre o seu).'],
+    result: 'A viagem final mais prazerosa para você apagar.',
     popular: true,
   },
   {
@@ -373,13 +324,8 @@ const SERVICES: ServiceItem[] = [
     tag: 'ESTÉTICA',
     title: 'Aparo de Pelos do Corpo',
     desc: 'Sem tempo para se cuidar? Eu aparo os pelos do seu corpo com máquina profissional para você ficar impecável e limpo para a semana.',
-    details: [
-      'Aparo com máquina (pente zero ou três) feito de forma cuidadosa.',
-      'Foco nas regiões que você escolher (peito, costas, abdômen ou pernas).',
-      'Feito no conforto da sua casa ou hotel, sem a frieza de salões.',
-      'Resultado: Corpo mais limpo, menos suor e visual muito mais agradável.'
-    ],
-    result: 'Visual mais limpo e sensação de cuidado.',
+    details: ['Aparo cuidadoso com máquina (pente zero ou três).', 'Foco nas regiões que escolher (peito, costas, etc).', 'Feito no seu conforto, sem a frieza de salões.'],
+    result: 'Visual mais limpo, menos suor e estética em dia.',
   },
 ];
 
@@ -394,8 +340,8 @@ const PREMIUM_PLANS_V27: PlanItem[] = [
     tag: 'RELAX',
     title: 'Alívio de Rotina (2x)',
     desc: 'Para quem trabalha de pé ou digitando. Inclui um bônus relaxante grátis.',
-    includes: ['1x Massagem nos Pés', '1x Massagem Clássica', '🎁 Bônus: Aromaterapia grátis em ambas as sessões', 'Duas semanas garantidas de alívio rápido e aromático.'],
-    result: 'Alívio rápido em dois encontros.',
+    includes: ['1x Massagem nos Pés', '1x Massagem Clássica', 'Bônus: Aromaterapia grátis nas sessões'],
+    result: 'Duas semanas garantidas de alívio.',
   },
   {
     id: 'pack_essencial',
@@ -406,9 +352,9 @@ const PREMIUM_PLANS_V27: PlanItem[] = [
     icon: 'layers',
     tag: 'DURMA BEM',
     title: 'Kit Sobrevivência (2x)',
-    desc: 'O básico essencial. Duas sessões agendadas no mês: um dia para tirar dores, outro para aliviar a mente.',
-    includes: ['1x Massagem Clássica (para tirar as dores e nós musculares)', '1x Massagem Sensorial (para esvaziar a cabeça com toques e prazer)', 'Sessões agendadas separadamente no mês', 'Ideal para garantir que você não surte com a rotina.'],
-    result: 'Rotina mais leve e menos tensão acumulada.',
+    desc: 'O básico essencial. Um dia para tirar dores, outro para aliviar a mente.',
+    includes: ['1x Massagem Clássica (tirar dores)', '1x Massagem Sensorial (esvaziar a cabeça)', 'Sessões agendadas separadamente no mês'],
+    result: 'Garantia de que você não vai surtar com a rotina.',
   },
   {
     id: 'pack_glow',
@@ -419,9 +365,9 @@ const PREMIUM_PLANS_V27: PlanItem[] = [
     icon: 'sparkles',
     tag: 'GLOW UP',
     title: 'Renovação Completa (2x)',
-    desc: 'Dia de cuidar da estética e dia de ter muito prazer. Com bônus de tempo.',
-    includes: ['1x Aparo de Pelos do Corpo', '1x Experiência Fusion', '🎁 Bônus: +30 minutos extras grátis na sessão Fusion', 'Ideal para elevar a autoestima, ficar limpo e aliviar o estresse.'],
-    result: 'Você fica mais limpo, cuidado e relaxado.',
+    desc: 'Dia de cuidar da estética e dia de ter muito prazer.',
+    includes: ['1x Aparo de Pelos do Corpo', '1x Experiência Fusion', 'Bônus: +30 min grátis na Fusion'],
+    result: 'Autoestima alta, corpo limpo e zero estresse.',
   },
   {
     id: 'pack_muscle',
@@ -433,7 +379,7 @@ const PREMIUM_PLANS_V27: PlanItem[] = [
     tag: 'MÚSCULOS',
     title: 'Combo Recuperação (2x)',
     desc: 'Focado em quem treina pesado e sofre com dores musculares intensas.',
-    includes: ['2x Massagem para Atletas (Crossfit)', '🎁 Bônus: Foco Extra em Dores (Pomadas potentes) grátis', 'Duas sessões totalmente dedicadas à sua recuperação física pesada.'],
+    includes: ['2x Massagem para Atletas (Crossfit)', 'Bônus: Foco Extra em Dores com pomadas potentes', 'Recuperação física pesada garantida'],
     result: 'Mais recuperação ao longo do mês.',
   },
   {
@@ -443,11 +389,11 @@ const PREMIUM_PLANS_V27: PlanItem[] = [
     fullPrice: PRICES.packs.interativo.full,
     savings: PRICES.packs.interativo.save,
     icon: 'heart',
-    tag: 'MAIS CALOR HUMANO',
+    tag: 'CALOR HUMANO',
     title: 'Combo Conexão (2x)',
-    desc: 'Para quem precisa de contato humano real e intimidade. Dois encontros separados no mês para você não se sentir sozinho.',
-    includes: ['1x Experiência Fusion (relaxamento completo)', '1x Massagem Reversa (dia para tocar e explorar)', 'Sessões marcadas em dias diferentes', 'Foco 100% em te dar calor humano e atenção exclusiva.'],
-    result: 'Mais acolhimento, troca e relaxamento.',
+    desc: 'Para quem precisa de contato humano real e intimidade. Dois encontros no mês para você não se sentir sozinho.',
+    includes: ['1x Experiência Fusion (relaxamento)', '1x Massagem Reversa (dia para tocar)', 'Atenção exclusiva e sem pressa'],
+    result: 'Você terá companhia e afeto no seu mês.',
   },
   {
     id: 'pack_premium',
@@ -456,11 +402,11 @@ const PREMIUM_PLANS_V27: PlanItem[] = [
     fullPrice: PRICES.packs.premium.full,
     savings: PRICES.packs.premium.save,
     icon: 'award',
-    tag: 'TRATAMENTO DE REI',
+    tag: 'VIP',
     title: 'Mensalidade do Chefe (3x)',
-    desc: 'Você trabalha demais, merece um tratamento VIP. Três semanas do mês garantidas com as minhas melhores e mais intensas massagens.',
-    includes: ['1x Naturista (liberdade sem roupas)', '1x Fusion (equilíbrio entre massagem forte e clímax quente)', '1x Nuru (contato extremo com gel para o maior relaxamento possível)', 'Três encontros VIP para garantir que seu mês seja um sucesso.'],
-    result: 'O mês inteiro com cuidado marcado e garantido.',
+    desc: 'Você trabalha demais, merece um tratamento VIP. Três semanas garantidas com minhas melhores massagens.',
+    includes: ['1x Naturista (liberdade sem roupas)', '1x Fusion (massagem forte e clímax quente)', '1x Nuru (contato extremo com gel)'],
+    result: 'O mês inteiro com cuidado garantido.',
     premium: true,
   },
   {
@@ -470,11 +416,11 @@ const PREMIUM_PLANS_V27: PlanItem[] = [
     fullPrice: PRICES.packs.ultimate.full,
     savings: PRICES.packs.ultimate.save,
     icon: 'heart',
-    tag: 'PREMIUM',
+    tag: 'COMPLETO',
     title: 'Jornada do Prazer (3x)',
-    desc: 'A imersão total. Três semanas escalando o nível de intimidade e calor.',
-    includes: ['1x Massagem Sensorial', '1x Experiência Fusion', '1x Massagem Nuru', '🎁 Bônus: Liberdade para Tocar grátis liberada nos 3 encontros', 'A forma definitiva de desligar a mente e explorar sensações.'],
-    result: 'A versão mais completa e imersiva para apagar o estresse.',
+    desc: 'A imersão total. Três semanas escalando o nível de intimidade e calor humano.',
+    includes: ['1x Massagem Sensorial', '1x Experiência Fusion', '1x Massagem Nuru', 'Bônus: Liberdade para Tocar liberada nas 3x'],
+    result: 'A jornada definitiva para desligar a mente.',
     premium: true,
   },
 ];
@@ -483,27 +429,26 @@ const EXTRAS: ExtraItem[] = [
   { id: 'hair_trim', price: PRICES.extras.hairTrim, icon: 'scissors', title: 'Aparo de Pelos', desc: 'Até 2 áreas do corpo para ficar com o visual em dia.' },
   { id: 'more_time', price: PRICES.extras.moreTime, icon: 'clock', title: '+30 Minutos', desc: 'Porque quando é bom, a gente não quer que acabe.' },
   { id: 'touch', price: PRICES.extras.touch, icon: 'hand', title: 'Liberdade para Tocar', desc: 'Você terá liberdade total para me tocar e acariciar.' },
-  { id: 'aroma', price: PRICES.extras.aroma, icon: 'sparkles', title: 'Aromaterapia', desc: 'Óleos essenciais relaxantes no ambiente e corpo.' },
-  { id: 'pain_relief', price: PRICES.extras.painRelief, icon: 'shield', title: 'Foco em Dor', desc: 'Pomadas térmicas potentes nas áreas travadas.' },
-  { id: 'dominador', price: PRICES.extras.active, icon: 'zap', title: 'Postura Dominadora', desc: 'Eu assumo o controle com postura mais ativa.' },
+  { id: 'aroma', price: PRICES.extras.aroma, icon: 'sparkles', title: 'Aromaterapia', desc: 'Óleos essenciais relaxantes no ambiente para a mente.' },
+  { id: 'pain_relief', price: PRICES.extras.painRelief, icon: 'shield', title: 'Foco em Dor', desc: 'Pomadas térmicas potentes nas áreas mais travadas.' },
+  { id: 'dominador', price: PRICES.extras.active, icon: 'zap', title: 'Postura Dominadora', desc: 'Eu assumo o controle com uma postura muito mais ativa.' },
   { id: 'oral', price: PRICES.extras.sensory, icon: 'heart', title: 'Estímulo Oral', desc: 'Contato quente e direto para maximizar a sua experiência.' },
-  { id: 'beijos', price: PRICES.extras.kisses, icon: 'heart', title: 'Beijos e Intimidade', desc: 'Beijos na boca e conexão física liberada.' },
+  { id: 'beijos', price: PRICES.extras.kisses, icon: 'heart', title: 'Beijos e Intimidade', desc: 'Beijos na boca e conexão física liberada durante a sessão.' },
   { id: 'prostatico', price: PRICES.extras.guided, icon: 'star', title: 'Massagem Prostática', desc: 'Estimulação interna focada com os dedos e lubrificante.' },
 ];
 
 const RULES = [
-  { icon: 'shower' as IconName, title: 'A Ducha Preparatória', desc: 'O banho prévio é obrigatório. A água quente relaxa os músculos e a higiene garante que o nosso contato seja perfeito e focado.' },
-  { icon: 'shield' as IconName, title: 'Saúde e Prevenção', desc: 'Ao agendar, você garante que está com a saúde em dia, sem lesões abertas ou doenças contagiosas, mantendo nosso encontro seguro.' },
-  { icon: 'hand' as IconName, title: 'Acolhimento e Respeito', desc: 'Eu me dedico a cuidar de você. Em troca, o respeito deve ser mútuo para que o ambiente seja leve e focado em bem-estar.' },
-  { icon: 'heart' as IconName, title: 'Entrega Absoluta', desc: 'O momento que estamos juntos é só seu. Desligue a mente, os problemas ficam lá fora. O foco agora é apenas sentir.' },
+  { icon: 'shower' as IconName, title: 'A Ducha Preparatória', desc: 'O banho prévio é obrigatório. A água quente relaxa os músculos e a higiene garante que o nosso contato seja focado.' },
+  { icon: 'shield' as IconName, title: 'Saúde e Prevenção', desc: 'Ao agendar, você garante que está com a saúde em dia, sem lesões abertas ou doenças contagiosas, mantendo tudo seguro.' },
+  { icon: 'hand' as IconName, title: 'Acolhimento e Respeito', desc: 'Eu me dedico a cuidar de você. Em troca, o respeito deve ser mútuo para que o ambiente seja leve.' },
+  { icon: 'heart' as IconName, title: 'Entrega Absoluta', desc: 'O momento que estamos juntos é só seu. Desligue a mente, os problemas ficam lá fora. O foco é apenas sentir.' },
 ];
 
 const REVIEWS = [
-  { name: 'Gustavo', loc: "Bela Vista - SP", service: 'Experiência Fusion', text: 'O Thalyson chegou na hora certa. A experiência em casa foi incrível. Mãos com técnica sem igual, o alívio foi imediato. Levantei parecendo 10kg mais leve.', s: 5 },
-  { name: 'Giovana', loc: "Hotel Portal da Mata", service: 'Massagem Sensorial', text: 'Você tem mãos abençoadas! Precisava muito desse descanso. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada!', s: 5 },
-  { name: 'Bruno', loc: "SP - Bela Vista", service: 'Massagem Clássica', text: 'Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito.', s: 5 },
-  { name: 'Lucas', loc: "Londrina", service: 'Massagem Nuru', text: 'Sendo casado, a discrição era minha prioridade e fui atendido com total sigilo. A massagem tântrica me permitiu redescobrir meu próprio corpo. Sensacional.', s: 5 },
-  { name: 'Ricardo', loc: "Fernandópolis", service: 'Massagem Reversa Clássica', text: 'Encontrei um profissionalismo raro. Me senti à vontade para soltar minhas travas. Saí de lá me sentindo 10kg mais leve, física e emocionalmente.', s: 5 },
+  { name: 'Gustavo', service: 'Experiência Fusion', text: 'O Thalyson chegou na hora certa. A experiência em casa foi incrível. Mãos com técnica sem igual, levantei parecendo 10kg mais leve.' },
+  { name: 'Giovana', service: 'Massagem Sensorial', text: 'Você tem mãos abençoadas! Precisava muito desse descanso. Foi super respeitoso a todo tempo e me relaxou demais.' },
+  { name: 'Bruno', service: 'Massagem Clássica', text: 'Quero dizer que sua massagem foi muito bem executada. Recomendo muito.' },
+  { name: 'Lucas', service: 'Massagem Nuru', text: 'A discrição era minha prioridade e fui atendido com total sigilo. A massagem me permitiu redescobrir meu próprio corpo. Sensacional.' },
 ];
 
 const CATEGORIES = [
@@ -530,13 +475,12 @@ const emptyBooking = (): BookingData => ({
   mediaAllowed: false,
   bookingId: `THALY-${Date.now().toString(36).toUpperCase()}`,
   customerName: '',
-  customerPhone: '',
 });
 
 const defaultUser: UserData = {
   name: '',
   xp: 0,
-  coupons: [{ id: 'WELCOME_V27', title: 'Presente de boas-vindas', code: 'BEMVINDO', val: 15 }],
+  coupons: [{ id: 'WELCOME_V28', title: 'Presente de boas-vindas', code: 'BEMVINDO', val: 15 }],
   usedCoupons: [],
   ordersCount: 92,
 };
@@ -560,13 +504,6 @@ function clean(value: string) {
 function maskCep(value: string) {
   const raw = digits(value).slice(0, 8);
   return raw.length > 5 ? `${raw.slice(0, 5)}-${raw.slice(5)}` : raw;
-}
-
-function maskPhone(value: string) {
-  const raw = digits(value).slice(0, 11);
-  if (raw.length <= 2) return raw;
-  if (raw.length <= 7) return `(${raw.slice(0, 2)}) ${raw.slice(2)}`;
-  return `(${raw.slice(0, 2)}) ${raw.slice(2, 7)}-${raw.slice(7)}`;
 }
 
 function dateLabel(iso: string) {
@@ -615,6 +552,8 @@ const GlobalStyles = memo(({ dark }: { dark: boolean }) => (
     .safe-bottom { padding-bottom: max(14px, env(safe-area-inset-bottom)); }
     .bg-page { background: radial-gradient(circle at 12% 0%, rgba(37,99,235,.13), transparent 28rem), radial-gradient(circle at 88% 8%, rgba(245,158,11,.12), transparent 26rem), var(--bg); }
     @media (min-width: 1024px) { :root { --bottom: 0px; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-up { animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   `}</style>
 ));
 
@@ -704,15 +643,10 @@ function Header({ dark, setDark }: { dark: boolean; setDark: (value: boolean) =>
         <a href="#top" className="focus flex min-w-0 items-center gap-3 rounded-2xl">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-lg font-bold text-white">T</span>
           <span className="min-w-0">
-            <span className="block truncate text-sm font-bold">Thaly Massagens</span>
-            <span className="block truncate text-xs text-[var(--muted)]">v27 premium plans</span>
+            <span className="block truncate text-sm font-bold">Thalyson Massagens</span>
+            <span className="block truncate text-xs text-[var(--muted)]">Atendimento acolhedor</span>
           </span>
         </a>
-        <nav className="hidden items-center gap-1 lg:flex">
-          {['sessões', 'planos', 'agenda', 'local', 'confirmar'].map((id) => (
-            <a key={id} href={`#${id}`} className="focus rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--text)]">{id}</a>
-          ))}
-        </nav>
         <button type="button" onClick={() => setDark(!dark)} className="focus flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--line)] bg-[var(--surface)]" aria-label="Alternar tema">
           <Icon name={dark ? 'sun' : 'moon'} size={18} />
         </button>
@@ -725,17 +659,16 @@ function Hero({ selectedTitle, onStart }: { selectedTitle: string; onStart: () =
   return (
     <section id="top" className="grid gap-5 py-7 sm:py-10 lg:grid-cols-12 lg:items-end lg:gap-8">
       <div className="min-w-0 lg:col-span-7 xl:col-span-8">
-        <span className="mb-4 inline-flex rounded-full bg-blue-500/10 px-4 py-2 text-xs font-bold uppercase tracking-[.16em] text-blue-500">agendamento vertical</span>
-        <h1 className="max-w-5xl text-[length:var(--h1)] font-bold leading-[.9] tracking-[-.075em]">Escolha. Agende. Confirme.</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">Uma página direta para escolher o atendimento e enviar tudo pronto no WhatsApp.</p>
+        <span className="mb-4 inline-flex rounded-full bg-blue-500/10 px-4 py-2 text-xs font-bold uppercase tracking-[.16em] text-blue-500">Agendamento Simplificado</span>
+        <h1 className="max-w-5xl text-[length:var(--h1)] font-bold leading-[.9] tracking-[-.075em]">Um momento só seu.</h1>
+        <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">Deixe o peso da rotina lá fora. Escolha como quer ser cuidado hoje, de forma discreta e sem complicações.</p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <Button onClick={onStart} icon="arrow">Ver sessões</Button>
-          <Button variant="secondary" onClick={() => document.getElementById('agenda')?.scrollIntoView({ behavior: 'smooth' })} icon="calendar">Ir para agenda</Button>
+          <Button onClick={onStart} icon="arrow">Escolher sessão</Button>
         </div>
       </div>
       <div className="min-w-0 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4 lg:col-span-5 xl:col-span-4">
-        <p className="text-xs font-bold uppercase tracking-[.16em] text-[var(--muted)]">Selecionado</p>
-        <p className="mt-2 truncate text-xl font-bold tracking-[-.04em]">{selectedTitle || 'Nada escolhido'}</p>
+        <p className="text-xs font-bold uppercase tracking-[.16em] text-[var(--muted)]">Sua Escolha</p>
+        <p className="mt-2 truncate text-xl font-bold tracking-[-.04em]">{selectedTitle || 'Nada selecionado'}</p>
         <div className="mt-4 grid grid-cols-3 gap-2 text-center">
           {['sessão', 'horário', 'whats'].map((item) => (
             <span key={item} className="rounded-2xl bg-[var(--soft)] px-2 py-3 text-[11px] font-bold text-[var(--muted)]">{item}</span>
@@ -791,7 +724,7 @@ function ServiceCard({ item, selected, onSelect }: { item: ServiceItem; selected
 
         <details className="min-w-0 rounded-3xl bg-[var(--soft)] p-4 lg:col-span-7" open={selected}>
           <summary className="focus flex cursor-pointer items-center justify-between gap-3 rounded-2xl text-sm font-bold">
-            <span>Como acontece</span>
+            <span>O que vai acontecer:</span>
             <Icon name="arrow" size={17} />
           </summary>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -828,10 +761,10 @@ function PlanCard({ item, selected, onSelect }: { item: PlanItem; selected: bool
         </div>
       </div>
       <div className="rounded-2xl bg-[var(--soft)] p-4">
-        {item.includes.map((line, idx) => (
-          <p key={idx} className="flex gap-2 text-sm leading-6">
-            <Icon name="check" size={15} className="mt-1 shrink-0 text-amber-500" />
-            <span>{line}</span>
+        {item.includes.map((line, index) => (
+          <p key={index} className="flex gap-2 text-sm leading-6">
+            <Icon name="check" size={15} className="mt-1 text-amber-500" />
+            {line}
           </p>
         ))}
       </div>
@@ -858,7 +791,7 @@ function ExtraCard({ item, active, onToggle }: { item: ExtraItem; active: boolea
         <span className="mt-1 block text-xs leading-5 text-[var(--muted)]">{item.desc}</span>
         <span className="mt-2 block text-sm font-bold text-blue-500">+ {money(item.price)}</span>
       </span>
-      {active && <Icon name="check" size={18} className="text-blue-500 shrink-0" />}
+      {active && <Icon name="check" size={18} className="text-blue-500" />}
     </button>
   );
 }
@@ -874,9 +807,17 @@ function DateTime({ booking, setBooking }: { booking: BookingData; setBooking: R
 
   const times = useMemo(() => {
     const list: string[] = [];
-    for (let hour = CONFIG.START_HOUR; hour <= CONFIG.END_HOUR; hour += 1) list.push(`${String(hour).padStart(2, '0')}:00`);
+    const now = new Date();
+    const todayIso = now.toISOString().slice(0, 10);
+    const isToday = booking.date === todayIso;
+    const currentHour = now.getHours();
+
+    for (let hour = CONFIG.START_HOUR; hour <= CONFIG.END_HOUR; hour += 1) {
+      if (isToday && hour <= currentHour) continue; // Bloqueia horários que já passaram hoje
+      list.push(`${String(hour).padStart(2, '0')}:00`);
+    }
     return list;
-  }, []);
+  }, [booking.date]);
 
   return (
     <div className="grid gap-4 lg:grid-cols-12">
@@ -884,7 +825,7 @@ function DateTime({ booking, setBooking }: { booking: BookingData; setBooking: R
         <h3 className="text-lg font-bold">Dia</h3>
         <div className="hide-scroll mt-4 flex gap-2 overflow-x-auto pb-1 lg:grid lg:grid-cols-2 lg:overflow-visible">
           {days.map((day) => (
-            <button key={day.iso} type="button" onClick={() => setBooking((current) => ({ ...current, date: day.iso }))} className={cx('focus min-w-[112px] rounded-2xl border px-4 py-4 text-left text-sm font-bold', booking.date === day.iso ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
+            <button key={day.iso} type="button" onClick={() => setBooking((current) => ({ ...current, date: day.iso, time: '' }))} className={cx('focus min-w-[112px] rounded-2xl border px-4 py-4 text-left text-sm font-bold', booking.date === day.iso ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
               {day.label}
             </button>
           ))}
@@ -892,17 +833,23 @@ function DateTime({ booking, setBooking }: { booking: BookingData; setBooking: R
       </div>
       <div className="min-w-0 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4 lg:col-span-7">
         <h3 className="text-lg font-bold">Horário</h3>
-        <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 xl:grid-cols-5">
-          {times.map((time) => {
-            const rush = CONFIG.RUSH_HOURS.includes(time as typeof CONFIG.RUSH_HOURS[number]);
-            return (
-              <button key={time} type="button" onClick={() => setBooking((current) => ({ ...current, time }))} className={cx('focus min-h-[58px] rounded-2xl border px-2 py-2 text-center', booking.time === time ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
-                <span className="block text-sm font-bold">{time}</span>
-                {rush && <span className={cx('mt-1 block text-[10px] font-bold', booking.time === time ? 'text-white/75' : 'text-amber-500')}>pico</span>}
-              </button>
-            );
-          })}
-        </div>
+        {booking.date ? (
+          <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 xl:grid-cols-5">
+            {times.length > 0 ? times.map((time) => {
+              const rush = CONFIG.RUSH_HOURS.includes(time as typeof CONFIG.RUSH_HOURS[number]);
+              return (
+                <button key={time} type="button" onClick={() => setBooking((current) => ({ ...current, time }))} className={cx('focus min-h-[58px] rounded-2xl border px-2 py-2 text-center', booking.time === time ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
+                  <span className="block text-sm font-bold">{time}</span>
+                  {rush && <span className={cx('mt-1 block text-[10px] font-bold', booking.time === time ? 'text-white/75' : 'text-amber-500')}>pico</span>}
+                </button>
+              );
+            }) : (
+              <p className="col-span-full py-4 text-sm text-[var(--muted)]">Nenhum horário disponível para este dia.</p>
+            )}
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-[var(--muted)]">Selecione um dia primeiro.</p>
+        )}
       </div>
     </div>
   );
@@ -931,19 +878,18 @@ function LocationForm({ booking, setBooking, toast }: { booking: BookingData; se
   return (
     <div className="grid gap-4 lg:grid-cols-12">
       <div className="min-w-0 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4 lg:col-span-4">
-        <h3 className="text-lg font-bold">Seus dados</h3>
+        <h3 className="text-lg font-bold">Como devo te chamar?</h3>
         <div className="mt-4 grid gap-4">
-          <Field label="Nome" value={booking.customerName} onChange={(value) => setBooking((current) => ({ ...current, customerName: value }))} placeholder="Nome ou apelido" icon="user" />
-          <Field label="WhatsApp" value={booking.customerPhone} onChange={(value) => setBooking((current) => ({ ...current, customerPhone: maskPhone(value) }))} placeholder="(17) 99999-9999" icon="message" inputMode="tel" />
+          <Field label="Nome ou Apelido" value={booking.customerName} onChange={(value) => setBooking((current) => ({ ...current, customerName: value }))} placeholder="Insira seu nome" icon="user" />
         </div>
       </div>
       <div className="min-w-0 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4 lg:col-span-8">
         <h3 className="text-lg font-bold">Local</h3>
         <div className="mt-4 grid gap-2 sm:grid-cols-3">
           {[
-            { id: 'home', label: 'Residência', icon: 'home' as IconName },
+            { id: 'motel', label: 'Suíte do massagista', icon: 'bed' as IconName },
+            { id: 'home', label: 'Sua Residência', icon: 'home' as IconName },
             { id: 'hotel', label: 'Hotel', icon: 'building' as IconName },
-            { id: 'motel', label: 'Minha suíte', icon: 'bed' as IconName },
           ].map((item) => (
             <button key={item.id} type="button" onClick={() => setBooking((current) => ({ ...current, locationType: item.id as LocationType }))} className={cx('focus flex items-center justify-center gap-2 rounded-2xl border px-3 py-4 text-sm font-bold', booking.locationType === item.id ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
               <Icon name={item.icon} size={18} />
@@ -953,7 +899,7 @@ function LocationForm({ booking, setBooking, toast }: { booking: BookingData; se
         </div>
 
         {booking.locationType === 'motel' ? (
-          <p className="mt-4 rounded-2xl bg-blue-500/10 p-4 text-sm leading-6">Perfeito! O endereço da suíte privada será enviado no WhatsApp após confirmação do agendamento.</p>
+          <p className="mt-4 rounded-2xl bg-blue-500/10 p-4 text-sm leading-6">O endereço da suíte será enviado no WhatsApp após você enviar o pedido.</p>
         ) : (
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {booking.locationType === 'hotel' && <div className="sm:col-span-2"><Field label="Hotel" value={booking.address.placeName} onChange={(value) => updateAddress({ placeName: value })} placeholder="Nome do hotel" icon="building" /></div>}
@@ -1026,7 +972,7 @@ function RulesBox({ booking, setBooking }: { booking: BookingData; setBooking: R
         <div className="grid gap-3">
           {RULES.map((rule) => (
             <p key={rule.title} className="flex gap-3 text-sm leading-6">
-              <Icon name={rule.icon} size={17} className="mt-1 text-blue-500 shrink-0" />
+              <Icon name={rule.icon} size={17} className="mt-1 text-blue-500" />
               <span><strong className="block">{rule.title}</strong><span className="text-[var(--muted)]">{rule.desc}</span></span>
             </p>
           ))}
@@ -1036,12 +982,12 @@ function RulesBox({ booking, setBooking }: { booking: BookingData; setBooking: R
         <h3 className="mb-3 text-lg font-bold">Confirmação</h3>
         <div className="grid gap-3">
           <label className="flex cursor-pointer gap-3 rounded-2xl bg-[var(--soft)] p-4 text-sm leading-6">
-            <input type="checkbox" checked={booking.mediaAllowed} onChange={(event) => setBooking((current) => ({ ...current, mediaAllowed: event.target.checked }))} className="mt-1 h-4 w-4 accent-blue-600 shrink-0" />
-            <span>Autorizo fotos anônimas para portfólio (nunca mostrando o rosto) e ganho 1% off.</span>
+            <input type="checkbox" checked={booking.mediaAllowed} onChange={(event) => setBooking((current) => ({ ...current, mediaAllowed: event.target.checked }))} className="mt-1 h-4 w-4 accent-blue-600" />
+            <span>Autorizo fotos anônimas para portfólio e recebo 1% off.</span>
           </label>
           <label className="flex cursor-pointer gap-3 rounded-2xl bg-[var(--soft)] p-4 text-sm leading-6">
-            <input type="checkbox" checked={booking.termsAccepted} onChange={(event) => setBooking((current) => ({ ...current, termsAccepted: event.target.checked }))} className="mt-1 h-4 w-4 accent-blue-600 shrink-0" />
-            <span>Li e aceito as regras de higiene, saúde, entrega absoluta e respeito mútuo.</span>
+            <input type="checkbox" checked={booking.termsAccepted} onChange={(event) => setBooking((current) => ({ ...current, termsAccepted: event.target.checked }))} className="mt-1 h-4 w-4 accent-blue-600" />
+            <span>Li e aceito a higiene, o respeito, a saúde e os limites combinados.</span>
           </label>
         </div>
       </div>
@@ -1129,7 +1075,7 @@ export default function App() {
     try {
       localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({ version: CONFIG.VERSION, booking, user }));
     } catch {
-      // storage indisponível: app continua funcionando
+      // storage indisponível
     }
   }, [booking, user]);
 
@@ -1157,6 +1103,33 @@ export default function App() {
   const total = Math.max(0, subtotal - discount);
   const finalDuration = baseDuration + (booking.extras.more_time ? 30 : 0);
 
+  // Progressive flow checks
+  const hasChoice = !!(booking.serviceId || booking.planId);
+  const hasDateTime = !!(booking.date && booking.time);
+  
+  const isLocalValid = () => {
+    if (booking.customerName.trim().length < 3) return false;
+    if (booking.locationType === 'home') return !!(booking.address.cep && booking.address.street && booking.address.number && booking.address.district && booking.address.city);
+    if (booking.locationType === 'hotel') return !!(booking.address.placeName && booking.address.number);
+    return true; // motel / suíte do massagista
+  };
+  
+  const hasLocal = isLocalValid();
+
+  // Auto-scroll when sections unlock
+  useEffect(() => {
+    if (hasChoice && !hasDateTime) document.getElementById('agenda')?.scrollIntoView({ behavior: 'smooth' });
+  }, [hasChoice, hasDateTime]);
+
+  useEffect(() => {
+    if (hasDateTime && !hasLocal) document.getElementById('local')?.scrollIntoView({ behavior: 'smooth' });
+  }, [hasDateTime, hasLocal]);
+
+  useEffect(() => {
+    if (hasLocal && !sent) document.getElementById('complementos')?.scrollIntoView({ behavior: 'smooth' });
+  }, [hasLocal, sent]);
+
+
   const validate = () => {
     if (!selectedService && !selectedPlan) return toast('Escolha uma sessão ou plano.', 'error'), false;
     if (!booking.date || !booking.time) return toast('Escolha dia e horário.', 'error'), false;
@@ -1172,37 +1145,32 @@ export default function App() {
     const nl = String.fromCharCode(10);
     const address = booking.address;
     const location = booking.locationType === 'motel'
-      ? '🏩 Minha suíte — endereço enviado após confirmação'
+      ? 'Suíte do massagista — endereço enviado após confirmação'
       : booking.locationType === 'hotel'
-        ? `🏨 ${clean(address.placeName)}, quarto ${clean(address.number)}`
-        : `🏠 ${clean(address.street)}, ${clean(address.number)} - ${clean(address.district)}, ${clean(address.city)} ${address.comp ? `(${clean(address.comp)})` : ''}`;
-    const extras = selectedExtras.length ? selectedExtras.map((item) => `➕ ${item.title} (+${money(item.price)})`).join(nl) : 'Nenhum';
+        ? `${clean(address.placeName)}, quarto ${clean(address.number)}`
+        : `${clean(address.street)}, ${clean(address.number)} - ${clean(address.district)}, ${clean(address.city)} ${address.comp ? `(${clean(address.comp)})` : ''}`;
+    const extras = selectedExtras.length ? selectedExtras.map((item) => `• ${item.title} (+${money(item.price)})`).join(nl) : 'Nenhum';
     const payment = booking.payment === 'pix' ? 'Pix' : booking.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
-    const selectedDescription = selectedPlan ? selectedPlan.desc : selectedService?.desc;
-
     return [
-      '*AGENDAMENTO THALY MASSAGENS — V27*',
+      '*AGENDAMENTO THALISON MASSAGENS*',
       '',
       `Pedido: ${booking.bookingId}`,
       `Nome: ${clean(booking.customerName)}`,
-      `WhatsApp: ${booking.customerPhone || 'não informado'}`,
-      `💆‍♂️ O que escolhi: *${selectedTitle}*`,
-      `_${selectedDescription}_`,
+      `Escolha: ${selectedTitle}`,
+      `Data: ${dateLabel(booking.date)} às ${booking.time}`,
+      `Duração estimada: ${finalDuration} min`,
+      `Local: ${location}`,
       '',
-      `📅 Data: ${dateLabel(booking.date)} às ${booking.time}`,
-      `⏱️ Duração estimada: ${finalDuration} min`,
-      `📍 Local: ${location}`,
-      '',
-      '*Extras Selecionados:*',
+      'Extras:',
       extras,
       '',
-      `💳 Pagamento: ${payment}`,
-      `💰 Total estimado: ${money(total)}`,
-      booking.appliedCoupon ? `🎁 Benefício ativado: ${booking.appliedCoupon.title}` : '',
+      `Pagamento: ${payment}`,
+      `Total estimado: ${money(total)}`,
+      booking.appliedCoupon ? `Benefício: ${booking.appliedCoupon.title}` : '',
       '',
-      '_Li e aceito as regras de higiene, respeito, entrega e limites combinados._'
-    ].filter(item => item !== undefined).join(nl);
+      'Li e aceito as regras de higiene, respeito, saúde e limites combinados.'
+    ].filter(Boolean).join(nl);
   };
 
   const finish = () => {
@@ -1228,7 +1196,7 @@ export default function App() {
         <Hero selectedTitle={selectedTitle} onStart={() => document.getElementById('sessões')?.scrollIntoView({ behavior: 'smooth' })} />
 
         <section id="sessões" className="py-8 sm:py-10">
-          <SectionTitle id="sessões-title" label="01 · Sessões" title="Escolha o cuidado." hint="Cards limpos. Detalhes abrem só quando necessário." />
+          <SectionTitle id="sessões-title" label="01 · Sessões" title="Escolha o cuidado." hint="Você terá um momento exclusivo, preparado para que você se desconecte totalmente." />
           <CategoryTabs value={category} onChange={setCategory} />
           <div className="grid gap-4">
             {visibleServices.map((item) => (
@@ -1246,7 +1214,7 @@ export default function App() {
         </section>
 
         <section id="planos" className="py-8 sm:py-10">
-          <SectionTitle id="planos-title" label="02 · Premium Plans v27" title="Planos mensais." hint="A versão premium foi preservada com todos os planos e valores." />
+          <SectionTitle id="planos-title" label="02 · Planos Mensais" title="Cuidado contínuo." hint="Para não se preocupar mais, garanta dias reservados para você no mês." />
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {PREMIUM_PLANS_V27.map((item) => (
               <PlanCard
@@ -1262,59 +1230,66 @@ export default function App() {
           </div>
         </section>
 
-        <section id="agenda" className="py-8 sm:py-10">
-          <SectionTitle id="agenda-title" label="03 · Agenda" title="Dia e horário." />
-          <DateTime booking={booking} setBooking={setBooking} />
-        </section>
+        {hasChoice && (
+          <section id="agenda" className="animate-fade-up py-8 sm:py-10">
+            <SectionTitle id="agenda-title" label="03 · Agenda" title="Dia e horário." />
+            <DateTime booking={booking} setBooking={setBooking} />
+          </section>
+        )}
 
-        <section id="local" className="py-8 sm:py-10">
-          <SectionTitle id="local-title" label="04 · Local" title="Dados e endereço." />
-          <LocationForm booking={booking} setBooking={setBooking} toast={toast} />
-        </section>
+        {hasDateTime && (
+          <section id="local" className="animate-fade-up py-8 sm:py-10">
+            <SectionTitle id="local-title" label="04 · Local" title="Dados e endereço." />
+            <LocationForm booking={booking} setBooking={setBooking} toast={toast} />
+          </section>
+        )}
 
-        <section id="complementos" className="py-8 sm:py-10">
-          <SectionTitle id="extras-title" label="05 · Extras" title="Complementos opcionais." />
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {EXTRAS.map((item) => (
-              <ExtraCard
-                key={item.id}
-                item={item}
-                active={!!booking.extras[item.id]}
-                onToggle={() => setBooking((current) => ({ ...current, extras: { ...current.extras, [item.id]: !current.extras[item.id] } }))}
-              />
-            ))}
-          </div>
-        </section>
-
-        <section id="confirmar" className="py-8 sm:py-10">
-          <SectionTitle id="confirmar-title" label="06 · Confirmar" title="Revise e envie." />
-          <div className="grid gap-5 lg:grid-cols-12 lg:items-start">
-            <div className="grid gap-5 lg:col-span-8">
-              <CouponBox user={user} booking={booking} setBooking={setBooking} />
-              <PaymentBox booking={booking} setBooking={setBooking} />
-              <RulesBox booking={booking} setBooking={setBooking} />
-
-              <section className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4">
-                <h3 className="mb-4 text-lg font-bold">O que os clientes dizem</h3>
-                <div className="grid gap-3 md:grid-cols-2">
-                  {REVIEWS.map((review) => (
-                    <article key={`${review.name}-${review.service}`} className="rounded-2xl bg-[var(--soft)] p-4">
-                      <p className="text-sm leading-6">“{review.text}”</p>
-                      <p className="mt-3 text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)]">{review.name} · {review.loc}</p>
-                      <p className="mt-1 text-xs font-bold uppercase tracking-[.12em] text-amber-500">{review.service}</p>
-                    </article>
-                  ))}
-                </div>
-              </section>
+        {hasLocal && (
+          <section id="complementos" className="animate-fade-up py-8 sm:py-10">
+            <SectionTitle id="extras-title" label="05 · Extras" title="Complementos." hint="Adicione detalhes para uma experiência mais imersiva." />
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {EXTRAS.map((item) => (
+                <ExtraCard
+                  key={item.id}
+                  item={item}
+                  active={!!booking.extras[item.id]}
+                  onToggle={() => setBooking((current) => ({ ...current, extras: { ...current.extras, [item.id]: !current.extras[item.id] } }))}
+                />
+              ))}
             </div>
+          </section>
+        )}
 
-            <div className="lg:col-span-4">
-              <Summary title={selectedTitle} base={baseValue} extras={extrasValue} rush={rushFee} discount={discount} total={total} booking={booking} />
-              <Button variant="whatsapp" onClick={finish} icon="message" className="mt-4 hidden w-full lg:inline-flex">Enviar no WhatsApp</Button>
-              {sent && <p className="mt-3 rounded-2xl bg-blue-500/10 p-4 text-sm font-bold text-blue-500">Pedido montado. Toque novamente se o WhatsApp não abriu.</p>}
+        {hasLocal && (
+          <section id="confirmar" className="animate-fade-up py-8 sm:py-10">
+            <SectionTitle id="confirmar-title" label="06 · Confirmar" title="Revise e envie." />
+            <div className="grid gap-5 lg:grid-cols-12 lg:items-start">
+              <div className="grid gap-5 lg:col-span-8">
+                <CouponBox user={user} booking={booking} setBooking={setBooking} />
+                <PaymentBox booking={booking} setBooking={setBooking} />
+                <RulesBox booking={booking} setBooking={setBooking} />
+
+                <section className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4">
+                  <h3 className="mb-4 text-lg font-bold">O que dizem</h3>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {REVIEWS.map((review) => (
+                      <article key={`${review.name}-${review.service}`} className="rounded-2xl bg-[var(--soft)] p-4">
+                        <p className="text-sm leading-6">“{review.text}”</p>
+                        <p className="mt-3 text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)]">{review.name} · {review.service}</p>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              </div>
+
+              <div className="lg:col-span-4">
+                <Summary title={selectedTitle} base={baseValue} extras={extrasValue} rush={rushFee} discount={discount} total={total} booking={booking} />
+                <Button variant="whatsapp" onClick={finish} icon="message" className="mt-4 hidden w-full lg:inline-flex">Enviar no WhatsApp</Button>
+                {sent && <p className="mt-3 rounded-2xl bg-blue-500/10 p-4 text-sm font-bold text-blue-500">Pedido montado. Toque novamente se o WhatsApp não abriu.</p>}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <BottomBar total={total} title={selectedTitle} onFinish={finish} />
