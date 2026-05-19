@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 // =====================================================================================
-// THALY MASSAGENS — AGENDAMENTO PROGRESSIVO E ACOLHEDOR
-// Fluxo Simplificado Passo a Passo
+// THALY MASSAGENS — AGENDAMENTO PROGRESSIVO
+// Fluxo Simplificado Passo a Passo com Copy Premium
 // =====================================================================================
 
 type Category = 'all' | 'express' | 'relax' | 'final' | 'care';
@@ -89,9 +89,9 @@ type Toast = {
 const CONFIG = {
   PHONE: '5517991360413',
   INSTAGRAM_URL: 'https://instagram.com/thalyson.massagens',
-  STORAGE_KEY: '@thaly_app_v29_acolhedor',
+  STORAGE_KEY: '@thaly_app_v30_premium',
   PIX_KEY: '62.922.530/0001-14',
-  VERSION: 'v29_progressivo_acolhedor',
+  VERSION: 'v30_progressivo_premium',
   START_HOUR: 9,
   END_HOUR: 22,
   RUSH_HOURS: ['12:00', '13:00', '17:00', '18:00'],
@@ -137,7 +137,7 @@ const PRICES = {
   sens: 177,
   naturista: 197,
   titan: 207,
-  reversa: 260,
+  reversa: 280,
   nuru: 317,
   crossfit: 187,
   pes: 110,
@@ -162,10 +162,10 @@ const SERVICES: ServiceItem[] = [
     min: 40,
     price: PRICES.pes,
     icon: 'user',
-    tag: 'ALÍVIO NOS PÉS',
+    tag: 'ALÍVIO RÁPIDO',
     title: 'Massagem nos Pés',
-    desc: 'Descanso rápido e direto para quem fica muito tempo em pé ou de sapatos.',
-    details: ['Massagem focada na sola dos pés e calcanhares.', 'Aperto profundo em pontos de dor.', 'Você vai sentir os pés mais leves na hora.'],
+    desc: 'Descanso rápido e direto para quem fica muito tempo em pé. Você vai sentir os pés mais leves na hora.',
+    details: ['Massagem focada na sola dos pés e calcanhares.', 'Aperto profundo em pontos de dor acumulada.', 'Liberação total de tensões na base do corpo.'],
     result: 'Pés descansados e corpo menos tenso.',
   },
   {
@@ -174,11 +174,11 @@ const SERVICES: ServiceItem[] = [
     min: 40,
     price: PRICES.maos,
     icon: 'hand',
-    tag: 'ALÍVIO NAS MÃOS',
+    tag: 'ALÍVIO RÁPIDO',
     title: 'Massagem nas Mãos',
-    desc: 'Tira a dor e o cansaço de quem trabalha muito tempo no computador ou celular.',
-    details: ['Alongamento dos dedos e punhos.', 'Massagem forte na palma das mãos.', 'Alívio direto nos braços cansados.'],
-    result: 'Mãos leves e sem dores musculares.',
+    desc: 'Tira a dor e o cansaço dos braços e punhos. Ideal para quem trabalha muito no computador ou celular.',
+    details: ['Alongamento profundo dos dedos e punhos.', 'Massagem firme na palma das mãos.', 'Alívio direto nos braços e antebraços cansados.'],
+    result: 'Mãos leves e braços sem dores musculares.',
   },
   {
     id: 'relaxante',
@@ -186,11 +186,11 @@ const SERVICES: ServiceItem[] = [
     min: 40,
     price: PRICES.relax,
     icon: 'user',
-    tag: 'ALÍVIO MUSCULAR',
+    tag: 'RELAXAMENTO FÍSICO',
     title: 'Massagem Clássica',
-    desc: 'Foco total em tirar as dores e os nós das suas costas. Perfeita para quem está com o corpo travado.',
-    details: ['Massagem forte com as mãos e rolos de madeira.', 'Foco nas costas, ombros e pescoço.', 'Desmancha os nós de tensão e estresse.'],
-    result: 'Corpo solto, sem dores e pronto para dormir bem.',
+    desc: 'Foco total em tirar as dores e os nós das suas costas. Perfeita para quem está com o corpo rígido e travado.',
+    details: ['Massagem forte com as mãos e rolos.', 'Foco nas costas, ombros e pescoço.', 'Desmancha todos os nós de tensão e estresse.'],
+    result: 'Corpo completamente solto, sem dores e pronto para descansar.',
   },
   {
     id: 'naturista',
@@ -198,11 +198,11 @@ const SERVICES: ServiceItem[] = [
     min: 40,
     price: PRICES.naturista,
     icon: 'sun',
-    tag: 'ZERO ROUPAS',
+    tag: 'LIBERDADE',
     title: 'Massagem Naturista',
-    desc: 'Massagem relaxante no corpo inteiro, sem nenhuma roupa. Para você se sentir totalmente livre e confortável.',
-    details: ['Sessão feita com nós dois sem roupas.', 'Técnicas de relaxamento para tirar a dor do corpo.', 'Ambiente totalmente sem julgamentos e acolhedor.'],
-    result: 'Sensação de liberdade e relaxamento físico.',
+    desc: 'Sessão no corpo inteiro, feita completamente sem roupas. Para você se sentir totalmente livre e à vontade.',
+    details: ['Sessão realizada com nós dois sem roupas.', 'Técnicas de relaxamento para desmanchar a dor do corpo.', 'Ambiente totalmente sem julgamentos e acolhedor.'],
+    result: 'Sensação absoluta de liberdade e relaxamento físico.',
   },
   {
     id: 'crossfit',
@@ -212,9 +212,9 @@ const SERVICES: ServiceItem[] = [
     icon: 'zap',
     tag: 'RECUPERAÇÃO',
     title: 'Massagem Desportiva',
-    desc: 'Para quem treina pesado. Massagem com força para aliviar músculos doloridos e ajudar na recuperação pós-treino.',
-    details: ['Massagem com muita pressão muscular.', 'Uso de pomadas que esquentam e tiram a dor.', 'Foco nas pernas, costas e ombros.'],
-    result: 'Músculos recuperados e dores aliviadas.',
+    desc: 'Massagem com muita pressão para aliviar músculos doloridos e ajudar na recuperação de quem treina pesado.',
+    details: ['Fricção profunda para soltar os músculos cansados.', 'Uso de pomadas que esquentam e tiram a dor.', 'Foco nas pernas, costas e ombros.'],
+    result: 'Músculos recuperados e dores aliviadas para o próximo treino.',
   },
   {
     id: 'sensitiva',
@@ -224,9 +224,9 @@ const SERVICES: ServiceItem[] = [
     icon: 'sparkles',
     tag: 'RELAXAMENTO MENTAL',
     title: 'Massagem Sensorial',
-    desc: 'Toques muito suaves no corpo todo que causam arrepios e ajudam a desligar a mente acelerada. Termina com finalização.',
-    details: ['Toques leves com as pontas dos dedos.', 'Estímulos que percorrem o corpo inteiro.', 'Finalização com massagem para relaxar e gozar.'],
-    result: 'Mente calma e estresse zerado.',
+    desc: 'Todas as sessões sensoriais iniciam com a massagem clássica relaxante para soltar o corpo. Depois, transicionamos para toques extremamente suaves que causam arrepios e despertam o tesão.',
+    details: ['Aquecimento com massagem clássica inicial nas costas.', 'Estímulos suaves e instigantes que percorrem o corpo inteiro.', 'A sessão termina com uma finalização manual focada no seu prazer absoluto.'],
+    result: 'Estresse zerado e clímax profundamente satisfatório.',
   },
   {
     id: 'mista',
@@ -234,11 +234,11 @@ const SERVICES: ServiceItem[] = [
     min: 60,
     price: PRICES.titan,
     icon: 'zap',
-    tag: 'A MAIS COMPLETA',
+    tag: 'INTENSA E COMPLETA',
     title: 'Massagem Fusion',
-    desc: 'A sessão mais escolhida. Primeiro eu tiro a dor das suas costas, depois mudo o ritmo e finalizo para você relaxar totalmente.',
-    details: ['Começamos tirando as dores e nós musculares.', 'Mudamos para toques mais próximos (corpo a corpo).', 'Termina com estimulação focada no seu prazer.'],
-    result: 'Corpo sem dores e mente totalmente relaxada.',
+    desc: 'A mais desejada. Iniciamos com a clássica relaxante para tirar todas as dores. Depois, o clima esquenta: eu fico apenas de cueca para um contato corpo a corpo sedutor, elevando o tesão ao máximo.',
+    details: ['Massagem relaxante inicial para remover a rigidez muscular.', 'Mudo o traje (apenas cueca) para um contato físico intenso e sedutor.', 'Finalização perfeita e dedicada para você chegar ao clímax e zerar o estresse.'],
+    result: 'Corpo sem dores, curiosidade saciada e mente extasiada.',
   },
   {
     id: 'reversa',
@@ -248,9 +248,9 @@ const SERVICES: ServiceItem[] = [
     icon: 'heart',
     tag: 'TROCA DE CARINHO',
     title: 'Massagem Reversa',
-    desc: 'Metade do tempo eu faço massagem em você. Na outra metade, você tem liberdade para me tocar e curtir o momento.',
-    details: ['Receba uma massagem relaxante completa.', 'Depois, você assume o controle e me toca.', 'Momento de carinho e intimidade real.'],
-    result: 'Conexão humana profunda e sem pressa.',
+    desc: 'Começamos com a massagem clássica. Nos primeiros 30 minutos, o foco é cuidar de você. Depois, você assume o controle e faz a massagem em mim. Tudo termina com uma finalização mútua e envolvente.',
+    details: ['Receba 30 minutos de relaxamento absoluto com massagem.', 'Inversão: você assume o controle, me toca e explora.', 'A sessão culmina na finalização (clímax) de ambos, criando uma conexão real.'],
+    result: 'Tesão saciado e uma conexão humana profunda e inesquecível.',
   },
   {
     id: 'nuru',
@@ -260,9 +260,9 @@ const SERVICES: ServiceItem[] = [
     icon: 'star',
     tag: 'MÁXIMO CONTATO',
     title: 'Massagem Nuru',
-    desc: 'Contato extremo de pele com pele usando bastante gel corporal deslizante. Uma experiência intensa do início ao fim.',
-    details: ['Uso de gel corporal específico para a sessão.', 'Meu corpo desliza sobre o seu.', 'Máxima proximidade física e finalização relaxante.'],
-    result: 'Prazer intenso e esquecimento dos problemas.',
+    desc: 'Tudo começa com a massagem clássica para aquecer os músculos. Em seguida, usamos muito gel deslizante para um contato extremo de pele com pele. Uma experiência feita para fazer as pernas tremerem.',
+    details: ['Massagem clássica inicial para aquecer o corpo.', 'Uso de gel corporal deslizando meu corpo inteiro sobre o seu.', 'Máxima proximidade física que termina em uma finalização intensa.'],
+    result: 'O ápice do prazer físico. Você vai esquecer de todos os problemas.',
     popular: true,
   },
   {
@@ -271,34 +271,55 @@ const SERVICES: ServiceItem[] = [
     min: 60,
     price: PRICES.depil,
     icon: 'scissors',
-    tag: 'CUIDADO',
+    tag: 'ESTÉTICA',
     title: 'Aparo de Pelos',
-    desc: 'Cuido da sua aparência. Aparo os pelos do seu corpo com máquina de forma confortável e higiênica.',
-    details: ['Uso de máquina profissional.', 'Você escolhe a região (peito, costas, etc).', 'Serviço rápido e sem dor.'],
-    result: 'Corpo limpo, fresco e bem cuidado.',
+    desc: 'Cuido da sua aparência. Aparo os pelos do seu corpo com máquina de forma confortável, rápida e higiênica.',
+    details: ['Uso de máquina profissional.', 'Você escolhe as regiões (peito, costas, pernas).', 'Serviço executado sem dor e no seu conforto.'],
+    result: 'Corpo visualmente limpo, fresco e bem cuidado.',
   },
 ];
 
 const EXTRAS: ExtraItem[] = [
-  { id: 'hair_trim', price: PRICES.extras.hairTrim, icon: 'scissors', title: 'Aparo de Pelos', desc: 'Aparo de até 2 áreas do corpo.' },
-  { id: 'more_time', price: PRICES.extras.moreTime, icon: 'clock', title: '+30 Minutos', desc: 'Mais tempo para aproveitar a massagem.' },
-  { id: 'touch', price: PRICES.extras.touch, icon: 'hand', title: 'Liberdade para Tocar', desc: 'Você pode me tocar e retribuir os carinhos.' },
-  { id: 'aroma', price: PRICES.extras.aroma, icon: 'sparkles', title: 'Aromaterapia', desc: 'Óleos com cheiros que acalmam a mente.' },
-  { id: 'pain_relief', price: PRICES.extras.painRelief, icon: 'shield', title: 'Foco em Dor', desc: 'Uso de pomadas térmicas para dores fortes.' },
+  { id: 'hair_trim', price: PRICES.extras.hairTrim, icon: 'scissors', title: 'Aparo de Pelos', desc: 'Aparo de até 2 áreas do corpo para renovar o visual.' },
+  { id: 'more_time', price: PRICES.extras.moreTime, icon: 'clock', title: '+30 Minutos', desc: 'Tempo adicional para prolongar a sua experiência de prazer.' },
+  { id: 'touch', price: PRICES.extras.touch, icon: 'hand', title: 'Liberdade para Tocar', desc: 'Sinta-se à vontade para me tocar e retribuir as carícias.' },
+  { id: 'aroma', price: PRICES.extras.aroma, icon: 'sparkles', title: 'Aromaterapia', desc: 'Óleos essenciais com aromas que preparam a mente para relaxar.' },
+  { id: 'pain_relief', price: PRICES.extras.painRelief, icon: 'shield', title: 'Foco em Dor', desc: 'Uso de pomadas térmicas potentes nas áreas mais travadas.' },
+  { id: 'dominador', price: PRICES.extras.active, icon: 'zap', title: 'Postura Dominadora', desc: 'Eu assumo o controle total da sessão com uma postura ativa.' },
+  { id: 'oral', price: PRICES.extras.sensory, icon: 'heart', title: 'Estímulo Oral', desc: 'Contato quente e direto para maximizar a sua experiência e clímax.' },
+  { id: 'beijos', price: PRICES.extras.kisses, icon: 'heart', title: 'Beijos e Intimidade', desc: 'Beijos na boca e conexão física totalmente liberada durante a sessão.' },
+  { id: 'prostatico', price: PRICES.extras.guided, icon: 'star', title: 'Massagem Prostática', desc: 'Estimulação interna focada para um nível de prazer ainda mais profundo.' },
 ];
 
 const RULES = [
-  { icon: 'shower' as IconName, title: 'Banho antes da sessão', desc: 'A água quente relaxa os músculos e mantém a higiene, deixando o toque mais agradável.' },
-  { icon: 'shield' as IconName, title: 'Saúde em dia', desc: 'É importante não ter lesões abertas ou gripes para a segurança de nós dois.' },
-  { icon: 'hand' as IconName, title: 'Respeito mútuo', desc: 'Meu foco é cuidar de você. O respeito garante que o clima fique sempre tranquilo.' },
-  { icon: 'heart' as IconName, title: 'Sinta o momento', desc: 'Deixe os problemas do trabalho do lado de fora. O momento aqui é só seu.' },
+  { icon: 'shower' as IconName, title: 'Banho antes da sessão', desc: 'A água quente relaxa os músculos e mantém a higiene, deixando o contato físico muito mais agradável e focado.' },
+  { icon: 'shield' as IconName, title: 'Saúde em dia', desc: 'É fundamental não apresentar lesões abertas ou gripes para mantermos a segurança e o bem-estar de nós dois.' },
+  { icon: 'hand' as IconName, title: 'Respeito mútuo', desc: 'Meu objetivo principal é cuidar de você e te dar prazer. O respeito recíproco garante que o clima fique excelente.' },
+  { icon: 'heart' as IconName, title: 'Entrega total', desc: 'Deixe as preocupações do trabalho lá fora. O momento aqui é exclusivamente seu. Feche os olhos e sinta.' },
+];
+
+const REVIEWS = [
+  { name: 'Gustavo', service: 'Massagem Fusion', text: 'O Thalyson chegou na hora certa. A experiência em casa foi incrível. Mãos com técnica sem igual, levantei parecendo 10kg mais leve.' },
+  { name: 'Giovana', service: 'Massagem Sensorial', text: 'Você tem mãos abençoadas! Precisava muito desse descanso. Foi super respeitoso a todo tempo e me relaxou demais.' },
+  { name: 'Bruno', service: 'Massagem Clássica', text: 'Quero dizer que sua massagem foi muito bem executada. Recomendo muito o trabalho.' },
+  { name: 'Lucas', service: 'Massagem Nuru', text: 'A discrição era minha prioridade e fui atendido com total sigilo. A massagem me permitiu redescobrir meu próprio corpo. Sensacional.' },
+  { name: 'Marcelo', service: 'Massagem Fusion', text: 'A parte do contato corpo a corpo é indescritível. A finalização me deixou nas nuvens, todo o estresse da semana sumiu na hora.' },
+  { name: 'Rafael', service: 'Massagem Reversa', text: 'Poder tocar e ter essa troca foi a melhor experiência. A finalização dos dois juntos cria um clima único e muito gostoso.' },
+  { name: 'Thiago', service: 'Massagem Nuru', text: 'Deslizar com o gel e sentir aquele contato pele a pele... O tesão vai a mil. A finalização foi intensa, recomendo de olhos fechados.' },
+  { name: 'Rodrigo', service: 'Massagem Sensorial', text: 'O início relaxante prepara o corpo perfeitamente. A finalização foi feita com tanta técnica que saí renovado e leve.' },
+  { name: 'Fernando', service: 'Massagem Fusion', text: 'Ver ele atendendo de cueca já muda o clima da sala inteira. A transição da massagem relaxante para o clímax final é absurda de boa.' },
+  { name: 'Alexandre', service: 'Massagem Reversa', text: 'Nunca tinha experimentado algo assim. Os 30 minutos finais onde pude tocar e chegarmos lá juntos foi inesquecível. Vale muito.' },
+  { name: 'Caio', service: 'Massagem Sensorial', text: 'Toques que arrepiam a alma. O momento da liberação e a finalização tiraram um peso gigantesco das minhas costas.' },
+  { name: 'Henrique', service: 'Massagem Nuru', text: 'Intimidade surreal. A clássica no começo tira a dor, e o contato com o gel junto com a finalização te levam pra outro mundo.' },
+  { name: 'Felipe', service: 'Massagem Fusion', text: 'Profissionalismo e tesão na medida certa. O toque firme, a proximidade do corpo dele e a finalização impecável. Voltarei.' },
+  { name: 'Diego', service: 'Massagem Reversa', text: 'Vale cada centavo investido. Poder trocar carícias sem pressa e ter a finalização mútua me fez sentir extremamente acolhido e satisfeito.' },
 ];
 
 const CATEGORIES = [
   { id: 'all' as Category, label: 'Todas' },
   { id: 'express' as Category, label: 'Rápidas' },
   { id: 'relax' as Category, label: 'Tira Dor' },
-  { id: 'final' as Category, label: 'Relaxar e Gozar' },
+  { id: 'final' as Category, label: 'Relaxar e Finalizar' },
   { id: 'care' as Category, label: 'Estética' },
 ];
 
@@ -322,7 +343,7 @@ const emptyBooking = (): BookingData => ({
 const defaultUser: UserData = {
   name: '',
   xp: 0,
-  coupons: [{ id: 'WELCOME_V29', title: 'Desconto de Primeira Vez', code: 'BEMVINDO', val: 15 }],
+  coupons: [{ id: 'WELCOME_V30', title: 'Desconto de Primeira Vez', code: 'BEMVINDO', val: 15 }],
   usedCoupons: [],
   ordersCount: 92,
 };
@@ -502,8 +523,8 @@ function Hero({ onStart }: { onStart: () => void }) {
     <section id="top" className="grid gap-5 py-7 sm:py-10">
       <div className="min-w-0">
         <span className="mb-4 inline-flex rounded-full bg-blue-500/10 px-4 py-2 text-xs font-bold uppercase tracking-[.16em] text-blue-500">Espaço de Acolhimento</span>
-        <h1 className="max-w-5xl text-[length:var(--h1)] font-bold leading-[.9] tracking-[-.075em]">Sinta-se bem.</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">Deixe o peso da rotina lá fora. Escolha como quer ser cuidado hoje, de forma discreta e com palavras simples.</p>
+        <h1 className="max-w-5xl text-[length:var(--h1)] font-bold leading-[.9] tracking-[-.075em]">Sinta o prazer do cuidado.</h1>
+        <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">Deixe a rotina lá fora. Escolha a experiência que vai aliviar suas dores físicas e proporcionar a melhor finalização para sua mente.</p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Button onClick={onStart} icon="arrow">Agendar Sessão</Button>
         </div>
@@ -539,7 +560,7 @@ function ServiceCard({ item, selected, onSelect }: { item: ServiceItem; selected
                 <h3 className="mt-1 text-lg font-bold leading-tight tracking-[-.04em] sm:text-xl">{item.title}</h3>
               </div>
             </div>
-            {item.popular && <span className="shrink-0 rounded-full bg-amber-500/15 px-2 py-1 text-[10px] font-bold text-amber-500">mais pedida</span>}
+            {item.popular && <span className="shrink-0 rounded-full bg-amber-500/15 px-2 py-1 text-[10px] font-bold text-amber-500">mais desejada</span>}
           </div>
           <p className="text-sm leading-6 text-[var(--muted)]">{item.desc}</p>
           <div className="mt-4 grid grid-cols-2 gap-2">
@@ -557,7 +578,7 @@ function ServiceCard({ item, selected, onSelect }: { item: ServiceItem; selected
 
         <details className="min-w-0 rounded-3xl bg-[var(--soft)] p-4 lg:col-span-7" open={selected}>
           <summary className="focus flex cursor-pointer items-center justify-between gap-3 rounded-2xl text-sm font-bold">
-            <span>Como funciona a sessão:</span>
+            <span>Como vai funcionar a sua sessão:</span>
             <Icon name="arrow" size={17} />
           </summary>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -571,7 +592,7 @@ function ServiceCard({ item, selected, onSelect }: { item: ServiceItem; selected
             </div>
             <div className="min-w-0 rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-4">
               <p className="text-xs font-bold uppercase tracking-[.16em] text-[var(--muted)]">O Resultado</p>
-              <p className="mt-2 text-sm leading-6">{item.result}</p>
+              <p className="mt-2 text-sm leading-6 font-medium">{item.result}</p>
             </div>
           </div>
         </details>
@@ -608,13 +629,12 @@ function DateTime({ booking, setBooking }: { booking: BookingData; setBooking: R
   const times = useMemo(() => {
     const list: string[] = [];
     const now = new Date();
-    // Ajuste de fuso simples para garantir a data local do Brasil
     const todayIso = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
     const isToday = booking.date === todayIso;
     const currentHour = now.getHours();
 
     for (let hour = CONFIG.START_HOUR; hour <= CONFIG.END_HOUR; hour += 1) {
-      if (isToday && hour <= currentHour) continue; // Bloqueia horas passadas no dia de hoje
+      if (isToday && hour <= currentHour) continue;
       list.push(`${String(hour).padStart(2, '0')}:00`);
     }
     return list;
@@ -858,9 +878,8 @@ export default function App() {
   const total = Math.max(0, subtotal - discount);
   const finalDuration = baseDuration + (booking.extras.more_time ? 30 : 0);
 
-  // Validação por passos para garantir que o cliente não pule etapas
   const validateStep = (targetStep: number) => {
-    if (targetStep === 2 && !booking.serviceId) return toast('Escolha uma massagem para continuar.', 'error'), false;
+    if (targetStep === 2 && !booking.serviceId) return toast('Escolha uma sessão para continuar.', 'error'), false;
     if (targetStep === 3 && (!booking.date || !booking.time)) return toast('Escolha o dia e o horário.', 'error'), false;
     if (targetStep === 4) {
       if (!clean(booking.customerName)) return toast('Por favor, preencha seu nome.', 'error'), false;
@@ -913,7 +932,7 @@ export default function App() {
       `Valor Final: ${money(total)}`,
       booking.appliedCoupon ? `Cupom Usado: ${booking.appliedCoupon.title}` : '',
       '',
-      'Confirmo que li e aceito as regras de higiene e respeito da sessão.'
+      'Confirmo que li e aceito as regras de higiene e entrega da sessão.'
     ].filter(Boolean).join(nl);
 
     setUser((current) => ({
@@ -932,8 +951,7 @@ export default function App() {
       <Header dark={dark} setDark={setDark} />
 
       <main className="mx-auto w-full max-w-screen-2xl px-[var(--page)] pt-6">
-        {/* Progresso Simples */}
-        <div className="mb-8 flex items-center justify-between border-b border-[var(--line)] pb-4 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+        <div className="mb-8 flex items-center justify-between border-b border-[var(--line)] pb-4 text-xs font-bold uppercase tracking-[.18em] text-[var(--muted)]">
           <span>Passo {step} de 5</span>
           <span className="text-blue-500">{step === 1 ? 'Sessão' : step === 2 ? 'Agenda' : step === 3 ? 'Local' : step === 4 ? 'Extras' : 'Confirmação'}</span>
         </div>
@@ -942,7 +960,7 @@ export default function App() {
           <section className="animate-fade-up">
             <Hero onStart={() => document.getElementById('sessoes')?.scrollIntoView({ behavior: 'smooth' })} />
             <div id="sessoes" className="py-8">
-              <SectionTitle label="01" title="Escolha a Massagem" hint="Selecione abaixo a opção que melhor atende à sua necessidade de hoje." />
+              <SectionTitle label="01" title="Escolha a Massagem" hint="Selecione abaixo a experiência que vai transformar o seu dia." />
               <CategoryTabs value={category} onChange={setCategory} />
               <div className="grid gap-4">
                 {visibleServices.map((item) => (
@@ -988,7 +1006,7 @@ export default function App() {
 
         {step === 4 && (
           <section className="animate-fade-up py-8">
-            <SectionTitle label="04" title="Detalhes Extras (Opcional)" hint="Você pode adicionar mais elementos para deixar a sessão ainda melhor." />
+            <SectionTitle label="04" title="Detalhes Extras (Opcional)" hint="Adicione complementos para maximizar o seu prazer." />
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {EXTRAS.map((item) => (
                 <ExtraCard
@@ -1026,9 +1044,21 @@ export default function App() {
                   </div>
                   <label className="flex cursor-pointer gap-3 rounded-2xl bg-[var(--soft)] p-4 text-sm leading-6 border border-transparent hover:border-[var(--line)] transition">
                     <input type="checkbox" checked={booking.termsAccepted} onChange={(event) => setBooking((current) => ({ ...current, termsAccepted: event.target.checked }))} className="mt-1 h-4 w-4 accent-blue-600" />
-                    <span>Estou ciente e aceito as regras de higiene, saúde e respeito.</span>
+                    <span>Estou ciente e aceito as regras de higiene, saúde e a entrega na sessão.</span>
                   </label>
                 </div>
+
+                <section className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4">
+                  <h3 className="mb-4 text-lg font-bold">O que dizem sobre mim</h3>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {REVIEWS.map((review, index) => (
+                      <article key={index} className="rounded-2xl bg-[var(--soft)] p-4">
+                        <p className="text-sm leading-6">“{review.text}”</p>
+                        <p className="mt-3 text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)]">{review.name} · {review.service}</p>
+                      </article>
+                    ))}
+                  </div>
+                </section>
               </div>
 
               <div className="lg:col-span-4">
