@@ -1,47 +1,18 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-// =====================================================================================
-// THALY MASSAGENS — V27 PREMIUM PLANS / VERTICAL CLEAN
-// UX/UI Senior + Copy Senior + Full Stack Senior
-// Fluxo: Hero → Sessões → Planos Premium → Agenda → Local → Extras → Confirmar
-// =====================================================================================
+// THALY MASSAGENS — V27 PREMIUM PLANS / VERTICAL CLEAN REFINED
+// Fluxo vertical: Hero → Sessões → Planos → Agenda → Local → Extras → Confirmar
 
 type Category = 'all' | 'express' | 'relax' | 'final' | 'care';
 type LocationType = 'home' | 'hotel' | 'motel';
 type PaymentMethod = '' | 'pix' | 'card' | 'cash';
-type ChoiceType = 'service' | 'plan' | '';
+type ChoiceType = '' | 'service' | 'plan';
 
 type IconName =
-  | 'check'
-  | 'x'
-  | 'arrow'
-  | 'sun'
-  | 'moon'
-  | 'star'
-  | 'sparkles'
-  | 'zap'
-  | 'package'
-  | 'layers'
-  | 'user'
-  | 'home'
-  | 'bed'
-  | 'building'
-  | 'map-pin'
-  | 'calendar'
-  | 'message'
-  | 'watch'
-  | 'credit-card'
-  | 'banknote'
-  | 'shield'
-  | 'shower'
-  | 'hand'
-  | 'scissors'
-  | 'heart'
-  | 'award'
-  | 'gift'
-  | 'tag'
-  | 'send'
-  | 'clock';
+  | 'check' | 'x' | 'arrow' | 'sun' | 'moon' | 'star' | 'sparkles' | 'zap' | 'package' | 'layers'
+  | 'user' | 'home' | 'bed' | 'building' | 'map-pin' | 'calendar' | 'message' | 'watch'
+  | 'credit-card' | 'banknote' | 'shield' | 'shower' | 'hand' | 'scissors' | 'heart'
+  | 'award' | 'gift' | 'tag' | 'send' | 'clock';
 
 type ServiceItem = {
   id: string;
@@ -123,18 +94,14 @@ type BookingData = {
   customerPhone: string;
 };
 
-type Toast = {
-  id: number;
-  type: 'success' | 'error';
-  msg: string;
-};
+type Toast = { id: number; type: 'success' | 'error'; msg: string };
 
 const CONFIG = {
   PHONE: '5517991360413',
   INSTAGRAM_URL: 'https://instagram.com/thalyson.massagens',
   STORAGE_KEY: '@thaly_app_v27_premium_plans',
   PIX_KEY: '62.922.530/0001-14',
-  VERSION: 'v27_premium_plans_vertical_clean',
+  VERSION: 'v27_vertical_clean_refined',
   START_HOUR: 9,
   END_HOUR: 22,
   RUSH_HOURS: ['12:00', '13:00', '17:00', '18:00'],
@@ -208,249 +175,52 @@ const PRICES = {
 };
 
 const SERVICES: ServiceItem[] = [
-  {
-    id: 'pes',
-    category: 'express',
-    min: 40,
-    price: PRICES.pes,
-    icon: 'user',
-    tag: 'ALÍVIO NOS PÉS',
-    title: 'Massagem nos Pés',
-    desc: 'Alívio localizado para pés cansados.',
-    details: ['Acomodação confortável.', 'Pressão na sola, calcanhar e dedos.', 'Finalização lenta para relaxar.'],
-    result: 'Pés mais leves e corpo menos tenso.',
-  },
-  {
-    id: 'maos',
-    category: 'express',
-    min: 40,
-    price: PRICES.maos,
-    icon: 'hand',
-    tag: 'ALÍVIO NAS MÃOS',
-    title: 'Massagem nas Mãos',
-    desc: 'Soltura para mãos, dedos, punhos e antebraços.',
-    details: ['Alongamento dos dedos.', 'Pressão na palma e polegar.', 'Soltura do punho e antebraço.'],
-    result: 'Mãos mais leves e menos rigidez.',
-  },
-  {
-    id: 'relaxante',
-    category: 'relax',
-    min: 40,
-    price: PRICES.relax,
-    icon: 'user',
-    tag: 'ALÍVIO MUSCULAR',
-    title: 'Massagem Clássica',
-    desc: 'Para costas travadas, ombros pesados e corpo rígido.',
-    details: ['Aquecimento da musculatura.', 'Pressão em costas, ombros e pescoço.', 'Ritmo final mais calmo.'],
-    result: 'Corpo mais solto e sensação de descanso.',
-  },
-  {
-    id: 'naturista',
-    category: 'relax',
-    min: 40,
-    price: PRICES.naturista,
-    icon: 'sun',
-    tag: 'LIBERDADE CORPORAL',
-    title: 'Clássica Naturista',
-    desc: 'Relaxamento com mais liberdade e menos tensão corporal.',
-    details: ['Alinhamento de limites.', 'Massagem corporal completa.', 'Condução natural e respeitosa.'],
-    result: 'Mais presença no corpo e relaxamento profundo.',
-  },
-  {
-    id: 'crossfit',
-    category: 'relax',
-    min: 60,
-    price: PRICES.crossfit,
-    icon: 'zap',
-    tag: 'RECUPERAÇÃO',
-    title: 'Massagem para Atletas',
-    desc: 'Pegada firme para quem treina pesado.',
-    details: ['Mapeamento das áreas sobrecarregadas.', 'Pressão progressiva.', 'Alongamentos leves no final.'],
-    result: 'Mais mobilidade e recuperação muscular.',
-  },
-  {
-    id: 'sensitiva',
-    category: 'final',
-    min: 60,
-    price: PRICES.sens,
-    icon: 'sparkles',
-    tag: 'SENSORIAL',
-    title: 'Massagem Sensorial',
-    desc: 'Toque, respiração e presença para desacelerar.',
-    details: ['Início calmo.', 'Ritmo sensorial progressivo.', 'Condução com comunicação e conforto.'],
-    result: 'Mente mais quieta e corpo relaxado.',
-  },
-  {
-    id: 'mista',
-    category: 'final',
-    min: 60,
-    price: PRICES.titan,
-    icon: 'zap',
-    tag: 'COMPLETA',
-    title: 'Experiência Fusion',
-    desc: 'Alívio muscular primeiro. Experiência sensorial depois.',
-    details: ['Começa como massagem clássica.', 'O ritmo evolui com calma.', 'Finalização guiada dentro dos limites combinados.'],
-    result: 'Alívio físico com uma experiência mais completa.',
-  },
-  {
-    id: 'reversa',
-    category: 'final',
-    min: 60,
-    price: PRICES.reversa,
-    icon: 'heart',
-    tag: 'INTERATIVA',
-    title: 'Massagem Reversa',
-    desc: 'Uma experiência com troca, presença e orientação.',
-    details: ['Primeira parte focada em você.', 'Depois a participação é guiada.', 'Tudo acontece com consentimento e comunicação.'],
-    result: 'Mais conexão e menos sensação de atendimento mecânico.',
-  },
-  {
-    id: 'nuru',
-    category: 'final',
-    min: 60,
-    price: PRICES.nuru,
-    icon: 'star',
-    tag: 'ENTREGA TOTAL',
-    title: 'Massagem Nuru',
-    desc: 'Gel, deslizamento e relaxamento intenso.',
-    details: ['Preparação do ambiente.', 'Relaxamento inicial.', 'Uso de gel e movimentos contínuos.'],
-    result: 'Corpo solto e relaxamento profundo.',
-    popular: true,
-  },
-  {
-    id: 'depilacao',
-    category: 'care',
-    min: 60,
-    price: PRICES.depil,
-    icon: 'scissors',
-    tag: 'ESTÉTICA',
-    title: 'Aparo de Pelos do Corpo',
-    desc: 'Manutenção prática para corpo limpo e confortável.',
-    details: ['Escolha das áreas.', 'Aparo com máquina.', 'Acabamento limpo e discreto.'],
-    result: 'Visual mais limpo e sensação de cuidado.',
-  },
+  { id: 'pes', category: 'express', min: 40, price: PRICES.pes, icon: 'user', tag: 'PÉS', title: 'Massagem nos Pés', desc: 'Alívio localizado para pés cansados.', details: ['Acomodação confortável.', 'Pressão na sola, calcanhar e dedos.', 'Finalização lenta para relaxar.'], result: 'Pés mais leves e corpo menos tenso.' },
+  { id: 'maos', category: 'express', min: 40, price: PRICES.maos, icon: 'hand', tag: 'MÃOS', title: 'Massagem nas Mãos', desc: 'Soltura para mãos, dedos, punhos e antebraços.', details: ['Alongamento dos dedos.', 'Pressão na palma e polegar.', 'Soltura do punho e antebraço.'], result: 'Mãos mais leves e menos rigidez.' },
+  { id: 'relaxante', category: 'relax', min: 40, price: PRICES.relax, icon: 'user', tag: 'CLÁSSICA', title: 'Massagem Clássica', desc: 'Para costas travadas, ombros pesados e corpo rígido.', details: ['Aquecimento da musculatura.', 'Pressão em costas, ombros e pescoço.', 'Ritmo final mais calmo.'], result: 'Corpo mais solto e sensação de descanso.' },
+  { id: 'naturista', category: 'relax', min: 40, price: PRICES.naturista, icon: 'sun', tag: 'NATURISTA', title: 'Clássica Naturista', desc: 'Relaxamento com mais liberdade e menos tensão corporal.', details: ['Alinhamento de limites.', 'Massagem corporal completa.', 'Condução natural e respeitosa.'], result: 'Mais presença no corpo e relaxamento profundo.' },
+  { id: 'crossfit', category: 'relax', min: 60, price: PRICES.crossfit, icon: 'zap', tag: 'ATLETAS', title: 'Massagem para Atletas', desc: 'Pegada firme para quem treina pesado.', details: ['Mapeamento das áreas sobrecarregadas.', 'Pressão progressiva.', 'Alongamentos leves no final.'], result: 'Mais mobilidade e recuperação muscular.' },
+  { id: 'sensitiva', category: 'final', min: 60, price: PRICES.sens, icon: 'sparkles', tag: 'SENSORIAL', title: 'Massagem Sensorial', desc: 'Toque, respiração e presença para desacelerar.', details: ['Início calmo.', 'Ritmo sensorial progressivo.', 'Condução com comunicação e conforto.'], result: 'Mente mais quieta e corpo relaxado.' },
+  { id: 'mista', category: 'final', min: 60, price: PRICES.titan, icon: 'zap', tag: 'FUSION', title: 'Experiência Fusion', desc: 'Alívio muscular primeiro. Experiência sensorial depois.', details: ['Começa como massagem clássica.', 'O ritmo evolui com calma.', 'Finalização guiada dentro dos limites combinados.'], result: 'Alívio físico com uma experiência mais completa.' },
+  { id: 'reversa', category: 'final', min: 60, price: PRICES.reversa, icon: 'heart', tag: 'REVERSA', title: 'Massagem Reversa', desc: 'Uma experiência com troca, presença e orientação.', details: ['Primeira parte focada em você.', 'Depois a participação é guiada.', 'Tudo acontece com consentimento e comunicação.'], result: 'Mais conexão e menos sensação de atendimento mecânico.' },
+  { id: 'nuru', category: 'final', min: 60, price: PRICES.nuru, icon: 'star', tag: 'NURU', title: 'Massagem Nuru', desc: 'Gel, deslizamento e relaxamento intenso.', details: ['Preparação do ambiente.', 'Relaxamento inicial.', 'Uso de gel e movimentos contínuos.'], result: 'Corpo solto e relaxamento profundo.', popular: true },
+  { id: 'depilacao', category: 'care', min: 60, price: PRICES.depil, icon: 'scissors', tag: 'APARO', title: 'Aparo de Pelos do Corpo', desc: 'Manutenção prática para corpo limpo e confortável.', details: ['Escolha das áreas.', 'Aparo com máquina.', 'Acabamento limpo e discreto.'], result: 'Visual mais limpo e sensação de cuidado.' },
 ];
 
 const PREMIUM_PLANS_V27: PlanItem[] = [
-  {
-    id: 'pack_basic',
-    min: 80,
-    price: PRICES.packs.basic.v,
-    fullPrice: PRICES.packs.basic.full,
-    savings: PRICES.packs.basic.save,
-    icon: 'watch',
-    tag: 'RELAX',
-    title: 'Alívio de Rotina (2x)',
-    desc: 'Duas pausas simples para manter o corpo cuidado.',
-    includes: ['1x Massagem nos Pés', '1x Massagem Clássica', 'Bônus: Aromaterapia'],
-    result: 'Alívio rápido em dois encontros.',
-  },
-  {
-    id: 'pack_essencial',
-    min: 100,
-    price: PRICES.packs.essencial.v,
-    fullPrice: PRICES.packs.essencial.full,
-    savings: PRICES.packs.essencial.save,
-    icon: 'layers',
-    tag: 'DURMA BEM',
-    title: 'Kit Sobrevivência (2x)',
-    desc: 'Um encontro para o corpo. Outro para a mente.',
-    includes: ['1x Massagem Clássica', '1x Massagem Sensorial', 'Sessões separadas no mês'],
-    result: 'Rotina mais leve e menos tensão acumulada.',
-  },
-  {
-    id: 'pack_glow',
-    min: 120,
-    price: PRICES.packs.glow.v,
-    fullPrice: PRICES.packs.glow.full,
-    savings: PRICES.packs.glow.save,
-    icon: 'sparkles',
-    tag: 'GLOW UP',
-    title: 'Renovação Completa (2x)',
-    desc: 'Estética, autoestima e relaxamento.',
-    includes: ['1x Aparo de Pelos', '1x Experiência Fusion', 'Bônus: +30 minutos na Fusion'],
-    result: 'Você fica mais limpo, cuidado e relaxado.',
-  },
-  {
-    id: 'pack_muscle',
-    min: 120,
-    price: PRICES.packs.muscle.v,
-    fullPrice: PRICES.packs.muscle.full,
-    savings: PRICES.packs.muscle.save,
-    icon: 'zap',
-    tag: 'MÚSCULOS',
-    title: 'Combo Recuperação (2x)',
-    desc: 'Para treino pesado e dores musculares.',
-    includes: ['2x Massagem para Atletas', 'Bônus: foco extra em dores', 'Atenção às áreas sobrecarregadas'],
-    result: 'Mais recuperação ao longo do mês.',
-  },
-  {
-    id: 'pack_interativo',
-    min: 120,
-    price: PRICES.packs.interativo.v,
-    fullPrice: PRICES.packs.interativo.full,
-    savings: PRICES.packs.interativo.save,
-    icon: 'heart',
-    tag: 'CONEXÃO',
-    title: 'Combo Conexão (2x)',
-    desc: 'Dois encontros com mais presença e cuidado.',
-    includes: ['1x Experiência Fusion', '1x Massagem Reversa', 'Dois encontros separados'],
-    result: 'Mais acolhimento, troca e relaxamento.',
-  },
-  {
-    id: 'pack_premium',
-    min: 180,
-    price: PRICES.packs.premium.v,
-    fullPrice: PRICES.packs.premium.full,
-    savings: PRICES.packs.premium.save,
-    icon: 'award',
-    tag: 'PREMIUM',
-    title: 'Mensalidade do Chefe (3x)',
-    desc: 'Três encontros com as experiências mais completas.',
-    includes: ['1x Clássica Naturista', '1x Experiência Fusion', '1x Massagem Nuru'],
-    result: 'O mês inteiro com cuidado marcado.',
-    premium: true,
-  },
-  {
-    id: 'pack_ultimate',
-    min: 180,
-    price: PRICES.packs.ultimate.v,
-    fullPrice: PRICES.packs.ultimate.full,
-    savings: PRICES.packs.ultimate.save,
-    icon: 'heart',
-    tag: 'PREMIUM',
-    title: 'Jornada do Prazer (3x)',
-    desc: 'Uma sequência crescente de cuidado e sensações.',
-    includes: ['1x Massagem Sensorial', '1x Experiência Fusion', '1x Massagem Nuru', 'Bônus combinado antes dos encontros'],
-    result: 'A versão mais completa da v27 Premium Plans.',
-    premium: true,
-  },
+  { id: 'pack_basic', min: 80, price: PRICES.packs.basic.v, fullPrice: PRICES.packs.basic.full, savings: PRICES.packs.basic.save, icon: 'watch', tag: 'RELAX', title: 'Alívio de Rotina', desc: 'Duas pausas simples.', includes: ['Massagem nos Pés', 'Massagem Clássica', 'Aromaterapia'], result: 'Alívio rápido em dois encontros.' },
+  { id: 'pack_essencial', min: 100, price: PRICES.packs.essencial.v, fullPrice: PRICES.packs.essencial.full, savings: PRICES.packs.essencial.save, icon: 'layers', tag: 'DURMA BEM', title: 'Kit Sobrevivência', desc: 'Corpo e mente.', includes: ['Massagem Clássica', 'Massagem Sensorial', 'Sessões separadas'], result: 'Rotina mais leve.' },
+  { id: 'pack_glow', min: 120, price: PRICES.packs.glow.v, fullPrice: PRICES.packs.glow.full, savings: PRICES.packs.glow.save, icon: 'sparkles', tag: 'GLOW UP', title: 'Renovação Completa', desc: 'Estética e relaxamento.', includes: ['Aparo de Pelos', 'Experiência Fusion', '+30 minutos na Fusion'], result: 'Mais cuidado e presença.' },
+  { id: 'pack_muscle', min: 120, price: PRICES.packs.muscle.v, fullPrice: PRICES.packs.muscle.full, savings: PRICES.packs.muscle.save, icon: 'zap', tag: 'MÚSCULOS', title: 'Combo Recuperação', desc: 'Para treino pesado.', includes: ['2x Massagem para Atletas', 'Foco extra em dores', 'Áreas sobrecarregadas'], result: 'Recuperação ao longo do mês.' },
+  { id: 'pack_interativo', min: 120, price: PRICES.packs.interativo.v, fullPrice: PRICES.packs.interativo.full, savings: PRICES.packs.interativo.save, icon: 'heart', tag: 'CONEXÃO', title: 'Combo Conexão', desc: 'Presença e troca.', includes: ['Experiência Fusion', 'Massagem Reversa', 'Dois encontros separados'], result: 'Mais acolhimento e relaxamento.' },
+  { id: 'pack_premium', min: 180, price: PRICES.packs.premium.v, fullPrice: PRICES.packs.premium.full, savings: PRICES.packs.premium.save, icon: 'award', tag: 'PREMIUM', title: 'Mensalidade do Chefe', desc: 'Três experiências completas.', includes: ['Clássica Naturista', 'Experiência Fusion', 'Massagem Nuru'], result: 'O mês inteiro com cuidado marcado.', premium: true },
+  { id: 'pack_ultimate', min: 180, price: PRICES.packs.ultimate.v, fullPrice: PRICES.packs.ultimate.full, savings: PRICES.packs.ultimate.save, icon: 'heart', tag: 'PREMIUM', title: 'Jornada do Prazer', desc: 'A sequência mais completa.', includes: ['Massagem Sensorial', 'Experiência Fusion', 'Massagem Nuru', 'Bônus combinado antes'], result: 'A versão mais completa da v27.', premium: true },
 ];
 
 const EXTRAS: ExtraItem[] = [
-  { id: 'hair_trim', price: PRICES.extras.hairTrim, icon: 'scissors', title: 'Aparo de Pelos', desc: 'Até 2 áreas do corpo.' },
-  { id: 'more_time', price: PRICES.extras.moreTime, icon: 'clock', title: '+30 Minutos', desc: 'Mais tempo, menos pressa.' },
-  { id: 'touch', price: PRICES.extras.touch, icon: 'hand', title: 'Interação Guiada', desc: 'Participação combinada antes.' },
-  { id: 'aroma', price: PRICES.extras.aroma, icon: 'sparkles', title: 'Aromaterapia', desc: 'Aroma e óleos relaxantes.' },
-  { id: 'pain_relief', price: PRICES.extras.painRelief, icon: 'shield', title: 'Foco em Dor', desc: 'Pontos travados e áreas tensas.' },
-  { id: 'dominador', price: PRICES.extras.active, icon: 'zap', title: 'Condução Ativa', desc: 'Ritmo mais conduzido.' },
-  { id: 'oral', price: PRICES.extras.sensory, icon: 'heart', title: 'Complemento Sensorial', desc: 'Combinado com clareza.' },
+  { id: 'hair_trim', price: PRICES.extras.hairTrim, icon: 'scissors', title: 'Aparo de Pelos', desc: 'Até 2 áreas.' },
+  { id: 'more_time', price: PRICES.extras.moreTime, icon: 'clock', title: '+30 Minutos', desc: 'Mais tempo.' },
+  { id: 'touch', price: PRICES.extras.touch, icon: 'hand', title: 'Interação Guiada', desc: 'Combinada antes.' },
+  { id: 'aroma', price: PRICES.extras.aroma, icon: 'sparkles', title: 'Aromaterapia', desc: 'Óleos e aroma.' },
+  { id: 'pain_relief', price: PRICES.extras.painRelief, icon: 'shield', title: 'Foco em Dor', desc: 'Pontos tensos.' },
+  { id: 'dominador', price: PRICES.extras.active, icon: 'zap', title: 'Condução Ativa', desc: 'Ritmo conduzido.' },
+  { id: 'oral', price: PRICES.extras.sensory, icon: 'heart', title: 'Complemento Sensorial', desc: 'Alinhado antes.' },
   { id: 'beijos', price: PRICES.extras.kisses, icon: 'heart', title: 'Beijos e Intimidade', desc: 'Mais proximidade.' },
-  { id: 'prostatico', price: PRICES.extras.guided, icon: 'star', title: 'Atenção Íntima Guiada', desc: 'Somente com consentimento.' },
+  { id: 'prostatico', price: PRICES.extras.guided, icon: 'star', title: 'Atenção Íntima Guiada', desc: 'Com consentimento.' },
 ];
 
 const RULES = [
-  { icon: 'shower' as IconName, title: 'Banho antes', desc: 'Higiene e conforto para os dois.' },
-  { icon: 'shield' as IconName, title: 'Saúde em dia', desc: 'Sem sintomas contagiosos ou lesões abertas.' },
-  { icon: 'hand' as IconName, title: 'Limites claros', desc: 'Tudo é combinado antes.' },
-  { icon: 'heart' as IconName, title: 'Sem julgamento', desc: 'Atendimento acolhedor e discreto.' },
+  { icon: 'shower' as IconName, title: 'Banho antes', desc: 'Higiene e conforto.' },
+  { icon: 'shield' as IconName, title: 'Saúde em dia', desc: 'Sem sintomas ou lesões.' },
+  { icon: 'hand' as IconName, title: 'Limites claros', desc: 'Tudo combinado antes.' },
+  { icon: 'heart' as IconName, title: 'Sem julgamento', desc: 'Discrição e acolhimento.' },
 ];
 
 const REVIEWS = [
-  { name: 'Gustavo', service: 'Experiência Fusion', text: 'Chegou no horário, preparou tudo com calma e o alívio foi imediato.' },
-  { name: 'Giovana', service: 'Massagem Sensorial', text: 'Foi respeitoso do início ao fim. Saí muito mais leve.' },
-  { name: 'Bruno', service: 'Massagem Clássica', text: 'A massagem foi bem executada e focada exatamente onde eu precisava.' },
-  { name: 'Ricardo', service: 'Massagem Reversa', text: 'Me senti à vontade, com discrição e sem julgamento.' },
+  { name: 'Gustavo', service: 'Fusion', text: 'Calmo, pontual e muito cuidadoso.' },
+  { name: 'Giovana', service: 'Sensorial', text: 'Respeitoso do início ao fim.' },
+  { name: 'Bruno', service: 'Clássica', text: 'Focou exatamente onde eu precisava.' },
+  { name: 'Ricardo', service: 'Reversa', text: 'Discreto, acolhedor e sem julgamento.' },
 ];
 
 const CATEGORIES = [
@@ -483,7 +253,7 @@ const emptyBooking = (): BookingData => ({
 const defaultUser: UserData = {
   name: '',
   xp: 0,
-  coupons: [{ id: 'WELCOME_V27', title: 'Presente de boas-vindas', code: 'BEMVINDO', val: 15 }],
+  coupons: [{ id: 'WELCOME_V27', title: 'Boas-vindas', code: 'BEMVINDO', val: 15 }],
   usedCoupons: [],
   ordersCount: 92,
 };
@@ -534,19 +304,19 @@ const GlobalStyles = memo(({ dark }: { dark: boolean }) => (
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
     :root {
       color-scheme: ${dark ? 'dark' : 'light'};
-      --bg: ${dark ? '#11141A' : '#FAF8F5'};
-      --surface: ${dark ? '#181C25' : '#FFFFFF'};
-      --surface-2: ${dark ? '#202632' : '#F2ECE5'};
-      --text: ${dark ? '#F3F0EA' : '#25211D'};
-      --muted: ${dark ? '#A7A29B' : '#726960'};
-      --line: ${dark ? 'rgba(255,255,255,.09)' : 'rgba(37,33,29,.10)'};
-      --soft: ${dark ? 'rgba(255,255,255,.055)' : 'rgba(37,33,29,.045)'};
+      --bg: ${dark ? '#101217' : '#FBF8F3'};
+      --surface: ${dark ? '#171A21' : '#FFFFFF'};
+      --surface-2: ${dark ? '#202530' : '#F1EAE1'};
+      --text: ${dark ? '#F6F0E8' : '#25211D'};
+      --muted: ${dark ? '#AAA39B' : '#736A60'};
+      --line: ${dark ? 'rgba(255,255,255,.085)' : 'rgba(37,33,29,.10)'};
+      --soft: ${dark ? 'rgba(255,255,255,.05)' : 'rgba(37,33,29,.045)'};
       --primary: #2563EB;
       --accent: #F59E0B;
       --page: clamp(16px, 4vw, 48px);
-      --radius: clamp(18px, 4vw, 30px);
-      --h1: clamp(2.15rem, 8vw, 5.2rem);
-      --h2: clamp(1.45rem, 4vw, 2.6rem);
+      --radius: clamp(18px, 4vw, 28px);
+      --h1: clamp(2.1rem, 8vw, 5rem);
+      --h2: clamp(1.4rem, 4vw, 2.35rem);
       --bottom: 104px;
     }
     * { box-sizing: border-box; }
@@ -555,31 +325,18 @@ const GlobalStyles = memo(({ dark }: { dark: boolean }) => (
     button, input { font: inherit; }
     input { font-size: 16px; }
     button { -webkit-tap-highlight-color: transparent; }
-    summary::-webkit-details-marker { display: none; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
     .hide-scroll::-webkit-scrollbar { display: none; }
     .hide-scroll { scrollbar-width: none; -ms-overflow-style: none; }
     .focus:focus-visible { outline: 3px solid rgba(37,99,235,.35); outline-offset: 3px; }
     .safe-bottom { padding-bottom: max(14px, env(safe-area-inset-bottom)); }
-    .bg-page { background: radial-gradient(circle at 12% 0%, rgba(37,99,235,.13), transparent 28rem), radial-gradient(circle at 88% 8%, rgba(245,158,11,.12), transparent 26rem), var(--bg); }
+    .bg-page { background: radial-gradient(circle at 10% 0%, rgba(37,99,235,.11), transparent 26rem), radial-gradient(circle at 92% 7%, rgba(245,158,11,.09), transparent 24rem), var(--bg); }
     @media (min-width: 1024px) { :root { --bottom: 0px; } }
   `}</style>
 ));
 
-function Button({
-  children,
-  onClick,
-  variant = 'primary',
-  className = '',
-  icon,
-  disabled = false,
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'whatsapp' | 'premium';
-  className?: string;
-  icon?: IconName;
-  disabled?: boolean;
-}) {
+function Button({ children, onClick, variant = 'primary', className = '', icon, disabled = false }: { children: React.ReactNode; onClick?: () => void; variant?: 'primary' | 'secondary' | 'ghost' | 'whatsapp' | 'premium'; className?: string; icon?: IconName; disabled?: boolean }) {
   const variants = {
     primary: 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-950/20',
     secondary: 'border border-[var(--line)] bg-[var(--surface-2)] text-[var(--text)] hover:border-blue-500/40',
@@ -589,33 +346,19 @@ function Button({
   };
 
   return (
-    <button type="button" onClick={onClick} disabled={disabled} className={cx('focus inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-bold transition active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-45', variants[variant], className)}>
-      {icon && <Icon name={icon} size={18} />}
+    <button type="button" onClick={onClick} disabled={disabled} className={cx('focus inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-bold transition active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-45', variants[variant], className)}>
+      {icon && <Icon name={icon} size={17} />}
       {children}
     </button>
   );
 }
 
-function Field({
-  label,
-  value,
-  onChange,
-  placeholder,
-  icon,
-  inputMode,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  icon?: IconName;
-  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
-}) {
+function Field({ label, value, onChange, placeholder, icon, inputMode }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; icon?: IconName; inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'] }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-2 block text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)]">{label}</span>
-      <span className="flex min-h-14 items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-4 focus-within:border-blue-500/60 focus-within:ring-4 focus-within:ring-blue-500/10">
-        {icon && <Icon name={icon} size={18} className="text-blue-500" />}
+      <span className="mb-2 block text-[11px] font-bold uppercase tracking-[.12em] text-[var(--muted)]">{label}</span>
+      <span className="flex min-h-13 items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-4 py-3 focus-within:border-blue-500/60 focus-within:ring-4 focus-within:ring-blue-500/10">
+        {icon && <Icon name={icon} size={17} className="text-blue-500" />}
         <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} inputMode={inputMode} className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-[var(--muted)]" />
       </span>
     </label>
@@ -637,9 +380,9 @@ function Toasts({ items }: { items: Toast[] }) {
 function SectionTitle({ id, label, title, hint }: { id: string; label: string; title: string; hint?: string }) {
   return (
     <div id={id} className="mb-5 scroll-mt-24">
-      <p className="mb-2 text-xs font-bold uppercase tracking-[.18em] text-blue-500">{label}</p>
+      <p className="mb-2 text-[11px] font-bold uppercase tracking-[.18em] text-blue-500">{label}</p>
       <h2 className="max-w-3xl text-[length:var(--h2)] font-bold leading-[1.04] tracking-[-.055em]">{title}</h2>
-      {hint && <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--muted)]">{hint}</p>}
+      {hint && <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--muted)]">{hint}</p>}
     </div>
   );
 }
@@ -647,9 +390,9 @@ function SectionTitle({ id, label, title, hint }: { id: string; label: string; t
 function Header({ dark, setDark }: { dark: boolean; setDark: (value: boolean) => void }) {
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--bg)]/92 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-[68px] w-full max-w-screen-2xl items-center justify-between gap-3 px-[var(--page)]">
+      <div className="mx-auto flex min-h-[64px] w-full max-w-screen-2xl items-center justify-between gap-3 px-[var(--page)]">
         <a href="#top" className="focus flex min-w-0 items-center gap-3 rounded-2xl">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-lg font-bold text-white">T</span>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-base font-bold text-white">T</span>
           <span className="min-w-0">
             <span className="block truncate text-sm font-bold">Thaly Massagens</span>
             <span className="block truncate text-xs text-[var(--muted)]">v27 premium plans</span>
@@ -660,34 +403,30 @@ function Header({ dark, setDark }: { dark: boolean; setDark: (value: boolean) =>
             <a key={id} href={`#${id}`} className="focus rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--text)]">{id}</a>
           ))}
         </nav>
-        <button type="button" onClick={() => setDark(!dark)} className="focus flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--line)] bg-[var(--surface)]" aria-label="Alternar tema">
-          <Icon name={dark ? 'sun' : 'moon'} size={18} />
+        <button type="button" onClick={() => setDark(!dark)} className="focus flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--line)] bg-[var(--surface)]" aria-label="Alternar tema">
+          <Icon name={dark ? 'sun' : 'moon'} size={17} />
         </button>
       </div>
     </header>
   );
 }
 
-function Hero({ selectedTitle, onStart }: { selectedTitle: string; onStart: () => void }) {
+function Hero({ selectedTitle, total, onStart }: { selectedTitle: string; total: number; onStart: () => void }) {
   return (
     <section id="top" className="grid gap-5 py-7 sm:py-10 lg:grid-cols-12 lg:items-end lg:gap-8">
-      <div className="min-w-0 lg:col-span-7 xl:col-span-8">
-        <span className="mb-4 inline-flex rounded-full bg-blue-500/10 px-4 py-2 text-xs font-bold uppercase tracking-[.16em] text-blue-500">agendamento vertical</span>
-        <h1 className="max-w-5xl text-[length:var(--h1)] font-bold leading-[.9] tracking-[-.075em]">Escolha. Agende. Confirme.</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">Uma página direta para escolher o atendimento e enviar tudo pronto no WhatsApp.</p>
+      <div className="min-w-0 lg:col-span-8">
+        <span className="mb-4 inline-flex rounded-full bg-blue-500/10 px-4 py-2 text-xs font-bold uppercase tracking-[.16em] text-blue-500">agendamento privado</span>
+        <h1 className="max-w-5xl text-[length:var(--h1)] font-bold leading-[.9] tracking-[-.075em]">Cuidado direto, sem ruído.</h1>
+        <p className="mt-4 max-w-xl text-sm leading-7 text-[var(--muted)] sm:text-base">Escolha a sessão, marque o horário e envie o pedido pronto.</p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Button onClick={onStart} icon="arrow">Ver sessões</Button>
-          <Button variant="secondary" onClick={() => document.getElementById('agenda')?.scrollIntoView({ behavior: 'smooth' })} icon="calendar">Ir para agenda</Button>
+          <Button variant="secondary" onClick={() => document.getElementById('agenda')?.scrollIntoView({ behavior: 'smooth' })} icon="calendar">Agendar</Button>
         </div>
       </div>
-      <div className="min-w-0 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4 lg:col-span-5 xl:col-span-4">
-        <p className="text-xs font-bold uppercase tracking-[.16em] text-[var(--muted)]">Selecionado</p>
+      <div className="min-w-0 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4 lg:col-span-4">
+        <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--muted)]">Selecionado</p>
         <p className="mt-2 truncate text-xl font-bold tracking-[-.04em]">{selectedTitle || 'Nada escolhido'}</p>
-        <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-          {['sessão', 'horário', 'whats'].map((item) => (
-            <span key={item} className="rounded-2xl bg-[var(--soft)] px-2 py-3 text-[11px] font-bold text-[var(--muted)]">{item}</span>
-          ))}
-        </div>
+        <p className="mt-2 text-2xl font-bold tracking-[-.05em]">{money(total)}</p>
       </div>
     </section>
   );
@@ -697,7 +436,7 @@ function CategoryTabs({ value, onChange }: { value: Category; onChange: (value: 
   return (
     <div className="hide-scroll -mx-[var(--page)] mb-5 flex gap-2 overflow-x-auto px-[var(--page)] sm:mx-0 sm:flex-wrap sm:px-0">
       {CATEGORIES.map((item) => (
-        <button key={item.id} type="button" onClick={() => onChange(item.id)} className={cx('focus flex min-w-fit items-center rounded-full border px-4 py-3 text-sm font-bold transition', value === item.id ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface)] hover:border-blue-500/40')}>
+        <button key={item.id} type="button" onClick={() => onChange(item.id)} className={cx('focus flex min-w-fit items-center rounded-full border px-4 py-2.5 text-sm font-bold transition', value === item.id ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface)] hover:border-blue-500/40')}>
           {item.label}
         </button>
       ))}
@@ -707,51 +446,45 @@ function CategoryTabs({ value, onChange }: { value: Category; onChange: (value: 
 
 function ServiceCard({ item, selected, onSelect }: { item: ServiceItem; selected: boolean; onSelect: () => void }) {
   return (
-    <article className={cx('min-w-0 rounded-[var(--radius)] border bg-[var(--surface)] p-4 transition sm:p-5', selected ? 'border-blue-600 shadow-xl shadow-blue-950/10' : 'border-[var(--line)] hover:border-blue-500/40')}>
+    <article className={cx('min-w-0 rounded-[var(--radius)] border bg-[var(--surface)] p-4 transition sm:p-5', selected ? 'border-blue-600 shadow-lg shadow-blue-950/10' : 'border-[var(--line)] hover:border-blue-500/40')}>
       <div className="grid min-w-0 gap-4 lg:grid-cols-12 lg:items-start">
         <div className="min-w-0 lg:col-span-5">
           <div className="mb-3 flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
-              <span className={cx('flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl', selected ? 'bg-blue-600 text-white' : 'bg-blue-500/10 text-blue-500')}>
-                <Icon name={item.icon} size={21} />
+              <span className={cx('flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl', selected ? 'bg-blue-600 text-white' : 'bg-blue-500/10 text-blue-500')}>
+                <Icon name={item.icon} size={19} />
               </span>
               <div className="min-w-0">
-                <p className="truncate text-[11px] font-bold uppercase tracking-[.16em] text-blue-500">{item.tag}</p>
-                <h3 className="mt-1 text-lg font-bold leading-tight tracking-[-.04em] sm:text-xl">{item.title}</h3>
+                <p className="truncate text-[10px] font-bold uppercase tracking-[.16em] text-blue-500">{item.tag}</p>
+                <h3 className="mt-1 text-base font-bold leading-tight tracking-[-.03em] sm:text-lg">{item.title}</h3>
               </div>
             </div>
             {item.popular && <span className="shrink-0 rounded-full bg-amber-500/15 px-2 py-1 text-[10px] font-bold text-amber-500">mais pedida</span>}
           </div>
           <p className="text-sm leading-6 text-[var(--muted)]">{item.desc}</p>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <div className="rounded-2xl bg-[var(--soft)] p-3">
-              <p className="text-[10px] font-bold uppercase tracking-[.14em] text-[var(--muted)]">Valor</p>
-              <p className="mt-1 text-lg font-bold">{money(item.price)}</p>
-            </div>
-            <div className="rounded-2xl bg-[var(--soft)] p-3">
-              <p className="text-[10px] font-bold uppercase tracking-[.14em] text-[var(--muted)]">Tempo</p>
-              <p className="mt-1 text-lg font-bold">{item.min} min</p>
-            </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-[var(--soft)] px-3 py-2 text-xs font-bold">{money(item.price)}</span>
+            <span className="rounded-full bg-[var(--soft)] px-3 py-2 text-xs font-bold">{item.min} min</span>
           </div>
           <Button onClick={onSelect} className="mt-4 w-full sm:w-auto" variant={selected ? 'secondary' : 'primary'} icon={selected ? 'check' : undefined}>{selected ? 'Escolhida' : 'Escolher'}</Button>
         </div>
 
         <details className="min-w-0 rounded-3xl bg-[var(--soft)] p-4 lg:col-span-7" open={selected}>
           <summary className="focus flex cursor-pointer items-center justify-between gap-3 rounded-2xl text-sm font-bold">
-            <span>Como acontece</span>
-            <Icon name="arrow" size={17} />
+            <span>Detalhes</span>
+            <Icon name="arrow" size={16} />
           </summary>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <div className="min-w-0 space-y-3">
               {item.details.map((step, index) => (
-                <p key={step} className="grid grid-cols-[28px_minmax(0,1fr)] gap-3 text-sm leading-6">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">{index + 1}</span>
+                <p key={step} className="grid grid-cols-[26px_minmax(0,1fr)] gap-3 text-sm leading-6">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-[11px] font-bold text-white">{index + 1}</span>
                   <span>{step}</span>
                 </p>
               ))}
             </div>
             <div className="min-w-0 rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-4">
-              <p className="text-xs font-bold uppercase tracking-[.16em] text-[var(--muted)]">Resultado</p>
+              <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--muted)]">Resultado</p>
               <p className="mt-2 text-sm leading-6">{item.result}</p>
             </div>
           </div>
@@ -761,23 +494,26 @@ function ServiceCard({ item, selected, onSelect }: { item: ServiceItem; selected
   );
 }
 
-function PlanCard({ item, selected, onSelect }: { item: PlanItem; selected: boolean; onSelect: () => void }) {
+function PlanCard({ item, selected, onSelect, featured = false }: { item: PlanItem; selected: boolean; onSelect: () => void; featured?: boolean }) {
   return (
-    <article className={cx('min-w-0 rounded-[var(--radius)] border bg-[var(--surface)] p-4 transition', selected ? 'border-amber-500 shadow-xl shadow-amber-950/10' : 'border-[var(--line)] hover:border-amber-500/40')}>
+    <article className={cx('min-w-0 rounded-[var(--radius)] border bg-[var(--surface)] p-4 transition', selected ? 'border-amber-500 shadow-lg shadow-amber-950/10' : 'border-[var(--line)] hover:border-amber-500/40', featured && 'bg-gradient-to-br from-amber-500/12 to-[var(--surface)]')}>
       <div className="mb-4 flex items-start gap-3">
         <span className={cx('flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl', selected ? 'bg-amber-500 text-zinc-950' : 'bg-amber-500/10 text-amber-500')}>
           <Icon name={item.icon} size={19} />
         </span>
-        <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[.16em] text-amber-500">{item.tag}</p>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-[10px] font-bold uppercase tracking-[.16em] text-amber-500">{item.tag}</p>
+            {featured && <span className="rounded-full bg-amber-500 px-2 py-1 text-[10px] font-bold text-zinc-950">destaque</span>}
+          </div>
           <h3 className="mt-1 text-lg font-bold tracking-[-.04em]">{item.title}</h3>
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{item.desc}</p>
+          <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{item.desc}</p>
         </div>
       </div>
-      <div className="rounded-2xl bg-[var(--soft)] p-4">
+      <div className="rounded-2xl bg-[var(--soft)] p-3">
         {item.includes.map((line) => (
           <p key={line} className="flex gap-2 text-sm leading-6">
-            <Icon name="check" size={15} className="mt-1 text-amber-500" />
+            <Icon name="check" size={14} className="mt-1 text-amber-500" />
             {line}
           </p>
         ))}
@@ -798,14 +534,14 @@ function ExtraCard({ item, active, onToggle }: { item: ExtraItem; active: boolea
   return (
     <button type="button" onClick={onToggle} className={cx('focus flex min-w-0 items-start gap-3 rounded-3xl border bg-[var(--surface)] p-4 text-left transition', active ? 'border-blue-600' : 'border-[var(--line)] hover:border-blue-500/40')}>
       <span className={cx('flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl', active ? 'bg-blue-600 text-white' : 'bg-blue-500/10 text-blue-500')}>
-        <Icon name={item.icon} size={18} />
+        <Icon name={item.icon} size={17} />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-bold">{item.title}</span>
         <span className="mt-1 block text-xs leading-5 text-[var(--muted)]">{item.desc}</span>
         <span className="mt-2 block text-sm font-bold text-blue-500">+ {money(item.price)}</span>
       </span>
-      {active && <Icon name="check" size={18} className="text-blue-500" />}
+      {active && <Icon name="check" size={17} className="text-blue-500" />}
     </button>
   );
 }
@@ -831,7 +567,7 @@ function DateTime({ booking, setBooking }: { booking: BookingData; setBooking: R
         <h3 className="text-lg font-bold">Dia</h3>
         <div className="hide-scroll mt-4 flex gap-2 overflow-x-auto pb-1 lg:grid lg:grid-cols-2 lg:overflow-visible">
           {days.map((day) => (
-            <button key={day.iso} type="button" onClick={() => setBooking((current) => ({ ...current, date: day.iso }))} className={cx('focus min-w-[112px] rounded-2xl border px-4 py-4 text-left text-sm font-bold', booking.date === day.iso ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
+            <button key={day.iso} type="button" onClick={() => setBooking((current) => ({ ...current, date: day.iso }))} className={cx('focus min-w-[108px] rounded-2xl border px-4 py-3 text-left text-sm font-bold', booking.date === day.iso ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
               {day.label}
             </button>
           ))}
@@ -843,7 +579,7 @@ function DateTime({ booking, setBooking }: { booking: BookingData; setBooking: R
           {times.map((time) => {
             const rush = CONFIG.RUSH_HOURS.includes(time as typeof CONFIG.RUSH_HOURS[number]);
             return (
-              <button key={time} type="button" onClick={() => setBooking((current) => ({ ...current, time }))} className={cx('focus min-h-[58px] rounded-2xl border px-2 py-2 text-center', booking.time === time ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
+              <button key={time} type="button" onClick={() => setBooking((current) => ({ ...current, time }))} className={cx('focus min-h-[54px] rounded-2xl border px-2 py-2 text-center', booking.time === time ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
                 <span className="block text-sm font-bold">{time}</span>
                 {rush && <span className={cx('mt-1 block text-[10px] font-bold', booking.time === time ? 'text-white/75' : 'text-amber-500')}>pico</span>}
               </button>
@@ -863,7 +599,6 @@ function LocationForm({ booking, setBooking, toast }: { booking: BookingData; se
     const raw = digits(next);
     updateAddress({ cep: next });
     if (raw.length !== 8) return;
-
     try {
       const response = await fetch(`https://viacep.com.br/ws/${raw}/json/`);
       const data = await response.json();
@@ -892,13 +627,12 @@ function LocationForm({ booking, setBooking, toast }: { booking: BookingData; se
             { id: 'hotel', label: 'Hotel', icon: 'building' as IconName },
             { id: 'motel', label: 'Minha suíte', icon: 'bed' as IconName },
           ].map((item) => (
-            <button key={item.id} type="button" onClick={() => setBooking((current) => ({ ...current, locationType: item.id as LocationType }))} className={cx('focus flex items-center justify-center gap-2 rounded-2xl border px-3 py-4 text-sm font-bold', booking.locationType === item.id ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
-              <Icon name={item.icon} size={18} />
+            <button key={item.id} type="button" onClick={() => setBooking((current) => ({ ...current, locationType: item.id as LocationType }))} className={cx('focus flex items-center justify-center gap-2 rounded-2xl border px-3 py-3.5 text-sm font-bold', booking.locationType === item.id ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
+              <Icon name={item.icon} size={17} />
               {item.label}
             </button>
           ))}
         </div>
-
         {booking.locationType === 'motel' ? (
           <p className="mt-4 rounded-2xl bg-blue-500/10 p-4 text-sm leading-6">O endereço é enviado no WhatsApp após confirmação.</p>
         ) : (
@@ -919,13 +653,10 @@ function LocationForm({ booking, setBooking, toast }: { booking: BookingData; se
 
 function CouponBox({ user, booking, setBooking }: { user: UserData; booking: BookingData; setBooking: React.Dispatch<React.SetStateAction<BookingData>> }) {
   const availableCoupons = user.coupons.filter((coupon) => !user.usedCoupons.includes(coupon.code));
-
   return (
     <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4">
       <h3 className="text-lg font-bold">Benefícios</h3>
-      {availableCoupons.length === 0 ? (
-        <p className="mt-3 text-sm text-[var(--muted)]">Nenhum benefício disponível agora.</p>
-      ) : (
+      {availableCoupons.length === 0 ? <p className="mt-3 text-sm text-[var(--muted)]">Nenhum benefício disponível.</p> : (
         <div className="mt-4 grid gap-2 sm:grid-cols-2">
           {availableCoupons.map((coupon) => {
             const active = booking.appliedCoupon?.code === coupon.code;
@@ -948,14 +679,13 @@ function PaymentBox({ booking, setBooking }: { booking: BookingData; setBooking:
     { id: 'card' as PaymentMethod, label: 'Cartão', sub: 'crédito/débito', icon: 'credit-card' as IconName },
     { id: 'cash' as PaymentMethod, label: 'Dinheiro', sub: 'no local', icon: 'banknote' as IconName },
   ];
-
   return (
     <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4">
       <h3 className="text-lg font-bold">Pagamento</h3>
       <div className="mt-4 grid gap-2 sm:grid-cols-3">
         {options.map((item) => (
           <button key={item.id} type="button" onClick={() => setBooking((current) => ({ ...current, payment: item.id }))} className={cx('focus rounded-2xl border p-4 text-left', booking.payment === item.id ? 'border-blue-600 bg-blue-600 text-white' : 'border-[var(--line)] bg-[var(--surface-2)]')}>
-            <Icon name={item.icon} size={18} />
+            <Icon name={item.icon} size={17} />
             <span className="mt-3 block text-sm font-bold">{item.label}</span>
             <span className={cx('mt-1 block text-xs', booking.payment === item.id ? 'text-white/75' : 'text-[var(--muted)]')}>{item.sub}</span>
           </button>
@@ -996,26 +726,10 @@ function RulesBox({ booking, setBooking }: { booking: BookingData; setBooking: R
   );
 }
 
-function Summary({
-  title,
-  base,
-  extras,
-  rush,
-  discount,
-  total,
-  booking,
-}: {
-  title: string;
-  base: number;
-  extras: number;
-  rush: number;
-  discount: number;
-  total: number;
-  booking: BookingData;
-}) {
+function Summary({ title, base, extras, rush, discount, total, booking }: { title: string; base: number; extras: number; rush: number; discount: number; total: number; booking: BookingData }) {
   return (
     <aside className="min-w-0 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4 lg:sticky lg:top-24">
-      <p className="text-xs font-bold uppercase tracking-[.16em] text-blue-500">Resumo</p>
+      <p className="text-[11px] font-bold uppercase tracking-[.16em] text-blue-500">Resumo</p>
       <h3 className="mt-2 text-3xl font-bold tracking-[-.06em]">{money(total)}</h3>
       <div className="mt-5 grid gap-3 text-sm">
         <Line label="Escolha" value={title || 'Não escolhida'} />
@@ -1090,6 +804,8 @@ export default function App() {
   const selectedService = SERVICES.find((item) => item.id === booking.serviceId);
   const selectedPlan = PREMIUM_PLANS_V27.find((item) => item.id === booking.planId);
   const selectedExtras = EXTRAS.filter((item) => booking.extras[item.id]);
+  const regularPlans = PREMIUM_PLANS_V27.filter((item) => !item.premium);
+  const featuredPlans = PREMIUM_PLANS_V27.filter((item) => item.premium);
 
   const selectedTitle = selectedPlan?.title || selectedService?.title || '';
   const baseValue = selectedPlan?.price || selectedService?.price || 0;
@@ -1150,10 +866,9 @@ export default function App() {
 
   const finish = () => {
     if (!validate()) return;
-    const gainedXP = Math.max(20, Math.round(total / 5));
     setUser((current) => ({
       ...current,
-      xp: current.xp + gainedXP,
+      xp: current.xp + Math.max(20, Math.round(total / 5)),
       ordersCount: current.ordersCount + 1,
       usedCoupons: booking.appliedCoupon ? [...current.usedCoupons, booking.appliedCoupon.code] : current.usedCoupons,
     }));
@@ -1168,82 +883,74 @@ export default function App() {
       <Header dark={dark} setDark={setDark} />
 
       <main className="mx-auto w-full max-w-screen-2xl px-[var(--page)]">
-        <Hero selectedTitle={selectedTitle} onStart={() => document.getElementById('sessões')?.scrollIntoView({ behavior: 'smooth' })} />
+        <Hero selectedTitle={selectedTitle} total={total} onStart={() => document.getElementById('sessões')?.scrollIntoView({ behavior: 'smooth' })} />
 
-        <section id="sessões" className="py-8 sm:py-10">
-          <SectionTitle id="sessões-title" label="01 · Sessões" title="Escolha o cuidado." hint="Cards limpos. Detalhes abrem só quando necessário." />
+        <section id="sessões" className="py-7 sm:py-9">
+          <SectionTitle id="sessões-title" label="01 · Sessões" title="Escolha o cuidado." />
           <CategoryTabs value={category} onChange={setCategory} />
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {visibleServices.map((item) => (
-              <ServiceCard
-                key={item.id}
-                item={item}
-                selected={booking.serviceId === item.id}
-                onSelect={() => {
-                  setBooking((current) => ({ ...current, choiceType: 'service', serviceId: item.id, planId: '' }));
-                  toast(`${item.title} escolhida.`);
-                }}
-              />
+              <ServiceCard key={item.id} item={item} selected={booking.serviceId === item.id} onSelect={() => {
+                setBooking((current) => ({ ...current, choiceType: 'service', serviceId: item.id, planId: '' }));
+                toast(`${item.title} escolhida.`);
+              }} />
             ))}
           </div>
         </section>
 
-        <section id="planos" className="py-8 sm:py-10">
-          <SectionTitle id="planos-title" label="02 · Premium Plans v27" title="Planos mensais." hint="A versão premium foi preservada com todos os planos e valores." />
+        <section id="planos" className="py-7 sm:py-9">
+          <SectionTitle id="planos-title" label="02 · Premium Plans v27" title="Planos mensais." />
+          <div className="mb-4 grid gap-4 lg:grid-cols-2">
+            {featuredPlans.map((item) => (
+              <PlanCard key={item.id} item={item} featured selected={booking.planId === item.id} onSelect={() => {
+                setBooking((current) => ({ ...current, choiceType: 'plan', planId: item.id, serviceId: '' }));
+                toast(`${item.title} escolhido.`);
+              }} />
+            ))}
+          </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {PREMIUM_PLANS_V27.map((item) => (
-              <PlanCard
-                key={item.id}
-                item={item}
-                selected={booking.planId === item.id}
-                onSelect={() => {
-                  setBooking((current) => ({ ...current, choiceType: 'plan', planId: item.id, serviceId: '' }));
-                  toast(`${item.title} escolhido.`);
-                }}
-              />
+            {regularPlans.map((item) => (
+              <PlanCard key={item.id} item={item} selected={booking.planId === item.id} onSelect={() => {
+                setBooking((current) => ({ ...current, choiceType: 'plan', planId: item.id, serviceId: '' }));
+                toast(`${item.title} escolhido.`);
+              }} />
             ))}
           </div>
         </section>
 
-        <section id="agenda" className="py-8 sm:py-10">
+        <section id="agenda" className="py-7 sm:py-9">
           <SectionTitle id="agenda-title" label="03 · Agenda" title="Dia e horário." />
           <DateTime booking={booking} setBooking={setBooking} />
         </section>
 
-        <section id="local" className="py-8 sm:py-10">
+        <section id="local" className="py-7 sm:py-9">
           <SectionTitle id="local-title" label="04 · Local" title="Dados e endereço." />
           <LocationForm booking={booking} setBooking={setBooking} toast={toast} />
         </section>
 
-        <section id="complementos" className="py-8 sm:py-10">
+        <section id="complementos" className="py-7 sm:py-9">
           <SectionTitle id="extras-title" label="05 · Extras" title="Complementos." />
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {EXTRAS.map((item) => (
-              <ExtraCard
-                key={item.id}
-                item={item}
-                active={!!booking.extras[item.id]}
-                onToggle={() => setBooking((current) => ({ ...current, extras: { ...current.extras, [item.id]: !current.extras[item.id] } }))}
-              />
+              <ExtraCard key={item.id} item={item} active={!!booking.extras[item.id]} onToggle={() => setBooking((current) => ({ ...current, extras: { ...current.extras, [item.id]: !current.extras[item.id] } }))} />
             ))}
           </div>
         </section>
 
-        <section id="confirmar" className="py-8 sm:py-10">
+        <section id="confirmar" className="py-7 sm:py-9">
           <SectionTitle id="confirmar-title" label="06 · Confirmar" title="Revise e envie." />
           <div className="grid gap-5 lg:grid-cols-12 lg:items-start">
             <div className="grid gap-5 lg:col-span-8">
               <CouponBox user={user} booking={booking} setBooking={setBooking} />
               <PaymentBox booking={booking} setBooking={setBooking} />
               <RulesBox booking={booking} setBooking={setBooking} />
-
               <section className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-4">
                 <h3 className="mb-4 text-lg font-bold">Depoimentos</h3>
                 <div className="grid gap-3 md:grid-cols-2">
                   {REVIEWS.map((review) => (
                     <article key={`${review.name}-${review.service}`} className="rounded-2xl bg-[var(--soft)] p-4">
                       <p className="text-sm leading-6">“{review.text}”</p>
-                      <p className="mt-3 text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)]">{review.name} · {review.service}</p>
+                      <p className="mt-3 text-[11px] font-bold uppercase tracking-[.12em] text-[var(--muted)]">{review.name} · {review.service}</p>
                     </article>
                   ))}
                 </div>
