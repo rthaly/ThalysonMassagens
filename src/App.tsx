@@ -218,9 +218,37 @@ const vibrate = (pattern = 50) => {
 const maskCEP = (v) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
 
 const formatMoney = (val, lang) => {
-  if (val === undefined || isNaN(val)) return lang === 'pt' ? 'R$ 0,00' : '$ 0.00';
-  const converted = lang === 'pt' ? val : val / CONFIG.EXCHANGE_RATE;
+  const safeVal = Number.isFinite(Number(val)) ? Number(val) : 0;
+  const converted = lang === 'pt' ? safeVal : safeVal / CONFIG.EXCHANGE_RATE;
   return lang === 'pt' ? `R$ ${converted.toFixed(2).replace('.', ',')}` : `$ ${converted.toFixed(2)}`;
+};
+
+// Cupons podem vir do localStorage/cache. Esta camada impede travamento por cupom antigo, duplicado ou incompleto.
+const makeCouponKey = (coupon) => String(coupon?.code || coupon?.id || '').trim().toUpperCase();
+
+const normalizeCoupon = (coupon) => {
+  if (!coupon || typeof coupon !== 'object') return null;
+  const code = String(coupon.code || coupon.id || '').trim().toUpperCase();
+  const rawValue = Number(coupon.val);
+  if (!code || !Number.isFinite(rawValue) || rawValue <= 0) return null;
+  const val = Math.min(999, Math.max(0, Math.round(rawValue)));
+  return {
+    id: String(coupon.id || code),
+    code,
+    val,
+    title: sanitizeInput(String(coupon.title || code)) || code
+  };
+};
+
+const normalizeCouponList = (coupons = []) => {
+  if (!Array.isArray(coupons)) return [];
+  const map = new Map();
+  coupons.forEach((coupon) => {
+    const safe = normalizeCoupon(coupon);
+    if (!safe) return;
+    map.set(makeCouponKey(safe), safe);
+  });
+  return Array.from(map.values());
 };
 
 const isWebViewUserAgent = () => {
@@ -676,7 +704,7 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user, T }) => {
       >
         <div className="flex justify-between items-center mb-8">
           <h2 className="font-display text-2xl">{T.menu_title}</h2>
-          <button
+          <button type="button"
             onClick={onClose}
             aria-label="Fechar menu"
             className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${isDark ? 'hover:bg-white/8 text-zinc-400' : 'hover:bg-black/5 text-slate-500'}`}
@@ -696,7 +724,7 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user, T }) => {
         </div>
 
         <nav className="flex-1 space-y-3" aria-label="Menu de configurações">
-          <button
+          <button type="button"
             onClick={toggleTheme}
             aria-label={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
             className={`w-full flex items-center justify-between p-5 rounded-2xl transition-colors ${isDark ? 'hover:bg-white/6 text-zinc-300' : 'hover:bg-black/4 text-slate-700'}`}
@@ -710,7 +738,7 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user, T }) => {
             </span>
           </button>
 
-          <button
+          <button type="button"
             onClick={() => {
               if (navigator.share) navigator.share({ title: 'Thalyson Massagens', text: T.share_text, url: window.location.href });
             }}
@@ -761,7 +789,7 @@ const FAQItem = memo(({ q, a, isDark }) => {
   const id = useMemo(() => `faq-${Math.random().toString(36).slice(2)}`, []);
   return (
     <div className={`border-b last:border-b-0 ${isDark ? 'border-white/8' : 'border-slate-200'}`}>
-      <button
+      <button type="button"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
         aria-controls={id}
@@ -864,7 +892,7 @@ const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDar
         <div className={`relative p-6 sm:p-8 pb-5 sm:pb-6 flex-shrink-0 ${isPremium ? (isDark ? 'bg-amber-950/20' : 'bg-amber-50/50') : (isDark ? 'bg-blue-950/20' : 'bg-blue-50/50')}`}>
           <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
 
-          <button
+          <button type="button"
             onClick={onClose}
             aria-label="Fechar detalhes"
             className={`absolute top-5 right-5 sm:top-6 sm:right-6 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isDark ? 'bg-black/20 text-white hover:bg-black/40' : 'bg-black/5 text-slate-700 hover:bg-black/10'}`}
@@ -1089,8 +1117,8 @@ export default function App() {
           loadedUser = {
             name: parsed.user.name || '',
             xp: typeof parsed.user.xp === 'number' ? parsed.user.xp : 0,
-            coupons: Array.isArray(parsed.user.coupons) ? parsed.user.coupons : [],
-            usedCoupons: Array.isArray(parsed.user.usedCoupons) ? parsed.user.usedCoupons : [],
+            coupons: normalizeCouponList(parsed.user.coupons),
+            usedCoupons: Array.isArray(parsed.user.usedCoupons) ? Array.from(new Set(parsed.user.usedCoupons.map(makeCouponKey).filter(Boolean))) : [],
             hasSeenWelcome: !!parsed.user.hasSeenWelcome,
             ordersCount: typeof parsed.user.ordersCount === 'number' ? Math.max(parsed.user.ordersCount, 92) : 92,
             lastActivity: parsed.user.lastActivity || new Date().toISOString()
@@ -1112,7 +1140,8 @@ export default function App() {
                 city: sanitizeInput(parsed.bookingDraft.address?.city || ''),
                 comp: sanitizeInput(parsed.bookingDraft.address?.comp || ''),
                 placeName: sanitizeInput(parsed.bookingDraft.address?.placeName || '')
-              }
+              },
+              appliedCoupon: normalizeCoupon(parsed.bookingDraft.appliedCoupon)
             };
             if (typeof parsed.step === 'number' && parsed.step >= 0 && parsed.step <= 4) loadedStep = parsed.step;
           }
@@ -1132,7 +1161,7 @@ export default function App() {
       try {
         const save = {
           user: { ...user, lastActivity: new Date().toISOString() },
-          bookingDraft: { ...booking, appliedCoupon: booking.appliedCoupon ? { ...booking.appliedCoupon } : null },
+          bookingDraft: { ...booking, appliedCoupon: normalizeCoupon(booking.appliedCoupon) },
           step
         };
         const s = JSON.stringify(save);
@@ -1246,7 +1275,8 @@ export default function App() {
     const duration = baseDuration + addedTime;
     const isRush = RUSH_HOURS.includes(booking.time || '');
     const rushFee = (isRush && booking.locationType !== 'motel') ? RUSH_FEE : 0;
-    const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
+    const selectedCoupon = normalizeCoupon(booking.appliedCoupon);
+    const disc = selectedCoupon ? Math.min(sub, Math.max(0, Number(selectedCoupon.val) || 0)) : 0;
     let running = Math.max(0, sub - disc);
     let mediaDisc = 0;
     if (booking.mediaAllowed) { mediaDisc = Math.ceil(running * 0.01); running = Math.max(0, running - mediaDisc); }
@@ -1282,6 +1312,33 @@ export default function App() {
     if (user.xp >= 800) return "Plenitude Plus";
     return DATA.levels.slice().reverse().find(l => user.xp >= l.xpNeeded)?.title || DATA.levels[0].title;
   };
+
+  const availableCoupons = useMemo(() => {
+    const used = new Set((user.usedCoupons || []).map(makeCouponKey));
+    return normalizeCouponList(user.coupons).filter(coupon => !used.has(makeCouponKey(coupon)));
+  }, [user.coupons, user.usedCoupons]);
+
+  const selectedCouponForView = useMemo(() => normalizeCoupon(booking.appliedCoupon), [booking.appliedCoupon]);
+  const selectedCouponKey = useMemo(() => makeCouponKey(selectedCouponForView), [selectedCouponForView]);
+
+  const handleToggleCoupon = useCallback((coupon) => {
+    const safeCoupon = normalizeCoupon(coupon);
+    if (!safeCoupon) {
+      addToast(T.toast_coupon_invalid, 'error');
+      vibrate([30, 30]);
+      return;
+    }
+
+    setBooking(prev => {
+      const currentKey = makeCouponKey(normalizeCoupon(prev.appliedCoupon));
+      const nextKey = makeCouponKey(safeCoupon);
+      return {
+        ...prev,
+        appliedCoupon: currentKey === nextKey ? null : safeCoupon
+      };
+    });
+    vibrate(30);
+  }, [addToast, T.toast_coupon_invalid]);
 
   const isStepValid = useCallback(() => {
     if (step === 0) return booking.cart.length > 0;
@@ -1341,7 +1398,8 @@ export default function App() {
       return ex ? `➕ ${ex.label}` : '';
     }).filter(Boolean).join('\n');
     let prices = `💵 *${isEn ? 'Subtotal' : 'Subtotal'}:* ${formatMoney(f.sub, lang)}`;
-    if (f.disc > 0) prices += `\n🎁 *${booking.appliedCoupon?.code}:* -${formatMoney(f.disc, lang)}`;
+    const selectedCoupon = normalizeCoupon(booking.appliedCoupon);
+    if (f.disc > 0 && selectedCoupon) prices += `\n🎁 *${selectedCoupon.code}:* -${formatMoney(f.disc, lang)}`;
     if (f.mediaDisc > 0) prices += `\n📸 *${isEn ? 'Portfolio' : 'Portfólio'}:* -${formatMoney(f.mediaDisc, lang)}`;
     if (f.pixDisc > 0) prices += `\n💸 *PIX (3%):* -${formatMoney(f.pixDisc, lang)}`;
     if (f.rushFee > 0) prices += `\n🚗 *${isEn ? 'Rush Fee' : 'Taxa Pico'}:* +${formatMoney(f.rushFee, lang)}`;
@@ -1355,13 +1413,15 @@ export default function App() {
 
   const finishBooking = () => {
     vibrate([100, 50, 100, 50, 100]);
-    let updatedCoupons = [...user.coupons];
-    let updatedHistory = [...user.usedCoupons];
-    if (booking.appliedCoupon && booking.appliedCoupon.id !== 'manual') {
-      if (!updatedHistory.includes(booking.appliedCoupon.code)) updatedHistory.push(booking.appliedCoupon.code);
-      updatedCoupons = updatedCoupons.filter(c => c.code !== booking.appliedCoupon?.code);
+    const selectedCoupon = normalizeCoupon(booking.appliedCoupon);
+    let updatedCoupons = normalizeCouponList(user.coupons);
+    let updatedHistory = Array.from(new Set((user.usedCoupons || []).map(makeCouponKey).filter(Boolean)));
+    if (selectedCoupon && selectedCoupon.id !== 'manual') {
+      const selectedKey = makeCouponKey(selectedCoupon);
+      if (!updatedHistory.includes(selectedKey)) updatedHistory.push(selectedKey);
+      updatedCoupons = updatedCoupons.filter(c => makeCouponKey(c) !== selectedKey);
     }
-    const newXP = user.xp + estimatedXP;
+    const newXP = Number(user.xp || 0) + Number(estimatedXP || 0);
     let leveledUp = false;
     DATA.levels.forEach(lvl => {
       if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
@@ -1446,7 +1506,7 @@ export default function App() {
         {step !== 4 && (
           <header className="pt-10 pb-8 md:pt-14 md:pb-12">
             <div className="flex items-start justify-between gap-3 sm:gap-5">
-              <button onClick={() => setStep(0)} className="group text-left min-w-0" aria-label="Voltar para o início">
+              <button type="button" onClick={() => setStep(0)} className="group text-left min-w-0" aria-label="Voltar para o início">
                 <h1 className={`font-display text-2xl sm:text-3xl md:text-4xl leading-tight mb-2 transition-opacity group-hover:opacity-80 safe-text ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   Thalyson Massagens
                 </h1>
@@ -1460,7 +1520,7 @@ export default function App() {
               </button>
 
               <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                <button
+                <button type="button"
                   onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')}
                   aria-label={lang === 'pt' ? 'Switch to English' : 'Mudar para Português'}
                   className={`relative h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center rounded-2xl border transition-all ${isDark ? 'border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white' : 'border-black/8 bg-black/4 text-slate-500 hover:text-slate-800'}`}
@@ -1468,14 +1528,14 @@ export default function App() {
                   <Icon name="globe" size={18} />
                   <span className="absolute -bottom-2 -right-2 text-[7px] sm:text-[8px] font-bold bg-blue-600 text-white px-1.5 py-0.5 rounded-md leading-none" aria-hidden="true">{lang.toUpperCase()}</span>
                 </button>
-                <button
+                <button type="button"
                   onClick={() => openExternal('instagram')}
                   aria-label="Abrir Instagram"
                   className={`h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center rounded-2xl border transition-all ${isDark ? 'border-white/10 bg-white/5 text-pink-400 hover:bg-white/10' : 'border-black/8 bg-black/4 text-pink-600 hover:text-pink-700'}`}
                 >
                   <Icon name="instagram" size={18} />
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setMenuOpen(true)}
                   aria-label="Abrir menu de configurações"
                   aria-expanded={menuOpen}
@@ -1536,7 +1596,7 @@ export default function App() {
                   { id: 'single', label: T.tab_single, icon: 'user' },
                   { id: 'packs', label: T.tab_packs, icon: 'package' }
                 ].map(tab => (
-                  <button
+                  <button type="button"
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     role="tab"
@@ -1647,7 +1707,7 @@ export default function App() {
                   <h3 className={`font-display text-2xl sm:text-3xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title}</h3>
                   <div className="hidden md:flex gap-3">
                     {['chevron-left', 'chevron-right'].map((dir, i) => (
-                      <button
+                      <button type="button"
                         key={dir}
                         onClick={() => reviewScrollRef.current?.scrollBy({ left: i === 0 ? -360 : 360, behavior: 'smooth' })}
                         aria-label={i === 0 ? 'Avaliação anterior' : 'Próxima avaliação'}
@@ -1700,7 +1760,7 @@ export default function App() {
                   { id: 'motel', label: T.loc_motel, icon: 'bed', desc: lang === 'en' ? 'Discreet space' : 'Local discreto' },
                   { id: 'hotel', label: T.loc_hotel, icon: 'building', desc: lang === 'en' ? 'Your room' : 'Seu quarto' }
                 ].map(x => (
-                  <button
+                  <button type="button"
                     key={x.id}
                     onClick={() => setBooking(b => ({ ...b, locationType: x.id }))}
                     role="radio"
@@ -1816,7 +1876,7 @@ export default function App() {
               <div className={`p-4 sm:p-5 rounded-3xl border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <div className="flex items-center justify-between mb-3 sm:mb-4 gap-3">
                   <span className={`text-[11px] uppercase font-semibold tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.cart_title}</span>
-                  <button
+                  <button type="button"
                     onClick={() => setStep(0)}
                     aria-label="Editar serviços selecionados"
                     className={`text-[11px] uppercase font-semibold tracking-wider px-3 sm:px-4 py-1.5 rounded-lg border transition-colors shrink-0 ${isDark ? 'border-white/10 text-zinc-300 hover:text-white hover:bg-white/8' : 'border-slate-200 text-slate-600 hover:text-slate-900'}`}
@@ -1836,7 +1896,7 @@ export default function App() {
 
               {/* Date picker */}
               <div className="relative">
-                <button
+                <button type="button"
                   onClick={() => scrollDates('left')}
                   aria-label="Datas anteriores"
                   className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'} shadow-lg`}
@@ -1853,7 +1913,7 @@ export default function App() {
                     const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
                     const mo = d.toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { month: 'short' }).replace('.', '');
                     return (
-                      <button
+                      <button type="button"
                         key={idx}
                         onClick={() => { setBooking(b => ({ ...b, date: d.toISOString(), time: null })); vibrate(30); }}
                         role="option"
@@ -1868,7 +1928,7 @@ export default function App() {
                     );
                   })}
                 </div>
-                <button
+                <button type="button"
                   onClick={() => scrollDates('right')}
                   aria-label="Próximas datas"
                   className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'} shadow-lg`}
@@ -1906,7 +1966,7 @@ export default function App() {
                           const isRush = RUSH_HOURS.includes(t) && booking.locationType !== 'motel';
                           const isSel = booking.time === t;
                           return (
-                            <button
+                            <button type="button"
                               key={t}
                               onClick={() => { setBooking(b => ({ ...b, time: t })); vibrate(30); }}
                               aria-pressed={isSel}
@@ -2058,9 +2118,9 @@ export default function App() {
                         <span>{T.subtotal}</span>
                         <span className="shrink-0">{formatMoney(financials.sub, lang)}</span>
                       </div>
-                      {booking.appliedCoupon && (
+                      {selectedCouponForView && financials.disc > 0 && (
                         <div className={`flex justify-between gap-3 text-sm sm:text-base font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                          <span className="flex items-center gap-2 min-w-0"><Icon name="gift" size={15} className="shrink-0" /><span className="safe-text">{booking.appliedCoupon.title}</span></span>
+                          <span className="flex items-center gap-2 min-w-0"><Icon name="gift" size={15} className="shrink-0" /><span className="safe-text">{selectedCouponForView.title}</span></span>
                           <span className="shrink-0">-{formatMoney(financials.disc, lang)}</span>
                         </div>
                       )}
@@ -2112,26 +2172,35 @@ export default function App() {
                       <span className="safe-text">{T.coupon_section}</span>
                     </h4>
 
-                    {user.coupons.length > 0 ? (
+                    {availableCoupons.length > 0 ? (
                       <div className="flex flex-col gap-3" role="group" aria-label="Cupons disponíveis">
-                        {user.coupons.map(c => (
-                          <button
-                            key={c.id}
-                            onClick={() => { setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c })); vibrate(30); }}
-                            aria-pressed={booking.appliedCoupon?.id === c.id}
-                            className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-600/10 border-emerald-500 text-emerald-400 shadow-sm' : isDark ? 'bg-white/4 border-white/10 text-zinc-300 hover:bg-white/8' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'}`}
-                          >
-                            <div className="flex items-center gap-3 min-w-0">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 text-white' : isDark ? 'bg-white/10' : 'bg-slate-200'}`} aria-hidden="true">
-                                <Icon name="gift" size={14} />
+                        {availableCoupons.map(c => {
+                          const couponKey = makeCouponKey(c);
+                          const isSelectedCoupon = selectedCouponKey === couponKey;
+                          return (
+                            <button
+                              type="button"
+                              key={couponKey}
+                              onClick={() => handleToggleCoupon(c)}
+                              aria-pressed={isSelectedCoupon}
+                              aria-label={`${isSelectedCoupon ? 'Remover' : 'Aplicar'} cupom ${c.title}, desconto de ${formatMoney(c.val, lang)}`}
+                              className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 tap-target safe-card ${isSelectedCoupon ? 'bg-emerald-600/10 border-emerald-500 text-emerald-400 shadow-sm' : isDark ? 'bg-white/4 border-white/10 text-zinc-300 hover:bg-white/8' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'}`}
+                            >
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isSelectedCoupon ? 'bg-emerald-500 text-white' : isDark ? 'bg-white/10' : 'bg-slate-200'}`} aria-hidden="true">
+                                  <Icon name="gift" size={14} />
+                                </div>
+                                <div className="min-w-0 flex-1 text-left">
+                                  <span className="block text-sm font-bold tracking-wide safe-text">{c.title}</span>
+                                  <span className={`block text-[10px] uppercase tracking-widest mt-0.5 ${isSelectedCoupon ? 'text-emerald-400' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}>-{formatMoney(c.val, lang)}</span>
+                                </div>
                               </div>
-                              <span className="text-sm font-bold tracking-wide text-left truncate">{c.title}</span>
-                            </div>
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-white/20' : 'border-slate-300'}`} aria-hidden="true">
-                              {booking.appliedCoupon?.id === c.id && <Icon name="check" size={14} />}
-                            </div>
-                          </button>
-                        ))}
+                              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${isSelectedCoupon ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-white/20' : 'border-slate-300'}`} aria-hidden="true">
+                                {isSelectedCoupon && <Icon name="check" size={14} />}
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className={`p-4 sm:p-5 rounded-2xl border border-dashed text-center text-sm font-medium ${isDark ? 'border-white/10 text-zinc-500' : 'border-slate-300 text-slate-400'}`} role="status">
@@ -2151,7 +2220,7 @@ export default function App() {
                         <p className={`text-xs mt-0.5 leading-relaxed font-medium break-words ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.media_desc}</p>
                       </div>
                     </div>
-                    <button
+                    <button type="button"
                       onClick={() => { setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed })); vibrate(30); }}
                       aria-pressed={booking.mediaAllowed}
                       aria-label={booking.mediaAllowed ? 'Revogar autorização de fotos' : 'Autorizar fotos e ganhar desconto'}
@@ -2171,7 +2240,7 @@ export default function App() {
                         { id: 'card', label: T.pay_card, icon: 'credit-card', note: null },
                         { id: 'money', label: T.pay_cash, icon: 'banknote', note: null }
                       ].map(pm => (
-                        <button
+                        <button type="button"
                           key={pm.id}
                           onClick={() => {
                             setBooking(b => ({ ...b, payment: pm.id }));
@@ -2197,7 +2266,7 @@ export default function App() {
 
                   {/* Terms */}
                   <div className={hasErrorGlobal && !booking.termsAccepted ? 'animate-shake' : ''}>
-                    <button
+                    <button type="button"
                       onClick={() => setTermsOpen(true)}
                       aria-label="Abrir regras e acordos"
                       className={`w-full flex items-center justify-between p-5 sm:p-6 rounded-[2rem] border cursor-pointer transition-all duration-300 ${booking.termsAccepted ? isDark ? 'bg-emerald-600/15 border-emerald-500/50' : 'bg-emerald-50 border-emerald-300' : isDark ? 'bg-white/4 border-white/8 hover:bg-white/8 hover:border-white/14' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`}
@@ -2266,7 +2335,7 @@ export default function App() {
                 <Button variant="whatsapp" size="xl" full icon="message" onClick={() => openExternal('whatsapp', generateWhatsAppMsg())} ariaLabel="Abrir WhatsApp para enviar pedido">
                   {T.whatsapp_btn}
                 </Button>
-                <button
+                <button type="button"
                   onClick={() => { setStep(0); setBooking({ ...booking, cart: [], termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }}
                   aria-label="Voltar ao início e começar novo agendamento"
                   className={`w-full text-sm font-semibold uppercase tracking-widest py-4 transition-colors ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-700'}`}
@@ -2289,7 +2358,7 @@ export default function App() {
             <div className="flex items-center justify-between gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-3 sm:py-4">
 
               {step > 0 && (
-                <button
+                <button type="button"
                   onClick={() => { setStep(s => s - 1); vibrate(30); }}
                   aria-label="Voltar etapa anterior"
                   className={`w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl border transition-all shrink-0 ${isDark ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-700' : 'border-slate-300 bg-slate-100 text-slate-600 hover:text-slate-900'}`}
@@ -2307,7 +2376,7 @@ export default function App() {
                 </p>
               </div>
 
-              <button
+              <button type="button"
                 onClick={handleNextStep}
                 aria-label={step === 3 ? T.finish_btn : T.next_btn}
                 className={`relative h-11 sm:h-12 md:h-14 flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 md:px-8 rounded-xl font-bold text-[12px] sm:text-[13px] md:text-sm uppercase tracking-wider transition-all duration-200 shrink-0 overflow-hidden ${isStepValid()
@@ -2339,7 +2408,7 @@ export default function App() {
           <div className={`relative w-full max-w-xl max-h-[88vh] rounded-[2.5rem] flex flex-col border shadow-2xl animate-slide-up ${isDark ? 'bg-[#11141a] border-zinc-700' : 'bg-white border-slate-300'}`}>
             <div className={`flex items-center justify-between p-6 sm:p-8 border-b shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
               <h3 id="terms-title" className={`font-display text-xl sm:text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.rules_complete}</h3>
-              <button
+              <button type="button"
                 onClick={() => setTermsOpen(false)}
                 aria-label="Fechar regras"
                 className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${isDark ? 'text-zinc-400 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'}`}
@@ -2395,8 +2464,13 @@ export default function App() {
               onClick={() => {
                 setWelcomePopup(false);
                 vibrate([50, 100]);
-                const c = { id: 'welcome', val: 10, title: 'BEMVINDO10', code: 'BEMVINDO10' };
-                setUser(u => ({ ...u, hasSeenWelcome: true, coupons: [...u.coupons, c] }));
+                const c = normalizeCoupon({ id: 'welcome', val: 10, title: 'BEMVINDO10', code: 'BEMVINDO10' });
+                if (!c) return;
+                setUser(u => ({
+                  ...u,
+                  hasSeenWelcome: true,
+                  coupons: normalizeCouponList([...u.coupons, c])
+                }));
                 setBooking(b => ({ ...b, appliedCoupon: c }));
                 addToast(T.toast_coupon_success);
               }}
