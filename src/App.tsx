@@ -482,6 +482,10 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     }
 
     * { box-sizing: border-box; min-width: 0; }
+    :where(h1, h2, h3, h4, p, span, strong, small, label, button, a, li) {
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
@@ -628,6 +632,42 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       gap: 22px;
       align-items: stretch;
       margin-bottom: 24px;
+    }
+    .hero-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(190px, 240px);
+      gap: 18px;
+      align-items: stretch;
+    }
+    .hero-copy {
+      display: grid;
+      align-content: center;
+    }
+    .portrait-card {
+      min-height: 100%;
+      display: grid;
+      align-content: end;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+    .portrait-card .profile-photo {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4 / 5;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .portrait-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 700;
     }
     .hero-card,
     .panel,
@@ -949,6 +989,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      flex-wrap: wrap;
       padding-top: 10px;
       border-top: 1px solid var(--border);
     }
@@ -968,6 +1009,14 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       font-weight: 700;
       white-space: nowrap;
     }
+    .price,
+    .old-price,
+    .total,
+    .xp-number {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .btn {
       min-height: 44px;
       display: inline-flex;
@@ -984,6 +1033,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       line-height: 1.2;
       text-align: center;
       white-space: normal;
+      max-width: 100%;
       transition: transform .18s ease, background .18s ease, border-color .18s ease;
     }
     .btn:hover:not(:disabled) { transform: translateY(-1px); }
@@ -1273,7 +1323,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     .extra-btn {
       min-height: 100%;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) minmax(max-content, auto);
       gap: 10px;
       padding: 12px;
       border: 1px solid var(--border);
@@ -1302,6 +1352,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
+      flex-wrap: wrap;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
     }
@@ -1383,6 +1434,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       align-items: end;
       justify-content: space-between;
       gap: 12px;
+      flex-wrap: wrap;
     }
     .total {
       font-size: clamp(1.42rem, 8vw, 1.75rem);
@@ -1576,12 +1628,13 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     }
     @media (max-width: 940px) {
       .hero,
+      .hero-main,
       .summary-layout,
       .flow-strip,
       .home-footer-grid {
         grid-template-columns: 1fr;
       }
-      .hero-card.profile { order: -1; }
+      .hero-card.profile { order: 0; }
       .flow-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 720px) {
@@ -1620,12 +1673,28 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       .time-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .extra-btn { grid-template-columns: 1fr; }
       .extra-btn > strong { white-space: normal; }
+      .portrait-card .profile-photo { aspect-ratio: 1 / 1; }
     }
     @media (max-width: 380px) {
       .profile-head { grid-template-columns: 62px minmax(0, 1fr); }
       .profile-photo { width: 62px; height: 62px; }
       .bottom-label { font-size: .66rem; }
       .bottom-title { max-width: 118px; }
+    }
+    @media (max-width: 350px) {
+      .bottom-inner {
+        flex-wrap: wrap;
+      }
+      .bottom-copy {
+        flex: 1 0 100%;
+        order: -1;
+      }
+      .bottom-title {
+        max-width: 100%;
+      }
+      .bottom-inner .btn:not(.back) {
+        flex: 1 1 0;
+      }
     }
   `}</style>
 ));
@@ -2394,9 +2463,18 @@ Li e aceito as regras. Aguardo sua confirmacao.`;
             {step === 0 ? (
               <>
                 <section className="hero" aria-labelledby="hero-title">
-                  <div className="hero-card">
-                    <h2 id="hero-title" className="hero-title">{T.heroTitle}</h2>
-                    <p className="hero-text">{T.heroText}</p>
+                  <div className="hero-card hero-main">
+                    <div className="hero-copy">
+                      <h2 id="hero-title" className="hero-title">{T.heroTitle}</h2>
+                      <p className="hero-text">{T.heroText}</p>
+                    </div>
+                    <div className="portrait-card">
+                      <ProfilePhoto alt={T.photoAlt} />
+                      <div className="portrait-meta">
+                        <span>{CONFIG.INSTAGRAM_HANDLE}</span>
+                        <Icon name="instagram" size={16} />
+                      </div>
+                    </div>
                   </div>
                   <aside className="hero-card profile" aria-label={T.xpTitle}>
                     <div className="profile-head">
