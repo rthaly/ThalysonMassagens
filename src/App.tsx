@@ -219,8 +219,8 @@ const getData = (lang: Lang) => {
       icon: 'sun',
       tag: isEn ? 'RELAX' : 'RELAXAMENTO',
       title: isEn ? 'Classic Massage' : 'Massagem Clássica',
-      desc: isEn ? 'A balanced session for stiff backs, heavy shoulders, stress and better sleep.' : 'Sessão equilibrada para costas travadas, ombros pesados, estresse e melhora do sono.',
-      details: isEn ? ['Back and shoulders', 'Relaxing rhythm', 'Therapeutic pressure', 'Breathing and body calm'] : ['Costas e ombros', 'Ritmo relaxante', 'Pressão terapêutica', 'Respiração e desaceleração corporal'],
+      desc: isEn ? 'Full-body relaxing massage for muscle tension, stress and body fatigue, without intimate touch.' : 'Massagem relaxante no corpo todo para aliviar tensão, estresse e cansaço físico, sem toques íntimos.',
+      details: isEn ? ['Full-body relaxing massage', 'Back, shoulders, legs and arms', 'Therapeutic pressure with calm rhythm', 'No intimate touch'] : ['Massagem relaxante no corpo todo', 'Costas, ombros, pernas e braços', 'Pressão terapêutica com ritmo calmo', 'Sem toques íntimos'],
       highlight: true,
     },
     {
@@ -231,8 +231,8 @@ const getData = (lang: Lang) => {
       icon: 'shield',
       tag: isEn ? 'RECOVERY' : 'RECUPERAÇÃO',
       title: isEn ? 'Sports Massage' : 'Massagem para Atletas',
-      desc: isEn ? 'Firm recovery care for people who train, work standing or carry muscle overload.' : 'Cuidado firme de recuperação para quem treina, trabalha em pé ou sente sobrecarga muscular.',
-      details: isEn ? ['Firm pressure', 'Myofascial release', 'Legs and back focus', 'Mobility stretches'] : ['Pressão mais firme', 'Liberação miofascial', 'Foco em pernas e costas', 'Alongamentos leves'],
+      desc: isEn ? 'Starts with classic full-body relaxation and adds firmer recovery work for overloaded muscles.' : 'Começa com massagem clássica relaxante no corpo todo e evolui para recuperação muscular mais firme.',
+      details: isEn ? ['Classic relaxing base', 'Firm pressure where needed', 'Back, legs, shoulders and arms', 'Mobility and muscle relief'] : ['Base de massagem clássica relaxante', 'Pressão firme onde houver tensão', 'Costas, pernas, ombros e braços', 'Mobilidade e alívio muscular'],
     },
     {
       id: 'sensitiva',
@@ -242,8 +242,8 @@ const getData = (lang: Lang) => {
       icon: 'sparkles',
       tag: isEn ? 'SENSORY' : 'SENSORIAL',
       title: isEn ? 'Sensory Massage' : 'Massagem Sensorial',
-      desc: isEn ? 'A softer, sensory session for anxiety, mental fatigue and accumulated tension.' : 'Sessão mais suave e sensorial para ansiedade, cansaço mental e tensão acumulada.',
-      details: isEn ? ['Soft touch', 'Slow rhythm', 'Calm environment', 'Gradual relaxation'] : ['Toques suaves', 'Ritmo lento', 'Ambiente calmo', 'Relaxamento gradual'],
+      desc: isEn ? 'Begins with a relaxing full-body massage, then moves into sensory touch and a manual lingam finish.' : 'Começa com massagem relaxante no corpo todo, depois segue para toques sensoriais que arrepiam e finalização lingam manual.',
+      details: isEn ? ['Classic relaxing massage first', 'Slow sensory touch', 'Clear consent and gradual rhythm', 'Manual lingam finish'] : ['Primeiro massagem clássica relaxante', 'Toques sensoriais lentos e arrepiantes', 'Ritmo gradual com consentimento claro', 'Finalização lingam manual'],
     },
     {
       id: 'mista',
@@ -253,8 +253,8 @@ const getData = (lang: Lang) => {
       icon: 'heart',
       tag: isEn ? 'COMPLETE' : 'COMPLETA',
       title: isEn ? 'Fusion Experience' : 'Experiência Fusion',
-      desc: isEn ? 'A complete experience that starts with muscle relief and evolves into deep relaxation.' : 'Experiência completa que começa com alívio muscular e evolui para relaxamento profundo.',
-      details: isEn ? ['Classic massage base', 'Shoulders and back relief', 'Gradual sensory rhythm', 'Full body relaxation'] : ['Base de massagem clássica', 'Alívio em ombros e costas', 'Ritmo sensorial gradual', 'Relaxamento corporal completo'],
+      desc: isEn ? 'Fusion of classic relaxing massage, sensory presence and beard glide across the body, with the therapist in underwear.' : 'Une massagem clássica relaxante, presença sensorial e deslizamento da barba pelo corpo, com atendimento de cueca.',
+      details: isEn ? ['Classic relaxing massage', 'Front and back body care', 'Beard glide on the body', 'Manual lingam finish'] : ['Massagem clássica relaxante', 'Parte de trás e frente do corpo', 'Deslizamento da barba pelo corpo', 'Finalização lingam manual'],
       highlight: true,
     },
     {
@@ -265,8 +265,8 @@ const getData = (lang: Lang) => {
       icon: 'star',
       tag: isEn ? 'PREMIUM' : 'PREMIUM',
       title: isEn ? 'Nuru Massage' : 'Massagem Nuru',
-      desc: isEn ? 'Premium gel-based session focused on glide, body comfort and deep relaxation.' : 'Sessão premium com gel, focada em deslizamento, conforto corporal e relaxamento profundo.',
-      details: isEn ? ['Initial relaxation', 'Warm gel application', 'Continuous glide', 'Deep relaxing finish'] : ['Relaxamento inicial', 'Aplicação de gel aquecido', 'Deslizamento contínuo', 'Finalização relaxante profunda'],
+      desc: isEn ? 'Premium nuru session with body-to-body glide using gel, both nude, front and back, ending with manual lingam finish.' : 'Sessão premium com gel para deslizamento corpo a corpo, ambos nus, de frente e de costas, com finalização lingam manual.',
+      details: isEn ? ['Classic relaxing start', 'Gel body-to-body glide', 'Front and back body contact', 'Manual lingam finish'] : ['Início com massagem relaxante clássica', 'Gel para deslizamento corpo a corpo', 'Contato de frente e de costas', 'Finalização lingam manual'],
     },
     {
       id: 'depilacao',
@@ -291,7 +291,7 @@ const getData = (lang: Lang) => {
       fullPrice: 284,
       savings: 37,
       desc: isEn ? 'A simple two-session plan for starting a care routine without overthinking.' : 'Plano simples com duas sessões para iniciar uma rotina de cuidado sem complicar.',
-      details: isEn ? ['1x Foot Massage', '1x Classic Massage', 'Aromatherapy bonus', 'Separate appointments'] : ['1x Massagem nos Pés', '1x Massagem Clássica', 'Bônus aromaterapia', 'Agendamentos separados'],
+      details: isEn ? ['1x Foot Massage', '1x full-body Classic Massage', 'Aromatherapy bonus', 'Separate appointments'] : ['1x Massagem nos Pés', '1x Massagem Clássica no corpo todo', 'Bônus aromaterapia', 'Agendamentos separados'],
       tag: isEn ? 'RELAX' : 'RELAX',
       icon: 'package',
     },
@@ -303,8 +303,8 @@ const getData = (lang: Lang) => {
       price: 297,
       fullPrice: 334,
       savings: 37,
-      desc: isEn ? 'One session for body pain and another for mental rest and sensory relaxation.' : 'Uma sessão para aliviar dores do corpo e outra para descanso mental e relaxamento sensorial.',
-      details: isEn ? ['1x Classic Massage', '1x Sensory Massage', 'Body and mind balance', 'Separate appointments'] : ['1x Massagem Clássica', '1x Massagem Sensorial', 'Equilíbrio corpo e mente', 'Agendamentos separados'],
+      desc: isEn ? 'One full-body classic session and one sensory session with gradual, clear and complete experience.' : 'Uma sessão clássica no corpo todo e uma sensorial com experiência gradual, clara e completa.',
+      details: isEn ? ['1x full-body Classic Massage', '1x Sensory Massage', 'Relaxing base plus sensory finish', 'Separate appointments'] : ['1x Massagem Clássica no corpo todo', '1x Massagem Sensorial', 'Base relaxante com finalização sensorial', 'Agendamentos separados'],
       tag: isEn ? 'SLEEP WELL' : 'DURMA BEM',
       icon: 'package',
       highlight: true,
@@ -317,18 +317,18 @@ const getData = (lang: Lang) => {
       price: 637,
       fullPrice: 721,
       savings: 84,
-      desc: isEn ? 'Three premium appointments for a full month of body care and deep relaxation.' : 'Três atendimentos premium para um mês completo de cuidado corporal e relaxamento profundo.',
-      details: isEn ? ['1x Classic Massage', '1x Fusion Experience', '1x Nuru Massage', 'Premium monthly routine'] : ['1x Massagem Clássica', '1x Experiência Fusion', '1x Massagem Nuru', 'Rotina mensal premium'],
+      desc: isEn ? 'Three premium appointments to experience classic relaxation, Fusion and Nuru in a monthly routine.' : 'Três atendimentos premium para viver a clássica relaxante, Fusion e Nuru em uma rotina mensal.',
+      details: isEn ? ['1x full-body Classic Massage', '1x Fusion Experience', '1x Nuru Massage', 'Complete premium routine'] : ['1x Massagem Clássica no corpo todo', '1x Experiência Fusion', '1x Massagem Nuru', 'Rotina premium completa'],
       tag: isEn ? 'VIP MONTH' : 'TRATAMENTO VIP',
       icon: 'star',
     },
   ];
 
   const extras: ExtraItem[] = [
-    { id: 'more_time', price: 77, icon: 'clock', label: isEn ? 'Extended Time (+30m)' : 'Mais 30 Minutos', desc: isEn ? 'Extends the session for a calmer rhythm, more complete relaxation and less rush.' : 'Estende a sessão para um ritmo mais calmo, relaxamento mais completo e sem pressa.' },
-    { id: 'aroma', price: 17, icon: 'sparkles', label: isEn ? 'Aromatherapy' : 'Aromaterapia', desc: isEn ? 'Relaxing aromatic oils to make the room softer and the body more receptive.' : 'Óleos aromáticos relaxantes para deixar o ambiente mais leve e o corpo mais receptivo.' },
-    { id: 'pain_relief', price: 17, icon: 'shield', label: isEn ? 'Extra Pain Focus' : 'Alívio de Dores Fortes', desc: isEn ? 'Extra focus on locked areas such as neck, shoulders, lower back or legs.' : 'Foco extra em áreas travadas como pescoço, ombros, lombar ou pernas.' },
-    { id: 'hair_trim', price: 57, icon: 'scissors', label: isEn ? 'Trim Extra' : 'Aparo de Pelos', desc: isEn ? 'Body hair maintenance in selected areas before or after the care session.' : 'Manutenção dos pelos em áreas escolhidas antes ou depois do atendimento.' },
+    { id: 'more_time', price: 77, icon: 'clock', label: isEn ? 'Extended Time (+30m)' : 'Mais 30 Minutos', desc: isEn ? 'Adds time to slow the rhythm, deepen the massage and avoid a rushed ending.' : 'Adiciona tempo para desacelerar o ritmo, aprofundar a massagem e evitar uma finalização apressada.' },
+    { id: 'aroma', price: 17, icon: 'sparkles', label: isEn ? 'Aromatherapy' : 'Aromaterapia', desc: isEn ? 'Aromatic oils and a calmer atmosphere to make breathing, touch and relaxation more immersive.' : 'Óleos aromáticos e ambiente mais calmo para tornar respiração, toque e relaxamento mais imersivos.' },
+    { id: 'pain_relief', price: 17, icon: 'shield', label: isEn ? 'Extra Pain Focus' : 'Alívio de Dores Fortes', desc: isEn ? 'Extra attention to tense areas with firmer, slower pressure according to your comfort.' : 'Atenção extra em áreas tensas com pressão mais firme e lenta, sempre conforme seu conforto.' },
+    { id: 'hair_trim', price: 57, icon: 'scissors', label: isEn ? 'Trim Extra' : 'Aparo de Pelos', desc: isEn ? 'Careful body hair trim in selected areas for a cleaner, lighter feeling before or after the session.' : 'Aparo cuidadoso dos pelos em áreas escolhidas para uma sensação mais limpa e leve antes ou depois da sessão.' },
   ];
 
   return {
@@ -338,8 +338,8 @@ const getData = (lang: Lang) => {
     extras,
     categories: [
       { id: 'express' as Category, title: isEn ? 'Quick relief' : 'Alívio rápido', desc: isEn ? 'Short, objective sessions.' : 'Sessões curtas e objetivas.' },
-      { id: 'relax' as Category, title: isEn ? 'Relax and recover' : 'Relaxar e recuperar', desc: isEn ? 'For tension, fatigue and body heaviness.' : 'Para tensão, cansaço e corpo pesado.' },
-      { id: 'premium' as Category, title: isEn ? 'Premium experiences' : 'Experiências premium', desc: isEn ? 'More complete and immersive care.' : 'Cuidado mais completo e imersivo.' },
+      { id: 'relax' as Category, title: isEn ? 'Relax and recover' : 'Relaxar e recuperar', desc: isEn ? 'Full-body relaxing base, muscle relief and recovery.' : 'Base relaxante no corpo todo, alívio muscular e recuperação.' },
+      { id: 'premium' as Category, title: isEn ? 'Premium experiences' : 'Experiências premium', desc: isEn ? 'Sensory sessions with clear flow, consent and complete finish.' : 'Sessões sensoriais com fluxo claro, consentimento e finalização completa.' },
       { id: 'care' as Category, title: isEn ? 'Personal care' : 'Cuidados pessoais', desc: isEn ? 'Simple body care add-ons.' : 'Cuidados simples para o corpo.' },
     ],
     rules: [
@@ -624,7 +624,7 @@ const ServiceCard = memo(
     <button
       type="button"
       onClick={onOpen}
-      className={`mobile-card relative flex h-full min-h-[190px] min-w-0 flex-col rounded-[1.65rem] border p-5 text-left transition-all hover:-translate-y-0.5 ${
+      className={`mobile-card relative flex h-full min-h-[188px] min-w-0 flex-col rounded-[1.65rem] border p-4 text-left sm:p-5 transition-all hover:-translate-y-0.5 ${
         selected
           ? item.type === 'pack'
             ? 'border-amber-500 bg-amber-500/10 shadow-lg shadow-amber-900/10'
@@ -635,7 +635,7 @@ const ServiceCard = memo(
       }`}
     >
       {item.highlight && !selected && <span className="absolute right-4 top-4 rounded-full bg-blue-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">Popular</span>}
-      <div className="flex min-w-0 items-start gap-4 pr-12">
+      <div className="flex min-w-0 items-start gap-3 pr-9 sm:gap-4 sm:pr-12">
         <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${item.type === 'pack' ? 'border-amber-500/25 bg-amber-500/10 text-amber-400' : isDark ? 'border-white/10 bg-white/10 text-zinc-200' : 'border-slate-200 bg-slate-50 text-slate-700'}`}>
           <Icon name={item.icon} size={23} />
         </span>
@@ -1410,13 +1410,13 @@ export default function App() {
 
       {step !== 4 && (
         <div className={`fixed inset-x-0 bottom-0 z-40 border-t p-4 sticky-safe backdrop-blur-xl ${isDark ? 'border-white/10 bg-[#0e1117]/92' : 'border-slate-200 bg-white/92'}`}>
-          <div className="mx-auto flex max-w-7xl items-center gap-3">
-            {step > 0 && <Button variant="outline" onClick={handleBackStep} icon="left" className="shrink-0 px-4">{T.back}</Button>}
-            <div className="min-w-0 flex-1">
-              <p className={`safe-text text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{booking.cart.length ? `${booking.cart.length} ${lang === 'en' ? 'selected' : 'selecionado(s)'}` : T.toastNeedService}</p>
-              <p className={`safe-text mt-1 text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{step === 3 ? `${T.total}: ${formatMoney(financials.total, lang)}` : lang === 'en' ? 'Price appears only in the final review.' : 'Valor somente no resumo final.'}</p>
-            </div>
-            <Button variant={step === 3 ? 'whatsapp' : 'primary'} onClick={handleNextStep} icon={step === 3 ? 'message' : 'right'} className="min-w-[136px]">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+            {step > 0 ? (
+              <Button variant="outline" onClick={handleBackStep} icon="left" className="shrink-0 px-4">{T.back}</Button>
+            ) : (
+              <span className="hidden sm:block" />
+            )}
+            <Button variant={step === 3 ? 'whatsapp' : 'primary'} onClick={handleNextStep} icon={step === 3 ? 'message' : 'right'} className="min-w-[148px]">
               {step === 3 ? T.finish : T.continue}
             </Button>
           </div>
@@ -1595,8 +1595,8 @@ function SummaryPanel({
         </>
       ) : (
         <div className={`rounded-2xl p-4 ${isDark ? 'bg-blue-600/10 text-blue-100' : 'bg-blue-50 text-blue-900'}`}>
-          <p className="safe-text text-sm font-semibold">{lang === 'en' ? 'The price appears only in the final review.' : 'O valor aparece somente no resumo final.'}</p>
-          <p className={`safe-text mt-1 text-xs leading-relaxed ${isDark ? 'text-blue-100/70' : 'text-blue-900/65'}`}>{lang === 'en' ? 'First choose the session, place and time. Then review the total before sending to WhatsApp.' : 'Primeiro escolha sessão, local e horário. Depois revise o total antes de enviar para o WhatsApp.'}</p>
+          <p className="safe-text text-sm font-semibold">{lang === 'en' ? 'Follow the steps and keep the flow simple.' : 'Siga as etapas e mantenha o fluxo simples.'}</p>
+          <p className={`safe-text mt-1 text-xs leading-relaxed ${isDark ? 'text-blue-100/70' : 'text-blue-900/65'}`}>{lang === 'en' ? 'Session, place, date and final review before sending on WhatsApp.' : 'Sessão, local, data e revisão final antes de enviar pelo WhatsApp.'}</p>
         </div>
       )}
     </div>
