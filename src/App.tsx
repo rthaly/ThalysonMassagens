@@ -2784,76 +2784,31 @@ function ThalysonBookingApp() {
 
 
   const handleToggleCoupon = useCallback((coupon) => {
-
-    try {
-
-      const couponKey = makeCouponKey(coupon);
-
-      const safeCoupon = resolveCoupon(couponKey, availableCoupons);
-
-      if (!safeCoupon) {
-
-        addToast(T.toast_coupon_invalid, 'error');
-
-        vibrate([30, 30]);
-
-        return;
-
-      }
-
-
-
-      const nextKey = makeCouponKey(safeCoupon);
-
-      setBooking(prev => {
-
-        const safePrev = prev && typeof prev === 'object' ? prev : {};
-
-        const currentKey = makeCouponKey(safePrev.appliedCoupon);
-
-        return {
-
-          ...safePrev,
-
-          type: safePrev.type || 'single',
-
-          cart: Array.isArray(safePrev.cart) ? safePrev.cart : [],
-
-          extras: safePrev.extras && typeof safePrev.extras === 'object' ? safePrev.extras : {},
-
-          address: safePrev.address && typeof safePrev.address === 'object'
-
-            ? safePrev.address
-
-            : { cep: '', street: '', number: '', district: '', city: '', comp: '', placeName: '' },
-
-          payment: safePrev.payment || '',
-
-          termsAccepted: !!safePrev.termsAccepted,
-
-          mediaAllowed: !!safePrev.mediaAllowed,
-
-          bookingId: safePrev.bookingId || `BOOK_${Date.now()}`,
-
-          appliedCoupon: currentKey === nextKey ? null : nextKey
-
-        };
-
-      });
-
-      vibrate(30);
-
-    } catch (error) {
-
-      console.error('Erro ao alternar cupom:', error);
-
+  try {
+    const safeCoupon = normalizeCoupon(coupon);
+    if (!safeCoupon) {
       addToast(T.toast_coupon_invalid, 'error');
-
       vibrate([30, 30]);
-
+      return;
     }
 
-  }, [addToast, availableCoupons, T.toast_coupon_invalid]);
+    setBooking(prev => {
+      if (!prev || typeof prev !== 'object') return prev;
+      const currentKey = makeCouponKey(prev.appliedCoupon);
+      const nextKey    = makeCouponKey(safeCoupon);
+      return {
+        ...prev,
+        appliedCoupon: currentKey === nextKey ? null : nextKey,
+      };
+    });
+
+    vibrate(30);
+  } catch (error) {
+    console.error('Erro ao alternar cupom:', error);
+    addToast(T.toast_coupon_invalid, 'error');
+    vibrate([30, 30]);
+  }
+}, [addToast, T.toast_coupon_invalid]);   // ← booking removido das deps
 
 
 
