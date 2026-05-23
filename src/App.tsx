@@ -224,7 +224,10 @@ const formatMoney = (val, lang) => {
 };
 
 // Cupons podem vir do localStorage/cache. Esta camada impede travamento por cupom antigo, duplicado ou incompleto.
-const makeCouponKey = (coupon) => String(coupon?.code || coupon?.id || '').trim().toUpperCase();
+const makeCouponKey = (coupon) => {
+  if (typeof coupon === 'string') return coupon.trim().toUpperCase();
+  return String(coupon?.code || coupon?.id || '').trim().toUpperCase();
+};
 
 const normalizeCoupon = (coupon) => {
   if (!coupon || typeof coupon !== 'object') return null;
@@ -249,6 +252,26 @@ const normalizeCouponList = (coupons = []) => {
     map.set(makeCouponKey(safe), safe);
   });
   return Array.from(map.values());
+};
+
+const WELCOME_COUPON = Object.freeze({
+  id: 'welcome',
+  val: 10,
+  title: 'BEMVINDO10',
+  code: 'BEMVINDO10'
+});
+
+const createWelcomeCoupon = () => normalizeCoupon(WELCOME_COUPON);
+
+const normalizeUsedCouponKeys = (usedCoupons = []) => {
+  if (!Array.isArray(usedCoupons)) return [];
+  return Array.from(new Set(usedCoupons.map(makeCouponKey).filter(Boolean)));
+};
+
+const hasCouponInList = (coupons, coupon) => {
+  const key = makeCouponKey(coupon);
+  if (!key) return false;
+  return normalizeCouponList(coupons).some(item => makeCouponKey(item) === key);
 };
 
 const isWebViewUserAgent = () => {
@@ -1118,7 +1141,7 @@ export default function App() {
             name: parsed.user.name || '',
             xp: typeof parsed.user.xp === 'number' ? parsed.user.xp : 0,
             coupons: normalizeCouponList(parsed.user.coupons),
-            usedCoupons: Array.isArray(parsed.user.usedCoupons) ? Array.from(new Set(parsed.user.usedCoupons.map(makeCouponKey).filter(Boolean))) : [],
+            usedCoupons: normalizeUsedCouponKeys(parsed.user.usedCoupons),
             hasSeenWelcome: !!parsed.user.hasSeenWelcome,
             ordersCount: typeof parsed.user.ordersCount === 'number' ? Math.max(parsed.user.ordersCount, 92) : 92,
             lastActivity: parsed.user.lastActivity || new Date().toISOString()
@@ -1314,7 +1337,7 @@ export default function App() {
   };
 
   const availableCoupons = useMemo(() => {
-    const used = new Set((user.usedCoupons || []).map(makeCouponKey));
+    const used = new Set(normalizeUsedCouponKeys(user.usedCoupons));
     return normalizeCouponList(user.coupons).filter(coupon => !used.has(makeCouponKey(coupon)));
   }, [user.coupons, user.usedCoupons]);
 
@@ -1322,23 +1345,80 @@ export default function App() {
   const selectedCouponKey = useMemo(() => makeCouponKey(selectedCouponForView), [selectedCouponForView]);
 
   const handleToggleCoupon = useCallback((coupon) => {
-    const safeCoupon = normalizeCoupon(coupon);
-    if (!safeCoupon) {
+    try {
+      const safeCoupon = normalizeCoupon(coupon);
+      if (!safeCoupon) {
+        addToast(T.toast_coupon_invalid, 'error');
+        vibrate([30, 30]);
+        return;
+      }
+
+      setBooking(prev => {
+        const safePrev = prev && typeof prev === 'object' ? prev : booking;
+        const currentKey = makeCouponKey(safePrev.appliedCoupon);
+        const nextKey = makeCouponKey(safeCoupon);
+        return {
+          ...safePrev,
+          cart: Array.isArray(safePrev.cart) ? safePrev.cart : [],
+          extras: safePrev.extras && typeof safePrev.extras === 'object' ? safePrev.extras : {},
+          address: safePrev.address && typeof safePrev.address === 'object' ? safePrev.address : booking.address,
+          appliedCoupon: currentKey === nextKey ? null : safeCoupon
+        };
+      });
+      vibrate(30);
+    } catch (error) {
+      console.error('Erro ao alternar cupom:', error);
       addToast(T.toast_coupon_invalid, 'error');
       vibrate([30, 30]);
-      return;
     }
+  }, [addToast, T.toast_coupon_invalid, booking]);
 
-    setBooking(prev => {
-      const currentKey = makeCouponKey(normalizeCoupon(prev.appliedCoupon));
-      const nextKey = makeCouponKey(safeCoupon);
-      return {
-        ...prev,
-        appliedCoupon: currentKey === nextKey ? null : safeCoupon
-      };
-    });
-    vibrate(30);
-  }, [addToast, T.toast_coupon_invalid]);
+  const handleClaimWelcomeCoupon = useCallback(() => {
+    try {
+      const coupon = createWelcomeCoupon();
+      if (!coupon) {
+        addToast(T.toast_coupon_invalid, 'error');
+        return;
+      }
+
+      setWelcomePopup(false);
+      vibrate([50, 100]);
+
+      setUser(prev => {
+        const safePrev = prev && typeof prev === 'object' ? prev : user;
+        const currentCoupons = normalizeCouponList(safePrev.coupons);
+        const nextCoupons = hasCouponInList(currentCoupons, coupon)
+          ? currentCoupons
+          : normalizeCouponList([...currentCoupons, coupon]);
+
+        return {
+          ...safePrev,
+          coupons: nextCoupons,
+          usedCoupons: normalizeUsedCouponKeys(safePrev.usedCoupons),
+          hasSeenWelcome: true
+        };
+      });
+
+      // O resgate apenas libera o cupom. A aplicação fica para a etapa de resumo,
+      // evitando travamento quando o carrinho ainda está vazio ou o cache antigo está carregando.
+      setBooking(prev => {
+        const safePrev = prev && typeof prev === 'object' ? prev : booking;
+        return {
+          ...safePrev,
+          cart: Array.isArray(safePrev.cart) ? safePrev.cart : [],
+          extras: safePrev.extras && typeof safePrev.extras === 'object' ? safePrev.extras : {},
+          address: safePrev.address && typeof safePrev.address === 'object' ? safePrev.address : booking.address,
+          appliedCoupon: null
+        };
+      });
+
+      addToast(T.toast_coupon_success);
+    } catch (error) {
+      console.error('Erro ao resgatar BEMVINDO10:', error);
+      setWelcomePopup(false);
+      addToast(T.toast_coupon_invalid, 'error');
+    }
+  }, [addToast, T.toast_coupon_invalid, T.toast_coupon_success, booking, user]);
 
   const isStepValid = useCallback(() => {
     if (step === 0) return booking.cart.length > 0;
@@ -1415,7 +1495,7 @@ export default function App() {
     vibrate([100, 50, 100, 50, 100]);
     const selectedCoupon = normalizeCoupon(booking.appliedCoupon);
     let updatedCoupons = normalizeCouponList(user.coupons);
-    let updatedHistory = Array.from(new Set((user.usedCoupons || []).map(makeCouponKey).filter(Boolean)));
+    let updatedHistory = normalizeUsedCouponKeys(user.usedCoupons);
     if (selectedCoupon && selectedCoupon.id !== 'manual') {
       const selectedKey = makeCouponKey(selectedCoupon);
       if (!updatedHistory.includes(selectedKey)) updatedHistory.push(selectedKey);
@@ -2461,19 +2541,7 @@ export default function App() {
             <Button
               full size="xl"
               ariaLabel="Resgatar cupom de boas-vindas"
-              onClick={() => {
-                setWelcomePopup(false);
-                vibrate([50, 100]);
-                const c = normalizeCoupon({ id: 'welcome', val: 10, title: 'BEMVINDO10', code: 'BEMVINDO10' });
-                if (!c) return;
-                setUser(u => ({
-                  ...u,
-                  hasSeenWelcome: true,
-                  coupons: normalizeCouponList([...u.coupons, c])
-                }));
-                setBooking(b => ({ ...b, appliedCoupon: c }));
-                addToast(T.toast_coupon_success);
-              }}
+              onClick={handleClaimWelcomeCoupon}
             >
               {T.get_coupon}
             </Button>
