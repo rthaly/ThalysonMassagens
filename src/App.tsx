@@ -263,6 +263,26 @@ const WELCOME_COUPON = Object.freeze({
 
 const createWelcomeCoupon = () => normalizeCoupon(WELCOME_COUPON);
 
+// Resolve o cupom a partir de objeto antigo, código salvo ou lista atual do usuário.
+// A partir desta versão, o agendamento salva somente o código do cupom para evitar
+// travamentos causados por objetos antigos/corrompidos vindos do localStorage.
+const resolveCoupon = (couponOrCode, couponList = []) => {
+  const direct = normalizeCoupon(couponOrCode);
+  if (direct) return direct;
+
+  const key = makeCouponKey(couponOrCode);
+  if (!key) return null;
+
+  const fromList = normalizeCouponList(couponList).find(item => makeCouponKey(item) === key);
+  if (fromList) return fromList;
+
+  // Compatibilidade para usuários que clicaram no BEMVINDO10 em versões anteriores
+  // e ficaram com apenas o código salvo no navegador.
+  if (key === 'BEMVINDO10') return createWelcomeCoupon();
+
+  return null;
+};
+
 const normalizeUsedCouponKeys = (usedCoupons = []) => {
   if (!Array.isArray(usedCoupons)) return [];
   return Array.from(new Set(usedCoupons.map(makeCouponKey).filter(Boolean)));
@@ -1061,10 +1081,64 @@ const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, lang, isPrem
   );
 });
 
+
+// ==================================================================================
+// RUNTIME SAFETY BOUNDARY
+// ==================================================================================
+class RuntimeErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, info) {
+    console.error('Erro capturado no app Thalyson:', error, info);
+  }
+
+  resetApp = () => {
+    try {
+      localStorage.removeItem(CONFIG.STORAGE_KEY);
+    } catch (error) {
+      console.error('Não foi possível limpar o cache do app:', error);
+    }
+    if (typeof window !== 'undefined') window.location.reload();
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen w-full bg-[#11141a] text-white flex items-center justify-center p-6 font-sans">
+          <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-white/5 p-7 shadow-2xl">
+            <div className="w-12 h-12 rounded-2xl bg-red-500/15 text-red-300 flex items-center justify-center mb-5" aria-hidden="true">
+              <span className="text-2xl">!</span>
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight mb-3">O app precisou reiniciar</h1>
+            <p className="text-sm leading-relaxed text-zinc-300 mb-6">
+              Encontrei um dado antigo salvo no navegador que quebrou a tela. Toque no botão abaixo para limpar apenas o cache deste agendamento e abrir o app novamente.
+            </p>
+            <button
+              type="button"
+              onClick={this.resetApp}
+              className="w-full h-13 min-h-[52px] rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors"
+            >
+              Restaurar agendamento
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // ==================================================================================
 // MAIN APP
 // ==================================================================================
-export default function App() {
+function ThalysonBookingApp() {
   const [loading, setLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -1164,7 +1238,7 @@ export default function App() {
                 comp: sanitizeInput(parsed.bookingDraft.address?.comp || ''),
                 placeName: sanitizeInput(parsed.bookingDraft.address?.placeName || '')
               },
-              appliedCoupon: normalizeCoupon(parsed.bookingDraft.appliedCoupon)
+              appliedCoupon: makeCouponKey(parsed.bookingDraft.appliedCoupon) || null
             };
             if (typeof parsed.step === 'number' && parsed.step >= 0 && parsed.step <= 4) loadedStep = parsed.step;
           }
@@ -1184,7 +1258,7 @@ export default function App() {
       try {
         const save = {
           user: { ...user, lastActivity: new Date().toISOString() },
-          bookingDraft: { ...booking, appliedCoupon: normalizeCoupon(booking.appliedCoupon) },
+          bookingDraft: { ...booking, appliedCoupon: makeCouponKey(booking.appliedCoupon) || null },
           step
         };
         const s = JSON.stringify(save);
@@ -1298,7 +1372,7 @@ export default function App() {
     const duration = baseDuration + addedTime;
     const isRush = RUSH_HOURS.includes(booking.time || '');
     const rushFee = (isRush && booking.locationType !== 'motel') ? RUSH_FEE : 0;
-    const selectedCoupon = normalizeCoupon(booking.appliedCoupon);
+    const selectedCoupon = resolveCoupon(booking.appliedCoupon, user.coupons);
     const disc = selectedCoupon ? Math.min(sub, Math.max(0, Number(selectedCoupon.val) || 0)) : 0;
     let running = Math.max(0, sub - disc);
     let mediaDisc = 0;
@@ -1306,7 +1380,7 @@ export default function App() {
     let pixDisc = 0;
     if (booking.payment === 'pix') pixDisc = Math.ceil(running * 0.03);
     return { sub, disc, pixDisc, mediaDisc, rushFee, total: Math.max(0, running - pixDisc) + rushFee, duration };
-  }, [booking.cart, booking.extras, booking.appliedCoupon, DATA.extras, booking.payment, booking.mediaAllowed, booking.time, booking.locationType]);
+  }, [booking.cart, booking.extras, booking.appliedCoupon, DATA.extras, booking.payment, booking.mediaAllowed, booking.time, booking.locationType, user.coupons]);
 
   const estimatedXP = useMemo(() => {
     const isPack = booking.cart.some(i => i.type === 'pack');
@@ -1341,8 +1415,8 @@ export default function App() {
     return normalizeCouponList(user.coupons).filter(coupon => !used.has(makeCouponKey(coupon)));
   }, [user.coupons, user.usedCoupons]);
 
-  const selectedCouponForView = useMemo(() => normalizeCoupon(booking.appliedCoupon), [booking.appliedCoupon]);
-  const selectedCouponKey = useMemo(() => makeCouponKey(selectedCouponForView), [selectedCouponForView]);
+  const selectedCouponForView = useMemo(() => resolveCoupon(booking.appliedCoupon, user.coupons), [booking.appliedCoupon, user.coupons]);
+  const selectedCouponKey = useMemo(() => makeCouponKey(booking.appliedCoupon), [booking.appliedCoupon]);
 
   const handleToggleCoupon = useCallback((coupon) => {
     try {
@@ -1362,7 +1436,7 @@ export default function App() {
           cart: Array.isArray(safePrev.cart) ? safePrev.cart : [],
           extras: safePrev.extras && typeof safePrev.extras === 'object' ? safePrev.extras : {},
           address: safePrev.address && typeof safePrev.address === 'object' ? safePrev.address : booking.address,
-          appliedCoupon: currentKey === nextKey ? null : safeCoupon
+          appliedCoupon: currentKey === nextKey ? null : nextKey
         };
       });
       vibrate(30);
@@ -1385,7 +1459,7 @@ export default function App() {
       vibrate([50, 100]);
 
       setUser(prev => {
-        const safePrev = prev && typeof prev === 'object' ? prev : user;
+        const safePrev = prev && typeof prev === 'object' ? prev : { name: '', xp: 0, coupons: [], usedCoupons: [], hasSeenWelcome: false, ordersCount: 92, lastActivity: new Date().toISOString() };
         const currentCoupons = normalizeCouponList(safePrev.coupons);
         const nextCoupons = hasCouponInList(currentCoupons, coupon)
           ? currentCoupons
@@ -1399,18 +1473,8 @@ export default function App() {
         };
       });
 
-      // O resgate apenas libera o cupom. A aplicação fica para a etapa de resumo,
-      // evitando travamento quando o carrinho ainda está vazio ou o cache antigo está carregando.
-      setBooking(prev => {
-        const safePrev = prev && typeof prev === 'object' ? prev : booking;
-        return {
-          ...safePrev,
-          cart: Array.isArray(safePrev.cart) ? safePrev.cart : [],
-          extras: safePrev.extras && typeof safePrev.extras === 'object' ? safePrev.extras : {},
-          address: safePrev.address && typeof safePrev.address === 'object' ? safePrev.address : booking.address,
-          appliedCoupon: null
-        };
-      });
+      // O resgate agora NÃO altera o objeto booking.
+      // Isso evita re-render pesado e qualquer conflito com carrinho vazio, etapa atual ou cache antigo.
 
       addToast(T.toast_coupon_success);
     } catch (error) {
@@ -1418,7 +1482,7 @@ export default function App() {
       setWelcomePopup(false);
       addToast(T.toast_coupon_invalid, 'error');
     }
-  }, [addToast, T.toast_coupon_invalid, T.toast_coupon_success, booking, user]);
+  }, [addToast, T.toast_coupon_invalid, T.toast_coupon_success]);
 
   const isStepValid = useCallback(() => {
     if (step === 0) return booking.cart.length > 0;
@@ -1478,7 +1542,7 @@ export default function App() {
       return ex ? `➕ ${ex.label}` : '';
     }).filter(Boolean).join('\n');
     let prices = `💵 *${isEn ? 'Subtotal' : 'Subtotal'}:* ${formatMoney(f.sub, lang)}`;
-    const selectedCoupon = normalizeCoupon(booking.appliedCoupon);
+    const selectedCoupon = resolveCoupon(booking.appliedCoupon, user.coupons);
     if (f.disc > 0 && selectedCoupon) prices += `\n🎁 *${selectedCoupon.code}:* -${formatMoney(f.disc, lang)}`;
     if (f.mediaDisc > 0) prices += `\n📸 *${isEn ? 'Portfolio' : 'Portfólio'}:* -${formatMoney(f.mediaDisc, lang)}`;
     if (f.pixDisc > 0) prices += `\n💸 *PIX (3%):* -${formatMoney(f.pixDisc, lang)}`;
@@ -1493,7 +1557,7 @@ export default function App() {
 
   const finishBooking = () => {
     vibrate([100, 50, 100, 50, 100]);
-    const selectedCoupon = normalizeCoupon(booking.appliedCoupon);
+    const selectedCoupon = resolveCoupon(booking.appliedCoupon, user.coupons);
     let updatedCoupons = normalizeCouponList(user.coupons);
     let updatedHistory = normalizeUsedCouponKeys(user.usedCoupons);
     if (selectedCoupon && selectedCoupon.id !== 'manual') {
@@ -2579,5 +2643,13 @@ export default function App() {
         </div>
       )}
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <RuntimeErrorBoundary>
+      <ThalysonBookingApp />
+    </RuntimeErrorBoundary>
   );
 }
