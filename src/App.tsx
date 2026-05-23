@@ -197,8 +197,8 @@ const getData = (lang: Lang) => {
       icon: 'user',
       tag: isEn ? 'FOOT RELIEF' : 'ALÍVIO NOS PÉS',
       title: isEn ? 'Foot Massage' : 'Massagem nos Pés',
-      desc: isEn ? 'Focused relief for tired feet.' : 'Alívio direto para pés cansados e tensão acumulada.',
-      details: isEn ? ['Reflexology', 'Pressure points', 'Light finish'] : ['Reflexologia nos pés', 'Pontos de tensão', 'Finalização leve'],
+      desc: isEn ? 'Focused care for tired feet, swelling and end-of-day heaviness.' : 'Cuidado focado para pés cansados, inchaço e sensação de peso no fim do dia.',
+      details: isEn ? ['Foot reflexology', 'Pressure points', 'Ankle mobility', 'Light relaxing finish'] : ['Reflexologia nos pés', 'Pressão em pontos de tensão', 'Mobilidade nos tornozelos', 'Finalização relaxante leve'],
     },
     {
       id: 'maos',
@@ -208,8 +208,8 @@ const getData = (lang: Lang) => {
       icon: 'user',
       tag: isEn ? 'HAND RELIEF' : 'ALÍVIO NAS MÃOS',
       title: isEn ? 'Hand Massage' : 'Massagem nas Mãos',
-      desc: isEn ? 'Release tension from typing and manual work.' : 'Para aliviar tensão nas mãos, dedos e punhos.',
-      details: isEn ? ['Finger mobility', 'Palm massage', 'Wrist relief'] : ['Mobilidade dos dedos', 'Massagem na palma', 'Alívio nos punhos'],
+      desc: isEn ? 'Relieves hands, wrists and forearms after repetitive work or training.' : 'Alivia mãos, punhos e antebraços após trabalho repetitivo, treino ou uso excessivo.',
+      details: isEn ? ['Finger mobility', 'Palm pressure', 'Wrist relief', 'Forearm release'] : ['Mobilidade dos dedos', 'Pressão na palma', 'Alívio nos punhos', 'Liberação dos antebraços'],
     },
     {
       id: 'relaxante',
@@ -219,8 +219,8 @@ const getData = (lang: Lang) => {
       icon: 'sun',
       tag: isEn ? 'RELAX' : 'RELAXAMENTO',
       title: isEn ? 'Classic Massage' : 'Massagem Clássica',
-      desc: isEn ? 'For stiff backs, heavy shoulders and better sleep.' : 'Para costas travadas, ombros pesados e sono melhor.',
-      details: isEn ? ['Manual relief', 'Relaxing rhythm', 'Therapeutic focus'] : ['Massagem manual', 'Ritmo relaxante', 'Foco terapêutico'],
+      desc: isEn ? 'A balanced session for stiff backs, heavy shoulders, stress and better sleep.' : 'Sessão equilibrada para costas travadas, ombros pesados, estresse e melhora do sono.',
+      details: isEn ? ['Back and shoulders', 'Relaxing rhythm', 'Therapeutic pressure', 'Breathing and body calm'] : ['Costas e ombros', 'Ritmo relaxante', 'Pressão terapêutica', 'Respiração e desaceleração corporal'],
       highlight: true,
     },
     {
@@ -231,8 +231,8 @@ const getData = (lang: Lang) => {
       icon: 'shield',
       tag: isEn ? 'RECOVERY' : 'RECUPERAÇÃO',
       title: isEn ? 'Sports Massage' : 'Massagem para Atletas',
-      desc: isEn ? 'Firm massage for people who train hard.' : 'Pegada firme para quem treina pesado e sente dores.',
-      details: isEn ? ['Vigorous friction', 'Myofascial release', 'Mobility stretches'] : ['Fricção mais firme', 'Liberação miofascial', 'Alongamentos leves'],
+      desc: isEn ? 'Firm recovery care for people who train, work standing or carry muscle overload.' : 'Cuidado firme de recuperação para quem treina, trabalha em pé ou sente sobrecarga muscular.',
+      details: isEn ? ['Firm pressure', 'Myofascial release', 'Legs and back focus', 'Mobility stretches'] : ['Pressão mais firme', 'Liberação miofascial', 'Foco em pernas e costas', 'Alongamentos leves'],
     },
     {
       id: 'sensitiva',
@@ -242,8 +242,8 @@ const getData = (lang: Lang) => {
       icon: 'sparkles',
       tag: isEn ? 'SENSORY' : 'SENSORIAL',
       title: isEn ? 'Sensory Massage' : 'Massagem Sensorial',
-      desc: isEn ? 'Soft, immersive touch to reduce anxiety and body tension.' : 'Toques suaves para reduzir ansiedade e tensão corporal.',
-      details: isEn ? ['Soft rhythm', 'Calm environment', 'Gradual relaxation'] : ['Ritmo suave', 'Ambiente calmo', 'Relaxamento gradual'],
+      desc: isEn ? 'A softer, sensory session for anxiety, mental fatigue and accumulated tension.' : 'Sessão mais suave e sensorial para ansiedade, cansaço mental e tensão acumulada.',
+      details: isEn ? ['Soft touch', 'Slow rhythm', 'Calm environment', 'Gradual relaxation'] : ['Toques suaves', 'Ritmo lento', 'Ambiente calmo', 'Relaxamento gradual'],
     },
     {
       id: 'mista',
@@ -253,8 +253,8 @@ const getData = (lang: Lang) => {
       icon: 'heart',
       tag: isEn ? 'COMPLETE' : 'COMPLETA',
       title: isEn ? 'Fusion Experience' : 'Experiência Fusion',
-      desc: isEn ? 'A complete session blending relief and sensory care.' : 'Une alívio muscular e cuidado sensorial em uma sessão completa.',
-      details: isEn ? ['Classic massage', 'Gradual rhythm', 'Full relaxation'] : ['Massagem clássica', 'Ritmo gradual', 'Relaxamento completo'],
+      desc: isEn ? 'A complete experience that starts with muscle relief and evolves into deep relaxation.' : 'Experiência completa que começa com alívio muscular e evolui para relaxamento profundo.',
+      details: isEn ? ['Classic massage base', 'Shoulders and back relief', 'Gradual sensory rhythm', 'Full body relaxation'] : ['Base de massagem clássica', 'Alívio em ombros e costas', 'Ritmo sensorial gradual', 'Relaxamento corporal completo'],
       highlight: true,
     },
     {
@@ -265,8 +265,8 @@ const getData = (lang: Lang) => {
       icon: 'star',
       tag: isEn ? 'PREMIUM' : 'PREMIUM',
       title: isEn ? 'Nuru Massage' : 'Massagem Nuru',
-      desc: isEn ? 'Premium gel-based care with a more immersive experience.' : 'Cuidado premium com gel e experiência mais imersiva.',
-      details: isEn ? ['Initial massage', 'Gel application', 'Deep relaxation'] : ['Massagem inicial', 'Aplicação de gel', 'Relaxamento profundo'],
+      desc: isEn ? 'Premium gel-based session focused on glide, body comfort and deep relaxation.' : 'Sessão premium com gel, focada em deslizamento, conforto corporal e relaxamento profundo.',
+      details: isEn ? ['Initial relaxation', 'Warm gel application', 'Continuous glide', 'Deep relaxing finish'] : ['Relaxamento inicial', 'Aplicação de gel aquecido', 'Deslizamento contínuo', 'Finalização relaxante profunda'],
     },
     {
       id: 'depilacao',
@@ -276,8 +276,8 @@ const getData = (lang: Lang) => {
       icon: 'scissors',
       tag: isEn ? 'CARE' : 'ESTÉTICA',
       title: isEn ? 'Full Body Trim' : 'Aparo de Pelos do Corpo',
-      desc: isEn ? 'Practical aesthetic care for selected areas.' : 'Cuidado estético prático para deixar o corpo mais limpo.',
-      details: isEn ? ['Clipper trim', 'Chosen areas', 'Private session'] : ['Aparo com máquina', 'Áreas escolhidas', 'Sessão privada'],
+      desc: isEn ? 'Practical aesthetic trim for a cleaner, lighter and more comfortable body feel.' : 'Aparo estético prático para uma sensação de corpo mais limpo, leve e confortável.',
+      details: isEn ? ['Clipper trim', 'Selected body areas', 'Careful finish', 'Private session'] : ['Aparo com máquina', 'Áreas do corpo escolhidas', 'Acabamento cuidadoso', 'Sessão privada'],
     },
   ];
 
@@ -290,8 +290,8 @@ const getData = (lang: Lang) => {
       price: 247,
       fullPrice: 284,
       savings: 37,
-      desc: isEn ? 'Two care sessions with a relaxing bonus.' : 'Duas sessões de cuidado com bônus relaxante.',
-      details: isEn ? ['1x Foot Massage', '1x Classic Massage', 'Bonus aromatherapy'] : ['1x Massagem nos Pés', '1x Massagem Clássica', 'Bônus aromaterapia'],
+      desc: isEn ? 'A simple two-session plan for starting a care routine without overthinking.' : 'Plano simples com duas sessões para iniciar uma rotina de cuidado sem complicar.',
+      details: isEn ? ['1x Foot Massage', '1x Classic Massage', 'Aromatherapy bonus', 'Separate appointments'] : ['1x Massagem nos Pés', '1x Massagem Clássica', 'Bônus aromaterapia', 'Agendamentos separados'],
       tag: isEn ? 'RELAX' : 'RELAX',
       icon: 'package',
     },
@@ -303,8 +303,8 @@ const getData = (lang: Lang) => {
       price: 297,
       fullPrice: 334,
       savings: 37,
-      desc: isEn ? 'Body pain relief and mental rest.' : 'Um dia para tirar dores, outro para aliviar a mente.',
-      details: isEn ? ['1x Classic', '1x Sensory', 'Separate appointments'] : ['1x Clássica', '1x Sensorial', 'Agendamentos separados'],
+      desc: isEn ? 'One session for body pain and another for mental rest and sensory relaxation.' : 'Uma sessão para aliviar dores do corpo e outra para descanso mental e relaxamento sensorial.',
+      details: isEn ? ['1x Classic Massage', '1x Sensory Massage', 'Body and mind balance', 'Separate appointments'] : ['1x Massagem Clássica', '1x Massagem Sensorial', 'Equilíbrio corpo e mente', 'Agendamentos separados'],
       tag: isEn ? 'SLEEP WELL' : 'DURMA BEM',
       icon: 'package',
       highlight: true,
@@ -317,18 +317,18 @@ const getData = (lang: Lang) => {
       price: 637,
       fullPrice: 721,
       savings: 84,
-      desc: isEn ? 'Three premium weeks with the most requested sessions.' : 'Três semanas com as experiências mais procuradas.',
-      details: isEn ? ['1x Classic', '1x Fusion', '1x Nuru'] : ['1x Clássica', '1x Fusion', '1x Nuru'],
+      desc: isEn ? 'Three premium appointments for a full month of body care and deep relaxation.' : 'Três atendimentos premium para um mês completo de cuidado corporal e relaxamento profundo.',
+      details: isEn ? ['1x Classic Massage', '1x Fusion Experience', '1x Nuru Massage', 'Premium monthly routine'] : ['1x Massagem Clássica', '1x Experiência Fusion', '1x Massagem Nuru', 'Rotina mensal premium'],
       tag: isEn ? 'VIP MONTH' : 'TRATAMENTO VIP',
       icon: 'star',
     },
   ];
 
   const extras: ExtraItem[] = [
-    { id: 'more_time', price: 77, icon: 'clock', label: isEn ? 'Extended Time (+30m)' : 'Mais 30 Minutos', desc: isEn ? 'More time to enjoy calmly.' : 'Mais tempo para curtir sem pressa.' },
-    { id: 'aroma', price: 17, icon: 'sparkles', label: isEn ? 'Aromatherapy' : 'Aromaterapia', desc: isEn ? 'Relaxing oils for body and room.' : 'Óleos relaxantes no ambiente e no corpo.' },
-    { id: 'pain_relief', price: 17, icon: 'shield', label: isEn ? 'Extra Pain Focus' : 'Alívio de Dores Fortes', desc: isEn ? 'More attention to tense areas.' : 'Atenção extra nas áreas travadas.' },
-    { id: 'hair_trim', price: 57, icon: 'scissors', label: isEn ? 'Trim Extra' : 'Aparo de Pelos', desc: isEn ? 'Maintenance in up to two areas.' : 'Aparo em até duas áreas do corpo.' },
+    { id: 'more_time', price: 77, icon: 'clock', label: isEn ? 'Extended Time (+30m)' : 'Mais 30 Minutos', desc: isEn ? 'Extends the session for a calmer rhythm, more complete relaxation and less rush.' : 'Estende a sessão para um ritmo mais calmo, relaxamento mais completo e sem pressa.' },
+    { id: 'aroma', price: 17, icon: 'sparkles', label: isEn ? 'Aromatherapy' : 'Aromaterapia', desc: isEn ? 'Relaxing aromatic oils to make the room softer and the body more receptive.' : 'Óleos aromáticos relaxantes para deixar o ambiente mais leve e o corpo mais receptivo.' },
+    { id: 'pain_relief', price: 17, icon: 'shield', label: isEn ? 'Extra Pain Focus' : 'Alívio de Dores Fortes', desc: isEn ? 'Extra focus on locked areas such as neck, shoulders, lower back or legs.' : 'Foco extra em áreas travadas como pescoço, ombros, lombar ou pernas.' },
+    { id: 'hair_trim', price: 57, icon: 'scissors', label: isEn ? 'Trim Extra' : 'Aparo de Pelos', desc: isEn ? 'Body hair maintenance in selected areas before or after the care session.' : 'Manutenção dos pelos em áreas escolhidas antes ou depois do atendimento.' },
   ];
 
   return {
@@ -350,7 +350,7 @@ const getData = (lang: Lang) => {
     ],
     text: {
       brand: 'Thalyson Massagens',
-      professional: isEn ? 'Professional massage therapist' : 'Massoterapeuta profissional',
+      professional: isEn ? 'Massage Technician' : 'Técnico em Massagens',
       attended: isEn ? 'men already served' : 'homens já atendidos',
       welcome: isEn ? 'Welcome,' : 'Bem-vindo,',
       welcomeAnon: isEn ? 'allow yourself to slow down.' : 'permita-se relaxar.',
@@ -620,7 +620,7 @@ const SectionHeader = memo(({ eyebrow, title, desc, isDark }: { eyebrow?: string
 SectionHeader.displayName = 'SectionHeader';
 
 const ServiceCard = memo(
-  ({ item, selected, onOpen, isDark, lang }: { item: ServiceItem; selected: boolean; onOpen: () => void; isDark: boolean; lang: Lang }) => (
+  ({ item, selected, onOpen, isDark }: { item: ServiceItem; selected: boolean; onOpen: () => void; isDark: boolean }) => (
     <button
       type="button"
       onClick={onOpen}
@@ -644,13 +644,9 @@ const ServiceCard = memo(
           <span className={`safe-text mt-2 block text-sm leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{item.desc}</span>
         </span>
       </div>
-      <div className="mt-auto flex flex-wrap items-end justify-between gap-3 pt-6">
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-6">
         <span className={`safe-text rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest ${item.type === 'pack' ? 'border-amber-500/25 bg-amber-500/10 text-amber-400' : isDark ? 'border-white/10 bg-white/10 text-zinc-400' : 'border-slate-200 bg-slate-50 text-slate-500'}`}>{item.tag}</span>
-        <span className="min-w-0 text-right">
-          {item.fullPrice && <span className={`safe-text block text-xs line-through ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{formatMoney(item.fullPrice, lang)}</span>}
-          <span className="price-text block text-xl font-semibold">{formatMoney(item.price, lang)}</span>
-          <span className={`safe-text mt-1 block text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{item.min} min</span>
-        </span>
+        <span className={`safe-text rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest ${isDark ? 'bg-white/10 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{item.min} min</span>
       </div>
       {selected && <span className={`absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full ${item.type === 'pack' ? 'bg-amber-500 text-zinc-950' : 'bg-blue-600 text-white'}`}><Icon name="check" size={16} /></span>}
     </button>
@@ -1110,7 +1106,6 @@ export default function App() {
           <section className="space-y-8 animate-fade-up">
             <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-[1fr_380px]">
               <div className={`mobile-card rounded-[2rem] border p-6 sm:p-8 ${isDark ? 'border-white/10 bg-white/5' : 'border-slate-200 bg-white shadow-sm'}`}>
-                <p className="safe-text mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-blue-400">{T.professional}</p>
                 <h2 className={`safe-text text-4xl font-semibold leading-[1.05] sm:text-6xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {T.welcome} <span className="italic text-gradient-blue">{user.name ? user.name.trim().split(' ')[0] : T.welcomeAnon}</span>
                 </h2>
@@ -1122,8 +1117,7 @@ export default function App() {
                   <img src={CONFIG.PROFILE_PHOTO_URL} alt="Foto de Thalyson" className="h-full w-full object-cover" style={{ objectPosition: 'center top' }} />
                 </div>
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent p-5 text-white">
-                  <p className="safe-text text-xs font-semibold uppercase tracking-widest text-blue-200">{T.professional}</p>
-                  <h3 className="safe-text mt-1 text-2xl font-semibold">Thalyson</h3>
+                  <p className="safe-text text-sm font-semibold uppercase tracking-[0.18em] text-blue-100">{T.professional}</p>
                 </div>
               </div>
             </div>
@@ -1162,7 +1156,7 @@ export default function App() {
                       </div>
                       <div className="responsive-grid">
                         {items.map((service) => (
-                          <ServiceCard key={service.id} item={service} selected={booking.cart.some((item) => item.id === service.id)} onOpen={() => setSelectedService(service)} isDark={isDark} lang={lang} />
+                          <ServiceCard key={service.id} item={service} selected={booking.cart.some((item) => item.id === service.id)} onOpen={() => setSelectedService(service)} isDark={isDark} />
                         ))}
                       </div>
                     </section>
@@ -1177,7 +1171,7 @@ export default function App() {
                 </div>
                 <div className="responsive-grid">
                   {data.plans.map((plan) => (
-                    <ServiceCard key={plan.id} item={plan} selected={booking.cart.some((item) => item.id === plan.id)} onOpen={() => setSelectedService(plan)} isDark={isDark} lang={lang} />
+                    <ServiceCard key={plan.id} item={plan} selected={booking.cart.some((item) => item.id === plan.id)} onOpen={() => setSelectedService(plan)} isDark={isDark} />
                   ))}
                 </div>
               </section>
@@ -1238,7 +1232,7 @@ export default function App() {
                 )}
               </div>
             </div>
-            <aside className="hidden lg:block"><SummaryPanel isDark={isDark} lang={lang} T={T} booking={booking} financials={financials} onCopyPix={copyPix} /></aside>
+            <aside className="hidden lg:block"><SummaryPanel isDark={isDark} lang={lang} T={T} booking={booking} financials={financials} extras={data.extras} step={step} onCopyPix={copyPix} /></aside>
           </section>
         )}
 
@@ -1288,7 +1282,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-            <aside className="hidden lg:block"><SummaryPanel isDark={isDark} lang={lang} T={T} booking={booking} financials={financials} onCopyPix={copyPix} /></aside>
+            <aside className="hidden lg:block"><SummaryPanel isDark={isDark} lang={lang} T={T} booking={booking} financials={financials} extras={data.extras} step={step} onCopyPix={copyPix} /></aside>
           </section>
         )}
 
@@ -1302,7 +1296,6 @@ export default function App() {
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {data.extras.map((extra) => {
                     const selected = Boolean(booking.extras[extra.id]);
-                    const price = booking.type === 'pack' ? Math.floor(extra.price * 0.8) : extra.price;
                     return (
                       <button
                         key={extra.id}
@@ -1314,7 +1307,6 @@ export default function App() {
                         <span className="min-w-0 flex-1">
                           <span className="safe-text block text-sm font-semibold">{extra.label}</span>
                           <span className={`safe-text mt-1 block text-xs leading-relaxed ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{extra.desc}</span>
-                          <span className="safe-text mt-2 block text-sm font-semibold text-blue-400">+ {formatMoney(price, lang)}</span>
                         </span>
                         {selected && <Icon name="check" size={18} className="text-blue-400" />}
                       </button>
@@ -1339,7 +1331,7 @@ export default function App() {
                           <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${selected ? 'bg-emerald-500 text-white' : isDark ? 'bg-white/10 text-zinc-300' : 'bg-white text-slate-600'}`}><Icon name="ticket" size={20} /></span>
                           <span>
                             <span className="safe-text block text-sm font-bold uppercase tracking-widest">{coupon.code}</span>
-                            <span className={`safe-text mt-1 block text-xs ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>-{formatMoney(coupon.val, lang)}</span>
+                            <span className={`safe-text mt-1 block text-xs ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{lang === 'en' ? 'Applied in final review' : 'Aplicado no resumo final'}</span>
                           </span>
                         </span>
                         {selected && <Icon name="check" size={18} className="text-emerald-400" />}
@@ -1397,7 +1389,7 @@ export default function App() {
                 </button>
               </div>
             </div>
-            <aside className="hidden lg:block"><SummaryPanel isDark={isDark} lang={lang} T={T} booking={booking} financials={financials} onCopyPix={copyPix} /></aside>
+            <aside className="hidden lg:block"><SummaryPanel isDark={isDark} lang={lang} T={T} booking={booking} financials={financials} extras={data.extras} step={step} onCopyPix={copyPix} /></aside>
           </section>
         )}
 
@@ -1422,7 +1414,7 @@ export default function App() {
             {step > 0 && <Button variant="outline" onClick={handleBackStep} icon="left" className="shrink-0 px-4">{T.back}</Button>}
             <div className="min-w-0 flex-1">
               <p className={`safe-text text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{booking.cart.length ? `${booking.cart.length} ${lang === 'en' ? 'selected' : 'selecionado(s)'}` : T.toastNeedService}</p>
-              <p className="price-text mt-1 text-2xl font-semibold">{formatMoney(financials.total, lang)}</p>
+              <p className={`safe-text mt-1 text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{step === 3 ? `${T.total}: ${formatMoney(financials.total, lang)}` : lang === 'en' ? 'Price appears only in the final review.' : 'Valor somente no resumo final.'}</p>
             </div>
             <Button variant={step === 3 ? 'whatsapp' : 'primary'} onClick={handleNextStep} icon={step === 3 ? 'message' : 'right'} className="min-w-[136px]">
               {step === 3 ? T.finish : T.continue}
@@ -1443,9 +1435,8 @@ export default function App() {
           <div className="flex-1 overflow-y-auto p-5 sm:p-7">
             <div className={`rounded-2xl border p-5 ${isDark ? 'border-white/10 bg-white/5' : 'border-slate-200 bg-slate-50'}`}>
               <p className={`safe-text text-sm leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{selectedService.desc}</p>
-              <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="mt-5 grid grid-cols-1 gap-3">
                 <div className={`rounded-2xl p-4 ${isDark ? 'bg-white/5' : 'bg-white'}`}><span className="safe-text block text-[10px] font-bold uppercase tracking-widest opacity-60">{T.duration}</span><strong className="mt-1 block text-xl">{selectedService.min} min</strong></div>
-                <div className={`rounded-2xl p-4 ${isDark ? 'bg-white/5' : 'bg-white'}`}><span className="safe-text block text-[10px] font-bold uppercase tracking-widest opacity-60">{T.total}</span><strong className="mt-1 block text-xl">{formatMoney(selectedService.price, lang)}</strong></div>
               </div>
             </div>
             <div className="mt-5">
@@ -1492,7 +1483,6 @@ export default function App() {
             <div className={`my-7 rounded-2xl border border-dashed p-5 text-center ${isDark ? 'border-blue-500/40 bg-blue-500/10' : 'border-blue-300 bg-blue-50/50'}`}>
               <p className={`safe-text text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>Cupom</p>
               <p className="safe-text mt-2 text-3xl font-semibold tracking-widest">BEMVINDO10</p>
-              <p className="safe-text mt-2 text-sm font-semibold text-emerald-400">- {formatMoney(data.welcomeCoupon.val, lang)}</p>
             </div>
             <Button full onClick={claimWelcomeCoupon} icon="gift">{T.claimGift}</Button>
           </div>
@@ -1508,6 +1498,8 @@ function SummaryPanel({
   T,
   booking,
   financials,
+  extras,
+  step,
   onCopyPix,
 }: {
   isDark: boolean;
@@ -1515,45 +1507,97 @@ function SummaryPanel({
   T: ReturnType<typeof getData>['text'];
   booking: BookingData;
   financials: { subtotal: number; couponDiscount: number; mediaDiscount: number; pixDiscount: number; rushFee: number; total: number; duration: number };
+  extras: ExtraItem[];
+  step: Step;
   onCopyPix: () => void;
 }) {
+  const selectedExtras = extras.filter((extra) => booking.extras[extra.id]);
+  const dateLabel = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'pt' ? CONFIG.LOCALE_PT : CONFIG.LOCALE_EN) : lang === 'en' ? 'Not chosen yet' : 'Ainda não escolhido';
+  const timeLabel = booking.time || (lang === 'en' ? 'Not chosen yet' : 'Ainda não escolhido');
+  const locationLabel =
+    booking.locationType === 'home'
+      ? booking.address.street
+        ? `${booking.address.street}${booking.address.number ? `, ${booking.address.number}` : ''}${booking.address.district ? ` - ${booking.address.district}` : ''}${booking.address.city ? `, ${booking.address.city}` : ''}`
+        : T.home
+      : booking.locationType === 'hotel'
+        ? booking.address.placeName || T.hotel
+        : T.motel;
+
   return (
     <div className={`sticky top-6 rounded-[2rem] border p-5 shadow-xl ${isDark ? 'border-white/10 bg-white/5 shadow-black/20' : 'border-slate-200 bg-white shadow-slate-200/70'}`}>
-      <div className="flex items-center justify-between gap-4">
-        <h3 className="safe-text text-xl font-semibold">{T.summaryTitle}</h3>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="safe-text text-[10px] font-bold uppercase tracking-[0.2em] text-blue-400">{lang === 'en' ? 'Booking flow' : 'Fluxo do agendamento'}</p>
+          <h3 className="safe-text mt-1 text-xl font-semibold">{T.summaryTitle}</h3>
+        </div>
         <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest ${isDark ? 'bg-white/10 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{financials.duration} min</span>
       </div>
 
       <div className="mt-5 space-y-3">
-        {booking.cart.length ? booking.cart.map((item) => (
-          <div key={item.id} className={`rounded-2xl p-3 ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
-            <div className="flex justify-between gap-3">
-              <span className="safe-text text-sm font-semibold">{item.title}</span>
-              <span className="price-text shrink-0 text-sm font-semibold">{formatMoney(item.price, lang)}</span>
-            </div>
+        <div className={`rounded-2xl p-4 ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
+          <p className={`safe-text text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{lang === 'en' ? 'Selected sessions' : 'Sessões escolhidas'}</p>
+          <div className="mt-3 space-y-2">
+            {booking.cart.length ? booking.cart.map((item) => (
+              <div key={item.id} className="flex items-start gap-2 text-sm">
+                <Icon name="check" size={15} className="mt-0.5 shrink-0 text-emerald-400" />
+                <span className="safe-text font-medium">{item.title}</span>
+              </div>
+            )) : <p className={`safe-text text-sm ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.toastNeedService}</p>}
           </div>
-        )) : <p className={`safe-text text-sm ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.toastNeedService}</p>}
+        </div>
+
+        <div className={`rounded-2xl p-4 ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
+          <p className={`safe-text text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.extrasTitle}</p>
+          <div className="mt-3 space-y-2">
+            {selectedExtras.length ? selectedExtras.map((extra) => (
+              <div key={extra.id} className="flex items-start gap-2 text-sm">
+                <Icon name={extra.icon} size={15} className="mt-0.5 shrink-0 text-blue-400" />
+                <span className="safe-text font-medium">{extra.label}</span>
+              </div>
+            )) : <p className={`safe-text text-sm ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{lang === 'en' ? 'No add-ons selected.' : 'Nenhum complemento selecionado.'}</p>}
+          </div>
+        </div>
+
+        <div className={`grid grid-cols-1 gap-3 rounded-2xl p-4 ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
+          <div>
+            <p className={`safe-text text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{lang === 'en' ? 'Date and time' : 'Data e horário'}</p>
+            <p className="safe-text mt-1 text-sm font-semibold">{dateLabel} • {timeLabel}</p>
+          </div>
+          <div>
+            <p className={`safe-text text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{lang === 'en' ? 'Place' : 'Local'}</p>
+            <p className="safe-text mt-1 text-sm font-semibold">{locationLabel}</p>
+          </div>
+        </div>
       </div>
 
       <div className={`my-5 h-px ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
 
-      <div className="space-y-3">
-        <SummaryLine label={T.subtotal} value={formatMoney(financials.subtotal, lang)} />
-        {financials.couponDiscount > 0 && <SummaryLine label={T.discount} value={`- ${formatMoney(financials.couponDiscount, lang)}`} tone="success" />}
-        {financials.mediaDiscount > 0 && <SummaryLine label={T.mediaDiscount} value={`- ${formatMoney(financials.mediaDiscount, lang)}`} tone="success" />}
-        {financials.pixDiscount > 0 && <SummaryLine label={T.pixDiscount} value={`- ${formatMoney(financials.pixDiscount, lang)}`} tone="success" />}
-        {financials.rushFee > 0 && <SummaryLine label={T.rushFee} value={`+ ${formatMoney(financials.rushFee, lang)}`} tone="warning" />}
-      </div>
+      {step === 3 ? (
+        <>
+          <div className="space-y-3">
+            <SummaryLine label={T.subtotal} value={formatMoney(financials.subtotal, lang)} />
+            {financials.couponDiscount > 0 && <SummaryLine label={T.discount} value={`- ${formatMoney(financials.couponDiscount, lang)}`} tone="success" />}
+            {financials.mediaDiscount > 0 && <SummaryLine label={T.mediaDiscount} value={`- ${formatMoney(financials.mediaDiscount, lang)}`} tone="success" />}
+            {financials.pixDiscount > 0 && <SummaryLine label={T.pixDiscount} value={`- ${formatMoney(financials.pixDiscount, lang)}`} tone="success" />}
+            {financials.rushFee > 0 && <SummaryLine label={T.rushFee} value={`+ ${formatMoney(financials.rushFee, lang)}`} tone="warning" />}
+          </div>
 
-      <div className={`mt-5 rounded-2xl p-4 ${isDark ? 'bg-blue-600/15' : 'bg-blue-50'}`}>
-        <div className="flex items-end justify-between gap-4">
-          <span className="safe-text text-sm font-bold uppercase tracking-widest text-blue-400">{T.total}</span>
-          <strong className="price-text text-3xl font-semibold">{formatMoney(financials.total, lang)}</strong>
+          <div className={`mt-5 rounded-2xl p-4 ${isDark ? 'bg-blue-600/15' : 'bg-blue-50'}`}>
+            <div className="flex items-end justify-between gap-4">
+              <span className="safe-text text-sm font-bold uppercase tracking-widest text-blue-400">{T.total}</span>
+              <strong className="price-text text-3xl font-semibold">{formatMoney(financials.total, lang)}</strong>
+            </div>
+          </div>
+
+          {booking.payment === 'pix' && (
+            <button type="button" onClick={onCopyPix} className={`mt-3 w-full rounded-2xl border px-4 py-3 text-center text-xs font-semibold uppercase tracking-widest ${isDark ? 'border-white/10 bg-white/5 text-zinc-300' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>{CONFIG.PIX_KEY}</button>
+          )}
+        </>
+      ) : (
+        <div className={`rounded-2xl p-4 ${isDark ? 'bg-blue-600/10 text-blue-100' : 'bg-blue-50 text-blue-900'}`}>
+          <p className="safe-text text-sm font-semibold">{lang === 'en' ? 'The price appears only in the final review.' : 'O valor aparece somente no resumo final.'}</p>
+          <p className={`safe-text mt-1 text-xs leading-relaxed ${isDark ? 'text-blue-100/70' : 'text-blue-900/65'}`}>{lang === 'en' ? 'First choose the session, place and time. Then review the total before sending to WhatsApp.' : 'Primeiro escolha sessão, local e horário. Depois revise o total antes de enviar para o WhatsApp.'}</p>
         </div>
-      </div>
-
-      {booking.payment === 'pix' && (
-        <button type="button" onClick={onCopyPix} className={`mt-3 w-full rounded-2xl border px-4 py-3 text-center text-xs font-semibold uppercase tracking-widest ${isDark ? 'border-white/10 bg-white/5 text-zinc-300' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>{CONFIG.PIX_KEY}</button>
       )}
     </div>
   );
