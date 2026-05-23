@@ -9,13 +9,14 @@ type Category = "relax" | "express" | "sensory" | "care";
 
 const CONFIG = {
   PHONE: "5517991360413",
-  INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: "@thaly_app_v29_senior_ux_booking",
+  INSTAGRAM_HANDLE: "@relaxarhojesp",
+  INSTAGRAM_URL: "https://instagram.com/relaxarhojesp",
+  STORAGE_KEY: "@thaly_app_v30_relaxarhojesp_booking",
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: "pt-BR",
   LOCALE_EN: "en-US",
   EXCHANGE_RATE: 5,
-  SECRET_TOKEN: "THALY_SECURE_V9",
+  SECRET_TOKEN: "THALY_SECURE_V10",
   START_HOUR: 9,
   END_HOUR: 22,
   RUSH_FEE: 15,
@@ -31,7 +32,6 @@ const ICON_PATHS: Record<string, string> = {
   check: "M20 6L9 17l-5-5",
   "chevron-left": "M15 18l-6-6 6-6",
   "chevron-right": "M9 18l6-6-6-6",
-  "chevron-down": "M6 9l6 6 6-6",
   globe: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M2 12h20 M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z",
   instagram: "M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z",
   share: "M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8 M16 6l-4-4-4 4 M12 2v13",
@@ -222,9 +222,9 @@ const getData = (lang: Lang) => {
         category: "sensory",
         type: "single",
         title: en ? "Sensory Massage" : "Massagem Sensorial",
-        short: en ? "Light touch, slow breathing and a relaxing ending." : "Toques leves, respiração calma e finalização relaxante.",
-        ideal: en ? "For anxiety, mental overload and need for affectionate care." : "Para ansiedade, mente acelerada e necessidade de acolhimento.",
-        steps: en ? ["I start with a calm body warm-up.", "I use light, slow and continuous touch.", "If you want, we include a manual ending agreed with you."] : ["Começo com aquecimento calmo do corpo.", "Uso toques leves, lentos e contínuos.", "Se você quiser, incluímos finalização manual combinada com você."],
+        short: en ? "Light touch, slow breathing and a relaxing finish." : "Toques leves, respiração calma e finalização relaxante.",
+        ideal: en ? "For anxiety, mental overload and the need for calmer body care." : "Para ansiedade, mente acelerada e necessidade de acolhimento corporal.",
+        steps: en ? ["I start with a calm body warm-up.", "I use light, slow and continuous touch.", "We align comfort and limits before the session begins."] : ["Começo com aquecimento calmo do corpo.", "Uso toques leves, lentos e contínuos.", "Alinhamos conforto e limites antes da sessão começar."],
         duration: 60,
         price: 177,
         icon: "sparkles",
@@ -237,7 +237,7 @@ const getData = (lang: Lang) => {
         title: en ? "Fusion Experience" : "Experiência Fusion",
         short: en ? "Therapeutic relief first, sensory care after." : "Primeiro alívio muscular, depois cuidado sensorial.",
         ideal: en ? "For those who want one complete session without choosing between body pain and stress." : "Para quem quer uma sessão completa sem escolher entre dor no corpo e estresse.",
-        steps: en ? ["We begin with classic massage on tense areas.", "Then the rhythm becomes more sensory.", "The ending is manual and agreed before it happens."] : ["Começamos com massagem clássica nas áreas tensas.", "Depois o ritmo fica mais sensorial.", "A finalização é manual e combinada antes de acontecer."],
+        steps: en ? ["We begin with classic massage on tense areas.", "Then the rhythm becomes more sensory.", "The whole session follows the limits agreed before starting."] : ["Começamos com massagem clássica nas áreas tensas.", "Depois o ritmo fica mais sensorial.", "Toda a sessão segue os limites combinados antes de começar."],
         duration: 70,
         price: 207,
         icon: "sparkles",
@@ -251,7 +251,7 @@ const getData = (lang: Lang) => {
         title: en ? "Reverse Massage" : "Massagem Reversa",
         short: en ? "A more interactive session, always with consent." : "Sessão mais interativa, sempre com consentimento.",
         ideal: en ? "For those who want a warmer, more participative experience." : "Para quem quer uma experiência mais próxima e participativa.",
-        steps: en ? ["I take care of you first.", "Then you can participate more actively within agreed limits.", "We keep the rhythm comfortable and respectful."] : ["Primeiro eu cuido de você.", "Depois você pode participar mais, dentro dos limites combinados.", "Mantemos tudo confortável, claro e respeitoso."],
+        steps: en ? ["I take care of you first.", "Then participation can be more active within agreed limits.", "We keep the rhythm comfortable, clear and respectful."] : ["Primeiro eu cuido de você.", "Depois a participação pode ser mais ativa, dentro dos limites combinados.", "Mantemos tudo confortável, claro e respeitoso."],
         duration: 70,
         price: 260,
         icon: "hand",
@@ -263,7 +263,7 @@ const getData = (lang: Lang) => {
         type: "single",
         title: en ? "Nuru Massage" : "Massagem Nuru",
         short: en ? "Warm gel, body glide and deep relaxation." : "Gel aquecido, deslizamento corporal e relaxamento profundo.",
-        ideal: en ? "For those who want an intense sensory experience with a clear agreement first." : "Para quem quer uma experiência sensorial intensa, com tudo combinado antes.",
+        ideal: en ? "For those who want an immersive sensory experience with clear agreement first." : "Para quem quer uma experiência sensorial imersiva, com tudo combinado antes.",
         steps: en ? ["We align limits and comfort.", "I apply proper gel for glide.", "The session follows a slow, immersive rhythm."] : ["Alinhamos limites e conforto.", "Aplico gel próprio para deslizamento.", "A sessão segue um ritmo lento e imersivo."],
         duration: 70,
         price: 317,
@@ -336,7 +336,18 @@ const getData = (lang: Lang) => {
       brand: "Thalyson Massagens",
       tagline: en ? "mobile massage and body care" : "massagem e cuidado corporal com atendimento móvel",
       heroTitle: en ? "Choose your session with calm and clarity." : "Escolha sua sessão com calma e clareza.",
-      heroText: en ? "First you choose what you need. Then you pick the place, date and time. I send everything ready to WhatsApp for confirmation." : "Primeiro você escolhe o tipo de cuidado. Depois informa o local, data e horário. No fim, o pedido vai pronto para o WhatsApp para confirmarmos.",
+      heroText: en ? "First choose what you need. Then add the place, date and time. At the end, the request goes ready to WhatsApp for confirmation." : "Primeiro escolha o tipo de cuidado. Depois informe local, data e horário. No fim, o pedido vai pronto para o WhatsApp para confirmarmos.",
+      flowTitle: en ? "Booking flow" : "Fluxo do agendamento",
+      flowCopy: en ? "Follow the steps and review everything before sending. Nothing is confirmed until WhatsApp." : "Siga as etapas e confira tudo antes de enviar. Nada fica confirmado sem a conversa no WhatsApp.",
+      flowSession: en ? "Choose the session" : "Escolha a sessão",
+      flowPlace: en ? "Tell the place" : "Informe o local",
+      flowTime: en ? "Pick date and time" : "Escolha data e horário",
+      flowReview: en ? "Review and send" : "Revise e envie",
+      footerTitle: en ? "Need to check before booking?" : "Precisa conferir antes de agendar?",
+      footerText: en ? "See the Instagram for updates and send the booking only when everything is clear to you." : "Veja o Instagram para acompanhar novidades e envie o pedido só quando estiver tudo claro para você.",
+      footerPrivacy: en ? "Your address is only used to prepare the WhatsApp request." : "Seu endereço é usado apenas para montar o pedido no WhatsApp.",
+      footerInstagram: en ? "Open Instagram" : "Abrir Instagram",
+      footerCta: en ? "Start by choosing a session" : "Comece escolhendo uma sessão",
       photoAlt: "Thalyson",
       xpTitle: en ? "Your care progress" : "Seu progresso de cuidado",
       xpSaved: en ? "Saved on this device" : "Salvo neste aparelho",
@@ -351,7 +362,6 @@ const getData = (lang: Lang) => {
       whatHappens: en ? "What happens" : "O que acontece",
       minutes: en ? "min" : "min",
       from: en ? "From" : "De",
-      price: en ? "Price" : "Valor",
       reviews: en ? "What clients say" : "O que clientes dizem",
       next: en ? "Continue" : "Continuar",
       back: en ? "Back" : "Voltar",
@@ -414,6 +424,7 @@ const getData = (lang: Lang) => {
       nameToast: en ? "Fill in your name." : "Preencha seu nome.",
       addressToast: en ? "Fill in the location." : "Preencha o local.",
       timeToast: en ? "Choose date and time." : "Escolha data e horário.",
+      paymentToast: en ? "Choose a payment method." : "Escolha uma forma de pagamento.",
       termsToast: en ? "Accept the rules before sending." : "Aceite as regras antes de enviar.",
       cepOk: en ? "Address found." : "Endereço encontrado.",
       cepError: en ? "ZIP code not found." : "CEP não encontrado.",
@@ -431,10 +442,12 @@ const getData = (lang: Lang) => {
 const sanitizeInput = (value: string) => String(value || "").replace(/[<>&"']/g, "");
 const maskCep = (value: string) => value.replace(/\D/g, "").replace(/^(\d{5})(\d)/, "$1-$2").slice(0, 9);
 const compactDate = (date: Date, lang: Lang) => date.toLocaleDateString(lang === "en" ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { day: "2-digit", month: "2-digit" });
+
 const money = (value: number, lang: Lang) => {
   const finalValue = lang === "pt" ? value : value / CONFIG.EXCHANGE_RATE;
   return lang === "pt" ? `R$ ${finalValue.toFixed(2).replace(".", ",")}` : `$ ${finalValue.toFixed(2)}`;
 };
+
 const vibrate = (pattern: number | number[] = 30) => {
   try {
     navigator.vibrate?.(pattern);
@@ -449,12 +462,11 @@ const Icon = memo(({ name, size = 20 }: { name: string; size?: number }) => (
 
 const Styles = memo(({ isDark }: { isDark: boolean }) => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-
     :root {
       --bg: ${isDark ? "#101318" : "#f7f8fa"};
       --surface: ${isDark ? "#171b22" : "#ffffff"};
       --surface-2: ${isDark ? "#202631" : "#eef2f7"};
+      --surface-3: ${isDark ? "#121720" : "#f9fafb"};
       --text: ${isDark ? "#f5f7fb" : "#101828"};
       --muted: ${isDark ? "#b2bac7" : "#596579"};
       --faint: ${isDark ? "#818b9b" : "#7a8494"};
@@ -469,14 +481,14 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       color-scheme: ${isDark ? "dark" : "light"};
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; min-width: 0; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
       min-width: 320px;
       background: var(--bg);
       color: var(--text);
-      font-family: Poppins, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Poppins, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       line-height: 1.55;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
@@ -485,6 +497,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     button { border: 0; color: inherit; background: none; cursor: pointer; }
     button:disabled { cursor: not-allowed; opacity: .55; }
     img { display: block; max-width: 100%; }
+    a { color: inherit; }
     .no-scroll { overflow: hidden; }
     .sr-only {
       position: absolute;
@@ -518,7 +531,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     .icon { flex: 0 0 auto; }
     .app {
       min-height: 100vh;
-      padding: 24px 18px 132px;
+      padding: 24px 18px 136px;
     }
     .shell {
       width: min(100%, 1120px);
@@ -532,7 +545,9 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       padding-bottom: 24px;
     }
     .brand {
+      flex: 1 1 auto;
       min-width: 0;
+      max-width: 720px;
       text-align: left;
       border-radius: 8px;
       padding: 2px;
@@ -540,10 +555,11 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     }
     .brand-title {
       margin: 0;
-      font-size: 2rem;
+      font-size: clamp(1.35rem, 4.4vw, 2rem);
       line-height: 1.1;
       letter-spacing: 0;
       overflow-wrap: anywhere;
+      hyphens: auto;
     }
     .brand-sub {
       margin: 6px 0 0;
@@ -588,32 +604,48 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       margin-bottom: 24px;
     }
     .step-pill {
-      min-width: 0;
       min-height: 42px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      padding: 8px;
       border: 1px solid var(--border);
       border-radius: 8px;
       background: var(--surface);
       color: var(--muted);
       font-size: .82rem;
       font-weight: 700;
+      line-height: 1.2;
       text-align: center;
+      overflow-wrap: anywhere;
     }
     .step-pill.active { color: white; border-color: var(--blue); background: var(--blue); }
     .step-pill.done { color: var(--text); border-color: var(--border-strong); }
     .hero {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 360px;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
       gap: 22px;
-      align-items: start;
+      align-items: stretch;
       margin-bottom: 24px;
     }
+    .hero-card,
+    .panel,
+    .service-card,
+    .review-card,
+    .choice-card,
+    .extra-btn,
+    .payment-btn,
+    .toggle-btn,
+    .rule,
+    .success-card,
+    .home-footer {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      hyphens: auto;
+    }
     .hero-card {
-      min-width: 0;
-      padding: 22px;
+      padding: clamp(16px, 2.4vw, 22px);
       border: 1px solid var(--border);
       border-radius: 8px;
       background: var(--surface);
@@ -621,7 +653,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     }
     .hero-title {
       margin: 0;
-      font-size: 2.25rem;
+      font-size: clamp(1.7rem, 6vw, 2.55rem);
       line-height: 1.12;
       letter-spacing: 0;
       overflow-wrap: anywhere;
@@ -633,9 +665,67 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       max-width: 760px;
       overflow-wrap: anywhere;
     }
+    .flow-strip {
+      display: grid;
+      grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr);
+      gap: 16px;
+      align-items: stretch;
+      margin-bottom: 24px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .flow-copy h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.25;
+    }
+    .flow-copy p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .flow-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .flow-item {
+      display: grid;
+      align-content: start;
+      gap: 6px;
+      min-height: 86px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-3);
+    }
+    .flow-num {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #fff;
+      font-size: .78rem;
+      font-weight: 800;
+    }
+    .flow-item span:last-child {
+      color: var(--muted);
+      font-size: .8rem;
+      font-weight: 700;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
     .profile {
       display: grid;
       gap: 14px;
+      align-content: start;
     }
     .profile-head {
       display: grid;
@@ -671,12 +761,13 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       gap: 12px;
     }
     .xp-number {
-      font-size: 2rem;
+      font-size: clamp(1.55rem, 6vw, 2rem);
       line-height: 1;
       font-weight: 700;
       white-space: nowrap;
     }
-    .xp-label {
+    .xp-label,
+    .info-label {
       color: var(--faint);
       font-size: .76rem;
       font-weight: 700;
@@ -700,7 +791,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding-bottom: 4px;
+      padding: 2px 0 6px;
       margin-bottom: 18px;
       scrollbar-width: thin;
     }
@@ -717,15 +808,15 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       background: var(--surface);
       color: var(--muted);
       font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
     }
     .tab[aria-selected="true"] {
       color: white;
       border-color: var(--blue);
       background: var(--blue);
     }
-    .section {
-      margin-top: 26px;
-    }
+    .section { margin-top: 26px; }
     .section-head {
       display: flex;
       align-items: flex-start;
@@ -735,7 +826,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     }
     .section-title {
       margin: 0;
-      font-size: 1.45rem;
+      font-size: clamp(1.2rem, 4.4vw, 1.45rem);
       line-height: 1.25;
       letter-spacing: 0;
       overflow-wrap: anywhere;
@@ -747,15 +838,15 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     }
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 292px), 1fr));
       gap: 14px;
       align-items: stretch;
     }
     .service-card {
-      min-width: 0;
       display: flex;
       flex-direction: column;
       gap: 14px;
+      min-height: 100%;
       padding: 16px;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -782,13 +873,6 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       background: var(--surface-2);
       color: var(--blue);
     }
-    .service-title-row {
-      min-width: 0;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
-    }
     .service-title {
       margin: 0;
       font-size: 1.08rem;
@@ -796,6 +880,12 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       letter-spacing: 0;
       overflow-wrap: anywhere;
       hyphens: auto;
+    }
+    .service-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
     }
     .tag {
       max-width: 100%;
@@ -822,15 +912,6 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     .info-block {
       display: grid;
       gap: 6px;
-      min-width: 0;
-    }
-    .info-label {
-      margin: 0;
-      color: var(--faint);
-      font-size: .72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .04em;
     }
     .info-text {
       margin: 0;
@@ -872,7 +953,6 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       border-top: 1px solid var(--border);
     }
     .price-stack {
-      min-width: 0;
       display: grid;
       gap: 2px;
     }
@@ -883,7 +963,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       white-space: nowrap;
     }
     .price {
-      font-size: 1.18rem;
+      font-size: clamp(1.05rem, 4vw, 1.18rem);
       line-height: 1.1;
       font-weight: 700;
       white-space: nowrap;
@@ -894,6 +974,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       align-items: center;
       justify-content: center;
       gap: 8px;
+      min-width: 0;
       padding: 10px 14px;
       border-radius: 8px;
       border: 1px solid transparent;
@@ -902,6 +983,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       font-weight: 700;
       line-height: 1.2;
       text-align: center;
+      white-space: normal;
       transition: transform .18s ease, background .18s ease, border-color .18s ease;
     }
     .btn:hover:not(:disabled) { transform: translateY(-1px); }
@@ -918,7 +1000,6 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       gap: 12px;
     }
     .review-card {
-      min-width: 0;
       padding: 14px;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -932,15 +1013,55 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       margin-bottom: 8px;
       font-weight: 700;
     }
+    .review-name > span:first-child { overflow-wrap: anywhere; }
     .review-text {
       margin: 0;
       color: var(--muted);
       font-size: .9rem;
       overflow-wrap: anywhere;
     }
+    .home-footer {
+      margin-top: 34px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: ${isDark ? "none" : "0 10px 24px rgba(16,24,40,.06)"};
+    }
+    .home-footer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(260px, .9fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+    .footer-title {
+      margin: 0;
+      font-size: clamp(1.16rem, 4vw, 1.45rem);
+      line-height: 1.22;
+    }
+    .footer-copy {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+    .footer-actions {
+      display: grid;
+      gap: 10px;
+      align-content: center;
+    }
+    .footer-note {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: .9rem;
+    }
     .page-title {
       margin: 0 0 8px;
-      font-size: 1.9rem;
+      font-size: clamp(1.45rem, 5.8vw, 1.9rem);
       line-height: 1.15;
       letter-spacing: 0;
       overflow-wrap: anywhere;
@@ -952,7 +1073,6 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       overflow-wrap: anywhere;
     }
     .panel {
-      min-width: 0;
       padding: 18px;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -966,7 +1086,6 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       margin-bottom: 18px;
     }
     .choice-card {
-      min-width: 0;
       min-height: 88px;
       display: flex;
       flex-direction: column;
@@ -980,7 +1099,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       color: var(--muted);
       text-align: center;
       font-weight: 700;
-      overflow-wrap: anywhere;
+      line-height: 1.2;
     }
     .choice-card[aria-pressed="true"] {
       color: white;
@@ -994,7 +1113,6 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     }
     .field-grid .wide { grid-column: 1 / -1; }
     .field {
-      min-width: 0;
       display: grid;
       gap: 6px;
     }
@@ -1004,8 +1122,9 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: .04em;
+      overflow-wrap: anywhere;
     }
-    .input-wrap { position: relative; min-width: 0; }
+    .input-wrap { position: relative; }
     .input-wrap .icon {
       position: absolute;
       left: 12px;
@@ -1016,7 +1135,6 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     }
     .input {
       width: 100%;
-      min-width: 0;
       min-height: 46px;
       padding: 10px 12px;
       border: 1px solid var(--border);
@@ -1024,6 +1142,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       background: var(--surface-2);
       color: var(--text);
       outline: none;
+      overflow-wrap: anywhere;
     }
     .input.with-icon { padding-left: 40px; }
     .input.error {
@@ -1068,6 +1187,8 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       background: var(--surface);
       color: var(--muted);
       font-weight: 700;
+      line-height: 1.1;
+      text-align: center;
     }
     .date-btn[aria-pressed="true"] {
       color: white;
@@ -1088,6 +1209,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       line-height: 1;
     }
     .time-section { margin-top: 16px; }
+    .time-section:first-child { margin-top: 0; }
     .time-title {
       margin: 0 0 8px;
       color: var(--faint);
@@ -1112,7 +1234,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       font-weight: 700;
     }
     .time-btn.rush {
-      color: #8a5a00;
+      color: ${isDark ? "#ffd88a" : "#8a5a00"};
       border-color: rgba(245,158,11,.45);
       background: rgba(245,158,11,.12);
     }
@@ -1149,7 +1271,6 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       margin-top: 12px;
     }
     .extra-btn {
-      min-width: 0;
       min-height: 100%;
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -1159,22 +1280,24 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       border-radius: 8px;
       background: var(--surface);
       text-align: left;
+      align-items: start;
     }
     .extra-btn[aria-pressed="true"] {
       border-color: var(--blue);
       background: var(--blue-soft);
     }
-    .extra-btn strong, .extra-btn span {
+    .extra-btn strong,
+    .extra-btn span {
       display: block;
       overflow-wrap: anywhere;
     }
+    .extra-btn > strong { white-space: nowrap; }
     .extra-btn span { color: var(--muted); font-size: .84rem; }
     .line-list {
       display: grid;
       gap: 10px;
     }
     .line {
-      min-width: 0;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
@@ -1184,14 +1307,15 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     }
     .line:last-child { border-bottom: 0; padding-bottom: 0; }
     .line span:first-child {
-      min-width: 0;
       color: var(--muted);
       overflow-wrap: anywhere;
     }
     .line span:last-child {
-      flex: 0 0 auto;
+      flex: 0 1 auto;
+      max-width: 55%;
+      text-align: right;
       font-weight: 700;
-      white-space: nowrap;
+      overflow-wrap: anywhere;
     }
     .summary-title {
       margin: 0 0 14px;
@@ -1222,13 +1346,14 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       color: var(--muted);
       text-align: left;
       font-weight: 700;
+      line-height: 1.2;
     }
     .payment-btn[aria-pressed="true"] {
       color: white;
       border-color: var(--blue);
       background: var(--blue);
     }
-    .payment-btn span { min-width: 0; overflow-wrap: anywhere; }
+    .payment-btn span { overflow-wrap: anywhere; }
     .toggle-btn {
       width: 100%;
       min-height: 46px;
@@ -1243,6 +1368,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       color: var(--muted);
       text-align: left;
       font-weight: 700;
+      line-height: 1.25;
     }
     .toggle-btn[aria-pressed="true"] {
       color: var(--text);
@@ -1259,7 +1385,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       gap: 12px;
     }
     .total {
-      font-size: 1.75rem;
+      font-size: clamp(1.42rem, 8vw, 1.75rem);
       line-height: 1;
       font-weight: 700;
       white-space: nowrap;
@@ -1283,13 +1409,14 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       border: 1px solid var(--border-strong);
       border-radius: 8px;
       background: var(--surface);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
       box-shadow: var(--shadow);
       backdrop-filter: blur(12px);
       pointer-events: auto;
     }
     .bottom-copy {
-      min-width: 0;
       flex: 1 1 auto;
+      overflow: hidden;
     }
     .bottom-label {
       margin: 0;
@@ -1344,7 +1471,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     .rule-list { display: grid; gap: 10px; }
     .rule {
       display: grid;
-      grid-template-columns: 38px minmax(0, 1fr);
+      grid-template-columns: 42px minmax(0, 1fr);
       gap: 10px;
       padding: 12px;
       border: 1px solid var(--border);
@@ -1405,6 +1532,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       border-left: 1px solid var(--border);
       background: var(--bg);
       box-shadow: var(--shadow);
+      overflow-y: auto;
     }
     .side-head {
       display: flex;
@@ -1412,7 +1540,7 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
       justify-content: space-between;
       gap: 12px;
     }
-    .side-head h2 { margin: 0; }
+    .side-head h2 { margin: 0; overflow-wrap: anywhere; }
     .success {
       min-height: 68vh;
       display: grid;
@@ -1446,42 +1574,56 @@ const Styles = memo(({ isDark }: { isDark: boolean }) => (
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
     }
-    @media (max-width: 880px) {
-      .hero, .summary-layout { grid-template-columns: 1fr; }
+    @media (max-width: 940px) {
+      .hero,
+      .summary-layout,
+      .flow-strip,
+      .home-footer-grid {
+        grid-template-columns: 1fr;
+      }
       .hero-card.profile { order: -1; }
+      .flow-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
       .stepper { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .location-grid { grid-template-columns: 1fr; }
+      .choice-card { min-height: 64px; flex-direction: row; justify-content: flex-start; text-align: left; }
+      .field-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 620px) {
       .app { padding: 16px 12px 126px; }
       .topbar { gap: 10px; }
-      .brand-title { font-size: 1.55rem; }
       .brand-sub { font-size: .8rem; }
       .top-actions { gap: 6px; }
       .icon-btn { width: 39px; height: 39px; }
-      .hero-title { font-size: 1.7rem; }
-      .hero-card, .panel { padding: 14px; }
+      .hero-card, .panel, .home-footer { padding: 14px; }
       .profile-head { grid-template-columns: 72px minmax(0, 1fr); }
       .profile-photo { width: 72px; height: 72px; }
       .cards-grid { grid-template-columns: 1fr; }
       .service-footer { align-items: stretch; flex-direction: column; }
       .service-footer .btn { width: 100%; }
-      .location-grid { grid-template-columns: 1fr; }
-      .choice-card { min-height: 64px; flex-direction: row; justify-content: flex-start; text-align: left; }
-      .field-grid { grid-template-columns: 1fr; }
       .date-btn { flex-basis: 66px; min-height: 76px; }
       .time-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .cart-summary { align-items: stretch; flex-direction: column; }
+      .cart-summary .btn { width: 100%; }
       .bottom-inner { gap: 8px; }
       .bottom-inner .btn { min-width: 104px; padding-left: 10px; padding-right: 10px; }
-      .bottom-inner .btn.back { min-width: 44px; width: 44px; }
-      .bottom-title { max-width: 150px; }
+      .bottom-inner .btn.back { min-width: 44px; width: 44px; padding: 0; }
+      .bottom-title { max-width: min(48vw, 220px); }
+      .line { flex-direction: column; gap: 4px; }
+      .line span:last-child { max-width: 100%; text-align: left; }
+    }
+    @media (max-width: 430px) {
+      .flow-list { grid-template-columns: 1fr; }
+      .tab { width: max-content; max-width: 86vw; white-space: normal; }
+      .topbar { align-items: flex-start; }
+      .time-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .extra-btn { grid-template-columns: 1fr; }
+      .extra-btn > strong { white-space: normal; }
     }
     @media (max-width: 380px) {
-      .brand-title { font-size: 1.35rem; }
-      .hero-title, .page-title { font-size: 1.45rem; }
       .profile-head { grid-template-columns: 62px minmax(0, 1fr); }
       .profile-photo { width: 62px; height: 62px; }
-      .time-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .bottom-label { font-size: .66rem; }
       .bottom-title { max-width: 118px; }
     }
@@ -1536,6 +1678,7 @@ const InputField = memo(({
 const ProfilePhoto = memo(({ alt }: { alt: string }) => {
   const sources = [CONFIG.PROFILE_PHOTO_PRIMARY, CONFIG.PROFILE_PHOTO_FALLBACK, fallbackSvg];
   const [index, setIndex] = useState(0);
+
   return (
     <img
       className="profile-photo"
@@ -1591,6 +1734,23 @@ const Button = memo(({
   </button>
 ));
 
+const FlowGuide = memo(({ T }: { T: ReturnType<typeof getData>["text"] }) => (
+  <section className="flow-strip" aria-labelledby="flow-title">
+    <div className="flow-copy">
+      <h2 id="flow-title">{T.flowTitle}</h2>
+      <p>{T.flowCopy}</p>
+    </div>
+    <ol className="flow-list">
+      {[T.flowSession, T.flowPlace, T.flowTime, T.flowReview].map((label, index) => (
+        <li className="flow-item" key={label}>
+          <span className="flow-num">{index + 1}</span>
+          <span>{label}</span>
+        </li>
+      ))}
+    </ol>
+  </section>
+));
+
 const ServiceCard = memo(({
   item,
   selected,
@@ -1608,10 +1768,8 @@ const ServiceCard = memo(({
     <div className="service-top">
       <div className="service-icon"><Icon name={item.icon} size={22} /></div>
       <div>
-        <div className="service-title-row">
-          <h3 className="service-title">{item.title}</h3>
-        </div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+        <h3 className="service-title">{item.title}</h3>
+        <div className="service-tags">
           <span className="tag">{item.tag}</span>
           {item.popular ? <span className="tag"><Icon name="star" size={13} />{lang === "en" ? "Popular" : "Mais pedido"}</span> : null}
           <span className="tag">{item.duration} {T.minutes}</span>
@@ -1639,6 +1797,39 @@ const ServiceCard = memo(({
       </Button>
     </div>
   </article>
+));
+
+const HomeFooter = memo(({
+  T,
+  selected,
+  onStart,
+  onInstagram,
+}: {
+  T: ReturnType<typeof getData>["text"];
+  selected: boolean;
+  onStart: () => void;
+  onInstagram: () => void;
+}) => (
+  <footer className="home-footer" aria-labelledby="home-footer-title">
+    <div className="home-footer-grid">
+      <div>
+        <h2 id="home-footer-title" className="footer-title">{T.footerTitle}</h2>
+        <p className="footer-copy">{T.footerText}</p>
+        <div className="footer-note" style={{ marginTop: 14 }}>
+          <Icon name="shield" />
+          <span>{T.footerPrivacy}</span>
+        </div>
+      </div>
+      <div className="footer-actions">
+        <Button variant="secondary" full icon="instagram" onClick={onInstagram}>
+          {T.footerInstagram} {CONFIG.INSTAGRAM_HANDLE}
+        </Button>
+        <Button full icon={selected ? "chevron-right" : "sparkles"} onClick={onStart}>
+          {selected ? T.next : T.footerCta}
+        </Button>
+      </div>
+    </div>
+  </footer>
 ));
 
 const SideMenu = memo(({
@@ -1788,6 +1979,7 @@ export default function App() {
   const [toasts, setToasts] = useState<Array<{ id: number; kind: ToastKind; msg: string }>>([]);
   const [fetchingCep, setFetchingCep] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
+  const loadedToastShown = useRef(false);
 
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
@@ -1820,6 +2012,10 @@ export default function App() {
     const id = Date.now();
     setToasts((prev) => [...prev.slice(-2), { id, kind, msg }]);
     window.setTimeout(() => setToasts((prev) => prev.filter((toast) => toast.id !== id)), 3800);
+  }, []);
+
+  const openInstagram = useCallback(() => {
+    window.open(CONFIG.INSTAGRAM_URL, "_blank", "noopener,noreferrer");
   }, []);
 
   useEffect(() => {
@@ -1861,12 +2057,24 @@ export default function App() {
   }, [user, booking, step, isClient, loading]);
 
   useEffect(() => {
-    if (!loading && !user.hasSeenWelcome) {
+    if (loading) return;
+    if (!user.hasSeenWelcome) {
       const timer = window.setTimeout(() => setWelcomeOpen(true), 800);
       return () => window.clearTimeout(timer);
     }
-    if (!loading && user.hasSeenWelcome) addToast(T.loaded);
+    if (!loadedToastShown.current) {
+      loadedToastShown.current = true;
+      addToast(T.loaded);
+    }
   }, [loading, user.hasSeenWelcome, addToast, T.loaded]);
+
+  useEffect(() => {
+    if (!booking.item) return;
+    const localized = DATA.services.find((item) => item.id === booking.item?.id);
+    if (localized && localized.title !== booking.item.title) {
+      setBooking((prev) => ({ ...prev, item: localized }));
+    }
+  }, [DATA.services, booking.item]);
 
   useEffect(() => {
     document.title = step === 0 ? "Thalyson Massagens" : "Agendamento - Thalyson Massagens";
@@ -1909,9 +2117,9 @@ export default function App() {
   }, [DATA.levels, user.xp]);
 
   const currentLevelTitle = useMemo(() => {
-    if (user.xp >= 800) return "Cuidado Plus";
+    if (user.xp >= 800) return lang === "en" ? "Care Plus" : "Cuidado Plus";
     return [...DATA.levels].reverse().find((level) => user.xp >= level.xp)?.title || DATA.levels[0].title;
-  }, [DATA.levels, user.xp]);
+  }, [DATA.levels, user.xp, lang]);
 
   const days = useMemo(() => {
     const today = new Date();
@@ -2031,6 +2239,7 @@ export default function App() {
       if (booking.locationType === "hotel") return `${T.hotelLoc}: ${booking.address.placeName}, ${booking.address.city}. ${T.room}: ${booking.address.comp || "-"}`;
       return `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}. ${T.complement}: ${booking.address.comp || "-"}`;
     })();
+
     return `*PEDIDO DE AGENDAMENTO* #${hash}
 
 Nome: ${sanitizeInput(user.name)}
@@ -2067,8 +2276,8 @@ Li e aceito as regras. Aguardo sua confirmacao.`;
     const newXp = user.xp + estimatedXp;
     const coupons = [...user.coupons];
     const usedCoupons = [...user.usedCoupons];
-    if (booking.appliedCoupon) {
-      if (!usedCoupons.includes(booking.appliedCoupon.code)) usedCoupons.push(booking.appliedCoupon.code);
+    if (booking.appliedCoupon && !usedCoupons.includes(booking.appliedCoupon.code)) {
+      usedCoupons.push(booking.appliedCoupon.code);
     }
     DATA.levels.forEach((level) => {
       if (newXp >= level.xp && user.xp < level.xp && level.reward > 0) {
@@ -2088,14 +2297,14 @@ Li e aceito as regras. Aguardo sua confirmacao.`;
       if (step === 0) addToast(T.selectToast, "error");
       if (step === 1) addToast(!user.name.trim() ? T.nameToast : T.addressToast, "error");
       if (step === 2) addToast(T.timeToast, "error");
-      if (step === 3) addToast(T.termsToast, "error");
+      if (step === 3) addToast(!booking.payment ? T.paymentToast : T.termsToast, "error");
       vibrate([30, 30]);
       return;
     }
     vibrate(25);
     if (step === 3) finishBooking();
     else setStep((prev) => Math.min(4, prev + 1) as Step);
-  }, [addToast, finishBooking, isStepValid, step, T, user.name]);
+  }, [addToast, finishBooking, isStepValid, step, T, user.name, booking.payment]);
 
   if (!isClient || loading) {
     return (
@@ -2150,7 +2359,7 @@ Li e aceito as regras. Aguardo sua confirmacao.`;
                 <Icon name="globe" />
                 <span className="lang-chip">{lang.toUpperCase()}</span>
               </button>
-              <button className="icon-btn" type="button" onClick={() => window.open(CONFIG.INSTAGRAM_URL, "_blank", "noopener,noreferrer")} aria-label="Abrir Instagram">
+              <button className="icon-btn" type="button" onClick={openInstagram} aria-label={`Abrir Instagram ${CONFIG.INSTAGRAM_HANDLE}`}>
                 <Icon name="instagram" />
               </button>
               <button className="icon-btn" type="button" onClick={() => setMenuOpen(true)} aria-label="Abrir menu">
@@ -2208,6 +2417,8 @@ Li e aceito as regras. Aguardo sua confirmacao.`;
                   </aside>
                 </section>
 
+                <FlowGuide T={T} />
+
                 <div className="tabs" role="tablist" aria-label="Tipo de sessão">
                   <button className="tab" role="tab" type="button" aria-selected={tab === "single"} onClick={() => setTab("single")}>
                     <Icon name="user" size={18} /> {T.singleTab}
@@ -2258,6 +2469,20 @@ Li e aceito as regras. Aguardo sua confirmacao.`;
                     ))}
                   </div>
                 </section>
+
+                <HomeFooter
+                  T={T}
+                  selected={Boolean(booking.item)}
+                  onInstagram={openInstagram}
+                  onStart={() => {
+                    if (booking.item) {
+                      nextStep();
+                    } else {
+                      document.querySelector(".tabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      addToast(T.selectToast, "error");
+                    }
+                  }}
+                />
               </>
             ) : null}
 
