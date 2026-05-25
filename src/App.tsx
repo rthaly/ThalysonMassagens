@@ -6,12 +6,12 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/thalyson.massagens",
-  STORAGE_KEY: '@thaly_app_v27_premium_plans',
+  STORAGE_KEY: '@thaly_app_v27_a11y_premium',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
   EXCHANGE_RATE: 5.0,
-  SECRET_TOKEN: 'THALY_SECURE_V8',
+  SECRET_TOKEN: 'THALY_SECURE_V9',
   START_HOUR: 9,
   END_HOUR: 22,
   MAX_STORAGE_SIZE: 5000
@@ -76,22 +76,26 @@ const ICON_PATHS: Record<string, string> = {
 };
 
 // ==================================================================================
-// GLOBAL STYLES
+// GLOBAL STYLES (A11y and Typography focus)
 // ==================================================================================
 const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   <style dangerouslySetInnerHTML={{ __html: `
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-    *, *::before, *::after { box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    *, *::before, *::after { 
+      box-sizing: border-box; 
+      -webkit-font-smoothing: antialiased; 
+      -moz-osx-font-smoothing: grayscale; 
+    }
 
     :root {
       --font-sans: 'Poppins', sans-serif;
       --font-display: 'Poppins', sans-serif;
       --c-bg: ${isDark ? '#11141a' : '#f9f8f6'};
       --c-surface: ${isDark ? '#181c25' : '#ffffff'};
-      --c-border: ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'};
-      --c-text: ${isDark ? '#e8e5df' : '#222222'};
-      --c-text-muted: ${isDark ? '#a1a09d' : '#6b6560'};
+      --c-border: ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'};
+      --c-text: ${isDark ? '#f4f4f5' : '#18181b'};
+      --c-text-muted: ${isDark ? '#a1a1aa' : '#52525b'};
       --c-blue: #3b82f6;
       --c-amber: #f59e0b;
     }
@@ -105,17 +109,24 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
       -webkit-tap-highlight-color: transparent;
       letter-spacing: 0.015em;
       line-height: 1.6;
+      font-size: 16px; /* Base size 16px for better a11y and to prevent iOS zoom */
     }
 
     h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.01em; }
     .font-display { font-family: var(--font-display); font-weight: 600; }
 
+    /* Focus Rings for Keyboard Accessibility */
+    *:focus-visible {
+      outline: 2px solid var(--c-blue);
+      outline-offset: 4px;
+    }
+
     /* Scrollbar */
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 4px; }
 
     /* Animations */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
@@ -150,7 +161,7 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     .service-card-selected { box-shadow: 0 0 0 2px var(--c-blue), 0 8px 32px rgba(59,130,246,0.12); }
     .service-card-selected-amber { box-shadow: 0 0 0 2px var(--c-amber), 0 8px 32px rgba(245,158,11,0.12); }
 
-    button { position: relative; overflow: hidden; outline: none; }
+    button { position: relative; overflow: hidden; cursor: pointer; border: none; }
     .input-field:focus { outline: none; border-color: var(--c-blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
 
     /* Gradients */
@@ -189,7 +200,7 @@ const isWebViewUserAgent = () => {
 const cleanupStorage = () => {
   try {
     Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('@thaly_app')) {
+      if (key.startsWith('@thaly_app') && key !== CONFIG.STORAGE_KEY) {
         try { JSON.parse(localStorage.getItem(key) || '{}'); } catch { localStorage.removeItem(key); }
       }
     });
@@ -199,7 +210,7 @@ const cleanupStorage = () => {
 // ==================================================================================
 // ICON COMPONENT
 // ==================================================================================
-const Icon = memo(({ name, size = 20, className = '' }: { name: string; size?: number; className?: string }) => {
+const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: number; className?: string }) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true">
       <path d={ICON_PATHS[name] || ''} />
@@ -432,11 +443,11 @@ const getData = (lang: 'pt' | 'en') => {
 
 // Toast Notification
 const ToastContainer = memo(({ toasts, isDark }: { toasts: any[]; isDark: boolean }) => (
-  <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-3 pointer-events-none w-full max-w-sm px-4">
+  <div aria-live="polite" className="fixed top-5 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-3 pointer-events-none w-full max-w-sm px-4">
     {toasts.map(t => (
       <div key={t.id} role="alert" className={`animate-toast-in pointer-events-auto flex items-center gap-4 px-5 py-4 rounded-2xl border shadow-2xl ${t.type === 'error' ? 'bg-red-950 border-red-500 text-red-100 shadow-[0_8px_30px_rgba(220,38,38,0.3)]' : isDark ? 'bg-[#181c25] border-zinc-600 text-white shadow-[0_8px_30px_rgba(0,0,0,0.8)]' : 'bg-white border-slate-300 text-slate-900 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'}`}>
         <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${t.type === 'error' ? 'bg-red-800 text-red-200' : 'bg-emerald-500/20 text-emerald-400'}`}>
-          <Icon name={t.type === 'error' ? 'alert-circle' : 'check'} size={16} />
+          <Icon name={t.type === 'error' ? 'alert-circle' : 'check'} size={18} />
         </div>
         <span className="text-sm font-semibold leading-snug">{t.msg}</span>
       </div>
@@ -456,87 +467,93 @@ const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disa
     amber: "bg-amber-500 text-zinc-950 hover:bg-amber-400 shadow-lg shadow-amber-900/25 font-bold hover:-translate-y-0.5",
   };
   const sizes: Record<string, string> = {
-    sm: "h-10 text-xs px-6 py-2 rounded-xl",
-    md: "h-12 text-sm px-8 py-3 rounded-2xl",
-    lg: "h-14 text-base px-10 py-4 rounded-2xl",
-    xl: "h-16 text-base px-12 py-5 rounded-2xl",
+    sm: "min-h-[44px] text-sm px-6 py-2 rounded-xl",
+    md: "min-h-[48px] text-base px-8 py-3 rounded-2xl",
+    lg: "min-h-[56px] text-base px-10 py-4 rounded-2xl",
+    xl: "min-h-[64px] text-lg px-12 py-5 rounded-2xl",
   };
   return (
     <button type="button" onClick={onClick} disabled={disabled || loading} aria-label={ariaLabel}
       className={`${base} ${variants[variant] || variants.primary} ${sizes[size] || sizes.md} ${full ? 'w-full' : ''} ${className}`}>
       {loading
-        ? <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-        : <>{icon && <Icon name={icon} size={20} />}{children}</>}
+        ? <span className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        : <>{icon && <Icon name={icon} size={22} />}{children}</>}
     </button>
   );
 });
 
 // Refined Input
-const InputField = memo(({ label, value, onChange, placeholder, icon, type = 'text', isDark = true, hasError = false, disabled = false, maxLength }: any) => (
-  <div className={`space-y-2 w-full ${hasError ? 'animate-shake' : ''}`}>
-    {label && (
-      <label className={`text-xs font-semibold uppercase tracking-widest pl-1 ${hasError ? 'text-red-400' : isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{label}</label>
-    )}
-    <div className="relative group">
-      {icon && (
-        <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-400' : isDark ? 'text-zinc-500 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}>
-          <Icon name={icon} size={20} />
-        </div>
+const InputField = memo(({ label, value, onChange, placeholder, icon, type = 'text', isDark = true, hasError = false, disabled = false, maxLength, id }: any) => {
+  const inputId = id || `input-${label?.replace(/\s+/g, '-').toLowerCase()}`;
+  return (
+    <div className={`space-y-2 w-full ${hasError ? 'animate-shake' : ''}`}>
+      {label && (
+        <label htmlFor={inputId} className={`block text-xs font-semibold uppercase tracking-widest pl-1 ${hasError ? 'text-red-400' : isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+          {label}
+        </label>
       )}
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        disabled={disabled}
-        maxLength={maxLength}
-        className={`input-field w-full h-14 rounded-2xl text-base font-medium transition-all border outline-none disabled:opacity-50 disabled:cursor-not-allowed ${icon ? 'pl-12 pr-4' : 'px-5'} ${hasError
-          ? 'border-red-500/50 bg-red-950/20 text-red-300 placeholder:text-red-500/40'
-          : isDark
-            ? 'border-white/10 bg-white/5 text-white placeholder:text-zinc-600 focus:border-blue-500/60 focus:bg-white/8'
-            : 'border-black/10 bg-black/4 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-blue-50/50'
-        }`}
-      />
+      <div className="relative group">
+        {icon && (
+          <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-400' : isDark ? 'text-zinc-500 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}>
+            <Icon name={icon} size={22} />
+          </div>
+        )}
+        <input
+          id={inputId}
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          disabled={disabled}
+          maxLength={maxLength}
+          className={`input-field w-full min-h-[56px] rounded-2xl text-base font-medium transition-all border outline-none disabled:opacity-50 disabled:cursor-not-allowed ${icon ? 'pl-12 pr-4' : 'px-5'} ${hasError
+            ? 'border-red-500/50 bg-red-950/20 text-red-300 placeholder:text-red-500/40'
+            : isDark
+              ? 'border-white/12 bg-white/5 text-white placeholder:text-zinc-500 focus:border-blue-500 focus:bg-white/10'
+              : 'border-slate-300 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white'
+          }`}
+        />
+      </div>
     </div>
-  </div>
-));
+  );
+});
 
 // Side Menu
 const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user, T }: any) => {
   if (!isOpen) return null;
   return (
     <>
-      <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} />
-      <aside className={`fixed top-0 right-0 h-full w-80 max-w-[88vw] z-[70] p-8 shadow-2xl animate-slide-right flex flex-col ${isDark ? 'bg-[#11141a] border-l border-white/6' : 'bg-[#f9f8f6] border-l border-black/6'}`}>
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} aria-hidden="true" />
+      <aside role="dialog" aria-modal="true" aria-label={T.menu_title} className={`fixed top-0 right-0 h-full w-80 max-w-[88vw] z-[70] p-6 sm:p-8 shadow-2xl animate-slide-right flex flex-col ${isDark ? 'bg-[#11141a] border-l border-white/10' : 'bg-[#f9f8f6] border-l border-slate-200'}`}>
         <div className="flex justify-between items-center mb-8">
           <h2 className="font-display text-2xl">{T.menu_title}</h2>
-          <button onClick={onClose} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${isDark ? 'hover:bg-white/8 text-zinc-400' : 'hover:bg-black/5 text-slate-500'}`}>
-            <Icon name="x" size={22} />
+          <button onClick={onClose} aria-label="Fechar menu" className={`w-12 h-12 flex items-center justify-center rounded-xl transition-colors ${isDark ? 'hover:bg-white/10 text-zinc-300' : 'hover:bg-slate-200 text-slate-600'}`}>
+            <Icon name="x" size={24} />
           </button>
         </div>
 
-        <div className={`mb-6 p-6 rounded-3xl border relative overflow-hidden ${isDark ? 'bg-blue-950/30 border-blue-500/20' : 'bg-blue-50 border-blue-200'}`}>
+        <div className={`mb-6 p-6 rounded-3xl border relative overflow-hidden ${isDark ? 'bg-blue-950/40 border-blue-500/30' : 'bg-blue-50 border-blue-200'}`}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-          <p className={`text-[10px] uppercase font-semibold tracking-widest mb-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{T.level_yours}</p>
+          <p className={`text-xs uppercase font-semibold tracking-widest mb-2 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{T.level_yours}</p>
           <div className="flex items-baseline gap-2">
             <span className="font-display text-5xl whitespace-nowrap">{user.xp}</span>
-            <span className={`text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>XP</span>
+            <span className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>XP</span>
           </div>
-          <p className={`text-xs mt-4 font-medium leading-relaxed border-t pt-4 ${isDark ? 'border-white/8 text-zinc-500' : 'border-black/8 text-slate-500'}`}>{T.menu_warning}</p>
+          <p className={`text-sm mt-4 font-medium leading-relaxed border-t pt-4 ${isDark ? 'border-white/10 text-zinc-400' : 'border-slate-300 text-slate-600'}`}>{T.menu_warning}</p>
         </div>
 
-        <nav className="flex-1 space-y-3">
-          <button onClick={toggleTheme} className={`w-full flex items-center justify-between p-5 rounded-2xl transition-colors ${isDark ? 'hover:bg-white/6 text-zinc-300' : 'hover:bg-black/4 text-slate-700'}`}>
-            <div className="flex items-center gap-3">
-              <Icon name={isDark ? "moon" : "sun"} size={20} className={isDark ? "text-blue-400" : "text-blue-600"} />
-              <span className="text-base font-medium">{T.theme_title}</span>
+        <nav className="flex-1 space-y-4">
+          <button onClick={toggleTheme} aria-label={`Mudar para tema ${isDark ? T.theme_light : T.theme_dark}`} className={`w-full min-h-[56px] flex items-center justify-between px-5 py-4 rounded-2xl transition-colors ${isDark ? 'hover:bg-white/10 text-zinc-200' : 'hover:bg-slate-200 text-slate-800'}`}>
+            <div className="flex items-center gap-4">
+              <Icon name={isDark ? "moon" : "sun"} size={22} className={isDark ? "text-blue-400" : "text-blue-600"} />
+              <span className="text-base font-semibold">{T.theme_title}</span>
             </div>
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg ${isDark ? 'bg-white/8 text-zinc-400' : 'bg-black/6 text-slate-500'}`}>{isDark ? T.theme_dark : T.theme_light}</span>
+            <span className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg ${isDark ? 'bg-white/10 text-zinc-300' : 'bg-slate-300 text-slate-700'}`}>{isDark ? T.theme_dark : T.theme_light}</span>
           </button>
 
-          <button onClick={() => { if (navigator.share) navigator.share({ title: 'Thalyson Massagens', text: T.share_text, url: window.location.href }); }} className={`w-full flex items-center gap-3 p-5 rounded-2xl transition-colors ${isDark ? 'hover:bg-white/6 text-zinc-300' : 'hover:bg-black/4 text-slate-700'}`}>
-            <Icon name="share" size={20} className="text-emerald-400" />
-            <span className="text-base font-medium">{T.refer_btn}</span>
+          <button onClick={() => { if (navigator.share) navigator.share({ title: 'Thalyson Massagens', text: T.share_text, url: window.location.href }); }} className={`w-full min-h-[56px] flex items-center gap-4 px-5 py-4 rounded-2xl transition-colors ${isDark ? 'hover:bg-white/10 text-zinc-200' : 'hover:bg-slate-200 text-slate-800'}`}>
+            <Icon name="share" size={22} className="text-emerald-500" />
+            <span className="text-base font-semibold">{T.refer_btn}</span>
           </button>
         </nav>
       </aside>
@@ -546,29 +563,29 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user, T }: any) =
 
 // Review Card
 const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
-  <article className={`h-full flex flex-col p-8 rounded-[2rem] border transition-all duration-300 ${isDark ? 'bg-white/4 border-white/8 hover:bg-white/6 hover:border-white/14' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}`}>
+  <article className={`h-full flex flex-col p-6 sm:p-8 rounded-[2rem] border transition-all duration-300 ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}`}>
     <div className="flex items-start justify-between mb-5 gap-3">
       <div className="flex items-center gap-4 min-w-0">
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold font-display shrink-0 ${isDark ? 'bg-blue-500/15 text-blue-300 border border-blue-500/20' : 'bg-blue-50 text-blue-700 border border-blue-200'}`}>
+        <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold font-display shrink-0 ${isDark ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-blue-50 text-blue-700 border border-blue-200'}`}>
           {review.n.charAt(0)}
         </div>
-        <div className="min-w-0">
-          <span className={`text-base font-semibold block ${isDark ? 'text-white' : 'text-slate-900'}`}>{review.n}</span>
-          <span className={`text-xs block tracking-wide ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{review.loc}</span>
+        <div className="min-w-0 flex flex-col justify-center">
+          <h3 className={`text-base sm:text-lg font-semibold block ${isDark ? 'text-white' : 'text-slate-900'}`}>{review.n}</h3>
+          <span className={`text-sm block tracking-wide ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{review.loc}</span>
         </div>
       </div>
-      <div className="flex gap-0.5 shrink-0">
+      <div className="flex gap-1 shrink-0 mt-1">
         {[...Array(5)].map((_, i) => (
-          <Icon key={i} name="star" size={14} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />
+          <Icon key={i} name="star" size={16} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />
         ))}
       </div>
     </div>
 
-    <div className={`inline-flex self-start items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-wider mb-5 border ${isDark ? 'bg-amber-500/10 border-amber-500/25 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-700'}`}>
-      <Icon name="award" size={12} /> {review.serv}
+    <div className={`inline-flex self-start items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider mb-5 border ${isDark ? 'bg-amber-500/15 border-amber-500/30 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
+      <Icon name="award" size={14} /> {review.serv}
     </div>
 
-    <p className={`text-sm leading-relaxed font-medium italic flex-1 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>"{review.t}"</p>
+    <p className={`text-base leading-relaxed font-medium italic flex-1 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>"{review.t}"</p>
   </article>
 ));
 
@@ -576,15 +593,19 @@ const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }
 const FAQItem = memo(({ q, a, isDark }: { q: string; a: string; isDark: boolean }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className={`border-b last:border-b-0 ${isDark ? 'border-white/8' : 'border-slate-200'}`}>
-      <button onClick={() => setOpen(!open)} className="w-full py-6 flex items-center justify-between text-left gap-4 group">
-        <span className={`text-base font-medium leading-snug ${isDark ? 'text-white/90 group-hover:text-white' : 'text-slate-800 group-hover:text-slate-900'}`}>{q}</span>
-        <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300 ${open ? isDark ? 'bg-blue-600 border-blue-500 text-white rotate-180' : 'bg-blue-600 border-blue-500 text-white rotate-180' : isDark ? 'border-white/12 text-zinc-400' : 'border-slate-200 text-slate-400'}`}>
-          <Icon name="chevron-down" size={16} />
+    <div className={`border-b last:border-b-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+      <button 
+        onClick={() => setOpen(!open)} 
+        aria-expanded={open}
+        className="w-full py-6 flex items-center justify-between text-left gap-4 group min-h-[64px]"
+      >
+        <h3 className={`text-base sm:text-lg font-medium leading-snug ${isDark ? 'text-white/90 group-hover:text-white' : 'text-slate-800 group-hover:text-slate-900'}`}>{q}</h3>
+        <div className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 ${open ? isDark ? 'bg-blue-600 border-blue-500 text-white rotate-180' : 'bg-blue-600 border-blue-500 text-white rotate-180' : isDark ? 'border-white/20 text-zinc-300' : 'border-slate-300 text-slate-500'}`}>
+          <Icon name="chevron-down" size={20} />
         </div>
       </button>
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? 'max-h-96 pb-6 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <p className={`text-sm leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? 'max-h-[500px] pb-6 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <p className={`text-base leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{a}</p>
       </div>
     </div>
   );
@@ -600,19 +621,19 @@ const SmartTimer = memo(({ isDark, text }: any) => {
   const fmt = (t: number) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
   const pct = (time / 600) * 100;
   return (
-    <div className={`flex items-center gap-5 p-5 rounded-[2rem] border ${isDark ? 'bg-blue-950/30 border-blue-500/20' : 'bg-blue-50 border-blue-200'}`}>
-      <div className={`relative w-14 h-14 shrink-0`}>
-        <svg viewBox="0 0 36 36" className="w-14 h-14 -rotate-90">
-          <circle cx="18" cy="18" r="15" fill="none" stroke={isDark ? 'rgba(59,130,246,0.15)' : 'rgba(59,130,246,0.12)'} strokeWidth="2.5" />
+    <div className={`flex items-center gap-5 p-5 rounded-[2rem] border ${isDark ? 'bg-blue-950/40 border-blue-500/30' : 'bg-blue-50 border-blue-200'}`}>
+      <div className={`relative w-16 h-16 shrink-0`}>
+        <svg viewBox="0 0 36 36" className="w-16 h-16 -rotate-90">
+          <circle cx="18" cy="18" r="15" fill="none" stroke={isDark ? 'rgba(59,130,246,0.2)' : 'rgba(59,130,246,0.15)'} strokeWidth="2.5" />
           <circle cx="18" cy="18" r="15" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={`${pct * 0.942} 100`} className="transition-all duration-1000" />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <Icon name="clock" size={18} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
+          <Icon name="clock" size={20} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
         </div>
       </div>
       <div>
-        <p className={`text-[11px] font-semibold uppercase tracking-widest mb-1 ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>{text}</p>
-        <p className={`font-display text-2xl whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{fmt(time)}</p>
+        <p className={`text-xs font-semibold uppercase tracking-widest mb-1 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{text}</p>
+        <p className={`font-display text-2xl sm:text-3xl whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{fmt(time)}</p>
       </div>
     </div>
   );
@@ -620,15 +641,15 @@ const SmartTimer = memo(({ isDark, text }: any) => {
 
 // Rule Item
 const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
-  <div className={`flex gap-5 p-6 rounded-[2rem] border border-transparent transition-colors ${isDark ? 'hover:bg-white/5 hover:border-white/8' : 'hover:bg-slate-50 hover:border-slate-200'}`}>
-    <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/15 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
-      <Icon name={rule.icon} size={24} />
+  <article className={`flex gap-5 p-6 rounded-[2rem] border border-transparent transition-colors ${isDark ? 'hover:bg-white/5 hover:border-white/10' : 'hover:bg-slate-50 hover:border-slate-200'}`}>
+    <div className={`shrink-0 w-14 h-14 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>
+      <Icon name={rule.icon} size={28} />
     </div>
     <div>
-      <h4 className={`text-base font-semibold mb-2 font-display ${isDark ? 'text-white' : 'text-slate-900'}`}>{rule.title}</h4>
-      <p className={`text-sm leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{rule.description}</p>
+      <h4 className={`text-lg font-semibold mb-2 font-display ${isDark ? 'text-white' : 'text-slate-900'}`}>{rule.title}</h4>
+      <p className={`text-base leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{rule.description}</p>
     </div>
-  </div>
+  </article>
 ));
 
 // Modal de Serviço
@@ -636,64 +657,64 @@ const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDar
   if (!isOpen || !service) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-modal-backdrop">
-      <div className={`relative w-full max-w-md max-h-[90vh] flex flex-col rounded-[2.5rem] border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#11141a] border-white/10' : 'bg-[#ffffff] border-slate-200'}`}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md animate-modal-backdrop">
+      <div role="dialog" aria-modal="true" aria-labelledby="modal-title" className={`relative w-full max-w-lg max-h-[90vh] flex flex-col rounded-[2.5rem] border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#11141a] border-white/10' : 'bg-[#ffffff] border-slate-200'}`}>
         
-        <div className={`relative p-8 pb-6 flex-shrink-0 ${isPremium ? (isDark ? 'bg-amber-950/20' : 'bg-amber-50/50') : (isDark ? 'bg-blue-950/20' : 'bg-blue-50/50')}`}>
-          <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+        <div className={`relative p-8 pb-6 flex-shrink-0 ${isPremium ? (isDark ? 'bg-amber-950/30' : 'bg-amber-50/80') : (isDark ? 'bg-blue-950/30' : 'bg-blue-50/80')}`}>
+          <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
           
-          <button onClick={onClose} className={`absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isDark ? 'bg-black/20 text-white hover:bg-black/40' : 'bg-black/5 text-slate-700 hover:bg-black/10'}`}>
-            <Icon name="x" size={20} />
+          <button onClick={onClose} aria-label="Fechar detalhes do serviço" className={`absolute top-6 right-6 w-12 h-12 rounded-full flex items-center justify-center transition-colors ${isDark ? 'bg-black/30 text-white hover:bg-black/50' : 'bg-black/5 text-slate-700 hover:bg-black/10'}`}>
+            <Icon name="x" size={24} />
           </button>
 
-          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border shadow-lg mb-6 ${isPremium ? isDark ? 'bg-amber-500/15 border-amber-500/30 text-amber-400' : 'bg-amber-100 border-amber-300 text-amber-700' : isDark ? 'bg-white/10 border-white/20 text-white' : 'bg-white border-slate-200 text-slate-800'}`}>
-            <Icon name={service.icon} size={30} />
+          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border shadow-lg mb-6 ${isPremium ? isDark ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-amber-100 border-amber-300 text-amber-700' : isDark ? 'bg-white/10 border-white/20 text-white' : 'bg-white border-slate-200 text-slate-800'}`}>
+            <Icon name={service.icon} size={32} />
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            <div className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border ${isPremium ? isDark ? 'bg-amber-500/15 border-amber-500/30 text-amber-400' : 'bg-amber-100 border-amber-300 text-amber-800' : isDark ? 'bg-white/10 border-white/20 text-zinc-300' : 'bg-slate-100 border-slate-300 text-slate-600'}`}>
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <div className={`inline-block text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full border ${isPremium ? isDark ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-amber-100 border-amber-300 text-amber-800' : isDark ? 'bg-white/10 border-white/20 text-zinc-200' : 'bg-slate-100 border-slate-300 text-slate-700'}`}>
               {service.tag}
             </div>
             {service.popular && (
-              <div className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm ${isPremium ? 'bg-amber-500 text-zinc-950' : 'bg-blue-600 text-white'}`}>
+              <div className={`inline-block text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full shadow-sm ${isPremium ? 'bg-amber-500 text-zinc-950' : 'bg-blue-600 text-white'}`}>
                 {T.popular_badge}
               </div>
             )}
           </div>
 
-          <h3 className={`font-display text-2xl leading-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{service.title}</h3>
+          <h2 id="modal-title" className={`font-display text-3xl leading-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{service.title}</h2>
           
-          <div className="flex items-baseline gap-2 mt-4">
+          <div className="flex items-baseline gap-3 mt-4">
             {service.fullPrice && (
-              <span className={`text-sm font-medium line-through whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+              <span className={`text-base font-medium line-through whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                 {T.from} {formatMoney(service.fullPrice, lang)}
               </span>
             )}
-            <span className={`font-display text-2xl whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, lang)}</span>
+            <span className={`font-display text-3xl whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, lang)}</span>
           </div>
         </div>
 
-        <div className={`flex-1 overflow-y-auto p-8 pt-6 space-y-6 scrollbar-hide ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-          <p className="text-sm leading-relaxed font-medium">{service.desc}</p>
+        <div className={`flex-1 overflow-y-auto p-8 pt-6 space-y-8 scrollbar-hide ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+          <p className="text-base leading-relaxed font-medium">{service.desc}</p>
           
           <div>
-            <h4 className={`text-[11px] font-bold uppercase tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.details_label}</h4>
-            <div className="space-y-4">
+            <h4 className={`text-sm font-bold uppercase tracking-widest mb-5 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.details_label}</h4>
+            <div className="space-y-5">
               {service.details.split('\n').map((line: string, i: number) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className={`mt-1 shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${isPremium ? isDark ? 'bg-amber-500/15 text-amber-400' : 'bg-amber-100 text-amber-600' : isDark ? 'bg-blue-500/15 text-blue-400' : 'bg-blue-100 text-blue-600'}`}>
-                    <Icon name="check" size={12} />
+                <div key={i} className="flex items-start gap-4">
+                  <div className={`mt-1 shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${isPremium ? isDark ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700' : isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'}`}>
+                    <Icon name="check" size={14} />
                   </div>
-                  <span className={`text-sm leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{line}</span>
+                  <span className={`text-base leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{line}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className={`p-6 border-t shrink-0 ${isDark ? 'border-white/10 bg-[#11141a]' : 'border-slate-200 bg-white'}`}>
+        <div className={`p-6 sm:p-8 border-t shrink-0 ${isDark ? 'border-white/10 bg-[#11141a]' : 'border-slate-200 bg-white'}`}>
           <Button 
-            full size="lg" 
+            full size="xl" 
             variant={isInCart ? 'outline' : isPremium ? 'amber' : 'primary'}
             onClick={() => { onSelect(service); onClose(); }}
           >
@@ -708,61 +729,62 @@ const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDar
 // Service Card
 const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, lang, isPremium = false, onOpenModal }: any) => {
   return (
-    <div
-      className={`relative rounded-[2rem] border transition-all duration-300 overflow-hidden card-hover cursor-pointer flex flex-col ${isInCart
+    <button
+      className={`relative w-full text-left rounded-[2rem] border transition-all duration-300 overflow-hidden card-hover flex flex-col min-h-[220px] ${isInCart
         ? isPremium
-          ? 'service-card-selected-amber border-amber-500/70 bg-amber-500/6'
-          : 'service-card-selected border-blue-500/70 bg-blue-500/6'
+          ? 'service-card-selected-amber border-amber-500/70 bg-amber-500/10'
+          : 'service-card-selected border-blue-500/70 bg-blue-500/10'
         : isDark
-          ? 'bg-white/4 border-white/8 hover:border-white/16 hover:bg-white/6'
+          ? 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
           : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm hover:shadow-md'
       }`}
       onClick={() => onOpenModal(service)}
+      aria-label={`Ver detalhes de ${service.title}`}
     >
       {isInCart && (
-        <div className={`absolute top-5 right-5 z-10 w-7 h-7 rounded-full flex items-center justify-center animate-check-pop ${isPremium ? 'bg-amber-500 text-zinc-950' : 'bg-blue-600 text-white'}`}>
-          <Icon name="check" size={16} />
+        <div className={`absolute top-5 right-5 z-10 w-8 h-8 rounded-full flex items-center justify-center animate-check-pop ${isPremium ? 'bg-amber-500 text-zinc-950' : 'bg-blue-600 text-white'}`}>
+          <Icon name="check" size={18} />
         </div>
       )}
 
-      <div className="p-7 flex-1 flex flex-col">
-        <div className="flex items-start gap-4 mb-5">
-          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border shrink-0 ${isPremium ? isDark ? 'bg-amber-500/12 border-amber-500/25 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600' : isDark ? 'bg-white/8 border-white/10 text-zinc-200' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-            <Icon name={service.icon} size={26} />
+      <div className="p-6 sm:p-7 flex-1 flex flex-col">
+        <div className="flex items-start gap-4 sm:gap-5 mb-5">
+          <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center border shrink-0 ${isPremium ? isDark ? 'bg-amber-500/15 border-amber-500/30 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600' : isDark ? 'bg-white/10 border-white/20 text-zinc-200' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+            <Icon name={service.icon} size={28} />
           </div>
           <div className="flex-1 min-w-0 pr-4">
-            <h3 className={`text-lg font-display leading-tight mb-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{service.title}</h3>
-            <p className={`text-[13px] leading-relaxed line-clamp-2 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{service.desc}</p>
+            <h3 className={`text-lg sm:text-xl font-display leading-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{service.title}</h3>
+            <p className={`text-sm sm:text-base leading-relaxed line-clamp-2 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{service.desc}</p>
           </div>
         </div>
 
         <div className="flex items-end justify-between mt-auto pt-6">
           <div className="flex items-center gap-2">
-            <div className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border ${isPremium ? isDark ? 'bg-amber-500/10 border-amber-500/25 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-700' : isDark ? 'bg-white/6 border-white/10 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+            <div className={`inline-block text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border ${isPremium ? isDark ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-amber-50 border-amber-300 text-amber-800' : isDark ? 'bg-white/10 border-white/20 text-zinc-300' : 'bg-slate-100 border-slate-300 text-slate-600'}`}>
               {service.tag}
             </div>
           </div>
           
           <div className="text-right shrink-0">
             {service.fullPrice && (
-              <p className={`text-[11px] font-medium line-through mb-0.5 whitespace-nowrap ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
+              <p className={`text-xs font-medium line-through mb-1 whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                 {formatMoney(service.fullPrice, lang)}
               </p>
             )}
-            <p className={`font-display text-xl leading-none whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, lang)}</p>
+            <p className={`font-display text-xl sm:text-2xl leading-none whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, lang)}</p>
           </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 });
 
 // Category Section Configuration
 const CATEGORY_CONFIG: Record<string, { color: string; glow: string; borderColor: string; bg: string; lightBg: string; lightBorder: string }> = {
-  relax: { color: '#3b82f6', glow: 'rgba(59,130,246,0.12)', borderColor: 'rgba(59,130,246,0.20)', bg: 'rgba(59,130,246,0.04)', lightBg: 'rgba(59,130,246,0.03)', lightBorder: 'rgba(59,130,246,0.12)' },
-  express: { color: '#10b981', glow: 'rgba(16,185,129,0.12)', borderColor: 'rgba(16,185,129,0.20)', bg: 'rgba(16,185,129,0.04)', lightBg: 'rgba(16,185,129,0.03)', lightBorder: 'rgba(16,185,129,0.12)' },
-  final: { color: '#f59e0b', glow: 'rgba(245,158,11,0.12)', borderColor: 'rgba(245,158,11,0.20)', bg: 'rgba(245,158,11,0.04)', lightBg: 'rgba(245,158,11,0.03)', lightBorder: 'rgba(245,158,11,0.12)' },
-  care: { color: '#ec4899', glow: 'rgba(236,72,153,0.12)', borderColor: 'rgba(236,72,153,0.20)', bg: 'rgba(236,72,153,0.04)', lightBg: 'rgba(236,72,153,0.03)', lightBorder: 'rgba(236,72,153,0.12)' },
+  relax: { color: '#3b82f6', glow: 'rgba(59,130,246,0.15)', borderColor: 'rgba(59,130,246,0.25)', bg: 'rgba(59,130,246,0.05)', lightBg: 'rgba(59,130,246,0.04)', lightBorder: 'rgba(59,130,246,0.15)' },
+  express: { color: '#10b981', glow: 'rgba(16,185,129,0.15)', borderColor: 'rgba(16,185,129,0.25)', bg: 'rgba(16,185,129,0.05)', lightBg: 'rgba(16,185,129,0.04)', lightBorder: 'rgba(16,185,129,0.15)' },
+  final: { color: '#f59e0b', glow: 'rgba(245,158,11,0.15)', borderColor: 'rgba(245,158,11,0.25)', bg: 'rgba(245,158,11,0.05)', lightBg: 'rgba(245,158,11,0.04)', lightBorder: 'rgba(245,158,11,0.15)' },
+  care: { color: '#ec4899', glow: 'rgba(236,72,153,0.15)', borderColor: 'rgba(236,72,153,0.25)', bg: 'rgba(236,72,153,0.05)', lightBg: 'rgba(236,72,153,0.04)', lightBorder: 'rgba(236,72,153,0.15)' },
 };
 
 // ==================================================================================
@@ -1167,10 +1189,10 @@ export default function App() {
               <span className="font-display text-5xl text-white">T</span>
             </div>
           </div>
-          <div className="w-full h-1.5 bg-white/6 rounded-full overflow-hidden mb-5">
+          <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-5">
             <div className="h-full bg-gradient-to-r from-blue-600 via-blue-400 to-blue-600 w-1/2 loading-bar-anim" />
           </div>
-          <p className={`text-[11px] uppercase font-semibold tracking-[0.2em] ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.loading}</p>
+          <p className={`text-sm uppercase font-semibold tracking-[0.2em] ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.loading}</p>
         </div>
       </div>
     );
@@ -1181,7 +1203,7 @@ export default function App() {
       <GlobalStyles isDark={isDark} />
 
       {isDark && (
-        <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none" aria-hidden="true">
           <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[120px]" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/4 rounded-full blur-[100px]" />
         </div>
@@ -1202,49 +1224,49 @@ export default function App() {
         isPremium={selectedServiceForModal?.type === 'pack'}
       />
 
-      <main className={`min-h-screen relative z-10 pb-44 px-5 md:px-8 max-w-5xl mx-auto`}>
+      <main className={`min-h-screen relative z-10 pb-56 px-5 sm:px-8 max-w-5xl mx-auto`}>
 
         {step !== 4 && (
-          <header className="pt-10 pb-8 md:pt-14 md:pb-12">
-            <div className="flex items-start justify-between gap-5">
-              <button onClick={() => setStep(0)} className="group text-left">
-                <h1 className={`font-display text-3xl md:text-4xl leading-tight mb-2 transition-opacity group-hover:opacity-80 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          <header className="pt-10 pb-8 sm:pt-14 sm:pb-12">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+              <button onClick={() => setStep(0)} className="group text-left" aria-label="Voltar para o início">
+                <h1 className={`font-display text-4xl sm:text-5xl leading-tight mb-2 transition-opacity group-hover:opacity-80 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   Thalyson Massagens
                 </h1>
-                <div className={`flex items-center gap-3 text-[11px] uppercase tracking-widest font-semibold ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
-                  <span className="relative flex h-2 w-2 shrink-0">
+                <div className={`flex items-center gap-3 text-sm uppercase tracking-widest font-semibold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                  <span className="relative flex h-3 w-3 shrink-0">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500" />
                   </span>
                   {lang === 'en' ? `${user.ordersCount}+ ${T.header_tensions}` : `+${user.ordersCount} ${T.header_tensions}`}
                 </div>
               </button>
 
-              <div className="flex items-center gap-3 shrink-0">
-                <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} className={`relative h-11 w-11 flex items-center justify-center rounded-2xl border transition-all ${isDark ? 'border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white' : 'border-black/8 bg-black/4 text-slate-500 hover:text-slate-800'}`}>
-                  <Icon name="globe" size={20} />
-                  <span className="absolute -bottom-2 -right-2 text-[8px] font-bold bg-blue-600 text-white px-1.5 py-0.5 rounded-md leading-none">{lang.toUpperCase()}</span>
+              <div className="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-end">
+                <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} aria-label={`Mudar idioma para ${lang === 'pt' ? 'Inglês' : 'Português'}`} className={`relative h-14 w-14 flex items-center justify-center rounded-2xl border transition-all ${isDark ? 'border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white' : 'border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900'}`}>
+                  <Icon name="globe" size={24} />
+                  <span className="absolute -bottom-2 -right-2 text-[10px] font-bold bg-blue-600 text-white px-2 py-0.5 rounded-md leading-none">{lang.toUpperCase()}</span>
                 </button>
-                <button onClick={() => openExternal('instagram')} className={`h-11 w-11 flex items-center justify-center rounded-2xl border transition-all ${isDark ? 'border-white/10 bg-white/5 text-pink-400 hover:bg-white/10' : 'border-black/8 bg-black/4 text-pink-600 hover:text-pink-700'}`}>
-                  <Icon name="instagram" size={20} />
+                <button onClick={() => openExternal('instagram')} aria-label="Abrir Instagram" className={`h-14 w-14 flex items-center justify-center rounded-2xl border transition-all ${isDark ? 'border-white/10 bg-white/5 text-pink-400 hover:bg-white/10' : 'border-slate-200 bg-slate-50 text-pink-600 hover:text-pink-700'}`}>
+                  <Icon name="instagram" size={24} />
                 </button>
-                <button onClick={() => setMenuOpen(true)} className={`h-11 w-11 flex items-center justify-center rounded-2xl border transition-all ${isDark ? 'border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white' : 'border-black/8 bg-black/4 text-slate-500 hover:text-slate-800'}`}>
-                  <Icon name="menu" size={20} />
+                <button onClick={() => setMenuOpen(true)} aria-label="Abrir Menu Principal" className={`h-14 w-14 flex items-center justify-center rounded-2xl border transition-all ${isDark ? 'border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white' : 'border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900'}`}>
+                  <Icon name="menu" size={24} />
                 </button>
               </div>
             </div>
 
             {step > 0 && step < 4 && (
-              <div className="mt-10 flex items-center gap-3">
+              <nav aria-label="Progresso do agendamento" className="mt-12 flex items-center gap-4">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-2 cursor-pointer" onClick={() => { if (i < step) setStep(i); }}>
-                    <div className={`w-full h-1.5 rounded-full transition-all duration-500 ${step > i ? 'bg-blue-600' : step === i ? 'bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]' : isDark ? 'bg-white/8' : 'bg-black/8'}`} />
-                    <span className={`text-[10px] uppercase font-semibold tracking-widest ${step >= i ? isDark ? 'text-white/80' : 'text-slate-700' : isDark ? 'text-white/20' : 'text-slate-300'}`}>
+                  <div key={i} className="flex-1 flex flex-col items-center gap-3 cursor-pointer" onClick={() => { if (i < step) setStep(i); }}>
+                    <div className={`w-full h-2 rounded-full transition-all duration-500 ${step > i ? 'bg-blue-600' : step === i ? 'bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]' : isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
+                    <span className={`text-xs uppercase font-bold tracking-widest ${step >= i ? isDark ? 'text-white' : 'text-slate-800' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
                       {i === 1 ? T.step_where : i === 2 ? T.step_when : T.step_summary}
                     </span>
                   </div>
                 ))}
-              </div>
+              </nav>
             )}
           </header>
         )}
@@ -1256,99 +1278,99 @@ export default function App() {
           {step === 0 && (
             <section className="animate-fade-up space-y-16">
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
                 <div>
-                  <h2 className={`font-display text-4xl md:text-5xl leading-[1.15] mb-5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  <h2 className={`font-display text-4xl sm:text-5xl leading-[1.2] mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {T.welcome} <span className="italic text-gradient-blue">{user.name ? String(user.name).trim().split(' ')[0] : T.welcome_anon}</span>
                   </h2>
-                  <p className={`text-base md:text-lg leading-relaxed max-w-md ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.choose_sub}</p>
+                  <p className={`text-lg sm:text-xl leading-relaxed max-w-md ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.choose_sub}</p>
                 </div>
 
-                <div className={`p-8 rounded-[2rem] border relative overflow-hidden ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/6 rounded-full blur-2xl -translate-y-1/3 translate-x-1/3 pointer-events-none" />
-                  <div className="flex items-start justify-between mb-8 relative">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' : 'bg-amber-50 text-amber-600 border border-amber-200'}`}>
-                        <Icon name="award" size={24} />
+                <article className={`p-8 sm:p-10 rounded-[2.5rem] border relative overflow-hidden ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3 pointer-events-none" />
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-10 gap-6 relative">
+                    <div className="flex items-center gap-5">
+                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' : 'bg-amber-50 text-amber-700 border border-amber-300'}`}>
+                        <Icon name="award" size={32} />
                       </div>
                       <div>
-                        <p className={`text-[10px] uppercase font-semibold tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.level_label}</p>
-                        <h3 className={`text-base font-semibold mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{getCurrentLevelTitle()}</h3>
+                        <h3 className={`text-sm uppercase font-bold tracking-widest ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.level_label}</h3>
+                        <p className={`text-xl font-semibold mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{getCurrentLevelTitle()}</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <span className="font-display text-4xl text-gradient-blue whitespace-nowrap">{user.xp}</span>
-                      <span className={`text-[10px] uppercase font-bold tracking-widest block ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.level_current}</span>
+                    <div className="sm:text-right">
+                      <span className="font-display text-5xl sm:text-6xl text-gradient-blue whitespace-nowrap">{user.xp}</span>
+                      <span className={`text-xs uppercase font-bold tracking-widest block mt-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.level_current}</span>
                     </div>
                   </div>
 
                   <div className="relative">
-                    <div className={`flex justify-between text-[10px] uppercase font-semibold tracking-widest mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                    <div className={`flex justify-between text-xs uppercase font-bold tracking-widest mb-4 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                       <span>{T.level_journey}</span>
                       <span>{Math.floor(getCurrentLevelProgress())}%</span>
                     </div>
-                    <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-white/6' : 'bg-slate-100'}`}>
+                    <div className={`h-3 rounded-full overflow-hidden ${isDark ? 'bg-white/10' : 'bg-slate-200'}`}>
                       <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-1000" style={{ width: `${getCurrentLevelProgress()}%` }} />
                     </div>
                     {nextLevel && (
-                      <p className={`text-xs mt-4 text-center font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                        {T.msg_level_keep1} <strong className={isDark ? 'text-white' : 'text-slate-800'}>{nextLevel.needed} XP</strong> {T.msg_level_keep2} <span className="text-blue-400 whitespace-nowrap">{formatMoney(nextLevel.reward, lang)}</span>
+                      <p className={`text-sm mt-6 text-center font-medium ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
+                        {T.msg_level_keep1} <strong className={isDark ? 'text-white' : 'text-slate-900'}>{nextLevel.needed} XP</strong> {T.msg_level_keep2} <span className="text-blue-500 whitespace-nowrap font-semibold">{formatMoney(nextLevel.reward, lang)}</span>
                       </p>
                     )}
                   </div>
-                </div>
+                </article>
               </div>
 
-              <div className={`flex p-2 rounded-2xl border w-fit mx-auto shadow-sm ${isDark ? 'bg-white/4 border-white/8' : 'bg-slate-50 border-slate-200'}`}>
+              <nav aria-label="Tipos de agendamento" className={`flex p-2 sm:p-3 rounded-3xl border w-fit mx-auto shadow-sm ${isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200'}`}>
                 {[
                   { id: 'single', label: T.tab_single, icon: 'user' },
                   { id: 'packs', label: T.tab_packs, icon: 'package' }
                 ].map(tab => (
-                  <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-3 px-6 py-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-300 ${activeTab === tab.id
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id)} aria-pressed={activeTab === tab.id}
+                    className={`flex items-center gap-3 px-6 sm:px-8 py-4 rounded-2xl text-sm font-bold uppercase tracking-wider transition-all duration-300 min-h-[56px] ${activeTab === tab.id
                       ? tab.id === 'packs' ? 'bg-amber-500 text-zinc-950 shadow-lg' : 'bg-blue-600 text-white shadow-lg'
-                      : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-700'}`}>
-                    <Icon name={tab.icon} size={18} />
+                      : isDark ? 'text-zinc-400 hover:text-white hover:bg-white/5' : 'text-slate-500 hover:text-slate-800 hover:bg-white'}`}>
+                    <Icon name={tab.icon} size={22} />
                     {tab.label}
                   </button>
                 ))}
-              </div>
+              </nav>
 
               <div className="tab-content">
                 {activeTab === 'single' ? (
-                  <div className="space-y-14">
+                  <div className="space-y-16">
                     {categoryConfig.map(cat => {
                       const services = DATA.services.filter((s: ServiceItem) => s.category === cat.id);
                       if (!services.length) return null;
                       const cfg = CATEGORY_CONFIG[cat.id];
                       return (
-                        <div key={cat.id} className="rounded-[2.5rem] overflow-hidden border" style={{ borderColor: cfg.borderColor, background: isDark ? cfg.bg : cfg.lightBg }}>
-                          <div className="px-8 py-6 flex items-center gap-5 border-b" style={{ borderColor: cfg.borderColor }}>
-                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm" style={{ background: `${cfg.color}15`, border: `1px solid ${cfg.color}30` }}>
-                              <Icon name={cat.icon} size={28} style={{ color: cfg.color }} />
+                        <section key={cat.id} aria-label={cat.title} className="rounded-[2.5rem] overflow-hidden border" style={{ borderColor: cfg.borderColor, background: isDark ? cfg.bg : cfg.lightBg }}>
+                          <div className="px-6 sm:px-10 py-8 flex items-center gap-6 border-b" style={{ borderColor: cfg.borderColor }}>
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center shrink-0 shadow-sm" style={{ background: `${cfg.color}15`, border: `1px solid ${cfg.color}30` }}>
+                              <Icon name={cat.icon} size={36} style={{ color: cfg.color }} />
                             </div>
                             <div>
-                              <h3 className={`font-display text-2xl leading-none mb-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{cat.title}</h3>
-                              <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{cat.desc}</p>
+                              <h2 className={`font-display text-3xl sm:text-4xl leading-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{cat.title}</h2>
+                              <p className={`text-base sm:text-lg ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{cat.desc}</p>
                             </div>
                             {booking.cart.filter(c => c.category === cat.id).length > 0 && (
-                              <div className="ml-auto shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md" style={{ background: cfg.color }}>
+                              <div className="ml-auto shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-base font-bold text-white shadow-md" style={{ background: cfg.color }}>
                                 {booking.cart.filter(c => c.category === cat.id).length}
                               </div>
                             )}
                           </div>
 
-                          <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-5">
+                          <div className="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                             {services.map((s: ServiceItem) => (
                               <ServiceCard key={s.id} service={s} isInCart={booking.cart.some(c => c.id === s.id)} onToggle={handleToggleCartItem} isDark={isDark} T={T} lang={lang} onOpenModal={setSelectedServiceForModal} />
                             ))}
                           </div>
-                        </div>
+                        </section>
                       );
                     })}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {DATA.plans.map((s: ServiceItem) => (
                       <ServiceCard key={s.id} service={s} isInCart={booking.cart.some(c => c.id === s.id)} onToggle={handleToggleCartItem} isDark={isDark} T={T} lang={lang} isPremium={true} onOpenModal={setSelectedServiceForModal} />
                     ))}
@@ -1356,35 +1378,35 @@ export default function App() {
                 )}
               </div>
 
-              <div className="py-12 border-t border-b" style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className={`font-display text-3xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title}</h3>
-                  <div className="hidden md:flex gap-3">
+              <section aria-labelledby="reviews-title" className="py-16 border-t border-b" style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+                <div className="flex items-center justify-between mb-10">
+                  <h2 id="reviews-title" className={`font-display text-4xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title}</h2>
+                  <div className="hidden md:flex gap-4">
                     {['chevron-left', 'chevron-right'].map((dir, i) => (
-                      <button key={dir} onClick={() => reviewScrollRef.current?.scrollBy({ left: i === 0 ? -360 : 360, behavior: 'smooth' })}
-                        className={`w-11 h-11 rounded-2xl flex items-center justify-center border transition-all hover:-translate-y-0.5 ${isDark ? 'border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-900 shadow-sm'}`}>
-                        <Icon name={dir} size={20} />
+                      <button key={dir} aria-label={i === 0 ? "Ver avaliações anteriores" : "Ver próximas avaliações"} onClick={() => reviewScrollRef.current?.scrollBy({ left: i === 0 ? -400 : 400, behavior: 'smooth' })}
+                        className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-all hover:-translate-y-1 ${isDark ? 'border-white/10 bg-white/5 text-zinc-300 hover:text-white hover:bg-white/10' : 'border-slate-200 bg-white text-slate-600 hover:text-slate-900 shadow-sm'}`}>
+                        <Icon name={dir} size={24} />
                       </button>
                     ))}
                   </div>
                 </div>
-                <div ref={reviewScrollRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-5 pb-5 -mx-5 px-5" style={{ scrollbarWidth: 'none' }}>
+                <div ref={reviewScrollRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-6 pb-6 -mx-5 px-5 sm:-mx-8 sm:px-8" style={{ scrollbarWidth: 'none' }}>
                   {DATA.reviews.map((r: Review, i: number) => (
-                    <div key={i} className="snap-center shrink-0 w-[85vw] sm:w-80 md:w-96 h-auto">
+                    <div key={i} className="snap-center shrink-0 w-[85vw] sm:w-[400px] h-auto">
                       <ReviewCard review={r} isDark={isDark} />
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
 
-              <div className="max-w-3xl mx-auto pb-8">
-                <h3 className={`font-display text-3xl text-center mb-10 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.faq_title}</h3>
-                <div className={`rounded-[2rem] border overflow-hidden ${isDark ? 'bg-white/3 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
-                  <div className="px-8 divide-y" style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
+              <section aria-labelledby="faq-title" className="max-w-4xl mx-auto pb-10">
+                <h2 id="faq-title" className={`font-display text-4xl text-center mb-12 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.faq_title}</h2>
+                <div className={`rounded-[2.5rem] border overflow-hidden ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <div className="px-8 sm:px-10 divide-y" style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
                     {DATA.faq.map((item: any, idx: number) => <FAQItem key={idx} q={item.q} a={item.a} isDark={isDark} />)}
                   </div>
                 </div>
-              </div>
+              </section>
             </section>
           )}
 
@@ -1392,36 +1414,38 @@ export default function App() {
               STEP 1 — WHERE
           ═══════════════════════════════════════════════════════ */}
           {step === 1 && (
-            <section className="animate-fade-up max-w-xl mx-auto space-y-10">
-              <div className="text-center">
-                <h2 className={`font-display text-4xl md:text-5xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
-              </div>
+            <section className="animate-fade-up max-w-2xl mx-auto space-y-12">
+              <header className="text-center">
+                <h2 className={`font-display text-4xl sm:text-5xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
+              </header>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 {[
                   { id: 'home', label: T.loc_home, icon: 'home', desc: lang === 'en' ? 'I come to you' : 'Vou até você' },
                   { id: 'motel', label: T.loc_motel, icon: 'bed', desc: lang === 'en' ? 'Discreet space' : 'Local discreto' },
                   { id: 'hotel', label: T.loc_hotel, icon: 'building', desc: lang === 'en' ? 'Your room' : 'Seu quarto' }
                 ].map(x => (
-                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))}
-                    className={`py-6 px-3 rounded-3xl flex flex-col items-center gap-3 transition-all duration-300 border ${booking.locationType === x.id
-                      ? 'bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-900/30 scale-105'
-                      : isDark ? 'bg-white/4 border-white/8 text-zinc-400 hover:bg-white/8 hover:text-white hover:border-white/14' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 shadow-sm hover:shadow-md'}`}>
-                    <Icon name={x.icon} size={28} />
-                    <span className="text-[11px] font-semibold uppercase tracking-widest">{x.label}</span>
-                    <span className={`text-[10px] font-medium ${booking.locationType === x.id ? 'text-blue-200' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{x.desc}</span>
+                  <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} aria-pressed={booking.locationType === x.id}
+                    className={`py-8 px-4 rounded-[2rem] flex flex-row sm:flex-col items-center sm:justify-center gap-4 sm:gap-5 transition-all duration-300 border min-h-[100px] ${booking.locationType === x.id
+                      ? 'bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-900/40 sm:scale-105'
+                      : isDark ? 'bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white hover:border-white/20' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm hover:shadow-md'}`}>
+                    <Icon name={x.icon} size={32} />
+                    <div className="text-left sm:text-center">
+                      <span className="block text-sm sm:text-base font-bold uppercase tracking-widest">{x.label}</span>
+                      <span className={`block text-xs sm:text-sm mt-1 font-medium ${booking.locationType === x.id ? 'text-blue-200' : isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{x.desc}</span>
+                    </div>
                   </button>
                 ))}
               </div>
 
-              <div className={`p-8 rounded-[2rem] border space-y-6 ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <article className={`p-8 sm:p-12 rounded-[2.5rem] border space-y-8 ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <InputField isDark={isDark} label={T.input_name} value={user.name}
                   onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))}
                   icon="user" placeholder={lang === 'en' ? "Your name" : "Como quer ser chamado?"}
                   hasError={hasErrorGlobal && (!user.name || String(user.name).trim().length < 3)} />
 
                 {booking.locationType === 'home' && (
-                  <div className="space-y-6 animate-fade-up">
+                  <div className="space-y-8 animate-fade-up">
                     <InputField isDark={isDark} label={T.input_cep} value={booking.address.cep || ''}
                       onChange={handleCepChange}
                       icon="map-pin" placeholder="00000-000" type="tel" maxLength={9}
@@ -1458,7 +1482,7 @@ export default function App() {
                 )}
 
                 {booking.locationType === 'hotel' && (
-                  <div className="space-y-6 animate-fade-up">
+                  <div className="space-y-8 animate-fade-up">
                     <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName}
                       onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))}
                       icon="building" placeholder={lang === 'en' ? "Hotel name" : "Nome completo do Hotel"} hasError={hasErrorGlobal && !booking.address.placeName} />
@@ -1474,14 +1498,14 @@ export default function App() {
                 )}
 
                 {booking.locationType === 'motel' && (
-                  <div className={`p-6 rounded-2xl border flex items-start gap-5 animate-fade-up ${isDark ? 'bg-white/4 border-white/8' : 'bg-slate-50 border-slate-200'}`}>
-                    <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${isDark ? 'bg-pink-500/15 text-pink-400' : 'bg-pink-50 text-pink-600'}`}>
-                      <Icon name="heart" size={24} />
+                  <div className={`p-8 rounded-[2rem] border flex items-start gap-6 animate-fade-up ${isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200'}`}>
+                    <div className={`shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center ${isDark ? 'bg-pink-500/20 text-pink-400' : 'bg-pink-100 text-pink-600'}`}>
+                      <Icon name="heart" size={32} />
                     </div>
-                    <p className={`text-base font-medium leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.motel_note}</p>
+                    <p className={`text-lg font-medium leading-relaxed ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{T.motel_note}</p>
                   </div>
                 )}
-              </div>
+              </article>
             </section>
           )}
 
@@ -1489,20 +1513,20 @@ export default function App() {
               STEP 2 — WHEN
           ═══════════════════════════════════════════════════════ */}
           {step === 2 && (
-            <section className="animate-fade-up max-w-3xl mx-auto space-y-10">
-              <div className="text-center">
-                <h2 className={`font-display text-4xl md:text-5xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.select_time_title}</h2>
-              </div>
+            <section className="animate-fade-up max-w-4xl mx-auto space-y-12">
+              <header className="text-center">
+                <h2 className={`font-display text-4xl sm:text-5xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.select_time_title}</h2>
+              </header>
 
-              <div className={`p-5 rounded-3xl border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className="flex items-center justify-between mb-4">
-                  <span className={`text-[11px] uppercase font-semibold tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.cart_title}</span>
-                  <button onClick={() => setStep(0)} className={`text-[11px] uppercase font-semibold tracking-wider px-4 py-1.5 rounded-lg border transition-colors ${isDark ? 'border-white/10 text-zinc-300 hover:text-white hover:bg-white/8' : 'border-slate-200 text-slate-600 hover:text-slate-900'}`}>{T.cart_edit}</button>
+              <div className={`p-6 sm:p-8 rounded-[2.5rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                  <span className={`text-sm uppercase font-bold tracking-widest ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.cart_title}</span>
+                  <button onClick={() => setStep(0)} className={`text-sm uppercase font-bold tracking-wider px-6 py-2 min-h-[44px] rounded-xl border transition-colors ${isDark ? 'border-white/20 text-zinc-200 hover:text-white hover:bg-white/10' : 'border-slate-300 text-slate-700 hover:text-slate-900 hover:bg-slate-50'}`}>{T.cart_edit}</button>
                 </div>
-                <div className="flex flex-wrap gap-2.5">
+                <div className="flex flex-wrap gap-3">
                   {booking.cart.map(item => (
-                    <span key={item.id} className={`inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl border ${isDark ? 'bg-blue-500/10 border-blue-500/25 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
-                      <Icon name={item.icon} size={16} />
+                    <span key={item.id} className={`inline-flex items-center gap-3 text-base font-semibold px-5 py-3 rounded-2xl border ${isDark ? 'bg-blue-500/15 border-blue-500/30 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800'}`}>
+                      <Icon name={item.icon} size={20} />
                       {item.title}
                     </span>
                   ))}
@@ -1510,56 +1534,56 @@ export default function App() {
               </div>
 
               <div className="relative">
-                <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'} shadow-lg`}><Icon name="chevron-left" size={20} /></button>
-                <div ref={dateScrollRef} className="flex gap-3 overflow-x-auto snap-x px-2 py-4 scrollbar-hide">
+                <button onClick={() => scrollDates('left')} aria-label="Datas anteriores" className={`hidden md:flex absolute -left-16 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-2xl border transition-all ${isDark ? 'bg-white/10 border-white/20 text-zinc-300 hover:text-white hover:bg-white/20' : 'bg-white border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm'} shadow-lg`}><Icon name="chevron-left" size={24} /></button>
+                <div ref={dateScrollRef} className="flex gap-4 overflow-x-auto snap-x px-2 py-4 scrollbar-hide">
                   {daysArray.map((d, idx) => {
                     const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
                     const mo = d.toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { month: 'short' }).replace('.', '');
                     return (
-                      <button key={idx} onClick={() => { setBooking(b => ({ ...b, date: d.toISOString(), time: null })); vibrate(30); }}
-                        className={`snap-center shrink-0 w-[72px] h-[100px] rounded-2xl flex flex-col items-center justify-center gap-1.5 transition-all duration-300 border ${isSel ? 'bg-blue-600 border-blue-400 text-white scale-[1.08] shadow-xl shadow-blue-900/30' : isDark ? 'bg-white/4 border-white/8 text-zinc-400 hover:bg-white/8 hover:text-white hover:border-white/14' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 shadow-sm'}`}>
-                        <span className={`text-[9px] uppercase font-semibold tracking-wider ${isSel ? 'text-blue-200' : ''}`}>{mo}</span>
-                        <span className={`font-display text-3xl leading-none ${isSel ? 'text-white' : isDark ? 'text-white' : 'text-slate-800'}`}>{d.getDate()}</span>
-                        <span className={`text-[9px] uppercase font-semibold tracking-wider ${isSel ? 'text-blue-200' : ''}`}>{getDayLabel(d)}</span>
+                      <button key={idx} onClick={() => { setBooking(b => ({ ...b, date: d.toISOString(), time: null })); vibrate(30); }} aria-pressed={isSel}
+                        className={`snap-center shrink-0 w-24 h-32 rounded-3xl flex flex-col items-center justify-center gap-2 transition-all duration-300 border ${isSel ? 'bg-blue-600 border-blue-400 text-white scale-[1.08] shadow-xl shadow-blue-900/30' : isDark ? 'bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white hover:border-white/20' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50 shadow-sm'}`}>
+                        <span className={`text-xs uppercase font-bold tracking-wider ${isSel ? 'text-blue-200' : ''}`}>{mo}</span>
+                        <span className={`font-display text-4xl leading-none ${isSel ? 'text-white' : isDark ? 'text-white' : 'text-slate-900'}`}>{d.getDate()}</span>
+                        <span className={`text-xs uppercase font-bold tracking-wider ${isSel ? 'text-blue-200' : ''}`}>{getDayLabel(d)}</span>
                       </button>
                     );
                   })}
                 </div>
-                <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'} shadow-lg`}><Icon name="chevron-right" size={20} /></button>
+                <button onClick={() => scrollDates('right')} aria-label="Próximas datas" className={`hidden md:flex absolute -right-16 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-2xl border transition-all ${isDark ? 'bg-white/10 border-white/20 text-zinc-300 hover:text-white hover:bg-white/20' : 'bg-white border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm'} shadow-lg`}><Icon name="chevron-right" size={24} /></button>
               </div>
 
               {!booking.date && (
-                <div className={`text-center py-20 rounded-[2rem] border border-dashed flex flex-col items-center gap-4 ${hasErrorGlobal ? 'animate-shake' : ''} ${isDark ? 'border-white/10 text-zinc-600' : 'border-slate-300 text-slate-400'}`}>
-                  <Icon name="calendar" size={40} className="opacity-40" />
-                  <p className="text-sm font-medium uppercase tracking-widest">{T.empty_date}</p>
+                <div className={`text-center py-24 rounded-[2.5rem] border border-dashed flex flex-col items-center gap-5 ${hasErrorGlobal ? 'animate-shake' : ''} ${isDark ? 'border-white/20 text-zinc-500' : 'border-slate-300 text-slate-500'}`}>
+                  <Icon name="calendar" size={48} className="opacity-50" />
+                  <p className="text-base font-semibold uppercase tracking-widest">{T.empty_date}</p>
                 </div>
               )}
 
               {booking.date && generateTimeSlots.length > 0 && (
-                <div className={`space-y-6 animate-fade-up ${hasErrorGlobal && !booking.time ? 'animate-shake' : ''}`}>
+                <div className={`space-y-8 animate-fade-up ${hasErrorGlobal && !booking.time ? 'animate-shake' : ''}`}>
                   {[
                     { key: 'morning', label: T.morning, icon: 'sunrise', slots: groupedTimeSlots.morning },
                     { key: 'afternoon', label: T.afternoon, icon: 'sun', slots: groupedTimeSlots.afternoon },
                     { key: 'evening', label: T.evening, icon: 'sunset', slots: groupedTimeSlots.evening },
                   ].filter(g => g.slots.length > 0).map(group => (
                     <div key={group.key}>
-                      <div className={`flex items-center gap-2.5 mb-4 text-[11px] uppercase font-semibold tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
-                        <Icon name={group.icon} size={15} />
+                      <div className={`flex items-center gap-3 mb-5 text-sm uppercase font-bold tracking-widest ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                        <Icon name={group.icon} size={20} />
                         {group.label}
                       </div>
-                      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                         {group.slots.map(t => {
                           const isRush = RUSH_HOURS.includes(t) && booking.locationType !== 'motel';
                           const isSel = booking.time === t;
                           return (
-                            <button key={t} onClick={() => { setBooking(b => ({ ...b, time: t })); vibrate(30); }}
-                              className={`relative flex flex-col items-center justify-center py-3 rounded-xl border text-base font-semibold transition-all duration-200 ${isSel
-                                ? isRush ? 'bg-amber-500 border-amber-400 text-zinc-950 scale-105 shadow-lg' : 'bg-blue-600 border-blue-400 text-white scale-105 shadow-lg shadow-blue-900/30'
+                            <button key={t} onClick={() => { setBooking(b => ({ ...b, time: t })); vibrate(30); }} aria-pressed={isSel}
+                              className={`relative flex flex-col items-center justify-center py-4 rounded-2xl border text-lg font-bold transition-all duration-200 min-h-[64px] ${isSel
+                                ? isRush ? 'bg-amber-500 border-amber-400 text-zinc-950 scale-105 shadow-lg' : 'bg-blue-600 border-blue-400 text-white scale-105 shadow-lg shadow-blue-900/40'
                                 : isDark
-                                  ? isRush ? 'bg-amber-500/8 border-amber-500/20 text-amber-400 hover:bg-amber-500/15' : 'bg-white/5 border-white/8 text-zinc-300 hover:bg-white/10 hover:border-white/14'
-                                  : isRush ? 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 shadow-sm'}`}>
+                                  ? isRush ? 'bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20' : 'bg-white/5 border-white/10 text-zinc-200 hover:bg-white/10 hover:border-white/20'
+                                  : isRush ? 'bg-amber-50 border-amber-300 text-amber-800 hover:bg-amber-100' : 'bg-white border-slate-300 text-slate-800 hover:border-slate-400 shadow-sm'}`}>
                               {t}
-                              {isRush && <span className={`text-[9px] uppercase tracking-wide mt-1 ${isSel ? 'text-amber-900/80 font-bold' : isDark ? 'text-amber-500' : 'text-amber-600'}`}>+{formatMoney(RUSH_FEE, lang).replace('R$ ', 'R$')}</span>}
+                              {isRush && <span className={`text-[10px] sm:text-xs uppercase tracking-widest mt-1 block ${isSel ? 'text-amber-950 font-bold' : isDark ? 'text-amber-400' : 'text-amber-700'}`}>+{formatMoney(RUSH_FEE, lang).replace('R$ ', 'R$')}</span>}
                             </button>
                           );
                         })}
@@ -1568,8 +1592,8 @@ export default function App() {
                   ))}
 
                   {Object.values(groupedTimeSlots).flat().some(t => RUSH_HOURS.includes(t)) && booking.locationType !== 'motel' && (
-                    <div className={`flex items-start gap-4 p-5 rounded-2xl border text-sm leading-relaxed font-medium mt-6 ${isDark ? 'bg-amber-500/8 border-amber-500/20 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
-                      <Icon name="alert-circle" size={20} className="shrink-0 mt-0.5" />
+                    <div className={`flex items-start gap-5 p-6 sm:p-8 rounded-3xl border text-base leading-relaxed font-medium mt-8 ${isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-900'}`}>
+                      <Icon name="alert-circle" size={28} className="shrink-0 mt-1" />
                       <p>{lang === 'en' ? 'Rush hour slots (noon/late afternoon) include a small displacement fee.' : 'Você selecionou um horário de pico (meio-dia/fim de tarde). Ele tem uma pequena taxa de deslocamento.'}</p>
                     </div>
                   )}
@@ -1577,8 +1601,8 @@ export default function App() {
               )}
 
               {booking.date && generateTimeSlots.length === 0 && (
-                <div className={`text-center py-20 rounded-[2rem] border ${isDark ? 'border-white/8 text-zinc-500' : 'border-slate-200 text-slate-400'}`}>
-                  <p className="text-base font-medium">{T.empty_slots}</p>
+                <div className={`text-center py-24 rounded-[2.5rem] border ${isDark ? 'border-white/10 text-zinc-400' : 'border-slate-300 text-slate-500'}`}>
+                  <p className="text-lg font-medium">{T.empty_slots}</p>
                 </div>
               )}
             </section>
@@ -1588,51 +1612,51 @@ export default function App() {
               STEP 3 — SUMMARY & PAYMENT
           ═══════════════════════════════════════════════════════ */}
           {step === 3 && (
-            <section className="animate-fade-up space-y-8 max-w-5xl mx-auto">
+            <section className="animate-fade-up space-y-10 max-w-5xl mx-auto">
               <SmartTimer isDark={isDark} text={T.timer_text} />
 
-              <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <h3 className={`font-display text-2xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.extras_title}</h3>
-                <p className={`text-sm mb-6 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{lang === 'en' ? 'Optional add-ons for your experience.' : 'Deseja adicionar algo extra para deixar a experiência mais completa?'}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <article className={`p-8 sm:p-10 rounded-[2.5rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <h3 className={`font-display text-3xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.extras_title}</h3>
+                <p className={`text-base mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{lang === 'en' ? 'Optional add-ons for your experience.' : 'Deseja adicionar algo extra para deixar a experiência mais completa?'}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   {DATA.extras.map((ex: any) => {
                     const price = booking.cart.some(i => i.type === 'pack') ? Math.floor(ex.price * 0.8) : ex.price;
                     const isActive = booking.extras[ex.id];
                     return (
-                      <div key={ex.id} onClick={() => { setBooking(b => ({ ...b, extras: { ...b.extras, [ex.id]: !b.extras[ex.id] } })); vibrate(30); }}
-                        role="checkbox" aria-checked={isActive}
-                        className={`flex items-start justify-between p-5 rounded-2xl border cursor-pointer transition-all duration-200 ${isActive ? 'bg-blue-600/12 border-blue-500/50 shadow-sm' : isDark ? 'bg-white/3 border-white/8 hover:bg-white/6 hover:border-white/14' : 'bg-slate-50 border-slate-200 hover:border-slate-300'}`}>
-                        <div className="flex items-start gap-4 min-w-0 pr-4">
-                          <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${isActive ? 'bg-blue-500 text-white' : isDark ? 'bg-white/10 text-zinc-400' : 'bg-white border text-slate-500'}`}>
-                            <Icon name={ex.icon} size={20} />
+                      <button key={ex.id} onClick={() => { setBooking(b => ({ ...b, extras: { ...b.extras, [ex.id]: !b.extras[ex.id] } })); vibrate(30); }}
+                        role="switch" aria-checked={isActive}
+                        className={`flex items-start justify-between p-6 rounded-[2rem] border text-left cursor-pointer transition-all duration-300 min-h-[100px] ${isActive ? 'bg-blue-600/15 border-blue-500/50 shadow-md' : isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20' : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white'}`}>
+                        <div className="flex items-start gap-5 min-w-0 pr-4">
+                          <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${isActive ? 'bg-blue-500 text-white' : isDark ? 'bg-white/10 text-zinc-300' : 'bg-white border border-slate-300 text-slate-600'}`}>
+                            <Icon name={ex.icon} size={24} />
                           </div>
                           <div className="min-w-0">
-                            <p className={`text-base font-semibold ${isActive ? isDark ? 'text-blue-300' : 'text-blue-700' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{ex.label}</p>
-                            <p className={`text-xs mt-1.5 leading-relaxed font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{ex.desc}</p>
+                            <p className={`text-lg font-semibold ${isActive ? isDark ? 'text-blue-300' : 'text-blue-700' : isDark ? 'text-white' : 'text-slate-900'}`}>{ex.label}</p>
+                            <p className={`text-sm mt-2 leading-relaxed font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{ex.desc}</p>
                           </div>
                         </div>
-                        <span className={`text-[11px] font-bold tracking-wider px-3 py-1.5 rounded-xl whitespace-nowrap shrink-0 self-start transition-colors mt-0.5 ${isActive ? 'bg-blue-600 text-white' : isDark ? 'bg-white/8 text-zinc-300' : 'bg-slate-200 text-slate-700'}`}>
+                        <span className={`text-xs font-bold tracking-wider px-4 py-2 rounded-xl whitespace-nowrap shrink-0 self-start transition-colors mt-0.5 ${isActive ? 'bg-blue-600 text-white' : isDark ? 'bg-white/10 text-zinc-300' : 'bg-slate-200 text-slate-800'}`}>
                           +{formatMoney(price, lang)}
                         </span>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
-              </div>
+              </article>
 
-              <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8">
-                <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
-                  <h3 className={`font-display text-2xl mb-8 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    <Icon name="file-text" size={24} className={isDark ? 'text-zinc-500' : 'text-slate-400'} />
+              <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-10">
+                <article className={`p-8 sm:p-10 rounded-[2.5rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <h3 className={`font-display text-3xl mb-10 flex items-center gap-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    <Icon name="file-text" size={32} className={isDark ? 'text-zinc-500' : 'text-slate-400'} />
                     {T.summary_title}
                   </h3>
 
-                  <div className="space-y-6">
+                  <div className="space-y-8">
                     <div>
-                      <p className={`text-[11px] uppercase font-semibold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_items}</p>
-                      <div className="space-y-3">
+                      <p className={`text-sm uppercase font-bold tracking-widest mb-5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_items}</p>
+                      <div className="space-y-4">
                         {booking.cart.map((item, i) => (
-                          <div key={i} className={`flex justify-between items-center gap-4 text-base font-medium border-b pb-3 last:border-0 last:pb-0 ${isDark ? 'border-white/6 text-white' : 'border-slate-100 text-slate-900'}`}>
+                          <div key={i} className={`flex justify-between items-center gap-5 text-lg font-semibold border-b pb-4 last:border-0 last:pb-0 ${isDark ? 'border-white/10 text-zinc-200' : 'border-slate-200 text-slate-800'}`}>
                             <span className="min-w-0 truncate">{item.title}</span>
                             <span className={`shrink-0 whitespace-nowrap ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{formatMoney(item.price, lang)}</span>
                           </div>
@@ -1641,15 +1665,15 @@ export default function App() {
                     </div>
 
                     {Object.keys(booking.extras || {}).filter(k => booking.extras[k]).length > 0 && (
-                      <div className={`border-t pt-6 ${isDark ? 'border-white/6' : 'border-slate-100'}`}>
-                        <p className={`text-[11px] uppercase font-semibold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_extras}</p>
-                        <div className="space-y-2">
+                      <div className={`border-t pt-8 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+                        <p className={`text-sm uppercase font-bold tracking-widest mb-5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_extras}</p>
+                        <div className="space-y-3">
                           {Object.keys(booking.extras || {}).filter(k => booking.extras[k]).map(k => {
                             const ex = DATA.extras.find((e: any) => e.id === k);
                             if (!ex) return null;
                             const price = booking.cart.some(i => i.type === 'pack') ? Math.floor(ex.price * 0.8) : ex.price;
                             return (
-                              <div key={k} className={`flex justify-between gap-4 text-base font-medium mb-1.5 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                              <div key={k} className={`flex justify-between gap-5 text-lg font-medium mb-2 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                                 <span className="min-w-0 truncate">{ex.label}</span>
                                 <span className="shrink-0 whitespace-nowrap">+{formatMoney(price, lang)}</span>
                               </div>
@@ -1659,127 +1683,127 @@ export default function App() {
                       </div>
                     )}
 
-                    <div className={`border-t pt-6 ${isDark ? 'border-white/6' : 'border-slate-100'}`}>
-                      <p className={`text-[11px] uppercase font-semibold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_info}</p>
-                      <div className="space-y-3 text-base font-medium">
-                        <div className={`flex items-center gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                          <Icon name="calendar" size={18} className="text-blue-500 shrink-0" />
+                    <div className={`border-t pt-8 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+                      <p className={`text-sm uppercase font-bold tracking-widest mb-5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_info}</p>
+                      <div className="space-y-4 text-lg font-medium">
+                        <div className={`flex items-center gap-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                          <Icon name="calendar" size={24} className="text-blue-500 shrink-0" />
                           <span className="whitespace-nowrap">
                             {booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : ''} {lang === 'en' ? 'at' : 'às'} {booking.time}
                           </span>
                         </div>
-                        <div className={`flex items-center gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                          <Icon name="map-pin" size={18} className="text-blue-500 shrink-0" />
+                        <div className={`flex items-center gap-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                          <Icon name="map-pin" size={24} className="text-blue-500 shrink-0" />
                           {booking.locationType === 'home' ? T.summary_loc_home : booking.locationType === 'motel' ? T.summary_loc_motel : T.summary_loc_hotel}
                         </div>
-                        <div className={`flex items-center gap-3 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                          <Icon name="clock" size={18} className="text-blue-500 shrink-0" />
+                        <div className={`flex items-center gap-4 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                          <Icon name="clock" size={24} className="text-blue-500 shrink-0" />
                           Tempo estimado: {financials.duration} min
                         </div>
                       </div>
                     </div>
 
-                    <div className={`border-t pt-6 space-y-3 ${isDark ? 'border-white/8' : 'border-slate-200'}`}>
-                      <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                    <div className={`border-t pt-8 space-y-4 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+                      <div className={`flex justify-between gap-5 text-lg font-semibold ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                         <span>{T.subtotal}</span>
                         <span className="shrink-0 whitespace-nowrap">{formatMoney(financials.sub, lang)}</span>
                       </div>
                       {booking.appliedCoupon && (
-                        <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                          <span className="flex items-center gap-2 min-w-0 truncate"><Icon name="gift" size={16} className="shrink-0" />{booking.appliedCoupon.title}</span>
+                        <div className={`flex justify-between gap-5 text-lg font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                          <span className="flex items-center gap-3 min-w-0 truncate"><Icon name="gift" size={20} className="shrink-0" />{booking.appliedCoupon.title}</span>
                           <span className="shrink-0 whitespace-nowrap">-{formatMoney(financials.disc, lang)}</span>
                         </div>
                       )}
                       {financials.mediaDisc > 0 && (
-                        <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                        <div className={`flex justify-between gap-5 text-lg font-semibold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                           <span>{T.media_discount}</span>
                           <span className="shrink-0 whitespace-nowrap">-{formatMoney(financials.mediaDisc, lang)}</span>
                         </div>
                       )}
                       {financials.pixDisc > 0 && (
-                        <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                        <div className={`flex justify-between gap-5 text-lg font-semibold ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                           <span>{T.pix_discount}</span>
                           <span className="shrink-0 whitespace-nowrap">-{formatMoney(financials.pixDisc, lang)}</span>
                         </div>
                       )}
                       {financials.rushFee > 0 && (
-                        <div className={`flex justify-between gap-4 text-base font-medium ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
-                          <span className="flex items-center gap-2 min-w-0 truncate"><Icon name="car" size={16} className="shrink-0" />{T.msg_rush_fee}</span>
+                        <div className={`flex justify-between gap-5 text-lg font-semibold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
+                          <span className="flex items-center gap-3 min-w-0 truncate"><Icon name="car" size={20} className="shrink-0" />{T.msg_rush_fee}</span>
                           <span className="shrink-0 whitespace-nowrap">+{formatMoney(financials.rushFee, lang)}</span>
                         </div>
                       )}
 
-                      <div className={`flex justify-between gap-4 items-end pt-5 mt-2 border-t ${isDark ? 'border-white/8' : 'border-slate-100'}`}>
-                        <span className={`text-sm uppercase font-semibold tracking-widest mb-1 shrink-0 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.total_label}</span>
+                      <div className={`flex justify-between gap-5 items-end pt-6 mt-4 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+                        <span className={`text-base uppercase font-bold tracking-widest mb-1 shrink-0 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.total_label}</span>
                         <div className="text-right min-w-0">
-                          <p className="font-display text-4xl text-gradient-blue whitespace-nowrap">{formatMoney(financials.total, lang)}</p>
-                          <p className={`text-[10px] uppercase font-bold tracking-widest mt-1 flex items-center justify-end gap-1.5 whitespace-nowrap ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
-                            <Icon name="sparkles" size={11} /> +{estimatedXP} {T.xp_guaranteed}
+                          <p className="font-display text-5xl sm:text-6xl text-gradient-blue whitespace-nowrap">{formatMoney(financials.total, lang)}</p>
+                          <p className={`text-xs sm:text-sm uppercase font-bold tracking-widest mt-2 flex items-center justify-end gap-2 whitespace-nowrap ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                            <Icon name="sparkles" size={14} /> +{estimatedXP} {T.xp_guaranteed}
                           </p>
                         </div>
                       </div>
                     </div>
 
                     {booking.locationType !== 'motel' && (
-                      <div className={`flex items-start gap-4 p-4 rounded-xl text-xs font-medium leading-relaxed border ${isDark ? 'bg-white/4 border-white/8 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
-                        <Icon name="car" size={18} className="shrink-0 mt-0.5" />
+                      <div className={`flex items-start gap-5 p-6 rounded-2xl text-sm sm:text-base font-medium leading-relaxed border ${isDark ? 'bg-white/5 border-white/10 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                        <Icon name="car" size={24} className="shrink-0 mt-0.5" />
                         {T.uber_notice}
                       </div>
                     )}
                   </div>
-                </div>
+                </article>
 
-                <div className="space-y-6">
-                  <div className={`p-6 rounded-[2rem] border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
-                    <h4 className={`text-base font-semibold mb-5 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      <Icon name="ticket" size={20} className={isDark ? 'text-zinc-500' : 'text-slate-400'} />
+                <div className="space-y-8">
+                  <article className={`p-8 rounded-[2.5rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <h4 className={`text-xl font-semibold mb-6 flex items-center gap-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      <Icon name="ticket" size={28} className={isDark ? 'text-zinc-500' : 'text-slate-400'} />
                       {T.coupon_section}
                     </h4>
 
                     {user.coupons.length > 0 ? (
-                      <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-4">
                         {user.coupons.map(c => (
                           <button key={c.id} onClick={() => { setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c })); vibrate(30); }}
-                            className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-600/10 border-emerald-500 text-emerald-400 shadow-sm' : isDark ? 'bg-white/4 border-white/10 text-zinc-300 hover:bg-white/8' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'}`}>
-                            <div className="flex items-center gap-3">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 text-white' : isDark ? 'bg-white/10' : 'bg-slate-200'}`}>
-                                <Icon name="gift" size={14} />
+                            className={`w-full p-5 rounded-[1.5rem] border transition-all flex items-center justify-between gap-4 min-h-[72px] ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-600/15 border-emerald-500/50 text-emerald-400 shadow-md' : isDark ? 'bg-white/5 border-white/10 text-zinc-200 hover:bg-white/10' : 'bg-slate-50 border-slate-300 text-slate-800 hover:bg-white'}`}>
+                            <div className="flex items-center gap-4">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 text-white' : isDark ? 'bg-white/10' : 'bg-slate-200'}`}>
+                                <Icon name="gift" size={20} />
                               </div>
-                              <span className="text-sm font-bold tracking-wide text-left">{c.title}</span>
+                              <span className="text-base font-bold tracking-wide text-left">{c.title}</span>
                             </div>
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-white/20' : 'border-slate-300'}`}>
-                              {booking.appliedCoupon?.id === c.id && <Icon name="check" size={14} />}
+                            <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-white/30' : 'border-slate-300'}`}>
+                              {booking.appliedCoupon?.id === c.id && <Icon name="check" size={18} />}
                             </div>
                           </button>
                         ))}
                       </div>
                     ) : (
-                      <div className={`p-5 rounded-2xl border border-dashed text-center text-sm font-medium ${isDark ? 'border-white/10 text-zinc-500' : 'border-slate-300 text-slate-400'}`}>
+                      <div className={`p-6 rounded-2xl border border-dashed text-center text-base font-medium ${isDark ? 'border-white/20 text-zinc-500' : 'border-slate-300 text-slate-500'}`}>
                         {T.coupon_empty}
                       </div>
                     )}
-                  </div>
+                  </article>
 
-                  <div className={`p-6 rounded-[2rem] border ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
-                    <div className="flex items-start gap-4 mb-5">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/8 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
-                        <Icon name="camera" size={22} />
+                  <article className={`p-8 rounded-[2.5rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div className="flex items-start gap-5 mb-6">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>
+                        <Icon name="camera" size={28} />
                       </div>
                       <div>
-                        <h4 className={`text-base font-semibold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.media_title}</h4>
-                        <p className={`text-xs mt-0.5 leading-relaxed font-medium ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.media_desc}</p>
+                        <h4 className={`text-xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.media_title}</h4>
+                        <p className={`text-sm leading-relaxed font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.media_desc}</p>
                       </div>
                     </div>
                     <button onClick={() => { setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed })); vibrate(30); }}
-                      className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all text-[11px] font-bold uppercase tracking-widest ${booking.mediaAllowed ? 'bg-blue-600/15 border-blue-500/50 text-blue-400' : isDark ? 'bg-white/4 border-white/10 text-zinc-500 hover:bg-white/8 hover:text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                      className={`w-full flex items-center justify-between p-5 rounded-2xl border transition-all text-xs sm:text-sm font-bold uppercase tracking-widest min-h-[64px] ${booking.mediaAllowed ? 'bg-blue-600/20 border-blue-500/50 text-blue-300' : isDark ? 'bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10 hover:text-zinc-200' : 'bg-slate-50 border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-white'}`}>
                       <span>{booking.mediaAllowed ? T.media_granted : T.media_support}</span>
-                      <span className={`px-3 py-1 rounded-lg whitespace-nowrap ${booking.mediaAllowed ? 'bg-blue-600 text-white' : isDark ? 'bg-white/8' : 'bg-slate-200'}`}>{T.media_bonus}</span>
+                      <span className={`px-4 py-2 rounded-xl whitespace-nowrap ${booking.mediaAllowed ? 'bg-blue-600 text-white' : isDark ? 'bg-white/10' : 'bg-slate-200'}`}>{T.media_bonus}</span>
                     </button>
-                  </div>
+                  </article>
 
-                  <div className={`p-6 rounded-[2rem] border ${hasErrorGlobal && !booking.payment ? 'animate-shake' : ''} ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
-                    <h4 className={`text-base font-semibold mb-5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.payment_title}</h4>
-                    <div className="space-y-3">
+                  <article className={`p-8 rounded-[2.5rem] border ${hasErrorGlobal && !booking.payment ? 'animate-shake' : ''} ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <h4 className={`text-xl font-semibold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.payment_title}</h4>
+                    <div className="space-y-4">
                       {[
                         { id: 'pix', label: T.pay_pix, icon: 'smartphone', note: lang === 'en' ? 'Copy key' : 'Copiar chave' },
                         { id: 'card', label: T.pay_card, icon: 'credit-card', note: null },
@@ -1790,38 +1814,38 @@ export default function App() {
                           vibrate(30);
                           if (p.id === 'pix') { navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast(T.toast_pix_copied); }
                         }}
-                          className={`w-full flex items-center gap-4 p-4 h-16 rounded-2xl border transition-all duration-200 ${booking.payment === p.id ? 'bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-900/20' : isDark ? 'bg-white/4 border-white/8 text-zinc-300 hover:bg-white/8 hover:border-white/14' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300'}`}>
-                          <Icon name={p.icon} size={22} className="shrink-0" />
-                          <span className="flex-1 text-left text-sm font-semibold tracking-wide">{p.label}</span>
+                          className={`w-full flex items-center gap-5 p-5 min-h-[72px] rounded-2xl border transition-all duration-300 ${booking.payment === p.id ? 'bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-900/30 scale-[1.02]' : isDark ? 'bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10 hover:border-white/20' : 'bg-slate-50 border-slate-300 text-slate-800 hover:border-slate-400 hover:bg-white'}`}>
+                          <Icon name={p.icon} size={28} className="shrink-0" />
+                          <span className="flex-1 text-left text-base font-bold tracking-wide">{p.label}</span>
                           {p.id === 'pix' && booking.payment === 'pix' && (
-                            <span className="text-[10px] font-bold bg-white/20 px-2.5 py-1 rounded-lg whitespace-nowrap">{p.note}</span>
+                            <span className="text-xs font-bold bg-white/20 px-3 py-1.5 rounded-xl whitespace-nowrap">{p.note}</span>
                           )}
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.payment === p.id ? 'border-white' : isDark ? 'border-white/20' : 'border-slate-300'}`}>
-                            {booking.payment === p.id && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.payment === p.id ? 'border-white' : isDark ? 'border-white/30' : 'border-slate-300'}`}>
+                            {booking.payment === p.id && <div className="w-3 h-3 rounded-full bg-white" />}
                           </div>
                         </button>
                       ))}
                     </div>
-                  </div>
+                  </article>
 
-                  <div className={hasErrorGlobal && !booking.termsAccepted ? 'animate-shake' : ''}>
+                  <article className={hasErrorGlobal && !booking.termsAccepted ? 'animate-shake' : ''}>
                     <button onClick={() => setTermsOpen(true)}
-                      className={`w-full flex items-center justify-between p-6 rounded-[2rem] border cursor-pointer transition-all duration-300 ${booking.termsAccepted ? isDark ? 'bg-emerald-600/15 border-emerald-500/50' : 'bg-emerald-50 border-emerald-300' : isDark ? 'bg-white/4 border-white/8 hover:bg-white/8 hover:border-white/14' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`}>
-                      <div className="flex items-center gap-4 min-w-0">
-                        <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${booking.termsAccepted ? isDark ? 'bg-emerald-600/20 text-emerald-400' : 'bg-emerald-100 text-emerald-600' : isDark ? 'bg-white/8 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
-                          <Icon name="heart" size={24} />
+                      className={`w-full flex items-center justify-between p-8 rounded-[2.5rem] border cursor-pointer transition-all duration-300 min-h-[100px] ${booking.termsAccepted ? isDark ? 'bg-emerald-600/20 border-emerald-500/50' : 'bg-emerald-50 border-emerald-400' : isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`}>
+                      <div className="flex items-center gap-5 min-w-0">
+                        <div className={`shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center ${booking.termsAccepted ? isDark ? 'bg-emerald-600/30 text-emerald-400' : 'bg-emerald-100 text-emerald-700' : isDark ? 'bg-white/10 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>
+                          <Icon name="heart" size={28} />
                         </div>
                         <div className="min-w-0 text-left">
-                          <p className={`text-base font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</p>
-                          <p className={`text-xs mt-1 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.terms_read}</p>
+                          <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</p>
+                          <p className={`text-sm mt-1 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.terms_read}</p>
                         </div>
                       </div>
                       <div onClick={e => { e.stopPropagation(); vibrate(30); setBooking(b => ({ ...b, termsAccepted: !b.termsAccepted })); }}
-                        className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.termsAccepted ? 'bg-emerald-600 border-emerald-500 text-white shadow-md' : isDark ? 'border-white/20' : 'border-slate-300'}`}>
-                        {booking.termsAccepted && <Icon name="check" size={16} />}
+                        className={`w-10 h-10 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.termsAccepted ? 'bg-emerald-600 border-emerald-500 text-white shadow-md' : isDark ? 'border-white/30' : 'border-slate-300'}`}>
+                        {booking.termsAccepted && <Icon name="check" size={20} />}
                       </div>
                     </button>
-                  </div>
+                  </article>
                 </div>
               </div>
             </section>
@@ -1831,41 +1855,41 @@ export default function App() {
               STEP 4 — SUCCESS
           ═══════════════════════════════════════════════════════ */}
           {step === 4 && (
-            <section className="min-h-[80vh] flex flex-col items-center justify-center text-center animate-scale-in max-w-md mx-auto px-5 pt-12">
+            <section className="min-h-[80vh] flex flex-col items-center justify-center text-center animate-scale-in max-w-lg mx-auto px-5 pt-12">
               <div className="relative mb-12">
                 <div className="absolute inset-0 rounded-full animate-ping" style={{ background: 'rgba(16,185,129,0.2)', animationDuration: '1.8s' }} />
                 <div className="absolute inset-0 rounded-full" style={{ boxShadow: '0 0 80px 30px rgba(16,185,129,0.15)' }} />
-                <div className={`relative w-32 h-32 rounded-full flex items-center justify-center border-[3px] border-emerald-500/50 ${isDark ? 'bg-emerald-500/10' : 'bg-emerald-50'}`}>
-                  <Icon name="check" size={50} className="text-emerald-400" />
+                <div className={`relative w-40 h-40 rounded-full flex items-center justify-center border-[4px] border-emerald-500/50 ${isDark ? 'bg-emerald-500/10' : 'bg-emerald-50'}`}>
+                  <Icon name="check" size={64} className="text-emerald-400" />
                 </div>
               </div>
 
-              <h2 className={`font-display text-4xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h2>
-              <p className={`text-base leading-relaxed mb-10 max-w-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
+              <h2 className={`font-display text-4xl sm:text-5xl mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h2>
+              <p className={`text-lg leading-relaxed mb-12 max-w-md ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.success_sub}</p>
 
-              <div className={`w-full p-6 rounded-[2rem] border mb-10 text-left space-y-3 ${isDark ? 'bg-white/4 border-white/8' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className={`flex items-center gap-3 text-base font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                  <Icon name="user" size={18} className="text-blue-400 shrink-0" />
+              <div className={`w-full p-8 rounded-[2.5rem] border mb-12 text-left space-y-4 ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <div className={`flex items-center gap-4 text-lg font-medium ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                  <Icon name="user" size={24} className="text-blue-500 shrink-0" />
                   {user.name}
                 </div>
-                <div className={`flex items-center gap-3 text-base font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                  <Icon name="calendar" size={18} className="text-blue-400 shrink-0" />
+                <div className={`flex items-center gap-4 text-lg font-medium ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                  <Icon name="calendar" size={24} className="text-blue-500 shrink-0" />
                   <span className="whitespace-nowrap">
                     {booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : ''} {lang === 'en' ? 'at' : 'às'} {booking.time}
                   </span>
                 </div>
-                <div className={`flex items-center justify-between text-base pt-3 border-t ${isDark ? 'border-white/6 text-white' : 'border-slate-100 text-slate-900'}`}>
-                  <span className="font-semibold uppercase tracking-widest text-xs shrink-0">{T.total_label}</span>
-                  <span className="font-display text-2xl text-gradient-blue whitespace-nowrap">{formatMoney(financials.total, lang)}</span>
+                <div className={`flex items-center justify-between pt-6 mt-2 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+                  <span className="font-bold uppercase tracking-widest text-sm shrink-0 text-zinc-500">{T.total_label}</span>
+                  <span className="font-display text-4xl text-gradient-blue whitespace-nowrap">{formatMoney(financials.total, lang)}</span>
                 </div>
               </div>
 
-              <div className="w-full space-y-4">
+              <div className="w-full space-y-5">
                 <Button variant="whatsapp" size="xl" full icon="message" onClick={() => openExternal('whatsapp', generateWhatsAppMsg())}>
                   {T.whatsapp_btn}
                 </Button>
                 <button onClick={() => { setStep(0); setBooking({ ...booking, cart: [], termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }}
-                  className={`w-full text-sm font-semibold uppercase tracking-widest py-4 transition-colors ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-700'}`}>
+                  className={`w-full text-base font-bold uppercase tracking-widest py-6 transition-colors min-h-[64px] ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-800'}`}>
                   {T.back_home}
                 </button>
               </div>
@@ -1876,36 +1900,36 @@ export default function App() {
 
       {/* ── STICKY BOTTOM NAV ── */}
       {step >= 0 && step < 4 && booking.cart.length > 0 && (
-        <nav className="fixed bottom-0 inset-x-0 px-4 sm:px-5 pb-5 pt-3 z-40 animate-slide-up pointer-events-none">
-          <div className={`max-w-5xl mx-auto pointer-events-auto rounded-[2rem] overflow-hidden border shadow-[0_-10px_40px_rgba(0,0,0,0.25)] ${isDark ? 'bg-[#181c25] border-zinc-700' : 'bg-white border-slate-300'}`}>
-            <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
+        <nav className="fixed bottom-0 inset-x-0 px-4 sm:px-6 pb-6 pt-4 z-40 animate-slide-up pointer-events-none">
+          <div className={`max-w-5xl mx-auto pointer-events-auto rounded-[2.5rem] overflow-hidden border shadow-[0_-10px_50px_rgba(0,0,0,0.3)] ${isDark ? 'bg-[#181c25]/95 backdrop-blur-xl border-zinc-700' : 'bg-white/95 backdrop-blur-xl border-slate-300'}`}>
+            <div className="flex items-center justify-between gap-4 px-5 py-4 sm:px-8 sm:py-6">
               
               {step > 0 && (
-                <button onClick={() => { setStep(s => s - 1); vibrate(30); }}
-                  className={`w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-xl border transition-all shrink-0 ${isDark ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-700' : 'border-slate-300 bg-slate-100 text-slate-600 hover:text-slate-900'}`}>
-                  <Icon name="chevron-left" size={22} />
+                <button onClick={() => { setStep(s => s - 1); vibrate(30); }} aria-label="Voltar etapa"
+                  className={`w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-2xl border transition-all shrink-0 ${isDark ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-700' : 'border-slate-300 bg-slate-50 text-slate-600 hover:text-slate-900'}`}>
+                  <Icon name="chevron-left" size={28} />
                 </button>
               )}
 
-              <div className="flex-1 min-w-0 pl-1">
-                <p className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-widest mb-0.5 truncate ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+              <div className="flex-1 min-w-0 pl-2">
+                <p className={`text-xs sm:text-sm uppercase font-bold tracking-widest mb-1 truncate ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                   {step === 0 ? `${booking.cart.length} ${T.items_selected}` : step === 3 ? T.total_label : T.subtotal}
                 </p>
-                <p className={`font-display text-[16px] sm:text-xl leading-none whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                <p className={`font-display text-2xl sm:text-3xl leading-none whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {step === 3 ? formatMoney(financials.total, lang) : formatMoney(financials.sub, lang)}
                 </p>
               </div>
 
-              <button onClick={handleNextStep}
-                className={`relative h-12 sm:h-14 flex items-center gap-2 px-5 sm:px-8 rounded-xl font-bold text-[13px] sm:text-sm uppercase tracking-wider transition-all duration-200 shrink-0 overflow-hidden ${isStepValid()
+              <button onClick={handleNextStep} aria-label={step === 3 ? T.finish_btn : T.next_btn}
+                className={`relative h-14 sm:h-16 flex items-center gap-3 px-6 sm:px-10 rounded-2xl font-bold text-sm sm:text-base uppercase tracking-wider transition-all duration-200 shrink-0 overflow-hidden ${isStepValid()
                   ? step === 3
-                    ? 'bg-[#25D366] text-white hover:bg-[#22c55e] shadow-lg shadow-green-900/40 hover:-translate-y-0.5 active:scale-95'
-                    : 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-900/40 hover:-translate-y-0.5 active:scale-95'
-                  : isDark ? 'bg-zinc-800 border border-zinc-700 text-zinc-500' : 'bg-slate-100 border border-slate-200 text-slate-400'}`}>
+                    ? 'bg-[#25D366] text-white hover:bg-[#22c55e] shadow-lg shadow-green-900/40 hover:-translate-y-1 active:scale-95'
+                    : 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-900/40 hover:-translate-y-1 active:scale-95'
+                  : isDark ? 'bg-zinc-800 border border-zinc-700 text-zinc-500' : 'bg-slate-100 border border-slate-300 text-slate-400'}`}>
                 {step === 3 ? (
-                  <><Icon name="message" size={18} /><span className="hidden sm:inline">{T.finish_btn}</span><span className="sm:hidden">{T.btn_finish_short}</span></>
+                  <><Icon name="message" size={24} /><span className="hidden sm:inline">{T.finish_btn}</span><span className="sm:hidden">{T.btn_finish_short}</span></>
                 ) : (
-                  <><span className="hidden sm:inline">{T.next_btn}</span><span className="sm:hidden">{T.btn_next_short}</span><Icon name="chevron-right" size={18} /></>
+                  <><span className="hidden sm:inline">{T.next_btn}</span><span className="sm:hidden">{T.btn_next_short}</span><Icon name="chevron-right" size={24} /></>
                 )}
               </button>
             </div>
@@ -1915,18 +1939,18 @@ export default function App() {
 
       {/* ── TERMS MODAL ── */}
       {termsOpen && (
-        <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-xl max-h-[85vh] rounded-[2.5rem] flex flex-col border shadow-2xl animate-slide-up ${isDark ? 'bg-[#11141a] border-zinc-700' : 'bg-white border-slate-300'}`}>
-            <div className={`flex items-center justify-between p-8 border-b shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-              <h3 className={`font-display text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.rules_complete}</h3>
-              <button onClick={() => setTermsOpen(false)} className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${isDark ? 'text-zinc-400 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'}`}>
-                <Icon name="x" size={22} />
+        <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md animate-fade-in">
+          <div role="dialog" aria-modal="true" aria-label={T.terms_title} className={`relative w-full max-w-2xl max-h-[85vh] rounded-[3rem] flex flex-col border shadow-2xl animate-slide-up ${isDark ? 'bg-[#11141a] border-zinc-700' : 'bg-white border-slate-300'}`}>
+            <div className={`flex items-center justify-between p-8 sm:p-10 border-b shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+              <h3 className={`font-display text-3xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.rules_complete}</h3>
+              <button onClick={() => setTermsOpen(false)} aria-label="Fechar regras" className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${isDark ? 'text-zinc-400 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'}`}>
+                <Icon name="x" size={28} />
               </button>
             </div>
-            <div className="overflow-y-auto flex-1 p-8 space-y-4">
+            <div className="overflow-y-auto flex-1 p-8 sm:p-10 space-y-6">
               {DATA.rules.map((rule: Rule, i: number) => <RuleItem key={i} rule={rule} isDark={isDark} />)}
             </div>
-            <div className={`p-6 border-t shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+            <div className={`p-8 sm:p-10 border-t shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
               <Button full size="xl" onClick={() => { setBooking(b => ({ ...b, termsAccepted: true })); vibrate(30); setTermsOpen(false); }}>{T.agree_terms}</Button>
             </div>
           </div>
@@ -1935,23 +1959,23 @@ export default function App() {
 
       {/* ── WELCOME POPUP ── */}
       {welcomePopup && (
-        <div className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center p-5 bg-black/95 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-md rounded-[2.5rem] p-10 border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#11141a] border-zinc-700' : 'bg-white border-slate-300'}`}>
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+        <div className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center p-6 bg-black/95 backdrop-blur-md animate-fade-in">
+          <div role="dialog" aria-modal="true" aria-label={T.welcome_popup_title} className={`relative w-full max-w-lg rounded-[3rem] p-10 sm:p-12 border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#11141a] border-zinc-700' : 'bg-white border-slate-300'}`}>
+            <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
 
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${isDark ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
-              <Icon name="gift" size={30} />
+            <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mb-8 ${isDark ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
+              <Icon name="gift" size={40} />
             </div>
-            <h3 className={`font-display text-3xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
-            <p className={`text-base leading-relaxed mb-6 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.welcome_popup_msg}</p>
+            <h3 className={`font-display text-4xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
+            <p className={`text-lg leading-relaxed mb-8 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.welcome_popup_msg}</p>
 
-            <div className={`text-xs font-medium p-4 rounded-xl border mb-6 ${isDark ? 'bg-amber-900/30 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800'}`}>
+            <div className={`text-sm font-medium p-5 rounded-2xl border mb-8 ${isDark ? 'bg-amber-900/30 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800'}`}>
               {T.welcome_popup_warning}
             </div>
 
-            <div className={`p-5 rounded-2xl border border-dashed mb-8 text-center ${isDark ? 'border-blue-500/40 bg-blue-500/10' : 'border-blue-300 bg-blue-50/50'}`}>
-              <p className={`text-[10px] uppercase font-bold tracking-widest mb-2 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{lang === 'en' ? 'Your first gift' : 'Seu presente inaugural'}</p>
-              <p className={`font-display text-4xl tracking-widest ${isDark ? 'text-white' : 'text-slate-900'}`}>BEMVINDO10</p>
+            <div className={`p-6 rounded-3xl border border-dashed mb-10 text-center ${isDark ? 'border-blue-500/40 bg-blue-500/10' : 'border-blue-300 bg-blue-50/50'}`}>
+              <p className={`text-xs uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{lang === 'en' ? 'Your first gift' : 'Seu presente inaugural'}</p>
+              <p className={`font-display text-5xl tracking-widest ${isDark ? 'text-white' : 'text-slate-900'}`}>BEMVINDO10</p>
             </div>
 
             <Button full size="xl" onClick={() => {
@@ -1968,16 +1992,16 @@ export default function App() {
 
       {/* ── LEVEL UP POPUP ── */}
       {levelUpPopup && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center p-5 bg-black/95 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-md rounded-[2.5rem] p-10 text-center border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#11141a] border-amber-700/50' : 'bg-white border-amber-300'}`}>
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-6 bg-black/95 backdrop-blur-md animate-fade-in">
+          <div role="dialog" aria-modal="true" aria-label={T.levelup_popup_title} className={`relative w-full max-w-lg rounded-[3rem] p-10 sm:p-12 text-center border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#11141a] border-amber-700/50' : 'bg-white border-amber-300'}`}>
+            <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
 
-            <div className={`w-20 h-20 mx-auto rounded-3xl flex items-center justify-center mb-6 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 shadow-xl shadow-amber-500/30 animate-bounce-slow relative z-10`}>
-              <Icon name="trophy" size={36} />
+            <div className={`w-28 h-28 mx-auto rounded-[2.5rem] flex items-center justify-center mb-8 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 shadow-2xl shadow-amber-500/30 animate-bounce-slow relative z-10`}>
+              <Icon name="trophy" size={48} />
             </div>
 
-            <h3 className={`font-display text-4xl mb-3 relative z-10 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
-            <p className={`text-base leading-relaxed font-medium mb-8 relative z-10 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.levelup_popup_msg}</p>
+            <h3 className={`font-display text-5xl mb-4 relative z-10 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
+            <p className={`text-lg leading-relaxed font-medium mb-10 relative z-10 ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{T.levelup_popup_msg}</p>
 
             <Button full size="xl" variant="amber" onClick={() => { setLevelUpPopup(false); vibrate(50); }} className="relative z-10">
               {T.level_redeem}
