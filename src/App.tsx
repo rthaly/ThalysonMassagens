@@ -5,7 +5,7 @@ const CONFIG = {
   PHONE: '5517991360413',
   INSTAGRAM_URL: 'https://instagram.com/relaxarhojesp',
   PROFILE_PHOTO_URL: 'https://i.ibb.co/gZxp3Dwz/Screenshot-1.png',
-  STORAGE_KEY: '@thalyson_booking_mobile_first_v1',
+  STORAGE_KEY: '@thalyson_booking_mobile_first_v2', // Atualizado para invalidar cache antigo se necessário
   PIX_KEY: '62.922.530/0001-14',
   LOCALE: 'pt-BR',
   START_HOUR: 9,
@@ -195,165 +195,22 @@ const categories = [
 ];
 
 const services: ServiceItem[] = [
-  {
-    id: 'pes',
-    category: 'express',
-    min: 40,
-    price: 110,
-    icon: 'user',
-    tag: 'ALÍVIO NOS PÉS',
-    title: 'Massagem nos Pés',
-    desc: 'Foco em pés cansados, inchaço, pressão acumulada e aquela sensação de peso no fim do dia.',
-    details: ['Reflexologia na sola dos pés', 'Pressão em pontos de tensão', 'Mobilidade nos tornozelos', 'Finalização leve para relaxamento geral'],
-  },
-  {
-    id: 'maos',
-    category: 'express',
-    min: 40,
-    price: 110,
-    icon: 'hand',
-    tag: 'ALÍVIO NAS MÃOS',
-    title: 'Massagem nas Mãos',
-    desc: 'Solta mãos, punhos e antebraços depois de digitar, dirigir ou repetir movimentos por horas.',
-    details: ['Mobilidade dos dedos', 'Pressão em palma e punhos', 'Liberação de antebraços', 'Finalização calma para conforto articular'],
-  },
-  {
-    id: 'relaxante',
-    category: 'relax',
-    min: 40,
-    price: 157,
-    icon: 'sun',
-    tag: 'CORPO TODO',
-    title: 'Massagem Clássica',
-    desc: 'Sessão relaxante para costas, ombros, pescoço, pernas, braços e pés, com pressão ajustada ao seu corpo.',
-    details: ['Massagem relaxante de corpo todo', 'Ritmo terapêutico e sem pressa', 'Pressão combinada no início', 'Foco em alívio, presença e bem-estar'],
-    highlight: true,
-  },
-  {
-    id: 'crossfit',
-    category: 'relax',
-    min: 60,
-    price: 187,
-    icon: 'shield',
-    tag: 'RECUPERAÇÃO',
-    title: 'Massagem para Atletas',
-    desc: 'Para quem treina pesado ou vive com músculos sobrecarregados. Começa relaxante e avança para uma pegada mais firme.',
-    details: ['Aquecimento com base relaxante', 'Trabalho firme nas áreas travadas', 'Costas, pernas, ombros e braços conforme necessidade', 'Ideal para recuperação e mobilidade'],
-  },
-  {
-    id: 'sensitiva',
-    category: 'premium',
-    min: 60,
-    price: 177,
-    icon: 'sparkles',
-    tag: 'SENSORIAL',
-    title: 'Massagem Sensorial',
-    desc: 'Um cuidado gradual: primeiro o corpo desacelera, depois o toque fica mais lento, suave e imersivo.',
-    details: ['Início com relaxamento de corpo todo', 'Toque sensorial leve e progressivo', 'Limites alinhados com clareza', 'Encerramento combinado com privacidade e respeito'],
-  },
-  {
-    id: 'mista',
-    category: 'premium',
-    min: 60,
-    price: 207,
-    icon: 'heart',
-    tag: 'FUSION',
-    title: 'Experiência Fusion',
-    desc: 'Combina relaxamento, presença sensorial e um clima mais próximo, sempre com consentimento e comunicação clara.',
-    details: ['Base relaxante no corpo todo', 'Ritmo sensorial gradual', 'Atenção à parte posterior e anterior do corpo', 'Finalização combinada no atendimento'],
-    highlight: true,
-  },
-  {
-    id: 'nuru',
-    category: 'premium',
-    min: 60,
-    price: 317,
-    icon: 'star',
-    tag: 'PREMIUM',
-    title: 'Massagem Nuru',
-    desc: 'Experiência premium com gel de deslizamento, pensada para entrega, conforto e uma conexão corporal mais intensa.',
-    details: ['Preparação relaxante do corpo', 'Uso de gel próprio para deslizamento', 'Movimentos contínuos e envolventes', 'Limites e preferências alinhados antes da sessão'],
-  },
-  {
-    id: 'depilacao',
-    category: 'care',
-    min: 60,
-    price: 107,
-    icon: 'scissors',
-    tag: 'ESTÉTICA',
-    title: 'Aparo de Pelos do Corpo',
-    desc: 'Cuidado prático para sensação de pele mais limpa, leve e confortável antes ou depois da sessão.',
-    details: ['Aparo com máquina em áreas escolhidas', 'Peito, abdômen, costas ou pernas', 'Acabamento cuidadoso e discreto', 'Indicado para conforto e estética'],
-  },
+  { id: 'pes', category: 'express', min: 40, price: 110, icon: 'user', tag: 'ALÍVIO NOS PÉS', title: 'Massagem nos Pés', desc: 'Foco em pés cansados, inchaço, pressão acumulada e aquela sensação de peso no fim do dia.', details: ['Reflexologia na sola dos pés', 'Pressão em pontos de tensão', 'Mobilidade nos tornozelos', 'Finalização leve para relaxamento geral'] },
+  { id: 'maos', category: 'express', min: 40, price: 110, icon: 'hand', tag: 'ALÍVIO NAS MÃOS', title: 'Massagem nas Mãos', desc: 'Solta mãos, punhos e antebraços depois de digitar, dirigir ou repetir movimentos por horas.', details: ['Mobilidade dos dedos', 'Pressão em palma e punhos', 'Liberação de antebraços', 'Finalização calma para conforto articular'] },
+  { id: 'relaxante', category: 'relax', min: 40, price: 157, icon: 'sun', tag: 'CORPO TODO', title: 'Massagem Clássica', desc: 'Sessão relaxante para costas, ombros, pescoço, pernas, braços e pés, com pressão ajustada ao seu corpo.', details: ['Massagem relaxante de corpo todo', 'Ritmo terapêutico e sem pressa', 'Pressão combinada no início', 'Foco em alívio, presença e bem-estar'], highlight: true },
+  { id: 'crossfit', category: 'relax', min: 60, price: 187, icon: 'shield', tag: 'RECUPERAÇÃO', title: 'Massagem para Atletas', desc: 'Para quem treina pesado ou vive com músculos sobrecarregados. Começa relaxante e avança para uma pegada mais firme.', details: ['Aquecimento com base relaxante', 'Trabalho firme nas áreas travadas', 'Costas, pernas, ombros e braços conforme necessidade', 'Ideal para recuperação e mobilidade'] },
+  { id: 'sensitiva', category: 'premium', min: 60, price: 177, icon: 'sparkles', tag: 'SENSORIAL', title: 'Massagem Sensorial', desc: 'Um cuidado gradual: primeiro o corpo desacelera, depois o toque fica mais lento, suave e imersivo.', details: ['Início com relaxamento de corpo todo', 'Toque sensorial leve e progressivo', 'Limites alinhados com clareza', 'Encerramento combinado com privacidade e respeito'] },
+  { id: 'mista', category: 'premium', min: 60, price: 207, icon: 'heart', tag: 'FUSION', title: 'Experiência Fusion', desc: 'Combina relaxamento, presença sensorial e um clima mais próximo, sempre com consentimento e comunicação clara.', details: ['Base relaxante no corpo todo', 'Ritmo sensorial gradual', 'Atenção à parte posterior e anterior do corpo', 'Finalização combinada no atendimento'], highlight: true },
+  { id: 'nuru', category: 'premium', min: 60, price: 317, icon: 'star', tag: 'PREMIUM', title: 'Massagem Nuru', desc: 'Experiência premium com gel de deslizamento, pensada para entrega, conforto e uma conexão corporal mais intensa.', details: ['Preparação relaxante do corpo', 'Uso de gel próprio para deslizamento', 'Movimentos contínuos e envolventes', 'Limites e preferências alinhados antes da sessão'] },
+  { id: 'depilacao', category: 'care', min: 60, price: 107, icon: 'scissors', tag: 'ESTÉTICA', title: 'Aparo de Pelos do Corpo', desc: 'Cuidado prático para sensação de pele mais limpa, leve e confortável antes ou depois da sessão.', details: ['Aparo com máquina em áreas escolhidas', 'Peito, abdômen, costas ou pernas', 'Acabamento cuidadoso e discreto', 'Indicado para conforto e estética'] },
 ];
 
 const plans: ServiceItem[] = [
-  {
-    id: 'pack_basic',
-    type: 'pack',
-    min: 60,
-    title: 'Alívio de Rotina (2x)',
-    price: 247,
-    fullPrice: 284,
-    savings: 37,
-    desc: 'Duas sessões no mês para manter o corpo em dia, com bônus de aromaterapia.',
-    details: ['1x Massagem nos Pés', '1x Massagem Clássica', 'Aromaterapia nas duas sessões', 'Agendamentos separados durante o mês'],
-    tag: 'RELAX',
-    icon: 'layers',
-  },
-  {
-    id: 'pack_essencial',
-    type: 'pack',
-    min: 60,
-    title: 'Kit Sobrevivência (2x)',
-    price: 297,
-    fullPrice: 334,
-    savings: 37,
-    desc: 'Um encontro para tirar dores do corpo e outro para desacelerar a mente.',
-    details: ['1x Massagem Clássica', '1x Massagem Sensorial', 'Ideal para rotina intensa', 'Melhor custo-benefício para voltar ao eixo'],
-    tag: 'DURMA BEM',
-    icon: 'sun',
-    highlight: true,
-  },
-  {
-    id: 'pack_glow',
-    type: 'pack',
-    min: 60,
-    title: 'Renovação Completa (2x)',
-    price: 327,
-    fullPrice: 391,
-    savings: 64,
-    desc: 'Dia de cuidado estético e dia de experiência sensorial com tempo extra.',
-    details: ['1x Aparo de Pelos do Corpo', '1x Experiência Fusion', 'Bônus de +30 minutos na Fusion', 'Para autoestima, conforto e presença corporal'],
-    tag: 'GLOW UP',
-    icon: 'sparkles',
-  },
-  {
-    id: 'pack_muscle',
-    type: 'pack',
-    min: 60,
-    title: 'Combo Recuperação (2x)',
-    price: 347,
-    fullPrice: 408,
-    savings: 61,
-    desc: 'Duas sessões focadas em recuperação física para quem treina ou sente dores recorrentes.',
-    details: ['2x Massagem para Atletas', 'Foco extra em pontos de dor', 'Atendimentos separados', 'Ideal para costas, pernas e ombros'],
-    tag: 'MÚSCULOS',
-    icon: 'zap',
-  },
-  {
-    id: 'pack_premium',
-    type: 'pack',
-    min: 60,
-    title: 'Mensalidade do Chefe (3x)',
-    price: 637,
-    fullPrice: 721,
-    savings: 84,
-    desc: 'Três semanas de cuidado premium para transformar o mês em uma rotina mais leve.',
-    details: ['1x sessão relaxante premium', '1x Experiência Fusion', '1x Massagem Nuru', 'Três encontros para manter relaxamento e presença'],
-    tag: 'VIP',
-    icon: 'award',
-  },
+  { id: 'pack_basic', type: 'pack', min: 60, title: 'Alívio de Rotina (2x)', price: 247, fullPrice: 284, savings: 37, desc: 'Duas sessões no mês para manter o corpo em dia, com bônus de aromaterapia.', details: ['1x Massagem nos Pés', '1x Massagem Clássica', 'Aromaterapia nas duas sessões', 'Agendamentos separados durante o mês'], tag: 'RELAX', icon: 'layers' },
+  { id: 'pack_essencial', type: 'pack', min: 60, title: 'Kit Sobrevivência (2x)', price: 297, fullPrice: 334, savings: 37, desc: 'Um encontro para tirar dores do corpo e outro para desacelerar a mente.', details: ['1x Massagem Clássica', '1x Massagem Sensorial', 'Ideal para rotina intensa', 'Melhor custo-benefício para voltar ao eixo'], tag: 'DURMA BEM', icon: 'sun', highlight: true },
+  { id: 'pack_glow', type: 'pack', min: 60, title: 'Renovação Completa (2x)', price: 327, fullPrice: 391, savings: 64, desc: 'Dia de cuidado estético e dia de experiência sensorial com tempo extra.', details: ['1x Aparo de Pelos do Corpo', '1x Experiência Fusion', 'Bônus de +30 minutos na Fusion', 'Para autoestima, conforto e presença corporal'], tag: 'GLOW UP', icon: 'sparkles' },
+  { id: 'pack_muscle', type: 'pack', min: 60, title: 'Combo Recuperação (2x)', price: 347, fullPrice: 408, savings: 61, desc: 'Duas sessões focadas em recuperação física para quem treina ou sente dores recorrentes.', details: ['2x Massagem para Atletas', 'Foco extra em pontos de dor', 'Atendimentos separados', 'Ideal para costas, pernas e ombros'], tag: 'MÚSCULOS', icon: 'zap' },
+  { id: 'pack_premium', type: 'pack', min: 60, title: 'Mensalidade do Chefe (3x)', price: 637, fullPrice: 721, savings: 84, desc: 'Três semanas de cuidado premium para transformar o mês em uma rotina mais leve.', details: ['1x sessão relaxante premium', '1x Experiência Fusion', '1x Massagem Nuru', 'Três encontros para manter relaxamento e presença'], tag: 'VIP', icon: 'award' },
 ];
 
 const extras: ExtraItem[] = [
@@ -380,8 +237,7 @@ const copy = {
   professional: 'Técnico em Massagens',
   attended: 'homens já atendidos',
   welcome: 'Agendamento premium, direto e sem enrolação.',
-  welcomeSub: 'Escolha o atendimento, defina local e horário, revise tudo e envie a mensagem pronta no WhatsApp.',
-  chooseSub: 'Um fluxo enxuto para você comparar sessões, montar sua experiência e confirmar com clareza.',
+  welcomeSub: 'Escolha o atendimento, defina local e horário, revise os detalhes e envie a mensagem pronta pelo WhatsApp.',
   tabSingle: 'Sessões avulsas',
   tabPacks: 'Planos mensais',
   continue: 'Continuar',
@@ -392,16 +248,16 @@ const copy = {
   selected: 'Selecionado',
   name: 'Seu nome ou apelido',
   locationTitle: 'Onde será o atendimento?',
-  locationSub: 'Informe seu nome e escolha o tipo de local. Só pedimos endereço completo quando ele for necessário.',
+  locationSub: 'Informe seu nome e escolha o tipo de local. O endereço completo só é exigido quando estritamente necessário.',
   whenTitle: 'Escolha data e horário',
-  whenSub: 'Horários de hoje aparecem apenas quando ainda estão disponíveis.',
+  whenSub: 'Apenas horários ainda disponíveis para a data selecionada aparecerão aqui.',
   summaryTitle: 'Revise seu agendamento',
-  summarySub: 'Adicione complementos, aplique benefícios e escolha a forma de pagamento.',
+  summarySub: 'Adicione complementos, aplique benefícios e defina a forma de pagamento.',
   extrasTitle: 'Complementos opcionais',
   couponTitle: 'Benefício disponível',
-  couponEmpty: 'Nenhum benefício disponível agora.',
+  couponEmpty: 'Nenhum benefício disponível no momento.',
   paymentTitle: 'Forma de pagamento',
-  termsTitle: 'Regras do atendimento',
+  termsTitle: 'Regras de atendimento',
   acceptTerms: 'Li e aceito as regras',
   total: 'Total',
   subtotal: 'Subtotal',
@@ -409,7 +265,7 @@ const copy = {
   pixDiscount: 'Desconto Pix',
   mediaDiscount: 'Desconto Portfólio',
   rushFee: 'Taxa de pico',
-  duration: 'Duração',
+  duration: 'Duração estimada',
   home: 'Residência',
   motel: 'Minha suíte',
   hotel: 'Hotel',
@@ -426,75 +282,40 @@ const copy = {
   mediaTitle: 'Apoiar meu portfólio',
   mediaDesc: 'Permitir fotos estéticas anônimas e ganhar 1% OFF.',
   toastCart: 'Seleção atualizada.',
-  toastCoupon: 'Benefício aplicado.',
+  toastCoupon: 'Benefício aplicado com sucesso.',
   toastCouponRemoved: 'Benefício removido.',
-  toastName: 'Preencha seu nome corretamente.',
-  toastAddr: 'Preencha o local completo.',
-  toastDate: 'Selecione data e horário.',
-  toastPayment: 'Escolha pagamento e aceite as regras.',
-  toastCepFound: 'Endereço encontrado pelo CEP.',
-  toastCepError: 'CEP não encontrado.',
-  toastPix: 'Chave PIX copiada.',
-  toastNeedService: 'Selecione pelo menos um serviço.',
-  successTitle: 'Tudo certo. Falta só confirmar.',
-  successSub: 'O WhatsApp abriu com a mensagem pronta. Revise e envie para confirmar o atendimento.',
+  toastName: 'Por favor, insira um nome válido.',
+  toastAddr: 'Precisamos de mais detalhes do endereço para continuar.',
+  toastDate: 'Selecione uma data e um horário para a sessão.',
+  toastPayment: 'Escolha o pagamento e aceite as regras para prosseguir.',
+  toastCepFound: 'Endereço localizado pelo CEP.',
+  toastCepError: 'Não conseguimos localizar este CEP.',
+  toastPix: 'Chave PIX copiada para a área de transferência.',
+  toastNeedService: 'Selecione pelo menos um serviço para continuar.',
+  successTitle: 'Tudo pronto. Falta só confirmar.',
+  successSub: 'A mensagem foi preparada no WhatsApp. Revise e envie para garantir seu horário.',
   whatsapp: 'Abrir WhatsApp novamente',
   startOver: 'Novo agendamento',
   today: 'HOJE',
   tomorrow: 'AMANHÃ',
-  claimGift: 'Pegar benefício',
-  giftText: 'Primeira visita com benefício liberado.',
-  serviceDetails: 'O que está incluso',
+  claimGift: 'Garantir benefício',
+  giftText: 'Sua primeira visita tem um benefício liberado.',
+  serviceDetails: 'O que está incluso:',
 };
 
 const Icon = memo(({ name, size = 20, className = '' }: { name: string; size?: number; className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
     <path d={ICON_PATHS[name] || ICON_PATHS.star} />
   </svg>
 ));
 Icon.displayName = 'Icon';
 
-const Button = memo(
-  ({
-    children,
-    onClick,
-    variant = 'primary',
-    disabled = false,
-    full = false,
-    icon,
-    className = '',
-  }: {
-    children: ReactNode;
-    onClick?: () => void;
-    variant?: 'primary' | 'whatsapp' | 'outline' | 'accent' | 'ghost';
-    disabled?: boolean;
-    full?: boolean;
-    icon?: string;
-    className?: string;
-  }) => (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`button button--${variant} ${full ? 'button--full' : ''} ${className}`}
-    >
-      {icon && <Icon name={icon} size={18} />}
-      <span>{children}</span>
-    </button>
-  ),
-);
+const Button = memo(({ children, onClick, variant = 'primary', disabled = false, full = false, icon, className = '' }: { children: ReactNode; onClick?: () => void; variant?: 'primary' | 'whatsapp' | 'outline' | 'accent' | 'ghost'; disabled?: boolean; full?: boolean; icon?: string; className?: string; }) => (
+  <button type="button" onClick={onClick} disabled={disabled} className={`button button--${variant} ${full ? 'button--full' : ''} ${className}`}>
+    {icon && <Icon name={icon} size={18} />}
+    <span>{children}</span>
+  </button>
+));
 Button.displayName = 'Button';
 
 const ToastStack = memo(({ toasts }: { toasts: Toast[] }) => (
@@ -511,49 +332,19 @@ const ToastStack = memo(({ toasts }: { toasts: Toast[] }) => (
 ));
 ToastStack.displayName = 'ToastStack';
 
-const InputField = memo(
-  ({
-    label,
-    value,
-    onChange,
-    placeholder,
-    type = 'text',
-    icon,
-    disabled = false,
-    maxLength,
-    error = false,
-  }: {
-    label: string;
-    value: string;
-    onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-    placeholder?: string;
-    type?: string;
-    icon?: string;
-    disabled?: boolean;
-    maxLength?: number;
-    error?: boolean;
-  }) => (
-    <label className={`field ${error ? 'field--error' : ''}`}>
-      <span className="field__label">{label}</span>
-      <span className="field__control">
-        {icon && (
-          <span className="field__icon">
-            <Icon name={icon} size={19} />
-          </span>
-        )}
-        <input
-          type={type}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          disabled={disabled}
-          maxLength={maxLength}
-          autoComplete="off"
-        />
-      </span>
-    </label>
-  ),
-);
+const InputField = memo(({ label, value, onChange, placeholder, type = 'text', icon, disabled = false, maxLength, error = false }: { label: string; value: string; onChange: (event: ChangeEvent<HTMLInputElement>) => void; placeholder?: string; type?: string; icon?: string; disabled?: boolean; maxLength?: number; error?: boolean; }) => (
+  <label className={`field ${error ? 'field--error' : ''}`}>
+    <span className="field__label">{label}</span>
+    <span className="field__control">
+      {icon && (
+        <span className="field__icon">
+          <Icon name={icon} size={19} />
+        </span>
+      )}
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} disabled={disabled} maxLength={maxLength} autoComplete="off" />
+    </span>
+  </label>
+));
 InputField.displayName = 'InputField';
 
 const SectionHeader = memo(({ eyebrow, title, desc }: { eyebrow?: string; title: string; desc?: string }) => (
@@ -565,45 +356,33 @@ const SectionHeader = memo(({ eyebrow, title, desc }: { eyebrow?: string; title:
 ));
 SectionHeader.displayName = 'SectionHeader';
 
-const ServiceCard = memo(
-  ({ item, selected, onOpen }: { item: ServiceItem; selected: boolean; onOpen: () => void }) => (
-    <button type="button" onClick={onOpen} className={`service-card ${selected ? 'is-selected' : ''} ${item.type === 'pack' ? 'is-pack' : ''}`}>
-      <span className="service-card__topline">
-        <span className="service-card__icon">
-          <Icon name={item.icon} size={23} />
-        </span>
-        {item.highlight && !selected && <span className="badge badge--blue">Popular</span>}
-        {selected && (
-          <span className="service-card__check">
-            <Icon name="check" size={16} />
-          </span>
-        )}
-      </span>
-
-      <span className="service-card__body">
-        <span className="service-card__tag">{item.tag}</span>
-        <strong>{item.title}</strong>
-        <span>{item.desc}</span>
-      </span>
-
-      <span className="service-card__meta">
-        <span>{item.min} min</span>
-        <span>{formatMoney(item.price)}</span>
-      </span>
-    </button>
-  ),
-);
+const ServiceCard = memo(({ item, selected, onOpen }: { item: ServiceItem; selected: boolean; onOpen: () => void }) => (
+  <button type="button" onClick={onOpen} className={`service-card ${selected ? 'is-selected' : ''} ${item.type === 'pack' ? 'is-pack' : ''}`} aria-pressed={selected}>
+    <span className="service-card__topline">
+      <span className="service-card__icon"><Icon name={item.icon} size={23} /></span>
+      {item.highlight && !selected && <span className="badge badge--blue">Popular</span>}
+      {selected && <span className="service-card__check"><Icon name="check" size={16} /></span>}
+    </span>
+    <span className="service-card__body">
+      <span className="service-card__tag">{item.tag}</span>
+      <strong>{item.title}</strong>
+      <span>{item.desc}</span>
+    </span>
+    <span className="service-card__meta">
+      <span>{item.min} min</span>
+      <span>{formatMoney(item.price)}</span>
+    </span>
+  </button>
+));
 ServiceCard.displayName = 'ServiceCard';
 
-const ModalShell = memo(
-  ({ children, onClose, max = 'modal--md' }: { children: ReactNode; onClose: () => void; max?: 'modal--sm' | 'modal--md' }) => (
-    <div className="modal-backdrop" onMouseDown={onClose}>
-      <div className={`modal ${max}`} onMouseDown={(event) => event.stopPropagation()}>
-        {children}
-      </div>
+const ModalShell = memo(({ children, onClose, max = 'modal--md' }: { children: ReactNode; onClose: () => void; max?: 'modal--sm' | 'modal--md' }) => (
+  <div className="modal-backdrop" onMouseDown={onClose}>
+    <div className={`modal ${max}`} onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true">
+      {children}
     </div>
-  ),
-);
+  </div>
+));
 ModalShell.displayName = 'ModalShell';
 
 const SummaryLine = memo(({ label, value, tone = 'normal' }: { label: ReactNode; value: ReactNode; tone?: 'normal' | 'success' | 'warning' }) => (
@@ -639,6 +418,7 @@ export default function App() {
 
   useEffect(() => setIsClient(true), []);
 
+  // HYDRATION SEGURA
   useEffect(() => {
     if (!isClient) return;
     try {
@@ -698,7 +478,7 @@ export default function App() {
       try {
         localStorage.setItem(CONFIG.STORAGE_KEY, payload);
       } catch {
-        // Storage pode falhar em modo privado.
+        // Fallback silencioso caso modo anônimo bloqueie
       }
     }
   }, [booking, isClient, isDark, loading, step, user]);
@@ -715,7 +495,6 @@ export default function App() {
       unlockPageScroll();
       return undefined;
     }
-
     const previous = {
       htmlOverflow: document.documentElement.style.overflow,
       htmlTouchAction: document.documentElement.style.touchAction,
@@ -758,14 +537,22 @@ export default function App() {
     window.setTimeout(() => anchor.remove(), 100);
   }, []);
 
+  // LÓGICA DE CARRINHO CORRIGIDA: Exclusividade mútua entre Planos e Sessões Únicas.
   const toggleCartItem = useCallback((item: ServiceItem) => {
     vibrate();
     setBooking((prev) => {
-      const exists = prev.cart.some((service) => service.id === item.id);
-      let nextCart = exists ? prev.cart.filter((service) => service.id !== item.id) : [...prev.cart, item];
+      const isAdding = !prev.cart.some((service) => service.id === item.id);
+      let nextCart = [];
 
-      if (item.type === 'pack' && !exists) {
-        nextCart = nextCart.filter((service) => service.type !== 'pack' || service.id === item.id);
+      if (isAdding) {
+        if (item.type === 'pack') {
+          nextCart = [item]; // Pack substitui tudo
+        } else {
+          // Sessão isolada remove eventuais packs e soma com outras sessões isoladas
+          nextCart = [...prev.cart.filter(s => s.type !== 'pack'), item];
+        }
+      } else {
+        nextCart = prev.cart.filter((service) => service.id !== item.id);
       }
 
       return {
@@ -1047,7 +834,7 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
               </div>
 
               <figure className="profile-card">
-                <img src={CONFIG.PROFILE_PHOTO_URL} alt="Foto de Thalyson" />
+                <img src={CONFIG.PROFILE_PHOTO_URL} alt={`Foto de ${copy.brand}`} />
                 <figcaption>
                   <span>{copy.professional}</span>
                   <strong>{copy.brand}</strong>
@@ -1098,7 +885,7 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
               </div>
             ) : (
               <section className="catalog-section">
-                <SectionHeader title={copy.tabPacks} desc="Escolha um plano por vez, compare economia e mantenha sua rotina de cuidado no mês." />
+                <SectionHeader title={copy.tabPacks} desc="Escolha um plano por vez, compare a economia e mantenha sua rotina de cuidado no mês." />
                 <div className="service-grid">
                   {plans.map((plan) => (
                     <ServiceCard key={plan.id} item={plan} selected={booking.cart.some((item) => item.id === plan.id)} onOpen={() => setSelectedService(plan)} />
@@ -1123,7 +910,7 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setBooking((prev) => ({ ...prev, locationType: item.id, address: item.id === prev.locationType ? prev.address : { ...prev.address } }))}
+                    onClick={() => setBooking((prev) => ({ ...prev, locationType: item.id }))}
                     className={booking.locationType === item.id ? 'choice-card is-selected' : 'choice-card'}
                   >
                     <Icon name={item.icon} size={26} />
@@ -1163,7 +950,7 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
                 {booking.locationType === 'motel' && (
                   <div className="info-callout">
                     <Icon name="shield" size={20} />
-                    <p>O endereço da suíte é confirmado pelo WhatsApp depois do pedido de agendamento.</p>
+                    <p>O endereço da suíte é alinhado e confirmado pelo WhatsApp com total discrição após a reserva.</p>
                   </div>
                 )}
               </div>
@@ -1194,7 +981,7 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
                 <div className="time-grid" aria-label="Escolha o horário">
                   {timeSlots.map((time) => {
                     const selected = booking.time === time;
-                    const rush = RUSH_HOURS.includes(time);
+                    const rush = RUSH_HOURS.includes(time) && booking.locationType !== 'motel';
                     return (
                       <button key={time} type="button" onClick={() => setBooking((prev) => ({ ...prev, time }))} className={selected ? 'time-card is-selected' : 'time-card'}>
                         <span>{time}</span>
@@ -1203,7 +990,7 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
                     );
                   })}
                 </div>
-                {booking.date && !timeSlots.length && <p className="empty-hint">Não há horários disponíveis para esta data.</p>}
+                {booking.date && !timeSlots.length && <p className="empty-hint">Lamentamos, mas não há horários disponíveis para esta data.</p>}
               </div>
             </div>
             <SummaryPanel booking={booking} financials={financials} step={step} onCopyPix={copyPix} />
@@ -1293,11 +1080,11 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
                   {booking.mediaAllowed && <Icon name="check" size={18} />}
                 </button>
 
-                <button type="button" onClick={() => setTermsOpen(true)} className={`consent-card ${booking.termsAccepted ? 'is-selected' : ''} ${hasError && !booking.termsAccepted ? 'has-error' : ''}`}>
+                <button type="button" onClick={() => setTermsOpen(true)} className={`consent-card ${booking.termsAccepted ? 'is-selected' : ''} ${hasError && !booking.termsAccepted ? 'field--error' : ''}`}>
                   <span className="consent-card__icon"><Icon name="shield" size={20} /></span>
                   <span>
                     <strong>{copy.termsTitle}</strong>
-                    <small>{booking.termsAccepted ? 'Regras aceitas para continuar.' : 'Leia e confirme antes de enviar.'}</small>
+                    <small>{booking.termsAccepted ? 'Regras aceitas para continuar.' : 'Leia e confirme antes de enviar o agendamento.'}</small>
                   </span>
                   {booking.termsAccepted ? <Icon name="check" size={18} /> : <Icon name="right" size={18} />}
                 </button>
@@ -1329,7 +1116,7 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
               <Button variant="outline" onClick={handleBackStep} icon="left" className="button--compact">{copy.back}</Button>
             ) : (
               <div className="mobile-total">
-                <span>Total</span>
+                <span>{copy.total}</span>
                 <strong>{formatMoney(financials.total)}</strong>
               </div>
             )}
@@ -1347,7 +1134,7 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
               <p className="eyebrow">{selectedService.tag}</p>
               <h3>{selectedService.title}</h3>
             </div>
-            <button type="button" onClick={closeAllModals} className="icon-button" aria-label="Fechar">
+            <button type="button" onClick={closeAllModals} className="icon-button" aria-label="Fechar modal">
               <Icon name="x" size={22} />
             </button>
           </div>
@@ -1421,7 +1208,7 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
           <div className="welcome-modal">
             <div className="welcome-modal__icon"><Icon name="gift" size={30} /></div>
             <h3>{copy.giftText}</h3>
-            <p>Use agora ou deixe aplicado para a etapa de revisão.</p>
+            <p>Use agora em seu carrinho ou guarde para aplicar mais tarde na tela de revisão.</p>
             <div className="coupon-stamp">
               <span>Cupom</span>
               <strong>BEMVINDO10</strong>
@@ -1437,7 +1224,7 @@ Li e aceito as regras. Aguardo sua confirmação.`.trim();
 function Stepper({ step, setStep }: { step: Step; setStep: Dispatch<SetStateAction<Step>> }) {
   const steps = ['Serviço', 'Local', 'Horário', 'Resumo'];
   return (
-    <nav className="stepper" aria-label="Etapas do agendamento">
+    <nav className="stepper" aria-label="Progresso do agendamento">
       {steps.map((label, index) => (
         <button
           key={label}
@@ -1467,8 +1254,8 @@ function SummaryPanel({
   onCopyPix: () => void;
 }) {
   const selectedExtras = extras.filter((extra) => booking.extras[extra.id]);
-  const dateLabel = booking.date ? new Date(`${booking.date}T00:00:00`).toLocaleDateString(CONFIG.LOCALE) : 'Ainda não escolhido';
-  const timeLabel = booking.time || 'Ainda não escolhido';
+  const dateLabel = booking.date ? new Date(`${booking.date}T00:00:00`).toLocaleDateString(CONFIG.LOCALE) : 'Pendente';
+  const timeLabel = booking.time || 'Pendente';
   const locationLabel =
     booking.locationType === 'home'
       ? booking.address.street
@@ -1479,10 +1266,10 @@ function SummaryPanel({
         : copy.motel;
 
   return (
-    <aside className="summary-panel" aria-label="Resumo do agendamento">
+    <aside className="summary-panel" aria-label="Resumo do pedido">
       <div className="summary-panel__header">
         <div>
-          <p className="eyebrow">Fluxo do agendamento</p>
+          <p className="eyebrow">Seu Carrinho</p>
           <h3>{copy.summaryTitle}</h3>
         </div>
         <span>{financials.duration} min</span>
@@ -1518,7 +1305,7 @@ function SummaryPanel({
           <strong>{dateLabel} · {timeLabel}</strong>
         </div>
         <div>
-          <p>Local</p>
+          <p>Local de atendimento</p>
           <strong>{locationLabel}</strong>
         </div>
       </div>
@@ -1541,13 +1328,13 @@ function SummaryPanel({
           </div>
 
           {booking.payment === 'pix' && (
-            <button type="button" onClick={onCopyPix} className="pix-copy">{CONFIG.PIX_KEY}</button>
+            <button type="button" onClick={onCopyPix} className="pix-copy" aria-label="Copiar chave PIX">{CONFIG.PIX_KEY}</button>
           )}
         </>
       ) : (
         <div className="summary-tip">
           <strong>Próximo passo claro.</strong>
-          <span>Sessão, local, data e revisão antes do envio no WhatsApp.</span>
+          <span>Defina sessão, local, data e revise antes de fazer o envio para o WhatsApp.</span>
         </div>
       )}
     </aside>
