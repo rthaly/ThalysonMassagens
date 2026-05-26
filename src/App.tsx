@@ -1153,7 +1153,7 @@ export default function App() {
                 <article className={`p-5 rounded-3xl border flex flex-col sm:flex-row items-start sm:items-center gap-4 ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                   <div className="relative shrink-0">
                     <div className={`w-20 h-20 rounded-2xl overflow-hidden border p-0.5 ${isDark ? 'border-blue-900' : 'border-blue-200'}`}>
-                      <img src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" alt="Thalyson" className="w-full h-full object-cover rounded-xl" />
+                      <img src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" alt="Thalyson Santos, São Paulo - Bela Vista" className="w-full h-full object-cover rounded-xl" />
                     </div>
                   </div>
                   <div className="min-w-0 flex-1">
