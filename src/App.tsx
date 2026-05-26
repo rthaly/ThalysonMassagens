@@ -296,7 +296,7 @@ const getData = (lang: 'pt' | 'en') => {
       welcome: isEn ? "Welcome," : "Olá,",
       welcome_anon: isEn ? "allow yourself." : "permita-se cuidar.",
       choose_sub: isEn ? "I know how heavy the routine is. Choose how you want to be cared for today." : "Permita-se uma pausa. O seu corpo guarda histórias, tensões e cansaço. Aqui você encontra um espaço seguro para soltar o controle, relaxar profundamente e despertar novas sensações.",
-      specialist: isEn ? "Massage Therapist" : "Massoterapeuta Corporal",
+      specialist: isEn ? "Massage Therapist" : "Massagista Corporal",
       level_label: isEn ? "Your Care Journey" : "Sua Jornada",
       tab_packs: isEn ? "Plans" : "Planos Mensais",
       tab_single: isEn ? "Single" : "Sessões Avulsas",
