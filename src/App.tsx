@@ -200,7 +200,7 @@ const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: n
 // TYPES
 // ==================================================================================
 interface ServiceItem { id: string; min: number; price: number; icon: string; tag: string; title: string; desc: string; details: string; fullPrice?: number; savings?: number; type?: string; popular?: boolean; category?: 'relax' | 'express' | 'final' | 'care'; }
-interface Coupon { id: string; val: number; type?: 'fixed' | 'percent'; title: string; code: string; }
+interface Coupon { id: string; val: number; title: string; code: string; }
 interface Review { n: string; loc: string; t: string; s: number; serv: string; }
 interface UserData { name: string; xp: number; coupons: Coupon[]; usedCoupons: string[]; hasSeenWelcome: boolean; ordersCount: number; lastActivity: string; }
 interface Address { cep: string; street: string; number: string; district: string; city: string; comp: string; placeName: string; }
@@ -253,7 +253,7 @@ const getData = (lang: 'pt' | 'en') => {
       { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "REDUCES ANXIETY" : "CALMA E PRESENÇA", title: isEn ? "Sensory Massage" : "Massagem Sensorial", desc: isEn ? "Classic massage first to calm the mind. Then, subtle touches to awaken senses, ending with pleasure." : "Massagem clássica para tirar dores e acalmar a mente. Em seguida, toques sutis para despertar os sentidos, finalizando com relaxamento total.", details: isEn ? "1. Classic full-body relaxing massage.\n2. Subtle touches to calm a racing mind.\n3. Building new physical sensations.\n4. Manual ending for total stress release." : "1. Massagem clássica no corpo todo.\n2. Toques sutis para desligar a mente acelerada.\n3. Construção de novas sensações.\n4. Finalização manual para liberação total." },
       { id: 'mista', category: 'final', min: 60, price: p.titan, icon: "zap", tag: isEn ? "BEST OF BOTH" : "O MELHOR DOS 2", title: isEn ? "Fusion Experience" : "Experiência Fusion", desc: isEn ? "Starts with the complete Classic massage to heal pain. Then, the rhythm changes to skin-to-skin contact." : "Inicia com a massagem clássica completa. Depois, o ritmo muda para contato próximo e uma finalização intensa.", details: isEn ? "1. Classic full-body relaxing massage.\n2. Close physical contact (I wear only underwear).\n3. Warming and stimulating all senses.\n4. Intense ending to recharge your energy." : "1. Massagem relaxante no corpo todo.\n2. Contato físico próximo (atendo de roupa íntima).\n3. Estímulo de todos os sentidos.\n4. Finalização intensa para recarregar as energias." },
       { id: 'reversa', category: 'final', min: 60, price: p.reversa, icon: "refresh-cw", tag: isEn ? "REAL CONTACT" : "CONTATO REAL", title: isEn ? "Reverse Massage" : "Massagem Reversa", desc: isEn ? "Starts with a Classic massage on your whole body. Then, you take control and massage me." : "Começa com a massagem clássica no seu corpo para relaxar. Depois, você assume o controle.", details: isEn ? "1. Classic full-body massage (approx. 30 min).\n2. The control passes to you.\n3. Freedom to touch and explore.\n4. Mutual ending and real exchange of affection." : "1. Massagem relaxante (aprox. 30 min).\n2. O controle da sessão passa para você.\n3. Liberdade para guiar o ritmo.\n4. Finalização mútua e troca de carinho." },
-      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "TOTAL SURRENDER" : "ENTREGA TOTAL", title: isEn ? "Nuru Massage" : "Massagem Nuru", desc: isEn ? "Classic massage first to remove pain. Then, warm gel and my body sliding over yours for extreme relaxation." : "Começamos com a massagem clássica para tirar as dores. Depois, gel que desliza e contato de corpo inteiro para um relaxamento extremo.", details: isEn ? "1. Classic full-body relaxing massage.\n2. Application of warm special gel on both of us.\n3. Contato pele com pele, deslizando pelo corpo.\n4. Finalização profunda para você relaxar e se entregar." },
+      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "TOTAL SURRENDER" : "ENTREGA TOTAL", title: isEn ? "Nuru Massage" : "Massagem Nuru", desc: isEn ? "Classic massage first to remove pain. Then, warm gel and my body sliding over yours for extreme relaxation." : "Começamos com a massagem clássica para tirar as dores. Depois, gel que desliza e contato de corpo inteiro para um relaxamento extremo.", details: isEn ? "1. Classic full-body relaxing massage.\n2. Application of warm special gel on both of us.\n3. Full skin-to-skin contact sliding over your body.\n4. Intense ending for complete relaxation." : "1. Massagem relaxante no corpo todo.\n2. Aplicação de gel aquecido em ambos.\n3. Contato pele com pele, deslizando pelo corpo.\n4. Finalização profunda para você relaxar e se entregar." },
       
       { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "AESTHETICS" : "ESTÉTICA", title: isEn ? "Body Hair Trim" : "Aparo de Pelos do Corpo", desc: isEn ? "Leave with a clean, light body ready for the week." : "Aparo profissional dos pelos para você ficar impecável e se sentir bem com seu corpo.", details: isEn ? "1. Trim with clippers\n2. Focus on specific body parts" : "1. Aparo com máquina (pente zero ou três).\n2. Foco nas regiões que você escolher.\n3. Feito no conforto da sua casa ou hotel.\n4. Corpo mais limpo e estética agradável." }
     ] as ServiceItem[],
@@ -318,8 +318,6 @@ const getData = (lang: 'pt' | 'en') => {
       extras_title: isEn ? "Add something special" : "Toques adicionais",
       coupon_section: isEn ? "Your Benefits" : "Seus Benefícios Disponíveis",
       coupon_empty: isEn ? "No benefits available at the moment." : "Nenhum benefício disponível no momento.",
-      promo_placeholder: isEn ? "Promo code" : "Código de desconto",
-      promo_btn: isEn ? "Apply" : "Aplicar",
       payment_title: isEn ? "Payment method (at the meeting)" : "Forma de pagamento (você paga no local)",
       terms_title: isEn ? "Agreement" : "Acordos e Regras",
       success_title: isEn ? "Almost there!" : "Tudo Certo! Falta Pouco",
@@ -729,7 +727,7 @@ export default function App() {
   const [isFetchingCep, setIsFetchingCep] = useState(false);
   const [hasErrorGlobal, setHasErrorGlobal] = useState(false);
   const [selectedServiceForModal, setSelectedServiceForModal] = useState<ServiceItem | null>(null);
-  const [promoInput, setPromoInput] = useState('');
+  const [manualCoupon, setManualCoupon] = useState('');
 
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
@@ -880,26 +878,6 @@ export default function App() {
     }
   };
 
-  const handleApplyPromo = useCallback(() => {
-    const code = promoInput.trim().toUpperCase();
-    if (code === 'RETORNO10') {
-       const newCoupon: Coupon = { 
-         id: 'retorno10', 
-         val: 10, 
-         type: 'percent', 
-         title: lang === 'en' ? 'Returning Client (10% OFF)' : 'Cliente Fiel (10% OFF)', 
-         code: code 
-       };
-       setBooking(b => ({ ...b, appliedCoupon: newCoupon }));
-       setPromoInput('');
-       addToast(T.toast_coupon_success, 'success');
-       vibrate(30);
-    } else {
-       addToast(T.toast_coupon_invalid, 'error');
-       vibrate([50, 50]);
-    }
-  }, [promoInput, lang, T.toast_coupon_success, T.toast_coupon_invalid, addToast]);
-
   const getDayLabel = useCallback((d: Date) => {
     const today = new Date(); const tmrw = new Date(today); tmrw.setDate(today.getDate() + 1); 
     if (d.toDateString() === today.toDateString()) return T.today;
@@ -949,12 +927,7 @@ export default function App() {
     const duration = baseDuration + addedTime;
     const isRush = RUSH_HOURS.includes(booking.time || '');
     const rushFee = (isRush && booking.locationType !== 'motel') ? RUSH_FEE : 0;
-    
-    // Calcula o desconto suportando cupons de porcentagem e valor fixo
-    const disc = booking.appliedCoupon 
-      ? (booking.appliedCoupon.type === 'percent' ? Math.floor(sub * (booking.appliedCoupon.val / 100)) : booking.appliedCoupon.val) 
-      : 0;
-
+    const disc = booking.appliedCoupon ? (booking.appliedCoupon.code === 'RETORNO10' ? sub * 0.10 : booking.appliedCoupon.val) : 0;
     let running = Math.max(0, sub - disc);
     let mediaDisc = 0;
     if (booking.mediaAllowed) { mediaDisc = Math.ceil(running * 0.01); running = Math.max(0, running - mediaDisc); }
@@ -1068,13 +1041,13 @@ export default function App() {
     DATA.levels.forEach(lvl => {
       if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
         leveledUp = true;
-        updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, type: 'fixed', title: `${lvl.title}`, code: `LVLUP${lvl.level}` });
+        updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, title: `${lvl.title}`, code: `LVLUP${lvl.level}` });
       }
     });
     if (newXP > 800) {
       const oldL = Math.floor(Math.max(0, user.xp - 800) / 500);
       const newL = Math.floor(Math.max(0, newXP - 800) / 500);
-      if (newL > oldL) { leveledUp = true; for (let i = oldL + 1; i <= newL; i++) updatedCoupons.push({ id: `LOOP_${i}_${Date.now()}`, val: DATA.levels[3].reward, type: 'fixed', title: `Plenitude Plus`, code: `PLUS${i}` }); }
+      if (newL > oldL) { leveledUp = true; for (let i = oldL + 1; i <= newL; i++) updatedCoupons.push({ id: `LOOP_${i}_${Date.now()}`, val: DATA.levels[3].reward, title: `Plenitude Plus`, code: `PLUS${i}` }); }
     }
     setUser(p => ({ ...p, xp: newXP, coupons: updatedCoupons, usedCoupons: updatedHistory, ordersCount: (p.ordersCount || 92) + 1, lastActivity: new Date().toISOString() }));
     if (leveledUp) { setLevelUpPopup(true); setTimeout(() => addToast(T.levelup_popup_title, 'success'), 500); }
@@ -1461,18 +1434,26 @@ export default function App() {
 
               <article className={`p-5 sm:p-6 rounded-3xl border ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <h3 className={`font-display text-xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.coupon_section}</h3>
-                
-                {/* Promo Code Input */}
+
+                {/* CAMPO DE CUPOM MANUAL */}
                 <div className="flex gap-2 mb-5">
                   <input
                     type="text"
-                    value={promoInput}
-                    onChange={e => setPromoInput(e.target.value)}
-                    placeholder={T.promo_placeholder}
-                    className={`flex-1 min-h-[48px] rounded-xl px-4 text-sm font-medium border outline-none transition-all ${isDark ? 'bg-white/5 border-zinc-800 text-white placeholder-zinc-600 focus:border-blue-500 focus:bg-white/10' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:bg-white'}`}
+                    placeholder={lang === 'en' ? "Have a code?" : "Tem um código?"}
+                    value={manualCoupon}
+                    onChange={(e) => setManualCoupon(e.target.value.toUpperCase())}
+                    className={`flex-1 rounded-xl px-4 text-sm outline-none border transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500'}`}
                   />
-                  <Button onClick={handleApplyPromo} disabled={!promoInput.trim()} size="md" className="shrink-0">
-                    {T.promo_btn}
+                  <Button onClick={() => {
+                    if (manualCoupon === 'RETORNO10') {
+                      setBooking(b => ({ ...b, appliedCoupon: { id: 'manual', val: 0, title: '10% OFF (Retorno)', code: 'RETORNO10' } }));
+                      addToast(T.toast_coupon_success);
+                      setManualCoupon('');
+                    } else {
+                      addToast(T.toast_coupon_invalid, 'error');
+                    }
+                  }} size="md" variant="primary">
+                    {lang === 'en' ? "Apply" : "Aplicar"}
                   </Button>
                 </div>
 
@@ -1733,7 +1714,7 @@ export default function App() {
             </div>
             <Button full size="lg" onClick={() => {
               setWelcomePopup(false); vibrate([50, 100]);
-              const c: Coupon = { id: 'welcome', val: 10, type: 'fixed', title: 'BEMVINDO10', code: 'BEMVINDO10' };
+              const c: Coupon = { id: 'welcome', val: 10, title: 'BEMVINDO10', code: 'BEMVINDO10' };
               setUser(u => ({ ...u, hasSeenWelcome: true, coupons: [...u.coupons, c] }));
               setBooking(b => ({ ...b, appliedCoupon: c }));
               addToast(T.toast_coupon_success);
