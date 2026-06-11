@@ -727,6 +727,7 @@ export default function App() {
   const [isFetchingCep, setIsFetchingCep] = useState(false);
   const [hasErrorGlobal, setHasErrorGlobal] = useState(false);
   const [selectedServiceForModal, setSelectedServiceForModal] = useState<ServiceItem | null>(null);
+  const [manualCoupon, setManualCoupon] = useState('');
 
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
@@ -926,7 +927,7 @@ export default function App() {
     const duration = baseDuration + addedTime;
     const isRush = RUSH_HOURS.includes(booking.time || '');
     const rushFee = (isRush && booking.locationType !== 'motel') ? RUSH_FEE : 0;
-    const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
+    const disc = booking.appliedCoupon ? (booking.appliedCoupon.code === 'RETORNO10' ? sub * 0.10 : booking.appliedCoupon.val) : 0;
     let running = Math.max(0, sub - disc);
     let mediaDisc = 0;
     if (booking.mediaAllowed) { mediaDisc = Math.ceil(running * 0.01); running = Math.max(0, running - mediaDisc); }
@@ -1433,6 +1434,29 @@ export default function App() {
 
               <article className={`p-5 sm:p-6 rounded-3xl border ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <h3 className={`font-display text-xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.coupon_section}</h3>
+
+                {/* CAMPO DE CUPOM MANUAL */}
+                <div className="flex gap-2 mb-5">
+                  <input
+                    type="text"
+                    placeholder={lang === 'en' ? "Have a code?" : "Tem um código?"}
+                    value={manualCoupon}
+                    onChange={(e) => setManualCoupon(e.target.value.toUpperCase())}
+                    className={`flex-1 rounded-xl px-4 text-sm outline-none border transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500'}`}
+                  />
+                  <Button onClick={() => {
+                    if (manualCoupon === 'RETORNO10') {
+                      setBooking(b => ({ ...b, appliedCoupon: { id: 'manual', val: 0, title: '10% OFF (Retorno)', code: 'RETORNO10' } }));
+                      addToast(T.toast_coupon_success);
+                      setManualCoupon('');
+                    } else {
+                      addToast(T.toast_coupon_invalid, 'error');
+                    }
+                  }} size="md" variant="primary">
+                    {lang === 'en' ? "Apply" : "Aplicar"}
+                  </Button>
+                </div>
+
                 {user.coupons.length > 0 ? (
                   <div className="space-y-3">
                     {user.coupons.map(c => (
