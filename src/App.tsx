@@ -1435,14 +1435,14 @@ export default function App() {
               <article className={`p-5 sm:p-6 rounded-3xl border ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <h3 className={`font-display text-xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.coupon_section}</h3>
 
-                {/* CAMPO DE CUPOM MANUAL */}
+               {/* CAMPO DE CUPOM MANUAL */}
                 <div className="flex items-center gap-2 mb-5">
                   <input
                     type="text"
                     placeholder={lang === 'en' ? "Have a code?" : "Tem um código?"}
                     value={manualCoupon}
                     onChange={(e) => setManualCoupon(e.target.value.toUpperCase())}
-                    className={`flex-1 rounded-xl px-4 min-h-[48px] text-sm outline-none border transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500'}`}
+                    className={`flex-1 rounded-xl px-4 h-[44px] text-sm outline-none border transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500'}`}
                   />
                   <Button onClick={() => {
                     if (manualCoupon === 'RETORNO10') {
@@ -1452,7 +1452,7 @@ export default function App() {
                     } else {
                       addToast(T.toast_coupon_invalid, 'error');
                     }
-                  }} size="md" variant="primary" className="!w-auto !px-5 !flex-none">
+                  }} size="sm" variant="primary" className="!w-auto !h-[44px] !px-4 !flex-none">
                     {lang === 'en' ? "Apply" : "Aplicar"}
                   </Button>
                 </div>
