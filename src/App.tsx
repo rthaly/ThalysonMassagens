@@ -223,7 +223,7 @@ const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
 const getData = (lang: 'pt' | 'en') => {
   const isEn = lang === 'en';
   const p = {
-    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317, crossfit: 187,
+    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 307, nuru: 317, crossfit: 187,
     pes: 110, maos: 110, combo_pm: 190,
     pack_basic: { v: 247, full: 284, save: 37 },
     pack1: { v: 297, full: 334, save: 37 },
