@@ -204,7 +204,7 @@ interface Coupon { id: string; val: number; title: string; code: string; }
 interface Review { n: string; loc: string; t: string; s: number; serv: string; }
 interface UserData { name: string; xp: number; coupons: Coupon[]; usedCoupons: string[]; hasSeenWelcome: boolean; ordersCount: number; lastActivity: string; }
 interface Address { cep: string; street: string; number: string; district: string; city: string; comp: string; placeName: string; }
-interface BookingData { type: 'single' | 'pack'; cart: ServiceItem[]; extras: Record<string, boolean>; date: string | null; time: string | null; locationType: 'home' | 'motel' | 'hotel'; address: Address; payment: string; appliedCoupon: Coupon | null; termsAccepted: boolean; bookingId: string; mediaAllowed: boolean; }
+interface BookingData { type: 'single' | 'pack'; cart: ServiceItem[]; extras: Record<string, boolean>; date: string | null; time: string | null; locationType: 'home' | 'motel' | 'hotel'; address: Address; payment: string; appliedCoupon: Coupon | null; termsAccepted: boolean; bookingId: string; customExtraText: string; }
 interface Rule { icon: string; title: string; description: string; }
 
 // ==================================================================================
@@ -232,7 +232,7 @@ const getData = (lang: 'pt' | 'en') => {
     pack2: { v: 387, full: 467, save: 80 },
     pack3: { v: 637, full: 721, save: 84 },
     pack_ultimate: { v: 657, full: 778, save: 121 },
-    extras: { more_time: 77, touch: 77, aroma: 17, hair_trim: 57, pain_relief: 17, dominador: 180, oral: 120, beijos: 77, prostatico: 120 }
+    extras: { more_time: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
   };
 
   return {
@@ -271,13 +271,8 @@ const getData = (lang: 'pt' | 'en') => {
     extras: [
       { id: 'hair_trim', price: p.extras.hair_trim, icon: "scissors", label: isEn ? "Trim (Extra)" : "Aparo de Pelos", desc: isEn ? "Maintenance in 2 body parts to look flawless." : "Aparo com máquina em até 2 áreas do corpo." },
       { id: 'more_time', price: p.extras.more_time, icon: "clock", label: isEn ? "Extended Time (+30m)" : "Mais 30 Minutos", desc: isEn ? "Because when it's good, we don't want it to end." : "Mais 30 minutos na sessão para curtir sem pressa." },
-      { id: 'touch', price: p.extras.touch, icon: "hand", label: isEn ? "Organic Interaction" : "Liberdade para Tocar", desc: isEn ? "Feel free to participate and touch as well." : "Liberdade para me tocar e participar de forma natural." },
       { id: 'aroma', price: p.extras.aroma, icon: "sparkles", label: isEn ? "Deep Aromatherapy" : "Aromaterapia", desc: isEn ? "Essential oils that lower your mental frequency." : "Óleos essenciais para ajudar a acalmar a mente." },
-      { id: 'pain_relief', price: p.extras.pain_relief, icon: "shield", label: isEn ? "Extra Focus on Pain" : "Foco em Dores", desc: isEn ? "Use of technical ointment to treat strong pain." : "Uso de pomadas térmicas para soltar áreas muito travadas." },
-      { id: 'dominador', price: p.extras.dominador, icon: "zap", label: isEn ? "Active Posture" : "Postura Ativa", desc: isEn ? "I take full control at the end of the session." : "Eu assumo o controle durante a parte final do encontro." },
-      { id: 'oral', price: p.extras.oral, icon: "heart", label: isEn ? "Oral Included" : "Estímulo Completo", desc: isEn ? "Oral intimacy included in the experience." : "Inclusão de contato mais intenso para maximizar a experiência." },
-      { id: 'beijos', price: p.extras.beijos, icon: "heart", label: isEn ? "Kisses Included" : "Beijos", desc: isEn ? "Kisses and affection allowed during the session." : "Beijos e conexão mais próxima liberada durante o clima." },
-      { id: 'prostatico', price: p.extras.prostatico, icon: "star", label: isEn ? "Prostatic Massage" : "Estimulação Interna", desc: isEn ? "Manual prostatic stimulation with lube." : "Estimulação interna e localizada para um relaxamento diferente." }
+      { id: 'pain_relief', price: p.extras.pain_relief, icon: "shield", label: isEn ? "Extra Focus on Pain" : "Foco em Dores", desc: isEn ? "Use of technical ointment to treat strong pain." : "Uso de pomadas térmicas para soltar áreas muito travadas." }
     ],
     faq: [
       { q: isEn ? "How do the touch and the ending work?" : "Como a finalização funciona na prática?", a: isEn ? "Everything is conducted with extreme respect..." : "Tudo é conduzido com muito respeito ao seu tempo e ao seu corpo. O objetivo é criar um espaço onde você possa confiar, se soltar totalmente e chegar a um relaxamento intenso que tira todo o peso da rotina." },
@@ -350,10 +345,6 @@ const getData = (lang: 'pt' | 'en') => {
       levelup_popup_msg: isEn ? "Your consistency generated rewards. A new exclusive benefit has been unlocked." : "Você tem cuidado de si com frequência, e isso merece recompensa. Benefício liberado.",
       get_coupon: isEn ? "Claim My Gift" : "Pegar Meu Presente",
       rules_complete: isEn ? "Mutual Agreement" : "Nossos Acordos",
-      media_discount: isEn ? "Portfolio Discount (1%)" : "Apoio Portfólio (1%)",
-      media_title: isEn ? "Support my work (Optional)" : "Apoiar meu trabalho? (Opcional)",
-      media_desc: isEn ? "Allow anonymous aesthetic photos (body outline only, no face/intimacy) for my portfolio and get 1% OFF." : "Permitir fotos estéticas e anônimas de detalhes do corpo (apenas contorno/costas, NUNCA rosto ou intimidade) e ganhe 1% OFF.",
-      media_bonus: isEn ? "Allow for 1% OFF" : "Permitir e ganhar 1% OFF",
       uber_notice: isEn ? "Travel fee (Uber) will be confirmed via WhatsApp." : "Importante: A taxa de deslocamento até você será confirmada no WhatsApp.",
       motel_note: isEn ? "My private suite address will be sent via WhatsApp after booking." : "Perfeito! Te envio o endereço da minha suíte pelo WhatsApp logo após finalizarmos.",
       menu_title: isEn ? "Menu" : "Configurações",
@@ -386,8 +377,6 @@ const getData = (lang: 'pt' | 'en') => {
       summary_loc_hotel: isEn ? "At a hotel" : "Em um hotel",
       coupon_applied: isEn ? "Coupon Applied" : "Presente Aplicado",
       xp_guaranteed: isEn ? "XP guaranteed" : "XP ganhos hoje",
-      media_granted: isEn ? "Authorization Granted" : "Fotos Autorizadas",
-      media_support: isEn ? "Support the Work" : "Autorizar Fotos",
       pay_pix: isEn ? "Pix (3% OFF)" : "Pix (3% OFF)",
       pay_card: isEn ? "Card" : "Cartão",
       pay_cash: isEn ? "Cash" : "Dinheiro em espécie",
@@ -739,7 +728,7 @@ export default function App() {
   const [booking, setBooking] = useState<BookingData>({
     type: 'single', cart: [], extras: {}, date: null, time: null, locationType: 'home',
     address: { cep: '', street: '', number: '', district: '', city: '', comp: '', placeName: '' },
-    payment: '', appliedCoupon: null, termsAccepted: false, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false
+    payment: '', appliedCoupon: null, termsAccepted: false, bookingId: `BOOK_${Date.now()}`, customExtraText: ''
   });
 
   const dateScrollRef = useRef<HTMLDivElement>(null);
@@ -798,7 +787,7 @@ export default function App() {
               ...booking, ...parsed.bookingDraft,
               cart: parsed.bookingDraft.cart || [],
               extras: typeof parsed.bookingDraft.extras === 'object' ? parsed.bookingDraft.extras : {},
-              mediaAllowed: !!parsed.bookingDraft.mediaAllowed,
+              customExtraText: sanitizeInput(parsed.bookingDraft.customExtraText || ''),
               address: {
                 cep: sanitizeInput(parsed.bookingDraft.address?.cep || ''),
                 street: sanitizeInput(parsed.bookingDraft.address?.street || ''),
@@ -912,7 +901,7 @@ export default function App() {
   }, [generateTimeSlots]);
 
   const financials = useMemo(() => {
-    if (booking.cart.length === 0) return { total: 0, sub: 0, disc: 0, pixDisc: 0, mediaDisc: 0, rushFee: 0, duration: 0 };
+    if (booking.cart.length === 0) return { total: 0, sub: 0, disc: 0, pixDisc: 0, rushFee: 0, duration: 0 };
     let sub = 0; let baseDuration = 0;
     const isPack = booking.cart.some(i => i.type === 'pack');
     booking.cart.forEach(item => { sub += item.price; if (!isPack) baseDuration += (item.min || 60); });
@@ -924,17 +913,20 @@ export default function App() {
         if (ex) { sub += isPack ? Math.floor(ex.price * 0.8) : ex.price; if (ex.id === 'more_time') addedTime += 30; }
       }
     });
+
+    if ((booking.customExtraText || '').trim().length > 0) {
+      sub += 150;
+    }
+
     const duration = baseDuration + addedTime;
     const isRush = RUSH_HOURS.includes(booking.time || '');
     const rushFee = (isRush && booking.locationType !== 'motel') ? RUSH_FEE : 0;
     const disc = booking.appliedCoupon ? (booking.appliedCoupon.code === 'RETORNO10' ? sub * 0.10 : booking.appliedCoupon.val) : 0;
     let running = Math.max(0, sub - disc);
-    let mediaDisc = 0;
-    if (booking.mediaAllowed) { mediaDisc = Math.ceil(running * 0.01); running = Math.max(0, running - mediaDisc); }
     let pixDisc = 0;
     if (booking.payment === 'pix') pixDisc = Math.ceil(running * 0.03);
-    return { sub, disc, pixDisc, mediaDisc, rushFee, total: Math.max(0, running - pixDisc) + rushFee, duration };
-  }, [booking.cart, booking.extras, booking.appliedCoupon, DATA.extras, booking.payment, booking.mediaAllowed, booking.time, booking.locationType]);
+    return { sub, disc, pixDisc, rushFee, total: Math.max(0, running - pixDisc) + rushFee, duration };
+  }, [booking.cart, booking.extras, booking.customExtraText, booking.appliedCoupon, DATA.extras, booking.payment, booking.time, booking.locationType]);
 
   const estimatedXP = useMemo(() => {
     const isPack = booking.cart.some(i => i.type === 'pack');
@@ -1008,14 +1000,19 @@ export default function App() {
       mapQ = a; 
     }
     
-    const extrasList = Object.keys(booking.extras || {}).filter(k => booking.extras[k]).map(k => { 
+    const extrasArr = Object.keys(booking.extras || {}).filter(k => booking.extras[k]).map(k => { 
       const ex = DATA.extras.find((e: any) => e.id === k); 
       return ex ? `  ➕ ${ex.label}` : ''; 
-    }).filter(Boolean).join('\n');
+    });
+
+    if ((booking.customExtraText || '').trim().length > 0) {
+      extrasArr.push(`  ➕ ${isEn ? 'Custom Request' : 'Pedido Especial'}: ${booking.customExtraText.trim()} (+R$ 150,00)`);
+    }
+
+    const extrasList = extrasArr.filter(Boolean).join('\n');
     
     let prices = `*Subtotal:* ${formatMoney(f.sub, lang)}`;
     if (f.disc > 0) prices += `\n*Benefício (${booking.appliedCoupon?.code}):* -${formatMoney(f.disc, lang)}`;
-    if (f.mediaDisc > 0) prices += `\n*Apoio Portfólio:* -${formatMoney(f.mediaDisc, lang)}`;
     if (f.pixDisc > 0) prices += `\n*PIX (3% OFF):* -${formatMoney(f.pixDisc, lang)}`;
     if (f.rushFee > 0) prices += `\n*Taxa Pico/Deslocamento:* +${formatMoney(f.rushFee, lang)}`;
     prices += `\n\n💰 *INVESTIMENTO TOTAL: ${formatMoney(f.total, lang)}*`;
@@ -1429,6 +1426,18 @@ export default function App() {
                       </button>
                     );
                   })}
+                  
+                  {/* CAMPO DE EXTRA PERSONALIZADO */}
+                  <div className="col-span-1 sm:col-span-2 mt-2">
+                    <InputField
+                      isDark={isDark}
+                      label={lang === 'en' ? "Custom Request (+150.00)" : "Pedido Especial (+R$ 150,00)"}
+                      value={booking.customExtraText}
+                      onChange={(e: any) => setBooking(b => ({ ...b, customExtraText: e.target.value }))}
+                      icon="plus"
+                      placeholder={lang === 'en' ? "What else do you want to add?" : "O que mais você deseja adicionar?"}
+                    />
+                  </div>
                 </div>
               </article>
 
@@ -1479,23 +1488,6 @@ export default function App() {
                 )}
               </article>
 
-              <article className={`p-5 sm:p-6 rounded-3xl border ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className="flex items-start gap-3 mb-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
-                    <Icon name="camera" size={20} />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className={`text-sm font-semibold mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.media_title}</h4>
-                    <p className={`text-xs leading-relaxed ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.media_desc}</p>
-                  </div>
-                </div>
-                <button onClick={() => { setBooking(b => ({ ...b, mediaAllowed: !b.mediaAllowed })); vibrate(30); }}
-                  className={`w-full flex items-center justify-between p-3 px-4 rounded-xl border transition-all text-[10px] sm:text-xs font-bold uppercase tracking-widest ${booking.mediaAllowed ? 'bg-blue-600/20 border-blue-500/50 text-blue-400' : isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-white'}`}>
-                  <span>{booking.mediaAllowed ? T.media_granted : T.media_support}</span>
-                  <span className={`px-2 py-1 rounded-md ${booking.mediaAllowed ? 'bg-blue-600 text-white' : isDark ? 'bg-zinc-800' : 'bg-slate-200'}`}>{T.media_bonus}</span>
-                </button>
-              </article>
-
               <article className={`p-5 sm:p-6 rounded-3xl border ${hasErrorGlobal && !booking.payment ? 'animate-shake' : ''} ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <h4 className={`font-display text-xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.payment_title}</h4>
                 <div className="space-y-3">
@@ -1529,7 +1521,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  {Object.keys(booking.extras || {}).filter(k => booking.extras[k]).length > 0 && (
+                  {(Object.keys(booking.extras || {}).filter(k => booking.extras[k]).length > 0 || (booking.customExtraText || '').trim().length > 0) && (
                     <div className={`border-t pt-4 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
                       <p className={`text-[10px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{T.summary_extras}</p>
                       <div className="space-y-2">
@@ -1544,6 +1536,12 @@ export default function App() {
                             </div>
                           );
                         })}
+                        {(booking.customExtraText || '').trim().length > 0 && (
+                           <div className={`flex justify-between items-center text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                             <span className="truncate pr-4">{lang === 'en' ? 'Custom Request' : 'Pedido Especial'}: {booking.customExtraText}</span>
+                             <span className="shrink-0">+{formatMoney(150, lang)}</span>
+                           </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -1566,12 +1564,6 @@ export default function App() {
                       <div className="flex justify-between items-center text-sm font-semibold text-emerald-500">
                         <span>{booking.appliedCoupon.title}</span>
                         <span>-{formatMoney(financials.disc, lang)}</span>
-                      </div>
-                    )}
-                    {financials.mediaDisc > 0 && (
-                      <div className="flex justify-between items-center text-sm font-semibold text-blue-500">
-                        <span>{T.media_discount}</span>
-                        <span>-{formatMoney(financials.mediaDisc, lang)}</span>
                       </div>
                     )}
                     {financials.pixDisc > 0 && (
@@ -1640,7 +1632,7 @@ export default function App() {
                 <Button variant="whatsapp" size="lg" full icon="message" onClick={() => openExternal('whatsapp', generateWhatsAppMsg())}>
                   {T.whatsapp_btn}
                 </Button>
-                <button onClick={() => { setStep(0); setBooking({ ...booking, cart: [], termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, mediaAllowed: false }); }} className={`w-full text-xs font-bold uppercase tracking-widest py-4 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+                <button onClick={() => { setStep(0); setBooking({ ...booking, cart: [], termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, customExtraText: '' }); }} className={`w-full text-xs font-bold uppercase tracking-widest py-4 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
                   {T.back_home}
                 </button>
               </div>
