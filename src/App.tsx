@@ -96,7 +96,7 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
       --c-surface: ${isDark ? '#181c25' : '#ffffff'};
       --c-border: ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'};
       --c-text: ${isDark ? '#f4f4f5' : '#18181b'};
-      --c-text-muted: ${isDark ? '#d4d4d8' : '#3f3f46'}; /* Melhorado o contraste geral das letras */
+      --c-text-muted: ${isDark ? '#d4d4d8' : '#3f3f46'}; 
       --c-blue: #3b82f6;
       --c-amber: #f59e0b;
     }
@@ -224,13 +224,13 @@ const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
 const getData = (lang: 'pt' | 'en') => {
   const isEn = lang === 'en';
   const p = {
-    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317, crossfit: 187,
+    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 307, nuru: 317, crossfit: 187,
     pes: 110, maos: 110, combo_pm: 190,
     pack_basic: { v: 247, full: 284, save: 37 },
     pack1: { v: 297, full: 334, save: 37 },
     pack_glow: { v: 327, full: 391, save: 64 },
     pack_muscle: { v: 347, full: 408, save: 61 },
-    pack2: { v: 387, full: 467, save: 80 },
+    pack2: { v: 427, full: 514, save: 87 }, 
     pack3: { v: 637, full: 721, save: 84 },
     pack_ultimate: { v: 657, full: 778, save: 121 },
     extras: { more_time: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
@@ -708,15 +708,16 @@ const FloatingWhatsApp = memo(({ isDark, lang, onClick }: any) => {
   const msg = lang === 'en' ? 'Hi! Need any help?' : 'Olá! Precisa de ajuda?';
 
   return (
-    <div className="fixed bottom-24 right-4 sm:bottom-24 sm:right-6 z-50 flex flex-col items-end gap-2 pointer-events-none">
-      {/* Balão de Mensagem (Abre e Fecha com animação fluida) */}
+    <div className="fixed bottom-24 right-4 sm:bottom-24 sm:right-6 z-50 flex items-center gap-4 pointer-events-none">
+      
+      {/* Balão de Mensagem (Abre e Fecha com animação fluida lateral) */}
       <div 
-        className={`pointer-events-auto transition-all duration-500 origin-bottom-right ${
-          showMsg ? 'scale-100 opacity-100 translate-y-0' : 'scale-75 opacity-0 translate-y-4 pointer-events-none'
+        className={`pointer-events-auto transition-all duration-500 origin-right ${
+          showMsg ? 'scale-100 opacity-100 translate-x-0' : 'scale-90 opacity-0 translate-x-4 pointer-events-none'
         }`}
       >
         <div 
-          className={`px-4 py-3 rounded-2xl rounded-br-sm shadow-xl relative cursor-pointer border max-w-[200px] ${
+          className={`px-4 py-3 rounded-2xl shadow-xl relative cursor-pointer border max-w-[220px] flex items-center ${
             isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200'
           }`} 
           onClick={onClick}
@@ -724,25 +725,31 @@ const FloatingWhatsApp = memo(({ isDark, lang, onClick }: any) => {
           <p className={`text-sm font-bold leading-snug ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
             {msg}
           </p>
+          {/* Seta do balão apontando para a foto */}
+          <div className={`absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 rotate-45 border-t border-r ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200'}`} />
         </div>
       </div>
 
-      {/* Foto de Perfil com Ícone do WhatsApp */}
+      {/* Foto de Perfil + Badge do WhatsApp */}
       <button
         onClick={onClick}
-        className="pointer-events-auto relative w-14 h-14 rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] flex items-center justify-center hover:scale-105 transition-transform border-2 border-[#25D366] bg-[#181c25] p-[2px]"
+        className="pointer-events-auto relative shrink-0 hover:scale-105 transition-transform"
         aria-label="Contato WhatsApp"
       >
-        <img 
-          src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" 
-          alt="Contato" 
-          className="w-full h-full object-cover rounded-full" 
-        />
-        {/* Ícone verde sobreposto na foto */}
-        <div className={`absolute -bottom-1 -right-1 w-6 h-6 bg-[#25D366] rounded-full border-2 flex items-center justify-center ${isDark ? 'border-[#11141a]' : 'border-white'}`}>
-          <Icon name="message-circle" size={12} className="text-white" />
+        {/* Contêiner da Foto com borda */}
+        <div className={`w-14 h-14 rounded-full overflow-hidden border-[3px] shadow-[0_4px_20px_rgba(37,211,102,0.4)] ${isDark ? 'border-[#25D366]' : 'border-[#25D366]'}`}>
+          <img 
+            src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" 
+            alt="Contato" 
+            className="w-full h-full object-cover" 
+          />
+        </div>
+        {/* Ícone verde sobreposto (badge perfeitamente posicionado) */}
+        <div className={`absolute -bottom-1 -right-1 w-7 h-7 bg-[#25D366] rounded-full flex items-center justify-center shadow-md border-2 ${isDark ? 'border-[#11141a]' : 'border-white'}`}>
+          <Icon name="message-circle" size={14} className="text-white" />
         </div>
       </button>
+
     </div>
   );
 });
