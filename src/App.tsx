@@ -77,11 +77,11 @@ const ICON_PATHS: Record<string, string> = {
 };
 
 // ==================================================================================
-// GLOBAL STYLES
+// GLOBAL STYLES (MELHORADOS PARA ALTO CONTRASTE)
 // ==================================================================================
 const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
   <style dangerouslySetInnerHTML={{ __html: `
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
     *, *::before, *::after { 
       box-sizing: border-box; 
@@ -92,11 +92,13 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
     :root {
       --font-sans: 'Poppins', sans-serif;
       --font-display: 'Poppins', sans-serif;
-      --c-bg: ${isDark ? '#11141a' : '#f9f8f6'};
-      --c-surface: ${isDark ? '#181c25' : '#ffffff'};
-      --c-border: ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'};
-      --c-text: ${isDark ? '#f4f4f5' : '#18181b'};
-      --c-text-muted: ${isDark ? '#a1a1aa' : '#52525b'};
+      /* Fundo mais profundo no dark mode para os cards destacarem */
+      --c-bg: ${isDark ? '#09090b' : '#f8fafc'};
+      /* Cards ligeiramente mais claros/contrastantes */
+      --c-surface: ${isDark ? '#18181b' : '#ffffff'};
+      --c-border: ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'};
+      --c-text: ${isDark ? '#fafafa' : '#0f172a'};
+      --c-text-muted: ${isDark ? '#a1a1aa' : '#64748b'};
       --c-blue: #3b82f6;
       --c-amber: #f59e0b;
     }
@@ -113,8 +115,8 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
       font-size: 15px; 
     }
 
-    h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.01em; }
-    .font-display { font-family: var(--font-display); font-weight: 600; }
+    h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.02em; }
+    .font-display { font-family: var(--font-display); font-weight: 700; }
 
     *:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 4px; }
 
@@ -410,11 +412,11 @@ const getData = (lang: 'pt' | 'en') => {
 const ToastContainer = memo(({ toasts, isDark }: { toasts: any[]; isDark: boolean }) => (
   <div aria-live="polite" className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 pointer-events-none w-[90vw] max-w-sm">
     {toasts.map(t => (
-      <div key={t.id} role="alert" className={`animate-toast-in pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-xl ${t.type === 'error' ? 'bg-red-950/90 border-red-500/50 text-red-100 shadow-[0_8px_30px_rgba(220,38,38,0.2)]' : isDark ? 'bg-[#181c25]/95 border-zinc-700 text-white shadow-[0_8px_30px_rgba(0,0,0,0.5)]' : 'bg-white/95 border-slate-200 text-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.1)]'} backdrop-blur-md`}>
+      <div key={t.id} role="alert" className={`animate-toast-in pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-xl ${t.type === 'error' ? 'bg-red-950/90 border-red-500/50 text-red-100 shadow-[0_8px_30px_rgba(220,38,38,0.2)]' : isDark ? 'bg-zinc-800/95 border-zinc-700 text-white shadow-[0_8px_30px_rgba(0,0,0,0.5)]' : 'bg-white/95 border-slate-200 text-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.1)]'} backdrop-blur-md`}>
         <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${t.type === 'error' ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-500'}`}>
           <Icon name={t.type === 'error' ? 'alert-circle' : 'check'} size={14} />
         </div>
-        <span className="text-xs sm:text-sm font-semibold leading-snug break-words flex-1">{t.msg}</span>
+        <span className="text-xs sm:text-sm font-bold leading-snug break-words flex-1">{t.msg}</span>
       </div>
     ))}
   </div>
@@ -450,13 +452,13 @@ const InputField = memo(({ label, value, onChange, placeholder, icon, type = 'te
   return (
     <div className={`space-y-1.5 w-full ${hasError ? 'animate-shake' : ''}`}>
       {label && (
-        <label htmlFor={inputId} className={`block text-[10px] sm:text-xs font-bold uppercase tracking-widest pl-1 ${hasError ? 'text-red-400' : isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+        <label htmlFor={inputId} className={`block text-[10px] sm:text-xs font-bold uppercase tracking-widest pl-1 ${hasError ? 'text-red-400' : isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
           {label}
         </label>
       )}
       <div className="relative group">
         {icon && (
-          <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-400' : isDark ? 'text-zinc-600 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}>
+          <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-400' : isDark ? 'text-zinc-500 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-600'}`}>
             <Icon name={icon} size={20} />
           </div>
         )}
@@ -468,222 +470,15 @@ const InputField = memo(({ label, value, onChange, placeholder, icon, type = 'te
           placeholder={placeholder}
           disabled={disabled}
           maxLength={maxLength}
-          className={`input-field w-full min-h-[52px] rounded-xl text-sm transition-all border outline-none disabled:opacity-50 disabled:cursor-not-allowed ${icon ? 'pl-12 pr-4' : 'px-4'} ${hasError
+          className={`input-field w-full min-h-[52px] rounded-xl text-sm font-medium transition-all border outline-none disabled:opacity-50 disabled:cursor-not-allowed ${icon ? 'pl-12 pr-4' : 'px-4'} ${hasError
             ? 'border-red-500/50 bg-red-950/10 text-red-400 placeholder:text-red-500/40'
             : isDark
-              ? 'border-zinc-800 bg-white/5 text-white placeholder:text-zinc-600 focus:border-blue-500 focus:bg-white/10'
+              ? 'border-zinc-800 bg-zinc-900/50 text-white placeholder:text-zinc-600 focus:border-blue-500 focus:bg-zinc-800/80'
               : 'border-slate-300 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white'
           }`}
         />
       </div>
     </div>
-  );
-});
-
-const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user, T }: any) => {
-  if (!isOpen) return null;
-  return (
-    <>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fade-in" onClick={onClose} aria-hidden="true" />
-      <aside role="dialog" aria-modal="true" aria-label={T.menu_title} className={`fixed top-0 right-0 h-full w-[85vw] max-w-[320px] z-[70] p-5 sm:p-6 shadow-2xl animate-slide-right flex flex-col ${isDark ? 'bg-[#11141a] border-l border-white/10' : 'bg-[#f9f8f6] border-l border-slate-200'}`}>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="font-display text-xl">{T.menu_title}</h2>
-          <button onClick={onClose} aria-label="Fechar menu" className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${isDark ? 'hover:bg-white/10 text-zinc-400' : 'hover:bg-slate-200 text-slate-500'}`}>
-            <Icon name="x" size={20} />
-          </button>
-        </div>
-
-        <div className={`mb-6 p-5 rounded-2xl border relative overflow-hidden ${isDark ? 'bg-blue-950/20 border-blue-900/50' : 'bg-blue-50 border-blue-200'}`}>
-          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-          <p className={`text-[10px] uppercase font-bold tracking-widest mb-1 ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>{T.level_yours}</p>
-          <div className="flex items-baseline gap-1.5 flex-wrap break-words">
-            <span className="font-display text-3xl shrink-0">{user.xp}</span>
-            <span className={`text-[10px] font-bold uppercase tracking-widest shrink-0 ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>XP</span>
-          </div>
-        </div>
-
-        <nav className="flex-1 space-y-3 overflow-y-auto">
-          <button onClick={toggleTheme} className={`w-full min-h-[52px] flex items-center justify-between px-4 py-3 rounded-xl transition-colors ${isDark ? 'hover:bg-white/5 text-zinc-300' : 'hover:bg-slate-100 text-slate-700'}`}>
-            <div className="flex items-center gap-3 min-w-0">
-              <Icon name={isDark ? "moon" : "sun"} size={18} className={`shrink-0 ${isDark ? "text-blue-400" : "text-blue-600"}`} />
-              <span className="text-sm font-semibold truncate">{T.theme_title}</span>
-            </div>
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg shrink-0 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`}>{isDark ? T.theme_dark : T.theme_light}</span>
-          </button>
-          <button onClick={() => { if (navigator.share) navigator.share({ title: 'Thalyson', text: T.share_text, url: window.location.href }); }} className={`w-full min-h-[52px] flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isDark ? 'hover:bg-white/5 text-zinc-300' : 'hover:bg-slate-100 text-slate-700'}`}>
-            <Icon name="share" size={18} className="text-emerald-500 shrink-0" />
-            <span className="text-sm font-semibold truncate">{T.refer_btn}</span>
-          </button>
-        </nav>
-      </aside>
-    </>
-  );
-});
-
-const ReviewCard = memo(({ review, isDark }: { review: Review; isDark: boolean }) => (
-  <article className={`h-full flex flex-col p-5 sm:p-6 rounded-3xl border transition-all duration-300 ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}`}>
-    <div className="flex items-start justify-between mb-4 gap-3">
-      <div className="flex items-center gap-3 min-w-0 flex-1">
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold font-display shrink-0 ${isDark ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-blue-50 text-blue-700 border border-blue-200'}`}>
-          {review.n.charAt(0)}
-        </div>
-        <div className="min-w-0 flex-1">
-          <h3 className={`text-sm font-semibold block truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{review.n}</h3>
-          <span className={`text-xs block truncate ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{review.loc}</span>
-        </div>
-      </div>
-      <div className="flex gap-0.5 shrink-0">
-        {[...Array(5)].map((_, i) => (
-          <Icon key={i} name="star" size={12} className={i < review.s ? 'text-amber-400 fill-amber-400' : isDark ? 'text-zinc-700' : 'text-slate-200'} />
-        ))}
-      </div>
-    </div>
-    <div className={`inline-flex self-start items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-3 border truncate max-w-full ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
-      <Icon name="award" size={10} className="shrink-0" /> {review.serv}
-    </div>
-    <p className={`text-sm leading-relaxed font-medium italic flex-1 break-words-all ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>"{review.t}"</p>
-  </article>
-));
-
-const FAQItem = memo(({ q, a, isDark }: { q: string; a: string; isDark: boolean }) => {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className={`border-b last:border-b-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-      <button onClick={() => setOpen(!open)} aria-expanded={open} className="w-full py-5 flex items-center justify-between text-left gap-4 min-h-[56px]">
-        <h3 className={`text-sm font-semibold leading-snug flex-1 break-words pr-2 ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{q}</h3>
-        <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 ${open ? 'rotate-180' : ''} ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
-          <Icon name="chevron-down" size={18} />
-        </div>
-      </button>
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? 'max-h-[500px] pb-5 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <p className={`text-sm leading-relaxed break-words ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{a}</p>
-      </div>
-    </div>
-  );
-});
-
-const SmartTimer = memo(({ isDark, text }: any) => {
-  const [time, setTime] = useState(600);
-  useEffect(() => {
-    const i = setInterval(() => setTime(p => p <= 0 ? 600 : p - 1), 1000);
-    return () => clearInterval(i);
-  }, []);
-  const fmt = (t: number) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
-  const pct = (time / 600) * 100;
-  return (
-    <div className={`flex items-center gap-4 p-4 rounded-3xl border w-full overflow-hidden ${isDark ? 'bg-blue-950/20 border-blue-900/40' : 'bg-blue-50 border-blue-200'}`}>
-      <div className={`relative w-12 h-12 shrink-0`}>
-        <svg viewBox="0 0 36 36" className="w-12 h-12 -rotate-90">
-          <circle cx="18" cy="18" r="15" fill="none" stroke={isDark ? 'rgba(59,130,246,0.1)' : 'rgba(59,130,246,0.15)'} strokeWidth="2.5" />
-          <circle cx="18" cy="18" r="15" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={`${pct * 0.942} 100`} className="transition-all duration-1000" />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Icon name="clock" size={14} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
-        </div>
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className={`text-[10px] font-bold uppercase tracking-widest truncate ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>{text}</p>
-        <p className={`font-display text-xl sm:text-2xl whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{fmt(time)}</p>
-      </div>
-    </div>
-  );
-});
-
-const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
-  <article className={`flex items-start gap-4 p-4 rounded-2xl border transition-colors ${isDark ? 'bg-white/5 border-white/5' : 'bg-slate-50 border-slate-100'}`}>
-    <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-200 text-slate-700'}`}>
-      <Icon name={rule.icon} size={20} />
-    </div>
-    <div className="min-w-0 flex-1">
-      <h4 className={`text-sm font-semibold mb-1 font-display break-words ${isDark ? 'text-white' : 'text-slate-900'}`}>{rule.title}</h4>
-      <p className={`text-xs sm:text-sm leading-relaxed break-words ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{rule.description}</p>
-    </div>
-  </article>
-));
-
-const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDark, T, lang, isPack }: any) => {
-  if (!isOpen || !service) return null;
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-modal-backdrop">
-      <div role="dialog" aria-modal="true" className={`relative w-full max-w-md max-h-[85vh] flex flex-col rounded-3xl border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-[#181c25] border-zinc-700' : 'bg-white border-slate-200'}`}>
-        <div className={`relative p-5 pb-4 shrink-0 border-b ${isDark ? 'border-zinc-800' : 'border-slate-100'} ${isPack ? (isDark ? 'bg-amber-950/20' : 'bg-amber-50/50') : ''}`}>
-          <button onClick={onClose} aria-label="Fechar" className={`absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
-            <Icon name="x" size={18} />
-          </button>
-          <div className="flex items-center gap-3 mb-3 pr-10">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shrink-0 ${isPack ? isDark ? 'bg-amber-900/30 border-amber-800 text-amber-500' : 'bg-amber-100 border-amber-200 text-amber-700' : isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-slate-100 border-slate-200 text-slate-700'}`}>
-              <Icon name={service.icon} size={20} />
-            </div>
-            <div className="flex-1 min-w-0">
-               <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                 <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md border ${isPack ? isDark ? 'border-amber-800/50 text-amber-500' : 'border-amber-300 text-amber-800' : isDark ? 'border-zinc-700 text-zinc-400' : 'border-slate-300 text-slate-600'}`}>
-                   {service.tag}
-                 </span>
-                 {service.popular && <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-blue-600 text-white">{T.popular_badge}</span>}
-               </div>
-               <h2 className={`font-display text-lg sm:text-xl truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{service.title}</h2>
-            </div>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className={`font-display text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, lang)}</span>
-            {service.fullPrice && <span className={`text-xs font-medium line-through ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{formatMoney(service.fullPrice, lang)}</span>}
-          </div>
-        </div>
-        <div className={`flex-1 overflow-y-auto p-5 space-y-6 scrollbar-hide ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-          <p className="text-sm leading-relaxed font-medium">{service.desc}</p>
-          <div>
-            <h4 className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.details_label}</h4>
-            <div className="space-y-3">
-              {service.details.split('\n').map((line: string, i: number) => (
-                <div key={i} className="flex items-start gap-3 text-sm">
-                  <div className={`mt-0.5 shrink-0 w-4 h-4 rounded-full flex items-center justify-center ${isPack ? isDark ? 'bg-amber-500/20 text-amber-500' : 'bg-amber-100 text-amber-700' : isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'}`}>
-                    <Icon name="check" size={10} />
-                  </div>
-                  <span className="leading-relaxed flex-1">{line.replace(/^\d+\.\s*/, '')}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className={`p-4 border-t shrink-0 ${isDark ? 'border-zinc-800 bg-[#181c25]' : 'border-slate-100 bg-white'}`}>
-          <Button full size="lg" variant={isInCart ? 'outline' : isPack ? 'amber' : 'primary'} onClick={() => { onSelect(service); onClose(); }}>
-            {isInCart ? (lang === 'en' ? 'Remove' : 'Remover') : (lang === 'en' ? 'Select' : 'Selecionar')}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-});
-
-const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, lang, isPack = false, onOpenModal }: any) => {
-  return (
-    <button className={`relative w-full text-left rounded-2xl border transition-all duration-200 card-hover flex flex-col h-auto min-h-[120px] ${isInCart ? isPack ? 'service-card-selected-amber border-amber-500/50 bg-amber-500/10' : 'service-card-selected border-blue-500/50 bg-blue-500/5' : isDark ? 'bg-[#181c25] border-zinc-700 hover:border-zinc-600' : 'bg-white border-slate-200 shadow-sm hover:border-slate-300'}`} onClick={() => onOpenModal(service)}>
-      {isInCart && (
-        <div className={`absolute top-3 right-3 z-10 w-6 h-6 rounded-full flex items-center justify-center animate-check-pop shrink-0 ${isPack ? 'bg-amber-500 text-amber-950' : 'bg-blue-600 text-white'}`}>
-          <Icon name="check" size={14} />
-        </div>
-      )}
-      <div className="p-4 flex-1 flex flex-col">
-        <div className="flex items-start gap-3 mb-3">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${isPack ? isDark ? 'bg-amber-900/30 border-amber-800/50 text-amber-500' : 'bg-amber-50 border-amber-200 text-amber-600' : isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
-            <Icon name={service.icon} size={20} />
-          </div>
-          <div className="flex-1 min-w-0 pr-6">
-            <h3 className={`text-base font-semibold leading-tight truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{service.title}</h3>
-            <p className={`text-xs mt-1 leading-relaxed line-clamp-2 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{service.desc}</p>
-          </div>
-        </div>
-        <div className="flex items-end justify-between mt-auto gap-2">
-          <div className={`inline-block text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border truncate max-w-[50%] ${isPack ? isDark ? 'border-amber-800/50 text-amber-500' : 'border-amber-300 text-amber-700' : isDark ? 'border-zinc-700 text-zinc-400' : 'border-slate-300 text-slate-600'}`}>
-            {service.tag}
-          </div>
-          <div className="text-right shrink-0">
-            {service.fullPrice && <p className={`text-[10px] font-medium line-through mb-0.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{formatMoney(service.fullPrice, lang)}</p>}
-            <p className={`font-display text-lg sm:text-xl leading-none ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatMoney(service.price, lang)}</p>
-          </div>
-        </div>
-      </div>
-    </button>
   );
 });
 
@@ -706,14 +501,14 @@ const TypewriterText = ({ texts }: { texts: string[] }) => {
           setIsDeleting(false);
           setIndex((index + 1) % texts.length);
         }
-      }, 30); // Velocidade apagando
+      }, 30);
     } else {
       timeout = setTimeout(() => {
         setDisplayedText(currentString.substring(0, displayedText.length + 1));
         if (displayedText.length === currentString.length) {
-          timeout = setTimeout(() => setIsDeleting(true), 2500); // Pausa antes de apagar
+          timeout = setTimeout(() => setIsDeleting(true), 2500);
         }
-      }, 80); // Velocidade digitando
+      }, 80);
     }
 
     return () => clearTimeout(timeout);
@@ -728,17 +523,92 @@ const TypewriterText = ({ texts }: { texts: string[] }) => {
 };
 
 // ==================================================================================
+// FLOATING WHATSAPP COMPONENT (ANIMAÇÃO ABRE E FECHA)
+// ==================================================================================
+const FloatingWhatsApp = memo(({ isDark, lang, openExternal }: any) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const floatBtnTexts = useMemo(() => lang === 'en' ? ["Need help?", "Have questions?", "Chat with me!"] : ["Precisa de ajuda?", "Ficou com dúvidas?", "Agende agora!"], [lang]);
+
+  useEffect(() => {
+    if (hasInteracted) return;
+    
+    // Animação de abrir e fechar o balão repetidamente
+    const intervalId = setInterval(() => {
+      setIsOpen(true);
+      setTimeout(() => setIsOpen(false), 6000); // Fica aberto por 6s
+    }, 15000); // Repete a cada 15s
+
+    // Dispara a primeira vez rapidinho após carregar a página
+    const initialTimeout = setTimeout(() => setIsOpen(true), 3000);
+    const initialClose = setTimeout(() => setIsOpen(false), 10000);
+
+    return () => { clearInterval(intervalId); clearTimeout(initialTimeout); clearTimeout(initialClose); };
+  }, [hasInteracted]);
+
+  return (
+    <div className="fixed bottom-[88px] sm:bottom-24 right-4 z-50 flex items-end flex-col gap-2"
+         onMouseEnter={() => { setIsOpen(true); setHasInteracted(true); }}
+         onMouseLeave={() => setIsOpen(false)}>
+      
+      {/* O Balão de Chat que expande/recolhe */}
+      <div 
+        className={`transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] origin-bottom-right 
+                    ${isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-50 opacity-0 translate-y-4 pointer-events-none'}`}>
+        
+        <div 
+          onClick={() => openExternal('whatsapp', 'Olá, estava no site relaxarhoje.com e gostaria de tirar uma dúvida.')}
+          className={`flex items-center gap-3 p-2 pr-5 rounded-full shadow-2xl border cursor-pointer 
+                      ${isDark ? 'bg-zinc-800 border-zinc-700 hover:bg-zinc-700' : 'bg-white border-slate-200 hover:bg-slate-50'}`}>
+          
+          <div className="relative shrink-0">
+            <img src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" alt="Thalyson" className="w-10 h-10 rounded-full object-cover border-2 border-[#25D366]" />
+            <span className={`absolute bottom-0 right-0 w-3 h-3 bg-[#25D366] border-2 rounded-full ${isDark ? 'border-zinc-800' : 'border-white'}`}></span>
+          </div>
+          
+          <div className="flex flex-col justify-center min-w-[120px]">
+            <span className={`text-[9px] font-bold uppercase tracking-widest leading-none mb-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+              Thalyson
+            </span>
+            <span className={`text-xs font-bold leading-none ${isDark ? 'text-white' : 'text-slate-800'}`}>
+              {isOpen && <TypewriterText texts={floatBtnTexts} />}
+            </span>
+          </div>
+        </div>
+
+        {/* Triângulo do balão de fala */}
+        <div className={`absolute bottom-[-6px] right-6 w-4 h-4 rotate-45 border-b border-r ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200'}`} />
+      </div>
+
+      {/* O Botão Fixo Verde do WhatsApp */}
+      <button
+        onClick={() => openExternal('whatsapp', 'Olá, estava no site relaxarhoje.com e gostaria de tirar uma dúvida.')}
+        className="w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] flex items-center justify-center hover:scale-110 transition-transform relative z-10"
+        aria-label="Contato WhatsApp"
+      >
+        <Icon name="message-circle" size={28} />
+        {/* Ping de notificação */}
+        <span className="absolute top-0 right-0 flex h-4 w-4">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-[#25D366]"></span>
+        </span>
+      </button>
+    </div>
+  );
+});
+
+// ==================================================================================
 // ROULETTE COMPONENT
 // ==================================================================================
 const PRIZES = [
-  { val: 5, color: '#f59e0b' },   // 0: Amber
-  { val: 10, color: '#2563eb' },  // 1: Blue
-  { val: 5, color: '#f59e0b' },   // 2: Amber
-  { val: 15, color: '#10b981' },  // 3: Emerald
-  { val: 5, color: '#f59e0b' },   // 4: Amber
-  { val: 10, color: '#2563eb' },  // 5: Blue
-  { val: 5, color: '#f59e0b' },   // 6: Amber
-  { val: 20, color: '#e11d48' },  // 7: Rose
+  { val: 5, color: '#f59e0b' },   
+  { val: 10, color: '#2563eb' },  
+  { val: 5, color: '#f59e0b' },   
+  { val: 15, color: '#10b981' },  
+  { val: 5, color: '#f59e0b' },   
+  { val: 10, color: '#2563eb' },  
+  { val: 5, color: '#f59e0b' },   
+  { val: 20, color: '#e11d48' },  
 ];
 
 const TigrinhoRoulette = memo(({ isOpen, isDark, lang, onWin }: any) => {
@@ -753,25 +623,21 @@ const TigrinhoRoulette = memo(({ isOpen, isDark, lang, onWin }: any) => {
     
     const r = Math.random();
     let targetVal;
-    // Probabilidades: 10 (60%), 5 (25%), 15 (10%), 20 (5%)
     if (r < 0.6) targetVal = 10;
     else if (r < 0.85) targetVal = 5;
     else if (r < 0.95) targetVal = 15;
     else targetVal = 20;
 
-    // Acha os índices válidos para o valor sorteado
     const validIndices = PRIZES.map((p, i) => p.val === targetVal ? i : -1).filter(i => i !== -1);
     const targetIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
     
-    // Calcula o ângulo alvo (subtrai pra girar até o topo)
     const targetAngle = 360 - (targetIndex * 45); 
-    const extraSpins = 360 * (5 + Math.floor(Math.random() * 3)); // 5 a 7 giros completos
-    const randomOffset = Math.floor(Math.random() * 30) - 15; // Variação de -15 a +15 graus para não cair cravado
+    const extraSpins = 360 * (5 + Math.floor(Math.random() * 3)); 
+    const randomOffset = Math.floor(Math.random() * 30) - 15; 
     
     const finalRotation = rotation + extraSpins + targetAngle + randomOffset;
     setRotation(finalRotation);
 
-    // Duração do giro definida no CSS inline abaixo é 5 segundos
     setTimeout(() => {
       setWinValue(targetVal);
       setPhase('won');
@@ -783,26 +649,23 @@ const TigrinhoRoulette = memo(({ isOpen, isDark, lang, onWin }: any) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div role="dialog" aria-modal="true" className={`relative w-full max-w-sm rounded-[2rem] p-6 text-center border shadow-2xl animate-scale-in flex flex-col items-center ${isDark ? 'bg-[#181c25] border-amber-900/50 shadow-[0_0_50px_rgba(245,158,11,0.15)]' : 'bg-white border-amber-200'}`}>
-        <h3 className={`font-display text-2xl mb-1 mt-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+      <div role="dialog" aria-modal="true" className={`relative w-full max-w-sm rounded-[2rem] p-6 text-center border shadow-2xl animate-scale-in flex flex-col items-center ${isDark ? 'bg-zinc-900 border-amber-900/50 shadow-[0_0_50px_rgba(245,158,11,0.15)]' : 'bg-white border-amber-200'}`}>
+        <h3 className={`font-display text-3xl mb-1 mt-2 font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
           {lang === 'en' ? 'Spin & Win!' : 'Gire e Ganhe!'}
         </h3>
-        <p className={`text-xs mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+        <p className={`text-sm mb-8 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
           {lang === 'en' ? 'Your welcome gift awaits.' : 'Seu presente de boas-vindas aguarda.'}
         </p>
 
-        {/* CONTAINER DA ROLETA */}
         <div className="relative w-64 h-64 mb-8">
-          {/* Ponteiro (Seta) */}
           <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20 w-8 h-8 flex items-center justify-center drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
             <svg viewBox="0 0 24 24" fill="white" className="w-8 h-8 text-white drop-shadow-xl z-20">
               <path d="M12 22L2 2h20L12 22z" />
             </svg>
           </div>
           
-          {/* A Roleta em Si */}
           <div 
-            className="w-full h-full rounded-full overflow-hidden border-[8px] border-[#11141a] shadow-inner relative"
+            className="w-full h-full rounded-full overflow-hidden border-[8px] border-[#09090b] shadow-inner relative"
             style={{ 
               transition: 'transform 5s cubic-bezier(0.2, 0.8, 0.2, 1)',
               transform: `rotate(${rotation}deg)`,
@@ -819,21 +682,18 @@ const TigrinhoRoulette = memo(({ isOpen, isDark, lang, onWin }: any) => {
           >
             {PRIZES.map((p, i) => (
               <div key={i} className="absolute inset-0 origin-center" style={{ transform: `rotate(${i * 45}deg)` }}>
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 text-white font-bold font-display text-lg drop-shadow-md">
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 text-white font-bold font-display text-xl drop-shadow-md">
                   {p.val}
                 </div>
-                {/* Linha separadora */}
                 <div className="absolute top-0 left-1/2 w-0.5 h-1/2 bg-white/20 origin-bottom" style={{ transform: 'translateX(-50%) rotate(22.5deg)' }} />
               </div>
             ))}
             
-            {/* Centro da Roleta */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#11141a] border-4 border-amber-500 flex items-center justify-center shadow-lg z-10">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#09090b] border-4 border-amber-500 flex items-center justify-center shadow-lg z-10">
               <Icon name="star" size={16} className="text-amber-500 fill-amber-500" />
             </div>
           </div>
           
-          {/* Luzes decorativas piscantes em volta */}
           <div className="absolute inset-0 rounded-full pointer-events-none" style={{ padding: '-4px' }}>
             {[...Array(12)].map((_, i) => (
               <div key={i} className="absolute w-2 h-2 rounded-full bg-amber-300 shadow-[0_0_10px_rgba(252,211,77,1)]"
@@ -848,23 +708,23 @@ const TigrinhoRoulette = memo(({ isOpen, isDark, lang, onWin }: any) => {
         </div>
 
         {phase === 'idle' && (
-          <Button full size="lg" variant="amber" onClick={spinWheel} className="animate-pulse-slow">
+          <Button full size="lg" variant="amber" onClick={spinWheel} className="animate-pulse-slow font-extrabold text-lg">
             {lang === 'en' ? 'SPIN ROULETTE' : 'GIRAR ROLETA'}
           </Button>
         )}
         
         {phase === 'spinning' && (
-          <Button full size="lg" disabled variant="secondary" className="opacity-50">
+          <Button full size="lg" disabled variant="secondary" className="opacity-50 font-extrabold text-lg">
             {lang === 'en' ? 'Spinning...' : 'Girando...'}
           </Button>
         )}
 
         {phase === 'won' && (
           <div className="animate-fade-up w-full">
-            <p className={`font-display text-2xl mb-4 text-amber-500`}>
+            <p className={`font-display font-extrabold text-3xl mb-4 text-amber-500`}>
               {lang === 'en' ? 'You Won R$' : 'Você Ganhou R$'} {winValue}!
             </p>
-            <Button full size="lg" variant="amber" onClick={() => onWin(winValue)}>
+            <Button full size="lg" variant="amber" onClick={() => onWin(winValue)} className="font-extrabold text-lg">
               {lang === 'en' ? 'Claim My Discount' : 'Pegar Meu Desconto'}
             </Button>
           </div>
@@ -881,6 +741,116 @@ const CATEGORY_CONFIG: Record<string, { color: string; borderColor: string; bg: 
   final: { color: '#f59e0b', borderColor: 'rgba(245,158,11,0.2)', bg: 'rgba(245,158,11,0.03)', lightBg: 'rgba(245,158,11,0.02)' },
   care: { color: '#ec4899', borderColor: 'rgba(236,72,153,0.2)', bg: 'rgba(236,72,153,0.03)', lightBg: 'rgba(236,72,153,0.02)' },
 };
+
+// ==================================================================================
+// RENDER HELPERS PARA MAIS CONTRASTE
+// ==================================================================================
+// Função para destacar as primeiras palavras na listagem de detalhes do serviço
+const highlightLine = (line: string, isDark: boolean) => {
+  const cleanLine = line.replace(/^\d+\.\s*/, '');
+  const words = cleanLine.split(' ');
+  const limit = Math.min(2, words.length); // Destaca as primeiras 2 palavras
+  const highlighted = words.slice(0, limit).join(' ');
+  const rest = words.slice(limit).join(' ');
+  
+  return (
+    <>
+      <strong className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{highlighted}</strong> {rest}
+    </>
+  );
+};
+
+
+const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDark, T, lang, isPack }: any) => {
+  if (!isOpen || !service) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-modal-backdrop">
+      <div role="dialog" aria-modal="true" className={`relative w-full max-w-md max-h-[85vh] flex flex-col rounded-3xl border shadow-2xl animate-scale-in overflow-hidden ${isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-slate-200'}`}>
+        <div className={`relative p-5 pb-4 shrink-0 border-b ${isDark ? 'border-zinc-800' : 'border-slate-100'} ${isPack ? (isDark ? 'bg-amber-950/20' : 'bg-amber-50/50') : ''}`}>
+          <button onClick={onClose} aria-label="Fechar" className={`absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
+            <Icon name="x" size={18} />
+          </button>
+          <div className="flex items-center gap-3 mb-3 pr-10">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shrink-0 ${isPack ? isDark ? 'bg-amber-900/30 border-amber-800 text-amber-500' : 'bg-amber-100 border-amber-200 text-amber-700' : isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-slate-100 border-slate-200 text-slate-700'}`}>
+              <Icon name={service.icon} size={20} />
+            </div>
+            <div className="flex-1 min-w-0">
+               <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                 <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md border ${isPack ? isDark ? 'border-amber-800/50 text-amber-500' : 'border-amber-300 text-amber-800' : isDark ? 'border-zinc-700 text-zinc-400' : 'border-slate-300 text-slate-600'}`}>
+                   {service.tag}
+                 </span>
+                 {service.popular && <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-blue-600 text-white">{T.popular_badge}</span>}
+               </div>
+               <h2 className={`font-display text-xl sm:text-2xl font-bold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{service.title}</h2>
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className={`font-display font-extrabold text-3xl ${isDark ? 'text-blue-400' : 'text-blue-600'} ${isPack ? isDark ? 'text-amber-400' : 'text-amber-600' : ''}`}>{formatMoney(service.price, lang)}</span>
+            {service.fullPrice && <span className={`text-sm font-bold line-through ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{formatMoney(service.fullPrice, lang)}</span>}
+          </div>
+        </div>
+        <div className={`flex-1 overflow-y-auto p-5 space-y-6 scrollbar-hide ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+          <p className={`text-sm leading-relaxed font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{service.desc}</p>
+          <div>
+            <h4 className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.details_label}</h4>
+            <div className="space-y-4">
+              {service.details.split('\n').map((line: string, i: number) => {
+                const stepNum = line.match(/^\d+/)?.[0] || (i + 1).toString();
+                return (
+                  <div key={i} className="flex items-start gap-3 text-sm">
+                    <div className={`mt-0.5 shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-bold text-[11px] ${isPack ? isDark ? 'bg-amber-500/20 text-amber-500' : 'bg-amber-100 text-amber-700' : isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'}`}>
+                      {stepNum}
+                    </div>
+                    <span className={`leading-relaxed flex-1 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                      {highlightLine(line, isDark)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        <div className={`p-4 border-t shrink-0 ${isDark ? 'border-zinc-800 bg-zinc-900' : 'border-slate-100 bg-white'}`}>
+          <Button full size="xl" variant={isInCart ? 'outline' : isPack ? 'amber' : 'primary'} onClick={() => { onSelect(service); onClose(); }}>
+            {isInCart ? (lang === 'en' ? 'Remove from Selection' : 'Remover da Seleção') : (lang === 'en' ? 'Select this Service' : 'Selecionar Opção')}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, lang, isPack = false, onOpenModal }: any) => {
+  return (
+    <button className={`relative w-full text-left rounded-2xl border transition-all duration-200 card-hover flex flex-col h-auto min-h-[120px] ${isInCart ? isPack ? 'service-card-selected-amber border-amber-500/50 bg-amber-500/10' : 'service-card-selected border-blue-500/50 bg-blue-500/5' : isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-white border-slate-200 shadow-sm hover:border-slate-300'}`} onClick={() => onOpenModal(service)}>
+      {isInCart && (
+        <div className={`absolute top-3 right-3 z-10 w-6 h-6 rounded-full flex items-center justify-center animate-check-pop shrink-0 ${isPack ? 'bg-amber-500 text-amber-950' : 'bg-blue-600 text-white'}`}>
+          <Icon name="check" size={14} />
+        </div>
+      )}
+      <div className="p-4 flex-1 flex flex-col">
+        <div className="flex items-start gap-3 mb-3">
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${isPack ? isDark ? 'bg-amber-900/30 border-amber-800/50 text-amber-500' : 'bg-amber-50 border-amber-200 text-amber-600' : isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+            <Icon name={service.icon} size={24} />
+          </div>
+          <div className="flex-1 min-w-0 pr-6 pt-0.5">
+            <h3 className={`text-lg font-extrabold leading-tight truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{service.title}</h3>
+            <p className={`text-xs mt-1.5 leading-relaxed line-clamp-2 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{service.desc}</p>
+          </div>
+        </div>
+        <div className="flex items-end justify-between mt-auto gap-2">
+          <div className={`inline-block text-[10px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-md border truncate max-w-[50%] ${isPack ? isDark ? 'border-amber-800/50 text-amber-500' : 'border-amber-300 text-amber-700' : isDark ? 'border-zinc-700 text-zinc-300' : 'border-slate-300 text-slate-600'}`}>
+            {service.tag}
+          </div>
+          <div className="text-right shrink-0">
+            {service.fullPrice && <p className={`text-[10px] font-bold line-through mb-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{formatMoney(service.fullPrice, lang)}</p>}
+            <p className={`font-display font-bold text-xl sm:text-2xl leading-none ${isDark ? 'text-blue-400' : 'text-blue-600'} ${isPack ? isDark ? 'text-amber-400' : 'text-amber-600' : ''}`}>{formatMoney(service.price, lang)}</p>
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+});
 
 // ==================================================================================
 // MAIN APP
@@ -1231,32 +1201,19 @@ export default function App() {
     dateScrollRef.current?.scrollBy({ left: dir === 'left' ? -200 : 200, behavior: 'smooth' });
   };
 
-  const categoryConfig = [
-    { id: 'relax', title: lang === 'en' ? "Just Relax" : "Relaxamento", icon: 'sun', desc: lang === 'en' ? "Therapeutic body work to relieve stress." : "Tire a tensão e o peso das costas." },
-    { id: 'express', title: lang === 'en' ? "Express Care" : "Cuidado Rápido", icon: 'watch', desc: lang === 'en' ? "Quick localized relief for hands and feet." : "Alívio focado em mãos e pés cansados." },
-    { id: 'final', title: lang === 'en' ? "With Ending" : "Com Finalização", icon: 'sparkles', desc: lang === 'en' ? "A complete and intense sensory journey." : "A jornada completa com relaxamento final." },
-    { id: 'care', title: lang === 'en' ? "Personal Care" : "Estética", icon: 'scissors', desc: lang === 'en' ? "Aesthetic body maintenance." : "Manutenção para um corpo impecável." },
-  ];
-
-  const floatBtnTexts = useMemo(() => {
-    return lang === 'en' 
-      ? ["Need help?", "Have questions?", "Chat with me!"] 
-      : ["Precisa de ajuda?", "Ficou com dúvidas?", "Agende agora!"];
-  }, [lang]);
-
-  if (!isClient) return <div className="min-h-screen w-full bg-[#11141a]" />;
+  if (!isClient) return <div className="min-h-screen w-full bg-[#09090b]" />;
 
   if (loading) {
     return (
-      <div className={`fixed inset-0 flex flex-col items-center justify-center z-[100] ${isDark ? 'bg-[#11141a]' : 'bg-[#f9f8f6]'}`}>
+      <div className={`fixed inset-0 flex flex-col items-center justify-center z-[100] ${isDark ? 'bg-[#09090b]' : 'bg-slate-50'}`}>
         <div className="flex flex-col items-center w-[200px] text-center">
           <div className="relative mb-8">
             <div className="absolute inset-0 bg-blue-500/20 blur-2xl scale-[1.5] animate-pulse" />
             <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-2xl border border-blue-400/20">
-              <span className="font-display text-4xl text-white">T</span>
+              <span className="font-display font-extrabold text-4xl text-white">T</span>
             </div>
           </div>
-          <p className={`text-xs uppercase font-bold tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.loading}</p>
+          <p className={`text-xs uppercase font-extrabold tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.loading}</p>
         </div>
       </div>
     );
@@ -1288,24 +1245,8 @@ export default function App() {
         }}
       />
 
-      {/* ── BOTÃO WHATSAPP FLUTUANTE COM ANIMAÇÃO DE DIGITAÇÃO ── */}
-      <div className="fixed bottom-[88px] sm:bottom-24 right-4 z-50 flex items-center gap-3">
-        {/* Balão animado */}
-        <div className={`hidden sm:flex px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-lg relative cursor-pointer border ${isDark ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-white text-slate-700 border-slate-200'}`}
-             onClick={() => openExternal('whatsapp', 'Olá, estava no site relaxarhoje.com e gostaria de tirar uma dúvida.')}>
-          <TypewriterText texts={floatBtnTexts} />
-          {/* Triangulozinho do balão apontando pro ícone */}
-          <div className={`absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 rotate-45 border-t border-r ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200'}`} />
-        </div>
-        {/* Botão circular clássico */}
-        <button
-          onClick={() => openExternal('whatsapp', 'Olá, estava no site relaxarhoje.com e gostaria de tirar uma dúvida.')}
-          className="w-12 h-12 bg-[#25D366] text-white rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] flex items-center justify-center hover:scale-110 transition-transform hover:bg-[#22c55e]"
-          aria-label="Contato WhatsApp"
-        >
-          <Icon name="message-circle" size={24} />
-        </button>
-      </div>
+      {/* WHATSAPP FLOAT BUTTON COM ANIMAÇÃO */}
+      <FloatingWhatsApp isDark={isDark} lang={lang} openExternal={openExternal} />
 
       <main className={`min-h-screen relative z-10 pb-40 px-4 sm:px-6 max-w-3xl mx-auto overflow-x-hidden`}>
 
@@ -1313,27 +1254,27 @@ export default function App() {
           <header className="pt-6 pb-6 sm:pt-10 sm:pb-8">
             <div className="flex items-center justify-between gap-4">
               <button onClick={() => setStep(0)} className="group text-left" aria-label="Voltar para o início">
-                <h1 className={`font-display text-2xl sm:text-3xl leading-tight mb-1 transition-opacity group-hover:opacity-80 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                <h1 className={`font-display font-extrabold text-3xl sm:text-4xl leading-tight mb-1 transition-opacity group-hover:opacity-80 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   Thalyson Massagens
                 </h1>
-                <div className={`flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
-                  <span className="relative flex h-2 w-2 shrink-0">
+                <div className={`flex items-center gap-2 text-[10px] uppercase tracking-widest font-extrabold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                  <span className="relative flex h-2.5 w-2.5 shrink-0">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500" />
                   </span>
                   {lang === 'en' ? `${user.ordersCount}+ ${T.header_tensions}` : `+${user.ordersCount} ${T.header_tensions}`}
                 </div>
               </button>
 
               <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} className={`relative h-10 w-10 flex items-center justify-center rounded-xl border transition-all ${isDark ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800'}`}>
-                  <Icon name="globe" size={18} />
+                <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} className={`relative h-12 w-12 flex items-center justify-center rounded-xl border transition-all ${isDark ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-600' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800'}`}>
+                  <Icon name="globe" size={20} />
                 </button>
-                <button onClick={() => openExternal('instagram')} className={`h-10 w-10 flex items-center justify-center rounded-xl border transition-all ${isDark ? 'border-zinc-800 bg-zinc-900 text-pink-500 hover:text-pink-400' : 'border-slate-200 bg-white text-pink-600 hover:text-pink-500'}`}>
-                  <Icon name="instagram" size={18} />
+                <button onClick={() => openExternal('instagram')} className={`h-12 w-12 flex items-center justify-center rounded-xl border transition-all ${isDark ? 'border-zinc-800 bg-zinc-900 text-pink-500 hover:text-pink-400 hover:border-pink-900' : 'border-slate-200 bg-white text-pink-600 hover:text-pink-500'}`}>
+                  <Icon name="instagram" size={20} />
                 </button>
-                <button onClick={() => setMenuOpen(true)} className={`h-10 w-10 flex items-center justify-center rounded-xl border transition-all ${isDark ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800'}`}>
-                  <Icon name="menu" size={18} />
+                <button onClick={() => setMenuOpen(true)} className={`h-12 w-12 flex items-center justify-center rounded-xl border transition-all ${isDark ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-600' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800'}`}>
+                  <Icon name="menu" size={20} />
                 </button>
               </div>
             </div>
@@ -1343,7 +1284,7 @@ export default function App() {
                 {[1, 2, 3].map(i => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1.5 cursor-pointer" onClick={() => { if (i < step) setStep(i); }}>
                     <div className={`w-full h-1.5 rounded-full transition-all duration-300 ${step > i ? 'bg-blue-600' : step === i ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]' : isDark ? 'bg-zinc-800' : 'bg-slate-200'}`} />
-                    <span className={`text-[9px] uppercase font-bold tracking-widest ${step >= i ? isDark ? 'text-white' : 'text-slate-800' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
+                    <span className={`text-[10px] uppercase font-bold tracking-widest ${step >= i ? isDark ? 'text-white' : 'text-slate-800' : isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
                       {i === 1 ? T.step_where : i === 2 ? T.step_when : T.step_summary}
                     </span>
                   </div>
@@ -1361,36 +1302,36 @@ export default function App() {
             <section className="animate-fade-up space-y-8 sm:space-y-12">
 
               <div className="flex flex-col gap-6">
-                <h2 className={`font-display text-2xl sm:text-3xl leading-[1.2] ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                <h2 className={`font-display font-bold text-2xl sm:text-3xl leading-[1.2] ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {T.welcome} <span className="text-blue-500">{user.name ? String(user.name).trim().split(' ')[0] : T.welcome_anon}</span>
                 </h2>
 
-                <article className={`p-5 rounded-3xl border flex flex-col sm:flex-row items-start sm:items-center gap-4 ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <article className={`p-5 rounded-[2rem] border flex flex-col sm:flex-row items-start sm:items-center gap-4 ${isDark ? 'bg-zinc-900 border-zinc-800 shadow-xl shadow-black/20' : 'bg-white border-slate-200 shadow-sm'}`}>
                   <div className="relative shrink-0">
-                    <div className={`w-20 h-20 rounded-2xl overflow-hidden border p-0.5 ${isDark ? 'border-blue-900' : 'border-blue-200'}`}>
-                      <img src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" alt="Thalyson Santos, São Paulo - Bela Vista" className="w-full h-full object-cover rounded-xl" />
+                    <div className={`w-24 h-24 rounded-[1.5rem] overflow-hidden border-2 p-0.5 ${isDark ? 'border-blue-500/50' : 'border-blue-200'}`}>
+                      <img src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" alt="Thalyson Santos, São Paulo - Bela Vista" className="w-full h-full object-cover rounded-[1.2rem]" />
                     </div>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className={`font-display text-xl mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson</h3>
-                    <p className={`text-[10px] font-bold uppercase tracking-widest mb-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{T.specialist}</p>
-                    <p className={`text-xs sm:text-sm leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.choose_sub}</p>
+                    <h3 className={`font-display font-extrabold text-2xl mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson</h3>
+                    <p className={`text-[11px] font-extrabold uppercase tracking-widest mb-3 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{T.specialist}</p>
+                    <p className={`text-sm leading-relaxed font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.choose_sub}</p>
                   </div>
                 </article>
 
-                <article className={`p-5 rounded-3xl border ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <article className={`p-5 rounded-[2rem] border ${isDark ? 'bg-zinc-900 border-zinc-800 shadow-xl shadow-black/20' : 'bg-white border-slate-200 shadow-sm'}`}>
                   <div className="flex items-center justify-between mb-5 gap-4">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isDark ? 'bg-amber-900/30 text-amber-500 border border-amber-900/50' : 'bg-amber-50 text-amber-600 border border-amber-200'}`}>
-                        <Icon name="award" size={20} />
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className={`w-12 h-12 rounded-[1rem] flex items-center justify-center shrink-0 ${isDark ? 'bg-amber-900/30 text-amber-500 border border-amber-900/50' : 'bg-amber-50 text-amber-600 border border-amber-200'}`}>
+                        <Icon name="award" size={24} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <h3 className={`text-[10px] uppercase font-bold tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.level_label}</h3>
-                        <p className={`text-sm font-semibold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{getCurrentLevelTitle()}</p>
+                        <p className={`text-base font-bold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{getCurrentLevelTitle()}</p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="font-display text-2xl text-blue-500">{user.xp}</span>
+                      <span className="font-display text-3xl font-extrabold text-blue-500">{user.xp}</span>
                       <span className={`text-[10px] uppercase font-bold tracking-widest block ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.level_current}</span>
                     </div>
                   </div>
@@ -1399,20 +1340,20 @@ export default function App() {
                       <span>{T.level_journey}</span>
                       <span>{Math.floor(getCurrentLevelProgress())}%</span>
                     </div>
-                    <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-100'}`}>
+                    <div className={`h-2.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-slate-100'}`}>
                       <div className="h-full bg-blue-500 rounded-full transition-all duration-1000" style={{ width: `${getCurrentLevelProgress()}%` }} />
                     </div>
                   </div>
                 </article>
               </div>
 
-              <nav aria-label="Tipos de agendamento" className={`flex p-1.5 rounded-2xl border w-full sm:w-fit mx-auto ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-slate-50 border-slate-200'}`}>
+              <nav aria-label="Tipos de agendamento" className={`flex p-1.5 rounded-2xl border w-full sm:w-fit mx-auto ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-slate-50 border-slate-200'}`}>
                 {[ { id: 'single', label: T.tab_single, icon: 'user' }, { id: 'packs', label: T.tab_packs, icon: 'package' } ].map(tab => (
                   <button key={tab.id} onClick={() => setActiveTab(tab.id)} aria-pressed={activeTab === tab.id}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 min-h-[44px] ${activeTab === tab.id
-                      ? tab.id === 'packs' ? 'bg-amber-500 text-amber-950 shadow-md' : 'bg-blue-600 text-white shadow-md'
-                      : isDark ? 'text-zinc-500 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}>
-                    <Icon name={tab.icon} size={16} className="shrink-0" />
+                    className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-[14px] text-xs font-bold uppercase tracking-wider transition-all duration-300 min-h-[48px] ${activeTab === tab.id
+                      ? tab.id === 'packs' ? 'bg-amber-500 text-amber-950 shadow-lg' : 'bg-blue-600 text-white shadow-lg'
+                      : isDark ? 'text-zinc-400 hover:text-white hover:bg-white/5' : 'text-slate-500 hover:text-slate-900 hover:bg-black/5'}`}>
+                    <Icon name={tab.icon} size={18} className="shrink-0" />
                     {tab.label}
                   </button>
                 ))}
@@ -1426,14 +1367,14 @@ export default function App() {
                       if (!services.length) return null;
                       const cfg = CATEGORY_CONFIG[cat.id];
                       return (
-                        <section key={cat.id} className="rounded-3xl border overflow-hidden" style={{ borderColor: cfg.borderColor, background: isDark ? cfg.bg : cfg.lightBg }}>
-                          <div className="px-4 py-4 flex items-center gap-3 border-b" style={{ borderColor: cfg.borderColor }}>
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${cfg.color}15`, border: `1px solid ${cfg.color}30` }}>
-                              <Icon name={cat.icon} size={20} style={{ color: cfg.color }} />
+                        <section key={cat.id} className="rounded-[2rem] border overflow-hidden shadow-sm" style={{ borderColor: cfg.borderColor, background: isDark ? cfg.bg : cfg.lightBg }}>
+                          <div className="px-5 py-5 flex items-center gap-4 border-b" style={{ borderColor: cfg.borderColor }}>
+                            <div className="w-12 h-12 rounded-[1rem] flex items-center justify-center shrink-0" style={{ background: `${cfg.color}15`, border: `1px solid ${cfg.color}30` }}>
+                              <Icon name={cat.icon} size={24} style={{ color: cfg.color }} />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <h2 className={`font-display text-lg mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{cat.title}</h2>
-                              <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{cat.desc}</p>
+                              <h2 className={`font-display text-xl font-bold mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{cat.title}</h2>
+                              <p className={`text-xs font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{cat.desc}</p>
                             </div>
                           </div>
                           <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1456,11 +1397,11 @@ export default function App() {
 
               <section className={`py-10 border-t border-b ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className={`font-display text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title}</h2>
+                  <h2 className={`font-display text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title}</h2>
                   <div className="flex gap-2 shrink-0">
                     {['chevron-left', 'chevron-right'].map((dir, i) => (
-                      <button key={dir} onClick={() => reviewScrollRef.current?.scrollBy({ left: i === 0 ? -260 : 260, behavior: 'smooth' })} className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${isDark ? 'border-zinc-700 bg-zinc-800 text-zinc-400 hover:text-white' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800 shadow-sm'}`}>
-                        <Icon name={dir} size={18} />
+                      <button key={dir} onClick={() => reviewScrollRef.current?.scrollBy({ left: i === 0 ? -260 : 260, behavior: 'smooth' })} className={`w-12 h-12 rounded-[1rem] flex items-center justify-center border transition-all ${isDark ? 'border-zinc-700 bg-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800 shadow-sm'}`}>
+                        <Icon name={dir} size={20} />
                       </button>
                     ))}
                   </div>
@@ -1475,8 +1416,8 @@ export default function App() {
               </section>
 
               <section className="pb-6">
-                <h2 className={`font-display text-2xl text-center mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.faq_title}</h2>
-                <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <h2 className={`font-display text-2xl font-bold text-center mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.faq_title}</h2>
+                <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-zinc-900 border-zinc-800 shadow-lg shadow-black/20' : 'bg-white border-slate-200 shadow-sm'}`}>
                   <div className={`px-5 divide-y ${isDark ? 'divide-zinc-800' : 'divide-slate-100'}`}>
                     {DATA.faq.map((item: any, idx: number) => <FAQItem key={idx} q={item.q} a={item.a} isDark={isDark} />)}
                   </div>
@@ -1491,20 +1432,20 @@ export default function App() {
           {step === 1 && (
             <section className="animate-fade-up max-w-xl mx-auto space-y-8">
               <header className="text-center">
-                <h2 className={`font-display text-3xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
+                <h2 className={`font-display font-bold text-3xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.location_title}</h2>
               </header>
 
               <div className="grid grid-cols-3 gap-3">
                 {[ { id: 'home', label: T.loc_home, icon: 'home' }, { id: 'motel', label: T.loc_motel, icon: 'bed' }, { id: 'hotel', label: T.loc_hotel, icon: 'building' } ].map(x => (
                   <button key={x.id} onClick={() => setBooking(b => ({ ...b, locationType: x.id as any }))} aria-pressed={booking.locationType === x.id}
-                    className={`p-4 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all border text-center min-h-[96px] ${booking.locationType === x.id ? 'bg-blue-600 border-blue-500 text-white shadow-md' : isDark ? 'bg-[#181c25] border-zinc-800 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}>
-                    <Icon name={x.icon} size={24} />
+                    className={`p-4 rounded-[1.5rem] flex flex-col items-center justify-center gap-3 transition-all border text-center min-h-[100px] ${booking.locationType === x.id ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/20' : isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}>
+                    <Icon name={x.icon} size={28} />
                     <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest">{x.label}</span>
                   </button>
                 ))}
               </div>
 
-              <article className={`p-5 sm:p-8 rounded-3xl border space-y-6 ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <article className={`p-5 sm:p-8 rounded-[2rem] border space-y-6 ${isDark ? 'bg-zinc-900 border-zinc-800 shadow-xl shadow-black/20' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <InputField isDark={isDark} label={T.input_name} value={user.name} onChange={(e: any) => setUser(u => ({ ...u, name: sanitizeInput(e.target.value) }))} icon="user" placeholder={lang === 'en' ? "Your name" : "Como quer ser chamado?"} hasError={hasErrorGlobal && (!user.name || String(user.name).trim().length < 3)} />
 
                 {booking.locationType === 'home' && (
@@ -1528,10 +1469,10 @@ export default function App() {
 
                 {booking.locationType === 'motel' && (
                   <div className={`p-5 rounded-2xl border flex items-start gap-4 animate-fade-up ${isDark ? 'bg-pink-900/10 border-pink-900/30' : 'bg-pink-50 border-pink-100'}`}>
-                    <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-pink-500/20 text-pink-400' : 'bg-pink-100 text-pink-600'}`}>
-                      <Icon name="heart" size={20} />
+                    <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${isDark ? 'bg-pink-500/20 text-pink-400' : 'bg-pink-100 text-pink-600'}`}>
+                      <Icon name="heart" size={24} />
                     </div>
-                    <p className={`text-sm leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.motel_note}</p>
+                    <p className={`text-sm leading-relaxed font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.motel_note}</p>
                   </div>
                 )}
               </article>
@@ -1544,32 +1485,32 @@ export default function App() {
           {step === 2 && (
             <section className="animate-fade-up max-w-2xl mx-auto space-y-8">
               <header className="text-center">
-                <h2 className={`font-display text-3xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.select_time_title}</h2>
+                <h2 className={`font-display text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.select_time_title}</h2>
               </header>
 
               <div className="relative w-full">
-                <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-xl border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'} shadow-md`}><Icon name="chevron-left" size={20} /></button>
-                <div ref={dateScrollRef} className="flex gap-3 overflow-x-auto snap-x py-2 scrollbar-hide w-full">
+                <button onClick={() => scrollDates('left')} className={`hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-xl border transition-all ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'} shadow-md`}><Icon name="chevron-left" size={24} /></button>
+                <div ref={dateScrollRef} className="flex gap-4 overflow-x-auto snap-x py-2 scrollbar-hide w-full">
                   {daysArray.map((d, idx) => {
                     const isSel = booking.date && new Date(booking.date).toDateString() === d.toDateString();
                     const mo = d.toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT, { month: 'short' }).replace('.', '');
                     return (
                       <button key={idx} onClick={() => { setBooking(b => ({ ...b, date: d.toISOString(), time: null })); vibrate(30); }} aria-pressed={isSel}
-                        className={`snap-center shrink-0 w-20 min-h-[90px] py-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all border ${isSel ? 'bg-blue-600 border-blue-500 text-white shadow-md' : isDark ? 'bg-[#181c25] border-zinc-800 text-zinc-500 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}>
+                        className={`snap-center shrink-0 w-[88px] min-h-[100px] py-3 rounded-[1.2rem] flex flex-col items-center justify-center gap-1.5 transition-all border ${isSel ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/20' : isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-700' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'}`}>
                         <span className={`text-[10px] uppercase font-bold tracking-wider ${isSel ? 'text-blue-200' : ''}`}>{mo}</span>
-                        <span className={`font-display text-2xl leading-none ${isSel ? 'text-white' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{d.getDate()}</span>
+                        <span className={`font-display text-3xl font-bold leading-none ${isSel ? 'text-white' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{d.getDate()}</span>
                         <span className={`text-[10px] uppercase font-bold tracking-wider ${isSel ? 'text-blue-200' : ''}`}>{getDayLabel(d)}</span>
                       </button>
                     );
                   })}
                 </div>
-                <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-xl border transition-all ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'} shadow-md`}><Icon name="chevron-right" size={20} /></button>
+                <button onClick={() => scrollDates('right')} className={`hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-xl border transition-all ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 shadow-sm'} shadow-md`}><Icon name="chevron-right" size={24} /></button>
               </div>
 
               {!booking.date && (
                 <div className={`text-center py-16 rounded-3xl border border-dashed flex flex-col items-center gap-4 ${hasErrorGlobal ? 'animate-shake' : ''} ${isDark ? 'border-zinc-700 text-zinc-600' : 'border-slate-300 text-slate-400'}`}>
                   <Icon name="calendar" size={32} />
-                  <p className="text-sm font-semibold uppercase tracking-widest">{T.empty_date}</p>
+                  <p className="text-sm font-bold uppercase tracking-widest">{T.empty_date}</p>
                 </div>
               )}
 
@@ -1580,24 +1521,24 @@ export default function App() {
                     { key: 'afternoon', label: T.afternoon, icon: 'sun', slots: groupedTimeSlots.afternoon },
                     { key: 'evening', label: T.evening, icon: 'sunset', slots: groupedTimeSlots.evening },
                   ].filter(g => g.slots.length > 0).map(group => (
-                    <div key={group.key} className={`p-5 rounded-3xl border ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-                      <div className={`flex items-center gap-2 mb-4 text-[10px] uppercase font-bold tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
-                        <Icon name={group.icon} size={16} className="shrink-0" />
+                    <div key={group.key} className={`p-5 sm:p-6 rounded-[2rem] border ${isDark ? 'bg-zinc-900 border-zinc-800 shadow-lg shadow-black/10' : 'bg-white border-slate-100 shadow-sm'}`}>
+                      <div className={`flex items-center gap-2 mb-5 text-[11px] uppercase font-bold tracking-widest ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                        <Icon name={group.icon} size={18} className="shrink-0" />
                         {group.label}
                       </div>
-                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3.5">
                         {group.slots.map(t => {
                           const isRush = RUSH_HOURS.includes(t) && booking.locationType !== 'motel';
                           const isSel = booking.time === t;
                           return (
                             <button key={t} onClick={() => { setBooking(b => ({ ...b, time: t })); vibrate(30); }} aria-pressed={isSel}
-                              className={`relative flex flex-col items-center justify-center py-3 px-2 rounded-xl border text-sm font-bold transition-all min-h-[56px] w-full ${isSel
+                              className={`relative flex flex-col items-center justify-center py-3.5 px-2 rounded-xl border text-[15px] font-bold transition-all min-h-[60px] w-full ${isSel
                                 ? isRush ? 'bg-amber-500 border-amber-500 text-amber-950 shadow-md' : 'bg-blue-600 border-blue-500 text-white shadow-md'
                                 : isDark
-                                  ? isRush ? 'bg-amber-900/20 border-amber-800/50 text-amber-500' : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:text-white'
-                                  : isRush ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-white'}`}>
+                                  ? isRush ? 'bg-amber-900/20 border-amber-800/50 text-amber-500 hover:bg-amber-900/40' : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-600'
+                                  : isRush ? 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-white hover:border-slate-300 shadow-sm'}`}>
                               {t}
-                              {isRush && <span className={`text-[9px] uppercase tracking-widest mt-0.5 ${isSel ? 'text-amber-900' : isDark ? 'text-amber-600' : 'text-amber-500'}`}>+{formatMoney(RUSH_FEE, lang).replace('R$ ', 'R$')}</span>}
+                              {isRush && <span className={`text-[9px] uppercase font-extrabold tracking-widest mt-1 ${isSel ? 'text-amber-900' : isDark ? 'text-amber-500' : 'text-amber-600'}`}>+{formatMoney(RUSH_FEE, lang).replace('R$ ', 'R$')}</span>}
                             </button>
                           );
                         })}
@@ -1606,8 +1547,8 @@ export default function App() {
                   ))}
 
                   {Object.values(groupedTimeSlots).flat().some(t => RUSH_HOURS.includes(t)) && booking.locationType !== 'motel' && (
-                    <div className={`flex items-start gap-3 p-4 rounded-2xl border text-xs font-medium ${isDark ? 'bg-amber-900/10 border-amber-800/40 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
-                      <Icon name="alert-circle" size={18} className="shrink-0" />
+                    <div className={`flex items-start gap-3 p-4 rounded-2xl border text-sm font-semibold ${isDark ? 'bg-amber-900/10 border-amber-800/40 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
+                      <Icon name="alert-circle" size={20} className="shrink-0" />
                       <p>{lang === 'en' ? 'Rush hour slots include a small displacement fee.' : 'Horários de pico possuem pequena taxa de deslocamento.'}</p>
                     </div>
                   )}
@@ -1623,29 +1564,28 @@ export default function App() {
             <section className="animate-fade-up space-y-6 max-w-2xl mx-auto">
               <SmartTimer isDark={isDark} text={T.timer_text} />
 
-              <article className={`p-5 sm:p-6 rounded-3xl border ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <h3 className={`font-display text-xl mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.extras_title}</h3>
-                <p className={`text-xs mb-5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{lang === 'en' ? 'Optional add-ons.' : 'Deseja adicionar algo extra?'}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <article className={`p-5 sm:p-8 rounded-[2rem] border ${isDark ? 'bg-zinc-900 border-zinc-800 shadow-xl shadow-black/20' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <h3 className={`font-display text-2xl font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.extras_title}</h3>
+                <p className={`text-sm font-medium mb-6 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{lang === 'en' ? 'Optional add-ons.' : 'Deseja adicionar algo extra?'}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {DATA.extras.map((ex: any) => {
                     const price = booking.cart.some(i => i.type === 'pack') ? Math.floor(ex.price * 0.8) : ex.price;
                     const isActive = booking.extras[ex.id];
                     return (
                       <button key={ex.id} onClick={() => { setBooking(b => ({ ...b, extras: { ...b.extras, [ex.id]: !b.extras[ex.id] } })); vibrate(30); }}
-                        className={`flex items-start p-4 rounded-2xl border text-left cursor-pointer transition-all gap-3 ${isActive ? isDark ? 'bg-blue-900/20 border-blue-800' : 'bg-blue-50 border-blue-200' : isDark ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' : 'bg-slate-50 border-slate-200 hover:border-slate-300'}`}>
-                        <div className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5 ${isActive ? 'bg-blue-500 text-white' : isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-white border border-slate-200 text-slate-500'}`}>
-                          <Icon name={ex.icon} size={16} />
+                        className={`flex items-start p-4 rounded-2xl border text-left cursor-pointer transition-all gap-4 ${isActive ? isDark ? 'bg-blue-900/20 border-blue-800' : 'bg-blue-50 border-blue-200' : isDark ? 'bg-zinc-800 border-zinc-700 hover:border-zinc-600' : 'bg-slate-50 border-slate-200 hover:border-slate-300 shadow-sm'}`}>
+                        <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center mt-0.5 ${isActive ? 'bg-blue-500 text-white' : isDark ? 'bg-zinc-900 text-zinc-400 border border-zinc-700' : 'bg-white border border-slate-200 text-slate-500'}`}>
+                          <Icon name={ex.icon} size={20} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-semibold truncate ${isActive ? isDark ? 'text-blue-400' : 'text-blue-700' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{ex.label}</p>
-                          <span className={`text-[10px] font-bold mt-1 inline-block ${isActive ? isDark ? 'text-blue-300' : 'text-blue-600' : isDark ? 'text-zinc-500' : 'text-slate-500'}`}>+{formatMoney(price, lang)}</span>
+                          <p className={`text-base font-bold truncate ${isActive ? isDark ? 'text-blue-400' : 'text-blue-700' : isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{ex.label}</p>
+                          <span className={`text-[11px] font-extrabold mt-1 inline-block ${isActive ? isDark ? 'text-blue-300' : 'text-blue-600' : isDark ? 'text-zinc-500' : 'text-slate-500'}`}>+{formatMoney(price, lang)}</span>
                         </div>
                       </button>
                     );
                   })}
                   
-                  {/* CAMPO DE EXTRA PERSONALIZADO */}
-                  <div className="col-span-1 sm:col-span-2 mt-2">
+                  <div className="col-span-1 sm:col-span-2 mt-3">
                     <InputField
                       isDark={isDark}
                       label={lang === 'en' ? "Custom Request (+150.00)" : "Pedido Especial (+R$ 150,00)"}
@@ -1658,17 +1598,16 @@ export default function App() {
                 </div>
               </article>
 
-              <article className={`p-5 sm:p-6 rounded-3xl border ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <h3 className={`font-display text-xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.coupon_section}</h3>
+              <article className={`p-5 sm:p-8 rounded-[2rem] border ${isDark ? 'bg-zinc-900 border-zinc-800 shadow-xl shadow-black/20' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <h3 className={`font-display text-2xl font-bold mb-5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.coupon_section}</h3>
 
-               {/* CAMPO DE CUPOM MANUAL */}
-                <div className="flex items-center gap-2 mb-5">
+                <div className="flex items-center gap-3 mb-6">
                   <input
                     type="text"
                     placeholder={lang === 'en' ? "Have a code?" : "Tem um código?"}
                     value={manualCoupon}
                     onChange={(e) => setManualCoupon(e.target.value.toUpperCase())}
-                    className={`flex-1 rounded-xl px-4 h-[44px] text-sm outline-none border transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500'}`}
+                    className={`flex-1 rounded-xl px-4 h-[52px] font-bold text-sm outline-none border transition-colors ${isDark ? 'bg-zinc-800 border-zinc-700 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500'}`}
                   />
                   <Button onClick={() => {
                     if (manualCoupon === 'RETORNO10') {
@@ -1678,59 +1617,59 @@ export default function App() {
                     } else {
                       addToast(T.toast_coupon_invalid, 'error');
                     }
-                  }} size="sm" variant="primary" className="!w-auto !h-[44px] !px-4 !flex-none">
+                  }} size="lg" variant="primary" className="!w-auto !px-6 !flex-none">
                     {lang === 'en' ? "Apply" : "Aplicar"}
                   </Button>
                 </div>
 
                 {user.coupons.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {user.coupons.map(c => (
                       <button key={c.id} onClick={() => { setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c })); vibrate(30); }}
-                        className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 ${booking.appliedCoupon?.id === c.id ? isDark ? 'bg-emerald-900/20 border-emerald-800 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700' : isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                        <div className="flex items-center gap-3">
-                          <Icon name="gift" size={20} className={booking.appliedCoupon?.id === c.id ? 'text-emerald-500' : isDark ? 'text-zinc-500' : 'text-slate-400'} />
-                          <span className="text-sm font-semibold truncate">{c.title}</span>
+                        className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 ${booking.appliedCoupon?.id === c.id ? isDark ? 'bg-emerald-900/20 border-emerald-800 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700' : isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-600' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300'}`}>
+                        <div className="flex items-center gap-4">
+                          <Icon name="gift" size={24} className={booking.appliedCoupon?.id === c.id ? 'text-emerald-500' : isDark ? 'text-zinc-500' : 'text-slate-400'} />
+                          <span className="text-base font-bold truncate">{c.title}</span>
                         </div>
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
-                          {booking.appliedCoupon?.id === c.id && <Icon name="check" size={12} />}
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-zinc-600' : 'border-slate-300'}`}>
+                          {booking.appliedCoupon?.id === c.id && <Icon name="check" size={14} />}
                         </div>
                       </button>
                     ))}
                   </div>
                 ) : (
-                  <div className={`p-4 rounded-2xl border border-dashed text-center text-xs font-medium ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-slate-300 text-slate-400'}`}>
+                  <div className={`p-5 rounded-2xl border border-dashed text-center text-sm font-semibold ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-slate-300 text-slate-400'}`}>
                     {T.coupon_empty}
                   </div>
                 )}
               </article>
 
-              <article className={`p-5 sm:p-6 rounded-3xl border ${hasErrorGlobal && !booking.payment ? 'animate-shake' : ''} ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <h4 className={`font-display text-xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.payment_title}</h4>
-                <div className="space-y-3">
+              <article className={`p-5 sm:p-8 rounded-[2rem] border ${hasErrorGlobal && !booking.payment ? 'animate-shake' : ''} ${isDark ? 'bg-zinc-900 border-zinc-800 shadow-xl shadow-black/20' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <h4 className={`font-display text-2xl font-bold mb-5 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.payment_title}</h4>
+                <div className="space-y-4">
                   {[ { id: 'pix', label: T.pay_pix, icon: 'smartphone' }, { id: 'card', label: T.pay_card, icon: 'credit-card' }, { id: 'money', label: T.pay_cash, icon: 'banknote' } ].map(p => (
                     <button key={p.id} onClick={() => { setBooking(b => ({ ...b, payment: p.id })); vibrate(30); if (p.id === 'pix') { navigator.clipboard.writeText(CONFIG.PIX_KEY); addToast(T.toast_pix_copied); } }}
-                      className={`w-full flex items-center gap-3 p-4 rounded-2xl border transition-all ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-md' : isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-white'}`}>
-                      <Icon name={p.icon} size={20} className="shrink-0" />
-                      <span className="flex-1 text-left text-sm font-semibold">{p.label}</span>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${booking.payment === p.id ? 'border-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
-                        {booking.payment === p.id && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                      className={`w-full flex items-center gap-4 p-5 rounded-2xl border transition-all ${booking.payment === p.id ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/20' : isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-600' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-white shadow-sm'}`}>
+                      <Icon name={p.icon} size={24} className="shrink-0" />
+                      <span className="flex-1 text-left text-base font-bold">{p.label}</span>
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${booking.payment === p.id ? 'border-white' : isDark ? 'border-zinc-600' : 'border-slate-300'}`}>
+                        {booking.payment === p.id && <div className="w-3 h-3 rounded-full bg-white" />}
                       </div>
                     </button>
                   ))}
                 </div>
               </article>
 
-              <article className={`p-5 sm:p-6 rounded-3xl border ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <h3 className={`font-display text-xl mb-5 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  <Icon name="file-text" size={20} className={isDark ? 'text-zinc-500' : 'text-slate-400'} /> {T.summary_title}
+              <article className={`p-5 sm:p-8 rounded-[2rem] border ${isDark ? 'bg-zinc-900 border-zinc-800 shadow-xl shadow-black/20' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <h3 className={`font-display text-2xl font-bold mb-6 flex items-center gap-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  <Icon name="file-text" size={24} className={isDark ? 'text-zinc-500' : 'text-slate-400'} /> {T.summary_title}
                 </h3>
                 <div className="space-y-6">
                   <div>
-                    <p className={`text-[10px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{T.summary_items}</p>
-                    <div className="space-y-2">
+                    <p className={`text-[11px] uppercase font-extrabold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_items}</p>
+                    <div className="space-y-3">
                       {booking.cart.map((item, i) => (
-                        <div key={i} className={`flex justify-between items-center text-sm font-semibold ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
+                        <div key={i} className={`flex justify-between items-center text-base font-bold ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>
                           <span className="truncate pr-4">{item.title}</span>
                           <span className="shrink-0">{formatMoney(item.price, lang)}</span>
                         </div>
@@ -1739,22 +1678,22 @@ export default function App() {
                   </div>
 
                   {(Object.keys(booking.extras || {}).filter(k => booking.extras[k]).length > 0 || (booking.customExtraText || '').trim().length > 0) && (
-                    <div className={`border-t pt-4 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
-                      <p className={`text-[10px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{T.summary_extras}</p>
-                      <div className="space-y-2">
+                    <div className={`border-t pt-5 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
+                      <p className={`text-[11px] uppercase font-extrabold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_extras}</p>
+                      <div className="space-y-3">
                         {Object.keys(booking.extras || {}).filter(k => booking.extras[k]).map(k => {
                           const ex = DATA.extras.find((e: any) => e.id === k);
                           if (!ex) return null;
                           const price = booking.cart.some(i => i.type === 'pack') ? Math.floor(ex.price * 0.8) : ex.price;
                           return (
-                            <div key={k} className={`flex justify-between items-center text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                            <div key={k} className={`flex justify-between items-center text-sm font-semibold ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                               <span className="truncate pr-4">{ex.label}</span>
                               <span className="shrink-0">+{formatMoney(price, lang)}</span>
                             </div>
                           );
                         })}
                         {(booking.customExtraText || '').trim().length > 0 && (
-                           <div className={`flex justify-between items-center text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                           <div className={`flex justify-between items-center text-sm font-semibold ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                              <span className="truncate pr-4">{lang === 'en' ? 'Custom Request' : 'Pedido Especial'}: {booking.customExtraText}</span>
                              <span className="shrink-0">+{formatMoney(150, lang)}</span>
                            </div>
@@ -1763,50 +1702,50 @@ export default function App() {
                     </div>
                   )}
 
-                  <div className={`border-t pt-4 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
-                    <p className={`text-[10px] uppercase font-bold tracking-widest mb-3 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{T.summary_info}</p>
-                    <div className={`space-y-2 text-sm ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                      <div className="flex items-center gap-2"><Icon name="calendar" size={16} className="text-blue-500" /> {booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : ''} {lang === 'en' ? 'at' : 'às'} {booking.time}</div>
-                      <div className="flex items-center gap-2"><Icon name="map-pin" size={16} className="text-blue-500" /> {booking.locationType === 'home' ? T.summary_loc_home : booking.locationType === 'motel' ? T.summary_loc_motel : T.summary_loc_hotel}</div>
-                      <div className="flex items-center gap-2"><Icon name="clock" size={16} className="text-blue-500" /> ~{financials.duration} min</div>
+                  <div className={`border-t pt-5 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
+                    <p className={`text-[11px] uppercase font-extrabold tracking-widest mb-4 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>{T.summary_info}</p>
+                    <div className={`space-y-3 text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                      <div className="flex items-center gap-3"><Icon name="calendar" size={18} className="text-blue-500" /> {booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : ''} {lang === 'en' ? 'at' : 'às'} {booking.time}</div>
+                      <div className="flex items-center gap-3"><Icon name="map-pin" size={18} className="text-blue-500" /> {booking.locationType === 'home' ? T.summary_loc_home : booking.locationType === 'motel' ? T.summary_loc_motel : T.summary_loc_hotel}</div>
+                      <div className="flex items-center gap-3"><Icon name="clock" size={18} className="text-blue-500" /> ~{financials.duration} min</div>
                     </div>
                   </div>
 
-                  <div className={`border-t pt-4 space-y-2 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
-                    <div className={`flex justify-between items-center text-sm font-semibold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+                  <div className={`border-t pt-5 space-y-3 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
+                    <div className={`flex justify-between items-center text-base font-bold ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
                       <span>{T.subtotal}</span>
                       <span>{formatMoney(financials.sub, lang)}</span>
                     </div>
                     {booking.appliedCoupon && (
-                      <div className="flex justify-between items-center text-sm font-semibold text-emerald-500">
+                      <div className="flex justify-between items-center text-base font-bold text-emerald-500">
                         <span>{booking.appliedCoupon.title}</span>
                         <span>-{formatMoney(financials.disc, lang)}</span>
                       </div>
                     )}
                     {financials.pixDisc > 0 && (
-                      <div className={`flex justify-between items-center text-sm font-semibold ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                      <div className={`flex justify-between items-center text-base font-bold ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                         <span>{T.pix_discount}</span>
                         <span>-{formatMoney(financials.pixDisc, lang)}</span>
                       </div>
                     )}
                     {financials.rushFee > 0 && (
-                      <div className="flex justify-between items-center text-sm font-semibold text-amber-500">
+                      <div className="flex justify-between items-center text-base font-bold text-amber-500">
                         <span>{T.msg_rush_fee}</span>
                         <span>+{formatMoney(financials.rushFee, lang)}</span>
                       </div>
                     )}
-                    <div className={`flex justify-between items-end pt-4 mt-2 border-t ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
-                      <span className={`text-xs uppercase font-bold tracking-widest ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.total_label}</span>
+                    <div className={`flex justify-between items-end pt-5 mt-3 border-t ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
+                      <span className={`text-sm uppercase font-extrabold tracking-widest ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{T.total_label}</span>
                       <div className="text-right">
-                        <p className="font-display text-3xl text-blue-500 leading-none">{formatMoney(financials.total, lang)}</p>
-                        <p className="text-[10px] uppercase font-bold tracking-widest text-blue-400 mt-1">+{estimatedXP} XP</p>
+                        <p className="font-display font-extrabold text-4xl text-blue-500 leading-none">{formatMoney(financials.total, lang)}</p>
+                        <p className="text-[11px] uppercase font-extrabold tracking-widest text-blue-400 mt-2">+{estimatedXP} XP</p>
                       </div>
                     </div>
                   </div>
                   
                   {booking.locationType !== 'motel' && (
-                    <div className={`flex items-start gap-2 p-3 rounded-xl text-xs font-medium border ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
-                      <Icon name="car" size={16} className="shrink-0" />
+                    <div className={`flex items-start gap-3 p-4 rounded-xl text-sm font-semibold border ${isDark ? 'bg-zinc-800/50 border-zinc-700 text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+                      <Icon name="car" size={20} className="shrink-0" />
                       <span>{T.uber_notice}</span>
                     </div>
                   )}
@@ -1814,14 +1753,14 @@ export default function App() {
               </article>
 
               <article className={hasErrorGlobal && !booking.termsAccepted ? 'animate-shake' : ''}>
-                <button onClick={() => setTermsOpen(true)} className={`w-full flex items-center justify-between p-5 rounded-3xl border transition-all gap-4 ${booking.termsAccepted ? isDark ? 'bg-emerald-900/20 border-emerald-800' : 'bg-emerald-50 border-emerald-200' : isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${booking.termsAccepted ? isDark ? 'bg-emerald-900/40 text-emerald-500' : 'bg-emerald-100 text-emerald-600' : isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
-                      <Icon name="shield" size={24} />
+                <button onClick={() => setTermsOpen(true)} className={`w-full flex items-center justify-between p-6 rounded-[2rem] border transition-all gap-4 ${booking.termsAccepted ? isDark ? 'bg-emerald-900/20 border-emerald-800 shadow-lg shadow-emerald-900/10' : 'bg-emerald-50 border-emerald-200' : isDark ? 'bg-zinc-900 border-zinc-800 shadow-xl shadow-black/20' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <div className="flex items-center gap-5">
+                    <div className={`w-14 h-14 rounded-[1.2rem] flex items-center justify-center shrink-0 ${booking.termsAccepted ? isDark ? 'bg-emerald-900/40 text-emerald-500' : 'bg-emerald-100 text-emerald-600' : isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
+                      <Icon name="shield" size={28} />
                     </div>
                     <div className="text-left">
-                      <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</p>
-                      <p className={`text-[10px] font-bold uppercase tracking-widest mt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.terms_read}</p>
+                      <p className={`text-base font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.terms_title}</p>
+                      <p className={`text-[11px] font-extrabold uppercase tracking-widest mt-1 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>{T.terms_read}</p>
                     </div>
                   </div>
                   <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${booking.termsAccepted ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
@@ -1838,18 +1777,18 @@ export default function App() {
           {step === 4 && (
             <section className="min-h-[70vh] flex flex-col items-center justify-center text-center animate-scale-in max-w-sm mx-auto px-4">
               <div className="relative mb-8">
-                <div className={`w-24 h-24 rounded-full flex items-center justify-center border-4 ${isDark ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-emerald-200 bg-emerald-50'}`}>
-                  <Icon name="check" size={40} className="text-emerald-500" />
+                <div className={`w-28 h-28 rounded-full flex items-center justify-center border-[6px] ${isDark ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-emerald-200 bg-emerald-50'}`}>
+                  <Icon name="check" size={48} className="text-emerald-500" />
                 </div>
               </div>
-              <h2 className={`font-display text-3xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h2>
-              <p className={`text-sm mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
+              <h2 className={`font-display font-extrabold text-4xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.success_title}</h2>
+              <p className={`text-base font-medium mb-10 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.success_sub}</p>
               
-              <div className="w-full space-y-4">
-                <Button variant="whatsapp" size="lg" full icon="message" onClick={() => openExternal('whatsapp', generateWhatsAppMsg())}>
+              <div className="w-full space-y-5">
+                <Button variant="whatsapp" size="xl" full icon="message" onClick={() => openExternal('whatsapp', generateWhatsAppMsg())}>
                   {T.whatsapp_btn}
                 </Button>
-                <button onClick={() => { setStep(0); setBooking({ ...booking, cart: [], termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, customExtraText: '' }); }} className={`w-full text-xs font-bold uppercase tracking-widest py-4 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+                <button onClick={() => { setStep(0); setBooking({ ...booking, cart: [], termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, customExtraText: '' }); }} className={`w-full text-xs font-extrabold uppercase tracking-widest py-4 ${isDark ? 'text-zinc-500 hover:text-white' : 'text-slate-500 hover:text-slate-900'} transition-colors`}>
                   {T.back_home}
                 </button>
               </div>
@@ -1860,27 +1799,27 @@ export default function App() {
 
       {/* ── STICKY BOTTOM NAV ── */}
       {step >= 0 && step < 4 && booking.cart.length > 0 && (
-        <nav className="fixed bottom-0 inset-x-0 p-3 sm:p-4 z-40 animate-slide-up pointer-events-none">
-          <div className={`max-w-3xl mx-auto pointer-events-auto rounded-3xl overflow-hidden border shadow-2xl ${isDark ? 'bg-[#181c25]/95 backdrop-blur-xl border-zinc-800' : 'bg-white/95 backdrop-blur-xl border-slate-200'}`}>
-            <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
+        <nav className="fixed bottom-0 inset-x-0 p-3 sm:p-5 z-40 animate-slide-up pointer-events-none">
+          <div className={`max-w-3xl mx-auto pointer-events-auto rounded-[2rem] overflow-hidden border shadow-2xl ${isDark ? 'bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-black/50' : 'bg-white/95 backdrop-blur-xl border-slate-200'}`}>
+            <div className="flex items-center justify-between gap-4 px-5 py-4 sm:px-6 sm:py-5">
               {step > 0 && (
-                <button onClick={() => { setStep(s => s - 1); vibrate(30); }} className={`w-12 h-12 flex items-center justify-center rounded-xl border shrink-0 ${isDark ? 'border-zinc-700 bg-zinc-800 text-zinc-300' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>
-                  <Icon name="chevron-left" size={20} />
+                <button onClick={() => { setStep(s => s - 1); vibrate(30); }} className={`w-14 h-14 flex items-center justify-center rounded-[1.2rem] border shrink-0 ${isDark ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-700' : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 shadow-sm'}`}>
+                  <Icon name="chevron-left" size={24} />
                 </button>
               )}
               <div className="flex-1 min-w-0 pl-1">
-                <p className={`text-[9px] sm:text-[10px] uppercase font-bold tracking-widest truncate ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+                <p className={`text-[10px] sm:text-xs uppercase font-extrabold tracking-widest truncate ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                   {step === 0 ? `${booking.cart.length} ${T.items_selected}` : step === 3 ? T.total_label : T.subtotal}
                 </p>
-                <p className={`font-display text-xl sm:text-2xl leading-none truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                <p className={`font-display font-extrabold text-2xl sm:text-3xl leading-none truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {step === 3 ? formatMoney(financials.total, lang) : formatMoney(financials.sub, lang)}
                 </p>
               </div>
-              <button onClick={handleNextStep} className={`h-12 flex items-center gap-2 px-5 sm:px-6 rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider shrink-0 transition-all ${isStepValid() ? step === 3 ? 'bg-[#25D366] text-white shadow-md' : 'bg-blue-600 text-white shadow-md' : isDark ? 'bg-zinc-800 text-zinc-600' : 'bg-slate-100 text-slate-400'}`}>
+              <button onClick={handleNextStep} className={`h-14 flex items-center gap-3 px-6 sm:px-8 rounded-[1.2rem] font-bold text-sm sm:text-base uppercase tracking-wider shrink-0 transition-all ${isStepValid() ? step === 3 ? 'bg-[#25D366] hover:bg-[#22c55e] text-white shadow-lg shadow-[#25D366]/20' : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20' : isDark ? 'bg-zinc-800 text-zinc-600' : 'bg-slate-100 text-slate-400'}`}>
                 {step === 3 ? (
-                  <><Icon name="message" size={16} /> <span className="hidden sm:inline">{T.finish_btn}</span><span className="sm:hidden">{T.btn_finish_short}</span></>
+                  <><Icon name="message" size={20} /> <span className="hidden sm:inline">{T.finish_btn}</span><span className="sm:hidden">{T.btn_finish_short}</span></>
                 ) : (
-                  <><span className="hidden sm:inline">{T.next_btn}</span><span className="sm:hidden">{T.btn_next_short}</span> <Icon name="chevron-right" size={16} /></>
+                  <><span className="hidden sm:inline">{T.next_btn}</span><span className="sm:hidden">{T.btn_next_short}</span> <Icon name="chevron-right" size={20} /></>
                 )}
               </button>
             </div>
@@ -1891,18 +1830,18 @@ export default function App() {
       {/* ── TERMS MODAL ── */}
       {termsOpen && (
         <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div role="dialog" aria-modal="true" className={`relative w-full max-w-lg max-h-[85vh] rounded-3xl flex flex-col border shadow-2xl animate-slide-up ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200'}`}>
-            <div className={`flex items-center justify-between p-5 sm:p-6 border-b shrink-0 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
-              <h3 className={`font-display text-xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.rules_complete}</h3>
-              <button onClick={() => setTermsOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
-                <Icon name="x" size={18} />
+          <div role="dialog" aria-modal="true" className={`relative w-full max-w-lg max-h-[85vh] rounded-[2rem] flex flex-col border shadow-2xl animate-slide-up ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}>
+            <div className={`flex items-center justify-between p-6 border-b shrink-0 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
+              <h3 className={`font-display text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.rules_complete}</h3>
+              <button onClick={() => setTermsOpen(false)} className={`w-10 h-10 rounded-full flex items-center justify-center ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
+                <Icon name="x" size={20} />
               </button>
             </div>
-            <div className="overflow-y-auto flex-1 p-5 sm:p-6 space-y-4">
+            <div className="overflow-y-auto flex-1 p-6 space-y-4">
               {DATA.rules.map((rule: Rule, i: number) => <RuleItem key={i} rule={rule} isDark={isDark} />)}
             </div>
-            <div className={`p-5 sm:p-6 border-t shrink-0 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
-              <Button full size="lg" onClick={() => { setBooking(b => ({ ...b, termsAccepted: true })); vibrate(30); setTermsOpen(false); }}>{T.agree_terms}</Button>
+            <div className={`p-6 border-t shrink-0 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
+              <Button full size="xl" onClick={() => { setBooking(b => ({ ...b, termsAccepted: true })); vibrate(30); setTermsOpen(false); }}>{T.agree_terms}</Button>
             </div>
           </div>
         </div>
@@ -1911,13 +1850,13 @@ export default function App() {
       {/* ── LEVEL UP POPUP ── */}
       {levelUpPopup && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div role="dialog" aria-modal="true" className={`relative w-full max-w-sm rounded-3xl p-6 sm:p-8 text-center border shadow-2xl animate-scale-in ${isDark ? 'bg-[#181c25] border-amber-900/50' : 'bg-white border-amber-200'}`}>
-            <div className={`w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-5 bg-gradient-to-br from-amber-400 to-amber-600 text-amber-950 shadow-lg`}>
-              <Icon name="trophy" size={32} />
+          <div role="dialog" aria-modal="true" className={`relative w-full max-w-sm rounded-[2rem] p-8 text-center border shadow-2xl animate-scale-in ${isDark ? 'bg-zinc-900 border-amber-900/50' : 'bg-white border-amber-200'}`}>
+            <div className={`w-24 h-24 mx-auto rounded-[1.5rem] flex items-center justify-center mb-6 bg-gradient-to-br from-amber-400 to-amber-600 text-amber-950 shadow-lg shadow-amber-900/20`}>
+              <Icon name="trophy" size={40} />
             </div>
-            <h3 className={`font-display text-3xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
-            <p className={`text-sm leading-relaxed mb-6 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.levelup_popup_msg}</p>
-            <Button full size="lg" variant="amber" onClick={() => { setLevelUpPopup(false); vibrate(50); }}>
+            <h3 className={`font-display font-extrabold text-4xl mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
+            <p className={`text-base font-medium leading-relaxed mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.levelup_popup_msg}</p>
+            <Button full size="xl" variant="amber" onClick={() => { setLevelUpPopup(false); vibrate(50); }}>
               {T.level_redeem}
             </Button>
           </div>
