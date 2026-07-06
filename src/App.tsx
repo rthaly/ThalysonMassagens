@@ -223,7 +223,7 @@ const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
 const getData = (lang: 'pt' | 'en') => {
   const isEn = lang === 'en';
   const p = {
-    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 307, nuru: 317, crossfit: 187,
+    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 260, nuru: 317, crossfit: 187,
     pes: 110, maos: 110, combo_pm: 190,
     pack_basic: { v: 247, full: 284, save: 37 },
     pack1: { v: 297, full: 334, save: 37 },
@@ -338,11 +338,6 @@ const getData = (lang: 'pt' | 'en') => {
       subtotal: isEn ? "Subtotal" : "Subtotal",
       discount: isEn ? "Discount" : "Desconto",
       pix_discount: isEn ? "Pix (3% OFF)" : "Pix (3% OFF)",
-      welcome_popup_title: isEn ? "Welcome!" : "Que bom ter você aqui!",
-      welcome_popup_msg: isEn ? "I'm glad you decided to take time to care for yourself. Here is a gift." : "O primeiro passo para o relaxamento absoluto é se permitir. Sinta-se acolhido, este é o seu momento. Pegue este presente para iniciarmos.",
-      welcome_popup_warning: isEn ? "Your progress is saved in this browser. Avoid clearing cache data." : "Seus pontos são salvos aqui neste aparelho. Não limpe o cache do navegador para não perder seu nível.",
-      levelup_popup_title: isEn ? "Level Up!" : "Você evoluiu!",
-      levelup_popup_msg: isEn ? "Your consistency generated rewards. A new exclusive benefit has been unlocked." : "Você tem cuidado de si com frequência, e isso merece recompensa. Benefício liberado.",
       get_coupon: isEn ? "Claim My Gift" : "Pegar Meu Presente",
       rules_complete: isEn ? "Mutual Agreement" : "Nossos Acordos",
       uber_notice: isEn ? "Travel fee (Uber) will be confirmed via WhatsApp." : "Importante: A taxa de deslocamento até você será confirmada no WhatsApp.",
@@ -400,6 +395,8 @@ const getData = (lang: 'pt' | 'en') => {
       morning: isEn ? "Morning" : "Manhã",
       afternoon: isEn ? "Afternoon" : "Tarde",
       evening: isEn ? "Evening" : "Noite",
+      levelup_popup_title: isEn ? "Level Up!" : "Você evoluiu!",
+      levelup_popup_msg: isEn ? "Your consistency generated rewards. A new exclusive benefit has been unlocked." : "Você tem cuidado de si com frequência, e isso merece recompensa. Benefício liberado.",
     },
     reviews: getFullReviews(lang)
   };
@@ -689,6 +686,77 @@ const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, lang, isPack
   );
 });
 
+// ROLETA TIGRINHO
+const TigrinhoRoulette = memo(({ isOpen, isDark, lang, onWin }: any) => {
+  const [phase, setPhase] = useState<'idle' | 'spinning' | 'won'>('idle');
+  const [currentVal, setCurrentVal] = useState(10);
+
+  useEffect(() => {
+    let interval: any;
+    if (phase === 'spinning') {
+      interval = setInterval(() => {
+        const options = [5, 10, 15, 20];
+        setCurrentVal(options[Math.floor(Math.random() * options.length)]);
+      }, 70);
+    }
+    return () => clearInterval(interval);
+  }, [phase]);
+
+  const stopRoulette = () => {
+    const r = Math.random();
+    // 10 reais (60%), 5 reais (25%), 15 reais (10%), 20 reais (5%)
+    const winVal = r < 0.60 ? 10 : r < 0.85 ? 5 : r < 0.95 ? 15 : 20;
+    setCurrentVal(winVal);
+    setPhase('won');
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      <div role="dialog" aria-modal="true" className={`relative w-full max-w-sm rounded-3xl p-6 sm:p-8 border shadow-2xl animate-scale-in text-center ${isDark ? 'bg-[#181c25] border-amber-900/50' : 'bg-white border-amber-200'}`}>
+        <div className={`w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-5 ${isDark ? 'bg-amber-900/30 text-amber-500' : 'bg-amber-50 text-amber-600'}`}>
+          <Icon name="gift" size={28} />
+        </div>
+        <h3 className={`font-display text-2xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          {lang === 'en' ? 'Spin to Win!' : 'Roleta da Sorte'}
+        </h3>
+        <p className={`text-sm leading-relaxed mb-6 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+          {lang === 'en' ? 'Stop the roulette to reveal your welcome discount.' : 'Pare a roleta para revelar seu desconto de boas-vindas.'}
+        </p>
+
+        <div className={`h-24 flex items-center justify-center rounded-2xl border mb-6 overflow-hidden relative ${isDark ? 'border-amber-500/30 bg-amber-500/10' : 'border-amber-200 bg-amber-50'}`}>
+          <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-black/20 to-transparent z-10" />
+          <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-black/20 to-transparent z-10" />
+          <p className={`font-display text-5xl transition-all ${phase === 'won' ? 'scale-110 text-amber-500' : isDark ? 'text-white' : 'text-slate-900'}`}>
+            R$ {currentVal}
+          </p>
+        </div>
+
+        {phase === 'idle' && (
+          <Button full size="lg" variant="amber" onClick={() => setPhase('spinning')}>
+            {lang === 'en' ? 'Play Now' : 'Girar Roleta'}
+          </Button>
+        )}
+        
+        {phase === 'spinning' && (
+          <Button full size="lg" variant="primary" className="!bg-red-500 hover:!bg-red-400 !shadow-red-900/20" onClick={stopRoulette}>
+            {lang === 'en' ? 'STOP!' : 'PARAR!'}
+          </Button>
+        )}
+
+        {phase === 'won' && (
+          <div className="animate-fade-up">
+            <Button full size="lg" variant="amber" onClick={() => onWin(currentVal)}>
+              {lang === 'en' ? 'Claim My Discount' : 'Pegar Meu Desconto'}
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
 // Category Section Configuration
 const CATEGORY_CONFIG: Record<string, { color: string; borderColor: string; bg: string; lightBg: string }> = {
   relax: { color: '#3b82f6', borderColor: 'rgba(59,130,246,0.2)', bg: 'rgba(59,130,246,0.03)', lightBg: 'rgba(59,130,246,0.02)' },
@@ -710,7 +778,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('single');
   const [toasts, setToasts] = useState<{ id: number; msg: string; type: 'success' | 'error' }[]>([]);
   const [termsOpen, setTermsOpen] = useState(false);
-  const [welcomePopup, setWelcomePopup] = useState(false);
+  const [showRoulette, setShowRoulette] = useState(false);
   const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isFetchingCep, setIsFetchingCep] = useState(false);
@@ -755,10 +823,6 @@ export default function App() {
       window.location.href = `intent://${window.location.href.replace(/^https?:\/\//i, '')}#Intent;scheme=https;package=com.android.chrome;end`;
     }
   }, []);
-
-  useEffect(() => {
-    if (isClient) document.title = step === 0 ? "Thalyson Massagens" : (lang === 'en' ? "Your Booking - Thalyson" : "Agendamento - Thalyson");
-  }, [step, isClient, lang]);
 
   useEffect(() => {
     if (!isClient) return;
@@ -824,7 +888,7 @@ export default function App() {
   useEffect(() => {
     if (!loading && isClient && dataLoaded) {
       if (!user.hasSeenWelcome) {
-        const t = setTimeout(() => setWelcomePopup(true), 1500);
+        const t = setTimeout(() => setShowRoulette(true), 1500);
         return () => clearTimeout(t);
       }
     }
@@ -932,12 +996,6 @@ export default function App() {
     const isPack = booking.cart.some(i => i.type === 'pack');
     return Math.floor(financials.total * (isPack ? 0.30 : 0.15));
   }, [financials.total, booking.cart]);
-
-  const nextLevel = useMemo(() => {
-    if (user.xp >= 800) { const need = 500 - ((user.xp - 800) % 500); return { needed: need, reward: DATA.levels[3].reward }; }
-    const next = DATA.levels.find(l => l.xpNeeded > user.xp);
-    return next ? { needed: next.xpNeeded - user.xp, reward: next.reward } : null;
-  }, [user.xp, DATA.levels]);
 
   const getCurrentLevelProgress = () => {
     if (user.xp >= 800) return (((user.xp - 800) % 500) / 500) * 100;
@@ -1093,6 +1151,30 @@ export default function App() {
         isDark={isDark} T={T} lang={lang} isPack={selectedServiceForModal?.type === 'pack'}
       />
 
+      <TigrinhoRoulette
+        isOpen={showRoulette}
+        isDark={isDark}
+        lang={lang}
+        onWin={(val: number) => {
+          setShowRoulette(false);
+          vibrate([100, 50, 100]);
+          const code = `ROLETASORTE${val}`;
+          const c: Coupon = { id: `roleta_${Date.now()}`, val, title: lang === 'en' ? `Lucky Spin Bonus (R$ ${val})` : `Bônus Roleta (R$ ${val})`, code };
+          setUser(u => ({ ...u, hasSeenWelcome: true, coupons: [...u.coupons, c] }));
+          setBooking(b => ({ ...b, appliedCoupon: c }));
+          addToast(lang === 'en' ? `R$ ${val} gift added!` : `Presente de R$ ${val} adicionado!`, 'success');
+        }}
+      />
+
+      {/* WHATSAPP FLOAT BUTTON */}
+      <button
+        onClick={() => openExternal('whatsapp', 'Olá, estava no site relaxarhoje.com e gostaria de tirar uma dúvida.')}
+        className="fixed bottom-24 right-4 z-50 w-12 h-12 bg-[#25D366] text-white rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] flex items-center justify-center hover:scale-110 transition-transform"
+        aria-label="Contato WhatsApp"
+      >
+        <Icon name="message" size={24} />
+      </button>
+
       <main className={`min-h-screen relative z-10 pb-40 px-4 sm:px-6 max-w-3xl mx-auto overflow-x-hidden`}>
 
         {step !== 4 && (
@@ -1114,6 +1196,9 @@ export default function App() {
               <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} className={`relative h-10 w-10 flex items-center justify-center rounded-xl border transition-all ${isDark ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800'}`}>
                   <Icon name="globe" size={18} />
+                </button>
+                <button onClick={() => openExternal('instagram')} className={`h-10 w-10 flex items-center justify-center rounded-xl border transition-all ${isDark ? 'border-zinc-800 bg-zinc-900 text-pink-500 hover:text-pink-400' : 'border-slate-200 bg-white text-pink-600 hover:text-pink-500'}`}>
+                  <Icon name="instagram" size={18} />
                 </button>
                 <button onClick={() => setMenuOpen(true)} className={`h-10 w-10 flex items-center justify-center rounded-xl border transition-all ${isDark ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800'}`}>
                   <Icon name="menu" size={18} />
@@ -1687,31 +1772,6 @@ export default function App() {
             <div className={`p-5 sm:p-6 border-t shrink-0 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
               <Button full size="lg" onClick={() => { setBooking(b => ({ ...b, termsAccepted: true })); vibrate(30); setTermsOpen(false); }}>{T.agree_terms}</Button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── WELCOME POPUP ── */}
-      {welcomePopup && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div role="dialog" aria-modal="true" className={`relative w-full max-w-sm rounded-3xl p-6 sm:p-8 border shadow-2xl animate-scale-in text-center ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200'}`}>
-            <div className={`w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-5 ${isDark ? 'bg-blue-900/30 text-blue-500' : 'bg-blue-50 text-blue-600'}`}>
-              <Icon name="gift" size={28} />
-            </div>
-            <h3 className={`font-display text-2xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome_popup_title}</h3>
-            <p className={`text-sm leading-relaxed mb-6 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.welcome_popup_msg}</p>
-            <div className={`p-4 rounded-2xl border border-dashed mb-6 ${isDark ? 'border-blue-500/30 bg-blue-500/10' : 'border-blue-200 bg-blue-50'}`}>
-              <p className={`text-[10px] uppercase font-bold tracking-widest mb-1 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{lang === 'en' ? 'Your first gift' : 'Seu presente inaugural'}</p>
-              <p className={`font-display text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>BEMVINDO10</p>
-            </div>
-            <Button full size="lg" onClick={() => {
-              setWelcomePopup(false); vibrate([50, 100]);
-              const c: Coupon = { id: 'welcome', val: 10, title: 'BEMVINDO10', code: 'BEMVINDO10' };
-              setUser(u => ({ ...u, hasSeenWelcome: true, coupons: [...u.coupons, c] }));
-              setBooking(b => ({ ...b, appliedCoupon: c }));
-              addToast(T.toast_coupon_success);
-            }}>{T.get_coupon}</Button>
-            <p className={`text-[9px] mt-4 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>{T.welcome_popup_warning}</p>
           </div>
         </div>
       )}
