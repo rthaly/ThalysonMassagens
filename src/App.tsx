@@ -73,6 +73,7 @@ const ICON_PATHS: Record<string, string> = {
   'sunset': 'M17 18a5 5 0 0 0-10 0 M12 9v7 M4.22 15.22l1.42-1.42 M1 18h2 M21 18h2 M18.36 16.64l1.42 1.42 M23 22H1',
   'moon-star': 'M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9 M20 3v4 M22 5h-4',
   'trash': 'M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2',
+  'message-circle': 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8.9h.5a8.48 8.48 0 0 1 8 8v.5z',
 };
 
 // ==================================================================================
@@ -686,68 +687,184 @@ const ServiceCard = memo(({ service, isInCart, onToggle, isDark, T, lang, isPack
   );
 });
 
-// ROLETA TIGRINHO
-const TigrinhoRoulette = memo(({ isOpen, isDark, lang, onWin }: any) => {
-  const [phase, setPhase] = useState<'idle' | 'spinning' | 'won'>('idle');
-  const [currentVal, setCurrentVal] = useState(10);
+// ==================================================================================
+// ANIMATED TYPING TEXT COMPONENT
+// ==================================================================================
+const TypewriterText = ({ texts }: { texts: string[] }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  const [index, setIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    let interval: any;
-    if (phase === 'spinning') {
-      interval = setInterval(() => {
-        const options = [5, 10, 15, 20];
-        setCurrentVal(options[Math.floor(Math.random() * options.length)]);
-      }, 70);
-    }
-    return () => clearInterval(interval);
-  }, [phase]);
+    const currentString = texts[index];
+    let timeout: any;
 
-  const stopRoulette = () => {
+    if (isDeleting) {
+      timeout = setTimeout(() => {
+        setDisplayedText(currentString.substring(0, displayedText.length - 1));
+        if (displayedText.length === 0) {
+          setIsDeleting(false);
+          setIndex((index + 1) % texts.length);
+        }
+      }, 30); // Velocidade apagando
+    } else {
+      timeout = setTimeout(() => {
+        setDisplayedText(currentString.substring(0, displayedText.length + 1));
+        if (displayedText.length === currentString.length) {
+          timeout = setTimeout(() => setIsDeleting(true), 2500); // Pausa antes de apagar
+        }
+      }, 80); // Velocidade digitando
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayedText, isDeleting, index, texts]);
+
+  return (
+    <span>
+      {displayedText}
+      <span className="animate-pulse border-r-2 border-current ml-[1px] opacity-70"></span>
+    </span>
+  );
+};
+
+// ==================================================================================
+// ROULETTE COMPONENT
+// ==================================================================================
+const PRIZES = [
+  { val: 5, color: '#f59e0b' },   // 0: Amber
+  { val: 10, color: '#2563eb' },  // 1: Blue
+  { val: 5, color: '#f59e0b' },   // 2: Amber
+  { val: 15, color: '#10b981' },  // 3: Emerald
+  { val: 5, color: '#f59e0b' },   // 4: Amber
+  { val: 10, color: '#2563eb' },  // 5: Blue
+  { val: 5, color: '#f59e0b' },   // 6: Amber
+  { val: 20, color: '#e11d48' },  // 7: Rose
+];
+
+const TigrinhoRoulette = memo(({ isOpen, isDark, lang, onWin }: any) => {
+  const [phase, setPhase] = useState<'idle' | 'spinning' | 'won'>('idle');
+  const [rotation, setRotation] = useState(0);
+  const [winValue, setWinValue] = useState(0);
+
+  const spinWheel = () => {
+    if (phase !== 'idle') return;
+    setPhase('spinning');
+    vibrate([50, 50, 50]);
+    
     const r = Math.random();
-    // 10 reais (60%), 5 reais (25%), 15 reais (10%), 20 reais (5%)
-    const winVal = r < 0.60 ? 10 : r < 0.85 ? 5 : r < 0.95 ? 15 : 20;
-    setCurrentVal(winVal);
-    setPhase('won');
+    let targetVal;
+    // Probabilidades: 10 (60%), 5 (25%), 15 (10%), 20 (5%)
+    if (r < 0.6) targetVal = 10;
+    else if (r < 0.85) targetVal = 5;
+    else if (r < 0.95) targetVal = 15;
+    else targetVal = 20;
+
+    // Acha os índices válidos para o valor sorteado
+    const validIndices = PRIZES.map((p, i) => p.val === targetVal ? i : -1).filter(i => i !== -1);
+    const targetIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+    
+    // Calcula o ângulo alvo (subtrai pra girar até o topo)
+    const targetAngle = 360 - (targetIndex * 45); 
+    const extraSpins = 360 * (5 + Math.floor(Math.random() * 3)); // 5 a 7 giros completos
+    const randomOffset = Math.floor(Math.random() * 30) - 15; // Variação de -15 a +15 graus para não cair cravado
+    
+    const finalRotation = rotation + extraSpins + targetAngle + randomOffset;
+    setRotation(finalRotation);
+
+    // Duração do giro definida no CSS inline abaixo é 5 segundos
+    setTimeout(() => {
+      setWinValue(targetVal);
+      setPhase('won');
+      vibrate([100, 50, 200]);
+    }, 5000); 
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div role="dialog" aria-modal="true" className={`relative w-full max-w-sm rounded-3xl p-6 sm:p-8 border shadow-2xl animate-scale-in text-center ${isDark ? 'bg-[#181c25] border-amber-900/50' : 'bg-white border-amber-200'}`}>
-        <div className={`w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-5 ${isDark ? 'bg-amber-900/30 text-amber-500' : 'bg-amber-50 text-amber-600'}`}>
-          <Icon name="gift" size={28} />
-        </div>
-        <h3 className={`font-display text-2xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-          {lang === 'en' ? 'Spin to Win!' : 'Roleta da Sorte'}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      <div role="dialog" aria-modal="true" className={`relative w-full max-w-sm rounded-[2rem] p-6 text-center border shadow-2xl animate-scale-in flex flex-col items-center ${isDark ? 'bg-[#181c25] border-amber-900/50 shadow-[0_0_50px_rgba(245,158,11,0.15)]' : 'bg-white border-amber-200'}`}>
+        <h3 className={`font-display text-2xl mb-1 mt-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          {lang === 'en' ? 'Spin & Win!' : 'Gire e Ganhe!'}
         </h3>
-        <p className={`text-sm leading-relaxed mb-6 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-          {lang === 'en' ? 'Stop the roulette to reveal your welcome discount.' : 'Pare a roleta para revelar seu desconto de boas-vindas.'}
+        <p className={`text-xs mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+          {lang === 'en' ? 'Your welcome gift awaits.' : 'Seu presente de boas-vindas aguarda.'}
         </p>
 
-        <div className={`h-24 flex items-center justify-center rounded-2xl border mb-6 overflow-hidden relative ${isDark ? 'border-amber-500/30 bg-amber-500/10' : 'border-amber-200 bg-amber-50'}`}>
-          <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-black/20 to-transparent z-10" />
-          <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-black/20 to-transparent z-10" />
-          <p className={`font-display text-5xl transition-all ${phase === 'won' ? 'scale-110 text-amber-500' : isDark ? 'text-white' : 'text-slate-900'}`}>
-            R$ {currentVal}
-          </p>
+        {/* CONTAINER DA ROLETA */}
+        <div className="relative w-64 h-64 mb-8">
+          {/* Ponteiro (Seta) */}
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20 w-8 h-8 flex items-center justify-center drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
+            <svg viewBox="0 0 24 24" fill="white" className="w-8 h-8 text-white drop-shadow-xl z-20">
+              <path d="M12 22L2 2h20L12 22z" />
+            </svg>
+          </div>
+          
+          {/* A Roleta em Si */}
+          <div 
+            className="w-full h-full rounded-full overflow-hidden border-[8px] border-[#11141a] shadow-inner relative"
+            style={{ 
+              transition: 'transform 5s cubic-bezier(0.2, 0.8, 0.2, 1)',
+              transform: `rotate(${rotation}deg)`,
+              background: `conic-gradient(from -22.5deg, 
+                #f59e0b 0 45deg, 
+                #2563eb 45deg 90deg, 
+                #f59e0b 90deg 135deg, 
+                #10b981 135deg 180deg, 
+                #f59e0b 180deg 225deg, 
+                #2563eb 225deg 270deg, 
+                #f59e0b 270deg 315deg, 
+                #e11d48 315deg 360deg)`
+            }}
+          >
+            {PRIZES.map((p, i) => (
+              <div key={i} className="absolute inset-0 origin-center" style={{ transform: `rotate(${i * 45}deg)` }}>
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 text-white font-bold font-display text-lg drop-shadow-md">
+                  {p.val}
+                </div>
+                {/* Linha separadora */}
+                <div className="absolute top-0 left-1/2 w-0.5 h-1/2 bg-white/20 origin-bottom" style={{ transform: 'translateX(-50%) rotate(22.5deg)' }} />
+              </div>
+            ))}
+            
+            {/* Centro da Roleta */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#11141a] border-4 border-amber-500 flex items-center justify-center shadow-lg z-10">
+              <Icon name="star" size={16} className="text-amber-500 fill-amber-500" />
+            </div>
+          </div>
+          
+          {/* Luzes decorativas piscantes em volta */}
+          <div className="absolute inset-0 rounded-full pointer-events-none" style={{ padding: '-4px' }}>
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="absolute w-2 h-2 rounded-full bg-amber-300 shadow-[0_0_10px_rgba(252,211,77,1)]"
+                style={{
+                  top: '50%', left: '50%',
+                  transform: `translate(-50%, -50%) rotate(${i * 30}deg) translateY(-128px)`,
+                  animation: `pulse 1s infinite ${i * 0.1}s alternate`
+                }}
+              />
+            ))}
+          </div>
         </div>
 
         {phase === 'idle' && (
-          <Button full size="lg" variant="amber" onClick={() => setPhase('spinning')}>
-            {lang === 'en' ? 'Play Now' : 'Girar Roleta'}
+          <Button full size="lg" variant="amber" onClick={spinWheel} className="animate-pulse-slow">
+            {lang === 'en' ? 'SPIN ROULETTE' : 'GIRAR ROLETA'}
           </Button>
         )}
         
         {phase === 'spinning' && (
-          <Button full size="lg" variant="primary" className="!bg-red-500 hover:!bg-red-400 !shadow-red-900/20" onClick={stopRoulette}>
-            {lang === 'en' ? 'STOP!' : 'PARAR!'}
+          <Button full size="lg" disabled variant="secondary" className="opacity-50">
+            {lang === 'en' ? 'Spinning...' : 'Girando...'}
           </Button>
         )}
 
         {phase === 'won' && (
-          <div className="animate-fade-up">
-            <Button full size="lg" variant="amber" onClick={() => onWin(currentVal)}>
+          <div className="animate-fade-up w-full">
+            <p className={`font-display text-2xl mb-4 text-amber-500`}>
+              {lang === 'en' ? 'You Won R$' : 'Você Ganhou R$'} {winValue}!
+            </p>
+            <Button full size="lg" variant="amber" onClick={() => onWin(winValue)}>
               {lang === 'en' ? 'Claim My Discount' : 'Pegar Meu Desconto'}
             </Button>
           </div>
@@ -1121,6 +1238,12 @@ export default function App() {
     { id: 'care', title: lang === 'en' ? "Personal Care" : "Estética", icon: 'scissors', desc: lang === 'en' ? "Aesthetic body maintenance." : "Manutenção para um corpo impecável." },
   ];
 
+  const floatBtnTexts = useMemo(() => {
+    return lang === 'en' 
+      ? ["Need help?", "Have questions?", "Chat with me!"] 
+      : ["Precisa de ajuda?", "Ficou com dúvidas?", "Agende agora!"];
+  }, [lang]);
+
   if (!isClient) return <div className="min-h-screen w-full bg-[#11141a]" />;
 
   if (loading) {
@@ -1157,7 +1280,6 @@ export default function App() {
         lang={lang}
         onWin={(val: number) => {
           setShowRoulette(false);
-          vibrate([100, 50, 100]);
           const code = `ROLETASORTE${val}`;
           const c: Coupon = { id: `roleta_${Date.now()}`, val, title: lang === 'en' ? `Lucky Spin Bonus (R$ ${val})` : `Bônus Roleta (R$ ${val})`, code };
           setUser(u => ({ ...u, hasSeenWelcome: true, coupons: [...u.coupons, c] }));
@@ -1166,14 +1288,24 @@ export default function App() {
         }}
       />
 
-      {/* WHATSAPP FLOAT BUTTON */}
-      <button
-        onClick={() => openExternal('whatsapp', 'Olá, estava no site relaxarhoje.com e gostaria de tirar uma dúvida.')}
-        className="fixed bottom-24 right-4 z-50 w-12 h-12 bg-[#25D366] text-white rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] flex items-center justify-center hover:scale-110 transition-transform"
-        aria-label="Contato WhatsApp"
-      >
-        <Icon name="message" size={24} />
-      </button>
+      {/* ── BOTÃO WHATSAPP FLUTUANTE COM ANIMAÇÃO DE DIGITAÇÃO ── */}
+      <div className="fixed bottom-[88px] sm:bottom-24 right-4 z-50 flex items-center gap-3">
+        {/* Balão animado */}
+        <div className={`hidden sm:flex px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-lg relative cursor-pointer border ${isDark ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-white text-slate-700 border-slate-200'}`}
+             onClick={() => openExternal('whatsapp', 'Olá, estava no site relaxarhoje.com e gostaria de tirar uma dúvida.')}>
+          <TypewriterText texts={floatBtnTexts} />
+          {/* Triangulozinho do balão apontando pro ícone */}
+          <div className={`absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 rotate-45 border-t border-r ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200'}`} />
+        </div>
+        {/* Botão circular clássico */}
+        <button
+          onClick={() => openExternal('whatsapp', 'Olá, estava no site relaxarhoje.com e gostaria de tirar uma dúvida.')}
+          className="w-12 h-12 bg-[#25D366] text-white rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] flex items-center justify-center hover:scale-110 transition-transform hover:bg-[#22c55e]"
+          aria-label="Contato WhatsApp"
+        >
+          <Icon name="message-circle" size={24} />
+        </button>
+      </div>
 
       <main className={`min-h-screen relative z-10 pb-40 px-4 sm:px-6 max-w-3xl mx-auto overflow-x-hidden`}>
 
