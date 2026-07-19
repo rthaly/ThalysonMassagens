@@ -226,13 +226,13 @@ const getData = (lang: 'pt' | 'en') => {
   const p = {
     depil: 107, relax: 180, sens: 200, naturista: 197, titan: 250, reversa: 300, nuru: 350, crossfit: 200,
     pes: 110, maos: 110, combo_pm: 190,
-    pack_basic: { v: 497, full: 550, save: 53 },
-    pack1: { v: 547, full: 600, save: 53 },
-    pack_glow: { v: 597, full: 650, save: 53 },
-    pack_muscle: { v: 647, full: 700, save: 53 },
-    pack2: { v: 747, full: 850, save: 103 },
-    pack3: { v: 847, full: 900, save: 53 },
-    pack_ultimate: { v: 997, full: 1100, save: 103 },
+    pack_basic: { v: 247, full: 287, save: 40 }, // Economia de ~14%
+    pack1: { v: 310, full: 360, save: 50 },       // Economia de ~14%
+    pack_glow: { v: 470, full: 550, save: 80 },    // Economia de ~15%
+    pack_muscle: { v: 420, full: 500, save: 80 },  // Economia de ~16%
+    pack2: { v: 500, full: 600, save: 100 },    // Economia de ~17%
+    pack3: { v: 580, full: 700, save: 120 },    // Economia de ~17%
+    pack_ultimate: { v: 800, full: 1000, save: 200 }, // Economia de 20%
     extras: { more_time: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
   };
 
