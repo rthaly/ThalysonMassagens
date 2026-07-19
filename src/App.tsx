@@ -224,15 +224,15 @@ const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
 const getData = (lang: 'pt' | 'en') => {
   const isEn = lang === 'en';
   const p = {
-    depil: 107, relax: 157, sens: 177, naturista: 197, titan: 207, reversa: 307, nuru: 317, crossfit: 187,
+    depil: 107, relax: 180, sens: 200, naturista: 197, titan: 250, reversa: 300, nuru: 350, crossfit: 200,
     pes: 110, maos: 110, combo_pm: 190,
-    pack_basic: { v: 247, full: 284, save: 37 },
-    pack1: { v: 297, full: 334, save: 37 },
-    pack_glow: { v: 327, full: 391, save: 64 },
-    pack_muscle: { v: 347, full: 408, save: 61 },
-    pack2: { v: 427, full: 514, save: 87 }, 
-    pack3: { v: 637, full: 721, save: 84 },
-    pack_ultimate: { v: 657, full: 778, save: 121 },
+    pack_basic: { v: 497, full: 550, save: 53 },
+    pack1: { v: 547, full: 600, save: 53 },
+    pack_glow: { v: 597, full: 650, save: 53 },
+    pack_muscle: { v: 647, full: 700, save: 53 },
+    pack2: { v: 747, full: 850, save: 103 },
+    pack3: { v: 847, full: 900, save: 53 },
+    pack_ultimate: { v: 997, full: 1100, save: 103 },
     extras: { more_time: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
   };
 
