@@ -226,13 +226,14 @@ const getData = (lang: 'pt' | 'en') => {
   const p = {
     depil: 107, relax: 180, sens: 200, naturista: 197, titan: 250, reversa: 300, nuru: 350, crossfit: 200,
     pes: 110, maos: 110, combo_pm: 190,
-    pack_basic: { v: 247, full: 287, save: 40 }, // Economia de ~14%
-    pack1: { v: 310, full: 360, save: 50 },       // Economia de ~14%
-    pack_glow: { v: 470, full: 550, save: 80 },    // Economia de ~15%
-    pack_muscle: { v: 420, full: 500, save: 80 },  // Economia de ~16%
-    pack2: { v: 500, full: 600, save: 100 },    // Economia de ~17%
-    pack3: { v: 580, full: 700, save: 120 },    // Economia de ~17%
-    pack_ultimate: { v: 800, full: 1000, save: 200 }, // Economia de 20%
+    // Valores atualizados com base na soma exata dos itens de cada pacote
+    pack_basic: { v: 257, full: 307, save: 50 },     // 110 (Pés) + 180 (Clássica) + 17 (Aroma) = 307
+    pack1: { v: 320, full: 380, save: 60 },          // 180 (Clássica) + 200 (Sensorial) = 380
+    pack_glow: { v: 364, full: 434, save: 70 },      // 107 (Aparo) + 250 (Fusion) + 77 (+30min) = 434
+    pack_muscle: { v: 357, full: 417, save: 60 },    // 2x 200 (Atletas) + 17 (Foco Dores) = 417
+    pack2: { v: 470, full: 550, save: 80 },          // 250 (Fusion) + 300 (Reversa) = 550
+    pack3: { v: 677, full: 797, save: 120 },         // 197 (Naturista) + 250 (Fusion) + 350 (Nuru) = 797
+    pack_ultimate: { v: 680, full: 800, save: 120 }, // 200 (Sensitiva) + 250 (Fusion) + 350 (Nuru) = 800
     extras: { more_time: 77, aroma: 17, hair_trim: 57, pain_relief: 17 }
   };
 
