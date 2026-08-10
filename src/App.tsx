@@ -6,7 +6,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/relaxarhojesp",
-  STORAGE_KEY: '@thaly_app_v29_premium_tantric',
+  STORAGE_KEY: '@thaly_app_v30_premium_tantric',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -200,11 +200,17 @@ interface Rule { icon: string; title: string; description: string; }
 // ==================================================================================
 const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
   return [
-    { n: "Gustavo H.", loc: "Bela Vista - SP", t: "O Thalyson foi extremamente profissional. O toque pele a pele da massagem Fusion me deixou nas nuvens. A finalização no Lingam tirou todo meu estresse. Discrição total.", serv: "Experiência Fusion", s: 5 },
-    { n: "L. (Sigiloso)", loc: "Santa Fé do Sul", t: "Precisava desse alívio sem julgamentos. Sou casado, o sigilo foi perfeito e a massagem sensitiva me fez redescobrir o prazer de relaxar.", serv: "Massagem Sensitiva", s: 5 },
-    { n: "Anônimo", loc: "Hotel - SP", t: "Estava de passagem a trabalho. O gel aquecido da Nuru deslizando pelo corpo foi a melhor sensação. Dormi leve igual criança.", serv: "Massagem Nuru", s: 5 },
-    { n: "Ricardo", loc: "Fernandópolis", t: "Encontrei um respeito raro. Me senti à vontade para soltar minhas travas. Fui super bem atendido na suíte dele.", serv: "Experiência Fusion", s: 5 },
-    { n: "Felipe", loc: "Londrina", t: "A massagem clássica é pesada na medida certa. Ele tirou uns nós das minhas costas que me atormentavam há semanas.", serv: "Massagem Clássica", s: 5 }
+    { n: "Gustavo", loc: "Bela Vista - SP", t: "O Thalyson chegou na hora certa. A experiência em casa foi incrível. Mãos com técnica sem igual, o alívio foi imediato. Levantei parecendo mais leve.", serv: "Experiência Fusion", s: 5 },
+    { n: "Giovana", loc: "Hotel Portal da Mata", t: "Você tem mãos abençoadas! Precisava muito desse descanso. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada!", serv: "Massagem Sensorial", s: 5 },
+    { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito.", serv: "Massagem Clássica", s: 5 },
+    { n: "Lucas", loc: "Londrina", t: "Sendo casado, a discrição era minha prioridade e fui atendido com total sigilo. A massagem tântrica me permitiu redescobrir meu próprio corpo. Sensacional.", serv: "Massagem Nuru", s: 5 },
+    { n: "Ricardo", loc: "Fernandópolis", t: "Encontrei um profissionalismo raro. Me senti à vontade para soltar minhas travas. Saí de lá me sentindo mais leve, física e emocionalmente.", serv: "Massagem Reversa", s: 5 },
+    // Novos Feedbacks Mais Quentes (Centro SP)
+    { n: "Marcos (Sigiloso)", loc: "Consolação - SP", t: "Fui na suíte dele. Clima perfeito, luz baixa. A Nuru com aquele gel que desliza pelo corpo todo é um absurdo de gostoso. Sensibilidade a mil e um final intenso e demorado.", serv: "Massagem Nuru", s: 5 },
+    { n: "Diego", loc: "República - SP", t: "Atendimento no meu apê na República. O cara manja muito. A massagem começou pegada pra tirar os nós e terminou num pele a pele de enlouquecer. O toque final no Lingam me fez desligar de tudo.", serv: "Experiência Fusion", s: 5 },
+    { n: "Fernando", loc: "Jardins - SP", t: "Maluco, que mão é essa! Pedi a Nuru em casa e foi a melhor escolha. Muito gel que desliza gostoso, o corpo dele no meu... a finalização manual foi surreal de boa. Dormi pesado depois.", serv: "Massagem Nuru", s: 5 },
+    { n: "C.A.", loc: "Santa Cecília - SP", t: "A liberdade de poder tocar e guiar o ritmo na Reversa, depois de relaxar com a massagem dele, foi excitante demais. Uma troca de energia f*da e muito respeito.", serv: "Massagem Reversa", s: 5 },
+    { n: "Paulo (Casado)", loc: "Higienópolis - SP", t: "Sou super travado, mas o Thalyson me deixou à vontade em 5 minutos. Aquela massagem sensitiva me levou a um ápice de prazer que eu não sentia há anos. Muito discreto.", serv: "Massagem Sensitiva", s: 5 }
   ];
 };
 
@@ -231,7 +237,7 @@ const getData = (lang: 'pt' | 'en') => {
       
       { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "SENSUAL START" : "DESPERTAR", title: isEn ? "Sensory Massage" : "Massagem Sensitiva", desc: isEn ? "Classic massage followed by gentle touches, ending with a manual release." : "Clássica para aliviar dores, seguida de toques sutis. Finalização tântrica manual para liberação total.", details: isEn ? "1. Classic body massage.\n2. Sensory awakening.\n3. Manual release (Lingam)." : "1. Massagem para soltar a musculatura pesada.\n2. Toques sutis para despertar a sensibilidade.\n3. Foco na região íntima (Lingam) no terço final.\n4. Finalização manual para ápice do relaxamento.\n*(Obs: Não há sexo ou penetração)*" },
       { id: 'mista', category: 'final', min: 60, price: p.titan, icon: "zap", tag: isEn ? "SKIN TO SKIN" : "PELE A PELE", title: isEn ? "Fusion Experience" : "Experiência Fusion", desc: isEn ? "Body-to-body contact (I wear underwear). Intense stimulation and manual ending." : "O equilíbrio perfeito. Massagem para dores e depois muito contato físico próximo para estímulo e finalização intensa.", details: isEn ? "1. Classic massage.\n2. Skin to skin contact.\n3. Manual release." : "1. Massagem clássica para tirar as travas.\n2. Contato físico muito próximo (atendo apenas de cueca).\n3. Estímulos corporais intensos.\n4. Finalização tântrica manual (Lingam) poderosa.\n*(Obs: Sem ato sexual)*" },
-      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "PREMIUM SLIDE" : "O ÁPICE DO PRAZER", title: isEn ? "Nuru Massage" : "Massagem Nuru (Com Gel)", desc: isEn ? "Full body sliding with warm gel. Total surrender with an intense manual ending." : "A mais pedida. Muito gel aquecido, deslizamento fluido de corpo inteiro e estimulação do Lingam. Relaxamento extremo.", details: isEn ? "1. Naked sliding massage.\n2. Warm special gel.\n3. Lingam massage ending." : "1. Nós dois sem roupas desde o início.\n2. Deslizamento fluido e contínuo corpo a corpo com gel.\n3. Massagem intensa focada no Pênis (Lingam).\n4. Finalização manual para você gozar e esvaziar a mente.\n*(Obs: Foco no seu prazer manual, não realizo penetração).*." },
+      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "PREMIUM SLIDE" : "O ÁPICE DO PRAZER", title: isEn ? "Nuru Massage" : "Massagem Nuru (Com Gel)", desc: isEn ? "Full body sliding with gliding gel. Total surrender with an intense manual ending." : "A mais pedida. Muito gel que desliza pelo corpo todo, contato fluido costas e frente, e massagem no Lingam. Relaxamento extremo.", details: isEn ? "1. Naked sliding massage.\n2. Special gliding gel.\n3. Lingam massage ending." : "1. Nós dois sem roupas desde o início.\n2. Deslizamento fluido e contínuo corpo a corpo com gel especial.\n3. Massagem intensa focada no Pênis (Lingam).\n4. Finalização manual para você gozar e esvaziar a mente.\n*(Obs: Foco no seu prazer manual, não realizo penetração).*." },
       
       { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "AESTHETICS" : "ESTÉTICA", title: isEn ? "Body Hair Trim" : "Aparo de Pelos", desc: isEn ? "Body hair maintenance with clippers." : "Aparo profissional dos pelos com máquina para higiene e estética.", details: isEn ? "1. Trim with clippers." : "1. Aparo com máquina (pente zero ou três).\n2. Corpo limpo e estética agradável para a sessão." }
     ] as ServiceItem[],
