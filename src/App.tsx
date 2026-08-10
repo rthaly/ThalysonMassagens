@@ -6,7 +6,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/relaxarhojesp",
-  STORAGE_KEY: '@thaly_app_v30_premium_tantric',
+  STORAGE_KEY: '@thaly_app_v31_premium_tantric',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -61,6 +61,7 @@ const ICON_PATHS: Record<string, string> = {
   'heart': 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
   'plus': 'M12 5v14 M5 12h14',
+  'refresh-cw': 'M23 4v6h-6 M1 20v-6h6 M3.51 9a9 9 0 0 1 14.85-3.36L23 10 M1 14l4.64 4.36A9 9 0 0 0 20.49 15',
   'message-circle': 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8.9h.5a8.48 8.48 0 0 1 8 8v.5z',
 };
 
@@ -200,11 +201,11 @@ interface Rule { icon: string; title: string; description: string; }
 // ==================================================================================
 const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
   return [
-    { n: "Gustavo", loc: "Bela Vista - SP", t: "O Thalyson chegou na hora certa. A experiência em casa foi incrível. Mãos com técnica sem igual, o alívio foi imediato. Levantei parecendo mais leve.", serv: "Experiência Fusion", s: 5 },
-    { n: "Giovana", loc: "Hotel Portal da Mata", t: "Você tem mãos abençoadas! Precisava muito desse descanso. Foi super respeitoso a todo tempo e me relaxou demais. Obrigada!", serv: "Massagem Sensorial", s: 5 },
-    { n: "Bruno", loc: "SP - Bela Vista", t: "Thalyson, quero dizer que sua massagem foi muito bem executada. Recomendo muito.", serv: "Massagem Clássica", s: 5 },
-    { n: "Lucas", loc: "Londrina", t: "Sendo casado, a discrição era minha prioridade e fui atendido com total sigilo. A massagem tântrica me permitiu redescobrir meu próprio corpo. Sensacional.", serv: "Massagem Nuru", s: 5 },
-    { n: "Ricardo", loc: "Fernandópolis", t: "Encontrei um profissionalismo raro. Me senti à vontade para soltar minhas travas. Saí de lá me sentindo mais leve, física e emocionalmente.", serv: "Massagem Reversa", s: 5 },
+    { n: "Gustavo H.", loc: "Bela Vista - SP", t: "O Thalyson foi extremamente profissional. O toque pele a pele da massagem Fusion me deixou nas nuvens. A finalização no Lingam tirou todo meu estresse. Discrição total.", serv: "Experiência Fusion", s: 5 },
+    { n: "L. (Sigiloso)", loc: "Santa Fé do Sul", t: "Precisava desse alívio sem julgamentos. Sou casado, o sigilo foi perfeito e a massagem sensitiva me fez redescobrir o prazer de relaxar.", serv: "Massagem Sensitiva", s: 5 },
+    { n: "Anônimo", loc: "Hotel - SP", t: "Estava de passagem a trabalho. O gel deslizando pelo corpo foi a melhor sensação. Dormi leve igual criança.", serv: "Massagem Nuru", s: 5 },
+    { n: "Ricardo", loc: "Fernandópolis", t: "Encontrei um respeito raro. Me senti à vontade para soltar minhas travas. Fui super bem atendido na suíte dele.", serv: "Experiência Fusion", s: 5 },
+    { n: "Felipe", loc: "Londrina", t: "A massagem clássica é pesada na medida certa. Ele tirou uns nós das minhas costas que me atormentavam há semanas.", serv: "Massagem Clássica", s: 5 },
     // Novos Feedbacks Mais Quentes (Centro SP)
     { n: "Marcos (Sigiloso)", loc: "Consolação - SP", t: "Fui na suíte dele. Clima perfeito, luz baixa. A Nuru com aquele gel que desliza pelo corpo todo é um absurdo de gostoso. Sensibilidade a mil e um final intenso e demorado.", serv: "Massagem Nuru", s: 5 },
     { n: "Diego", loc: "República - SP", t: "Atendimento no meu apê na República. O cara manja muito. A massagem começou pegada pra tirar os nós e terminou num pele a pele de enlouquecer. O toque final no Lingam me fez desligar de tudo.", serv: "Experiência Fusion", s: 5 },
@@ -237,6 +238,7 @@ const getData = (lang: 'pt' | 'en') => {
       
       { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "SENSUAL START" : "DESPERTAR", title: isEn ? "Sensory Massage" : "Massagem Sensitiva", desc: isEn ? "Classic massage followed by gentle touches, ending with a manual release." : "Clássica para aliviar dores, seguida de toques sutis. Finalização tântrica manual para liberação total.", details: isEn ? "1. Classic body massage.\n2. Sensory awakening.\n3. Manual release (Lingam)." : "1. Massagem para soltar a musculatura pesada.\n2. Toques sutis para despertar a sensibilidade.\n3. Foco na região íntima (Lingam) no terço final.\n4. Finalização manual para ápice do relaxamento.\n*(Obs: Não há sexo ou penetração)*" },
       { id: 'mista', category: 'final', min: 60, price: p.titan, icon: "zap", tag: isEn ? "SKIN TO SKIN" : "PELE A PELE", title: isEn ? "Fusion Experience" : "Experiência Fusion", desc: isEn ? "Body-to-body contact (I wear underwear). Intense stimulation and manual ending." : "O equilíbrio perfeito. Massagem para dores e depois muito contato físico próximo para estímulo e finalização intensa.", details: isEn ? "1. Classic massage.\n2. Skin to skin contact.\n3. Manual release." : "1. Massagem clássica para tirar as travas.\n2. Contato físico muito próximo (atendo apenas de cueca).\n3. Estímulos corporais intensos.\n4. Finalização tântrica manual (Lingam) poderosa.\n*(Obs: Sem ato sexual)*" },
+      { id: 'reversa', category: 'final', min: 60, price: p.reversa, icon: "refresh-cw", tag: isEn ? "YOUR CONTROL" : "SEU CONTROLE", title: isEn ? "Reverse Massage" : "Massagem Reversa", desc: isEn ? "I start the massage, then you take control." : "Começa comigo tirando suas tensões. Depois, você assume o controle da sessão.", details: isEn ? "1. Classic massage (approx. 30 min).\n2. Control passes to you.\n3. Freedom to guide the rhythm.\n4. Mutual ending." : "1. Massagem clássica (aprox. 30 min).\n2. O controle da sessão passa para você.\n3. Liberdade total para guiar o ritmo e os toques.\n4. Finalização tântrica intensa e mútua.\n*(Obs: Sem ato sexual/penetração)*" },
       { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "PREMIUM SLIDE" : "O ÁPICE DO PRAZER", title: isEn ? "Nuru Massage" : "Massagem Nuru (Com Gel)", desc: isEn ? "Full body sliding with gliding gel. Total surrender with an intense manual ending." : "A mais pedida. Muito gel que desliza pelo corpo todo, contato fluido costas e frente, e massagem no Lingam. Relaxamento extremo.", details: isEn ? "1. Naked sliding massage.\n2. Special gliding gel.\n3. Lingam massage ending." : "1. Nós dois sem roupas desde o início.\n2. Deslizamento fluido e contínuo corpo a corpo com gel especial.\n3. Massagem intensa focada no Pênis (Lingam).\n4. Finalização manual para você gozar e esvaziar a mente.\n*(Obs: Foco no seu prazer manual, não realizo penetração).*." },
       
       { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "AESTHETICS" : "ESTÉTICA", title: isEn ? "Body Hair Trim" : "Aparo de Pelos", desc: isEn ? "Body hair maintenance with clippers." : "Aparo profissional dos pelos com máquina para higiene e estética.", details: isEn ? "1. Trim with clippers." : "1. Aparo com máquina (pente zero ou três).\n2. Corpo limpo e estética agradável para a sessão." }
@@ -1062,6 +1064,7 @@ export default function App() {
               </button>
               <div className="flex items-center gap-2 shrink-0">
                 <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} className={`h-10 w-10 flex items-center justify-center rounded-xl border ${isDark ? 'border-zinc-800 bg-zinc-900 text-zinc-400' : 'border-slate-200 bg-white text-slate-500'}`}><Icon name="globe" size={18} /></button>
+                <button onClick={() => openExternal('instagram')} className={`h-10 w-10 flex items-center justify-center rounded-xl border ${isDark ? 'border-zinc-800 bg-zinc-900 text-pink-500' : 'border-slate-200 bg-white text-pink-600'}`}><Icon name="instagram" size={18} /></button>
                 <button onClick={() => setMenuOpen(true)} className={`h-10 w-10 flex items-center justify-center rounded-xl border ${isDark ? 'border-zinc-800 bg-zinc-900 text-zinc-400' : 'border-slate-200 bg-white text-slate-500'}`}><Icon name="menu" size={18} /></button>
               </div>
             </div>
@@ -1083,6 +1086,7 @@ export default function App() {
             <section className="animate-fade-up space-y-8">
               <div className="flex flex-col gap-6">
                 <h2 className={`font-display font-bold text-2xl sm:text-3xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.welcome} <span className="text-blue-500">{user.name ? String(user.name).trim().split(' ')[0] : T.welcome_anon}</span></h2>
+                
                 <article className={`p-5 rounded-3xl border flex items-center gap-4 ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                   <div className={`w-16 h-16 rounded-2xl overflow-hidden border p-0.5 ${isDark ? 'border-blue-900' : 'border-blue-200'}`}><img src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" alt="Thalyson" className="w-full h-full object-cover rounded-xl" /></div>
                   <div className="flex-1">
@@ -1091,7 +1095,28 @@ export default function App() {
                     <p className={`text-xs font-medium mt-1 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.choose_sub}</p>
                   </div>
                 </article>
+
+                {/* HORÁRIOS DE ATENDIMENTO */}
+                <div className={`flex items-center gap-4 p-4 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-slate-50 border-slate-200'}`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600'}`}>
+                    <Icon name="clock" size={20} />
+                  </div>
+                  <div>
+                    <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{lang === 'en' ? 'Working Hours' : 'Horários de Atendimento'}</p>
+                    <p className={`text-xs font-medium mt-0.5 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{lang === 'en' ? 'Everyday from 09:00 AM to 10:00 PM' : 'Todos os dias, das 09:00 às 22:00'}</p>
+                  </div>
+                </div>
               </div>
+
+              {/* DÚVIDAS FREQUENTES NO TOPO */}
+              <section className="pb-2">
+                <h2 className={`font-display font-bold text-2xl text-center mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.faq_title}</h2>
+                <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200'}`}>
+                  <div className={`px-5 divide-y ${isDark ? 'divide-zinc-800' : 'divide-slate-100'}`}>
+                    {DATA.faq.map((item: any, idx: number) => <FAQItem key={idx} q={item.q} a={item.a} isDark={isDark} />)}
+                  </div>
+                </div>
+              </section>
 
               <nav className={`flex p-1.5 rounded-2xl border w-full sm:w-fit mx-auto ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-slate-50 border-slate-200'}`}>
                 {[{ id: 'single', label: T.tab_single, icon: 'user' }, { id: 'packs', label: T.tab_packs, icon: 'package' }].map(tab => (
@@ -1149,14 +1174,6 @@ export default function App() {
                 </div>
               </section>
 
-              <section className="pb-6">
-                <h2 className={`font-display font-bold text-2xl text-center mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.faq_title}</h2>
-                <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#181c25] border-zinc-800' : 'bg-white border-slate-200'}`}>
-                  <div className={`px-5 divide-y ${isDark ? 'divide-zinc-800' : 'divide-slate-100'}`}>
-                    {DATA.faq.map((item: any, idx: number) => <FAQItem key={idx} q={item.q} a={item.a} isDark={isDark} />)}
-                  </div>
-                </div>
-              </section>
             </section>
           )}
 
