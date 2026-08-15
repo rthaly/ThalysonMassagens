@@ -201,10 +201,14 @@ interface Rule { icon: string; title: string; description: string; }
 // ==================================================================================
 const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
   return [
-{ n: "João", loc: "Suíte Do Massagista,Bela Vista - SP", t: "Thalyson muito obrigado!! 
-Amei de verdade, consegui relaxar e me entregar de verdade! 
-Normalmente finalizo rápido quando é só putaria!! Mas com você no toque no pele com pele, consegui relaxar aproveitar e ir mais longe!! foi pra outro nível! 
-Muito obrigado e parabéns pelo trabalho!.", serv: "Experiência Nuru", s: 5 },
+{ 
+  n: "João", 
+  loc: "Suíte Do Massagista, Bela Vista - SP", 
+  t: "Thalyson muito obrigado!! Amei de verdade, consegui relaxar e me entregar de verdade! Normalmente finalizo rápido quando é só putaria!! Mas com você no toque no pele com pele, consegui relaxar aproveitar e ir mais longe!! foi pra outro nível! Muito obrigado e parabéns pelo trabalho!.", 
+  serv: "Experiência Nuru", 
+  s: 5 
+},
+
     { n: "Gustavo H.", loc: "Bela Vista - SP", t: "O Thalyson foi extremamente profissional. O toque pele a pele da massagem Fusion me deixou nas nuvens. A finalização no Lingam tirou todo meu estresse. Discrição total.", serv: "Experiência Fusion", s: 5 },
     { n: "L. (Sigiloso)", loc: "Santa Fé do Sul", t: "Precisava desse alívio sem julgamentos. Sou casado, o sigilo foi perfeito e a massagem sensitiva me fez redescobrir o prazer de relaxar.", serv: "Massagem Sensitiva", s: 5 },
     { n: "Anônimo", loc: "Hotel - SP", t: "Estava de passagem a trabalho. O gel deslizando pelo corpo foi a melhor sensação. Dormi leve igual criança.", serv: "Massagem Nuru", s: 5 },
