@@ -226,7 +226,7 @@ const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
 const getData = (lang: 'pt' | 'en') => {
   const isEn = lang === 'en';
   const p = {
-    depil: 107, relax: 180, sens: 200, naturista: 197, titan: 250, reversa: 300, nuru: 350, pes: 110,
+    depil: 107, relax: 180, sens: 200, naturista: 197, titan: 250, reversa: 400, nuru: 350, pes: 110,
     pack_classic4: { v: 576, full: 720, save: 144 }, 
     pack_tantric: { v: 640, full: 800, save: 160 },  
     extras: { more_time: 77, aroma: 17, hair_trim: 57 }
