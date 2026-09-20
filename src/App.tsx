@@ -5,7 +5,7 @@ import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
-  INSTAGRAM_URL: "https://instagram.com/relaxarhojesp",
+  INSTAGRAM_URL: "https://www.instagram.com/relaxarhojesp",
   THERAPIST_EMAIL: "thalysonrd@gmail.com",
   START_HOUR: 9,
   END_HOUR: 22,
@@ -17,7 +17,7 @@ const RUSH_FEE = 15;
 const ICON_PATHS: Record<string, string> = {
   'check': 'M20 6L9 17l-5-5',
   'star': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
-  'user-check': 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M17 11l2 2 4-4',
+  'user-check': 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
   'sparkles': 'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z M20 3v4 M22 5h-4 M4 17v2 M5 18H3',
   'zap': 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
   'shield': 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
@@ -29,7 +29,7 @@ const ICON_PATHS: Record<string, string> = {
   'map-pin': 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
   'calendar': 'M8 2v4 M16 2v4 M3 10h18 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
-  'x': 'M18 6L6 18M6 6l12 12'
+  'lock': 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4'
 };
 
 // ==================================================================================
@@ -135,10 +135,10 @@ const DATA = {
     { id: 'aroma', price: 20, label: "Aromaterapia Relaxante" }
   ],
   reviews: [
-    { n: "Felipe", loc: "Bela Vista - SP", t: "O ambiente é simples mas muito acolhedor. A Nuru foi surreal de boa, me desliguei total dos problemas." },
-    { n: "João S.", loc: "Hotel - SP", t: "Estava de passagem e pedi no hotel. O cara é extremamente profissional e a Fusion é um absurdo de gostosa." },
-    { n: "Carlos (Sigiloso)", loc: "Consolação - SP", t: "Para quem é casado e precisa de discrição, não tem lugar melhor. Respeito do início ao fim." },
-    { n: "Anônimo", loc: "Jardins - SP", t: "A experiência Reversa mudou meu conceito de massagem. O Thalyson deixa a gente super à vontade." }
+    { n: "Marcos A.", loc: "Bela Vista - SP", t: "Atendimento sensacional. O Thalyson é super atencioso e me deixou muito à vontade desde o primeiro minuto. Recomendo a Fusion, valeu cada centavo!" },
+    { n: "Leandro S.", loc: "Jardins - SP", t: "Lugar discreto, limpo e bem localizado. A massagem Nuru é indescritível, me desliguei total dos problemas." },
+    { n: "João Paulo", loc: "Hotel - SP", t: "Estava de passagem por SP e pedi atendimento no hotel. Pontual, muito profissional e com uma energia maravilhosa. Voltarei com certeza." },
+    { n: "Rafael (Sigiloso)", loc: "Consolação - SP", t: "Para quem é casado e precisa de discrição, não tem lugar melhor. Respeito do início ao fim e a massagem tirou todas as minhas dores." }
   ],
   coupons: {
     'RELAX10': { type: 'fixed', value: 10, label: 'Desconto Especial (R$ 10)' },
@@ -237,7 +237,7 @@ export default function App() {
   
   const [booking, setBooking] = useState({
     cart: [] as any[], extras: {} as any, locationType: '',
-    name: '', age: '', specialRequest: '', payment: '', discount: 0,
+    name: '', age: '', fetishRequest: '', payment: '', discount: 0,
     address: { cep: '', street: '', number: '', district: '', city: '', comp: '', placeName: '' },
     date: null as Date | null, time: '', manualCoupon: '', manualCouponValue: 0
   });
@@ -249,7 +249,6 @@ export default function App() {
   const reviewsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // CORREÇÃO APLICADA AQUI: Adicionado o ELSE para marcar 'false' e liberar a tela
     const checkAdult = localStorage.getItem('thaly_adult');
     if (checkAdult === 'yes') {
       setIsAdult(true);
@@ -333,13 +332,17 @@ export default function App() {
       }
     });
 
+    // Calcula o valor do fetiche automaticamente se preenchido
+    const fetishFee = booking.fetishRequest.trim().length > 0 ? 130 : 0;
+    sub += fetishFee;
+
     const rushFee = (RUSH_HOURS.includes(booking.time) && booking.locationType !== 'motel') ? RUSH_FEE : 0;
     const totalDiscounts = booking.discount + booking.manualCouponValue;
     
     let running = Math.max(0, sub - totalDiscounts);
     let pixDisc = booking.payment === 'pix' ? Math.ceil(running * 0.03) : 0;
     
-    return { sub, rushFee, pixDisc, totalDiscounts, total: Math.max(0, running - pixDisc) + rushFee, duration };
+    return { sub, rushFee, pixDisc, totalDiscounts, fetishFee, total: Math.max(0, running - pixDisc) + rushFee, duration };
   }, [booking]);
 
   const scrollToRef = (ref: React.RefObject<HTMLDivElement>) => {
@@ -359,7 +362,7 @@ export default function App() {
     const f = financials;
     const dateStr = booking.date ? new Date(booking.date).toLocaleDateString('pt-BR') : '';
     
-    // Gerador de Link do Google Calendar (Sem gerar Meet, apenas cria o evento)
+    // Gerador de Link do Google Calendar
     let calendarLink = "";
     if (booking.date && booking.time) {
       const d = new Date(booking.date);
@@ -379,7 +382,9 @@ export default function App() {
     
     const extrasList = Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => `➕ ${DATA.extras.find(e=>e.id===k)?.label}`).join('\n');
     
-    const msg = `*PEDIDO DE SESSÃO*\n\n👤 *Nome:* ${booking.name} (${booking.age} anos)\n📅 *Quando:* ${dateStr} às ${booking.time}\n⏳ *Duração:* ~${f.duration} min\n\n*O que faremos:*\n${servicesText}\n${extrasList ? `\n*Extras:*\n${extrasList}\n` : ''}\n*Onde:* \n${locTxt}\n\n*Pagamento:* ${booking.payment.toUpperCase()}\n💰 *Valor Total:* ${formatMoney(f.total)}\n\n${booking.specialRequest ? `📝 *Observação:* ${booking.specialRequest}\n\n` : ''}_Estou ciente das regras de higiene e limites da sessão._\n\n🗓️ *Adicione na sua agenda clicando aqui:*\n${calendarLink}`;
+    const fetishText = booking.fetishRequest.trim() ? `\n\n⛓️ *Fetiche / Pedido Especial (+R$ 130,00):*\n"${booking.fetishRequest.trim()}"\n_(Aguardando avaliação do terapeuta)_` : '';
+    
+    const msg = `*PEDIDO DE SESSÃO*\n\n👤 *Nome:* ${booking.name} (${booking.age} anos)\n📅 *Quando:* ${dateStr} às ${booking.time}\n⏳ *Duração:* ~${f.duration} min\n\n*O que faremos:*\n${servicesText}\n${extrasList ? `\n*Extras:*\n${extrasList}\n` : ''}\n*Onde:* \n${locTxt}${fetishText}\n\n*Pagamento:* ${booking.payment.toUpperCase()}\n💰 *Valor Total:* ${formatMoney(f.total)}\n\n_Estou ciente das regras de higiene e limites da sessão._\n\n🗓️ *Adicione na sua agenda clicando aqui:*\n${calendarLink}`;
     
     window.open(`https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
   };
@@ -437,9 +442,9 @@ export default function App() {
         
         {/* HEADER */}
         <header className="flex justify-end animate-fade-up">
-          <button onClick={() => window.open(CONFIG.INSTAGRAM_URL, '_blank')} className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-zinc-400 hover:text-pink-500 transition-colors">
+          <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-zinc-400 hover:text-pink-500 transition-colors">
             <Icon name="instagram" size={18} />
-          </button>
+          </a>
         </header>
 
         {/* HERO SECTION */}
@@ -656,13 +661,17 @@ export default function App() {
               </div>
             </div>
 
-            {/* Pedidos Especiais */}
+            {/* Fetiches / Pedidos Especiais */}
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-2 pl-1">Tem algum pedido especial?</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 pl-1">Fetiches / Pedidos Especiais</p>
+                <span className="text-xs font-bold text-amber-500">+ R$ 130,00</span>
+              </div>
+              <p className="text-xs text-zinc-400 mb-3 pl-1 leading-relaxed">Sujeito a avaliação. Descreva o que deseja. Se não for aceito no momento do atendimento, esse valor não será cobrado.</p>
               <textarea 
-                value={booking.specialRequest} 
-                onChange={(e) => setBooking(b => ({ ...b, specialRequest: e.target.value }))}
-                placeholder="Ex: Levar óleo específico, focar mais nas costas..." 
+                value={booking.fetishRequest} 
+                onChange={(e) => setBooking(b => ({ ...b, fetishRequest: e.target.value }))}
+                placeholder="Descreva seu pedido ou fetiche com clareza..." 
                 className="w-full p-4 rounded-2xl input-premium text-sm min-h-[100px] resize-none"
               />
             </div>
@@ -699,7 +708,9 @@ export default function App() {
             </div>
 
             <div className="pt-6 border-t border-white/10">
-              <div className="flex justify-between text-sm text-zinc-400 mb-2"><span>Subtotal</span><span>{formatMoney(financials.sub)}</span></div>
+              <div className="flex justify-between text-sm text-zinc-400 mb-2"><span>Subtotal</span><span>{formatMoney(financials.sub - financials.fetishFee)}</span></div>
+              
+              {financials.fetishFee > 0 && <div className="flex justify-between text-sm text-zinc-400 mb-2"><span>Pedido / Fetiche</span><span>+{formatMoney(financials.fetishFee)}</span></div>}
               
               {booking.discount > 0 && <div className="flex justify-between text-sm text-amber-500 mb-2"><span>Cortesia (Boas Vindas)</span><span>-{formatMoney(booking.discount)}</span></div>}
               {booking.manualCouponValue > 0 && <div className="flex justify-between text-sm text-amber-500 mb-2"><span>Cupom Aplicado</span><span>-{formatMoney(booking.manualCouponValue)}</span></div>}
