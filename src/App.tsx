@@ -6,8 +6,8 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, memo } from '
 const CONFIG = {
   PHONE: "5517991360413",
   INSTAGRAM_URL: "https://instagram.com/relaxarhojesp",
-  THERAPIST_EMAIL: "thalysonrd@gmail.com", // Coloque seu e-mail do Google aqui para receber os convites
-  STORAGE_KEY: '@thaly_app_v28_premium',
+  THERAPIST_EMAIL: "thalysonrd@gmail.com", // SEU EMAIL AQUI PARA RECEBER O CONVITE DA AGENDA
+  STORAGE_KEY: '@thaly_app_v29_premium_full',
   PIX_KEY: "62.922.530/0001-14",
   LOCALE_PT: 'pt-BR',
   LOCALE_EN: 'en-US',
@@ -15,6 +15,7 @@ const CONFIG = {
   SECRET_TOKEN: 'THALY_SECURE_V12',
   START_HOUR: 9,
   END_HOUR: 22,
+  MAX_STORAGE_SIZE: 5000
 } as const;
 
 const RUSH_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
@@ -42,6 +43,7 @@ const ICON_PATHS: Record<string, string> = {
   'bed': 'M2 4v16 M2 8h18a2 2 0 0 1 2 2v10 M2 17h20 M6 8v9',
   'building': 'M4 22v-17a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17 M4 22h16 M10 22V10h4v12 M14 6h.01 M10 6h.01',
   'map-pin': 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
+  'car': 'M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2 M7 17v4h2v-4 M15 17v4h2v-4',
   'calendar': 'M8 2v4 M16 2v4 M3 10h18 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
   'calendar-plus': 'M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8 M16 2v4 M8 2v4 M3 10h18 M19 16v6 M16 19h6',
   'smartphone': 'M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z M12 18h.01',
@@ -56,6 +58,7 @@ const ICON_PATHS: Record<string, string> = {
   'trophy': 'M8 21h8M12 17v4m9-13.5a2.5 2.5 0 0 0-5 0v3a2.5 2.5 0 0 0 5 0v-3zM3 7.5a2.5 2.5 0 0 1 5 0v3a2.5 2.5 0 0 1-5 0v-3zM9 4.5h6',
   'gift': 'M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7 M16 8h-4 M4 8h16a2 2 0 0 1 2 2v2H2v-2a2 2 0 0 1 2-2z M12 8V4 M12 8V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v4 M12 8V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4',
   'scissors': 'M6 9L12 15 18 9 M6 20a3 3 0 0 1-3-3v-6l6 6v3z M18 20a3 3 0 0 0 3-3v-6l-6 6v3z',
+  'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8',
   'heart': 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
   'plus': 'M12 5v14 M5 12h14',
@@ -91,9 +94,10 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
       background-color: var(--c-bg);
       color: var(--c-text);
       font-family: var(--font-sans);
-      transition: background-color 0.3s ease, color 0.3s ease;
+      transition: background-color 0.4s ease, color 0.4s ease;
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
+      letter-spacing: 0.015em;
       line-height: 1.5;
       font-size: 15px; 
     }
@@ -129,6 +133,7 @@ const GlobalStyles = memo(({ isDark }: { isDark: boolean }) => (
 
     button { position: relative; overflow: hidden; cursor: pointer; border: none; }
     .input-field:focus { outline: none; border-color: var(--c-blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
     .break-words-all { word-break: break-word; overflow-wrap: break-word; hyphens: auto; }
   `}} />
 ));
@@ -153,6 +158,12 @@ const formatMoney = (val: number | undefined, lang: 'pt' | 'en') => {
   if (val === undefined || isNaN(val)) return lang === 'pt' ? 'R$ 0,00' : '$ 0.00';
   const converted = lang === 'pt' ? val : val / CONFIG.EXCHANGE_RATE;
   return lang === 'pt' ? `R$ ${converted.toFixed(2).replace('.', ',')}` : `$ ${converted.toFixed(2)}`;
+};
+
+const isWebViewUserAgent = () => {
+  if (typeof window === 'undefined') return false;
+  const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+  return ['FBAN', 'FBAV', 'Instagram', 'Line', 'TikTok'].some(k => ua.includes(k));
 };
 
 const cleanupStorage = () => {
@@ -186,15 +197,21 @@ interface BookingData { type: 'single' | 'pack'; cart: ServiceItem[]; extras: Re
 interface Rule { icon: string; title: string; description: string; }
 
 // ==================================================================================
-// DATA CONFIGURATION
+// DATA STRATEGY
 // ==================================================================================
 const getFullReviews = (lang: 'pt' | 'en'): Review[] => {
   return [
-    { n: "João", loc: "Suíte Do Massagista, Bela Vista", t: "Thalyson muito obrigado! Amei de verdade, consegui relaxar e me entregar. Foi pra outro nível, parabéns pelo trabalho.", serv: "Experiência Nuru", s: 5 },
-    { n: "Gustavo H.", loc: "Bela Vista", t: "O Thalyson foi extremamente profissional. O toque pele a pele da massagem Fusion me deixou nas nuvens.", serv: "Experiência Fusion", s: 5 },
-    { n: "L. (Sigiloso)", loc: "Santa Fé do Sul", t: "Precisava desse alívio sem julgamentos. O sigilo foi perfeito e a massagem sensitiva me fez redescobrir o prazer de relaxar.", serv: "Massagem Sensitiva", s: 5 },
+    { n: "João", loc: "Suíte Do Massagista, Bela Vista - SP", t: "Thalyson muito obrigado!! Amei de verdade, consegui relaxar e me entregar de verdade! Normalmente finalizo rápido quando é só putaria!! Mas com você no toque no pele com pele, consegui relaxar aproveitar e ir mais longe!! foi pra outro nível! Muito obrigado e parabéns pelo trabalho!.", serv: "Experiência Nuru", s: 5 },
+    { n: "Gustavo H.", loc: "Bela Vista - SP", t: "O Thalyson foi extremamente profissional. O toque pele a pele da massagem Fusion me deixou nas nuvens. A finalização no Lingam tirou todo meu estresse. Discrição total.", serv: "Experiência Fusion", s: 5 },
+    { n: "L. (Sigiloso)", loc: "Santa Fé do Sul", t: "Precisava desse alívio sem julgamentos. Sou casado, o sigilo foi perfeito e a massagem sensitiva me fez redescobrir o prazer de relaxar.", serv: "Massagem Sensitiva", s: 5 },
     { n: "Anônimo", loc: "Hotel - SP", t: "Estava de passagem a trabalho. O gel deslizando pelo corpo foi a melhor sensação. Dormi leve igual criança.", serv: "Massagem Nuru", s: 5 },
-    { n: "Felipe", loc: "Londrina", t: "A massagem clássica é pesada na medida certa. Ele tirou uns nós das minhas costas que me atormentavam há semanas.", serv: "Massagem Clássica", s: 5 }
+    { n: "Ricardo", loc: "Fernandópolis", t: "Encontrei um respeito raro. Me senti à vontade para soltar minhas travas. Fui super bem atendido na suíte dele.", serv: "Experiência Fusion", s: 5 },
+    { n: "Felipe", loc: "Londrina", t: "A massagem clássica é pesada na medida certa. Ele tirou uns nós das minhas costas que me atormentavam há semanas.", serv: "Massagem Clássica", s: 5 },
+    { n: "Marcos (Sigiloso)", loc: "Consolação - SP", t: "Fui na suíte dele. Clima perfeito, luz baixa. A Nuru com aquele gel que desliza pelo corpo todo é um absurdo de gostoso. Sensibilidade a mil e um final intenso e demorado.", serv: "Massagem Nuru", s: 5 },
+    { n: "Diego", loc: "República - SP", t: "Atendimento no meu apê na República. O cara manja muito. A massagem começou pegada pra tirar os nós e terminou num pele a pele de enlouquecer. O toque final no Lingam me fez desligar de tudo.", serv: "Experiência Fusion", s: 5 },
+    { n: "Fernando", loc: "Jardins - SP", t: "Maluco, que mão é essa! Pedi a Nuru em casa e foi a melhor escolha. Muito gel que desliza gostoso, o corpo dele no meu... a finalização manual foi surreal de boa. Dormi pesado depois.", serv: "Massagem Nuru", s: 5 },
+    { n: "C.A.", loc: "Santa Cecília - SP", t: "A liberdade de poder tocar e guiar o ritmo na Reversa, depois de relaxar com a massagem dele, foi excitante demais. Uma troca de energia f*da e muito respeito.", serv: "Massagem Reversa", s: 5 },
+    { n: "Paulo (Casado)", loc: "Higienópolis - SP", t: "Sou super travado, mas o Thalyson me deixou à vontade em 5 minutos. Aquela massagem sensitiva me levou a um ápice de prazer que eu não sentia há anos. Muito discreto.", serv: "Massagem Sensitiva", s: 5 }
   ];
 };
 
@@ -210,41 +227,48 @@ const getData = (lang: 'pt' | 'en') => {
   return {
     levels: [
       { level: 1, xpNeeded: 0, reward: 0, title: isEn ? "Beginner" : "Iniciante no Cuidado" },
-      { level: 2, xpNeeded: 100, reward: 15, title: isEn ? "Explorer" : "Explorador" }
+      { level: 2, xpNeeded: 100, reward: 15, title: isEn ? "Explorer" : "Explorador" },
+      { level: 3, xpNeeded: 350, reward: 30, title: isEn ? "Conscious Body" : "Corpo Consciente" },
+      { level: 4, xpNeeded: 800, reward: 50, title: isEn ? "Plenitude" : "Plenitude Alcançada" }
     ],
     services: [
-      { id: 'relaxante', category: 'relax', min: 60, price: p.relax, icon: "user-check", tag: isEn ? "MUSCLE RELIEF" : "ALÍVIO MUSCULAR", title: isEn ? "Classic Massage" : "Massagem Clássica", desc: isEn ? "Full body massage focused on pain relief. No intimate touches." : "Massagem corporal focada em tirar dores musculares. Sem toques íntimos.", details: "1. Massagem no corpo todo (costas, pernas, braços).\n2. Foco em nós e tensões musculares.\n3. Zero toques em áreas íntimas.\n4. Promove sono profundo e alívio." },
-      { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "SENSUAL START" : "DESPERTAR", title: isEn ? "Sensory Massage" : "Massagem Sensitiva", desc: isEn ? "Classic massage followed by gentle touches, ending with a manual release." : "Clássica para aliviar dores, seguida de toques sutis e finalização tântrica manual.", details: "1. Massagem para soltar a musculatura pesada.\n2. Toques sutis para despertar a sensibilidade.\n3. Foco na região íntima no terço final.\n4. Finalização manual para ápice do relaxamento." },
-      { id: 'mista', category: 'final', min: 60, price: p.titan, icon: "zap", tag: isEn ? "SKIN TO SKIN" : "PELE A PELE", title: isEn ? "Fusion Experience" : "Experiência Fusion", desc: isEn ? "Body-to-body contact (I wear underwear). Intense stimulation and manual ending." : "Massagem para dores seguida de muito contato físico próximo e finalização intensa.", details: "1. Massagem clássica para tirar as travas.\n2. Contato físico muito próximo (atendo de cueca).\n3. Estímulos corporais intensos.\n4. Finalização tântrica manual." },
-      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "PREMIUM SLIDE" : "A MAIS PEDIDA", title: isEn ? "Massagem Nuru" : "Massagem Nuru", desc: isEn ? "Full body sliding with gliding gel. Total surrender with an intense manual ending." : "Muito gel deslizando pelo corpo todo, contato fluido e massagem no Lingam.", details: "1. Nós dois sem roupas desde o início.\n2. Deslizamento corpo a corpo com gel especial.\n3. Massagem intensa focada no Pênis (Lingam).\n4. Finalização manual para esvaziar a mente." },
-      { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "AESTHETICS" : "ESTÉTICA", title: isEn ? "Body Hair Trim" : "Aparo de Pelos", desc: isEn ? "Body hair maintenance with clippers." : "Aparo dos pelos com máquina (pente 0 e 3) para higiene e estética.", details: "1. Aparo com máquina nas áreas solicitadas.\n2. Estética agradável para a sessão." }
+      { id: 'pes', category: 'express', min: 40, price: p.pes, icon: "user-check", tag: isEn ? "FOOT RELIEF" : "ALÍVIO PÉS", title: isEn ? "Foot Reflexology" : "Reflexologia Podal", desc: isEn ? "Complete relief for tired feet." : "Alívio completo para pés cansados após longas jornadas.", details: isEn ? "1. Foot reflexology\n2. Deep pressure points" : "1. Reflexologia focada na sola dos pés.\n2. Pressão profunda em pontos de tensão.\n3. Alívio imediato de cansaço." },
+      { id: 'relaxante', category: 'relax', min: 40, price: p.relax, icon: "user-check", tag: isEn ? "MUSCLE RELIEF" : "ALÍVIO MUSCULAR", title: isEn ? "Classic Massage" : "Massagem Clássica", desc: isEn ? "Full body massage focused on pain relief. No intimate touches." : "Massagem corporal terapêutica focada em tirar dores. Estritamente profissional, sem toques íntimos.", details: isEn ? "1. Full body relaxing massage.\n2. Deep tension relief.\n3. Professional session only." : "1. Massagem no corpo todo (costas, pernas, braços).\n2. Foco em nós e tensões musculares.\n3. Zero toques em áreas íntimas.\n4. Promove sono profundo e alívio do estresse." },
+      { id: 'sensitiva', category: 'final', min: 60, price: p.sens, icon: "sparkles", tag: isEn ? "SENSUAL START" : "DESPERTAR", title: isEn ? "Sensory Massage" : "Massagem Sensitiva", desc: isEn ? "Classic massage followed by gentle touches, ending with a manual release." : "Clássica para aliviar dores, seguida de toques sutis. Finalização tântrica manual para liberação total.", details: isEn ? "1. Classic body massage.\n2. Sensory awakening.\n3. Manual release (Lingam)." : "1. Massagem para soltar a musculatura pesada.\n2. Toques sutis para despertar a sensibilidade.\n3. Foco na região íntima (Lingam) no terço final.\n4. Finalização manual para ápice do relaxamento.\n*(Obs: Não há sexo ou penetração)*" },
+      { id: 'mista', category: 'final', min: 60, price: p.titan, icon: "zap", tag: isEn ? "SKIN TO SKIN" : "PELE A PELE", title: isEn ? "Fusion Experience" : "Experiência Fusion", desc: isEn ? "Body-to-body contact (I wear underwear). Intense stimulation and manual ending." : "O equilíbrio perfeito. Massagem para dores e depois muito contato físico próximo para estímulo e finalização intensa.", details: isEn ? "1. Classic massage.\n2. Skin to skin contact.\n3. Manual release." : "1. Massagem clássica para tirar as travas.\n2. Contato físico muito próximo (atendo apenas de cueca).\n3. Estímulos corporais intensos.\n4. Finalização tântrica manual (Lingam) poderosa.\n*(Obs: Sem ato sexual)*" },
+      { id: 'reversa', category: 'final', min: 60, price: p.reversa, icon: "refresh-cw", tag: isEn ? "YOUR CONTROL" : "SEU CONTROLE", title: isEn ? "Reverse Massage" : "Massagem Reversa", desc: isEn ? "I start the massage, then you take control." : "Começa comigo tirando suas tensões. Depois, você assume o controle da sessão.", details: isEn ? "1. Classic massage (approx. 30 min).\n2. Control passes to you.\n3. Freedom to guide the rhythm.\n4. Mutual ending." : "1. Massagem clássica (aprox. 30 min).\n2. O controle da sessão passa para você.\n3. Liberdade total para guiar o ritmo e os toques.\n4. Finalização tântrica intensa e mútua.\n*(Obs: Sem ato sexual/penetração)*" },
+      { id: 'nuru', category: 'final', min: 60, price: p.nuru, icon: "star", popular: true, tag: isEn ? "PREMIUM SLIDE" : "O ÁPICE DO PRAZER", title: isEn ? "Massagem Nuru (Com Gel)" : "Massagem Nuru (Com Gel)", desc: isEn ? "Full body sliding with gliding gel. Total surrender with an intense manual ending." : "A mais pedida. Muito gel que desliza pelo corpo todo, contato fluido costas e frente, e massagem no Lingam. Relaxamento extremo.", details: isEn ? "1. Naked sliding massage.\n2. Special gliding gel.\n3. Lingam massage ending." : "1. Nós dois sem roupas desde o início.\n2. Deslizamento fluido e contínuo corpo a corpo com gel especial.\n3. Massagem intensa focada no Pênis (Lingam).\n4. Finalização manual para você gozar e esvaziar a mente.\n*(Obs: Foco no seu prazer manual, não realizo penetração).*." },
+      { id: 'depilacao', category: 'care', min: 60, price: p.depil, icon: "scissors", tag: isEn ? "AESTHETICS" : "ESTÉTICA", title: isEn ? "Body Hair Trim" : "Aparo de Pelos", desc: isEn ? "Body hair maintenance with clippers." : "Aparo dos pelos com máquina para higiene e estética, pente 0 e 3.", details: isEn ? "1. Trim with clippers." : "1. Aparo com máquina (pente zero ou três).\n2. Corpo limpo e estética agradável para a sessão." }
     ] as ServiceItem[],
     
     plans: [
-      { id: 'pack_classic4', type: 'pack', title: isEn ? "Pain-Free Month (4x)" : "Mês Sem Dor (4x)", price: p.pack_classic4.v, fullPrice: p.pack_classic4.full, savings: p.pack_classic4.save, desc: isEn ? "Relief with zero intimate touches." : "Alívio muscular contínuo e zero toques íntimos. 1x por semana.", details: "4x Massagem Clássica\nAgendamento flexível 1x por semana.", tag: "CLÁSSICO", icon: "calendar" },
+      { id: 'pack_classic4', type: 'pack', title: isEn ? "Pain-Free Month (4x)" : "Mês Sem Dor (4x)", price: p.pack_classic4.v, fullPrice: p.pack_classic4.full, savings: p.pack_classic4.save, desc: isEn ? "Relief with zero intimate touches." : "Alívio muscular contínuo e zero toques íntimos. 1x por semana.", details: isEn ? "4x Classic Massage" : "4x Massagem Clássica\nAgendamento flexível 1x por semana.", tag: "CLÁSSICO", icon: "calendar" },
+      { id: 'pack_tantric', type: 'pack', title: isEn ? "Tantric Journey (3x)" : "Jornada Tântrica (3x)", price: p.pack_tantric.v, fullPrice: p.pack_tantric.full, savings: p.pack_tantric.save, desc: isEn ? "Three encounters escalating intimacy." : "Três encontros escalando o nível de intimidade e relaxamento.", details: isEn ? "Sensory + Fusion + Nuru" : "1x Sensitiva (Despertar)\n1x Fusion (Pele a pele)\n1x Nuru (Deslize com gel e entrega total)", tag: "IMERSÃO", icon: "heart" },
     ] as ServiceItem[],
 
     extras: [
-      { id: 'more_time', price: p.extras.more_time, icon: "clock", label: isEn ? "Extended Time (+30m)" : "Tempo Extra (+30 Minutos)", desc: "" },
+      { id: 'hair_trim', price: p.extras.hair_trim, icon: "scissors", label: isEn ? "Trim (Extra)" : "Aparo de Pelos (Até 2 áreas)", desc: "" },
+      { id: 'more_time', price: p.extras.more_time, icon: "clock", label: isEn ? "Extended Time (+30m)" : "Sessão mais longa (+30 Minutos)", desc: "" },
       { id: 'aroma', price: p.extras.aroma, icon: "sparkles", label: isEn ? "Aromatherapy" : "Aromaterapia Relaxante", desc: "" }
     ],
     faq: [
-      { q: isEn ? "Is there sex/penetration?" : "Rola sexo ou penetração?", a: isEn ? "No. Strictly therapeutic with a manual ending." : "Não. Meu trabalho é estritamente focado no relaxamento corporal e terapia tântrica. A finalização acontece apenas com técnicas manuais focadas no seu alívio. Não realizo penetração ou sexo." },
-      { q: isEn ? "Is it discreet?" : "Sou sigiloso. É discreto?", a: isEn ? "Absolute discretion guaranteed." : "Sim. A discrição é absoluta, seja no seu local ou na minha suíte. Seus dados são confidenciais." },
-      { q: isEn ? "Where is the meeting?" : "Onde nós vamos nos encontrar?", a: isEn ? "I come to you or a hotel." : "Eu posso ir até a sua casa ou hotel, ou você pode vir na minha suíte privada na Bela Vista." }
+      { q: isEn ? "Is there sex/penetration?" : "Rola sexo ou penetração (Programa)?", a: isEn ? "No. Strictly therapeutic with a manual ending." : "Não. Meu trabalho é estritamente focado no relaxamento e terapia tântrica. Nas sessões com finalização, o ápice do prazer é alcançado através de técnicas manuais (massagem no Lingam) com foco no seu alívio, de forma muito respeitosa e intensa. Não realizo penetração ou sexo ativo/passivo." },
+      { q: isEn ? "Is it discreet?" : "Sou casado/sigiloso, o atendimento é discreto?", a: isEn ? "Absolute discretion guaranteed." : "Sim. A discrição é absoluta. O atendimento no seu local, hotel ou na minha suíte garante privacidade total. Ninguém além de nós saberá do encontro. Seus dados são apagados do meu histórico." },
+      { q: isEn ? "Where is the meeting?" : "Onde nós vamos nos encontrar?", a: isEn ? "I come to you or a hotel." : "Eu vou até você (residência ou hotel) ou você pode vir na minha Suíte Privada na Bela Vista." },
+      { q: isEn ? "Ashamed of my body?" : "Tenho vergonha do meu corpo, o que eu faço?", a: isEn ? "No judgments here." : "Esqueça isso. Meu ambiente é livre de preconceitos. Não importa sua idade ou formato de corpo. Estou focado exclusivamente em cuidar de você e entregar prazer e relaxamento." }
     ],
     rules: [
-      { icon: "shield", title: isEn ? "Discretion" : "Sigilo Absoluto", description: isEn ? "Total privacy." : "O que acontece na sessão fica na sessão." },
-      { icon: "hand", title: isEn ? "Boundaries" : "Limites Claros", description: isEn ? "Manual release only." : "Sem ato sexual ou penetração. Apenas técnicas manuais." },
-      { icon: "shower", title: isEn ? "Hygiene" : "Higiene Básica", description: isEn ? "Shower before." : "Um banho quente antes do atendimento é essencial." }
+      { icon: "shield", title: isEn ? "Discretion & Sigil" : "Sigilo e Discrição Absoluta", description: isEn ? "Total privacy." : "Para o conforto de homens sigilosos ou casados, o que acontece na sessão morre na sessão." },
+      { icon: "hand", title: isEn ? "Boundaries (No Sex)" : "Limites Claros (Sem Ato Sexual)", description: isEn ? "Manual release only." : "As sessões focadas em finalização utilizam apenas técnicas de estímulo manual. Sexo (penetração) não faz parte do serviço." },
+      { icon: "shower", title: isEn ? "Hygiene" : "Higiene Básica", description: isEn ? "Shower before." : "Um banho quente antes do nosso contato é essencial para o conforto e respeito mútuo." }
     ],
     text: {
       welcome: isEn ? "Welcome," : "Olá,",
       welcome_anon: isEn ? "allow yourself." : "permita-se relaxar.",
       choose_sub: isEn ? "Choose your care." : "Espaço seguro, sigiloso e sem julgamentos para homens soltarem a tensão da rotina.",
-      specialist: isEn ? "Tantric Specialist" : "Massagista Independente",
-      level_yours: isEn ? "Your XP" : "Seu Progresso",
-      tab_packs: isEn ? "Plans" : "Combos",
+      specialist: isEn ? "Tantric Specialist" : "Terapeuta Tântrico Corporal",
+      level_label: isEn ? "Your Journey" : "Seu Nível",
+      tab_packs: isEn ? "Plans" : "Combos Mensais",
       tab_single: isEn ? "Single" : "Sessões Avulsas",
       next_btn: isEn ? "Continue" : "Continuar",
       finish_btn: isEn ? "Complete Booking" : "Finalizar Agendamento",
@@ -262,14 +286,14 @@ const getData = (lang: 'pt' | 'en') => {
       select_time_title: isEn ? "When?" : "Quando vamos nos ver?",
       location_title: isEn ? "Where?" : "Onde será nosso encontro?",
       extras_title: isEn ? "Add-ons" : "Deseja algo a mais?",
-      coupon_section: isEn ? "Gifts & Promos" : "Cupons",
+      coupon_section: isEn ? "Gifts & Promos" : "Seus Benefícios e Cupons",
       coupon_empty: isEn ? "No gifts yet." : "Nenhum benefício ativo no momento.",
       payment_title: isEn ? "Payment (In person)" : "Forma de pagamento (No local)",
       terms_title: isEn ? "Rules & Discretion" : "Regras e Sigilo",
       success_title: isEn ? "Almost there!" : "Tudo Certo, falta pouco!",
-      success_sub: isEn ? "Send the summary on WhatsApp to confirm." : "Me envie o resumo no WhatsApp para confirmarmos o agendamento.",
+      success_sub: isEn ? "Send the summary on WhatsApp to confirm." : "Para garantir seu horário e o sigilo, me envie o resumo no WhatsApp para confirmarmos tudo.",
       whatsapp_btn: isEn ? "Send to WhatsApp" : "Confirmar via WhatsApp",
-      calendar_btn: isEn ? "Add to Calendar" : "Salvar no Google Agenda",
+      calendar_btn: isEn ? "Add to Calendar" : "Salvar na Agenda (App Nativo)",
       back_home: isEn ? "Start over" : "Voltar para o início",
       timer_text: isEn ? "Cart saved for" : "Reserva segura por",
       input_name: isEn ? "Name or Nickname" : "Nome ou Apelido (Sigilo mantido)",
@@ -283,47 +307,66 @@ const getData = (lang: 'pt' | 'en') => {
       input_room: isEn ? "Room" : "Quarto / Suíte",
       agree_terms: isEn ? "I agree" : "Eu li e compreendi as regras",
       faq_title: isEn ? "FAQ" : "Dúvidas Frequentes",
-      reviews_title: isEn ? "Experiences:" : "Relatos reais:",
+      reviews_title: isEn ? "Experiences:" : "Relatos de quem já se permitiu:",
       empty_date: isEn ? "Select a day." : "Toque em um dia acima para ver os horários.",
       total_label: isEn ? "Total" : "Total",
       subtotal: isEn ? "Subtotal" : "Subtotal",
       pix_discount: isEn ? "Pix (3% OFF)" : "Pix (3% OFF)",
-      rules_complete: isEn ? "Agreements" : "Nossos Acordos",
-      uber_notice: isEn ? "Travel fee confirmed on WhatsApp." : "Importante: A taxa de Uber será calculada no WhatsApp.",
+      rules_complete: isEn ? "Agreements" : "Nossos Acordos Inegociáveis",
+      uber_notice: isEn ? "Travel fee confirmed on WhatsApp." : "Importante: A taxa de Uber até você será calculada no WhatsApp.",
       motel_note: isEn ? "Address sent after booking." : "Perfeito! Te envio o endereço da minha suíte (Bela Vista) no WhatsApp.",
       menu_title: isEn ? "Settings" : "Menu",
+      level_yours: isEn ? "Your XP" : "Seu Progresso",
+      level_current: isEn ? "Points" : "Pontos",
+      level_journey: isEn ? "Journey" : "Jornada",
       theme_title: isEn ? "Theme" : "Aparência",
       theme_dark: isEn ? "Dark" : "Escuro",
       theme_light: isEn ? "Light" : "Claro",
       refer_btn: isEn ? "Share" : "Indicar de forma discreta",
-      share_text: isEn ? 'Great massage therapist.' : 'Recomendo esse massagista em SP. Mandam muito bem e é super discreto.',
+      share_text: isEn ? 'Great massage therapist.' : 'Cara muito bom pra massagem e aliviar a tensão em SP. Super discreto.',
       header_tensions: isEn ? "sessions" : "atendimentos",
+      step_when: isEn ? "When" : "Quando",
+      step_where: isEn ? "Where" : "Onde",
+      step_summary: isEn ? "Summary" : "Resumo",
       cart_title: isEn ? "Cart" : "Sua Seleção",
       time_rush: isEn ? "Rush" : "Pico",
       loc_home: isEn ? "Home" : "Na sua Casa",
       loc_motel: isEn ? "My Suite" : "Minha Suíte",
       loc_hotel: isEn ? "Hotel" : "Hotel",
+      summary_title: isEn ? "Summary" : "Resumo da Sessão",
+      summary_items: isEn ? "SERVICES" : "O QUE VAMOS FAZER",
+      summary_extras: isEn ? "EXTRAS" : "ADICIONAIS",
+      summary_info: isEn ? "DETAILS" : "INFORMAÇÕES",
+      summary_loc_home: isEn ? "At home" : "Na sua residência",
+      summary_loc_motel: isEn ? "At my suite" : "Na minha suíte",
+      summary_loc_hotel: isEn ? "At hotel" : "Em um hotel",
       pay_pix: isEn ? "Pix (3% OFF)" : "Pix",
       pay_card: isEn ? "Card" : "Cartão (Crédito/Débito)",
       pay_cash: isEn ? "Cash" : "Dinheiro",
       terms_read: isEn ? "Read rules" : "Toque para ler as regras de convivência",
+      level_redeem: isEn ? "Redeem" : "Resgatar XP",
       today: isEn ? "TODAY" : "HOJE",
       tomorrow: isEn ? "TOMORROW" : "AMANHÃ",
-      popular_badge: isEn ? "Popular" : "Mais Pedida",
+      popular_badge: isEn ? "Popular" : "A Mais Pedida",
+      items_selected: isEn ? "items" : "selecionado(s)",
       btn_finish_short: isEn ? "Finish" : "Concluir",
       btn_next_short: isEn ? "Next" : "Próximo",
+      msg_rush_fee: isEn ? "Rush Fee" : "Deslocamento / Pico",
       toast_loaded: isEn ? "Loaded" : "Dados carregados!",
-      toast_cart_toggle: isEn ? "Updated." : "Serviço atualizado.",
+      toast_cart_toggle: isEn ? "Updated." : "Serviço alterado.",
+      toast_pix_copied: isEn ? "PIX copied" : "Chave PIX copiada!",
       morning: isEn ? "Morning" : "Manhã",
       afternoon: isEn ? "Afternoon" : "Tarde",
-      evening: isEn ? "Evening" : "Noite"
+      evening: isEn ? "Evening" : "Noite",
+      levelup_popup_title: isEn ? "Level Up!" : "Você subiu de nível!",
+      levelup_popup_msg: isEn ? "New benefit unlocked." : "Seus pontos geraram uma nova recompensa tântrica. Aproveite seu benefício.",
     },
     reviews: getFullReviews(lang)
   };
 };
 
 // ==================================================================================
-// COMPONENTS
+// REFINED COMPONENTS
 // ==================================================================================
 
 const ToastContainer = memo(({ toasts, isDark }: { toasts: any[]; isDark: boolean }) => (
@@ -333,7 +376,7 @@ const ToastContainer = memo(({ toasts, isDark }: { toasts: any[]; isDark: boolea
         <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${t.type === 'error' ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-500'}`}>
           <Icon name={t.type === 'error' ? 'alert-circle' : 'check'} size={14} />
         </div>
-        <span className="text-sm font-bold leading-snug break-words flex-1">{t.msg}</span>
+        <span className="text-xs sm:text-sm font-bold leading-snug break-words flex-1">{t.msg}</span>
       </div>
     ))}
   </div>
@@ -344,10 +387,10 @@ const Button = memo(({ children, onClick, variant = 'primary', size = 'md', disa
   const variants: Record<string, string> = {
     primary: "bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-900/20",
     secondary: "bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700",
-    google: "bg-white text-slate-800 hover:bg-slate-100 shadow-md border border-slate-200",
     whatsapp: "bg-[#25D366] text-white hover:bg-[#22c55e] shadow-md shadow-green-900/20",
     outline: "border border-current text-current hover:bg-black/5",
     amber: "bg-amber-500 text-amber-950 hover:bg-amber-400 shadow-md shadow-amber-900/20",
+    google: "bg-white text-slate-800 hover:bg-slate-100 shadow-md border border-slate-200",
   };
   const sizes: Record<string, string> = {
     sm: "min-h-[40px] py-2 px-4 text-xs rounded-xl",
@@ -366,7 +409,7 @@ const InputField = memo(({ label, value, onChange, placeholder, icon, type = 'te
   const inputId = id || `input-${label?.replace(/\s+/g, '-').toLowerCase()}`;
   return (
     <div className={`space-y-1.5 w-full ${hasError ? 'animate-shake' : ''}`}>
-      {label && <label htmlFor={inputId} className={`block text-xs font-bold uppercase tracking-widest pl-1 ${hasError ? 'text-red-400' : isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{label}</label>}
+      {label && <label htmlFor={inputId} className={`block text-[10px] sm:text-xs font-bold uppercase tracking-widest pl-1 ${hasError ? 'text-red-400' : isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{label}</label>}
       <div className="relative group">
         {icon && <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${hasError ? 'text-red-400' : isDark ? 'text-zinc-500' : 'text-slate-400'}`}><Icon name={icon} size={20} /></div>}
         <input id={inputId} type={type} value={value} onChange={onChange} placeholder={placeholder} disabled={disabled} maxLength={maxLength}
@@ -376,17 +419,158 @@ const InputField = memo(({ label, value, onChange, placeholder, icon, type = 'te
   );
 });
 
+// ==================================================================================
+// FLOATING WHATSAPP COMPONENT COM BOTÃO DE OCULTAR
+// ==================================================================================
 const FloatingWhatsApp = memo(({ isDark, lang, onClick }: any) => {
-  return (
-    <div className="fixed bottom-24 right-4 sm:bottom-24 sm:right-6 z-50 flex items-center gap-4 pointer-events-none">
-      <button onClick={onClick} className="pointer-events-auto relative shrink-0 hover:scale-105 transition-transform" aria-label="Contato WhatsApp">
-        <div className={`w-14 h-14 rounded-full overflow-hidden border-[3px] shadow-[0_4px_20px_rgba(37,211,102,0.4)] border-[#25D366]`}>
-          <img src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" alt="Contato" className="w-full h-full object-cover" />
-        </div>
-        <div className={`absolute -bottom-1 -right-1 w-7 h-7 bg-[#25D366] rounded-full flex items-center justify-center shadow-md border-2 ${isDark ? 'border-[#0f1115]' : 'border-white'}`}>
-          <Icon name="message-circle" size={14} className="text-white" />
-        </div>
+  const [showMsg, setShowMsg] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+
+  useEffect(() => {
+    if (isMinimized) return;
+    const interval = setInterval(() => {
+      setShowMsg(true);
+      setTimeout(() => setShowMsg(false), 5000); 
+    }, 15000); 
+    setTimeout(() => setShowMsg(true), 3000);
+    return () => clearInterval(interval);
+  }, [isMinimized]);
+
+  if (isMinimized) {
+    return (
+      <button 
+        onClick={() => setIsMinimized(false)}
+        className={`fixed bottom-24 right-4 z-50 w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-2 border-[#25D366] bg-[#25D366] text-white hover:scale-105 transition-transform animate-scale-in`}
+        aria-label="Abrir WhatsApp"
+      >
+        <Icon name="message-circle" size={24} />
       </button>
+    );
+  }
+
+  const msg = lang === 'en' ? 'Hi! Need any help?' : 'Oi, tem alguma dúvida?';
+
+  return (
+    <div className="fixed bottom-24 right-4 sm:bottom-24 sm:right-6 z-50 flex flex-col items-end gap-2 pointer-events-none animate-scale-in">
+      <div className={`pointer-events-auto transition-all duration-500 origin-bottom-right mb-2 ${showMsg ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-4 pointer-events-none'}`}>
+        <div className={`px-4 py-3 rounded-2xl shadow-xl relative cursor-pointer border max-w-[220px] flex items-center ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200'}`} onClick={onClick}>
+          <p className={`text-sm font-bold leading-snug ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>{msg}</p>
+          <div className={`absolute -bottom-1.5 right-6 w-3 h-3 rotate-45 border-b border-r ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200'}`} />
+        </div>
+      </div>
+      
+      <div className="relative pointer-events-auto group">
+        {/* Botão de Fechar / Minimizar */}
+        <button 
+          onClick={(e) => { e.stopPropagation(); setIsMinimized(true); vibrate(30); }}
+          className="absolute -top-2 -right-2 z-20 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md scale-0 group-hover:scale-100 transition-transform"
+          aria-label="Ocultar botão do WhatsApp"
+        >
+          <Icon name="x" size={14} />
+        </button>
+
+        <button onClick={onClick} className="relative shrink-0 hover:scale-105 transition-transform block" aria-label="Contato WhatsApp">
+          <div className={`w-14 h-14 rounded-full overflow-hidden border-[3px] shadow-[0_4px_20px_rgba(37,211,102,0.4)] border-[#25D366]`}>
+            <img src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" alt="Contato" className="w-full h-full object-cover" />
+          </div>
+          <div className={`absolute -bottom-1 -right-1 w-7 h-7 bg-[#25D366] rounded-full flex items-center justify-center shadow-md border-2 ${isDark ? 'border-[#0f1115]' : 'border-white'}`}>
+            <Icon name="message-circle" size={14} className="text-white" />
+          </div>
+        </button>
+      </div>
+    </div>
+  );
+});
+
+// ==================================================================================
+// ROULETTE COMPONENT
+// ==================================================================================
+const PRIZES = [
+  { val: 5, color: '#f59e0b' },
+  { val: 10, color: '#2563eb' },
+  { val: 5, color: '#f59e0b' },
+  { val: 15, color: '#10b981' },
+  { val: 5, color: '#f59e0b' },
+  { val: 10, color: '#2563eb' },
+  { val: 5, color: '#f59e0b' },
+  { val: 20, color: '#e11d48' },
+];
+
+const TigrinhoRoulette = memo(({ isOpen, isDark, lang, onWin, onClose }: any) => {
+  const [phase, setPhase] = useState<'idle' | 'spinning' | 'won'>('idle');
+  const [rotation, setRotation] = useState(0);
+  const [winValue, setWinValue] = useState(0);
+
+  const spinWheel = () => {
+    if (phase !== 'idle') return;
+    setPhase('spinning');
+    vibrate([50, 50, 50]);
+    
+    const r = Math.random();
+    let targetVal;
+    if (r < 0.6) targetVal = 10;
+    else if (r < 0.85) targetVal = 5;
+    else if (r < 0.95) targetVal = 15;
+    else targetVal = 20;
+
+    const validIndices = PRIZES.map((p, i) => p.val === targetVal ? i : -1).filter(i => i !== -1);
+    const targetIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+    
+    const targetAngle = 360 - (targetIndex * 45); 
+    const extraSpins = 360 * (5 + Math.floor(Math.random() * 3)); 
+    const randomOffset = Math.floor(Math.random() * 30) - 15; 
+    
+    const finalRotation = rotation + extraSpins + targetAngle + randomOffset;
+    setRotation(finalRotation);
+
+    setTimeout(() => {
+      setWinValue(targetVal);
+      setPhase('won');
+      vibrate([100, 50, 200]);
+    }, 5000); 
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      <div role="dialog" className={`relative w-full max-w-sm rounded-[2rem] p-6 text-center border shadow-2xl animate-scale-in flex flex-col items-center ${isDark ? 'bg-[#161920] border-amber-900/50 shadow-[0_0_50px_rgba(245,158,11,0.15)]' : 'bg-white border-amber-200'}`}>
+        <button onClick={onClose} className={`absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center z-50 ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-800'}`}>
+          <Icon name="x" size={18} />
+        </button>
+
+        <h3 className={`font-display text-2xl mb-1 mt-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{lang === 'en' ? 'Spin & Win!' : 'Sorteie seu Desconto'}</h3>
+        <p className={`text-xs font-bold mb-8 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{lang === 'en' ? 'Your welcome gift awaits.' : 'Um presente de boas vindas pra você.'}</p>
+
+        <div className="relative w-64 h-64 mb-8">
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20 w-8 h-8 flex items-center justify-center drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
+            <svg viewBox="0 0 24 24" fill="white" className="w-8 h-8 text-white drop-shadow-xl z-20"><path d="M12 22L2 2h20L12 22z" /></svg>
+          </div>
+          
+          <div className="w-full h-full rounded-full overflow-hidden border-[8px] border-[#0f1115] shadow-inner relative"
+            style={{ 
+              transition: 'transform 5s cubic-bezier(0.2, 0.8, 0.2, 1)', transform: `rotate(${rotation}deg)`,
+              background: `conic-gradient(from -22.5deg, #f59e0b 0 45deg, #2563eb 45deg 90deg, #f59e0b 90deg 135deg, #10b981 135deg 180deg, #f59e0b 180deg 225deg, #2563eb 225deg 270deg, #f59e0b 270deg 315deg, #e11d48 315deg 360deg)`
+            }}>
+            {PRIZES.map((p, i) => (
+              <div key={i} className="absolute inset-0 origin-center" style={{ transform: `rotate(${i * 45}deg)` }}>
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 text-white font-bold font-display text-lg drop-shadow-md">{p.val}</div>
+                <div className="absolute top-0 left-1/2 w-0.5 h-1/2 bg-white/20 origin-bottom" style={{ transform: 'translateX(-50%) rotate(22.5deg)' }} />
+              </div>
+            ))}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#0f1115] border-4 border-amber-500 flex items-center justify-center shadow-lg z-10"><Icon name="star" size={16} className="text-amber-500 fill-amber-500" /></div>
+          </div>
+        </div>
+
+        {phase === 'idle' && <Button full size="lg" variant="amber" onClick={spinWheel} className="animate-pulse-slow">{lang === 'en' ? 'SPIN ROULETTE' : 'GIRAR ROLETA'}</Button>}
+        {phase === 'spinning' && <Button full size="lg" disabled variant="secondary" className="opacity-50">{lang === 'en' ? 'Spinning...' : 'Sorteando...'}</Button>}
+        {phase === 'won' && (
+          <div className="animate-fade-up w-full">
+            <p className={`font-display text-2xl mb-4 text-amber-500`}>{lang === 'en' ? 'You Won R$' : 'Você Ganhou R$'} {winValue} OFF!</p>
+            <Button full size="lg" variant="amber" onClick={() => onWin(winValue)}>{lang === 'en' ? 'Claim My Discount' : 'Pegar Meu Desconto'}</Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 });
@@ -401,12 +585,16 @@ const SideMenu = memo(({ isOpen, onClose, isDark, toggleTheme, user, T }: any) =
           <h2 className="font-display text-xl">{T.menu_title}</h2>
           <button onClick={onClose} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${isDark ? 'hover:bg-white/10 text-zinc-400' : 'hover:bg-slate-200 text-slate-500'}`}><Icon name="x" size={20} /></button>
         </div>
+        <div className={`mb-6 p-5 rounded-2xl border relative overflow-hidden ${isDark ? 'bg-blue-950/20 border-blue-900/50' : 'bg-blue-50 border-blue-200'}`}>
+          <p className={`text-[10px] uppercase font-bold tracking-widest mb-1 ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>{T.level_yours}</p>
+          <div className="flex items-baseline gap-1.5"><span className="font-display text-3xl">{user.xp}</span><span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>XP</span></div>
+        </div>
         <nav className="flex-1 space-y-3">
           <button onClick={toggleTheme} className={`w-full min-h-[52px] flex items-center justify-between px-4 py-3 rounded-xl transition-colors ${isDark ? 'hover:bg-white/5 text-zinc-200' : 'hover:bg-slate-100 text-slate-800'}`}>
             <div className="flex items-center gap-3"><Icon name={isDark ? "moon" : "sun"} size={18} className={isDark ? "text-blue-400" : "text-blue-600"} /><span className="text-sm font-bold">{T.theme_title}</span></div>
             <span className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-lg ${isDark ? 'bg-white/10' : 'bg-slate-200'}`}>{isDark ? T.theme_dark : T.theme_light}</span>
           </button>
-          <button onClick={() => { if (navigator.share) navigator.share({ title: 'Thalyson Massagens', text: T.share_text, url: window.location.href }); }} className={`w-full min-h-[52px] flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isDark ? 'hover:bg-white/5 text-zinc-200' : 'hover:bg-slate-100 text-slate-800'}`}>
+          <button onClick={() => { if (navigator.share) navigator.share({ title: 'Thalyson', text: T.share_text, url: window.location.href }); }} className={`w-full min-h-[52px] flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isDark ? 'hover:bg-white/5 text-zinc-200' : 'hover:bg-slate-100 text-slate-800'}`}>
             <Icon name="share" size={18} className="text-emerald-500" /><span className="text-sm font-bold">{T.refer_btn}</span>
           </button>
         </nav>
@@ -457,7 +645,7 @@ const SmartTimer = memo(({ isDark, text }: any) => {
     <div className={`flex items-center gap-4 p-4 rounded-3xl border w-full ${isDark ? 'bg-blue-950/20 border-blue-900/40' : 'bg-blue-50 border-blue-200'}`}>
       <Icon name="clock" size={24} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
       <div className="min-w-0 flex-1">
-        <p className={`text-xs font-bold uppercase tracking-widest truncate ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>{text}</p>
+        <p className={`text-[10px] font-bold uppercase tracking-widest truncate ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>{text}</p>
         <p className={`font-display text-xl whitespace-nowrap ${isDark ? 'text-white' : 'text-slate-900'}`}>{fmt(time)}</p>
       </div>
     </div>
@@ -469,7 +657,7 @@ const RuleItem = memo(({ rule, isDark }: { rule: Rule; isDark: boolean }) => (
     <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-200 text-slate-700'}`}><Icon name={rule.icon} size={20} /></div>
     <div className="min-w-0 flex-1">
       <h4 className={`text-sm font-bold mb-1 font-display break-words ${isDark ? 'text-white' : 'text-slate-900'}`}>{rule.title}</h4>
-      <p className={`text-sm font-medium break-words ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{rule.description}</p>
+      <p className={`text-xs sm:text-sm font-medium break-words ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>{rule.description}</p>
     </div>
   </article>
 ));
@@ -501,12 +689,12 @@ const ServiceModal = memo(({ service, isOpen, onClose, onSelect, isInCart, isDar
         <div className={`flex-1 overflow-y-auto p-5 space-y-6 scrollbar-hide ${isDark ? 'text-zinc-300' : 'text-slate-800'}`}>
           <p className="text-sm font-medium">{service.desc}</p>
           <div>
-            <h4 className={`text-xs font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.details_label}</h4>
+            <h4 className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-3 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>{T.details_label}</h4>
             <div className="space-y-3">
               {service.details.split('\n').map((line: string, i: number) => (
                 <div key={i} className="flex items-start gap-3 text-sm font-medium">
                   <div className={`mt-0.5 shrink-0 w-4 h-4 rounded-full flex items-center justify-center ${isPack ? isDark ? 'bg-amber-500/20 text-amber-500' : 'bg-amber-100 text-amber-700' : isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'}`}><Icon name="check" size={10} /></div>
-                  <span className="leading-relaxed flex-1">{line.replace(/^\d+\.\s*/, '')}</span>
+                  <span className="leading-relaxed flex-1" dangerouslySetInnerHTML={{__html: line.replace(/^\d+\.\s*/, '').replace(/\*(.*?)\*/g, '<strong class="text-amber-500">$1</strong>')}}></span>
                 </div>
               ))}
             </div>
@@ -569,10 +757,13 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('single');
   const [toasts, setToasts] = useState<{ id: number; msg: string; type: 'success' | 'error' }[]>([]);
   const [termsOpen, setTermsOpen] = useState(false);
+  const [showRoulette, setShowRoulette] = useState(false);
+  const [levelUpPopup, setLevelUpPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isFetchingCep, setIsFetchingCep] = useState(false);
   const [hasErrorGlobal, setHasErrorGlobal] = useState(false);
   const [selectedServiceForModal, setSelectedServiceForModal] = useState<ServiceItem | null>(null);
+  const [manualCoupon, setManualCoupon] = useState('');
 
   const DATA = useMemo(() => getData(lang), [lang]);
   const T = DATA.text;
@@ -604,39 +795,50 @@ export default function App() {
     setTimeout(() => document.body.removeChild(a), 100);
   }, []);
 
-  // NOVO: Adiciona ao Google Agenda como um Evento para os dois
-  const addToGoogleCalendar = () => {
-    if (!booking.date || !booking.time) return;
-    
+  // GERADOR DE ARQUIVO .ICS NATIVO - ABRE O APLICATIVO DIRETO (iOS / ANDROID)
+  const downloadICS = () => {
+    if(!booking.date || !booking.time) return;
     const d = new Date(booking.date);
     const [h, m] = booking.time.split(':');
     d.setHours(parseInt(h), parseInt(m), 0, 0);
-
-    // O atendimento do Thalyson costuma durar no máximo 60 min.
-    const endD = new Date(d.getTime() + (60 * 60000));
+    const endD = new Date(d.getTime() + (60 * 60000)); // 60 minutos
 
     const fmt = (date: Date) => {
         return date.toISOString().replace(/-|:|\.\d+/g, '').substring(0,15) + 'Z';
     };
 
-    const title = encodeURIComponent("Sessão Terapêutica de Massagem");
-    const details = encodeURIComponent(`Sessão agendada com Thalyson.\n\nCliente: ${user.name}\nDuração Estimada: 60 minutos\nPor favor, me envie o resumo no WhatsApp para validar.`);
-    
-    let loc = "A combinar";
-    if (booking.locationType === 'home') {
-      loc = `${booking.address.street}, ${booking.address.number} - ${booking.address.district}, ${booking.address.city}`;
-    } else if (booking.locationType === 'hotel') {
-      loc = `${booking.address.placeName}, ${booking.address.city}`;
-    }
-    const locationStr = encodeURIComponent(loc);
-    
-    const email = encodeURIComponent(CONFIG.THERAPIST_EMAIL);
+    let loc = "A combinar com o massagista";
+    if (booking.locationType === 'home') loc = `${booking.address.street}, ${booking.address.number}`;
+    else if (booking.locationType === 'hotel') loc = booking.address.placeName;
+    else if (booking.locationType === 'motel') loc = "Suíte do Massagista (Bela Vista)";
 
-    // Cria a URL que força o Google Agenda a criar o evento no calendário do cliente e enviar o convite para o massagista.
-    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${fmt(d)}/${fmt(endD)}&details=${details}&location=${locationStr}&add=${email}`;
-
-    window.open(url, '_blank');
-    addToast("Abrindo Google Agenda...", "success");
+    const icsData = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Thalyson Massagens//PT',
+        'CALSCALE:GREGORIAN',
+        'METHOD:REQUEST',
+        'BEGIN:VEVENT',
+        `DTSTART:${fmt(d)}`,
+        `DTEND:${fmt(endD)}`,
+        `SUMMARY:Sessão com Thalyson Massagista`,
+        `DESCRIPTION:Seu momento reservado e sigiloso de cuidado.`,
+        `LOCATION:${loc}`,
+        `ORGANIZER;CN="${user.name}":mailto:cliente@agendamento.com`,
+        `ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN="Thalyson":mailto:${CONFIG.THERAPIST_EMAIL}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+    ].join('\n');
+    
+    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'sessao-thalyson.ics');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    addToast("Evento criado! Salve no aplicativo do celular para confirmar.", "success");
   };
 
   useEffect(() => { setIsClient(true); cleanupStorage(); }, []);
@@ -670,6 +872,15 @@ export default function App() {
       } catch {}
     }
   }, [user, booking, step, isClient, dataLoaded]);
+
+  useEffect(() => {
+    if (!loading && isClient && dataLoaded) {
+      if (!user.hasSeenWelcome) {
+        const t = setTimeout(() => setShowRoulette(true), 1500);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [loading, isClient, dataLoaded, user.hasSeenWelcome]);
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
 
@@ -748,11 +959,13 @@ export default function App() {
     const duration = baseDuration + addedTime;
     const isRush = RUSH_HOURS.includes(booking.time || '');
     const rushFee = (isRush && booking.locationType !== 'motel') ? RUSH_FEE : 0;
-    const disc = booking.appliedCoupon ? booking.appliedCoupon.val : 0;
+    const disc = booking.appliedCoupon ? (booking.appliedCoupon.code === 'MIND&BODY' ? sub * 0.10 : booking.appliedCoupon.val) : 0;
     let running = Math.max(0, sub - disc);
     let pixDisc = booking.payment === 'pix' ? Math.ceil(running * 0.03) : 0;
     return { sub, disc, pixDisc, rushFee, total: Math.max(0, running - pixDisc) + rushFee, duration };
   }, [booking, DATA.extras]);
+
+  const estimatedXP = useMemo(() => Math.floor(financials.total * (booking.cart.some(i => i.type === 'pack') ? 0.30 : 0.15)), [financials.total, booking.cart]);
 
   const isStepValid = useCallback(() => {
     if (step === 0) return booking.cart.length > 0;
@@ -778,6 +991,17 @@ export default function App() {
     if (step === 3) finishBooking(); else setStep(s => s + 1);
   }, [step, booking, user.name, T, addToast, isStepValid]);
 
+  const applyManualCoupon = () => {
+    const code = manualCoupon.trim().toUpperCase();
+    if (code === 'MIND&BODY') {
+      setBooking(b => ({ ...b, appliedCoupon: { id: 'manual', val: 0, title: '10% OFF (MIND&BODY)', code: 'MIND&BODY' } }));
+      addToast(T.toast_coupon_success);
+      setManualCoupon('');
+    } else {
+      addToast(T.toast_coupon_invalid, 'error');
+    }
+  };
+
   const generateWhatsAppMsg = () => {
     const f = financials;
     const dateStr = booking.date ? new Date(booking.date).toLocaleDateString(lang === 'en' ? CONFIG.LOCALE_EN : CONFIG.LOCALE_PT) : '';
@@ -792,26 +1016,44 @@ export default function App() {
     const extrasArr = Object.keys(booking.extras || {}).filter(k => booking.extras[k]).map(k => { 
       const ex = DATA.extras.find((e: any) => e.id === k); return ex ? `  ➕ ${ex.label}` : ''; 
     });
+    if ((booking.customExtraText || '').trim().length > 0) extrasArr.push(`  ➕ Pedido Especial: ${booking.customExtraText.trim()} (+R$ 150,00)`);
     const extrasList = extrasArr.filter(Boolean).join('\n');
     
     let prices = `*Subtotal:* ${formatMoney(f.sub, lang)}`;
+    if (f.disc > 0) prices += `\n*Benefício:* -${formatMoney(f.disc, lang)}`;
     if (f.pixDisc > 0) prices += `\n*PIX (3% OFF):* -${formatMoney(f.pixDisc, lang)}`;
     if (f.rushFee > 0) prices += `\n*Taxa Pico/Deslocamento:* +${formatMoney(f.rushFee, lang)}`;
     prices += `\n\n💰 *INVESTIMENTO TOTAL: ${formatMoney(f.total, lang)}*`;
     
-    return `*PEDIDO DE SESSÃO* | #${hash}\n──────────────────\nOlá Thalyson. Estou precisando de alívio.\n\n👤 *Meu nome/apelido:* ${sanitizeInput(user.name)}\n📅 *Quando:* ${dateStr} às ${booking.time}\n⏳ *Tempo reservado:* ~${f.duration} min\n\n*A EXPERIÊNCIA:*\n${servicesText}\n\n${extrasList ? `*Complementos:*\n${extrasList}\n\n` : ''}*ONDE VAI SER:*\n${locTxt}\n\n*VALORES:*\n${prices}\n*Pagamento:* ${booking.payment.toUpperCase()}\n──────────────────\n_Estou ciente e aceito os acordos de sigilo, higiene e limites (sem ato sexual)._`;
+    return `*PEDIDO DE SESSÃO* | #${hash}\n──────────────────\nOlá Thalyson. Estou precisando de alívio e me desconectar.\n\n👤 *Meu nome/apelido:* ${sanitizeInput(user.name)}\n📅 *Quando:* ${dateStr} às ${booking.time}\n⏳ *Tempo reservado:* ~${f.duration} min\n\n*A EXPERIÊNCIA:*\n${servicesText}\n\n${extrasList ? `*Complementos:*\n${extrasList}\n\n` : ''}*ONDE VAI SER:*\n${locTxt}\n\n*Saúde:* Declaro estar saudável.\n\n*VALORES:*\n${prices}\n*Pagamento:* ${booking.payment.toUpperCase()}\n──────────────────\n_Estou ciente e aceito os acordos de sigilo, higiene e limites (sem ato sexual)._`;
   };
 
   const finishBooking = () => {
     vibrate([100, 50, 100, 50, 100]);
-    setUser(p => ({ ...p, ordersCount: (p.ordersCount || 142) + 1, lastActivity: new Date().toISOString() }));
+    let updatedCoupons = [...user.coupons];
+    let updatedHistory = [...user.usedCoupons];
+    if (booking.appliedCoupon && booking.appliedCoupon.id !== 'manual') {
+      if (!updatedHistory.includes(booking.appliedCoupon.code)) updatedHistory.push(booking.appliedCoupon.code);
+      updatedCoupons = updatedCoupons.filter(c => c.code !== booking.appliedCoupon?.code);
+    }
+    const newXP = user.xp + estimatedXP;
+    let leveledUp = false;
+    DATA.levels.forEach(lvl => {
+      if (newXP >= lvl.xpNeeded && user.xp < lvl.xpNeeded && lvl.level > 1) {
+        leveledUp = true;
+        updatedCoupons.push({ id: `LVL${lvl.level}_${Date.now()}`, val: lvl.reward, title: `${lvl.title} Bônus`, code: `LVLUP${lvl.level}` });
+      }
+    });
+
+    setUser(p => ({ ...p, xp: newXP, coupons: updatedCoupons, usedCoupons: updatedHistory, ordersCount: (p.ordersCount || 142) + 1, lastActivity: new Date().toISOString() }));
+    if (leveledUp) { setLevelUpPopup(true); setTimeout(() => addToast(T.levelup_popup_title, 'success'), 500); }
     setStep(4);
   };
 
   const categoryConfig = [
     { id: 'relax', title: lang === 'en' ? "Therapeutic" : "Massagem Terapêutica", icon: 'sun', desc: lang === 'en' ? "Pain relief without intimate touches." : "Foco em dores, sem toques íntimos." },
-    { id: 'final', title: lang === 'en' ? "Tantric Journey" : "Terapia Tântrica", icon: 'sparkles', desc: lang === 'en' ? "Sensory focus with manual release." : "Jornada sensorial com finalização íntima manual." },
-    { id: 'care', title: lang === 'en' ? "Aesthetics" : "Estética Masculina", icon: 'scissors', desc: lang === 'en' ? "Body hair trim." : "Aparo de pelos corporais." },
+    { id: 'final', title: lang === 'en' ? "Tantric Journey" : "Terapia Tântrica & Prazer", icon: 'sparkles', desc: lang === 'en' ? "Sensory focus with manual release." : "Jornada sensorial com finalização íntima manual." },
+    { id: 'care', title: lang === 'en' ? "Aesthetics" : "Cuidados Masculinos", icon: 'scissors', desc: lang === 'en' ? "Body hair trim." : "Aparo de pelos corporais." },
   ];
 
   if (!isClient) return <div className="min-h-screen w-full bg-[#0f1115]" />;
@@ -832,7 +1074,18 @@ export default function App() {
       
       <ServiceModal service={selectedServiceForModal} isOpen={!!selectedServiceForModal} onClose={() => setSelectedServiceForModal(null)} onSelect={handleToggleCartItem} isInCart={selectedServiceForModal ? booking.cart.some(c => c.id === selectedServiceForModal.id) : false} isDark={isDark} T={T} lang={lang} isPack={selectedServiceForModal?.type === 'pack'} />
 
-      <FloatingWhatsApp isDark={isDark} lang={lang} onClick={() => openExternal('whatsapp', 'Olá Thalyson, estava no site e gostaria de conversar.')} />
+      <TigrinhoRoulette
+        isOpen={showRoulette} isDark={isDark} lang={lang} onClose={() => setShowRoulette(false)}
+        onWin={(val: number) => {
+          setShowRoulette(false);
+          const c: Coupon = { id: `roleta_${Date.now()}`, val, title: lang === 'en' ? `Lucky Spin (R$ ${val})` : `Bônus Roleta (R$ ${val})`, code: `ROLETA${val}` };
+          setUser(u => ({ ...u, hasSeenWelcome: true, coupons: [...u.coupons, c] }));
+          setBooking(b => ({ ...b, appliedCoupon: c }));
+          addToast(lang === 'en' ? `R$ ${val} gift added!` : `Presente de R$ ${val} adicionado!`, 'success');
+        }}
+      />
+
+      <FloatingWhatsApp isDark={isDark} lang={lang} onClick={() => openExternal('whatsapp', 'Olá Thalyson, estava no site e gostaria de tirar uma dúvida.')} />
 
       <main className={`min-h-screen relative z-10 pb-40 px-4 sm:px-6 max-w-3xl mx-auto overflow-x-hidden`}>
 
@@ -841,10 +1094,11 @@ export default function App() {
             <div className="flex items-center justify-between gap-4">
               <button onClick={() => setStep(0)} className="group text-left">
                 <h1 className={`font-display text-2xl sm:text-3xl font-bold leading-tight mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Thalyson Massagens</h1>
-                <div className={`flex items-center gap-2 text-[10px] uppercase font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}><span className="relative flex h-2 w-2 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" /></span> Sigilo Absoluto</div>
+                <div className={`flex items-center gap-2 text-[10px] uppercase font-bold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}><span className="relative flex h-2 w-2 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" /></span> Sigilo e Discrição ({user.ordersCount} {T.header_tensions})</div>
               </button>
               <div className="flex items-center gap-2 shrink-0">
                 <button onClick={() => setLang(l => l === 'pt' ? 'en' : 'pt')} className={`h-10 w-10 flex items-center justify-center rounded-xl border ${isDark ? 'border-zinc-800 bg-[#161920] text-zinc-400' : 'border-slate-200 bg-white text-slate-500'}`}><Icon name="globe" size={18} /></button>
+                <button onClick={() => openExternal('instagram')} className={`h-10 w-10 flex items-center justify-center rounded-xl border ${isDark ? 'border-zinc-800 bg-[#161920] text-pink-500' : 'border-slate-200 bg-white text-pink-600'}`}><Icon name="instagram" size={18} /></button>
                 <button onClick={() => setMenuOpen(true)} className={`h-10 w-10 flex items-center justify-center rounded-xl border ${isDark ? 'border-zinc-800 bg-[#161920] text-zinc-400' : 'border-slate-200 bg-white text-slate-500'}`}><Icon name="menu" size={18} /></button>
               </div>
             </div>
@@ -876,7 +1130,8 @@ export default function App() {
                   </div>
                 </article>
 
-                <div className={`flex items-center gap-4 p-4 rounded-2xl border ${isDark ? 'bg-[#161920] border-zinc-800' : 'bg-slate-50 border-slate-200'}`}>
+                {/* HORÁRIOS DE ATENDIMENTO */}
+                <div className={`flex items-center gap-4 p-4 rounded-2xl border ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-slate-50 border-slate-200'}`}>
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600'}`}>
                     <Icon name="clock" size={20} />
                   </div>
@@ -887,6 +1142,7 @@ export default function App() {
                 </div>
               </div>
 
+              {/* DÚVIDAS FREQUENTES NO TOPO */}
               <section className="pb-2">
                 <h2 className={`font-display font-bold text-2xl text-center mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.faq_title}</h2>
                 <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#161920] border-zinc-800' : 'bg-white border-slate-200'}`}>
@@ -934,12 +1190,13 @@ export default function App() {
                 )}
               </div>
 
+              {/* RESTAURAÇÃO DOS FEEDBACKS / REVIEWS */}
               <section className={`py-10 border-t border-b ${isDark ? 'border-zinc-800' : 'border-slate-200'}`}>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className={`font-display font-bold text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.reviews_title}</h2>
                   <div className="flex gap-2 shrink-0">
-                    <button onClick={() => reviewScrollRef.current?.scrollBy({ left: -260, behavior: 'smooth' })} className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${isDark ? 'border-zinc-700 bg-[#161920] text-zinc-300 hover:text-white' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="chevron-left" size={18} /></button>
-                    <button onClick={() => reviewScrollRef.current?.scrollBy({ left: 260, behavior: 'smooth' })} className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${isDark ? 'border-zinc-700 bg-[#161920] text-zinc-300 hover:text-white' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="chevron-right" size={18} /></button>
+                    <button onClick={() => reviewScrollRef.current?.scrollBy({ left: -260, behavior: 'smooth' })} className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${isDark ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:text-white' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="chevron-left" size={18} /></button>
+                    <button onClick={() => reviewScrollRef.current?.scrollBy({ left: 260, behavior: 'smooth' })} className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${isDark ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:text-white' : 'border-slate-200 bg-white text-slate-500 hover:text-slate-800 shadow-sm'}`}><Icon name="chevron-right" size={18} /></button>
                   </div>
                 </div>
                 <div ref={reviewScrollRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6">
@@ -975,17 +1232,19 @@ export default function App() {
                     <InputField isDark={isDark} label={T.input_num} value={booking.address.number} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, number: sanitizeInput(e.target.value) } }))} placeholder="Número" type="tel" hasError={hasErrorGlobal && !booking.address.number} />
                     <InputField isDark={isDark} label={T.input_district} value={booking.address.district} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, district: sanitizeInput(e.target.value) } }))} placeholder="Bairro" disabled={isFetchingCep} hasError={hasErrorGlobal && !booking.address.district} />
                     <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder="Cidade" disabled={isFetchingCep} hasError={hasErrorGlobal && !booking.address.city} />
+                    <InputField isDark={isDark} label={T.input_comp} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Complemento (Opcional)" />
                   </div>
                 )}
                 {booking.locationType === 'hotel' && (
                   <div className="space-y-5 animate-fade-up">
                     <InputField isDark={isDark} label={T.input_hotel} value={booking.address.placeName} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, placeName: sanitizeInput(e.target.value) } }))} icon="building" placeholder="Nome do Hotel" hasError={hasErrorGlobal && !booking.address.placeName} />
+                    <InputField isDark={isDark} label={T.input_city} value={booking.address.city} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, city: sanitizeInput(e.target.value) } }))} placeholder="Cidade" hasError={hasErrorGlobal && !booking.address.city} />
                     <InputField isDark={isDark} label={T.input_room} value={booking.address.comp} onChange={(e: any) => setBooking(b => ({ ...b, address: { ...b.address, comp: sanitizeInput(e.target.value) } }))} placeholder="Nº do Quarto" />
                   </div>
                 )}
                 {booking.locationType === 'motel' && (
-                  <div className={`p-5 rounded-2xl border flex items-start gap-4 animate-fade-up ${isDark ? 'bg-[#161920] border-zinc-800' : 'bg-slate-50 border-slate-200'}`}>
-                    <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600'}`}><Icon name="heart" size={20} /></div>
+                  <div className={`p-5 rounded-2xl border flex items-start gap-4 animate-fade-up ${isDark ? 'bg-pink-900/10 border-pink-900/30' : 'bg-pink-50 border-pink-100'}`}>
+                    <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-pink-500/20 text-pink-400' : 'bg-pink-100 text-pink-600'}`}><Icon name="heart" size={20} /></div>
                     <p className={`text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.motel_note}</p>
                   </div>
                 )}
@@ -1028,12 +1287,19 @@ export default function App() {
                             <button key={t} onClick={() => { setBooking(b => ({ ...b, time: t })); vibrate(30); }}
                               className={`relative flex flex-col items-center justify-center py-3 px-2 rounded-xl border text-sm font-bold min-h-[56px] w-full ${isSel ? isRush ? 'bg-amber-500 border-amber-500 text-amber-950' : 'bg-blue-600 border-blue-500 text-white' : isDark ? isRush ? 'bg-amber-900/20 border-amber-800/50 text-amber-500' : 'bg-zinc-800 border-zinc-700 text-zinc-300' : isRush ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
                               {t}
+                              {isRush && <span className={`text-[9px] font-bold uppercase mt-0.5 ${isSel ? 'text-amber-900' : isDark ? 'text-amber-500' : 'text-amber-600'}`}>+{formatMoney(RUSH_FEE, lang).replace('R$ ', 'R$')}</span>}
                             </button>
                           );
                         })}
                       </div>
                     </div>
                   ))}
+                  {Object.values(groupedTimeSlots).flat().some(t => RUSH_HOURS.includes(t)) && booking.locationType !== 'motel' && (
+                    <div className={`flex items-start gap-3 p-4 rounded-2xl border text-xs font-bold ${isDark ? 'bg-amber-900/10 border-amber-800/40 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
+                      <Icon name="alert-circle" size={18} />
+                      <p>Horários de pico possuem taxa de deslocamento (Uber).</p>
+                    </div>
+                  )}
                 </div>
               )}
             </section>
@@ -1061,7 +1327,41 @@ export default function App() {
                       </button>
                     );
                   })}
+                  <div className="col-span-1 sm:col-span-2 mt-2">
+                    <InputField isDark={isDark} label="Pedido Especial / Fantasia (+R$ 150,00)" value={booking.customExtraText} onChange={(e: any) => setBooking(b => ({ ...b, customExtraText: e.target.value }))} icon="plus" placeholder="O que mais você deseja adicionar?" />
+                  </div>
                 </div>
+              </article>
+
+              {/* RESTAURAÇÃO DO SISTEMA DE CUPONS COMPLETO */}
+              <article className={`p-5 sm:p-6 rounded-3xl border ${isDark ? 'bg-[#161920] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <h3 className={`font-display font-bold text-xl mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.coupon_section}</h3>
+
+                <div className="flex items-center gap-2 mb-5">
+                  <input type="text" placeholder="Tem um código?" value={manualCoupon} onChange={(e) => setManualCoupon(e.target.value.toUpperCase())}
+                    className={`flex-1 font-bold rounded-xl px-4 h-[44px] text-sm outline-none border transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500'}`}
+                  />
+                  <Button onClick={applyManualCoupon} size="sm" variant="primary" className="!w-auto !h-[44px] !px-4 !flex-none">Aplicar</Button>
+                </div>
+
+                {user.coupons.length > 0 ? (
+                  <div className="space-y-3">
+                    {user.coupons.map(c => (
+                      <button key={c.id} onClick={() => { setBooking(b => ({ ...b, appliedCoupon: b.appliedCoupon?.id === c.id ? null : c })); vibrate(30); }}
+                        className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 ${booking.appliedCoupon?.id === c.id ? isDark ? 'bg-emerald-900/20 border-emerald-800 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700' : isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                        <div className="flex items-center gap-3">
+                          <Icon name="gift" size={20} className={booking.appliedCoupon?.id === c.id ? 'text-emerald-500' : isDark ? 'text-zinc-500' : 'text-slate-400'} />
+                          <span className="text-sm font-bold truncate">{c.title}</span>
+                        </div>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${booking.appliedCoupon?.id === c.id ? 'bg-emerald-500 border-emerald-500 text-white' : isDark ? 'border-zinc-700' : 'border-slate-300'}`}>
+                          {booking.appliedCoupon?.id === c.id && <Icon name="check" size={12} />}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={`p-4 rounded-2xl border border-dashed text-center text-xs font-bold ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-slate-300 text-slate-500'}`}>{T.coupon_empty}</div>
+                )}
               </article>
 
               <article className={`p-5 sm:p-6 rounded-3xl border ${hasErrorGlobal && !booking.payment ? 'animate-shake' : ''} ${isDark ? 'bg-[#161920] border-zinc-800' : 'bg-white border-slate-200 shadow-sm'}`}>
@@ -1106,8 +1406,8 @@ export default function App() {
                   {T.whatsapp_btn}
                 </Button>
                 
-                {/* BOTÃO PARA SALVAR NA AGENDA GOOGLE */}
-                <Button variant="google" size="lg" full icon="calendar-plus" onClick={addToGoogleCalendar}>
+                {/* BOTÃO PARA SALVAR NA AGENDA VIA .ICS */}
+                <Button variant="google" size="lg" full icon="calendar-plus" onClick={downloadICS}>
                   {T.calendar_btn}
                 </Button>
 
@@ -1152,6 +1452,18 @@ export default function App() {
             <div className={`p-5 border-t shrink-0 ${isDark ? 'border-zinc-800' : 'border-slate-100'}`}>
               <Button full size="lg" onClick={() => { setBooking(b => ({ ...b, termsAccepted: true })); setTermsOpen(false); }}>{T.agree_terms}</Button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* LEVEL UP POPUP */}
+      {levelUpPopup && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div role="dialog" className={`relative w-full max-w-sm rounded-3xl p-6 sm:p-8 text-center border shadow-2xl animate-scale-in ${isDark ? 'bg-[#161920] border-amber-900/50' : 'bg-white border-amber-200'}`}>
+            <div className={`w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-5 bg-gradient-to-br from-amber-400 to-amber-600 text-amber-950 shadow-lg`}><Icon name="trophy" size={32} /></div>
+            <h3 className={`font-display font-bold text-3xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{T.levelup_popup_title}</h3>
+            <p className={`text-sm font-medium leading-relaxed mb-6 ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>{T.levelup_popup_msg}</p>
+            <Button full size="lg" variant="amber" onClick={() => { setLevelUpPopup(false); vibrate(50); }}>{T.level_redeem}</Button>
           </div>
         </div>
       )}
