@@ -249,8 +249,13 @@ export default function App() {
   const reviewsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // CORREÇÃO APLICADA AQUI: Adicionado o ELSE para marcar 'false' e liberar a tela
     const checkAdult = localStorage.getItem('thaly_adult');
-    if (checkAdult === 'yes') setIsAdult(true);
+    if (checkAdult === 'yes') {
+      setIsAdult(true);
+    } else {
+      setIsAdult(false);
+    }
     
     const hasSeen = localStorage.getItem('thaly_gift_v3');
     if (hasSeen) { 
