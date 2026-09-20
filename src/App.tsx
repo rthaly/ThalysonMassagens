@@ -299,7 +299,6 @@ const getData = (lang: 'pt' | 'en') => {
       success_title: isEn ? "Almost there!" : "Tudo Certo, falta pouco!",
       success_sub: isEn ? "Send the summary on WhatsApp to confirm." : "Para garantir o seu horário e o sigilo, me envie o resumo no WhatsApp para confirmar.",
       whatsapp_btn: isEn ? "Send to WhatsApp" : "Confirmar via WhatsApp",
-      calendar_btn: isEn ? "Add to Calendar" : "Salvar na Agenda (Discreto)",
       back_home: isEn ? "Start over" : "Voltar para o início",
       timer_text: isEn ? "Cart saved for" : "Sua reserva está segura por",
       input_name: isEn ? "Name or Nickname" : "Seu Nome ou Apelido (Sigilo mantido)",
@@ -773,41 +772,6 @@ export default function App() {
     document.body.appendChild(a); a.click();
     setTimeout(() => document.body.removeChild(a), 100);
   }, []);
-
-  const downloadICS = () => {
-    if(!booking.date || !booking.time) return;
-    const d = new Date(booking.date);
-    const [h, m] = booking.time.split(':');
-    d.setHours(parseInt(h), parseInt(m), 0, 0);
-    const endD = new Date(d.getTime() + (120 * 60000)); // 2h placeholder
-
-    const fmt = (date: Date) => {
-        return date.toISOString().replace(/-|:|\.\d+/g, '').substring(0,15) + 'Z';
-    };
-
-    const icsData = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//Thalyson Massagens//PT',
-        'BEGIN:VEVENT',
-        `DTSTART:${fmt(d)}`,
-        `DTEND:${fmt(endD)}`,
-        `SUMMARY:Sessão de Relaxamento`,
-        `DESCRIPTION:Seu momento reservado de descanso e cuidado sigiloso.`,
-        'END:VEVENT',
-        'END:VCALENDAR'
-    ].join('\n');
-    
-    const blob = new Blob([icsData], { type: 'text/calendar' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'sessao-relaxamento.ics');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    addToast("Evento discreto salvo na agenda!");
-  };
 
   useEffect(() => { setIsClient(true); cleanupStorage(); }, []);
 
@@ -1382,11 +1346,6 @@ export default function App() {
               <div className="w-full space-y-4">
                 <Button variant="whatsapp" size="lg" full icon="message" onClick={() => openExternal('whatsapp', generateWhatsAppMsg())}>
                   {T.whatsapp_btn}
-                </Button>
-                
-                {/* BOTÃO PARA SALVAR NA AGENDA */}
-                <Button variant="secondary" size="lg" full icon="calendar-plus" onClick={downloadICS}>
-                  {T.calendar_btn}
                 </Button>
 
                 <button onClick={() => { setStep(0); setBooking({ ...booking, cart: [], termsAccepted: false, appliedCoupon: null, bookingId: `BOOK_${Date.now()}`, customExtraText: '' }); }} className={`w-full text-xs font-bold uppercase tracking-widest py-4 ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
