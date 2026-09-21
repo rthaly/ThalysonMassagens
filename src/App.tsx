@@ -371,9 +371,27 @@ export default function App() {
     setIsProfileOpen(true);
   };
 
+  // ZERA TUDO QUANDO CLICA EM VOLTAR PARA O INÍCIO
   const resetFlow = () => {
     vibrate(20);
+    
+    // Confirma mais uma vez os status
     const isAdult = localStorage.getItem('thaly_adult_v24');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v24');
+    
+    setIsReturningClient(hasBookedBefore === 'yes');
+    
+    // Limpa todos os estados de cupom para ter certeza que não sobrou nada
+    setGiftApplied(false);
+    setAppliedCoupon('');
+    setCouponInput('');
+    
+    // Limpa os dados do formulário
+    setData({
+      name: '', locType: '', cep: '', street: '', number: '', comp: '', bairro: '', 
+      date: null, time: '', extras: {}, req: '', payment: ''
+    });
+
     setStep(isAdult === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
   };
@@ -500,9 +518,15 @@ export default function App() {
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
   }, [data, mood, fin, lang, appliedCoupon]);
 
+  // FINALIZAÇÃO ONDE O ESTADO É ATUALIZADO IMEDIATAMENTE
   const finishFlow = () => {
     vibrate([30,50]);
     localStorage.setItem('thaly_returning_v24', 'yes');
+    
+    // Atualiza o estado na hora para sumir com a caixa
+    setIsReturningClient(true);
+    setGiftApplied(false); 
+    
     setStep(5);
     window.location.href = wppLink;
   };
@@ -728,7 +752,7 @@ export default function App() {
               <div className="space-y-8">
                 
                 <div className="space-y-5">
-                  {/* CAIXA DE PRESENTE: Só aparece na 1ª vez e se não tiver digitado nenhum cupom manual */}
+                  {/* CAIXA DE PRESENTE: Só aparece se o cliente for novo E não tiver digitado nenhum cupom manual */}
                   {!isReturningClient && !appliedCoupon && !giftApplied && (
                     <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
                       <div className="absolute -right-4 -bottom-4 opacity-5">
@@ -755,7 +779,7 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* CAMPO DE CUPOM MANUAL: Aparece sempre que o presente não estiver aplicado */}
+                  {/* CAMPO DE CUPOM MANUAL: Sempre visível, a não ser que o presente esteja aplicado */}
                   {!giftApplied && (
                     <div className="animate-in fade-in">
                       <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
