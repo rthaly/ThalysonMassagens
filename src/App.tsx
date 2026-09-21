@@ -81,7 +81,7 @@ const TEXTS = {
     total: "Valor Final",
     btnFinish: "Finalizar Pedido",
     step5Title: "Tudo Pronto.",
-    step5Desc: "O seu resumo foi gerado. Para confirmar a sua reserva na minha agenda, clique no botão abaixo e me envie a mensagem no WhatsApp.",
+    step5Desc: "A sua solicitação foi gerada e enviada para o WhatsApp. Caso o aplicativo não tenha aberto automaticamente, clique no botão abaixo.",
     btnSend: "Confirmar no WhatsApp",
     btnBack: "Voltar para o início",
   },
@@ -140,7 +140,7 @@ const TEXTS = {
     total: "Final Value",
     btnFinish: "Finish Order",
     step5Title: "All Set.",
-    step5Desc: "Your summary is ready. To confirm your booking on my schedule, click the button below and send the message on WhatsApp.",
+    step5Desc: "Your request was generated and sent to WhatsApp. If the app did not open automatically, click the button below.",
     btnSend: "Confirm on WhatsApp",
     btnBack: "Back to start",
   }
@@ -311,7 +311,6 @@ export default function App() {
     req: '', payment: ''
   });
 
-  // Chave atualizada para v24. O teste será limpo e puro.
   useEffect(() => {
     const isAdult = localStorage.getItem('thaly_adult_v24');
     const hasBookedBefore = localStorage.getItem('thaly_returning_v24');
@@ -456,7 +455,6 @@ export default function App() {
     const ext = Object.keys(data.extras).filter(k=>data.extras[k]).map(k=>EXTRAS.find(e=>e.id===k)?.[lang].label).join(', ');
     const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
-    // A Bússola: Define exatamente quem vai até quem com base no que foi escolhido.
     let locationText = '';
     if (data.locType === 'studio') {
       locationText = `Você vem até o meu espaço (Minha Suíte, Bela Vista)`;
@@ -504,10 +502,9 @@ export default function App() {
 
   const finishFlow = () => {
     vibrate([30,50]);
-    // A mágica acontece aqui: ao finalizar, ele é marcado como cliente recorrente.
-    // Na próxima vez que ele recarregar o site, a caixa do presente desaparece.
     localStorage.setItem('thaly_returning_v24', 'yes');
     setStep(5);
+    window.location.href = wppLink;
   };
 
   return (
@@ -523,11 +520,11 @@ export default function App() {
           <button onClick={openProfile} className="text-left group outline-none py-2 flex items-center gap-3">
             <img 
               src="FmtU3Ogx_400x400.jpg" 
-              alt="Terapeuta Thalyson" 
+              alt="Thalyson" 
               className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg transition-transform group-hover:scale-105"
             />
             <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
-              Thalyson Massagens
+              Thalyson Massagens.
             </span>
           </button>
           
@@ -555,7 +552,7 @@ export default function App() {
                 <Icon name="close" size={20} />
               </button>
               
-              <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt=" /Terapeuta Thalyson" />
+              <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt="Thalyson" />
               
               <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Terapeuta Thalyson.</h2>
               <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Solteiro</p>
@@ -731,7 +728,7 @@ export default function App() {
               <div className="space-y-8">
                 
                 <div className="space-y-5">
-                  {/* CAIXA DE PRESENTE: Só existe se a pessoa NUNCA tiver finalizado um agendamento e não tiver cupom ativo */}
+                  {/* CAIXA DE PRESENTE: Só aparece na 1ª vez e se não tiver digitado nenhum cupom manual */}
                   {!isReturningClient && !appliedCoupon && !giftApplied && (
                     <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
                       <div className="absolute -right-4 -bottom-4 opacity-5">
@@ -758,7 +755,7 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* CAMPO DE CUPOM MANUAL (Some se o presente estiver em uso) */}
+                  {/* CAMPO DE CUPOM MANUAL: Aparece sempre que o presente não estiver aplicado */}
                   {!giftApplied && (
                     <div className="animate-in fade-in">
                       <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
