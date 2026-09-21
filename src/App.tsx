@@ -63,7 +63,7 @@ const TEXTS = {
     subPix: "Desconto Pix",
     total: "Total Final",
     btnFinish: "Finalizar Pedido",
-    btnBackStep: "Voltar para etapa anterior",
+    btnBackStep: "Voltar",
     step5Title: "Tudo Pronto.",
     step5Desc: "O seu resumo foi gerado e o WhatsApp deve ter aberto automaticamente. Caso o seu navegador tenha bloqueado a janela (ou se quiser tentar novamente), clique no botão abaixo.",
     btnSend: "Reenviar no WhatsApp",
@@ -134,7 +134,7 @@ const TEXTS = {
     subPix: "Pix Discount",
     total: "Final Total",
     btnFinish: "Finish Order",
-    btnBackStep: "Back to previous step",
+    btnBackStep: "Go Back",
     step5Title: "All Set.",
     step5Desc: "Your summary is ready and WhatsApp should have opened automatically. If your browser blocked the window (or if you need to try again), click the button below.",
     btnSend: "Resend on WhatsApp",
@@ -261,7 +261,7 @@ const CinematicStyles = memo(() => (
 
     .modern-input {
       background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1);
-      color: white; border-radius: 0; padding: 12px 0; transition: border-color 0.3s;
+      color: white; border-radius: 0; padding: 16px 0; transition: border-color 0.3s;
     }
     .modern-input:focus { outline: none; border-bottom-color: rgba(255,255,255,0.8); }
     .modern-input::placeholder { color: rgba(255,255,255,0.2); }
@@ -426,11 +426,11 @@ export default function App() {
       <div className="grain-overlay" />
       <div className="ambient-glow" style={{ backgroundColor: mood.color }} />
 
-      <div className="relative z-10 min-h-screen flex flex-col pt-10 pb-16 px-6 max-w-md mx-auto">
+      <div className="relative z-10 min-h-[100dvh] flex flex-col pt-10 px-6 max-w-md mx-auto">
         
         {/* CABEÇALHO SEMPRE VISÍVEL */}
-        <header className="flex justify-between items-center mb-10 step-enter">
-          <button onClick={resetFlow} className="text-left group outline-none">
+        <header className="flex justify-between items-center mb-8 step-enter">
+          <button onClick={resetFlow} className="text-left group outline-none py-2">
             <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
               Thalyson Massagens.
             </span>
@@ -445,244 +445,266 @@ export default function App() {
               </div>
             )}
             
-            <button onClick={toggleLang} className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-white/50 hover:text-white transition-colors outline-none">
+            <button onClick={toggleLang} className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-white/50 hover:text-white transition-colors outline-none py-2">
               <Icon name="globe" size={14} />
               {lang}
             </button>
 
-            <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors outline-none">
+            <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors outline-none py-2">
               <Icon name="instagram" size={18} />
             </a>
           </div>
         </header>
 
-        {/* STEP 0: O AVISO */}
-        {step === 0 && (
-          <div className="flex-1 flex flex-col justify-center step-enter">
-            <h1 style={{ fontFamily: 'var(--font-serif)', whiteSpace: 'pre-line' }} className="text-4xl leading-tight mb-6">{T.ageTitle}</h1>
-            <p className="text-white/60 text-sm leading-relaxed mb-10">{T.ageDesc}</p>
-            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-medium text-sm tracking-widest uppercase transition-transform active:scale-95 outline-none">
-              {T.ageBtn}
-            </button>
-          </div>
-        )}
-
-        {/* STEP 1: A FREQUÊNCIA */}
-        {step === 1 && (
-          <div className="flex-1 flex flex-col step-enter pb-8">
-            <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step1Label}</h2>
-            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step1Title}</h1>
-            
-            <div className="flex flex-col gap-3">
-              {MOODS.map(m => {
-                const active = mood.id === m.id;
-                return (
-                  <button key={m.id} onClick={() => { vibrate(20); setMoodId(m.id); }}
-                    className={`text-left p-5 transition-all duration-500 border outline-none ${active ? 'bg-white/10 backdrop-blur-md' : 'border-white/5 hover:border-white/20 bg-transparent'}`}
-                    style={{ borderColor: active ? m.accent : '' }}>
-                    <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: active ? m.accent : 'rgba(255,255,255,0.4)' }}>{m[lang].title}</p>
-                    <p className={`text-sm ${active ? 'text-white' : 'text-white/60'}`}>{m[lang].subtitle}</p>
-                  </button>
-                )
-              })}
+        {/* ÁREA DE CONTEÚDO (COM ESPAÇO NO FUNDO PARA NÃO BATER NO DOCK) */}
+        <div className="flex-1 flex flex-col pb-32">
+          
+          {/* STEP 0: O AVISO */}
+          {step === 0 && (
+            <div className="flex-1 flex flex-col justify-center step-enter">
+              <h1 style={{ fontFamily: 'var(--font-serif)', whiteSpace: 'pre-line' }} className="text-4xl leading-tight mb-6">{T.ageTitle}</h1>
+              <p className="text-white/60 text-sm leading-relaxed mb-10">{T.ageDesc}</p>
             </div>
+          )}
 
-            <div className="mt-8 p-6 bg-black/40 backdrop-blur-xl border border-white/10 min-h-[140px]">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-medium text-lg">{mood[lang].service}</h3>
-                <div className="text-right flex flex-col items-end">
-                  <span className="text-base font-bold block" style={{ color: mood.accent }}>{formatMoney(mood.price)}</span>
-                  <span className="text-[10px] text-white/50 uppercase tracking-widest mt-0.5">{T.upTo} {mood.min}m</span>
-                </div>
-              </div>
-              <p className="text-sm text-white/60 leading-relaxed mt-2">{mood[lang].desc}</p>
-            </div>
-
-            <button onClick={() => { vibrate(30); setStep(2); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none">
-              {T.btnContinue}
-            </button>
-          </div>
-        )}
-
-        {/* STEP 2: COORDENADAS */}
-        {step === 2 && (
-          <div className="flex-1 flex flex-col step-enter pb-8">
-            <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step2Label}</h2>
-            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step2Title}</h1>
-
-            <div className="space-y-6">
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full modern-input" />
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.locLabel}</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-sm outline-none transition-colors border ${data.locType==='studio' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locStudio}</button>
-                  <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-sm outline-none transition-colors border ${data.locType==='home' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locHome}</button>
-                </div>
-              </div>
-
-              {data.locType === 'studio' && <p className="text-sm text-white/60 bg-white/5 p-4 border border-white/10 leading-relaxed animate-in fade-in">{T.studioDesc}</p>}
+          {/* STEP 1: A FREQUÊNCIA */}
+          {step === 1 && (
+            <div className="flex-1 flex flex-col step-enter">
+              <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step1Label}</h2>
+              <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step1Title}</h1>
               
-              {data.locType === 'home' && (
-                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                  <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full modern-input" />
-                  <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full modern-input" />
-                  <div className="flex gap-4">
-                    <input type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 modern-input" />
-                    <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 modern-input" />
-                  </div>
-                  <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full modern-input" />
-                </div>
-              )}
-            </div>
-
-            <div className="mt-12 flex flex-col gap-4">
-              <button disabled={!data.name || !data.locType || (data.locType==='home' && (!data.street || !data.bairro))} onClick={() => { vibrate(30); setStep(3); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
-                {T.btnNext}
-              </button>
-              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-2">
-                {T.btnBackStep}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 3: TEMPO */}
-        {step === 3 && (
-          <div className="flex-1 flex flex-col step-enter pb-8">
-            <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step3Label}</h2>
-            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step3Title}</h1>
-
-            <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-2 mb-8">
-              {days.map((d, i) => {
-                const sel = data.date?.toDateString() === d.toDateString();
-                const dayName = d.toLocaleDateString(lang === 'PT' ? 'pt-BR' : 'en-US', {weekday:'short'}).slice(0,3);
-                return (
-                  <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 w-16 h-20 outline-none flex flex-col items-center justify-center border transition-all ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/50'}`}>
-                    <span className="text-[10px] uppercase font-bold tracking-widest">{dayName}</span>
-                    <span style={{ fontFamily: 'var(--font-serif)' }} className="text-2xl mt-1">{d.getDate()}</span>
-                  </button>
-                )
-              })}
-            </div>
-
-            {data.date && (
-              <div className="grid grid-cols-3 gap-3 animate-in fade-in">
-                {getSlots().map(t => {
-                  const sel = data.time === t;
+              <div className="flex flex-col gap-3">
+                {MOODS.map(m => {
+                  const active = mood.id === m.id;
                   return (
-                    <button key={t} onClick={() => setData({...data, time: t})} className={`py-4 text-sm outline-none font-medium border transition-colors ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>
-                      {t}
+                    <button key={m.id} onClick={() => { vibrate(20); setMoodId(m.id); }}
+                      className={`text-left p-5 transition-all duration-500 border outline-none ${active ? 'bg-white/10 backdrop-blur-md' : 'border-white/5 hover:border-white/20 bg-transparent'}`}
+                      style={{ borderColor: active ? m.accent : '' }}>
+                      <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: active ? m.accent : 'rgba(255,255,255,0.4)' }}>{m[lang].title}</p>
+                      <p className={`text-sm ${active ? 'text-white' : 'text-white/60'}`}>{m[lang].subtitle}</p>
                     </button>
                   )
                 })}
-                {getSlots().length === 0 && <p className="col-span-3 text-sm text-white/40 text-center py-4 border border-white/5">{T.noSlots}</p>}
               </div>
-            )}
 
-            <div className="mt-12 flex flex-col gap-4">
-              <button disabled={!data.date || !data.time} onClick={() => { vibrate(30); setStep(4); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
-                {T.btnAdjust}
-              </button>
-              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-2">
-                {T.btnBackStep}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 4: O ACORDO */}
-        {step === 4 && (
-          <div className="flex-1 flex flex-col step-enter pb-8">
-            <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step4Label}</h2>
-            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step4Title}</h1>
-
-            <div className="space-y-8">
-              {!giftApplied && (
-                <div className="p-5 border border-white/20 bg-white/5 animate-in fade-in">
-                  <p className="text-sm text-white mb-3 leading-relaxed">{T.giftDesc}</p>
-                  <button onClick={applyGift} className="text-xs font-bold outline-none uppercase tracking-widest border-b border-white pb-1">{T.giftBtn}</button>
+              <div className="mt-8 p-6 bg-black/40 backdrop-blur-xl border border-white/10 min-h-[140px]">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-medium text-lg">{mood[lang].service}</h3>
+                  <div className="text-right flex flex-col items-end">
+                    <span className="text-base font-bold block" style={{ color: mood.accent }}>{formatMoney(mood.price)}</span>
+                    <span className="text-[10px] text-white/50 uppercase tracking-widest mt-0.5">{T.upTo} {mood.min}m</span>
+                  </div>
                 </div>
-              )}
+                <p className="text-sm text-white/60 leading-relaxed mt-2">{mood[lang].desc}</p>
+              </div>
+            </div>
+          )}
 
-              <div>
-                <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.addons}</p>
-                <div className="space-y-3">
-                  {EXTRAS.map(ex => {
-                    const sel = data.extras[ex.id];
+          {/* STEP 2: COORDENADAS */}
+          {step === 2 && (
+            <div className="flex-1 flex flex-col step-enter">
+              <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step2Label}</h2>
+              <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step2Title}</h1>
+
+              <div className="space-y-6">
+                <div>
+                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full modern-input" />
+                </div>
+
+                <div className="pt-4">
+                  <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.locLabel}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-sm outline-none transition-colors border ${data.locType==='studio' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locStudio}</button>
+                    <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-sm outline-none transition-colors border ${data.locType==='home' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locHome}</button>
+                  </div>
+                </div>
+
+                {data.locType === 'studio' && <p className="text-sm text-white/60 bg-white/5 p-4 border border-white/10 leading-relaxed animate-in fade-in">{T.studioDesc}</p>}
+                
+                {data.locType === 'home' && (
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+                    <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full modern-input" />
+                    <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full modern-input" />
+                    <div className="flex gap-4">
+                      <input type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 modern-input" />
+                      <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 modern-input" />
+                    </div>
+                    <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full modern-input" />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: TEMPO */}
+          {step === 3 && (
+            <div className="flex-1 flex flex-col step-enter">
+              <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step3Label}</h2>
+              <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step3Title}</h1>
+
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-2 mb-8">
+                {days.map((d, i) => {
+                  const sel = data.date?.toDateString() === d.toDateString();
+                  const dayName = d.toLocaleDateString(lang === 'PT' ? 'pt-BR' : 'en-US', {weekday:'short'}).slice(0,3);
+                  return (
+                    <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 w-16 h-20 outline-none flex flex-col items-center justify-center border transition-all ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/50'}`}>
+                      <span className="text-[10px] uppercase font-bold tracking-widest">{dayName}</span>
+                      <span style={{ fontFamily: 'var(--font-serif)' }} className="text-2xl mt-1">{d.getDate()}</span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {data.date && (
+                <div className="grid grid-cols-3 gap-3 animate-in fade-in">
+                  {getSlots().map(t => {
+                    const sel = data.time === t;
                     return (
-                      <button key={ex.id} onClick={()=>setData({...data, extras:{...data.extras, [ex.id]:!sel}})} className={`w-full outline-none flex justify-between p-4 border text-sm transition-colors ${sel ? 'border-white bg-white/10 text-white' : 'border-white/10 text-white/60'}`}>
-                        <span>{ex[lang].label}</span>
-                        <span>+{formatMoney(ex.price)}</span>
+                      <button key={t} onClick={() => setData({...data, time: t})} className={`py-4 text-sm outline-none font-medium border transition-colors ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>
+                        {t}
                       </button>
                     )
                   })}
+                  {getSlots().length === 0 && <p className="col-span-3 text-sm text-white/40 text-center py-4 border border-white/5">{T.noSlots}</p>}
                 </div>
-              </div>
+              )}
+            </div>
+          )}
 
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <p className="text-xs text-white/50 uppercase tracking-widest">{T.reqLabel}</p>
-                  <span className="text-xs font-bold text-white/60">+ R$ 130</span>
+          {/* STEP 4: O ACORDO */}
+          {step === 4 && (
+            <div className="flex-1 flex flex-col step-enter">
+              <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step4Label}</h2>
+              <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step4Title}</h1>
+
+              <div className="space-y-8">
+                {!giftApplied && (
+                  <div className="p-5 border border-white/20 bg-white/5 animate-in fade-in">
+                    <p className="text-sm text-white mb-3 leading-relaxed">{T.giftDesc}</p>
+                    <button onClick={applyGift} className="text-xs font-bold outline-none uppercase tracking-widest border-b border-white pb-1 py-2">{T.giftBtn}</button>
+                  </div>
+                )}
+
+                <div>
+                  <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.addons}</p>
+                  <div className="space-y-3">
+                    {EXTRAS.map(ex => {
+                      const sel = data.extras[ex.id];
+                      return (
+                        <button key={ex.id} onClick={()=>setData({...data, extras:{...data.extras, [ex.id]:!sel}})} className={`w-full outline-none flex justify-between p-4 border text-sm transition-colors ${sel ? 'border-white bg-white/10 text-white' : 'border-white/10 text-white/60'}`}>
+                          <span>{ex[lang].label}</span>
+                          <span>+{formatMoney(ex.price)}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
-                <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full modern-input text-sm" />
-                <p className="text-[10px] text-white/40 mt-2 leading-relaxed">{T.reqDesc}</p>
-              </div>
 
-              <div>
-                <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.payLabel}</p>
-                <div className="grid grid-cols-3 gap-3">
-                  {[{id:'pix', l:T.payPix},{id:'card', l:T.payCard},{id:'cash', l:T.payCash}].map(p => (
-                    <button key={p.id} onClick={()=>setData({...data, payment:p.id})} className={`py-4 outline-none text-xs font-bold uppercase tracking-wider border transition-colors ${data.payment === p.id ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{p.l}</button>
-                  ))}
+                <div>
+                  <div className="flex justify-between items-end mb-2">
+                    <p className="text-xs text-white/50 uppercase tracking-widest">{T.reqLabel}</p>
+                    <span className="text-xs font-bold text-white/60">+ R$ 130</span>
+                  </div>
+                  <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full modern-input text-sm" />
+                  <p className="text-[10px] text-white/40 mt-2 leading-relaxed">{T.reqDesc}</p>
                 </div>
-              </div>
 
-              <div className="pt-6 border-t border-white/10">
-                <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subBase}</span><span>{formatMoney(mood.price)}</span></div>
-                {fin.extrasValue > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasValue)}</span></div>}
-                {fin.reqFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subReq}</span><span>+{formatMoney(fin.reqFee)}</span></div>}
-                {fin.discount > 0 && <div className="flex justify-between text-sm text-white mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discount)}</span></div>}
-                {fin.peak > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peak)}</span></div>}
-                {fin.pix > 0 && <div className="flex justify-between text-sm text-white mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pix)}</span></div>}
-                
-                <div className="flex justify-between items-end mt-8">
-                  <span className="text-sm uppercase tracking-widest text-white/50">{T.total}</span>
-                  <span style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl text-white">{formatMoney(fin.total)}</span>
+                <div>
+                  <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.payLabel}</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[{id:'pix', l:T.payPix},{id:'card', l:T.payCard},{id:'cash', l:T.payCash}].map(p => (
+                      <button key={p.id} onClick={()=>setData({...data, payment:p.id})} className={`py-4 outline-none text-xs font-bold uppercase tracking-wider border transition-colors ${data.payment === p.id ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{p.l}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-white/10">
+                  <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subBase}</span><span>{formatMoney(mood.price)}</span></div>
+                  {fin.extrasValue > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasValue)}</span></div>}
+                  {fin.reqFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subReq}</span><span>+{formatMoney(fin.reqFee)}</span></div>}
+                  {fin.discount > 0 && <div className="flex justify-between text-sm text-white mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discount)}</span></div>}
+                  {fin.peak > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peak)}</span></div>}
+                  {fin.pix > 0 && <div className="flex justify-between text-sm text-white mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pix)}</span></div>}
+                  
+                  <div className="flex justify-between items-end mt-8">
+                    <span className="text-sm uppercase tracking-widest text-white/50">{T.total}</span>
+                    <span style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl text-white">{formatMoney(fin.total)}</span>
+                  </div>
                 </div>
               </div>
             </div>
+          )}
 
-            <div className="mt-12 flex flex-col gap-4">
+          {/* STEP 5: FINAL */}
+          {step === 5 && (
+            <div className="flex-1 flex flex-col justify-center text-center step-enter">
+              <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl mb-4">{T.step5Title}</h1>
+              <p className="text-white/60 text-sm leading-relaxed mb-10">{T.step5Desc}</p>
+            </div>
+          )}
+
+        </div>
+
+        {/* DOCK INFERIOR FIXO PARA BOTÕES DE AÇÃO (A ZONA DO POLEGAR) */}
+        <div className="sticky bottom-0 -mx-6 px-6 py-6 bg-[#09090b]/80 backdrop-blur-xl border-t border-white/5 mt-auto z-50 flex flex-col gap-2">
+          
+          {step === 0 && (
+            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-medium text-sm tracking-widest uppercase transition-transform active:scale-95 outline-none">
+              {T.ageBtn}
+            </button>
+          )}
+
+          {step === 1 && (
+            <button onClick={() => { vibrate(30); setStep(2); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none">
+              {T.btnContinue}
+            </button>
+          )}
+
+          {step === 2 && (
+            <>
+              <button disabled={!data.name || !data.locType || (data.locType==='home' && (!data.street || !data.bairro))} onClick={() => { vibrate(30); setStep(3); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
+                {T.btnNext}
+              </button>
+              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-3">
+                {T.btnBackStep}
+              </button>
+            </>
+          )}
+
+          {step === 3 && (
+            <>
+              <button disabled={!data.date || !data.time} onClick={() => { vibrate(30); setStep(4); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
+                {T.btnAdjust}
+              </button>
+              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-3">
+                {T.btnBackStep}
+              </button>
+            </>
+          )}
+
+          {step === 4 && (
+            <>
               <button disabled={!data.payment} onClick={() => { vibrate([30,50]); sendWhatsApp(); setStep(5); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
                 {T.btnFinish}
               </button>
-              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-2">
+              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-3">
                 {T.btnBackStep}
               </button>
-            </div>
-          </div>
-        )}
+            </>
+          )}
 
-        {/* STEP 5: FINAL */}
-        {step === 5 && (
-          <div className="flex-1 flex flex-col justify-center text-center step-enter">
-            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl mb-4">{T.step5Title}</h1>
-            <p className="text-white/60 text-sm leading-relaxed mb-10">{T.step5Desc}</p>
-            
-            <button onClick={sendWhatsApp} className="bg-transparent border border-white text-white h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none">
-              {T.btnSend}
-            </button>
+          {step === 5 && (
+            <>
+              <button onClick={sendWhatsApp} className="bg-transparent border border-white text-white h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none">
+                {T.btnSend}
+              </button>
+              <button onClick={resetFlow} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-3 mt-1">
+                {T.btnBack}
+              </button>
+            </>
+          )}
 
-            <button onClick={resetFlow} className="mt-8 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors outline-none">
-              {T.btnBack}
-            </button>
-          </div>
-        )}
+        </div>
 
       </div>
     </>
