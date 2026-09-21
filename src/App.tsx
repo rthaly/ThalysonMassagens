@@ -25,7 +25,7 @@ const TEXTS = {
     step1Label: "Etapa 01",
     step1Title: "Como você quer se sentir hoje?",
     upTo: "Até",
-    btnContinue: "Continuar",
+    btnContinue: "Continuar para Local",
     step2Label: "Etapa 02",
     step2Title: "Quem e Onde.",
     namePlace: "Como prefere ser chamado?",
@@ -38,13 +38,13 @@ const TEXTS = {
     number: "Número",
     comp: "Apto / Quarto (opcional)",
     bairroPlace: "Bairro",
-    btnNext: "Avançar",
+    btnNext: "Avançar para Horários",
     step3Label: "Etapa 03",
     step3Title: "O Momento.",
     noSlots: "Nenhum horário disponível hoje.",
-    btnAdjust: "Ajustes Finais",
     step4Label: "Etapa 04",
     step4Title: "O Acordo.",
+    giftTitle: "Presente Liberado",
     giftDesc: "Como é sua primeira vez agendando por aqui, liberei um pequeno desconto no valor final.",
     giftBtn: "Desbloquear Cortesia (R$ 15)",
     addons: "Adicionais da Sessão",
@@ -63,7 +63,6 @@ const TEXTS = {
     subPix: "Desconto Pix",
     total: "Total Final",
     btnFinish: "Finalizar Pedido",
-    btnBackStep: "Voltar",
     step5Title: "Tudo Pronto.",
     step5Desc: "O seu resumo foi gerado e o WhatsApp deve ter aberto automaticamente. Caso o seu navegador tenha bloqueado a janela (ou se quiser tentar novamente), clique no botão abaixo.",
     btnSend: "Reenviar no WhatsApp",
@@ -96,7 +95,7 @@ const TEXTS = {
     step1Label: "Step 01",
     step1Title: "How do you want to feel today?",
     upTo: "Up to",
-    btnContinue: "Continue",
+    btnContinue: "Continue to Location",
     step2Label: "Step 02",
     step2Title: "Who and Where.",
     namePlace: "How should I call you?",
@@ -109,13 +108,13 @@ const TEXTS = {
     number: "Number",
     comp: "Apt / Room (optional)",
     bairroPlace: "Neighborhood",
-    btnNext: "Next",
+    btnNext: "Next to Schedule",
     step3Label: "Step 03",
     step3Title: "The Moment.",
     noSlots: "No slots available today.",
-    btnAdjust: "Final Adjustments",
     step4Label: "Step 04",
     step4Title: "The Agreement.",
+    giftTitle: "Gift Unlocked",
     giftDesc: "Since it is your first time booking here, I unlocked a small discount on the final amount.",
     giftBtn: "Unlock Courtesy (R$ 15)",
     addons: "Session Add-ons",
@@ -134,7 +133,6 @@ const TEXTS = {
     subPix: "Pix Discount",
     total: "Final Total",
     btnFinish: "Finish Order",
-    btnBackStep: "Go Back",
     step5Title: "All Set.",
     step5Desc: "Your summary is ready and WhatsApp should have opened automatically. If your browser blocked the window (or if you need to try again), click the button below.",
     btnSend: "Resend on WhatsApp",
@@ -164,32 +162,27 @@ const TEXTS = {
 
 const MOODS = [
   {
-    id: 'classica',
-    color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60,
+    id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60,
     PT: { title: 'Desatar os nós', subtitle: 'Tensão e peso nas costas.', service: 'Massagem Clássica', desc: 'Corpo todo, pressão firme. Estritamente terapêutica para alívio muscular profundo. Sem toques íntimos.' },
     EN: { title: 'Untie the knots', subtitle: 'Tension and back weight.', service: 'Classic Massage', desc: 'Full body, firm pressure. Strictly therapeutic for deep muscle relief. No intimate touch.' }
   },
   {
-    id: 'sensitiva',
-    color: '#713f12', accent: '#fbbf24', price: 200, min: 60,
+    id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60,
     PT: { title: 'Despertar', subtitle: 'Mente cansada, corpo dormente.', service: 'Massagem Sensitiva', desc: 'Inicia com massagem profunda para tirar a tensão e evolui para toques sutis na pele. Inclui técnica íntima manual (Lingam) focada no alívio mental.' },
     EN: { title: 'Awakening', subtitle: 'Tired mind, numb body.', service: 'Sensitive Massage', desc: 'Starts with deep massage to release tension and evolves into subtle skin touches. Includes manual intimate technique (Lingam) focused on mental relief.' }
   },
   {
-    id: 'fusion',
-    color: '#831843', accent: '#f43f5e', price: 250, min: 60,
+    id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60,
     PT: { title: 'Proximidade', subtitle: 'Buscando contato físico real.', service: 'Experiência Fusion', desc: 'Atendo apenas de cueca para garantir maior intimidade. Contato intenso, corpo a corpo e o toque da minha barba por você. Inclui técnica íntima (Lingam) prolongada.' },
     EN: { title: 'Closeness', subtitle: 'Seeking real physical contact.', service: 'Fusion Experience', desc: 'I wear only underwear to ensure greater intimacy. Intense body-to-body contact and the touch of my beard on you. Includes prolonged intimate technique (Lingam).' }
   },
   {
-    id: 'nuru',
-    color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60,
+    id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60,
     PT: { title: 'Imersão Total', subtitle: 'Desconexão absoluta da rotina.', service: 'Massagem Nuru (Gel)', desc: 'Nós dois sem roupas do início ao fim. Usamos muito gel especial ultra deslizante sobre a pele. Contato fluido e intenso de corpos inteiros, frente e costas. Inclui técnica íntima.' },
     EN: { title: 'Total Immersion', subtitle: 'Absolute disconnection from routine.', service: 'Nuru Massage (Gel)', desc: 'Both of us completely naked. We use a lot of special ultra-gliding gel on the skin. Fluid and intense full-body contact, front and back. Includes intimate technique.' }
   },
   {
-    id: 'reversa',
-    color: '#14532d', accent: '#4ade80', price: 400, min: 60,
+    id: 'reversa', color: '#14532d', accent: '#4ade80', price: 400, min: 60,
     PT: { title: 'Assumir o Controle', subtitle: 'Vontade de explorar e ditar o ritmo.', service: 'Massagem Reversa', desc: 'Eu começo relaxando e estimulando o seu corpo, mas depois o controle passa para você. Você dita o ritmo, os toques e explora livremente o meu corpo. Finalização mútua.' },
     EN: { title: 'Take Control', subtitle: 'Desire to explore and set the pace.', service: 'Reverse Massage', desc: 'I start by relaxing and stimulating your body, but then the control passes to you. You set the pace, the touches, and explore my body freely. Mutual finish.' }
   }
@@ -209,7 +202,8 @@ const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-
 
 const ICON_PATHS: Record<string, string> = {
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
-  'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'
+  'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
+  'gift': 'M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z'
 };
 
 const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: number; className?: string }) => (
@@ -239,6 +233,7 @@ const CinematicStyles = memo(() => (
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
       margin: 0; padding: 0;
+      scroll-behavior: smooth;
     }
 
     .grain-overlay {
@@ -291,33 +286,42 @@ export default function App() {
   });
 
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v9');
-    const hasGift = localStorage.getItem('thaly_gift_v9');
+    const isAdult = localStorage.getItem('thaly_adult_v10');
+    const hasGift = localStorage.getItem('thaly_gift_v10');
     if (isAdult === 'yes') setStep(1);
     if (hasGift === 'yes') setGiftApplied(true);
   }, []);
 
+  // Lógica de Smooth Scroll: sempre que a etapa muda, rola a tela suavemente para a nova seção
+  useEffect(() => {
+    if (step > 0 && step < 5) {
+      setTimeout(() => {
+        const el = document.getElementById(`step-${step}`);
+        if (el) {
+          const y = el.getBoundingClientRect().top + window.scrollY - 30; // 30px de respiro
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 150);
+    }
+  }, [step]);
+
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v9', 'yes');
+    localStorage.setItem('thaly_adult_v10', 'yes');
     setStep(1);
   };
 
   const applyGift = () => {
     vibrate([40, 60]);
-    localStorage.setItem('thaly_gift_v9', 'yes');
+    localStorage.setItem('thaly_gift_v10', 'yes');
     setGiftApplied(true);
   };
 
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v9');
+    const isAdult = localStorage.getItem('thaly_adult_v10');
     setStep(isAdult === 'yes' ? 1 : 0);
-  };
-
-  const goBack = () => {
-    vibrate(15);
-    setStep(prev => prev - 1);
+    window.scrollTo(0,0);
   };
 
   const toggleLang = () => {
@@ -426,10 +430,10 @@ export default function App() {
       <div className="grain-overlay" />
       <div className="ambient-glow" style={{ backgroundColor: mood.color }} />
 
-      <div className="relative z-10 min-h-[100dvh] flex flex-col pt-10 px-6 max-w-md mx-auto">
+      <div className="relative z-10 min-h-[100dvh] flex flex-col px-6 py-10 max-w-md mx-auto">
         
-        {/* CABEÇALHO SEMPRE VISÍVEL */}
-        <header className="flex justify-between items-center mb-8 step-enter">
+        {/* CABEÇALHO */}
+        <header className="flex justify-between items-center mb-10">
           <button onClick={resetFlow} className="text-left group outline-none py-2">
             <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
               Thalyson Massagens.
@@ -456,53 +460,65 @@ export default function App() {
           </div>
         </header>
 
-        {/* ÁREA DE CONTEÚDO */}
-        <div className="flex-1 flex flex-col pb-32">
+        {/* ================================================================================== */}
+        {/* STEP 0: O AVISO (+18) */}
+        {/* ================================================================================== */}
+        {step === 0 && (
+          <div className="flex-1 flex flex-col justify-center step-enter pb-10">
+            <h1 style={{ fontFamily: 'var(--font-serif)', whiteSpace: 'pre-line' }} className="text-4xl leading-tight mb-6">{T.ageTitle}</h1>
+            <p className="text-white/60 text-sm leading-relaxed mb-12">{T.ageDesc}</p>
+            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none rounded-sm">
+              {T.ageBtn}
+            </button>
+          </div>
+        )}
+
+        {/* ================================================================================== */}
+        {/* O FLUXO CONTÍNUO (STEPS 1 A 4 SÃO RENDERIZADOS NA MESMA PÁGINA) */}
+        {/* ================================================================================== */}
+        <div className={step >= 1 && step < 5 ? "block" : "hidden"}>
           
-          {/* STEP 0: O AVISO */}
-          {step === 0 && (
-            <div className="flex-1 flex flex-col justify-center step-enter">
-              <h1 style={{ fontFamily: 'var(--font-serif)', whiteSpace: 'pre-line' }} className="text-4xl leading-tight mb-6">{T.ageTitle}</h1>
-              <p className="text-white/60 text-sm leading-relaxed mb-10">{T.ageDesc}</p>
-            </div>
-          )}
-
           {/* STEP 1: A FREQUÊNCIA */}
-          {step === 1 && (
-            <div className="flex-1 flex flex-col step-enter">
-              <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step1Label}</h2>
-              <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step1Title}</h1>
-              
-              <div className="flex flex-col gap-3">
-                {MOODS.map(m => {
-                  const active = mood.id === m.id;
-                  return (
-                    <button key={m.id} onClick={() => { vibrate(20); setMoodId(m.id); }}
-                      className={`text-left p-5 transition-all duration-500 border outline-none ${active ? 'bg-white/10 backdrop-blur-md' : 'border-white/5 hover:border-white/20 bg-transparent'}`}
-                      style={{ borderColor: active ? m.accent : '' }}>
-                      <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: active ? m.accent : 'rgba(255,255,255,0.4)' }}>{m[lang].title}</p>
-                      <p className={`text-sm ${active ? 'text-white' : 'text-white/60'}`}>{m[lang].subtitle}</p>
-                    </button>
-                  )
-                })}
-              </div>
-
-              <div className="mt-8 p-6 bg-black/40 backdrop-blur-xl border border-white/10 min-h-[140px]">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-medium text-lg">{mood[lang].service}</h3>
-                  <div className="text-right flex flex-col items-end">
-                    <span className="text-base font-bold block" style={{ color: mood.accent }}>{formatMoney(mood.price)}</span>
-                    <span className="text-[10px] text-white/50 uppercase tracking-widest mt-0.5">{T.upTo} {mood.min}m</span>
-                  </div>
-                </div>
-                <p className="text-sm text-white/60 leading-relaxed mt-2">{mood[lang].desc}</p>
-              </div>
+          <div id="step-1" className="step-enter mb-16">
+            <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step1Label}</h2>
+            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step1Title}</h1>
+            
+            <div className="flex flex-col gap-3">
+              {MOODS.map(m => {
+                const active = mood.id === m.id;
+                return (
+                  <button key={m.id} onClick={() => { vibrate(20); setMoodId(m.id); }}
+                    className={`text-left p-5 transition-all duration-500 border outline-none rounded-sm ${active ? 'bg-white/10 backdrop-blur-md' : 'border-white/5 hover:border-white/20 bg-transparent'}`}
+                    style={{ borderColor: active ? m.accent : '' }}>
+                    <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: active ? m.accent : 'rgba(255,255,255,0.4)' }}>{m[lang].title}</p>
+                    <p className={`text-sm ${active ? 'text-white' : 'text-white/60'}`}>{m[lang].subtitle}</p>
+                  </button>
+                )
+              })}
             </div>
-          )}
+
+            <div className="mt-8 p-6 bg-black/40 backdrop-blur-xl border border-white/10 min-h-[140px] rounded-sm">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-medium text-lg">{mood[lang].service}</h3>
+                <div className="text-right flex flex-col items-end">
+                  <span className="text-base font-bold block" style={{ color: mood.accent }}>{formatMoney(mood.price)}</span>
+                  <span className="text-[10px] text-white/50 uppercase tracking-widest mt-0.5">{T.upTo} {mood.min}m</span>
+                </div>
+              </div>
+              <p className="text-sm text-white/60 leading-relaxed mt-2">{mood[lang].desc}</p>
+            </div>
+
+            {/* Esconde o botão Continuar se já estiver nas próximas etapas para manter limpo */}
+            {step === 1 && (
+              <button onClick={() => { vibrate(30); setStep(2); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none rounded-sm">
+                {T.btnContinue}
+              </button>
+            )}
+          </div>
 
           {/* STEP 2: COORDENADAS */}
-          {step === 2 && (
-            <div className="flex-1 flex flex-col step-enter">
+          {step >= 2 && (
+            <div id="step-2" className="step-enter mb-16 pt-8 border-t border-white/10">
               <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step2Label}</h2>
               <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step2Title}</h1>
 
@@ -514,12 +530,12 @@ export default function App() {
                 <div className="pt-4">
                   <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.locLabel}</p>
                   <div className="grid grid-cols-2 gap-3">
-                    <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-sm font-medium outline-none transition-colors border ${data.locType==='studio' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locStudio}</button>
-                    <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-sm font-medium outline-none transition-colors border ${data.locType==='home' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locHome}</button>
+                    <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-sm font-medium outline-none transition-colors border rounded-sm ${data.locType==='studio' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locStudio}</button>
+                    <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-sm font-medium outline-none transition-colors border rounded-sm ${data.locType==='home' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locHome}</button>
                   </div>
                 </div>
 
-                {data.locType === 'studio' && <p className="text-sm text-white/60 bg-white/5 p-4 border border-white/10 leading-relaxed animate-in fade-in">{T.studioDesc}</p>}
+                {data.locType === 'studio' && <p className="text-sm text-white/60 bg-white/5 p-4 border border-white/10 leading-relaxed rounded-sm animate-in fade-in">{T.studioDesc}</p>}
                 
                 {data.locType === 'home' && (
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
@@ -533,21 +549,27 @@ export default function App() {
                   </div>
                 )}
               </div>
+
+              {step === 2 && (
+                <button disabled={!isStep2Valid} onClick={() => { vibrate(30); setStep(3); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none rounded-sm">
+                  {T.btnNext}
+                </button>
+              )}
             </div>
           )}
 
           {/* STEP 3: TEMPO */}
-          {step === 3 && (
-            <div className="flex-1 flex flex-col step-enter">
+          {step >= 3 && (
+            <div id="step-3" className="step-enter mb-16 pt-8 border-t border-white/10">
               <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step3Label}</h2>
               <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step3Title}</h1>
 
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-2 mb-8">
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4 mb-6">
                 {days.map((d, i) => {
                   const sel = data.date?.toDateString() === d.toDateString();
                   const dayName = d.toLocaleDateString(lang === 'PT' ? 'pt-BR' : 'en-US', {weekday:'short'}).slice(0,3);
                   return (
-                    <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 w-16 h-20 outline-none flex flex-col items-center justify-center border transition-all ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/50'}`}>
+                    <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 w-16 h-20 outline-none flex flex-col items-center justify-center border rounded-sm transition-all ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/50'}`}>
                       <span className="text-[10px] uppercase font-bold tracking-widest">{dayName}</span>
                       <span style={{ fontFamily: 'var(--font-serif)' }} className="text-2xl mt-1">{d.getDate()}</span>
                     </button>
@@ -560,28 +582,46 @@ export default function App() {
                   {getSlots().map(t => {
                     const sel = data.time === t;
                     return (
-                      <button key={t} onClick={() => setData({...data, time: t})} className={`py-4 text-sm outline-none font-medium border transition-colors ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>
+                      <button key={t} onClick={() => { 
+                        vibrate(20);
+                        setData({...data, time: t});
+                        // Auto-avança instantaneamente para a Etapa 4 ao escolher o horário
+                        if (step === 3) setStep(4);
+                      }} className={`py-4 text-sm outline-none font-medium border rounded-sm transition-colors ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>
                         {t}
                       </button>
                     )
                   })}
-                  {getSlots().length === 0 && <p className="col-span-3 text-sm text-white/40 text-center py-4 border border-white/5">{T.noSlots}</p>}
+                  {getSlots().length === 0 && <p className="col-span-3 text-sm text-white/40 text-center py-4 border border-white/5 rounded-sm">{T.noSlots}</p>}
                 </div>
               )}
             </div>
           )}
 
           {/* STEP 4: O ACORDO */}
-          {step === 4 && (
-            <div className="flex-1 flex flex-col step-enter">
+          {step >= 4 && (
+            <div id="step-4" className="step-enter mb-8 pt-8 border-t border-white/10">
               <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step4Label}</h2>
               <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step4Title}</h1>
 
               <div className="space-y-8">
+                
+                {/* CAIXA DE CORTESIA VERDE NEON */}
                 {!giftApplied && (
-                  <div className="p-5 border border-white/20 bg-white/5 animate-in fade-in">
-                    <p className="text-sm text-white mb-3 leading-relaxed">{T.giftDesc}</p>
-                    <button onClick={applyGift} className="text-xs font-bold outline-none uppercase tracking-widest border-b border-white pb-1 py-2">{T.giftBtn}</button>
+                  <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
+                    <div className="absolute -right-4 -bottom-4 opacity-5">
+                      <Icon name="gift" size={120} />
+                    </div>
+                    <div className="relative z-10 w-full">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Icon name="gift" className="text-[#4ade80]" size={18} />
+                        <h3 className="text-[#4ade80] font-bold uppercase tracking-widest text-xs">{T.giftTitle}</h3>
+                      </div>
+                      <p className="text-sm text-[#4ade80]/90 mb-5 leading-relaxed">{T.giftDesc}</p>
+                      <button onClick={applyGift} className="bg-[#4ade80] text-black w-full text-xs font-bold px-5 py-3.5 uppercase tracking-widest outline-none rounded-sm transition-transform active:scale-95 shadow-lg shadow-[#4ade80]/20">
+                        {T.giftBtn}
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -591,7 +631,7 @@ export default function App() {
                     {EXTRAS.map(ex => {
                       const sel = data.extras[ex.id];
                       return (
-                        <button key={ex.id} onClick={()=>setData({...data, extras:{...data.extras, [ex.id]:!sel}})} className={`w-full outline-none flex justify-between p-4 border text-sm transition-colors ${sel ? 'border-white bg-white/10 text-white' : 'border-white/10 text-white/60'}`}>
+                        <button key={ex.id} onClick={()=>setData({...data, extras:{...data.extras, [ex.id]:!sel}})} className={`w-full outline-none flex justify-between p-4 border rounded-sm text-sm transition-colors ${sel ? 'border-white bg-white/10 text-white' : 'border-white/10 text-white/60'}`}>
                           <span>{ex[lang].label}</span>
                           <span>+{formatMoney(ex.price)}</span>
                         </button>
@@ -613,98 +653,50 @@ export default function App() {
                   <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.payLabel}</p>
                   <div className="grid grid-cols-3 gap-3">
                     {[{id:'pix', l:T.payPix},{id:'card', l:T.payCard},{id:'cash', l:T.payCash}].map(p => (
-                      <button key={p.id} onClick={()=>setData({...data, payment:p.id})} className={`py-4 outline-none text-xs font-bold uppercase tracking-wider border transition-colors ${data.payment === p.id ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{p.l}</button>
+                      <button key={p.id} onClick={()=>setData({...data, payment:p.id})} className={`py-4 outline-none text-xs font-bold uppercase tracking-wider border rounded-sm transition-colors ${data.payment === p.id ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{p.l}</button>
                     ))}
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-white/10">
+                <div className="pt-8 border-t border-white/10">
                   <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subBase}</span><span>{formatMoney(mood.price)}</span></div>
                   {fin.extrasValue > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasValue)}</span></div>}
                   {fin.reqFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subReq}</span><span>+{formatMoney(fin.reqFee)}</span></div>}
-                  {fin.discount > 0 && <div className="flex justify-between text-sm text-white mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discount)}</span></div>}
+                  {fin.discount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discount)}</span></div>}
                   {fin.peak > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peak)}</span></div>}
                   {fin.pix > 0 && <div className="flex justify-between text-sm text-white mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pix)}</span></div>}
                   
-                  <div className="flex justify-between items-end mt-8">
+                  <div className="flex justify-between items-end mt-8 mb-10">
                     <span className="text-sm uppercase tracking-widest text-white/50">{T.total}</span>
                     <span style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl text-white">{formatMoney(fin.total)}</span>
                   </div>
+
+                  <button disabled={!data.payment} onClick={() => { vibrate([30,50]); sendWhatsApp(); setStep(5); }} className="bg-white text-black h-16 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none rounded-sm shadow-xl shadow-white/10">
+                    {T.btnFinish}
+                  </button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* STEP 5: FINAL */}
-          {step === 5 && (
-            <div className="flex-1 flex flex-col justify-center text-center step-enter">
-              <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl mb-4">{T.step5Title}</h1>
-              <p className="text-white/60 text-sm leading-relaxed mb-10">{T.step5Desc}</p>
-            </div>
-          )}
-
         </div>
 
-        {/* DOCK INFERIOR FIXO */}
-        <div className="fixed bottom-0 left-0 right-0 px-6 py-6 bg-[#09090b]/80 backdrop-blur-xl border-t border-white/5 z-50 flex flex-col gap-2 max-w-md mx-auto">
-          
-          {step === 0 && (
-            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none">
-              {T.ageBtn}
+        {/* ================================================================================== */}
+        {/* STEP 5: FINALIZADO (Esconde o resto do form para dar sensação de sucesso limpo) */}
+        {/* ================================================================================== */}
+        {step === 5 && (
+          <div className="flex-1 flex flex-col justify-center text-center step-enter pb-20">
+            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl mb-4">{T.step5Title}</h1>
+            <p className="text-white/60 text-sm leading-relaxed mb-10">{T.step5Desc}</p>
+            
+            <button onClick={sendWhatsApp} className="bg-transparent border border-white text-white h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none rounded-sm">
+              {T.btnSend}
             </button>
-          )}
-
-          {step === 1 && (
-            <button onClick={() => { vibrate(30); setStep(2); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none">
-              {T.btnContinue}
+            <button onClick={resetFlow} className="mt-8 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors outline-none py-2">
+              {T.btnBack}
             </button>
-          )}
-
-          {step === 2 && (
-            <>
-              <button disabled={!isStep2Valid} onClick={() => { vibrate(30); setStep(3); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
-                {T.btnNext}
-              </button>
-              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-3">
-                {T.btnBackStep}
-              </button>
-            </>
-          )}
-
-          {step === 3 && (
-            <>
-              <button disabled={!data.date || !data.time} onClick={() => { vibrate(30); setStep(4); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
-                {T.btnAdjust}
-              </button>
-              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-3">
-                {T.btnBackStep}
-              </button>
-            </>
-          )}
-
-          {step === 4 && (
-            <>
-              <button disabled={!data.payment} onClick={() => { vibrate([30,50]); sendWhatsApp(); setStep(5); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
-                {T.btnFinish}
-              </button>
-              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-3">
-                {T.btnBackStep}
-              </button>
-            </>
-          )}
-
-          {step === 5 && (
-            <>
-              <button onClick={sendWhatsApp} className="bg-transparent border border-white text-white h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none">
-                {T.btnSend}
-              </button>
-              <button onClick={resetFlow} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-3 mt-1">
-                {T.btnBack}
-              </button>
-            </>
-          )}
-
-        </div>
+          </div>
+        )}
 
       </div>
     </>
