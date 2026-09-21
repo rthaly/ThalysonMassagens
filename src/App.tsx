@@ -314,7 +314,9 @@ export default function App() {
 
   const resetFlow = () => {
     vibrate(20);
-    setStep(1);
+    // Para não quebrar o aviso se a pessoa limpar o cache ou ainda não tiver aceitado
+    const isAdult = localStorage.getItem('thaly_adult_v8');
+    setStep(isAdult === 'yes' ? 1 : 0);
   };
 
   const goBack = () => {
@@ -423,35 +425,33 @@ export default function App() {
 
       <div className="relative z-10 min-h-screen flex flex-col pt-10 pb-16 px-6 max-w-md mx-auto">
         
-        {/* Cabecalho de Navegação Dinâmico */}
-        {step > 0 && (
-          <header className="flex justify-between items-center mb-10 step-enter">
-            <button onClick={resetFlow} className="text-left group outline-none">
-              <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
-                Thalyson.
-              </span>
-            </button>
+        {/* CABEÇALHO SEMPRE VISÍVEL */}
+        <header className="flex justify-between items-center mb-10 step-enter">
+          <button onClick={resetFlow} className="text-left group outline-none">
+            <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
+              Thalyson Massagens.
+            </span>
+          </button>
+          
+          <div className="flex items-center gap-5">
+            {step > 0 && step < 5 && (
+              <div className="flex gap-1.5 mr-2">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className={`h-[3px] rounded-full transition-all duration-500 ${step >= i ? 'w-5 bg-white' : 'w-2 bg-white/20'}`} />
+                ))}
+              </div>
+            )}
             
-            <div className="flex items-center gap-5">
-              {step < 5 && (
-                <div className="flex gap-1.5 mr-2">
-                  {[1,2,3,4].map(i => (
-                    <div key={i} className={`h-[3px] rounded-full transition-all duration-500 ${step >= i ? 'w-5 bg-white' : 'w-2 bg-white/20'}`} />
-                  ))}
-                </div>
-              )}
-              
-              <button onClick={toggleLang} className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-white/50 hover:text-white transition-colors outline-none">
-                <Icon name="globe" size={14} />
-                {lang}
-              </button>
+            <button onClick={toggleLang} className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-white/50 hover:text-white transition-colors outline-none">
+              <Icon name="globe" size={14} />
+              {lang}
+            </button>
 
-              <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors outline-none">
-                <Icon name="instagram" size={18} />
-              </a>
-            </div>
-          </header>
-        )}
+            <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors outline-none">
+              <Icon name="instagram" size={18} />
+            </a>
+          </div>
+        </header>
 
         {/* STEP 0: O AVISO */}
         {step === 0 && (
