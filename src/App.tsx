@@ -480,9 +480,12 @@ export default function App() {
             <div className="mt-8 p-6 bg-black/40 backdrop-blur-xl border border-white/10 min-h-[140px]">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-medium text-lg">{mood[lang].service}</h3>
-                <span className="text-sm font-medium" style={{ color: mood.accent }}>{T.upTo} {mood.min}m</span>
+                <div className="text-right flex flex-col items-end">
+                  <span className="text-base font-bold block" style={{ color: mood.accent }}>{formatMoney(mood.price)}</span>
+                  <span className="text-[10px] text-white/50 uppercase tracking-widest mt-0.5">{T.upTo} {mood.min}m</span>
+                </div>
               </div>
-              <p className="text-sm text-white/60 leading-relaxed">{mood[lang].desc}</p>
+              <p className="text-sm text-white/60 leading-relaxed mt-2">{mood[lang].desc}</p>
             </div>
 
             <button onClick={() => { vibrate(30); setStep(2); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none">
