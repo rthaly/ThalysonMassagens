@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, memo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 
 // ==================================================================================
 // CONFIGURAÇÃO
@@ -28,15 +28,15 @@ const TEXTS = {
     btnContinue: "Continuar",
     step2Label: "Etapa 02",
     step2Title: "Quem e Onde.",
-    namePlace: "Nome ou Apelido",
-    locLabel: "Local do Encontro",
-    locStudio: "Meu Espaço",
-    locHome: "Outro Local",
-    studioDesc: "Eu atendo em um estúdio privativo na Bela Vista. O endereço completo é liberado no WhatsApp após confirmarmos o horário.",
+    namePlace: "Como prefere ser chamado?",
+    locLabel: "Onde será a sessão?",
+    locStudio: "Meu Local (Bela Vista)",
+    locHome: "Seu Local (Vou até você)",
+    studioDesc: "Atendo em um estúdio privativo na Bela Vista. O endereço completo e as instruções de acesso são liberados no WhatsApp após confirmarmos o horário.",
     cep: "CEP (opcional)",
-    street: "Rua ou Hotel",
+    street: "Rua ou Avenida",
     number: "Número",
-    comp: "Apto / Quarto",
+    comp: "Apto / Quarto (opcional)",
     bairroPlace: "Bairro",
     btnNext: "Avançar",
     step3Label: "Etapa 03",
@@ -52,7 +52,7 @@ const TEXTS = {
     reqPlace: "Tem alguma vontade específica para hoje?",
     reqDesc: "Sujeito a avaliação na hora. Caso não seja possível realizar o pedido, o valor da taxa não será cobrado.",
     payLabel: "Como vai pagar no local?",
-    payPix: "Pix (-3%)",
+    payPix: "Pix (3% OFF)",
     payCard: "Cartão",
     payCash: "Dinheiro",
     subBase: "Sessão Base",
@@ -78,8 +78,8 @@ const TEXTS = {
     wtsServ: "Serviço",
     wtsHappen: "O que vai rolar",
     wtsExtras: "Extras inclusos",
-    wtsLocStudio: "Local: Meu Espaço (Bela Vista, São Paulo)\n🗺️ Endereço exato enviado por aqui após a confirmação.",
-    wtsLocHome: "Local",
+    wtsLocStudio: "Local do Encontro: Meu Local (Bela Vista, São Paulo)\n🗺️ Endereço exato enviado por aqui após a confirmação.",
+    wtsLocHome: "Local do Encontro: Seu Local",
     wtsReq: "Pedido Especial / Fetiche",
     wtsReqWait: "(Aguardando sua avaliação)",
     wtsFin: "Resumo Financeiro",
@@ -99,15 +99,15 @@ const TEXTS = {
     btnContinue: "Continue",
     step2Label: "Step 02",
     step2Title: "Who and Where.",
-    namePlace: "Name or Nickname",
-    locLabel: "Meeting Place",
-    locStudio: "My Studio",
-    locHome: "Other Location",
-    studioDesc: "I work in a private studio in Bela Vista. The exact address is shared on WhatsApp once we confirm the schedule.",
+    namePlace: "How should I call you?",
+    locLabel: "Where will the session be?",
+    locStudio: "My Place (Bela Vista)",
+    locHome: "Your Place (I go to you)",
+    studioDesc: "I work in a private studio in Bela Vista. The exact address and access instructions are shared on WhatsApp once we confirm the schedule.",
     cep: "ZIP Code (optional)",
-    street: "Street or Hotel",
+    street: "Street or Avenue",
     number: "Number",
-    comp: "Apt / Room",
+    comp: "Apt / Room (optional)",
     bairroPlace: "Neighborhood",
     btnNext: "Next",
     step3Label: "Step 03",
@@ -116,14 +116,14 @@ const TEXTS = {
     btnAdjust: "Final Adjustments",
     step4Label: "Step 04",
     step4Title: "The Agreement.",
-    giftDesc: "Since it's your first time booking here, I've unlocked a small discount on the final amount.",
+    giftDesc: "Since it is your first time booking here, I unlocked a small discount on the final amount.",
     giftBtn: "Unlock Courtesy (R$ 15)",
     addons: "Session Add-ons",
     reqLabel: "Specific Request / Preference",
     reqPlace: "Any specific desire for today?",
     reqDesc: "Subject to evaluation on site. If the request cannot be fulfilled, the fee will not be charged.",
     payLabel: "How will you pay on site?",
-    payPix: "Pix (-3%)",
+    payPix: "Pix (3% OFF)",
     payCard: "Credit Card",
     payCash: "Cash",
     subBase: "Base Session",
@@ -149,8 +149,8 @@ const TEXTS = {
     wtsServ: "Service",
     wtsHappen: "What to expect",
     wtsExtras: "Included Extras",
-    wtsLocStudio: "Location: My Studio (Bela Vista, São Paulo)\n🗺️ Exact address will be sent here upon confirmation.",
-    wtsLocHome: "Location",
+    wtsLocStudio: "Meeting Location: My Place (Bela Vista, São Paulo)\n🗺️ Exact address will be sent here upon confirmation.",
+    wtsLocHome: "Meeting Location: Your Place",
     wtsReq: "Special Request / Fetish",
     wtsReqWait: "(Awaiting your evaluation)",
     wtsFin: "Financial Summary",
@@ -282,6 +282,7 @@ export default function App() {
   const [moodId, setMoodId] = useState(MOODS[0].id);
   const mood = useMemo(() => MOODS.find(m => m.id === moodId) || MOODS[0], [moodId]);
   const T = TEXTS[lang];
+  const numberInputRef = useRef<HTMLInputElement>(null);
 
   const [data, setData] = useState({
     name: '', locType: '', cep: '', street: '', number: '', comp: '', bairro: '', 
@@ -289,30 +290,28 @@ export default function App() {
     req: '', payment: ''
   });
 
-  const [cepLoading, setCepLoading] = useState(false);
-
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v8');
-    const hasGift = localStorage.getItem('thaly_gift_v8');
+    const isAdult = localStorage.getItem('thaly_adult_v9');
+    const hasGift = localStorage.getItem('thaly_gift_v9');
     if (isAdult === 'yes') setStep(1);
     if (hasGift === 'yes') setGiftApplied(true);
   }, []);
 
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v8', 'yes');
+    localStorage.setItem('thaly_adult_v9', 'yes');
     setStep(1);
   };
 
   const applyGift = () => {
     vibrate([40, 60]);
-    localStorage.setItem('thaly_gift_v8', 'yes');
+    localStorage.setItem('thaly_gift_v9', 'yes');
     setGiftApplied(true);
   };
 
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v8');
+    const isAdult = localStorage.getItem('thaly_adult_v9');
     setStep(isAdult === 'yes' ? 1 : 0);
   };
 
@@ -330,7 +329,6 @@ export default function App() {
     const masked = maskCEP(val);
     setData(prev => ({ ...prev, cep: masked }));
     if (masked.length === 9) {
-      setCepLoading(true);
       try {
         const res = await fetch(`https://viacep.com.br/ws/${masked.replace('-', '')}/json/`);
         const json = await res.json();
@@ -340,12 +338,14 @@ export default function App() {
             street: json.logradouro || '', 
             bairro: json.bairro || '' 
           }));
+          setTimeout(() => numberInputRef.current?.focus(), 150);
         }
-      } catch (e) {} finally {
-        setCepLoading(false);
-      }
+      } catch (e) {}
     }
   };
+
+  const isStep2Valid = data.name.trim().length > 1 && data.locType !== '' && 
+    (data.locType === 'studio' || (data.locType === 'home' && data.street.trim() !== '' && data.number.trim() !== '' && data.bairro.trim() !== ''));
 
   const fin = useMemo(() => {
     let sub = mood.price;
@@ -386,7 +386,7 @@ export default function App() {
     
     const mapsLink = data.locType === 'studio' 
       ? `📍 *${T.wtsLocStudio}*` 
-      : `📍 *${T.wtsLocHome}:* ${data.street}, ${data.number} ${data.comp ? `(${data.comp})` : ''} - ${data.bairro}\n🗺️ *Maps:* https://maps.google.com/?q=${encodeURIComponent(`${data.street}, ${data.number},${data.bairro}, São Paulo`)}`;
+      : `📍 *${T.wtsLocHome}:* ${data.street}, ${data.number} ${data.comp ? `(${data.comp})` : ''}, ${data.bairro}\n🗺️ *Maps:* https://maps.google.com/?q=${encodeURIComponent(`${data.street}, ${data.number},${data.bairro}, São Paulo`)}`;
 
     const rTxt = data.req.trim() ? `\n\n🔥 *${T.wtsReq}:*\n"${data.req.trim()}"\n_${T.wtsReqWait}_` : '';
 
@@ -409,7 +409,7 @@ export default function App() {
       `${fin.peak > 0 ? `${T.subPeak}: +${formatMoney(fin.peak)}\n` : ''}` +
       `${fin.discount > 0 ? `${T.subGift}: -${formatMoney(fin.discount)}\n` : ''}` +
       `${fin.pix > 0 ? `${T.subPix}: -${formatMoney(fin.pix)}\n` : ''}` +
-      `------------------------\n` +
+      `=======================\n` +
       `💰 *${T.total}:* ${formatMoney(fin.total)}\n` +
       `${T.wtsPay}: *${data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? T.payCard : T.payCash}*\n\n` +
       `*⚖️ ${T.wtsRulesTitle}:*\n` +
@@ -456,7 +456,7 @@ export default function App() {
           </div>
         </header>
 
-        {/* ÁREA DE CONTEÚDO (COM ESPAÇO NO FUNDO PARA NÃO BATER NO DOCK) */}
+        {/* ÁREA DE CONTEÚDO */}
         <div className="flex-1 flex flex-col pb-32">
           
           {/* STEP 0: O AVISO */}
@@ -508,14 +508,14 @@ export default function App() {
 
               <div className="space-y-6">
                 <div>
-                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full modern-input" />
+                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full modern-input text-lg font-medium" />
                 </div>
 
                 <div className="pt-4">
                   <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.locLabel}</p>
                   <div className="grid grid-cols-2 gap-3">
-                    <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-sm outline-none transition-colors border ${data.locType==='studio' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locStudio}</button>
-                    <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-sm outline-none transition-colors border ${data.locType==='home' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locHome}</button>
+                    <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-sm font-medium outline-none transition-colors border ${data.locType==='studio' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locStudio}</button>
+                    <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-sm font-medium outline-none transition-colors border ${data.locType==='home' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locHome}</button>
                   </div>
                 </div>
 
@@ -526,7 +526,7 @@ export default function App() {
                     <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full modern-input" />
                     <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full modern-input" />
                     <div className="flex gap-4">
-                      <input type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 modern-input" />
+                      <input ref={numberInputRef} type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 modern-input" />
                       <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 modern-input" />
                     </div>
                     <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full modern-input" />
@@ -645,11 +645,11 @@ export default function App() {
 
         </div>
 
-        {/* DOCK INFERIOR FIXO PARA BOTÕES DE AÇÃO (A ZONA DO POLEGAR) */}
-        <div className="sticky bottom-0 -mx-6 px-6 py-6 bg-[#09090b]/80 backdrop-blur-xl border-t border-white/5 mt-auto z-50 flex flex-col gap-2">
+        {/* DOCK INFERIOR FIXO */}
+        <div className="fixed bottom-0 left-0 right-0 px-6 py-6 bg-[#09090b]/80 backdrop-blur-xl border-t border-white/5 z-50 flex flex-col gap-2 max-w-md mx-auto">
           
           {step === 0 && (
-            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-medium text-sm tracking-widest uppercase transition-transform active:scale-95 outline-none">
+            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none">
               {T.ageBtn}
             </button>
           )}
@@ -662,7 +662,7 @@ export default function App() {
 
           {step === 2 && (
             <>
-              <button disabled={!data.name || !data.locType || (data.locType==='home' && (!data.street || !data.bairro))} onClick={() => { vibrate(30); setStep(3); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
+              <button disabled={!isStep2Valid} onClick={() => { vibrate(30); setStep(3); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
                 {T.btnNext}
               </button>
               <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-3">
