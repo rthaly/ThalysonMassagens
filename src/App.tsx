@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 
 // ==================================================================================
-// DESIGN TOKENS & CONFIG
+// CONFIGURAÇÕES E TIPAGENS
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
@@ -13,6 +13,46 @@ const CONFIG = {
 
 const RUSH_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 const RUSH_FEE = 15;
+
+interface Service {
+  id: string;
+  min: number;
+  price: number;
+  icon: string;
+  tag: string;
+  title: string;
+  desc: string;
+  details?: string[];
+  fullPrice?: number;
+  popular?: boolean;
+}
+
+interface Address {
+  cep: string;
+  street: string;
+  number: string;
+  district: string;
+  city: string;
+  comp: string;
+  placeName: string;
+}
+
+interface BookingState {
+  cart: Service[];
+  extras: Record<string, boolean>;
+  locationType: string;
+  name: string;
+  age: string;
+  specialRequest: string;
+  payment: string;
+  discount: number;
+  address: Address;
+  date: Date | null;
+  time: string;
+  manualCoupon: string;
+  manualCouponValue: number;
+  finished: boolean;
+}
 
 const ICON_PATHS: Record<string, string> = {
   'check': 'M20 6L9 17l-5-5',
@@ -33,7 +73,7 @@ const ICON_PATHS: Record<string, string> = {
 };
 
 // ==================================================================================
-// GLOBAL STYLES (Plus Jakarta Sans & Utilities)
+// ESTILOS GLOBAIS
 // ==================================================================================
 const GlobalStyles = memo(() => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -61,15 +101,9 @@ const GlobalStyles = memo(() => (
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    @keyframes pulseSoft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
     
     .animate-fade-up { animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-    .animate-pulse-soft { animation: pulseSoft 2s infinite ease-in-out; }
-
-    /* Utilitários 3D para o cartão de cortesia */
-    .preserve-3d { transform-style: preserve-3d; }
-    .backface-hidden { backface-visibility: hidden; }
 
     .glass-panel { background: rgba(18, 18, 20, 0.6); backdrop-filter: blur(16px); border: 1px solid var(--c-border); }
     
@@ -86,16 +120,15 @@ const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: n
 ));
 
 const formatMoney = (val: number) => `R$ ${val.toFixed(2).replace('.', ',')}`;
-const vibrate = (pattern: number | number[] = 50) => { try { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); } catch(e){} };
 const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
 
 // ==================================================================================
-// DATA SOURCE
+// DADOS DOS SERVIÇOS
 // ==================================================================================
 const DATA = {
   services: [
     { 
-      id: 'depilacao', min: 60, price: 107, icon: "scissors", tag: "ESTÉTICA", title: "Aparo de Pelos", 
+      id: 'depilacao', min: 40, price: 107, icon: "scissors", tag: "ESTÉTICA", title: "Aparo de Pelos", 
       desc: "Higiene e estética corporal.",
       details: ["Aparo feito com máquina (pentes 0 e 3)", "Cuidado completo para deixar o corpo limpo e preparado."]
     },
@@ -107,42 +140,42 @@ const DATA = {
     { 
       id: 'relaxante', min: 60, price: 180, icon: "user-check", tag: "ALÍVIO MUSCULAR", title: "Massagem Clássica", 
       desc: "Corpo todo, focada em desfazer nós e dores.",
-      details: ["Pressão firme nas costas, braços e pernas", "Foco em tirar travas e estresse muscular", "Estritamente terapêutica, sem toques íntimos."]
+      details: ["Pressão firme nas costas, braços e pernas", "Foco em tirar travas e estresse muscular", "Estritamente terapêutica."]
     },
     { 
       id: 'sensitiva', min: 60, price: 200, icon: "sparkles", tag: "DESPERTAR", title: "Massagem Sensitiva", 
       desc: "Inicia clássica e termina sensorial.",
-      details: ["Massagem inicial profunda para tirar tensão", "Toques sutis com as mãos despertando a pele", "Finalização tântrica manual focada no alívio mental."]
+      details: ["Massagem inicial profunda para tirar tensão", "Toques sutis com as mãos despertando a pele", "Finalização focada no relaxamento mental."]
     },
     { 
       id: 'mista', min: 60, price: 250, icon: "zap", tag: "CUECA E BARBA", title: "Experiência Fusion", 
-      desc: "Contato físico intenso, corpo a corpo.",
-      details: ["Atendo apenas de cueca, garantindo sensações próximas", "Após relaxar seu corpo, passo minha barba em você (frente e costas)", "Nível alto de intimidade, com massagem íntima manual (Lingam)."]
+      desc: "Contato físico mais próximo.",
+      details: ["Atendo apenas de cueca, garantindo sensações próximas", "Após relaxar seu corpo, passo minha barba em você", "Nível alto de intimidade e conexão."]
     },
     { 
       id: 'nuru', min: 60, price: 350, icon: "star", popular: true, tag: "DESLIZAMENTO", title: "Massagem Nuru (Gel)", 
       desc: "A mais pedida. Deslizamento total de corpos.",
-      details: ["Nós dois sem roupas do início ao fim", "Muito gel especial ultra deslizante sobre a pele", "Contato fluido e intenso de corpo todo (frente e costas)", "Estímulo terminando em uma liberação prazerosa e intensa."]
+      details: ["Nós dois sem roupas do início ao fim", "Muito gel especial ultra deslizante sobre a pele", "Contato fluido e intenso de corpo todo."]
     },
     { 
       id: 'reversa', min: 60, price: 400, icon: "zap", tag: "SEU CONTROLE", title: "Massagem Reversa", 
       desc: "Você assume o comando da sessão.",
-      details: ["Eu começo a massagem relaxando o seu corpo", "Depois, o controle passa para você", "Você dita o ritmo, os toques e a intensidade pelo meu corpo", "Finalização mútua e libertadora."]
+      details: ["Eu começo a massagem relaxando o seu corpo", "Depois, o controle passa para você", "Você dita o ritmo e os toques pelo meu corpo."]
     }
   ],
   packs: [
-    { id: 'pack_classic4', price: 576, fullPrice: 720, icon: "calendar", tag: "MENSAL", title: "Mês Sem Dor (4x)", desc: "4 sessões clássicas no mês (1x por semana) focadas na saúde muscular e alívio de tensões." },
-    { id: 'pack_tantric', price: 640, fullPrice: 800, icon: "heart", tag: "IMERSÃO", title: "Jornada Tântrica (3x)", desc: "3 encontros escalando a intimidade: 1 Sensitiva, 1 Fusion e 1 Nuru com gel." }
+    { id: 'pack_classic4', min: 60, price: 576, fullPrice: 720, icon: "calendar", tag: "MENSAL", title: "Mês Sem Dor (4x)", desc: "4 sessões clássicas no mês (1x por semana) focadas na saúde muscular." },
+    { id: 'pack_tantric', min: 60, price: 640, fullPrice: 800, icon: "heart", tag: "IMERSÃO", title: "Jornada Tântrica (3x)", desc: "3 encontros escalando a intimidade: 1 Sensitiva, 1 Fusion e 1 Nuru." }
   ],
   extras: [
-    { id: 'more_time', price: 75, label: "Estender tempo (+30 Minutos)" },
-    { id: 'aroma', price: 20, label: "Aromaterapia Relaxante" }
+    { id: 'aroma', price: 20, label: "Aromaterapia Relaxante" },
+    { id: 'foco_lombar', price: 30, label: "Foco extra na lombar e cervical" }
   ],
   reviews: [
-    { n: "Marcos A.", loc: "Bela Vista - SP", t: "Atendimento sensacional. O Thalyson é super atencioso e me deixou muito à vontade desde o primeiro minuto. Recomendo a Fusion, valeu cada centavo!" },
-    { n: "Leandro S.", loc: "Jardins - SP", t: "Lugar discreto, limpo e bem localizado. A massagem Nuru é indescritível, me desliguei total dos problemas." },
-    { n: "João Paulo", loc: "Hotel - SP", t: "Estava de passagem por SP e pedi atendimento no hotel. Pontual, muito profissional e com uma energia maravilhosa. Voltarei com certeza." },
-    { n: "Rafael (Sigiloso)", loc: "Consolação - SP", t: "Para quem é casado e precisa de discrição, não tem lugar melhor. Respeito do início ao fim e a massagem tirou todas as minhas dores." }
+    { n: "Marcos A.", loc: "Bela Vista - SP", t: "Atendimento sensacional. O Thalyson me deixou muito à vontade desde o primeiro minuto. Recomendo a Fusion!" },
+    { n: "Leandro S.", loc: "Jardins - SP", t: "Lugar discreto e limpo. A massagem Nuru é excelente, me desliguei total dos problemas." },
+    { n: "João Paulo", loc: "Hotel - SP", t: "Pedi atendimento no hotel. Pontual, profissional e com uma energia muito boa." },
+    { n: "Rafael (Sigiloso)", loc: "Consolação - SP", t: "Para quem precisa de discrição, não tem lugar melhor. Respeito do início ao fim." }
   ],
   coupons: {
     'RELAX10': { type: 'fixed', value: 10, label: 'Desconto Especial (R$ 10)' },
@@ -151,18 +184,17 @@ const DATA = {
 };
 
 // ==================================================================================
-// COMPONENTS
+// COMPONENTES DE INTERFACE
 // ==================================================================================
-
 const AgeGateModal = ({ onConfirm }: { onConfirm: (valid: boolean) => void }) => {
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 bg-[#09090b]/95 backdrop-blur-md animate-fade-in text-center">
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 bg-[#09090b]/95 backdrop-blur-md animate-scale-in text-center">
       <div className="w-20 h-20 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mb-6 border border-amber-500/20">
         <Icon name="shield" size={32} />
       </div>
-      <h2 className="text-3xl font-bold text-white mb-3">Conteúdo Adulto</h2>
+      <h2 className="text-3xl font-bold text-white mb-3">Aviso de Conteúdo</h2>
       <p className="text-zinc-400 text-sm mb-10 max-w-sm leading-relaxed">
-        Meus serviços de terapia e relaxamento são exclusivos para maiores de 18 anos. Você confirma que tem mais de 18 anos?
+        Meus serviços de relaxamento envolvem contato físico próximo e são exclusivos para maiores de idade. Você confirma ter mais de 18 anos?
       </p>
       <div className="flex flex-col gap-3 w-full max-w-sm">
         <button onClick={() => onConfirm(true)} className="w-full bg-amber-500 text-black font-bold h-14 rounded-2xl flex items-center justify-center transition-transform active:scale-95">
@@ -176,46 +208,19 @@ const AgeGateModal = ({ onConfirm }: { onConfirm: (valid: boolean) => void }) =>
   );
 };
 
-const PremiumGiftReveal = ({ onWin }: { onWin: (val: number) => void }) => {
-  const [selected, setSelected] = useState<number | null>(null);
-  const [revealedVal, setRevealedVal] = useState<number | null>(null);
-
-  const handleSelect = (idx: number) => {
-    if (selected !== null) return;
-    vibrate([50, 50]);
-    setSelected(idx);
-    const chances = [20, 20, 20, 20, 15, 10]; 
-    const prize = chances[Math.floor(Math.random() * chances.length)];
-    
-    setTimeout(() => {
-      setRevealedVal(prize);
-      vibrate([100, 50, 200]);
-      setTimeout(() => onWin(prize), 2500);
-    }, 600);
-  };
-
+const WelcomeGiftModal = ({ onClaim }: { onClaim: (val: number) => void }) => {
   return (
-    <div className="fixed inset-0 z-[90] flex flex-col items-center justify-center p-6 bg-[#09090b]/95 backdrop-blur-md animate-fade-in">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Cortesias</h2>
-        <p className="text-zinc-400 text-sm">Escolha um dos cartões para descobrir seu benefício de boas-vindas na primeira sessão.</p>
+    <div className="fixed inset-0 z-[90] flex flex-col items-center justify-center p-6 bg-[#09090b]/95 backdrop-blur-md animate-scale-in text-center">
+      <div className="w-20 h-20 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mb-6 border border-amber-500/20">
+        <Icon name="gift" size={32} />
       </div>
-      <div className="flex gap-4">
-        {[0, 1, 2].map((idx) => (
-          <button key={idx} onClick={() => handleSelect(idx)} disabled={selected !== null}
-            className={`relative w-24 h-36 rounded-2xl border transition-all duration-700 preserve-3d ${selected === idx ? 'scale-110' : selected !== null ? 'opacity-30 scale-95' : 'hover:scale-105'} ${revealedVal && selected === idx ? '[transform:rotateY(180deg)_scale(1.1)]' : ''}`}>
-            
-            <div className={`absolute inset-0 backface-hidden rounded-2xl border flex items-center justify-center bg-[#121214] border-amber-500/30 shadow-[0_0_20px_rgba(251,191,36,0.1)]`}>
-              <Icon name="gift" className="text-amber-500/50" />
-            </div>
-
-            <div className={`absolute inset-0 backface-hidden rounded-2xl border flex flex-col items-center justify-center bg-amber-500 border-amber-400 [transform:rotateY(180deg)]`}>
-              <span className="text-xs font-bold text-amber-950 uppercase tracking-widest">Bônus</span>
-              <span className="text-2xl font-bold text-amber-950 mt-1">R$ {revealedVal}</span>
-            </div>
-          </button>
-        ))}
-      </div>
+      <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">Cortesia de Primeira Sessão</h2>
+      <p className="text-zinc-400 text-sm mb-10 max-w-sm leading-relaxed">
+        Como forma de boas-vindas, preparei um desconto exclusivo para o seu primeiro agendamento comigo.
+      </p>
+      <button onClick={() => onClaim(15)} className="w-full max-w-sm bg-amber-500 text-black font-bold h-14 rounded-2xl flex items-center justify-center gap-2 hover:bg-amber-400 transition-colors shadow-[0_0_20px_rgba(251,191,36,0.2)]">
+        Desbloquear Desconto de R$ 15 <Icon name="check" size={18} />
+      </button>
     </div>
   );
 };
@@ -231,7 +236,7 @@ const SectionHeader = ({ title, subtitle, step }: { title: string, subtitle?: st
 );
 
 // ==================================================================================
-// MAIN APP COMPONENT
+// COMPONENTE PRINCIPAL
 // ==================================================================================
 export default function App() {
   const [isAdult, setIsAdult] = useState<boolean | null>(null);
@@ -239,11 +244,11 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('single');
   const [isLoadingCep, setIsLoadingCep] = useState(false);
   
-  const [booking, setBooking] = useState({
-    cart: [] as any[], extras: {} as Record<string, boolean>, locationType: '',
-    name: '', age: '', fetishRequest: '', payment: '', discount: 0,
+  const [booking, setBooking] = useState<BookingState>({
+    cart: [], extras: {}, locationType: '',
+    name: '', age: '', specialRequest: '', payment: '', discount: 0,
     address: { cep: '', street: '', number: '', district: '', city: '', comp: '', placeName: '' },
-    date: null as Date | null, time: '', manualCoupon: '', manualCouponValue: 0,
+    date: null, time: '', manualCoupon: '', manualCouponValue: 0,
     finished: false
   });
 
@@ -251,18 +256,13 @@ export default function App() {
   const locationRef = useRef<HTMLDivElement>(null);
   const timeRef = useRef<HTMLDivElement>(null);
   const checkoutRef = useRef<HTMLDivElement>(null);
-  const reviewsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const checkAdult = localStorage.getItem('thaly_adult');
-      if (checkAdult === 'yes') {
-        setIsAdult(true);
-      } else {
-        setIsAdult(false);
-      }
+      setIsAdult(checkAdult === 'yes');
       
-      const hasSeen = localStorage.getItem('thaly_gift_v3');
+      const hasSeen = localStorage.getItem('thaly_gift_v4');
       if (hasSeen) { 
         setGiftDone(true); 
         setBooking(b => ({ ...b, discount: parseInt(hasSeen) })); 
@@ -279,14 +279,13 @@ export default function App() {
     }
   };
 
-  const handleWinGift = (val: number) => {
-    localStorage.setItem('thaly_gift_v3', val.toString());
+  const handleClaimGift = (val: number) => {
+    localStorage.setItem('thaly_gift_v4', val.toString());
     setBooking(b => ({ ...b, discount: val }));
     setGiftDone(true);
   };
 
-  const handleToggleItem = (item: any) => {
-    vibrate(30);
+  const handleToggleItem = (item: Service) => {
     setBooking(p => {
       const exists = p.cart.find(c => c.id === item.id);
       return { ...p, cart: exists ? p.cart.filter(c => c.id !== item.id) : [...p.cart, item] };
@@ -304,7 +303,6 @@ export default function App() {
         const data = await res.json();
         if (!data.erro) {
           setBooking(b => ({ ...b, address: { ...b.address, street: data.logradouro, district: data.bairro, city: data.localidade }}));
-          vibrate([50, 50]);
         }
       } catch (err) {} finally {
         setIsLoadingCep(false);
@@ -317,7 +315,6 @@ export default function App() {
     const couponData = (DATA.coupons as any)[code];
     if (couponData) {
       setBooking(b => ({ ...b, manualCouponValue: couponData.value }));
-      vibrate(50);
     } else {
       setBooking(b => ({ ...b, manualCouponValue: 0 }));
       alert("Cupom inválido ou expirado.");
@@ -327,19 +324,23 @@ export default function App() {
   const financials = useMemo(() => {
     let sub = 0; let duration = 0;
     const isPack = booking.cart.some(i => i.id.startsWith('pack'));
-    booking.cart.forEach(item => { sub += item.price; if (!isPack) duration += (item.min || 60); });
+    
+    booking.cart.forEach(item => { 
+      sub += item.price; 
+      if (!isPack) duration += (item.min || 60); 
+    });
     
     if (isPack) duration = 60;
     
     Object.keys(booking.extras).forEach(k => {
       if (booking.extras[k]) { 
         const ex = DATA.extras.find(e => e.id === k); 
-        if (ex) { sub += ex.price; if (k === 'more_time') duration += 30; } 
+        if (ex) { sub += ex.price; } 
       }
     });
 
-    const fetishFee = booking.fetishRequest.trim().length > 0 ? 130 : 0;
-    sub += fetishFee;
+    const customRequestFee = booking.specialRequest.trim().length > 0 ? 130 : 0;
+    sub += customRequestFee;
 
     const rushFee = (RUSH_HOURS.includes(booking.time) && booking.locationType !== 'motel') ? RUSH_FEE : 0;
     const totalDiscounts = booking.discount + booking.manualCouponValue;
@@ -347,7 +348,7 @@ export default function App() {
     let running = Math.max(0, sub - totalDiscounts);
     let pixDisc = booking.payment === 'pix' ? Math.ceil(running * 0.03) : 0;
     
-    return { sub, rushFee, pixDisc, totalDiscounts, fetishFee, total: Math.max(0, running - pixDisc) + rushFee, duration };
+    return { sub, rushFee, pixDisc, totalDiscounts, customRequestFee, total: Math.max(0, running - pixDisc) + rushFee, duration };
   }, [booking]);
 
   const scrollToRef = (ref: React.RefObject<HTMLDivElement>) => {
@@ -355,53 +356,12 @@ export default function App() {
   };
 
   const currentStepInfo = useMemo(() => {
-    if (booking.cart.length === 0) return { label: 'Escolha um serviço', action: () => scrollToRef(servicesRef), ready: false };
-    if (!booking.name || !booking.age || !booking.locationType || (booking.locationType === 'home' && !booking.address.street) || (booking.locationType === 'hotel' && !booking.address.placeName)) return { label: 'Preencha seus dados', action: () => scrollToRef(locationRef), ready: false };
-    if (!booking.date || !booking.time) return { label: 'Escolha data e horário', action: () => scrollToRef(timeRef), ready: false };
-    if (!booking.payment) return { label: 'Selecione o pagamento', action: () => scrollToRef(checkoutRef), ready: false };
-    return { label: 'Finalizar e Enviar', action: () => setBooking(b => ({ ...b, finished: true })), ready: true };
+    if (booking.cart.length === 0) return { label: 'Escolher serviço', action: () => scrollToRef(servicesRef), ready: false };
+    if (!booking.name || !booking.age || !booking.locationType || (booking.locationType === 'home' && !booking.address.street) || (booking.locationType === 'hotel' && !booking.address.placeName)) return { label: 'Preencher identificação', action: () => scrollToRef(locationRef), ready: false };
+    if (!booking.date || !booking.time) return { label: 'Selecionar horário', action: () => scrollToRef(timeRef), ready: false };
+    if (!booking.payment) return { label: 'Revisar pagamento', action: () => scrollToRef(checkoutRef), ready: false };
+    return { label: 'Confirmar Agendamento', action: () => setBooking(b => ({ ...b, finished: true })), ready: true };
   }, [booking]);
-
-
-  const handleSaveToCalendar = () => {
-    if (!booking.date || !booking.time) return;
-    
-    const d = new Date(booking.date);
-    const [h, m] = booking.time.split(':');
-    d.setHours(parseInt(h), parseInt(m), 0, 0);
-    
-    const endD = new Date(d.getTime() + (financials.duration * 60000));
-    
-    const formatICSDate = (date: Date) => date.toISOString().replace(/-|:|\.\d+/g, '').substring(0, 15) + 'Z';
-    
-    const loc = booking.locationType === 'home' 
-      ? `${booking.address.street}, ${booking.address.number}` 
-      : booking.locationType === 'hotel' ? booking.address.placeName : "Bela Vista, São Paulo";
-
-    const icsString = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//Thalyson Massagens//NONSGML v1.0//EN",
-      "BEGIN:VEVENT",
-      `DTSTART:${formatICSDate(d)}`,
-      `DTEND:${formatICSDate(endD)}`,
-      "SUMMARY:Sessão - Thalyson Massagens",
-      "DESCRIPTION:Momento reservado e sigiloso.",
-      `LOCATION:${loc}`,
-      "END:VEVENT",
-      "END:VCALENDAR"
-    ].join("\n");
-
-    const blob = new Blob([icsString], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'sessao-thalyson.ics';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
 
   const sendWhatsApp = () => {
     const f = financials;
@@ -410,38 +370,29 @@ export default function App() {
     const servicesText = booking.cart.map(item => `▪️ ${item.title}`).join('\n');
     let locTxt = booking.locationType === 'home' 
       ? `🏡 *Casa:* ${booking.address.street}, ${booking.address.number} ${booking.address.comp ? `(${booking.address.comp})` : ''}` 
-      : booking.locationType === 'motel' ? `🔑 *Suíte:* Bela Vista` : `🏨 *Hotel:* ${booking.address.placeName} (Qto: ${booking.address.comp || '-'})`; 
+      : booking.locationType === 'motel' ? `🔑 *Meu Espaço:* Bela Vista` : `🏨 *Hotel:* ${booking.address.placeName} (Qto: ${booking.address.comp || '-'})`; 
     
     const extrasList = Object.keys(booking.extras).filter(k => booking.extras[k]).map(k => `➕ ${DATA.extras.find(e=>e.id===k)?.label}`).join('\n');
+    const reqText = booking.specialRequest.trim() ? `\n\n📝 *Preferência Especial (+R$ 130,00):*\n"${booking.specialRequest.trim()}"\n_(Aguardando sua confirmação)_` : '';
     
-    const fetishText = booking.fetishRequest.trim() ? `\n\n⛓️ *Fetiche / Pedido Especial (+R$ 130,00):*\n"${booking.fetishRequest.trim()}"\n_(Aguardando avaliação do terapeuta)_` : '';
-    
-    const msg = `*PEDIDO DE SESSÃO*\n\n👤 *Nome:* ${booking.name} (${booking.age} anos)\n📅 *Quando:* ${dateStr} às ${booking.time}\n⏳ *Duração:* ~${f.duration} min\n\n*O que faremos:*\n${servicesText}\n${extrasList ? `\n*Extras:*\n${extrasList}\n` : ''}\n*Onde:* \n${locTxt}${fetishText}\n\n*Pagamento:* ${booking.payment.toUpperCase()}\n💰 *Valor Total:* ${formatMoney(f.total)}\n\n_Estou ciente das regras de higiene e limites da sessão._`;
+    const msg = `*NOVO AGENDAMENTO*\n\n👤 *Nome:* ${booking.name} (${booking.age} anos)\n📅 *Data:* ${dateStr} às ${booking.time}\n⏳ *Duração:* ~${f.duration} min\n\n*Serviços escolhidos:*\n${servicesText}\n${extrasList ? `\n*Extras:*\n${extrasList}\n` : ''}\n*Local:* \n${locTxt}${reqText}\n\n*Pagamento:* ${booking.payment.toUpperCase()}\n💰 *Valor Total:* ${formatMoney(f.total)}`;
     
     window.open(`https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   if (isAdult === null) return null;
   if (isAdult === false) return <AgeGateModal onConfirm={handleAdultConfirm} />;
-  
-  if (!giftDone) return <PremiumGiftReveal onWin={handleWinGift} />;
+  if (!giftDone) return <WelcomeGiftModal onClaim={handleClaimGift} />;
 
   if (booking.finished) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center animate-scale-in">
         <div className="w-24 h-24 bg-[#25D366]/20 text-[#25D366] rounded-full flex items-center justify-center mb-6 border border-[#25D366]/30"><Icon name="check" size={40} /></div>
-        <h2 className="text-3xl font-bold text-white mb-3">Resumo Concluído!</h2>
-        <p className="text-zinc-400 text-sm mb-10 max-w-sm leading-relaxed">Sua solicitação está pronta. Para finalizar e garantir nossa discrição, adicione na sua agenda e me envie a mensagem.</p>
-        
-        <div className="w-full max-w-sm flex flex-col gap-4">
-          <button onClick={handleSaveToCalendar} className="w-full bg-white/10 text-white font-bold h-14 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/20 transition-colors border border-white/20">
-            <Icon name="calendar" size={20} /> Salvar no meu Calendário
-          </button>
-
-          <button onClick={sendWhatsApp} className="w-full bg-[#25D366] text-black font-bold h-14 rounded-2xl flex items-center justify-center gap-2 hover:bg-green-500 transition-colors shadow-[0_0_20px_rgba(37,211,102,0.2)]">
-            <Icon name="message" size={20} /> Enviar Pedido no WhatsApp
-          </button>
-        </div>
+        <h2 className="text-3xl font-bold text-white mb-3">Tudo certo por aqui.</h2>
+        <p className="text-zinc-400 text-sm mb-10 max-w-sm leading-relaxed">Para garantir nosso sigilo e confirmar seu horário, me envie as informações geradas direto no WhatsApp.</p>
+        <button onClick={sendWhatsApp} className="w-full max-w-sm bg-[#25D366] text-black font-bold h-14 rounded-2xl flex items-center justify-center gap-2 hover:bg-green-500 transition-colors shadow-[0_0_20px_rgba(37,211,102,0.2)]">
+          <Icon name="message" size={20} /> Enviar Pedido no WhatsApp
+        </button>
       </div>
     );
   }
@@ -460,7 +411,6 @@ export default function App() {
     for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
       slots.push(`${i < 10 ? '0' : ''}${i}:00`);
     }
-    
     const now = new Date();
     if (booking.date.toDateString() === now.toDateString()) {
       return slots.filter(t => parseInt(t.split(':')[0]) > now.getHours());
@@ -475,7 +425,7 @@ export default function App() {
       <main className="max-w-2xl mx-auto px-4 sm:px-6 pt-6 pb-40 flex flex-col gap-14">
         
         <header className="flex justify-end animate-fade-up">
-          <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-zinc-400 hover:text-pink-500 transition-colors">
+          <a href={CONFIG.INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-zinc-400 hover:text-white transition-colors">
             <Icon name="instagram" size={18} />
           </a>
         </header>
@@ -486,17 +436,13 @@ export default function App() {
               <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-amber-500/50 shadow-[0_0_20px_rgba(251,191,36,0.2)]">
                 <img src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png" alt="Thalyson" className="w-full h-full object-cover" />
               </div>
-              <div className="absolute -bottom-2 -right-2 bg-emerald-500 border-2 border-[#09090b] text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse-soft" /> Ativo
-              </div>
             </div>
             
             <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Thalyson Massagens</h1>
-            <p className="text-zinc-400 text-sm mb-5 leading-relaxed max-w-sm">Sou eu mesmo quem atende. Um espaço simples na Bela Vista, focado exclusivamente no seu relaxamento.</p>
+            <p className="text-zinc-400 text-sm mb-5 leading-relaxed max-w-sm">Sou eu mesmo quem atende. Um espaço individual e simples na Bela Vista, focado no seu relaxamento sem complicações.</p>
             
             <div className="flex flex-wrap justify-center gap-2">
               <span className="flex items-center gap-1.5 glass-panel text-xs font-bold text-zinc-300 px-3 py-2 rounded-xl"><Icon name="star" size={14} className="text-amber-500" /> 5.0</span>
-              <span className="flex items-center gap-1.5 glass-panel text-xs font-bold text-zinc-300 px-3 py-2 rounded-xl"><Icon name="user-check" size={14} className="text-blue-400" /> 142 Sessões</span>
               <span className="flex items-center gap-1.5 glass-panel text-xs font-bold text-zinc-300 px-3 py-2 rounded-xl"><Icon name="map-pin" size={14} className="text-emerald-400" /> Bela Vista</span>
               <span className="flex items-center gap-1.5 glass-panel text-xs font-bold text-zinc-300 px-3 py-2 rounded-xl"><Icon name="shield" size={14} className="text-purple-400" /> Sigilo Total</span>
             </div>
@@ -504,11 +450,11 @@ export default function App() {
         </section>
 
         <section ref={servicesRef} className="animate-fade-up">
-          <SectionHeader step={1} title="Sessões" subtitle="Leia os detalhes tangíveis e escolha sua experiência." />
+          <SectionHeader step={1} title="Sessões" subtitle="Escolha a experiência que faz sentido para você hoje." />
           
           <div className="flex gap-2 p-1.5 glass-panel rounded-2xl mb-6 w-full sm:w-fit">
             <button onClick={() => setActiveTab('single')} className={`flex-1 px-6 py-2.5 rounded-xl text-xs font-bold transition-colors ${activeTab === 'single' ? 'bg-white text-black' : 'text-zinc-400'}`}>Avulsas</button>
-            <button onClick={() => setActiveTab('packs')} className={`flex-1 px-6 py-2.5 rounded-xl text-xs font-bold transition-colors ${activeTab === 'packs' ? 'bg-amber-500 text-black' : 'text-zinc-400'}`}>Combos Mensais</button>
+            <button onClick={() => setActiveTab('packs')} className={`flex-1 px-6 py-2.5 rounded-xl text-xs font-bold transition-colors ${activeTab === 'packs' ? 'bg-amber-500 text-black' : 'text-zinc-400'}`}>Pacotes Mensais</button>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
@@ -531,9 +477,9 @@ export default function App() {
                     </div>
                   </div>
 
-                  {'details' in item && (
+                  {'details' in item && item.details && (
                     <div className="mt-3 mb-5 space-y-2 pl-[4.25rem]">
-                      {(item.details as string[]).map((detail, idx) => (
+                      {item.details.map((detail, idx) => (
                         <div key={idx} className="flex items-start gap-2 text-xs text-zinc-300">
                           <span className="text-amber-500 mt-0.5">•</span>
                           <span className="leading-relaxed">{detail}</span>
@@ -543,7 +489,7 @@ export default function App() {
                   )}
 
                   <div className="flex items-end justify-between mt-2 pt-4 border-t border-white/5 pl-[4.25rem]">
-                    <span className="text-xs text-zinc-500 font-bold">Aprox. {item.min || 60} min</span>
+                    <span className="text-xs text-zinc-500 font-bold">Até {item.min || 60} min</span>
                     <div className="text-right">
                       {item.fullPrice && <span className="text-xs text-zinc-500 line-through block mb-0.5">{formatMoney(item.fullPrice)}</span>}
                       <span className="text-white font-bold text-xl">{formatMoney(item.price)}</span>
@@ -556,31 +502,8 @@ export default function App() {
           </div>
         </section>
 
-        <section ref={reviewsRef} className="animate-fade-up py-6 border-y border-white/10">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-white">Relatos de quem já veio</h2>
-          </div>
-          <div className="flex gap-4 overflow-x-auto snap-x scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 pb-4">
-            {DATA.reviews.map((r, i) => (
-              <div key={i} className="snap-center shrink-0 w-[280px] glass-panel p-5 rounded-3xl flex flex-col h-auto">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm text-white shrink-0">{r.n.charAt(0)}</div>
-                  <div>
-                    <p className="text-sm font-bold text-white">{r.n}</p>
-                    <p className="text-xs text-zinc-500">{r.loc}</p>
-                  </div>
-                </div>
-                <div className="flex gap-1 mb-3">
-                  {[...Array(5)].map((_, idx) => <Icon key={idx} name="star" size={12} className="text-amber-500 fill-amber-500" />)}
-                </div>
-                <p className="text-sm text-zinc-300 leading-relaxed italic">"{r.t}"</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
         <section ref={locationRef} className={`transition-opacity duration-500 ${booking.cart.length ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
-          <SectionHeader step={2} title="Local e Identificação" subtitle="Apenas para saber como te chamar." />
+          <SectionHeader step={2} title="Local e Identificação" subtitle="Como devo te chamar e onde vamos nos encontrar." />
           
           <div className="glass-panel p-5 sm:p-8 rounded-3xl space-y-6">
             <div className="flex gap-3">
@@ -597,14 +520,14 @@ export default function App() {
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-3 block pl-1">Onde vamos nos encontrar?</label>
               <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
-                {[{id: 'motel', label: 'Minha Suíte'}, {id: 'home', label: 'Na sua Casa'}, {id: 'hotel', label: 'Em Hotel'}].map(l => (
+                {[{id: 'motel', label: 'Meu Espaço'}, {id: 'home', label: 'Na sua Casa'}, {id: 'hotel', label: 'Em Hotel'}].map(l => (
                   <button key={l.id} onClick={() => setBooking(b => ({...b, locationType: l.id}))} className={`py-4 px-1 sm:px-2 text-[10px] sm:text-xs font-bold rounded-2xl border transition-colors flex flex-col items-center justify-center text-center ${booking.locationType === l.id ? 'bg-amber-500 border-amber-500 text-black' : 'bg-white/5 border-white/10 text-zinc-400'}`}>
                     {l.label}
                   </button>
                 ))}
               </div>
 
-              {booking.locationType === 'motel' && <p className="text-xs text-amber-500 bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 font-medium leading-relaxed">Você virá até meu espaço na Bela Vista (próximo à Av. Paulista). O endereço exato é enviado pelo WhatsApp após finalizarmos.</p>}
+              {booking.locationType === 'motel' && <p className="text-xs text-amber-500 bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 font-medium leading-relaxed">Você virá até meu espaço na Bela Vista. O endereço exato e detalhes de acesso são enviados pelo WhatsApp após confirmarmos o horário.</p>}
               
               {booking.locationType === 'home' && (
                 <div className="space-y-3 animate-fade-up">
@@ -632,7 +555,7 @@ export default function App() {
         </section>
 
         <section ref={timeRef} className={`transition-opacity duration-500 ${booking.locationType && booking.name && booking.age ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
-          <SectionHeader step={3} title="Data e Horário" subtitle="Trabalho todos os dias, das 09h às 22h." />
+          <SectionHeader step={3} title="Data e Horário" subtitle="Meus horários de atendimento, das 09h às 22h." />
           
           <div className="flex gap-3 overflow-x-auto snap-x scrollbar-hide mb-6 -mx-4 px-4 sm:mx-0 sm:px-0 pb-2">
             {days.map((d, i) => {
@@ -660,14 +583,14 @@ export default function App() {
                   );
                 })
               ) : (
-                <div className="col-span-4 p-4 text-center text-zinc-500 text-sm glass-panel rounded-xl">Nenhum horário disponível para hoje.</div>
+                <div className="col-span-4 p-4 text-center text-zinc-500 text-sm glass-panel rounded-xl">Nenhum horário disponível para hoje. Tente outra data.</div>
               )}
             </div>
           )}
         </section>
 
         <section ref={checkoutRef} className={`transition-opacity duration-500 ${booking.time ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
-          <SectionHeader step={4} title="Extras e Pagamento" subtitle="O acerto é feito no local, após a sessão." />
+          <SectionHeader step={4} title="Preferências e Pagamento" subtitle="O acerto é feito presencialmente." />
           
           <div className="glass-panel p-5 sm:p-8 rounded-3xl space-y-6">
             
@@ -688,14 +611,14 @@ export default function App() {
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 pl-1">Fetiches / Pedidos Especiais</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 pl-1">Toque Pessoal / Preferências</p>
                 <span className="text-xs font-bold text-amber-500">+ R$ 130,00</span>
               </div>
-              <p className="text-xs text-zinc-400 mb-3 pl-1 leading-relaxed">Sujeito a avaliação. Descreva o que deseja. Se não for aceito no momento do atendimento, esse valor não será cobrado.</p>
+              <p className="text-xs text-zinc-400 mb-3 pl-1 leading-relaxed">Tem algum pedido específico ou fetiche que gostaria de explorar? Descreva aqui. Sujeito a avaliação na hora. Caso eu não possa atender o pedido, essa taxa não será cobrada.</p>
               <textarea 
-                value={booking.fetishRequest} 
-                onChange={(e) => setBooking(b => ({ ...b, fetishRequest: e.target.value }))}
-                placeholder="Descreva seu pedido ou fetiche com clareza..." 
+                value={booking.specialRequest} 
+                onChange={(e) => setBooking(b => ({ ...b, specialRequest: e.target.value }))}
+                placeholder="Fique à vontade para descrever..." 
                 className="w-full p-4 rounded-2xl input-premium text-sm min-h-[100px] resize-none"
               />
             </div>
@@ -721,7 +644,7 @@ export default function App() {
             </div>
 
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-3 pl-1">Como vai pagar no local?</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-3 pl-1">Forma de Pagamento no Local</p>
               <div className="flex gap-2 sm:gap-3">
                 {[{id: 'pix', label: 'Pix (-3%)'}, {id: 'card', label: 'Cartão'}, {id: 'cash', label: 'Dinheiro'}].map(p => (
                   <button key={p.id} onClick={() => setBooking(b => ({...b, payment: p.id}))} className={`flex-1 h-12 rounded-xl text-xs font-bold border transition-colors ${booking.payment === p.id ? 'bg-amber-500 border-amber-500 text-black' : 'bg-white/5 border-white/10 text-zinc-400'}`}>{p.label}</button>
@@ -730,14 +653,14 @@ export default function App() {
             </div>
 
             <div className="pt-6 border-t border-white/10">
-              <div className="flex justify-between text-sm text-zinc-400 mb-2"><span>Subtotal</span><span>{formatMoney(financials.sub - financials.fetishFee)}</span></div>
+              <div className="flex justify-between text-sm text-zinc-400 mb-2"><span>Subtotal</span><span>{formatMoney(financials.sub - financials.customRequestFee)}</span></div>
               
-              {financials.fetishFee > 0 && <div className="flex justify-between text-sm text-zinc-400 mb-2"><span>Pedido / Fetiche</span><span>+{formatMoney(financials.fetishFee)}</span></div>}
+              {financials.customRequestFee > 0 && <div className="flex justify-between text-sm text-zinc-400 mb-2"><span>Pedido Especial</span><span>+{formatMoney(financials.customRequestFee)}</span></div>}
               
               {booking.discount > 0 && <div className="flex justify-between text-sm text-amber-500 mb-2"><span>Cortesia (Boas Vindas)</span><span>-{formatMoney(booking.discount)}</span></div>}
               {booking.manualCouponValue > 0 && <div className="flex justify-between text-sm text-amber-500 mb-2"><span>Cupom Aplicado</span><span>-{formatMoney(booking.manualCouponValue)}</span></div>}
               
-              {financials.rushFee > 0 && <div className="flex justify-between text-sm text-zinc-400 mb-2"><span>Taxa de Pico (Deslocamento)</span><span>+{formatMoney(financials.rushFee)}</span></div>}
+              {financials.rushFee > 0 && <div className="flex justify-between text-sm text-zinc-400 mb-2"><span>Taxa de Deslocamento</span><span>+{formatMoney(financials.rushFee)}</span></div>}
               {financials.pixDisc > 0 && <div className="flex justify-between text-sm text-emerald-400 mb-2"><span>Desconto Pix</span><span>-{formatMoney(financials.pixDisc)}</span></div>}
               
               <div className="flex justify-between items-center mt-6">
@@ -753,7 +676,7 @@ export default function App() {
       <footer className="bg-[#121214] border-t border-white/5 py-10 pb-36 text-center text-zinc-500 text-xs mt-auto">
         <div className="max-w-xl mx-auto px-6">
           <p className="font-bold text-white mb-2">Thalyson Massagens</p>
-          <p className="mb-4 leading-relaxed">Atendimento exclusivo, discreto e focado no bem-estar masculino. Não realizamos serviços ilegais ou que desrespeitem nossos termos de uso e higiene.</p>
+          <p className="mb-4 leading-relaxed">Atendimento exclusivo, discreto e focado no bem-estar masculino. Não realizamos serviços que desrespeitem nossos termos de uso e higiene.</p>
           <p>© {new Date().getFullYear()} Thalyson Massagens. Bela Vista, SP.</p>
         </div>
       </footer>
