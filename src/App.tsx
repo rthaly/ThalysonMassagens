@@ -29,7 +29,6 @@ const TEXTS = {
     step2Label: "Etapa 02",
     step2Title: "Quem e Onde.",
     namePlace: "Nome ou Apelido",
-    agePlace: "Idade",
     locLabel: "Local do Encontro",
     locStudio: "Meu Espaço",
     locHome: "Outro Local",
@@ -38,6 +37,7 @@ const TEXTS = {
     street: "Rua ou Hotel",
     number: "Número",
     comp: "Apto / Quarto",
+    bairroPlace: "Bairro",
     btnNext: "Avançar",
     step3Label: "Etapa 03",
     step3Title: "O Momento.",
@@ -71,7 +71,6 @@ const TEXTS = {
     wtsNew: "NOVA SOLICITAÇÃO DE AGENDAMENTO",
     wtsId: "Identificação",
     wtsName: "Nome",
-    wtsYears: "anos",
     wtsSession: "A Sessão",
     wtsDate: "Data",
     wtsDur: "Duração Estimada",
@@ -101,7 +100,6 @@ const TEXTS = {
     step2Label: "Step 02",
     step2Title: "Who and Where.",
     namePlace: "Name or Nickname",
-    agePlace: "Age",
     locLabel: "Meeting Place",
     locStudio: "My Studio",
     locHome: "Other Location",
@@ -110,6 +108,7 @@ const TEXTS = {
     street: "Street or Hotel",
     number: "Number",
     comp: "Apt / Room",
+    bairroPlace: "Neighborhood",
     btnNext: "Next",
     step3Label: "Step 03",
     step3Title: "The Moment.",
@@ -143,7 +142,6 @@ const TEXTS = {
     wtsNew: "NEW BOOKING REQUEST",
     wtsId: "Identification",
     wtsName: "Name",
-    wtsYears: "years old",
     wtsSession: "The Session",
     wtsDate: "Date",
     wtsDur: "Estimated Duration",
@@ -286,7 +284,7 @@ export default function App() {
   const T = TEXTS[lang];
 
   const [data, setData] = useState({
-    name: '', age: '', locType: '', cep: '', street: '', number: '', comp: '', 
+    name: '', locType: '', cep: '', street: '', number: '', comp: '', bairro: '', 
     date: null as Date | null, time: '', extras: {} as Record<string, boolean>,
     req: '', payment: ''
   });
@@ -314,7 +312,6 @@ export default function App() {
 
   const resetFlow = () => {
     vibrate(20);
-    // Para não quebrar o aviso se a pessoa limpar o cache ou ainda não tiver aceitado
     const isAdult = localStorage.getItem('thaly_adult_v8');
     setStep(isAdult === 'yes' ? 1 : 0);
   };
@@ -337,7 +334,13 @@ export default function App() {
       try {
         const res = await fetch(`https://viacep.com.br/ws/${masked.replace('-', '')}/json/`);
         const json = await res.json();
-        if (!json.erro) setData(prev => ({ ...prev, street: json.logradouro }));
+        if (!json.erro) {
+          setData(prev => ({ 
+            ...prev, 
+            street: json.logradouro || '', 
+            bairro: json.bairro || '' 
+          }));
+        }
       } catch (e) {} finally {
         setCepLoading(false);
       }
@@ -383,13 +386,13 @@ export default function App() {
     
     const mapsLink = data.locType === 'studio' 
       ? `📍 *${T.wtsLocStudio}*` 
-      : `📍 *${T.wtsLocHome}:* ${data.street}, ${data.number} ${data.comp ? `(${data.comp})` : ''}\n🗺️ *Maps:* https://maps.google.com/?q=${encodeURIComponent(`${data.street},${data.number}, São Paulo`)}`;
+      : `📍 *${T.wtsLocHome}:* ${data.street}, ${data.number} ${data.comp ? `(${data.comp})` : ''} - ${data.bairro}\n🗺️ *Maps:* https://maps.google.com/?q=${encodeURIComponent(`${data.street}, ${data.number},${data.bairro}, São Paulo`)}`;
 
     const rTxt = data.req.trim() ? `\n\n🔥 *${T.wtsReq}:*\n"${data.req.trim()}"\n_${T.wtsReqWait}_` : '';
 
     const text = `*${T.wtsNew}* 🌿\n\n` +
       `*👤 ${T.wtsId}*\n` +
-      `${T.wtsName}: ${data.name} (${data.age} ${T.wtsYears})\n\n` +
+      `${T.wtsName}: ${data.name}\n\n` +
       `*📅 ${T.wtsSession}*\n` +
       `${T.wtsDate}: ${dStr} às ${data.time}\n` +
       `${T.wtsDur}: ~${fin.dur} min\n` +
@@ -512,9 +515,6 @@ export default function App() {
                 <div className="flex-1">
                   <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full modern-input" />
                 </div>
-                <div className="w-24">
-                  <input type="tel" maxLength={2} placeholder={T.agePlace} value={data.age} onChange={e=>setData({...data, age: e.target.value.replace(/\D/g,'')})} className="w-full modern-input text-center" />
-                </div>
               </div>
 
               <div className="pt-4">
@@ -535,12 +535,13 @@ export default function App() {
                     <input type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 modern-input" />
                     <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 modern-input" />
                   </div>
+                  <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full modern-input" />
                 </div>
               )}
             </div>
 
             <div className="mt-12 flex flex-col gap-4">
-              <button disabled={!data.name || !data.age || !data.locType || (data.locType==='home' && !data.street)} onClick={() => { vibrate(30); setStep(3); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
+              <button disabled={!data.name || !data.locType || (data.locType==='home' && (!data.street || !data.bairro))} onClick={() => { vibrate(30); setStep(3); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
                 {T.btnNext}
               </button>
               <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-2">
