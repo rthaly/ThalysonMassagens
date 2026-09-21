@@ -251,7 +251,8 @@ const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-
 const ICON_PATHS: Record<string, string> = {
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
   'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
-  'gift': 'M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z'
+  'gift': 'M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z',
+  'close': 'M18 6L6 18 M6 6l12 12'
 };
 
 const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: number; className?: string }) => (
@@ -326,11 +327,12 @@ export default function App() {
   const activeList = bookingMode === 'single' ? MOODS : COMBOS;
   const [moodId, setMoodId] = useState(MOODS[0].id);
 
-  // Estados do Cupom
   const [couponInput, setCouponInput] = useState('');
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponError, setCouponError] = useState(false);
   
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
   useEffect(() => {
     setMoodId(activeList[0].id);
   }, [bookingMode, activeList]);
@@ -347,14 +349,14 @@ export default function App() {
   });
 
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v17');
-    const hasGift = localStorage.getItem('thaly_gift_v17');
+    const isAdult = localStorage.getItem('thaly_adult_v18');
+    const hasGift = localStorage.getItem('thaly_gift_v18');
     if (isAdult === 'yes') setStep(1);
     if (hasGift === 'yes') setGiftApplied(true);
   }, []);
 
   useEffect(() => {
-    if (step > 0 && step < 5) {
+    if (step > 0 && step < 5 && !isProfileOpen) {
       setTimeout(() => {
         const el = document.getElementById(`step-${step}`);
         if (el) {
@@ -363,17 +365,17 @@ export default function App() {
         }
       }, 150);
     }
-  }, [step]);
+  }, [step, isProfileOpen]);
 
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v17', 'yes');
+    localStorage.setItem('thaly_adult_v18', 'yes');
     setStep(1);
   };
 
   const applyGift = () => {
     vibrate([40, 60]);
-    localStorage.setItem('thaly_gift_v17', 'yes');
+    localStorage.setItem('thaly_gift_v18', 'yes');
     setGiftApplied(true);
   };
 
@@ -391,9 +393,14 @@ export default function App() {
     }
   };
 
+  const openProfile = () => {
+    vibrate(15);
+    setIsProfileOpen(true);
+  };
+
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v17');
+    const isAdult = localStorage.getItem('thaly_adult_v18');
     setStep(isAdult === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
   };
@@ -519,14 +526,14 @@ export default function App() {
         
         {/* CABEÇALHO */}
         <header className="flex justify-between items-center mb-10">
-          <button onClick={resetFlow} className="text-left group outline-none py-2 flex items-center gap-3">
+          <button onClick={openProfile} className="text-left group outline-none py-2 flex items-center gap-3">
             <img 
               src="FmtU3Ogx_400x400.jpg" 
               alt="Thalyson" 
-              className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg"
+              className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg transition-transform group-hover:scale-105"
             />
             <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
-              Thalyson Massagens.
+              Thalyson.
             </span>
           </button>
           
@@ -543,12 +550,40 @@ export default function App() {
               <Icon name="globe" size={14} />
               {lang}
             </button>
-
-            <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors outline-none py-2">
-              <Icon name="instagram" size={18} />
-            </a>
           </div>
         </header>
+
+        {/* MODAL DO PERFIL */}
+        {isProfileOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in" onClick={() => setIsProfileOpen(false)}>
+            <div className="bg-[#09090b] border border-white/10 rounded-md w-full max-w-sm p-8 relative shadow-2xl" onClick={e => e.stopPropagation()}>
+              <button onClick={() => setIsProfileOpen(false)} className="absolute top-4 right-4 p-2 text-white/50 hover:text-white transition-colors outline-none">
+                <Icon name="close" size={20} />
+              </button>
+              
+              <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt="Thalyson" />
+              
+              <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Thalyson.</h2>
+              <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Solteiro</p>
+              
+              <div className="space-y-4 text-sm text-white/70 leading-relaxed">
+                <p>
+                  Nasci em Santa Fé do Sul, no interior de São Paulo. Hoje meu espaço fica aqui na capital, na Bela Vista.
+                </p>
+                <p>
+                  Trabalho como terapeuta há mais de um ano. O que eu faço é simples: uso minhas mãos e o toque para tirar o peso da sua rotina e te entregar uma experiência onde você só precisa fechar os olhos, relaxar e aproveitar.
+                </p>
+              </div>
+              
+              <div className="mt-8 pt-6 border-t border-white/10 flex justify-center">
+                <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors outline-none">
+                  <Icon name="instagram" size={16} />
+                  Acompanhe no Instagram
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* STEP 0: O AVISO (+18) */}
         {step === 0 && (
