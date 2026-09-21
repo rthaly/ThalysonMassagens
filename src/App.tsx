@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 
 // ==================================================================================
-// CONFIGURAÇÃO
+// CONFIGURAÇÃO GERAL E CUPONS
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
@@ -9,6 +9,13 @@ const CONFIG = {
   ADDRESS_AREA: "Bela Vista, São Paulo",
   START_HOUR: 9,
   END_HOUR: 22,
+  
+  // CRIE SEUS CUPONS AQUI (Nome do Cupom : Valor de desconto em Reais)
+  COUPONS: {
+    "GOZAR10": 10,
+    "THALY20": 20,
+    "BEMVINDO50": 50
+  }
 };
 
 const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
@@ -32,9 +39,9 @@ const TEXTS = {
     step2Title: "Quem e Onde.",
     namePlace: "Como prefere ser chamado?",
     locLabel: "Onde será a 1ª sessão?",
-    locStudio: "Meu Espaço (Bela Vista)",
+    locStudio: "Minha Suíte (Bela Vista)",
     locHome: "Seu Espaço (Vou até você)",
-    studioDesc: "Atendo em um apartamento privativo na Bela Vista. O endereço completo e as instruções eu te mando no WhatsApp assim que confirmarmos o horário.",
+    studioDesc: "Atendo sozinho em uma suíte privativa na Bela Vista. O endereço completo e as instruções eu te mando no WhatsApp assim que confirmarmos o horário.",
     cep: "CEP (opcional)",
     street: "Rua ou Avenida",
     number: "Número",
@@ -49,6 +56,9 @@ const TEXTS = {
     giftTitle: "Presente Liberado",
     giftDesc: "Como é sua primeira vez marcando por aqui, deixei um pequeno desconto no valor final.",
     giftBtn: "Desbloquear Cortesia (R$ 15)",
+    couponLabel: "Tem um cupom?",
+    couponPlace: "Digite o código",
+    couponBtn: "Aplicar",
     addons: "Vontades Extras (Hoje)",
     reqLabel: "Tem algum fetiche ou pedido?",
     reqPlace: "O que você quer que role hoje?",
@@ -61,6 +71,7 @@ const TEXTS = {
     subExtras: "Extras (Hoje)",
     subReq: "Pedido Especial (Hoje)",
     subGift: "Cortesia (Primeira Vez)",
+    subCoupon: "Cupom Aplicado",
     subPeak: "Deslocamento",
     subPix: "Desconto Pix",
     total: "Valor Final",
@@ -81,7 +92,7 @@ const TEXTS = {
     wtsMood: "Sessão",
     wtsServ: "Estilo",
     wtsLoc: "ONDE VAI ROLAR",
-    wtsLocStudio: "Meu Espaço (Bela Vista, São Paulo)\n🗺️ _Te mando o endereço exato e como entrar assim que a gente confirmar._",
+    wtsLocStudio: "Minha Suíte Privativa (Bela Vista, São Paulo)\n🗺️ _Te mando o endereço exato e como entrar assim que a gente confirmar._",
     wtsLocHome: "Seu Espaço",
     wtsAddons: "VONTADES EXTRAS",
     wtsReq: "Pedido Específico",
@@ -107,9 +118,9 @@ const TEXTS = {
     step2Title: "Who and Where.",
     namePlace: "How should I call you?",
     locLabel: "Where will the 1st session be?",
-    locStudio: "My Space (Bela Vista)",
+    locStudio: "My Suite (Bela Vista)",
     locHome: "Your Space (I go to you)",
-    studioDesc: "I receive in a private apartment in Bela Vista. Exact address and instructions sent on WhatsApp after confirming.",
+    studioDesc: "I receive alone in a private suite in Bela Vista. Exact address and instructions sent on WhatsApp after confirming.",
     cep: "ZIP Code (optional)",
     street: "Street or Avenue",
     number: "Number",
@@ -124,6 +135,9 @@ const TEXTS = {
     giftTitle: "Gift Unlocked",
     giftDesc: "Since it is your first time booking here, I unlocked a small discount on the final amount.",
     giftBtn: "Unlock Courtesy (R$ 15)",
+    couponLabel: "Have a coupon?",
+    couponPlace: "Enter code",
+    couponBtn: "Apply",
     addons: "Extra Desires (Today)",
     reqLabel: "Any fetish or special request?",
     reqPlace: "What do you want to happen today?",
@@ -136,6 +150,7 @@ const TEXTS = {
     subExtras: "Extras (Today)",
     subReq: "Special Request (Today)",
     subGift: "Courtesy (First Time)",
+    subCoupon: "Coupon Applied",
     subPeak: "Travel Fee",
     subPix: "Pix Discount",
     total: "Final Value",
@@ -156,7 +171,7 @@ const TEXTS = {
     wtsMood: "Session",
     wtsServ: "Style",
     wtsLoc: "WHERE IT HAPPENS",
-    wtsLocStudio: "My Space (Bela Vista, São Paulo)\n🗺️ _I'll send the exact address once we confirm._",
+    wtsLocStudio: "My Private Suite (Bela Vista, São Paulo)\n🗺️ _I'll send the exact address once we confirm._",
     wtsLocHome: "Your Space",
     wtsAddons: "EXTRA DESIRES",
     wtsReq: "Specific Request",
@@ -173,51 +188,51 @@ const TEXTS = {
 const MOODS = [
   {
     id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false,
-    PT: { title: 'Desatar os nós', subtitle: 'Tensão e peso nas costas.', service: 'Massagem Clássica', desc: 'Corpo todo, pressão firme. Estritamente para amassar a musculatura e tirar a dor do corpo. Sem toques íntimos.' },
-    EN: { title: 'Untie the knots', subtitle: 'Tension and back weight.', service: 'Classic Massage', desc: 'Full body, firm pressure. Strictly to knead muscles and relieve pain. No intimate touch.' }
+    PT: { title: 'Desatar os nós', subtitle: 'Tensão e peso nas costas.', service: 'Massagem Clássica', desc: 'Começamos relaxando todo o seu corpo para tirar a dor com pressão firme. Estritamente para amassar a musculatura. Sem toques íntimos.' },
+    EN: { title: 'Untie the knots', subtitle: 'Tension and back weight.', service: 'Classic Massage', desc: 'We start by relaxing your entire body to relieve pain. Strictly to knead muscles. No intimate touch.' }
   },
   {
     id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false,
-    PT: { title: 'A Jornada Tântrica', subtitle: 'Começa relaxando, termina gozando.', service: 'Massagem Sensitiva / Tântrica', desc: 'Toda sessão tântrica começa com uma Clássica profunda nas costas para destravar você. Só com o corpo solto é que a gente evolui pros toques na pele e pra técnica íntima final (Lingam).' },
-    EN: { title: 'The Tantric Journey', subtitle: 'Starts relaxing, ends releasing.', service: 'Sensitive / Tantric Massage', desc: 'Starts with a deep Classic on the back to loosen you up. Then we evolve to skin touches and final intimate technique (Lingam).' }
+    PT: { title: 'A Jornada Tântrica', subtitle: 'Começa relaxando, termina gozando.', service: 'Massagem Sensitiva / Tântrica', desc: 'Toda sessão começa relaxando e destravando seu corpo com a massagem clássica. Só com o corpo solto é que a gente evolui pros toques na pele e pra técnica íntima final (Lingam).' },
+    EN: { title: 'The Tantric Journey', subtitle: 'Starts relaxing, ends releasing.', service: 'Sensitive / Tantric Massage', desc: 'Every session starts relaxing and unlocking your body. Then we evolve to skin touches and final intimate technique (Lingam).' }
   },
   {
     id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false,
-    PT: { title: 'Proximidade', subtitle: 'Mais intimidade, pele na pele.', service: 'Experiência Fusion', desc: 'Depois de destravar suas costas, eu fico só de cueca. O contato fica intenso, corpo a corpo, você sente o toque da minha barba. Finalização íntima prolongada e deliciosa.' },
-    EN: { title: 'Closeness', subtitle: 'More intimacy, skin on skin.', service: 'Fusion Experience', desc: 'After loosening your back, I stay only in underwear. Intense body-to-body contact, touch of my beard. Prolonged and delicious intimate finish.' }
+    PT: { title: 'Proximidade', subtitle: 'Mais intimidade, pele na pele.', service: 'Experiência Fusion', desc: 'Começo relaxando seu corpo inteiro para soltar a tensão. Depois, fico só de cueca. O contato fica intenso, corpo a corpo, com o toque da minha barba. Finalização íntima prolongada.' },
+    EN: { title: 'Closeness', subtitle: 'More intimacy, skin on skin.', service: 'Fusion Experience', desc: 'I start by relaxing your whole body. Then, I stay only in underwear. Intense body-to-body contact. Prolonged intimate finish.' }
   },
   {
     id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false,
-    PT: { title: 'Imersão Total', subtitle: 'Nós dois suados e escorregadios.', service: 'Massagem Nuru (Gel)', desc: 'Após o relaxamento inicial, a gente tira tudo. Muito gel ultra deslizante. Nossos corpos colados deslizando um no outro, frente e costas, até você chegar lá.' },
-    EN: { title: 'Total Immersion', subtitle: 'Both of us sweaty and slippery.', service: 'Nuru Massage (Gel)', desc: 'After initial relaxation, we take it all off. Lots of ultra-gliding gel. Bodies glued sliding on each other until you get there.' }
+    PT: { title: 'Imersão Total', subtitle: 'Nós dois suados e escorregadios.', service: 'Massagem Nuru (Gel)', desc: 'Iniciamos relaxando toda a sua musculatura. Depois, a gente tira tudo. Muito gel ultra deslizante. Nossos corpos colados deslizando um no outro até você chegar lá.' },
+    EN: { title: 'Total Immersion', subtitle: 'Both of us sweaty and slippery.', service: 'Nuru Massage (Gel)', desc: 'We begin by relaxing your muscles. Then we take it all off. Lots of ultra-gliding gel. Bodies glued sliding on each other.' }
   },
   {
     id: 'reversa', color: '#14532d', accent: '#4ade80', price: 400, min: 60, isCombo: false,
-    PT: { title: 'Assumir o Controle', subtitle: 'Aproveite o meu corpo.', service: 'Massagem Reversa', desc: 'Eu começo tirando sua tensão, mas depois você assume. Você dita o ritmo, toca onde quiser e explora o meu corpo livremente até a gente gozar junto.' },
-    EN: { title: 'Take Control', subtitle: 'Enjoy my body.', service: 'Reverse Massage', desc: 'I start taking your tension, then you take over. Set the pace, touch anywhere, explore my body freely until mutual release.' }
+    PT: { title: 'Assumir o Controle', subtitle: 'Aproveite o meu corpo.', service: 'Massagem Reversa', desc: 'Eu começo relaxando o seu corpo e tirando sua tensão, mas depois você assume. Você dita o ritmo, toca onde quiser e explora o meu corpo livremente até gozarmos juntos.' },
+    EN: { title: 'Take Control', subtitle: 'Enjoy my body.', service: 'Reverse Massage', desc: 'I start by relaxing your body, then you take over. Set the pace, touch anywhere, explore my body freely until mutual release.' }
   }
 ];
 
 const COMBOS = [
   {
     id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true,
-    PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Dois encontros no mês para quem quer contato pele a pele. Uma sessão Nuru e uma Reversa (ambas começam relaxando suas costas). Corpo solto, mente leve e finalização intensa. De R$ 750 por R$ 590 (Economia de R$ 160).' },
-    EN: { title: 'Intensity (Nuru + Reverse)', subtitle: 'Exploration and release without rush.', service: '2 Encounters', desc: 'Two sessions a month. One Nuru and one Reverse (both start relaxing your back). Loose body, light mind, intense finish. From R$ 750 for R$ 590 (Save R$ 160).' }
+    PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Uma sessão Nuru e uma Reversa. Ambas começam relaxando e destravando seu corpo inteiro primeiro. Corpo solto, mente leve e finalização intensa. De R$ 750 por R$ 590 (Economia de R$ 160).' },
+    EN: { title: 'Intensity (Nuru + Reverse)', subtitle: 'Exploration and release without rush.', service: '2 Encounters', desc: 'One Nuru and one Reverse. Both start by completely relaxing your body first. From R$ 750 for R$ 590 (Save R$ 160).' }
   },
   {
     id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true,
-    PT: { title: 'Exploração Total (As 4 Fases)', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros', desc: 'Você vem uma vez por semana. A gente começa no toque sutil da Sensitiva e evolui a cada visita até a explosão da Reversa. É sobre soltar o corpo e gozar de formas diferentes. De R$ 1.200 por R$ 890 (Economia de R$ 310).' },
-    EN: { title: 'Total Exploration (All 4 Phases)', subtitle: 'A whole month of discoveries.', service: '4 Encounters', desc: 'Come once a week. Experience all 4 stages, evolving intimacy each visit. It is about letting go and releasing in different ways. From R$ 1,200 for R$ 890 (Save R$ 310).' }
+    PT: { title: 'Exploração Total (As 4 Fases)', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros', desc: 'Você vem uma vez por semana. Todo encontro começa relaxando sua musculatura, evoluindo a intimidade a cada visita até a explosão da Reversa. De R$ 1.200 por R$ 890 (Economia de R$ 310).' },
+    EN: { title: 'Total Exploration (All 4 Phases)', subtitle: 'A whole month of discoveries.', service: '4 Encounters', desc: 'Come once a week. Every session starts by relaxing your muscles, evolving intimacy each visit. From R$ 1,200 for R$ 890 (Save R$ 310).' }
   },
   {
     id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true,
-    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e tirar aquela dor chata das costas. Sem toques íntimos, só alívio puro. De R$ 360 por R$ 320 (Economia de R$ 40).' },
-    EN: { title: 'Biweekly Relief (2 Sessions)', subtitle: 'Taking the weight off.', service: '2 Encounters', desc: 'Two visits a month purely to knead muscles and relieve back pain. No intimate touch. From R$ 360 for R$ 320 (Save R$ 40).' }
+    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar dores. Sem toques íntimos. De R$ 360 por R$ 320 (Economia de R$ 40).' },
+    EN: { title: 'Biweekly Relief (2 Sessions)', subtitle: 'Taking the weight off.', service: '2 Encounters', desc: 'Two visits a month purely to relax your body and relieve pain. No intimate touch. From R$ 360 for R$ 320 (Save R$ 40).' }
   },
   {
     id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true,
-    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros', desc: 'Uma hora por semana para a gente soltar todos os seus nós. Você chega travado do trabalho e sai leve. De R$ 720 por R$ 560 (Economia de R$ 160).' },
-    EN: { title: 'Light Routine (4 Sessions)', subtitle: 'Pain-free body all month.', service: '4 Encounters', desc: 'One hour a week to untie all knots. Arrive stiff from work, leave light. From R$ 720 for R$ 560 (Save R$ 160).' }
+    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve. De R$ 720 por R$ 560 (Economia de R$ 160).' },
+    EN: { title: 'Light Routine (4 Sessions)', subtitle: 'Pain-free body all month.', service: '4 Encounters', desc: 'One hour a week to relax your entire body. Arrive stiff, leave light. From R$ 720 for R$ 560 (Save R$ 160).' }
   }
 ];
 
@@ -310,6 +325,11 @@ export default function App() {
   const [bookingMode, setBookingMode] = useState<'single'|'combo'>('single');
   const activeList = bookingMode === 'single' ? MOODS : COMBOS;
   const [moodId, setMoodId] = useState(MOODS[0].id);
+
+  // Estados do Cupom
+  const [couponInput, setCouponInput] = useState('');
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponError, setCouponError] = useState(false);
   
   useEffect(() => {
     setMoodId(activeList[0].id);
@@ -327,8 +347,8 @@ export default function App() {
   });
 
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v15');
-    const hasGift = localStorage.getItem('thaly_gift_v15');
+    const isAdult = localStorage.getItem('thaly_adult_v17');
+    const hasGift = localStorage.getItem('thaly_gift_v17');
     if (isAdult === 'yes') setStep(1);
     if (hasGift === 'yes') setGiftApplied(true);
   }, []);
@@ -347,19 +367,33 @@ export default function App() {
 
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v15', 'yes');
+    localStorage.setItem('thaly_adult_v17', 'yes');
     setStep(1);
   };
 
   const applyGift = () => {
     vibrate([40, 60]);
-    localStorage.setItem('thaly_gift_v15', 'yes');
+    localStorage.setItem('thaly_gift_v17', 'yes');
     setGiftApplied(true);
+  };
+
+  const applyCoupon = () => {
+    const code = couponInput.trim().toUpperCase();
+    if (CONFIG.COUPONS[code as keyof typeof CONFIG.COUPONS]) {
+      vibrate([30, 50]);
+      setCouponDiscount(CONFIG.COUPONS[code as keyof typeof CONFIG.COUPONS]);
+      setCouponError(false);
+    } else {
+      vibrate(50);
+      setCouponDiscount(0);
+      setCouponError(true);
+      setTimeout(() => setCouponError(false), 2000);
+    }
   };
 
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v15');
+    const isAdult = localStorage.getItem('thaly_adult_v17');
     setStep(isAdult === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
   };
@@ -406,11 +440,11 @@ export default function App() {
     const peak = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
     const discount = giftApplied ? 15 : 0;
     
-    const base = Math.max(0, sub - discount);
+    const base = Math.max(0, sub - discount - couponDiscount);
     const pix = data.payment === 'pix' ? Math.ceil(base * 0.03) : 0;
     
     return { sub, extrasValue, peak, discount, reqFee, pix, total: (base - pix) + peak, dur };
-  }, [mood, data, giftApplied]);
+  }, [mood, data, giftApplied, couponDiscount]);
 
   const days = useMemo(() => Array.from({length: 15}, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() + i); return d;
@@ -432,7 +466,7 @@ export default function App() {
       ? `• ${T.wtsLocStudio}` 
       : `• ${data.street}, ${data.number} ${data.comp ? `(${data.comp})` : ''}, ${data.bairro}\n🗺️ _Maps:_ https://maps.google.com/?q=${encodeURIComponent(`${data.street}, ${data.number},${data.bairro}, São Paulo`)}`;
 
-    const isComboText = mood.isCombo ? " (Agendamento da 1ª Sessão)" : "";
+    const isComboText = mood.isCombo ? " (1ª Sessão)" : "";
 
     const text = 
       `🔥 *${T.wtsNew}* 🔥\n` +
@@ -461,6 +495,7 @@ export default function App() {
       (fin.reqFee > 0 ? `• ${T.subReq}: +${formatMoney(fin.reqFee)}\n` : '') +
       (fin.peak > 0 ? `• ${T.subPeak}: +${formatMoney(fin.peak)}\n` : '') +
       (fin.discount > 0 ? `• ${T.subGift}: -${formatMoney(fin.discount)}\n` : '') +
+      (couponDiscount > 0 ? `• ${T.subCoupon} (${couponInput.toUpperCase()}): -${formatMoney(couponDiscount)}\n` : '') +
       (fin.pix > 0 ? `• ${T.subPix}: -${formatMoney(fin.pix)}\n` : '') +
       `──────────────────\n` +
       `*${T.wtsInvestFinal}:* *${formatMoney(fin.total)}*\n` +
@@ -484,9 +519,14 @@ export default function App() {
         
         {/* CABEÇALHO */}
         <header className="flex justify-between items-center mb-10">
-          <button onClick={resetFlow} className="text-left group outline-none py-2">
+          <button onClick={resetFlow} className="text-left group outline-none py-2 flex items-center gap-3">
+            <img 
+              src="FmtU3Ogx_400x400.jpg" 
+              alt="Thalyson" 
+              className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg"
+            />
             <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
-              Thalyson.
+              Thalyson Massagens.
             </span>
           </button>
           
@@ -661,6 +701,7 @@ export default function App() {
 
               <div className="space-y-8">
                 
+                {/* CAIXA DE CORTESIA */}
                 {!giftApplied && (
                   <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
                     <div className="absolute -right-4 -bottom-4 opacity-5">
@@ -678,6 +719,27 @@ export default function App() {
                     </div>
                   </div>
                 )}
+
+                {/* CAIXA DE CUPOM */}
+                <div>
+                  <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
+                  <div className="flex gap-3">
+                    <input 
+                      type="text" 
+                      placeholder={T.couponPlace} 
+                      value={couponInput} 
+                      onChange={e => setCouponInput(e.target.value)}
+                      className={`flex-1 bg-white/5 border ${couponError ? 'border-red-500/50' : 'border-white/10'} text-white rounded-sm px-4 outline-none focus:border-white/50 transition-colors uppercase`}
+                    />
+                    <button 
+                      onClick={applyCoupon}
+                      className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none"
+                    >
+                      {T.couponBtn}
+                    </button>
+                  </div>
+                  {couponDiscount > 0 && <p className="text-xs text-[#4ade80] mt-2">Cupom aplicado: -{formatMoney(couponDiscount)}</p>}
+                </div>
 
                 <div>
                   <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.addons}</p>
@@ -717,6 +779,7 @@ export default function App() {
                   {fin.extrasValue > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasValue)}</span></div>}
                   {fin.reqFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subReq}</span><span>+{formatMoney(fin.reqFee)}</span></div>}
                   {fin.discount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discount)}</span></div>}
+                  {couponDiscount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subCoupon}</span><span>-{formatMoney(couponDiscount)}</span></div>}
                   {fin.peak > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peak)}</span></div>}
                   {fin.pix > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pix)}</span></div>}
                   
