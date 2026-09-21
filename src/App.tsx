@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo, memo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 
 // ==================================================================================
-// CONFIGURAÇÃO
+// CONFIGURAÇÃO GERAL E CUPONS
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
@@ -9,6 +9,13 @@ const CONFIG = {
   ADDRESS_AREA: "Bela Vista, São Paulo",
   START_HOUR: 9,
   END_HOUR: 22,
+  
+  // CRIE SEUS CUPONS AQUI (Nome do Cupom : Valor de desconto em Reais)
+  COUPONS: {
+    "GOZAR10": 10,
+    "THALY20": 20,
+    "BEMVINDO50": 50
+  }
 };
 
 const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
@@ -20,184 +27,218 @@ const PEAK_FEE = 15;
 const TEXTS = {
   PT: {
     ageTitle: "Ambiente\nReservado.",
-    ageDesc: "O atendimento é feito de forma individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no relaxamento. Confirma ter mais de 18 anos para prosseguir?",
+    ageDesc: "O atendimento é feito de forma individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no prazer e relaxamento. Confirma ter mais de 18 anos para prosseguir?",
     ageBtn: "Sim, tenho mais de 18 anos",
     step1Label: "Etapa 01",
     step1Title: "Como você quer se sentir hoje?",
+    tabSingle: "Só Hoje",
+    tabCombo: "Ciclos de Prazer",
     upTo: "Até",
-    btnContinue: "Continuar",
+    btnContinue: "Continuar para Local",
     step2Label: "Etapa 02",
     step2Title: "Quem e Onde.",
-    namePlace: "Nome ou Apelido",
-    locLabel: "Local do Encontro",
-    locStudio: "Meu Espaço",
-    locHome: "Outro Local",
-    studioDesc: "Eu atendo em um estúdio privativo na Bela Vista. O endereço completo é liberado no WhatsApp após confirmarmos o horário.",
+    namePlace: "Como prefere ser chamado?",
+    locLabel: "Onde será a 1ª sessão?",
+    locStudio: "Minha Suíte (Bela Vista)",
+    locHome: "Seu Espaço (Vou até você)",
+    studioDesc: "Atendo sozinho em uma suíte privativa na Bela Vista. O endereço completo e as instruções eu te mando no WhatsApp assim que confirmarmos o horário.",
     cep: "CEP (opcional)",
-    street: "Rua ou Hotel",
+    street: "Rua ou Avenida",
     number: "Número",
-    comp: "Apto / Quarto",
+    comp: "Apto / Quarto (opcional)",
     bairroPlace: "Bairro",
-    btnNext: "Avançar",
+    btnNext: "Avançar para Horários",
     step3Label: "Etapa 03",
     step3Title: "O Momento.",
     noSlots: "Nenhum horário disponível hoje.",
-    btnAdjust: "Ajustes Finais",
     step4Label: "Etapa 04",
     step4Title: "O Acordo.",
-    giftDesc: "Como é sua primeira vez agendando por aqui, liberei um pequeno desconto no valor final.",
+    giftTitle: "Presente Liberado",
+    giftDesc: "Como é sua primeira vez marcando por aqui, deixei um pequeno desconto no valor final.",
     giftBtn: "Desbloquear Cortesia (R$ 15)",
-    addons: "Adicionais da Sessão",
-    reqLabel: "Pedido Específico / Preferência",
-    reqPlace: "Tem alguma vontade específica para hoje?",
+    couponLabel: "Tem um cupom?",
+    couponPlace: "Digite o código",
+    couponBtn: "Aplicar",
+    addons: "Vontades Extras (Hoje)",
+    reqLabel: "Tem algum fetiche ou pedido?",
+    reqPlace: "O que você quer que role hoje?",
     reqDesc: "Sujeito a avaliação na hora. Caso não seja possível realizar o pedido, o valor da taxa não será cobrado.",
-    payLabel: "Como vai pagar no local?",
-    payPix: "Pix (-3%)",
+    payLabel: "Como vai pagar na hora?",
+    payPix: "Pix (3% OFF)",
     payCard: "Cartão",
     payCash: "Dinheiro",
-    subBase: "Sessão Base",
-    subExtras: "Extras",
-    subReq: "Pedido Especial",
+    subBase: "Valor Base",
+    subExtras: "Extras (Hoje)",
+    subReq: "Pedido Especial (Hoje)",
     subGift: "Cortesia (Primeira Vez)",
-    subPeak: "Taxa de Deslocamento",
+    subCoupon: "Cupom Aplicado",
+    subPeak: "Deslocamento",
     subPix: "Desconto Pix",
-    total: "Total Final",
+    total: "Valor Final",
     btnFinish: "Finalizar Pedido",
-    btnBackStep: "Voltar para etapa anterior",
     step5Title: "Tudo Pronto.",
     step5Desc: "O seu resumo foi gerado e o WhatsApp deve ter aberto automaticamente. Caso o seu navegador tenha bloqueado a janela (ou se quiser tentar novamente), clique no botão abaixo.",
     btnSend: "Reenviar no WhatsApp",
     btnBack: "Voltar para o início",
-    wtsNew: "NOVA SOLICITAÇÃO DE AGENDAMENTO",
-    wtsId: "Identificação",
+    
+    // WHATSAPP TEXTS
+    wtsNew: "NOVO PEDIDO DE ENCONTRO",
+    wtsSystem: "Chegou pelo formulário",
+    wtsId: "QUEM VEM",
     wtsName: "Nome",
-    wtsSession: "A Sessão",
-    wtsDate: "Data",
-    wtsDur: "Duração Estimada",
-    wtsMood: "Mood escolhido",
-    wtsServ: "Serviço",
-    wtsHappen: "O que vai rolar",
-    wtsExtras: "Extras inclusos",
-    wtsLocStudio: "Local: Meu Espaço (Bela Vista, São Paulo)\n🗺️ Endereço exato enviado por aqui após a confirmação.",
-    wtsLocHome: "Local",
-    wtsReq: "Pedido Especial / Fetiche",
-    wtsReqWait: "(Aguardando sua avaliação)",
-    wtsFin: "Resumo Financeiro",
-    wtsPay: "Pagamento Presencial",
-    wtsRulesTitle: "Diretrizes Concordadas",
-    wtsRule1: "Higiene prévia (banho recente) é inegociável.",
-    wtsRule2: "Sigilo e discrição garantidos para ambas as partes.",
-    wtsRule3: "O desrespeito aos limites informados cancela a sessão imediatamente.",
+    wtsSession: "O MOMENTO",
+    wtsDate: "Data marcada",
+    wtsDur: "Tempo na maca",
+    wtsMood: "Sessão",
+    wtsServ: "Estilo",
+    wtsLoc: "ONDE VAI ROLAR",
+    wtsLocStudio: "Minha Suíte Privativa (Bela Vista, São Paulo)\n🗺️ _Te mando o endereço exato e como entrar assim que a gente confirmar._",
+    wtsLocHome: "Seu Espaço",
+    wtsAddons: "VONTADES EXTRAS",
+    wtsReq: "Pedido Específico",
+    wtsFin: "OS VALORES",
+    wtsInvestFinal: "VALOR FINAL",
+    wtsPay: "Vai pagar no",
+    wtsRulesTitle: "O NOSSO ACORDO",
+    wtsRule1: "Higiene é inegociável. Venha de banho tomado.",
+    wtsRule2: "Pode confiar, tudo que rolar fica só entre a gente.",
+    wtsRule3: "Se rolar desrespeito aos meus limites, a sessão acaba na hora.",
   },
   EN: {
     ageTitle: "Private\nEnvironment.",
-    ageDesc: "The service is strictly individual. Some experiences include intense physical contact and intimate relaxation techniques. Do you confirm you are over 18 to proceed?",
+    ageDesc: "The service is strictly individual. Experiences include intense physical contact and intimate techniques focused on pleasure and release. Confirm you are over 18?",
     ageBtn: "Yes, I am over 18",
     step1Label: "Step 01",
     step1Title: "How do you want to feel today?",
+    tabSingle: "Just Today",
+    tabCombo: "Pleasure Cycles",
     upTo: "Up to",
-    btnContinue: "Continue",
+    btnContinue: "Continue to Location",
     step2Label: "Step 02",
     step2Title: "Who and Where.",
-    namePlace: "Name or Nickname",
-    locLabel: "Meeting Place",
-    locStudio: "My Studio",
-    locHome: "Other Location",
-    studioDesc: "I work in a private studio in Bela Vista. The exact address is shared on WhatsApp once we confirm the schedule.",
+    namePlace: "How should I call you?",
+    locLabel: "Where will the 1st session be?",
+    locStudio: "My Suite (Bela Vista)",
+    locHome: "Your Space (I go to you)",
+    studioDesc: "I receive alone in a private suite in Bela Vista. Exact address and instructions sent on WhatsApp after confirming.",
     cep: "ZIP Code (optional)",
-    street: "Street or Hotel",
+    street: "Street or Avenue",
     number: "Number",
-    comp: "Apt / Room",
+    comp: "Apt / Room (optional)",
     bairroPlace: "Neighborhood",
-    btnNext: "Next",
+    btnNext: "Next to Schedule",
     step3Label: "Step 03",
     step3Title: "The Moment.",
     noSlots: "No slots available today.",
-    btnAdjust: "Final Adjustments",
     step4Label: "Step 04",
     step4Title: "The Agreement.",
-    giftDesc: "Since it's your first time booking here, I've unlocked a small discount on the final amount.",
+    giftTitle: "Gift Unlocked",
+    giftDesc: "Since it is your first time booking here, I unlocked a small discount on the final amount.",
     giftBtn: "Unlock Courtesy (R$ 15)",
-    addons: "Session Add-ons",
-    reqLabel: "Specific Request / Preference",
-    reqPlace: "Any specific desire for today?",
-    reqDesc: "Subject to evaluation on site. If the request cannot be fulfilled, the fee will not be charged.",
+    couponLabel: "Have a coupon?",
+    couponPlace: "Enter code",
+    couponBtn: "Apply",
+    addons: "Extra Desires (Today)",
+    reqLabel: "Any fetish or special request?",
+    reqPlace: "What do you want to happen today?",
+    reqDesc: "Subject to evaluation on site. If not possible, the fee will not be charged.",
     payLabel: "How will you pay on site?",
-    payPix: "Pix (-3%)",
+    payPix: "Pix (3% OFF)",
     payCard: "Credit Card",
     payCash: "Cash",
-    subBase: "Base Session",
-    subExtras: "Extras",
-    subReq: "Special Request",
+    subBase: "Base Value",
+    subExtras: "Extras (Today)",
+    subReq: "Special Request (Today)",
     subGift: "Courtesy (First Time)",
+    subCoupon: "Coupon Applied",
     subPeak: "Travel Fee",
     subPix: "Pix Discount",
-    total: "Final Total",
+    total: "Final Value",
     btnFinish: "Finish Order",
-    btnBackStep: "Back to previous step",
     step5Title: "All Set.",
     step5Desc: "Your summary is ready and WhatsApp should have opened automatically. If your browser blocked the window (or if you need to try again), click the button below.",
     btnSend: "Resend on WhatsApp",
     btnBack: "Back to start",
-    wtsNew: "NEW BOOKING REQUEST",
-    wtsId: "Identification",
+    
+    // WHATSAPP TEXTS
+    wtsNew: "NEW ENCOUNTER REQUEST",
+    wtsSystem: "Arrived via form",
+    wtsId: "WHO IS COMING",
     wtsName: "Name",
-    wtsSession: "The Session",
-    wtsDate: "Date",
-    wtsDur: "Estimated Duration",
-    wtsMood: "Chosen Mood",
-    wtsServ: "Service",
-    wtsHappen: "What to expect",
-    wtsExtras: "Included Extras",
-    wtsLocStudio: "Location: My Studio (Bela Vista, São Paulo)\n🗺️ Exact address will be sent here upon confirmation.",
-    wtsLocHome: "Location",
-    wtsReq: "Special Request / Fetish",
-    wtsReqWait: "(Awaiting your evaluation)",
-    wtsFin: "Financial Summary",
-    wtsPay: "On-site Payment",
-    wtsRulesTitle: "Agreed Guidelines",
-    wtsRule1: "Prior hygiene (recent shower) is non-negotiable.",
-    wtsRule2: "Absolute privacy and discretion guaranteed for both.",
-    wtsRule3: "Disrespecting boundaries cancels the session immediately.",
+    wtsSession: "THE MOMENT",
+    wtsDate: "Booked for",
+    wtsDur: "Time on the table",
+    wtsMood: "Session",
+    wtsServ: "Style",
+    wtsLoc: "WHERE IT HAPPENS",
+    wtsLocStudio: "My Private Suite (Bela Vista, São Paulo)\n🗺️ _I'll send the exact address once we confirm._",
+    wtsLocHome: "Your Space",
+    wtsAddons: "EXTRA DESIRES",
+    wtsReq: "Specific Request",
+    wtsFin: "THE VALUES",
+    wtsInvestFinal: "FINAL VALUE",
+    wtsPay: "Paying with",
+    wtsRulesTitle: "OUR AGREEMENT",
+    wtsRule1: "Hygiene is non-negotiable. Please shower before.",
+    wtsRule2: "You can trust me, everything stays between us.",
+    wtsRule3: "Disrespecting my boundaries ends the session immediately.",
   }
 };
 
 const MOODS = [
   {
-    id: 'classica',
-    color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60,
-    PT: { title: 'Desatar os nós', subtitle: 'Tensão e peso nas costas.', service: 'Massagem Clássica', desc: 'Corpo todo, pressão firme. Estritamente terapêutica para alívio muscular profundo. Sem toques íntimos.' },
-    EN: { title: 'Untie the knots', subtitle: 'Tension and back weight.', service: 'Classic Massage', desc: 'Full body, firm pressure. Strictly therapeutic for deep muscle relief. No intimate touch.' }
+    id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false,
+    PT: { title: 'Desatar os nós', subtitle: 'Tensão e peso nas costas.', service: 'Massagem Clássica', desc: 'Começamos relaxando todo o seu corpo para tirar a dor com pressão firme. Estritamente para amassar a musculatura. Sem toques íntimos.' },
+    EN: { title: 'Untie the knots', subtitle: 'Tension and back weight.', service: 'Classic Massage', desc: 'We start by relaxing your entire body to relieve pain. Strictly to knead muscles. No intimate touch.' }
   },
   {
-    id: 'sensitiva',
-    color: '#713f12', accent: '#fbbf24', price: 200, min: 60,
-    PT: { title: 'Despertar', subtitle: 'Mente cansada, corpo dormente.', service: 'Massagem Sensitiva', desc: 'Inicia com massagem profunda para tirar a tensão e evolui para toques sutis na pele. Inclui técnica íntima manual (Lingam) focada no alívio mental.' },
-    EN: { title: 'Awakening', subtitle: 'Tired mind, numb body.', service: 'Sensitive Massage', desc: 'Starts with deep massage to release tension and evolves into subtle skin touches. Includes manual intimate technique (Lingam) focused on mental relief.' }
+    id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false,
+    PT: { title: 'A Jornada Tântrica', subtitle: 'Começa relaxando, termina gozando.', service: 'Massagem Sensitiva / Tântrica', desc: 'Toda sessão começa relaxando e destravando seu corpo com a massagem clássica. Só com o corpo solto é que a gente evolui pros toques na pele e pra técnica íntima final (Lingam).' },
+    EN: { title: 'The Tantric Journey', subtitle: 'Starts relaxing, ends releasing.', service: 'Sensitive / Tantric Massage', desc: 'Every session starts relaxing and unlocking your body. Then we evolve to skin touches and final intimate technique (Lingam).' }
   },
   {
-    id: 'fusion',
-    color: '#831843', accent: '#f43f5e', price: 250, min: 60,
-    PT: { title: 'Proximidade', subtitle: 'Buscando contato físico real.', service: 'Experiência Fusion', desc: 'Atendo apenas de cueca para garantir maior intimidade. Contato intenso, corpo a corpo e o toque da minha barba por você. Inclui técnica íntima (Lingam) prolongada.' },
-    EN: { title: 'Closeness', subtitle: 'Seeking real physical contact.', service: 'Fusion Experience', desc: 'I wear only underwear to ensure greater intimacy. Intense body-to-body contact and the touch of my beard on you. Includes prolonged intimate technique (Lingam).' }
+    id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false,
+    PT: { title: 'Proximidade', subtitle: 'Mais intimidade, pele na pele.', service: 'Experiência Fusion', desc: 'Começo relaxando seu corpo inteiro para soltar a tensão. Depois, fico só de cueca. O contato fica intenso, corpo a corpo, com o toque da minha barba. Finalização íntima prolongada.' },
+    EN: { title: 'Closeness', subtitle: 'More intimacy, skin on skin.', service: 'Fusion Experience', desc: 'I start by relaxing your whole body. Then, I stay only in underwear. Intense body-to-body contact. Prolonged intimate finish.' }
   },
   {
-    id: 'nuru',
-    color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60,
-    PT: { title: 'Imersão Total', subtitle: 'Desconexão absoluta da rotina.', service: 'Massagem Nuru (Gel)', desc: 'Nós dois sem roupas do início ao fim. Usamos muito gel especial ultra deslizante sobre a pele. Contato fluido e intenso de corpos inteiros, frente e costas. Inclui técnica íntima.' },
-    EN: { title: 'Total Immersion', subtitle: 'Absolute disconnection from routine.', service: 'Nuru Massage (Gel)', desc: 'Both of us completely naked. We use a lot of special ultra-gliding gel on the skin. Fluid and intense full-body contact, front and back. Includes intimate technique.' }
+    id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false,
+    PT: { title: 'Imersão Total', subtitle: 'Nós dois suados e escorregadios.', service: 'Massagem Nuru (Gel)', desc: 'Iniciamos relaxando toda a sua musculatura. Depois, a gente tira tudo. Muito gel ultra deslizante. Nossos corpos colados deslizando um no outro até você chegar lá.' },
+    EN: { title: 'Total Immersion', subtitle: 'Both of us sweaty and slippery.', service: 'Nuru Massage (Gel)', desc: 'We begin by relaxing your muscles. Then we take it all off. Lots of ultra-gliding gel. Bodies glued sliding on each other.' }
   },
   {
-    id: 'reversa',
-    color: '#14532d', accent: '#4ade80', price: 400, min: 60,
-    PT: { title: 'Assumir o Controle', subtitle: 'Vontade de explorar e ditar o ritmo.', service: 'Massagem Reversa', desc: 'Eu começo relaxando e estimulando o seu corpo, mas depois o controle passa para você. Você dita o ritmo, os toques e explora livremente o meu corpo. Finalização mútua.' },
-    EN: { title: 'Take Control', subtitle: 'Desire to explore and set the pace.', service: 'Reverse Massage', desc: 'I start by relaxing and stimulating your body, but then the control passes to you. You set the pace, the touches, and explore my body freely. Mutual finish.' }
+    id: 'reversa', color: '#14532d', accent: '#4ade80', price: 400, min: 60, isCombo: false,
+    PT: { title: 'Assumir o Controle', subtitle: 'Aproveite o meu corpo.', service: 'Massagem Reversa', desc: 'Eu começo relaxando o seu corpo e tirando sua tensão, mas depois você assume. Você dita o ritmo, toca onde quiser e explora o meu corpo livremente até gozarmos juntos.' },
+    EN: { title: 'Take Control', subtitle: 'Enjoy my body.', service: 'Reverse Massage', desc: 'I start by relaxing your body, then you take over. Set the pace, touch anywhere, explore my body freely until mutual release.' }
+  }
+];
+
+const COMBOS = [
+  {
+    id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true,
+    PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Uma sessão Nuru e uma Reversa. Ambas começam relaxando e destravando seu corpo inteiro primeiro. Corpo solto, mente leve e finalização intensa. De R$ 750 por R$ 590 (Economia de R$ 160).' },
+    EN: { title: 'Intensity (Nuru + Reverse)', subtitle: 'Exploration and release without rush.', service: '2 Encounters', desc: 'One Nuru and one Reverse. Both start by completely relaxing your body first. From R$ 750 for R$ 590 (Save R$ 160).' }
+  },
+  {
+    id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true,
+    PT: { title: 'Exploração Total (As 4 Fases)', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros', desc: 'Você vem uma vez por semana. Todo encontro começa relaxando sua musculatura, evoluindo a intimidade a cada visita até a explosão da Reversa. De R$ 1.200 por R$ 890 (Economia de R$ 310).' },
+    EN: { title: 'Total Exploration (All 4 Phases)', subtitle: 'A whole month of discoveries.', service: '4 Encounters', desc: 'Come once a week. Every session starts by relaxing your muscles, evolving intimacy each visit. From R$ 1,200 for R$ 890 (Save R$ 310).' }
+  },
+  {
+    id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true,
+    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar dores. Sem toques íntimos. De R$ 360 por R$ 320 (Economia de R$ 40).' },
+    EN: { title: 'Biweekly Relief (2 Sessions)', subtitle: 'Taking the weight off.', service: '2 Encounters', desc: 'Two visits a month purely to relax your body and relieve pain. No intimate touch. From R$ 360 for R$ 320 (Save R$ 40).' }
+  },
+  {
+    id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true,
+    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve. De R$ 720 por R$ 560 (Economia de R$ 160).' },
+    EN: { title: 'Light Routine (4 Sessions)', subtitle: 'Pain-free body all month.', service: '4 Encounters', desc: 'One hour a week to relax your entire body. Arrive stiff, leave light. From R$ 720 for R$ 560 (Save R$ 160).' }
   }
 ];
 
 const EXTRAS = [
-  { id: 'aroma', price: 20, PT: { label: 'Aromaterapia Relaxante' }, EN: { label: 'Relaxing Aromatherapy' } },
-  { id: 'time', price: 75, PT: { label: 'Estender Tempo (+30min)' }, EN: { label: 'Extend Time (+30min)' } }
+  { id: 'aroma', price: 20, PT: { label: 'Óleos essenciais relaxantes' }, EN: { label: 'Relaxing essential oils' } },
+  { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' }, EN: { label: 'Stay longer (+30min)' } }
 ];
 
 // ==================================================================================
@@ -209,7 +250,8 @@ const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-
 
 const ICON_PATHS: Record<string, string> = {
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
-  'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'
+  'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
+  'gift': 'M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z'
 };
 
 const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: number; className?: string }) => (
@@ -239,6 +281,7 @@ const CinematicStyles = memo(() => (
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
       margin: 0; padding: 0;
+      scroll-behavior: smooth;
     }
 
     .grain-overlay {
@@ -261,7 +304,7 @@ const CinematicStyles = memo(() => (
 
     .modern-input {
       background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1);
-      color: white; border-radius: 0; padding: 12px 0; transition: border-color 0.3s;
+      color: white; border-radius: 0; padding: 16px 0; transition: border-color 0.3s;
     }
     .modern-input:focus { outline: none; border-bottom-color: rgba(255,255,255,0.8); }
     .modern-input::placeholder { color: rgba(255,255,255,0.2); }
@@ -279,9 +322,23 @@ export default function App() {
   const [giftApplied, setGiftApplied] = useState(false);
   const [lang, setLang] = useState<'PT' | 'EN'>('PT');
   
+  const [bookingMode, setBookingMode] = useState<'single'|'combo'>('single');
+  const activeList = bookingMode === 'single' ? MOODS : COMBOS;
   const [moodId, setMoodId] = useState(MOODS[0].id);
-  const mood = useMemo(() => MOODS.find(m => m.id === moodId) || MOODS[0], [moodId]);
+
+  // Estados do Cupom
+  const [couponInput, setCouponInput] = useState('');
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponError, setCouponError] = useState(false);
+  
+  useEffect(() => {
+    setMoodId(activeList[0].id);
+  }, [bookingMode, activeList]);
+
+  const mood = useMemo(() => activeList.find(m => m.id === moodId) || activeList[0], [moodId, activeList]);
+  
   const T = TEXTS[lang];
+  const numberInputRef = useRef<HTMLInputElement>(null);
 
   const [data, setData] = useState({
     name: '', locType: '', cep: '', street: '', number: '', comp: '', bairro: '', 
@@ -289,36 +346,56 @@ export default function App() {
     req: '', payment: ''
   });
 
-  const [cepLoading, setCepLoading] = useState(false);
-
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v8');
-    const hasGift = localStorage.getItem('thaly_gift_v8');
+    const isAdult = localStorage.getItem('thaly_adult_v17');
+    const hasGift = localStorage.getItem('thaly_gift_v17');
     if (isAdult === 'yes') setStep(1);
     if (hasGift === 'yes') setGiftApplied(true);
   }, []);
 
+  useEffect(() => {
+    if (step > 0 && step < 5) {
+      setTimeout(() => {
+        const el = document.getElementById(`step-${step}`);
+        if (el) {
+          const y = el.getBoundingClientRect().top + window.scrollY - 30;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 150);
+    }
+  }, [step]);
+
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v8', 'yes');
+    localStorage.setItem('thaly_adult_v17', 'yes');
     setStep(1);
   };
 
   const applyGift = () => {
     vibrate([40, 60]);
-    localStorage.setItem('thaly_gift_v8', 'yes');
+    localStorage.setItem('thaly_gift_v17', 'yes');
     setGiftApplied(true);
+  };
+
+  const applyCoupon = () => {
+    const code = couponInput.trim().toUpperCase();
+    if (CONFIG.COUPONS[code as keyof typeof CONFIG.COUPONS]) {
+      vibrate([30, 50]);
+      setCouponDiscount(CONFIG.COUPONS[code as keyof typeof CONFIG.COUPONS]);
+      setCouponError(false);
+    } else {
+      vibrate(50);
+      setCouponDiscount(0);
+      setCouponError(true);
+      setTimeout(() => setCouponError(false), 2000);
+    }
   };
 
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v8');
+    const isAdult = localStorage.getItem('thaly_adult_v17');
     setStep(isAdult === 'yes' ? 1 : 0);
-  };
-
-  const goBack = () => {
-    vibrate(15);
-    setStep(prev => prev - 1);
+    window.scrollTo(0,0);
   };
 
   const toggleLang = () => {
@@ -330,7 +407,6 @@ export default function App() {
     const masked = maskCEP(val);
     setData(prev => ({ ...prev, cep: masked }));
     if (masked.length === 9) {
-      setCepLoading(true);
       try {
         const res = await fetch(`https://viacep.com.br/ws/${masked.replace('-', '')}/json/`);
         const json = await res.json();
@@ -340,12 +416,14 @@ export default function App() {
             street: json.logradouro || '', 
             bairro: json.bairro || '' 
           }));
+          setTimeout(() => numberInputRef.current?.focus(), 150);
         }
-      } catch (e) {} finally {
-        setCepLoading(false);
-      }
+      } catch (e) {}
     }
   };
+
+  const isStep2Valid = data.name.trim().length > 1 && data.locType !== '' && 
+    (data.locType === 'studio' || (data.locType === 'home' && data.street.trim() !== '' && data.number.trim() !== '' && data.bairro.trim() !== ''));
 
   const fin = useMemo(() => {
     let sub = mood.price;
@@ -362,11 +440,11 @@ export default function App() {
     const peak = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
     const discount = giftApplied ? 15 : 0;
     
-    const base = Math.max(0, sub - discount);
+    const base = Math.max(0, sub - discount - couponDiscount);
     const pix = data.payment === 'pix' ? Math.ceil(base * 0.03) : 0;
     
     return { sub, extrasValue, peak, discount, reqFee, pix, total: (base - pix) + peak, dur };
-  }, [mood, data, giftApplied]);
+  }, [mood, data, giftApplied, couponDiscount]);
 
   const days = useMemo(() => Array.from({length: 15}, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() + i); return d;
@@ -385,37 +463,48 @@ export default function App() {
     const ext = Object.keys(data.extras).filter(k=>data.extras[k]).map(k=>EXTRAS.find(e=>e.id===k)?.[lang].label).join(', ');
     
     const mapsLink = data.locType === 'studio' 
-      ? `📍 *${T.wtsLocStudio}*` 
-      : `📍 *${T.wtsLocHome}:* ${data.street}, ${data.number} ${data.comp ? `(${data.comp})` : ''} - ${data.bairro}\n🗺️ *Maps:* https://maps.google.com/?q=${encodeURIComponent(`${data.street}, ${data.number},${data.bairro}, São Paulo`)}`;
+      ? `• ${T.wtsLocStudio}` 
+      : `• ${data.street}, ${data.number} ${data.comp ? `(${data.comp})` : ''}, ${data.bairro}\n🗺️ _Maps:_ https://maps.google.com/?q=${encodeURIComponent(`${data.street}, ${data.number},${data.bairro}, São Paulo`)}`;
 
-    const rTxt = data.req.trim() ? `\n\n🔥 *${T.wtsReq}:*\n"${data.req.trim()}"\n_${T.wtsReqWait}_` : '';
+    const isComboText = mood.isCombo ? " (1ª Sessão)" : "";
 
-    const text = `*${T.wtsNew}* 🌿\n\n` +
+    const text = 
+      `🔥 *${T.wtsNew}* 🔥\n` +
+      `_${T.wtsSystem}_\n\n` +
+      
       `*👤 ${T.wtsId}*\n` +
-      `${T.wtsName}: ${data.name}\n\n` +
-      `*📅 ${T.wtsSession}*\n` +
-      `${T.wtsDate}: ${dStr} às ${data.time}\n` +
-      `${T.wtsDur}: ~${fin.dur} min\n` +
-      `${T.wtsMood}: ${mood[lang].title}\n` +
-      `${T.wtsServ}: ${mood[lang].service}\n` +
-      `*${T.wtsHappen}:* ${mood[lang].desc}\n` +
-      `${ext ? `\n*${T.wtsExtras}:*${ext}\n` : '\n'}` +
-      `${mapsLink}` +
-      `${rTxt}\n\n` +
-      `*💳 ${T.wtsFin}*\n` +
-      `${T.subBase}: ${formatMoney(mood.price)}\n` +
-      `${fin.extrasValue > 0 ? `${T.subExtras}: +${formatMoney(fin.extrasValue)}\n` : ''}` +
-      `${fin.reqFee > 0 ? `${T.subReq}: +${formatMoney(fin.reqFee)}\n` : ''}` +
-      `${fin.peak > 0 ? `${T.subPeak}: +${formatMoney(fin.peak)}\n` : ''}` +
-      `${fin.discount > 0 ? `${T.subGift}: -${formatMoney(fin.discount)}\n` : ''}` +
-      `${fin.pix > 0 ? `${T.subPix}: -${formatMoney(fin.pix)}\n` : ''}` +
-      `------------------------\n` +
-      `💰 *${T.total}:* ${formatMoney(fin.total)}\n` +
-      `${T.wtsPay}: *${data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? T.payCard : T.payCash}*\n\n` +
-      `*⚖️ ${T.wtsRulesTitle}:*\n` +
-      `• ${T.wtsRule1}\n` +
-      `• ${T.wtsRule2}\n` +
-      `• ${T.wtsRule3}`;
+      `• *${T.wtsName}:* ${data.name}\n\n` +
+      
+      `*💦 ${T.wtsSession}${isComboText}*\n` +
+      `• *${T.wtsDate}:* ${dStr} às ${data.time}\n` +
+      `• *${T.wtsDur}:* ~${fin.dur} min\n` +
+      `• *${T.wtsMood}:* ${mood[lang].title}\n` +
+      `• *${T.wtsServ}:* ${mood[lang].service}\n\n` +
+      
+      `*📍 ${T.wtsLoc}*\n` +
+      `${mapsLink}\n\n` +
+
+      (ext || data.req.trim() ? `*✨ ${T.wtsAddons}*\n` : '') +
+      (ext ? `• *Extra:* ${ext}\n` : '') +
+      (data.req.trim() ? `• *${T.wtsReq}:* "${data.req.trim()}"\n` : '') +
+      (ext || data.req.trim() ? '\n' : '') +
+
+      `*💸 ${T.wtsFin}*\n` +
+      `• ${T.subBase}: ${formatMoney(mood.price)}\n` +
+      (fin.extrasValue > 0 ? `• ${T.subExtras}: +${formatMoney(fin.extrasValue)}\n` : '') +
+      (fin.reqFee > 0 ? `• ${T.subReq}: +${formatMoney(fin.reqFee)}\n` : '') +
+      (fin.peak > 0 ? `• ${T.subPeak}: +${formatMoney(fin.peak)}\n` : '') +
+      (fin.discount > 0 ? `• ${T.subGift}: -${formatMoney(fin.discount)}\n` : '') +
+      (couponDiscount > 0 ? `• ${T.subCoupon} (${couponInput.toUpperCase()}): -${formatMoney(couponDiscount)}\n` : '') +
+      (fin.pix > 0 ? `• ${T.subPix}: -${formatMoney(fin.pix)}\n` : '') +
+      `──────────────────\n` +
+      `*${T.wtsInvestFinal}:* *${formatMoney(fin.total)}*\n` +
+      `• *${T.wtsPay}:* ${data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? T.payCard : T.payCash}\n\n` +
+      
+      `*🤝 ${T.wtsRulesTitle}*\n` +
+      `✓ ${T.wtsRule1}\n` +
+      `✓ ${T.wtsRule2}\n` +
+      `✓ ${T.wtsRule3}`;
     
     window.open(`https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -426,11 +515,16 @@ export default function App() {
       <div className="grain-overlay" />
       <div className="ambient-glow" style={{ backgroundColor: mood.color }} />
 
-      <div className="relative z-10 min-h-screen flex flex-col pt-10 pb-16 px-6 max-w-md mx-auto">
+      <div className="relative z-10 min-h-[100dvh] flex flex-col px-6 py-10 max-w-md mx-auto">
         
-        {/* CABEÇALHO SEMPRE VISÍVEL */}
-        <header className="flex justify-between items-center mb-10 step-enter">
-          <button onClick={resetFlow} className="text-left group outline-none">
+        {/* CABEÇALHO */}
+        <header className="flex justify-between items-center mb-10">
+          <button onClick={resetFlow} className="text-left group outline-none py-2 flex items-center gap-3">
+            <img 
+              src="FmtU3Ogx_400x400.jpg" 
+              alt="Thalyson" 
+              className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg"
+            />
             <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
               Thalyson Massagens.
             </span>
@@ -445,40 +539,53 @@ export default function App() {
               </div>
             )}
             
-            <button onClick={toggleLang} className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-white/50 hover:text-white transition-colors outline-none">
+            <button onClick={toggleLang} className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-white/50 hover:text-white transition-colors outline-none py-2">
               <Icon name="globe" size={14} />
               {lang}
             </button>
 
-            <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors outline-none">
+            <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors outline-none py-2">
               <Icon name="instagram" size={18} />
             </a>
           </div>
         </header>
 
-        {/* STEP 0: O AVISO */}
+        {/* STEP 0: O AVISO (+18) */}
         {step === 0 && (
-          <div className="flex-1 flex flex-col justify-center step-enter">
+          <div className="flex-1 flex flex-col justify-center step-enter pb-10">
             <h1 style={{ fontFamily: 'var(--font-serif)', whiteSpace: 'pre-line' }} className="text-4xl leading-tight mb-6">{T.ageTitle}</h1>
-            <p className="text-white/60 text-sm leading-relaxed mb-10">{T.ageDesc}</p>
-            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-medium text-sm tracking-widest uppercase transition-transform active:scale-95 outline-none">
+            <p className="text-white/60 text-sm leading-relaxed mb-12">{T.ageDesc}</p>
+            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none rounded-sm">
               {T.ageBtn}
             </button>
           </div>
         )}
 
-        {/* STEP 1: A FREQUÊNCIA */}
-        {step === 1 && (
-          <div className="flex-1 flex flex-col step-enter pb-8">
+        {/* O FLUXO CONTÍNUO */}
+        <div className={step >= 1 && step < 5 ? "block" : "hidden"}>
+          
+          {/* STEP 1: A FREQUÊNCIA */}
+          <div id="step-1" className="step-enter mb-16">
             <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step1Label}</h2>
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step1Title}</h1>
             
+            <div className="flex bg-white/5 p-1 rounded-sm border border-white/10 mb-6">
+              <button onClick={() => { vibrate(10); setBookingMode('single'); }} 
+                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none ${bookingMode === 'single' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}>
+                {T.tabSingle}
+              </button>
+              <button onClick={() => { vibrate(10); setBookingMode('combo'); }} 
+                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none ${bookingMode === 'combo' ? 'bg-[#f59e0b] text-black shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'text-white/40 hover:text-white'}`}>
+                {T.tabCombo}
+              </button>
+            </div>
+
             <div className="flex flex-col gap-3">
-              {MOODS.map(m => {
+              {activeList.map(m => {
                 const active = mood.id === m.id;
                 return (
                   <button key={m.id} onClick={() => { vibrate(20); setMoodId(m.id); }}
-                    className={`text-left p-5 transition-all duration-500 border outline-none ${active ? 'bg-white/10 backdrop-blur-md' : 'border-white/5 hover:border-white/20 bg-transparent'}`}
+                    className={`text-left p-5 transition-all duration-500 border outline-none rounded-sm ${active ? 'bg-white/10 backdrop-blur-md' : 'border-white/5 hover:border-white/20 bg-transparent'}`}
                     style={{ borderColor: active ? m.accent : '' }}>
                     <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: active ? m.accent : 'rgba(255,255,255,0.4)' }}>{m[lang].title}</p>
                     <p className={`text-sm ${active ? 'text-white' : 'text-white/60'}`}>{m[lang].subtitle}</p>
@@ -487,198 +594,220 @@ export default function App() {
               })}
             </div>
 
-            <div className="mt-8 p-6 bg-black/40 backdrop-blur-xl border border-white/10 min-h-[140px]">
+            <div className="mt-8 p-6 bg-black/40 backdrop-blur-xl border border-white/10 min-h-[140px] rounded-sm">
               <div className="flex justify-between items-start mb-2">
-                <h3 className="font-medium text-lg">{mood[lang].service}</h3>
-                <div className="text-right flex flex-col items-end">
+                <h3 className="font-medium text-lg pr-4">{mood[lang].service}</h3>
+                <div className="text-right flex flex-col items-end shrink-0">
                   <span className="text-base font-bold block" style={{ color: mood.accent }}>{formatMoney(mood.price)}</span>
-                  <span className="text-[10px] text-white/50 uppercase tracking-widest mt-0.5">{T.upTo} {mood.min}m</span>
+                  {!mood.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest mt-0.5">{T.upTo} {mood.min}m</span>}
                 </div>
               </div>
               <p className="text-sm text-white/60 leading-relaxed mt-2">{mood[lang].desc}</p>
             </div>
 
-            <button onClick={() => { vibrate(30); setStep(2); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none">
-              {T.btnContinue}
-            </button>
+            {step === 1 && (
+              <button onClick={() => { vibrate(30); setStep(2); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none rounded-sm">
+                {T.btnContinue}
+              </button>
+            )}
           </div>
-        )}
 
-        {/* STEP 2: COORDENADAS */}
-        {step === 2 && (
-          <div className="flex-1 flex flex-col step-enter pb-8">
-            <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step2Label}</h2>
-            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step2Title}</h1>
+          {/* STEP 2: COORDENADAS */}
+          {step >= 2 && (
+            <div id="step-2" className="step-enter mb-16 pt-8 border-t border-white/10">
+              <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step2Label}</h2>
+              <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step2Title}</h1>
 
-            <div className="space-y-6">
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full modern-input" />
+              <div className="space-y-6">
+                <div>
+                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full modern-input text-lg font-medium" />
                 </div>
-              </div>
 
-              <div className="pt-4">
-                <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.locLabel}</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-sm outline-none transition-colors border ${data.locType==='studio' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locStudio}</button>
-                  <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-sm outline-none transition-colors border ${data.locType==='home' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locHome}</button>
-                </div>
-              </div>
-
-              {data.locType === 'studio' && <p className="text-sm text-white/60 bg-white/5 p-4 border border-white/10 leading-relaxed animate-in fade-in">{T.studioDesc}</p>}
-              
-              {data.locType === 'home' && (
-                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                  <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full modern-input" />
-                  <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full modern-input" />
-                  <div className="flex gap-4">
-                    <input type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 modern-input" />
-                    <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 modern-input" />
+                <div className="pt-4">
+                  <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.locLabel}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-sm font-medium outline-none transition-colors border rounded-sm ${data.locType==='studio' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locStudio}</button>
+                    <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-sm font-medium outline-none transition-colors border rounded-sm ${data.locType==='home' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locHome}</button>
                   </div>
-                  <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full modern-input" />
                 </div>
+
+                {data.locType === 'studio' && <p className="text-sm text-white/60 bg-white/5 p-4 border border-white/10 leading-relaxed rounded-sm animate-in fade-in">{T.studioDesc}</p>}
+                
+                {data.locType === 'home' && (
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+                    <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full modern-input" />
+                    <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full modern-input" />
+                    <div className="flex gap-4">
+                      <input ref={numberInputRef} type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 modern-input" />
+                      <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 modern-input" />
+                    </div>
+                    <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full modern-input" />
+                  </div>
+                )}
+              </div>
+
+              {step === 2 && (
+                <button disabled={!isStep2Valid} onClick={() => { vibrate(30); setStep(3); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none rounded-sm">
+                  {T.btnNext}
+                </button>
               )}
             </div>
+          )}
 
-            <div className="mt-12 flex flex-col gap-4">
-              <button disabled={!data.name || !data.locType || (data.locType==='home' && (!data.street || !data.bairro))} onClick={() => { vibrate(30); setStep(3); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
-                {T.btnNext}
-              </button>
-              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-2">
-                {T.btnBackStep}
-              </button>
-            </div>
-          </div>
-        )}
+          {/* STEP 3: TEMPO */}
+          {step >= 3 && (
+            <div id="step-3" className="step-enter mb-16 pt-8 border-t border-white/10">
+              <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step3Label}</h2>
+              <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step3Title}</h1>
 
-        {/* STEP 3: TEMPO */}
-        {step === 3 && (
-          <div className="flex-1 flex flex-col step-enter pb-8">
-            <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step3Label}</h2>
-            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step3Title}</h1>
-
-            <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-2 mb-8">
-              {days.map((d, i) => {
-                const sel = data.date?.toDateString() === d.toDateString();
-                const dayName = d.toLocaleDateString(lang === 'PT' ? 'pt-BR' : 'en-US', {weekday:'short'}).slice(0,3);
-                return (
-                  <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 w-16 h-20 outline-none flex flex-col items-center justify-center border transition-all ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/50'}`}>
-                    <span className="text-[10px] uppercase font-bold tracking-widest">{dayName}</span>
-                    <span style={{ fontFamily: 'var(--font-serif)' }} className="text-2xl mt-1">{d.getDate()}</span>
-                  </button>
-                )
-              })}
-            </div>
-
-            {data.date && (
-              <div className="grid grid-cols-3 gap-3 animate-in fade-in">
-                {getSlots().map(t => {
-                  const sel = data.time === t;
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4 mb-6">
+                {days.map((d, i) => {
+                  const sel = data.date?.toDateString() === d.toDateString();
+                  const dayName = d.toLocaleDateString(lang === 'PT' ? 'pt-BR' : 'en-US', {weekday:'short'}).slice(0,3);
                   return (
-                    <button key={t} onClick={() => setData({...data, time: t})} className={`py-4 text-sm outline-none font-medium border transition-colors ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>
-                      {t}
+                    <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 w-16 h-20 outline-none flex flex-col items-center justify-center border rounded-sm transition-all ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/50'}`}>
+                      <span className="text-[10px] uppercase font-bold tracking-widest">{dayName}</span>
+                      <span style={{ fontFamily: 'var(--font-serif)' }} className="text-2xl mt-1">{d.getDate()}</span>
                     </button>
                   )
                 })}
-                {getSlots().length === 0 && <p className="col-span-3 text-sm text-white/40 text-center py-4 border border-white/5">{T.noSlots}</p>}
               </div>
-            )}
 
-            <div className="mt-12 flex flex-col gap-4">
-              <button disabled={!data.date || !data.time} onClick={() => { vibrate(30); setStep(4); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
-                {T.btnAdjust}
-              </button>
-              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-2">
-                {T.btnBackStep}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 4: O ACORDO */}
-        {step === 4 && (
-          <div className="flex-1 flex flex-col step-enter pb-8">
-            <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step4Label}</h2>
-            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step4Title}</h1>
-
-            <div className="space-y-8">
-              {!giftApplied && (
-                <div className="p-5 border border-white/20 bg-white/5 animate-in fade-in">
-                  <p className="text-sm text-white mb-3 leading-relaxed">{T.giftDesc}</p>
-                  <button onClick={applyGift} className="text-xs font-bold outline-none uppercase tracking-widest border-b border-white pb-1">{T.giftBtn}</button>
-                </div>
-              )}
-
-              <div>
-                <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.addons}</p>
-                <div className="space-y-3">
-                  {EXTRAS.map(ex => {
-                    const sel = data.extras[ex.id];
+              {data.date && (
+                <div className="grid grid-cols-3 gap-3 animate-in fade-in">
+                  {getSlots().map(t => {
+                    const sel = data.time === t;
                     return (
-                      <button key={ex.id} onClick={()=>setData({...data, extras:{...data.extras, [ex.id]:!sel}})} className={`w-full outline-none flex justify-between p-4 border text-sm transition-colors ${sel ? 'border-white bg-white/10 text-white' : 'border-white/10 text-white/60'}`}>
-                        <span>{ex[lang].label}</span>
-                        <span>+{formatMoney(ex.price)}</span>
+                      <button key={t} onClick={() => { 
+                        vibrate(20);
+                        setData({...data, time: t});
+                        if (step === 3) setStep(4);
+                      }} className={`py-4 text-sm outline-none font-medium border rounded-sm transition-colors ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>
+                        {t}
                       </button>
                     )
                   })}
+                  {getSlots().length === 0 && <p className="col-span-3 text-sm text-white/40 text-center py-4 border border-white/5 rounded-sm">{T.noSlots}</p>}
                 </div>
-              </div>
+              )}
+            </div>
+          )}
 
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <p className="text-xs text-white/50 uppercase tracking-widest">{T.reqLabel}</p>
-                  <span className="text-xs font-bold text-white/60">+ R$ 130</span>
-                </div>
-                <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full modern-input text-sm" />
-                <p className="text-[10px] text-white/40 mt-2 leading-relaxed">{T.reqDesc}</p>
-              </div>
+          {/* STEP 4: O ACORDO */}
+          {step >= 4 && (
+            <div id="step-4" className="step-enter mb-8 pt-8 border-t border-white/10">
+              <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step4Label}</h2>
+              <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step4Title}</h1>
 
-              <div>
-                <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.payLabel}</p>
-                <div className="grid grid-cols-3 gap-3">
-                  {[{id:'pix', l:T.payPix},{id:'card', l:T.payCard},{id:'cash', l:T.payCash}].map(p => (
-                    <button key={p.id} onClick={()=>setData({...data, payment:p.id})} className={`py-4 outline-none text-xs font-bold uppercase tracking-wider border transition-colors ${data.payment === p.id ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{p.l}</button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-white/10">
-                <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subBase}</span><span>{formatMoney(mood.price)}</span></div>
-                {fin.extrasValue > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasValue)}</span></div>}
-                {fin.reqFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subReq}</span><span>+{formatMoney(fin.reqFee)}</span></div>}
-                {fin.discount > 0 && <div className="flex justify-between text-sm text-white mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discount)}</span></div>}
-                {fin.peak > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peak)}</span></div>}
-                {fin.pix > 0 && <div className="flex justify-between text-sm text-white mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pix)}</span></div>}
+              <div className="space-y-8">
                 
-                <div className="flex justify-between items-end mt-8">
-                  <span className="text-sm uppercase tracking-widest text-white/50">{T.total}</span>
-                  <span style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl text-white">{formatMoney(fin.total)}</span>
+                {/* CAIXA DE CORTESIA */}
+                {!giftApplied && (
+                  <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
+                    <div className="absolute -right-4 -bottom-4 opacity-5">
+                      <Icon name="gift" size={120} />
+                    </div>
+                    <div className="relative z-10 w-full">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Icon name="gift" className="text-[#4ade80]" size={18} />
+                        <h3 className="text-[#4ade80] font-bold uppercase tracking-widest text-xs">{T.giftTitle}</h3>
+                      </div>
+                      <p className="text-sm text-[#4ade80]/90 mb-5 leading-relaxed">{T.giftDesc}</p>
+                      <button onClick={applyGift} className="bg-[#4ade80] text-black w-full text-xs font-bold px-5 py-3.5 uppercase tracking-widest outline-none rounded-sm transition-transform active:scale-95 shadow-lg shadow-[#4ade80]/20">
+                        {T.giftBtn}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* CAIXA DE CUPOM */}
+                <div>
+                  <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
+                  <div className="flex gap-3">
+                    <input 
+                      type="text" 
+                      placeholder={T.couponPlace} 
+                      value={couponInput} 
+                      onChange={e => setCouponInput(e.target.value)}
+                      className={`flex-1 bg-white/5 border ${couponError ? 'border-red-500/50' : 'border-white/10'} text-white rounded-sm px-4 outline-none focus:border-white/50 transition-colors uppercase`}
+                    />
+                    <button 
+                      onClick={applyCoupon}
+                      className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none"
+                    >
+                      {T.couponBtn}
+                    </button>
+                  </div>
+                  {couponDiscount > 0 && <p className="text-xs text-[#4ade80] mt-2">Cupom aplicado: -{formatMoney(couponDiscount)}</p>}
+                </div>
+
+                <div>
+                  <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.addons}</p>
+                  <div className="space-y-3">
+                    {EXTRAS.map(ex => {
+                      const sel = data.extras[ex.id];
+                      return (
+                        <button key={ex.id} onClick={()=>setData({...data, extras:{...data.extras, [ex.id]:!sel}})} className={`w-full outline-none flex justify-between p-4 border rounded-sm text-sm transition-colors ${sel ? 'border-white bg-white/10 text-white' : 'border-white/10 text-white/60'}`}>
+                          <span>{ex[lang].label}</span>
+                          <span>+{formatMoney(ex.price)}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-end mb-2">
+                    <p className="text-xs text-white/50 uppercase tracking-widest">{T.reqLabel}</p>
+                    <span className="text-xs font-bold text-white/60">+ R$ 130</span>
+                  </div>
+                  <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full modern-input text-sm" />
+                  <p className="text-[10px] text-white/40 mt-2 leading-relaxed">{T.reqDesc}</p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.payLabel}</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[{id:'pix', l:T.payPix},{id:'card', l:T.payCard},{id:'cash', l:T.payCash}].map(p => (
+                      <button key={p.id} onClick={()=>setData({...data, payment:p.id})} className={`py-4 outline-none text-xs font-bold uppercase tracking-wider border rounded-sm transition-colors ${data.payment === p.id ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{p.l}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-8 border-t border-white/10">
+                  <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subBase}</span><span>{formatMoney(mood.price)}</span></div>
+                  {fin.extrasValue > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasValue)}</span></div>}
+                  {fin.reqFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subReq}</span><span>+{formatMoney(fin.reqFee)}</span></div>}
+                  {fin.discount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discount)}</span></div>}
+                  {couponDiscount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subCoupon}</span><span>-{formatMoney(couponDiscount)}</span></div>}
+                  {fin.peak > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peak)}</span></div>}
+                  {fin.pix > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pix)}</span></div>}
+                  
+                  <div className="flex justify-between items-end mt-8 mb-10">
+                    <span className="text-sm uppercase tracking-widest text-white/50">{T.total}</span>
+                    <span style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl text-white">{formatMoney(fin.total)}</span>
+                  </div>
+
+                  <button disabled={!data.payment} onClick={() => { vibrate([30,50]); sendWhatsApp(); setStep(5); }} className="bg-white text-black h-16 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none rounded-sm shadow-xl shadow-white/10">
+                    {T.btnFinish}
+                  </button>
                 </div>
               </div>
             </div>
+          )}
 
-            <div className="mt-12 flex flex-col gap-4">
-              <button disabled={!data.payment} onClick={() => { vibrate([30,50]); sendWhatsApp(); setStep(5); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
-                {T.btnFinish}
-              </button>
-              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-2">
-                {T.btnBackStep}
-              </button>
-            </div>
-          </div>
-        )}
+        </div>
 
-        {/* STEP 5: FINAL */}
+        {/* STEP 5: FINALIZADO */}
         {step === 5 && (
-          <div className="flex-1 flex flex-col justify-center text-center step-enter">
+          <div className="flex-1 flex flex-col justify-center text-center step-enter pb-20">
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl mb-4">{T.step5Title}</h1>
             <p className="text-white/60 text-sm leading-relaxed mb-10">{T.step5Desc}</p>
             
-            <button onClick={sendWhatsApp} className="bg-transparent border border-white text-white h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none">
+            <button onClick={sendWhatsApp} className="bg-transparent border border-white text-white h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none rounded-sm">
               {T.btnSend}
             </button>
-
-            <button onClick={resetFlow} className="mt-8 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors outline-none">
+            <button onClick={resetFlow} className="mt-8 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors outline-none py-2">
               {T.btnBack}
             </button>
           </div>
