@@ -25,7 +25,7 @@ const MOODS = [
     color: '#3f3f46',
     accent: '#a1a1aa',
     service: 'Massagem Clássica',
-    desc: 'Corpo todo, pressão firme. Estritamente terapêutica para alívio muscular profundo.',
+    desc: 'Corpo todo, pressão firme. Estritamente terapêutica para alívio muscular profundo. Sem toques íntimos.',
     price: 180,
     min: 60,
   },
@@ -36,7 +36,7 @@ const MOODS = [
     color: '#713f12',
     accent: '#fbbf24',
     service: 'Massagem Sensitiva',
-    desc: 'Inicia com alívio de tensão e evolui para toques sutis. Inclui técnica íntima (Lingam) para máximo relaxamento.',
+    desc: 'Inicia com massagem profunda para tirar a tensão e evolui para toques sutis na pele. Inclui técnica íntima manual (Lingam) focada no alívio mental.',
     price: 200,
     min: 60,
   },
@@ -47,7 +47,7 @@ const MOODS = [
     color: '#831843',
     accent: '#f43f5e',
     service: 'Experiência Fusion',
-    desc: 'Atendo apenas de cueca. Contato intenso, corpo a corpo e barba. Inclui técnica íntima prolongada.',
+    desc: 'Atendo apenas de cueca para garantir maior intimidade. Contato intenso, corpo a corpo e o toque da minha barba por você. Inclui técnica íntima (Lingam) prolongada.',
     price: 250,
     min: 60,
   },
@@ -58,7 +58,7 @@ const MOODS = [
     color: '#1e1b4b',
     accent: '#818cf8',
     service: 'Massagem Nuru (Gel)',
-    desc: 'Nós dois sem roupas do início ao fim. Muito gel deslizante, fluidez total de corpos frente e costas.',
+    desc: 'Nós dois sem roupas do início ao fim. Usamos muito gel especial ultra deslizante sobre a pele. Contato fluido e intenso de corpos inteiros, frente e costas. Inclui técnica íntima.',
     price: 350,
     min: 60,
   },
@@ -69,7 +69,7 @@ const MOODS = [
     color: '#14532d',
     accent: '#4ade80',
     service: 'Massagem Reversa',
-    desc: 'Eu preparo o seu corpo para relaxar, depois o controle passa para você explorar e guiar o contato livremente.',
+    desc: 'Eu começo relaxando e estimulando o seu corpo, mas depois o controle passa para você. Você dita o ritmo, os toques e explora livremente o meu corpo. Finalização mútua.',
     price: 400,
     min: 60,
   }
@@ -81,14 +81,23 @@ const EXTRAS = [
 ];
 
 // ==================================================================================
-// UTILITÁRIOS
+// UTILITÁRIOS E ÍCONES
 // ==================================================================================
 const formatMoney = (val: number) => `R$ ${val.toFixed(2).replace('.', ',')}`;
 const vibrate = (pattern: number | number[] = 20) => { try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} };
 const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
 
+const ICON_PATHS: Record<string, string> = {
+  'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
+  'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'
+};
+
+const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: number; className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true"><path d={ICON_PATHS[name] || ''} /></svg>
+));
+
 // ==================================================================================
-// COMPONENTE: SVG Noise & Estilos
+// ESTILOS CINEMATOGRÁFICOS
 // ==================================================================================
 const CinematicStyles = memo(() => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -148,6 +157,7 @@ const CinematicStyles = memo(() => (
 export default function App() {
   const [step, setStep] = useState(0); 
   const [giftApplied, setGiftApplied] = useState(false);
+  const [lang, setLang] = useState('PT');
   
   const [mood, setMood] = useState(MOODS[0]);
   const [data, setData] = useState({
@@ -159,27 +169,32 @@ export default function App() {
   const [cepLoading, setCepLoading] = useState(false);
 
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v7');
-    const hasGift = localStorage.getItem('thaly_gift_v7');
+    const isAdult = localStorage.getItem('thaly_adult_v8');
+    const hasGift = localStorage.getItem('thaly_gift_v8');
     if (isAdult === 'yes') setStep(1);
     if (hasGift === 'yes') setGiftApplied(true);
   }, []);
 
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v7', 'yes');
+    localStorage.setItem('thaly_adult_v8', 'yes');
     setStep(1);
   };
 
   const applyGift = () => {
     vibrate([40, 60]);
-    localStorage.setItem('thaly_gift_v7', 'yes');
+    localStorage.setItem('thaly_gift_v8', 'yes');
     setGiftApplied(true);
   };
 
   const resetFlow = () => {
     vibrate(20);
     setStep(1);
+  };
+
+  const toggleLang = () => {
+    vibrate(15);
+    setLang(l => l === 'PT' ? 'EN' : 'PT');
   };
 
   const handleCep = async (val: string) => {
@@ -236,10 +251,10 @@ export default function App() {
     const ext = Object.keys(data.extras).filter(k=>data.extras[k]).map(k=>EXTRAS.find(e=>e.id===k)?.label).join(', ');
     
     const mapsLink = data.locType === 'studio' 
-      ? `📍 *Local:* Meu Espaço (Bela Vista, São Paulo)\n🗺️ _Endereço completo e acesso enviados por aqui após confirmação._` 
+      ? `📍 *Local:* Meu Espaço (Bela Vista, São Paulo)\n🗺️ _Endereço exato enviado por aqui após a confirmação._` 
       : `📍 *Local:* ${data.street}, ${data.number} ${data.comp ? `(${data.comp})` : ''}\n🗺️ *Maps:* https://maps.google.com/?q=${encodeURIComponent(`${data.street},${data.number}, São Paulo`)}`;
 
-    const rTxt = data.req.trim() ? `\n\n🔥 *Pedido Especial / Preferência:*\n"${data.req.trim()}"\n_(Aguardando sua avaliação)_` : '';
+    const rTxt = data.req.trim() ? `\n\n🔥 *Pedido Especial / Fetiche:*\n"${data.req.trim()}"\n_(Aguardando sua avaliação)_` : '';
 
     const text = `*NOVA SOLICITAÇÃO DE AGENDAMENTO* 🌿\n\n` +
       `*👤 Identificação*\n` +
@@ -247,9 +262,10 @@ export default function App() {
       `*📅 A Sessão*\n` +
       `Data: ${dStr} às ${data.time}\n` +
       `Duração Estimada: ~${fin.dur} min\n` +
-      `Mood: ${mood.title}\n` +
+      `Mood escolhido: ${mood.title}\n` +
       `Serviço: ${mood.service}\n` +
-      `${ext ? `Extras: ${ext}\n` : ''}` +
+      `*O que vai rolar:* ${mood.desc}\n` +
+      `${ext ? `\n*Extras inclusos:* ${ext}\n` : '\n'}` +
       `${mapsLink}` +
       `${rTxt}\n\n` +
       `*💳 Resumo Financeiro*\n` +
@@ -257,12 +273,15 @@ export default function App() {
       `${fin.extrasValue > 0 ? `Adicionais: +${formatMoney(fin.extrasValue)}\n` : ''}` +
       `${fin.reqFee > 0 ? `Pedido Especial: +${formatMoney(fin.reqFee)}\n` : ''}` +
       `${fin.peak > 0 ? `Taxa de Deslocamento: +${formatMoney(fin.peak)}\n` : ''}` +
-      `${fin.discount > 0 ? `Cortesia de Primeira Sessão: -${formatMoney(fin.discount)}\n` : ''}` +
+      `${fin.discount > 0 ? `Cortesia de Primeira Vez: -${formatMoney(fin.discount)}\n` : ''}` +
       `${fin.pix > 0 ? `Desconto Pix: -${formatMoney(fin.pix)}\n` : ''}` +
       `------------------------\n` +
       `💰 *Valor Final:* ${formatMoney(fin.total)}\n` +
-      `Forma de Pagamento: *${data.payment.toUpperCase()}*\n\n` +
-      `_Estou ciente do respeito mútuo e das diretrizes do atendimento._`;
+      `Pagamento Presencial: *${data.payment.toUpperCase()}*\n\n` +
+      `*⚖️ Diretrizes Concordadas:*\n` +
+      `• Higiene prévia (banho recente) é inegociável.\n` +
+      `• Sigilo e discrição garantidos para ambas as partes.\n` +
+      `• O desrespeito aos limites informados cancela a sessão imediatamente.`;
     
     window.open(`https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -280,17 +299,28 @@ export default function App() {
           <header className="flex justify-between items-center mb-10 step-enter">
             <button onClick={resetFlow} className="text-left group outline-none">
               <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
-                Thalyson Massagens, São Paulo - Centro.
+                Thalyson.
               </span>
             </button>
             
-            {step < 5 && (
-              <div className="flex gap-1.5">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className={`h-[3px] rounded-full transition-all duration-500 ${step >= i ? 'w-5 bg-white' : 'w-2 bg-white/20'}`} />
-                ))}
-              </div>
-            )}
+            <div className="flex items-center gap-5">
+              {step < 5 && (
+                <div className="flex gap-1.5 mr-2">
+                  {[1,2,3,4].map(i => (
+                    <div key={i} className={`h-[3px] rounded-full transition-all duration-500 ${step >= i ? 'w-5 bg-white' : 'w-2 bg-white/20'}`} />
+                  ))}
+                </div>
+              )}
+              
+              <button onClick={toggleLang} className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-white/50 hover:text-white transition-colors outline-none">
+                <Icon name="globe" size={14} />
+                {lang}
+              </button>
+
+              <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors outline-none">
+                <Icon name="instagram" size={18} />
+              </a>
+            </div>
           </header>
         )}
 
@@ -301,7 +331,7 @@ export default function App() {
             <p className="text-white/60 text-sm leading-relaxed mb-10">
               O atendimento é feito de forma individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no relaxamento. Confirma ter mais de 18 anos para prosseguir?
             </p>
-            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-medium text-sm tracking-widest uppercase transition-transform active:scale-95">
+            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-medium text-sm tracking-widest uppercase transition-transform active:scale-95 outline-none">
               Sim, tenho mais de 18 anos
             </button>
           </div>
@@ -311,7 +341,9 @@ export default function App() {
         {step === 1 && (
           <div className="flex-1 flex flex-col step-enter pb-8">
             <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">Etapa 01</h2>
-            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">Como você quer se sentir hoje?</h1>
+            <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">
+              {lang === 'PT' ? 'Como você quer se sentir hoje?' : 'How do you want to feel today?'}
+            </h1>
             
             <div className="flex flex-col gap-3">
               {MOODS.map(m => {
@@ -335,7 +367,7 @@ export default function App() {
               <p className="text-sm text-white/60 leading-relaxed">{mood.desc}</p>
             </div>
 
-            <button onClick={() => { vibrate(30); setStep(2); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95">
+            <button onClick={() => { vibrate(30); setStep(2); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none">
               Continuar
             </button>
           </div>
@@ -365,7 +397,7 @@ export default function App() {
                 </div>
               </div>
 
-              {data.locType === 'studio' && <p className="text-sm text-white/60 bg-white/5 p-4 border border-white/10 leading-relaxed animate-in fade-in">O estúdio fica localizado na Bela Vista. O endereço completo é liberado no WhatsApp após confirmarmos o horário, garantindo discrição para nós dois.</p>}
+              {data.locType === 'studio' && <p className="text-sm text-white/60 bg-white/5 p-4 border border-white/10 leading-relaxed animate-in fade-in">Eu atendo em um estúdio privativo na Bela Vista. O endereço completo é liberado no WhatsApp após confirmarmos o horário.</p>}
               
               {data.locType === 'home' && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
@@ -379,7 +411,7 @@ export default function App() {
               )}
             </div>
 
-            <button disabled={!data.name || !data.age || !data.locType || (data.locType==='home' && !data.street)} onClick={() => { vibrate(30); setStep(3); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity">
+            <button disabled={!data.name || !data.age || !data.locType || (data.locType==='home' && !data.street)} onClick={() => { vibrate(30); setStep(3); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
               Avançar
             </button>
           </div>
@@ -413,11 +445,11 @@ export default function App() {
                     </button>
                   )
                 })}
-                {getSlots().length === 0 && <p className="col-span-3 text-sm text-white/40 text-center py-4 border border-white/5">Nenhum horário para hoje.</p>}
+                {getSlots().length === 0 && <p className="col-span-3 text-sm text-white/40 text-center py-4 border border-white/5">Nenhum horário disponível hoje.</p>}
               </div>
             )}
 
-            <button disabled={!data.date || !data.time} onClick={() => { vibrate(30); setStep(4); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity">
+            <button disabled={!data.date || !data.time} onClick={() => { vibrate(30); setStep(4); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
               Ajustes Finais
             </button>
           </div>
@@ -432,7 +464,7 @@ export default function App() {
             <div className="space-y-8">
               {!giftApplied && (
                 <div className="p-5 border border-white/20 bg-white/5 animate-in fade-in">
-                  <p className="text-sm text-white mb-3 leading-relaxed">Como é sua primeira vez agendando por aqui, liberei um pequeno desconto no valor final. Considere um abraço de boas-vindas.</p>
+                  <p className="text-sm text-white mb-3 leading-relaxed">Como é sua primeira vez agendando por aqui, liberei um pequeno desconto no valor final.</p>
                   <button onClick={applyGift} className="text-xs font-bold outline-none uppercase tracking-widest border-b border-white pb-1">Desbloquear Cortesia (R$ 15)</button>
                 </div>
               )}
@@ -485,7 +517,7 @@ export default function App() {
               </div>
             </div>
 
-            <button disabled={!data.payment} onClick={() => { vibrate([30,50]); setStep(5); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity">
+            <button disabled={!data.payment} onClick={() => { vibrate([30,50]); setStep(5); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
               Finalizar Pedido
             </button>
           </div>
@@ -496,14 +528,14 @@ export default function App() {
           <div className="flex-1 flex flex-col justify-center text-center step-enter">
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl mb-4">Tudo Pronto.</h1>
             <p className="text-white/60 text-sm leading-relaxed mb-10">
-              O seu resumo foi gerado. Como prezo pelo seu sigilo, seus dados não ficam salvos em nenhum site. Envie a solicitação direto no WhatsApp para travar o seu horário.
+              O seu resumo foi gerado. Como prezo pelo sigilo, seus dados não ficam salvos em nenhum site. Envie a solicitação direto no WhatsApp para travar o seu horário e receber o endereço.
             </p>
             
-            <button onClick={sendWhatsApp} className="bg-transparent border border-white text-white h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black">
-              Enviar para o WhatsApp
+            <button onClick={sendWhatsApp} className="bg-transparent border border-white text-white h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none">
+              Mandar no WhatsApp
             </button>
 
-            <button onClick={resetFlow} className="mt-8 text-xs uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+            <button onClick={resetFlow} className="mt-8 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors outline-none">
               Voltar para o início
             </button>
           </div>
