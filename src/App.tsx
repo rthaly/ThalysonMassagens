@@ -63,6 +63,7 @@ const TEXTS = {
     subPix: "Desconto Pix",
     total: "Total Final",
     btnFinish: "Finalizar Pedido",
+    btnBackStep: "Voltar para etapa anterior",
     step5Title: "Tudo Pronto.",
     step5Desc: "O seu resumo foi gerado e o WhatsApp deve ter aberto automaticamente. Caso o seu navegador tenha bloqueado a janela (ou se quiser tentar novamente), clique no botão abaixo.",
     btnSend: "Reenviar no WhatsApp",
@@ -134,6 +135,7 @@ const TEXTS = {
     subPix: "Pix Discount",
     total: "Final Total",
     btnFinish: "Finish Order",
+    btnBackStep: "Back to previous step",
     step5Title: "All Set.",
     step5Desc: "Your summary is ready and WhatsApp should have opened automatically. If your browser blocked the window (or if you need to try again), click the button below.",
     btnSend: "Resend on WhatsApp",
@@ -315,6 +317,11 @@ export default function App() {
     setStep(1);
   };
 
+  const goBack = () => {
+    vibrate(15);
+    setStep(prev => prev - 1);
+  };
+
   const toggleLang = () => {
     vibrate(15);
     setLang(l => l === 'PT' ? 'EN' : 'PT');
@@ -414,7 +421,7 @@ export default function App() {
       <div className="grain-overlay" />
       <div className="ambient-glow" style={{ backgroundColor: mood.color }} />
 
-      <div className="relative z-10 min-h-screen flex flex-col pt-10 pb-24 px-6 max-w-md mx-auto">
+      <div className="relative z-10 min-h-screen flex flex-col pt-10 pb-16 px-6 max-w-md mx-auto">
         
         {/* Cabecalho de Navegação Dinâmico */}
         {step > 0 && (
@@ -532,9 +539,14 @@ export default function App() {
               )}
             </div>
 
-            <button disabled={!data.name || !data.age || !data.locType || (data.locType==='home' && !data.street)} onClick={() => { vibrate(30); setStep(3); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
-              {T.btnNext}
-            </button>
+            <div className="mt-12 flex flex-col gap-4">
+              <button disabled={!data.name || !data.age || !data.locType || (data.locType==='home' && !data.street)} onClick={() => { vibrate(30); setStep(3); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-opacity outline-none">
+                {T.btnNext}
+              </button>
+              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-2">
+                {T.btnBackStep}
+              </button>
+            </div>
           </div>
         )}
 
@@ -571,9 +583,14 @@ export default function App() {
               </div>
             )}
 
-            <button disabled={!data.date || !data.time} onClick={() => { vibrate(30); setStep(4); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
-              {T.btnAdjust}
-            </button>
+            <div className="mt-12 flex flex-col gap-4">
+              <button disabled={!data.date || !data.time} onClick={() => { vibrate(30); setStep(4); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
+                {T.btnAdjust}
+              </button>
+              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-2">
+                {T.btnBackStep}
+              </button>
+            </div>
           </div>
         )}
 
@@ -639,9 +656,14 @@ export default function App() {
               </div>
             </div>
 
-            <button disabled={!data.payment} onClick={() => { vibrate([30,50]); sendWhatsApp(); setStep(5); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
-              {T.btnFinish}
-            </button>
+            <div className="mt-12 flex flex-col gap-4">
+              <button disabled={!data.payment} onClick={() => { vibrate([30,50]); sendWhatsApp(); setStep(5); }} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
+                {T.btnFinish}
+              </button>
+              <button onClick={goBack} className="text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors outline-none py-2">
+                {T.btnBackStep}
+              </button>
+            </div>
           </div>
         )}
 
