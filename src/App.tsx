@@ -20,21 +20,21 @@ const PEAK_FEE = 15;
 const TEXTS = {
   PT: {
     ageTitle: "Ambiente\nReservado.",
-    ageDesc: "O atendimento é feito de forma individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no relaxamento. Confirma ter mais de 18 anos para prosseguir?",
+    ageDesc: "O atendimento é feito de forma individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no prazer e relaxamento. Confirma ter mais de 18 anos para prosseguir?",
     ageBtn: "Sim, tenho mais de 18 anos",
     step1Label: "Etapa 01",
     step1Title: "Como você quer se sentir hoje?",
-    tabSingle: "Sessão Única",
-    tabCombo: "Pacotes Especiais",
+    tabSingle: "Só Hoje",
+    tabCombo: "Ciclos de Prazer",
     upTo: "Até",
     btnContinue: "Continuar para Local",
     step2Label: "Etapa 02",
     step2Title: "Quem e Onde.",
     namePlace: "Como prefere ser chamado?",
     locLabel: "Onde será a 1ª sessão?",
-    locStudio: "Meu Local (Bela Vista)",
-    locHome: "Seu Local (Vou até você)",
-    studioDesc: "Atendo em um estúdio privativo na Bela Vista. O endereço completo e as instruções de acesso são liberados no WhatsApp após confirmarmos o horário.",
+    locStudio: "Meu Espaço (Bela Vista)",
+    locHome: "Seu Espaço (Vou até você)",
+    studioDesc: "Atendo em um apartamento privativo na Bela Vista. O endereço completo e as instruções eu te mando no WhatsApp assim que confirmarmos o horário.",
     cep: "CEP (opcional)",
     street: "Rua ou Avenida",
     number: "Número",
@@ -47,13 +47,13 @@ const TEXTS = {
     step4Label: "Etapa 04",
     step4Title: "O Acordo.",
     giftTitle: "Presente Liberado",
-    giftDesc: "Como é sua primeira vez agendando por aqui, liberei um pequeno desconto no valor final.",
+    giftDesc: "Como é sua primeira vez marcando por aqui, deixei um pequeno desconto no valor final.",
     giftBtn: "Desbloquear Cortesia (R$ 15)",
-    addons: "Adicionais da Sessão (Hoje)",
-    reqLabel: "Pedido Específico / Preferência",
-    reqPlace: "Tem alguma vontade específica para hoje?",
+    addons: "Vontades Extras (Hoje)",
+    reqLabel: "Tem algum fetiche ou pedido?",
+    reqPlace: "O que você quer que role hoje?",
     reqDesc: "Sujeito a avaliação na hora. Caso não seja possível realizar o pedido, o valor da taxa não será cobrado.",
-    payLabel: "Como vai pagar no local?",
+    payLabel: "Como vai pagar na hora?",
     payPix: "Pix (3% OFF)",
     payCard: "Cartão",
     payCash: "Dinheiro",
@@ -61,9 +61,9 @@ const TEXTS = {
     subExtras: "Extras (Hoje)",
     subReq: "Pedido Especial (Hoje)",
     subGift: "Cortesia (Primeira Vez)",
-    subPeak: "Taxa de Deslocamento",
-    subPix: "Benefício Pix",
-    total: "Total Final",
+    subPeak: "Deslocamento",
+    subPix: "Desconto Pix",
+    total: "Valor Final",
     btnFinish: "Finalizar Pedido",
     step5Title: "Tudo Pronto.",
     step5Desc: "O seu resumo foi gerado e o WhatsApp deve ter aberto automaticamente. Caso o seu navegador tenha bloqueado a janela (ou se quiser tentar novamente), clique no botão abaixo.",
@@ -71,45 +71,45 @@ const TEXTS = {
     btnBack: "Voltar para o início",
     
     // WHATSAPP TEXTS
-    wtsNew: "NOVA RESERVA DE EXPERIÊNCIA",
-    wtsSystem: "Recebido via Sistema Exclusivo",
-    wtsId: "CLIENTE",
+    wtsNew: "NOVO PEDIDO DE ENCONTRO",
+    wtsSystem: "Chegou pelo formulário",
+    wtsId: "QUEM VEM",
     wtsName: "Nome",
-    wtsSession: "A JORNADA",
-    wtsDate: "Data do Encontro",
-    wtsDur: "Tempo de Imersão",
-    wtsMood: "Modalidade",
-    wtsServ: "Categoria",
-    wtsLoc: "LOCALIZAÇÃO",
-    wtsLocStudio: "Meu Local (Bela Vista, São Paulo)\n🗺️ _Endereço exato e instruções de acesso enviados por aqui após a confirmação._",
-    wtsLocHome: "Seu Local",
-    wtsAddons: "PREFERÊNCIAS & EXTRAS",
+    wtsSession: "O MOMENTO",
+    wtsDate: "Data marcada",
+    wtsDur: "Tempo na maca",
+    wtsMood: "Sessão",
+    wtsServ: "Estilo",
+    wtsLoc: "ONDE VAI ROLAR",
+    wtsLocStudio: "Meu Espaço (Bela Vista, São Paulo)\n🗺️ _Te mando o endereço exato e como entrar assim que a gente confirmar._",
+    wtsLocHome: "Seu Espaço",
+    wtsAddons: "VONTADES EXTRAS",
     wtsReq: "Pedido Específico",
-    wtsFin: "DETALHAMENTO DO INVESTIMENTO",
-    wtsInvestFinal: "INVESTIMENTO FINAL",
-    wtsPay: "Forma de Pagamento",
-    wtsRulesTitle: "ACORDO DE EXCELÊNCIA",
-    wtsRule1: "Higiene prévia (banho recente) é inegociável.",
-    wtsRule2: "Sigilo e discrição garantidos para ambas as partes.",
-    wtsRule3: "Respeito mútuo aos limites estabelecidos na sessão.",
+    wtsFin: "OS VALORES",
+    wtsInvestFinal: "VALOR FINAL",
+    wtsPay: "Vai pagar no",
+    wtsRulesTitle: "O NOSSO ACORDO",
+    wtsRule1: "Higiene é inegociável. Venha de banho tomado.",
+    wtsRule2: "Pode confiar, tudo que rolar fica só entre a gente.",
+    wtsRule3: "Se rolar desrespeito aos meus limites, a sessão acaba na hora.",
   },
   EN: {
     ageTitle: "Private\nEnvironment.",
-    ageDesc: "The service is strictly individual. Some experiences include intense physical contact and intimate relaxation techniques. Do you confirm you are over 18 to proceed?",
+    ageDesc: "The service is strictly individual. Experiences include intense physical contact and intimate techniques focused on pleasure and release. Confirm you are over 18?",
     ageBtn: "Yes, I am over 18",
     step1Label: "Step 01",
     step1Title: "How do you want to feel today?",
-    tabSingle: "Single Session",
-    tabCombo: "Special Packages",
+    tabSingle: "Just Today",
+    tabCombo: "Pleasure Cycles",
     upTo: "Up to",
     btnContinue: "Continue to Location",
     step2Label: "Step 02",
     step2Title: "Who and Where.",
     namePlace: "How should I call you?",
     locLabel: "Where will the 1st session be?",
-    locStudio: "My Place (Bela Vista)",
-    locHome: "Your Place (I go to you)",
-    studioDesc: "I work in a private studio in Bela Vista. The exact address and access instructions are shared on WhatsApp once we confirm the schedule.",
+    locStudio: "My Space (Bela Vista)",
+    locHome: "Your Space (I go to you)",
+    studioDesc: "I receive in a private apartment in Bela Vista. Exact address and instructions sent on WhatsApp after confirming.",
     cep: "ZIP Code (optional)",
     street: "Street or Avenue",
     number: "Number",
@@ -124,10 +124,10 @@ const TEXTS = {
     giftTitle: "Gift Unlocked",
     giftDesc: "Since it is your first time booking here, I unlocked a small discount on the final amount.",
     giftBtn: "Unlock Courtesy (R$ 15)",
-    addons: "Session Add-ons (Today)",
-    reqLabel: "Specific Request / Preference",
-    reqPlace: "Any specific desire for today?",
-    reqDesc: "Subject to evaluation on site. If the request cannot be fulfilled, the fee will not be charged.",
+    addons: "Extra Desires (Today)",
+    reqLabel: "Any fetish or special request?",
+    reqPlace: "What do you want to happen today?",
+    reqDesc: "Subject to evaluation on site. If not possible, the fee will not be charged.",
     payLabel: "How will you pay on site?",
     payPix: "Pix (3% OFF)",
     payCard: "Credit Card",
@@ -137,8 +137,8 @@ const TEXTS = {
     subReq: "Special Request (Today)",
     subGift: "Courtesy (First Time)",
     subPeak: "Travel Fee",
-    subPix: "Pix Benefit",
-    total: "Final Total",
+    subPix: "Pix Discount",
+    total: "Final Value",
     btnFinish: "Finish Order",
     step5Title: "All Set.",
     step5Desc: "Your summary is ready and WhatsApp should have opened automatically. If your browser blocked the window (or if you need to try again), click the button below.",
@@ -146,84 +146,84 @@ const TEXTS = {
     btnBack: "Back to start",
     
     // WHATSAPP TEXTS
-    wtsNew: "NEW EXPERIENCE BOOKING",
-    wtsSystem: "Received via Exclusive System",
-    wtsId: "CLIENT",
+    wtsNew: "NEW ENCOUNTER REQUEST",
+    wtsSystem: "Arrived via form",
+    wtsId: "WHO IS COMING",
     wtsName: "Name",
-    wtsSession: "THE JOURNEY",
-    wtsDate: "Meeting Date",
-    wtsDur: "Immersion Time",
-    wtsMood: "Modality",
-    wtsServ: "Category",
-    wtsLoc: "LOCATION",
-    wtsLocStudio: "My Place (Bela Vista, São Paulo)\n🗺️ _Exact address and access instructions will be sent here upon confirmation._",
-    wtsLocHome: "Your Place",
-    wtsAddons: "PREFERENCES & EXTRAS",
+    wtsSession: "THE MOMENT",
+    wtsDate: "Booked for",
+    wtsDur: "Time on the table",
+    wtsMood: "Session",
+    wtsServ: "Style",
+    wtsLoc: "WHERE IT HAPPENS",
+    wtsLocStudio: "My Space (Bela Vista, São Paulo)\n🗺️ _I'll send the exact address once we confirm._",
+    wtsLocHome: "Your Space",
+    wtsAddons: "EXTRA DESIRES",
     wtsReq: "Specific Request",
-    wtsFin: "INVESTMENT BREAKDOWN",
-    wtsInvestFinal: "FINAL INVESTMENT",
-    wtsPay: "Payment Method",
-    wtsRulesTitle: "AGREEMENT OF EXCELLENCE",
-    wtsRule1: "Prior hygiene (recent shower) is non-negotiable.",
-    wtsRule2: "Absolute privacy and discretion guaranteed for both.",
-    wtsRule3: "Mutual respect for the established boundaries.",
+    wtsFin: "THE VALUES",
+    wtsInvestFinal: "FINAL VALUE",
+    wtsPay: "Paying with",
+    wtsRulesTitle: "OUR AGREEMENT",
+    wtsRule1: "Hygiene is non-negotiable. Please shower before.",
+    wtsRule2: "You can trust me, everything stays between us.",
+    wtsRule3: "Disrespecting my boundaries ends the session immediately.",
   }
 };
 
 const MOODS = [
   {
     id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false,
-    PT: { title: 'Desatar os nós', subtitle: 'Tensão e peso nas costas.', service: 'Massagem Clássica', desc: 'Corpo todo, pressão firme. Estritamente terapêutica para alívio muscular profundo. Sem toques íntimos.' },
-    EN: { title: 'Untie the knots', subtitle: 'Tension and back weight.', service: 'Classic Massage', desc: 'Full body, firm pressure. Strictly therapeutic for deep muscle relief. No intimate touch.' }
+    PT: { title: 'Desatar os nós', subtitle: 'Tensão e peso nas costas.', service: 'Massagem Clássica', desc: 'Corpo todo, pressão firme. Estritamente para amassar a musculatura e tirar a dor do corpo. Sem toques íntimos.' },
+    EN: { title: 'Untie the knots', subtitle: 'Tension and back weight.', service: 'Classic Massage', desc: 'Full body, firm pressure. Strictly to knead muscles and relieve pain. No intimate touch.' }
   },
   {
     id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false,
-    PT: { title: 'A Jornada Tântrica', subtitle: 'Corpo preparado, mente relaxada.', service: 'Massagem Sensitiva / Tântrica', desc: 'Toda sessão tântrica começa com uma Clássica profunda para destravar a musculatura e preparar você. Só depois evolui para os toques sutis e a técnica íntima (Lingam).' },
-    EN: { title: 'The Tantric Journey', subtitle: 'Prepared body, relaxed mind.', service: 'Sensitive / Tantric Massage', desc: 'Every tantric session starts with a deep Classic massage to release tension. Only then it evolves into subtle touches and manual intimate technique (Lingam).' }
+    PT: { title: 'A Jornada Tântrica', subtitle: 'Começa relaxando, termina gozando.', service: 'Massagem Sensitiva / Tântrica', desc: 'Toda sessão tântrica começa com uma Clássica profunda nas costas para destravar você. Só com o corpo solto é que a gente evolui pros toques na pele e pra técnica íntima final (Lingam).' },
+    EN: { title: 'The Tantric Journey', subtitle: 'Starts relaxing, ends releasing.', service: 'Sensitive / Tantric Massage', desc: 'Starts with a deep Classic on the back to loosen you up. Then we evolve to skin touches and final intimate technique (Lingam).' }
   },
   {
     id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false,
-    PT: { title: 'Proximidade', subtitle: 'Buscando contato físico real.', service: 'Experiência Fusion', desc: 'Inicia com Massagem Clássica. Depois, atendo apenas de cueca para garantir maior intimidade. Contato intenso, corpo a corpo e o toque da minha barba. Inclui técnica íntima (Lingam).' },
-    EN: { title: 'Closeness', subtitle: 'Seeking real physical contact.', service: 'Fusion Experience', desc: 'Starts with Classic. Then, I wear only underwear for intimacy. Intense body-to-body contact and the touch of my beard. Includes intimate technique (Lingam).' }
+    PT: { title: 'Proximidade', subtitle: 'Mais intimidade, pele na pele.', service: 'Experiência Fusion', desc: 'Depois de destravar suas costas, eu fico só de cueca. O contato fica intenso, corpo a corpo, você sente o toque da minha barba. Finalização íntima prolongada e deliciosa.' },
+    EN: { title: 'Closeness', subtitle: 'More intimacy, skin on skin.', service: 'Fusion Experience', desc: 'After loosening your back, I stay only in underwear. Intense body-to-body contact, touch of my beard. Prolonged and delicious intimate finish.' }
   },
   {
     id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false,
-    PT: { title: 'Imersão Total', subtitle: 'Desconexão absoluta da rotina.', service: 'Massagem Nuru (Gel)', desc: 'Após o relaxamento inicial Clássico, nós dois sem roupas do início ao fim. Usamos gel especial ultra deslizante. Contato fluido e intenso de corpos inteiros. Inclui técnica íntima.' },
-    EN: { title: 'Total Immersion', subtitle: 'Absolute disconnection from routine.', service: 'Nuru Massage (Gel)', desc: 'After initial Classic relaxation, both of us naked. We use ultra-gliding special gel. Fluid full-body contact. Includes intimate technique.' }
+    PT: { title: 'Imersão Total', subtitle: 'Nós dois suados e escorregadios.', service: 'Massagem Nuru (Gel)', desc: 'Após o relaxamento inicial, a gente tira tudo. Muito gel ultra deslizante. Nossos corpos colados deslizando um no outro, frente e costas, até você chegar lá.' },
+    EN: { title: 'Total Immersion', subtitle: 'Both of us sweaty and slippery.', service: 'Nuru Massage (Gel)', desc: 'After initial relaxation, we take it all off. Lots of ultra-gliding gel. Bodies glued sliding on each other until you get there.' }
   },
   {
     id: 'reversa', color: '#14532d', accent: '#4ade80', price: 400, min: 60, isCombo: false,
-    PT: { title: 'Assumir o Controle', subtitle: 'Vontade de explorar e ditar o ritmo.', service: 'Massagem Reversa', desc: 'Eu começo relaxando e destravando seu corpo, mas depois o controle passa para você. Você dita o ritmo, os toques e explora livremente o meu corpo. Finalização mútua.' },
-    EN: { title: 'Take Control', subtitle: 'Desire to explore and set the pace.', service: 'Reverse Massage', desc: 'I start by relaxing your body, but then the control passes to you. You set the pace, touches, and explore my body freely. Mutual finish.' }
+    PT: { title: 'Assumir o Controle', subtitle: 'Aproveite o meu corpo.', service: 'Massagem Reversa', desc: 'Eu começo tirando sua tensão, mas depois você assume. Você dita o ritmo, toca onde quiser e explora o meu corpo livremente até a gente gozar junto.' },
+    EN: { title: 'Take Control', subtitle: 'Enjoy my body.', service: 'Reverse Massage', desc: 'I start taking your tension, then you take over. Set the pace, touch anywhere, explore my body freely until mutual release.' }
   }
 ];
 
 const COMBOS = [
   {
     id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true,
-    PT: { title: 'Elite Tântrica (Nuru + Reversa)', subtitle: 'O ápice da intensidade em 2 sessões.', service: 'Pacote Premium', desc: 'A experiência premium. Uma sessão de Nuru (Gel) e uma sessão Reversa. (Ambas iniciam com Massagem Clássica para preparo do corpo). De R$ 750 por R$ 590 (Economia de R$ 160).' },
-    EN: { title: 'Tantric Elite (Nuru + Reverse)', subtitle: 'Peak intensity in 2 sessions.', service: 'Premium Package', desc: 'One Nuru (Gel) and one Reverse session. (Both start with Classic body prep). From R$ 750 for R$ 590 (Save R$ 160).' }
+    PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Dois encontros no mês para quem quer contato pele a pele. Uma sessão Nuru e uma Reversa (ambas começam relaxando suas costas). Corpo solto, mente leve e finalização intensa. De R$ 750 por R$ 590 (Economia de R$ 160).' },
+    EN: { title: 'Intensity (Nuru + Reverse)', subtitle: 'Exploration and release without rush.', service: '2 Encounters', desc: 'Two sessions a month. One Nuru and one Reverse (both start relaxing your back). Loose body, light mind, intense finish. From R$ 750 for R$ 590 (Save R$ 160).' }
   },
   {
     id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true,
-    PT: { title: 'A Jornada (As 4 Tântricas)', subtitle: 'Sensitiva, Fusion, Nuru e Reversa.', service: 'Pacote Completo', desc: 'O pacote definitivo (1 sessão/semana). Você passa por todas as 4 experiências, evoluindo a entrega e a intimidade a cada encontro. De R$ 1.200 por R$ 890 (Economia de R$ 310).' },
-    EN: { title: 'The Journey (All 4 Tantric)', subtitle: 'Sensitive, Fusion, Nuru, and Reverse.', service: 'Complete Package', desc: 'The ultimate package (1 weekly). Experience all 4 stages, evolving intimacy each encounter. From R$ 1,200 for R$ 890 (Save R$ 310).' }
+    PT: { title: 'Exploração Total (As 4 Fases)', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros', desc: 'Você vem uma vez por semana. A gente começa no toque sutil da Sensitiva e evolui a cada visita até a explosão da Reversa. É sobre soltar o corpo e gozar de formas diferentes. De R$ 1.200 por R$ 890 (Economia de R$ 310).' },
+    EN: { title: 'Total Exploration (All 4 Phases)', subtitle: 'A whole month of discoveries.', service: '4 Encounters', desc: 'Come once a week. Experience all 4 stages, evolving intimacy each visit. It is about letting go and releasing in different ways. From R$ 1,200 for R$ 890 (Save R$ 310).' }
   },
   {
     id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true,
-    PT: { title: 'Clássica Quinzenal (2 Sessões)', subtitle: 'Manutenção muscular básica.', service: 'Pacote Intermediário', desc: 'Duas sessões no mês de Massagem Clássica para focar estritamente em alívio de dores nas costas e tensão. De R$ 360 por R$ 320 (Economia de R$ 40).' },
-    EN: { title: 'Biweekly Classic (2 Sessions)', subtitle: 'Basic muscle maintenance.', service: 'Intermediate Package', desc: 'Two sessions a month of strict therapeutic massage. From R$ 360 for R$ 320 (Save R$ 40).' }
+    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e tirar aquela dor chata das costas. Sem toques íntimos, só alívio puro. De R$ 360 por R$ 320 (Economia de R$ 40).' },
+    EN: { title: 'Biweekly Relief (2 Sessions)', subtitle: 'Taking the weight off.', service: '2 Encounters', desc: 'Two visits a month purely to knead muscles and relieve back pain. No intimate touch. From R$ 360 for R$ 320 (Save R$ 40).' }
   },
   {
     id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true,
-    PT: { title: 'Clássica Mensal (4 Sessões)', subtitle: 'Corpo sempre destravado.', service: 'Pacote Completo', desc: 'Quatro sessões (1 por semana) de Massagem Clássica profunda. Ideal para quem trabalha muito tempo sentado ou sob stress. De R$ 720 por R$ 560 (Economia de R$ 160).' },
-    EN: { title: 'Monthly Classic (4 Sessions)', subtitle: 'Always tension-free.', service: 'Complete Package', desc: 'Four weekly sessions of deep Classic Massage. From R$ 720 for R$ 560 (Save R$ 160).' }
+    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros', desc: 'Uma hora por semana para a gente soltar todos os seus nós. Você chega travado do trabalho e sai leve. De R$ 720 por R$ 560 (Economia de R$ 160).' },
+    EN: { title: 'Light Routine (4 Sessions)', subtitle: 'Pain-free body all month.', service: '4 Encounters', desc: 'One hour a week to untie all knots. Arrive stiff from work, leave light. From R$ 720 for R$ 560 (Save R$ 160).' }
   }
 ];
 
 const EXTRAS = [
-  { id: 'aroma', price: 20, PT: { label: 'Aromaterapia Relaxante' }, EN: { label: 'Relaxing Aromatherapy' } },
-  { id: 'time', price: 75, PT: { label: 'Estender Tempo (+30min)' }, EN: { label: 'Extend Time (+30min)' } }
+  { id: 'aroma', price: 20, PT: { label: 'Óleos essenciais relaxantes' }, EN: { label: 'Relaxing essential oils' } },
+  { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' }, EN: { label: 'Stay longer (+30min)' } }
 ];
 
 // ==================================================================================
@@ -327,8 +327,8 @@ export default function App() {
   });
 
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v14');
-    const hasGift = localStorage.getItem('thaly_gift_v14');
+    const isAdult = localStorage.getItem('thaly_adult_v15');
+    const hasGift = localStorage.getItem('thaly_gift_v15');
     if (isAdult === 'yes') setStep(1);
     if (hasGift === 'yes') setGiftApplied(true);
   }, []);
@@ -347,19 +347,19 @@ export default function App() {
 
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v14', 'yes');
+    localStorage.setItem('thaly_adult_v15', 'yes');
     setStep(1);
   };
 
   const applyGift = () => {
     vibrate([40, 60]);
-    localStorage.setItem('thaly_gift_v14', 'yes');
+    localStorage.setItem('thaly_gift_v15', 'yes');
     setGiftApplied(true);
   };
 
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v14');
+    const isAdult = localStorage.getItem('thaly_adult_v15');
     setStep(isAdult === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
   };
@@ -435,13 +435,13 @@ export default function App() {
     const isComboText = mood.isCombo ? " (Agendamento da 1ª Sessão)" : "";
 
     const text = 
-      `⚜️ *${T.wtsNew}* ⚜️\n` +
+      `🔥 *${T.wtsNew}* 🔥\n` +
       `_${T.wtsSystem}_\n\n` +
       
       `*👤 ${T.wtsId}*\n` +
       `• *${T.wtsName}:* ${data.name}\n\n` +
       
-      `*⏳ ${T.wtsSession}${isComboText}*\n` +
+      `*💦 ${T.wtsSession}${isComboText}*\n` +
       `• *${T.wtsDate}:* ${dStr} às ${data.time}\n` +
       `• *${T.wtsDur}:* ~${fin.dur} min\n` +
       `• *${T.wtsMood}:* ${mood[lang].title}\n` +
@@ -451,11 +451,11 @@ export default function App() {
       `${mapsLink}\n\n` +
 
       (ext || data.req.trim() ? `*✨ ${T.wtsAddons}*\n` : '') +
-      (ext ? `• *Incluso:* ${ext}\n` : '') +
+      (ext ? `• *Extra:* ${ext}\n` : '') +
       (data.req.trim() ? `• *${T.wtsReq}:* "${data.req.trim()}"\n` : '') +
       (ext || data.req.trim() ? '\n' : '') +
 
-      `*💎 ${T.wtsFin}*\n` +
+      `*💸 ${T.wtsFin}*\n` +
       `• ${T.subBase}: ${formatMoney(mood.price)}\n` +
       (fin.extrasValue > 0 ? `• ${T.subExtras}: +${formatMoney(fin.extrasValue)}\n` : '') +
       (fin.reqFee > 0 ? `• ${T.subReq}: +${formatMoney(fin.reqFee)}\n` : '') +
@@ -466,7 +466,7 @@ export default function App() {
       `*${T.wtsInvestFinal}:* *${formatMoney(fin.total)}*\n` +
       `• *${T.wtsPay}:* ${data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? T.payCard : T.payCash}\n\n` +
       
-      `*⚖️ ${T.wtsRulesTitle}*\n` +
+      `*🤝 ${T.wtsRulesTitle}*\n` +
       `✓ ${T.wtsRule1}\n` +
       `✓ ${T.wtsRule2}\n` +
       `✓ ${T.wtsRule3}`;
@@ -486,7 +486,7 @@ export default function App() {
         <header className="flex justify-between items-center mb-10">
           <button onClick={resetFlow} className="text-left group outline-none py-2">
             <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
-              Thalyson Massagens.
+              Thalyson.
             </span>
           </button>
           
@@ -721,7 +721,7 @@ export default function App() {
                   {fin.pix > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pix)}</span></div>}
                   
                   <div className="flex justify-between items-end mt-8 mb-10">
-                    <span className="text-sm uppercase tracking-widest text-white/50">{T.wtsInvestFinal}</span>
+                    <span className="text-sm uppercase tracking-widest text-white/50">{T.total}</span>
                     <span style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl text-white">{formatMoney(fin.total)}</span>
                   </div>
 
