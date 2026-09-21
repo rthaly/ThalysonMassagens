@@ -10,9 +10,9 @@ const CONFIG = {
   START_HOUR: 9,
   END_HOUR: 22,
   
-  // CUPONS (Valores menores que 1 são porcentagem. Ex: 0.1 = 10%. Valores maiores são Reais. Ex: 50 = R$ 50)
+  // CUPONS (Valores menores que 1 são porcentagem. Ex: 0.08 = 8%. Valores maiores são Reais. Ex: 50 = R$ 50)
   COUPONS: {
-    "SESSAO2": 0.1,
+    "SESSAO2": 0.08,
     "GOZAR10": 10,
     "THALY20": 20,
     "BEMVINDO50": 50
@@ -311,10 +311,10 @@ export default function App() {
     req: '', payment: ''
   });
 
-  // Atualizei a versão do localStorage para v22 para resetar os testes
+  // Chave atualizada para v24. O teste será limpo e puro.
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v22');
-    const hasBookedBefore = localStorage.getItem('thaly_returning_v22');
+    const isAdult = localStorage.getItem('thaly_adult_v24');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v24');
     
     if (isAdult === 'yes') setStep(1);
     if (hasBookedBefore === 'yes') setIsReturningClient(true);
@@ -332,17 +332,16 @@ export default function App() {
     }
   }, [step, isProfileOpen]);
 
-  // FUNÇÃO PARA ROLAR A TELA QUANDO O TECLADO DO CELULAR ABRIR
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     const target = e.target;
     setTimeout(() => {
       target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 400); // 400ms para dar tempo do teclado animar até o topo
+    }, 400);
   };
 
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v22', 'yes');
+    localStorage.setItem('thaly_adult_v24', 'yes');
     setStep(1);
   };
 
@@ -375,7 +374,7 @@ export default function App() {
 
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v22');
+    const isAdult = localStorage.getItem('thaly_adult_v24');
     setStep(isAdult === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
   };
@@ -407,7 +406,6 @@ export default function App() {
   const isStep2Valid = data.name.trim().length > 1 && data.locType !== '' && 
     (data.locType === 'studio' || (data.locType === 'home' && data.street.trim() !== '' && data.number.trim() !== '' && data.bairro.trim() !== ''));
 
-  // CÁLCULO FINANCEIRO DETALHADO E TRANSPARENTE
   const fin = useMemo(() => {
     let basePrice = mood.price;
     let dur = mood.min;
@@ -453,16 +451,18 @@ export default function App() {
     return s;
   };
 
-  // GERAÇÃO DO LINK DO WHATSAPP REFINADA E ELEGANTE
   const wppLink = useMemo(() => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
     const ext = Object.keys(data.extras).filter(k=>data.extras[k]).map(k=>EXTRAS.find(e=>e.id===k)?.[lang].label).join(', ');
-    
-    const mapsLink = data.locType === 'studio' 
-      ? `Sua suíte na Bela Vista` 
-      : `${data.street}, ${data.number}${data.comp ? ' ' + data.comp : ''}, ${data.bairro}`;
-
     const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
+
+    // A Bússola: Define exatamente quem vai até quem com base no que foi escolhido.
+    let locationText = '';
+    if (data.locType === 'studio') {
+      locationText = `Você vem até o meu espaço (Minha Suíte, Bela Vista)`;
+    } else {
+      locationText = `Eu vou até você (${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro})`;
+    }
 
     let text = `Oi Thalyson, tudo bem? Finalizei a minha reserva no site e vim confirmar o nosso encontro.\n\n`;
     
@@ -475,7 +475,7 @@ export default function App() {
     text += `*QUANDO E ONDE:*\n`;
     text += `• Data: ${dStr} às ${data.time}\n`;
     text += `• Duração: até ${fin.dur} min\n`;
-    text += `• Local: ${mapsLink}\n\n`;
+    text += `• Local: ${locationText}\n\n`;
 
     if (ext || data.req.trim()) {
       text += `*DETALHES DA SESSÃO:*\n`;
@@ -495,22 +495,19 @@ export default function App() {
     text += `*Valor Final:* ${formatMoney(fin.total)} (via ${paymentMethod})\n\n`;
 
     text += `*PRÓXIMA SESSÃO:*\n`;
-    text += `Já deixei anotado o cupom SESSAO2 para garantir 10% de desconto na minha próxima visita.\n\n`;
+    text += `Já deixei anotado o cupom SESSAO2 para garantir 8% de desconto na minha próxima visita.\n\n`;
 
     text += `Estou ciente do nosso acordo de respeito mutuo e higiene. Aguardo a sua confirmação!`;
     
-    return `https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(text)}`;
+    return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
   }, [data, mood, fin, lang, appliedCoupon]);
 
   const finishFlow = () => {
     vibrate([30,50]);
-    localStorage.setItem('thaly_returning_v22', 'yes');
+    // A mágica acontece aqui: ao finalizar, ele é marcado como cliente recorrente.
+    // Na próxima vez que ele recarregar o site, a caixa do presente desaparece.
+    localStorage.setItem('thaly_returning_v24', 'yes');
     setStep(5);
-    
-    // Tenta abrir direto, se o navegador bloquear, o cliente clica no botão nativo da Etapa 5
-    setTimeout(() => {
-      window.open(wppLink, '_blank');
-    }, 100);
   };
 
   return (
@@ -526,11 +523,11 @@ export default function App() {
           <button onClick={openProfile} className="text-left group outline-none py-2 flex items-center gap-3">
             <img 
               src="FmtU3Ogx_400x400.jpg" 
-              alt="Thalyson Massagens" 
+              alt="Thalyson" 
               className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg transition-transform group-hover:scale-105"
             />
             <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
-              Thalyson Massagens.
+              Thalyson.
             </span>
           </button>
           
@@ -558,9 +555,9 @@ export default function App() {
                 <Icon name="close" size={20} />
               </button>
               
-              <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt="Thalyson Massagens" />
+              <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt="Thalyson" />
               
-              <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Thalyson Massagens </h2>
+              <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Thalyson.</h2>
               <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Solteiro</p>
               
               <div className="space-y-4 text-sm text-white/70 leading-relaxed">
@@ -733,9 +730,8 @@ export default function App() {
 
               <div className="space-y-8">
                 
-                {/* LÓGICA INTELIGENTE DE DESCONTOS EXCLUDENTES */}
                 <div className="space-y-5">
-                  {/* PRESENTE DE BOAS VINDAS (SÓ APARECE SE NÃO TIVER CUPOM ATIVO) */}
+                  {/* CAIXA DE PRESENTE: Só existe se a pessoa NUNCA tiver finalizado um agendamento e não tiver cupom ativo */}
                   {!isReturningClient && !appliedCoupon && !giftApplied && (
                     <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
                       <div className="absolute -right-4 -bottom-4 opacity-5">
@@ -754,15 +750,15 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* FEEDBACK DO PRESENTE APLICADO */}
-                  {giftApplied && (
+                  {/* AVISO DO PRESENTE APLICADO */}
+                  {!isReturningClient && giftApplied && (
                     <div className="flex justify-between items-center p-4 bg-[#4ade80]/10 border border-[#4ade80]/30 rounded-sm animate-in fade-in">
                       <span className="text-[#4ade80] text-sm font-bold flex items-center gap-2"><Icon name="gift" size={16}/> {T.giftActive}</span>
                       <button onClick={() => setGiftApplied(false)} className="text-white/50 hover:text-white text-xs underline outline-none">{T.btnRemove}</button>
                     </div>
                   )}
 
-                  {/* CAIXA DE CUPOM (SÓ APARECE SE O PRESENTE NÃO ESTIVER ATIVO) */}
+                  {/* CAMPO DE CUPOM MANUAL (Some se o presente estiver em uso) */}
                   {!giftApplied && (
                     <div className="animate-in fade-in">
                       <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
@@ -860,20 +856,16 @@ export default function App() {
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl mb-4">{T.step5Title}</h1>
             <p className="text-white/60 text-sm leading-relaxed mb-6">{T.step5Desc}</p>
             
-            {/* AVISO DE DESCONTO PARA A PRÓXIMA SESSÃO */}
             <div className="bg-white/5 border border-white/10 p-5 rounded-sm mb-10 text-left">
               <div className="flex items-center gap-2 mb-2">
                 <Icon name="ticket" className="text-[#4ade80]" size={16} />
                 <p className="text-[#4ade80] text-xs font-bold uppercase tracking-widest">Para o próximo encontro</p>
               </div>
-              <p className="text-sm text-white/70">Guarde o cupom <strong className="text-white">SESSAO2</strong>. Você pode aplicar ele no nosso site para garantir 10% de desconto na sua próxima visita.</p>
+              <p className="text-sm text-white/70">Guarde o cupom <strong className="text-white">SESSAO2</strong>. Você pode aplicar ele no nosso site para garantir 8% de desconto na sua próxima visita.</p>
             </div>
 
-            {/* A SOLUÇÃO DEFINITIVA: LINK NATIVO (ANCORA) PARA O WHATSAPP. IMPOSSÍVEL O NAVEGADOR BLOQUEAR */}
             <a 
               href={wppLink} 
-              target="_blank" 
-              rel="noopener noreferrer" 
               className="bg-transparent border border-white text-white flex items-center justify-center h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none rounded-sm no-underline"
             >
               {T.btnSend}
