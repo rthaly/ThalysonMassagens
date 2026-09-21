@@ -78,8 +78,8 @@ const TEXTS = {
     total: "Valor Final",
     btnFinish: "Finalizar Pedido",
     step5Title: "Tudo Pronto.",
-    step5Desc: "A sua reserva foi gerada e o WhatsApp deve ter aberto automaticamente com os detalhes. Se o seu navegador bloqueou a janela, basta clicar no botão abaixo.",
-    btnSend: "Abrir WhatsApp",
+    step5Desc: "O seu resumo foi gerado. Para confirmar a sua reserva na minha agenda, clique no botão abaixo e me envie a mensagem no WhatsApp.",
+    btnSend: "Confirmar no WhatsApp",
     btnBack: "Voltar para o início",
   },
   EN: {
@@ -134,8 +134,8 @@ const TEXTS = {
     total: "Final Value",
     btnFinish: "Finish Order",
     step5Title: "All Set.",
-    step5Desc: "Your summary is ready and WhatsApp should have opened automatically. If your browser blocked the window, click the button below.",
-    btnSend: "Open WhatsApp",
+    step5Desc: "Your summary is ready. To confirm your booking on my schedule, click the button below and send the message on WhatsApp.",
+    btnSend: "Confirm on WhatsApp",
     btnBack: "Back to start",
   }
 };
@@ -306,8 +306,8 @@ export default function App() {
   });
 
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v20');
-    const hasBookedBefore = localStorage.getItem('thaly_returning_v20');
+    const isAdult = localStorage.getItem('thaly_adult_v21');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v21');
     
     if (isAdult === 'yes') setStep(1);
     if (hasBookedBefore === 'yes') setIsReturningClient(true);
@@ -327,14 +327,14 @@ export default function App() {
 
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v20', 'yes');
+    localStorage.setItem('thaly_adult_v21', 'yes');
     setStep(1);
   };
 
   const applyGift = () => {
     vibrate([40, 60]);
     setGiftApplied(true);
-    setAppliedCoupon(''); // Garante que se aplicar o presente, limpa o cupom
+    setAppliedCoupon('');
     setCouponInput('');
   };
 
@@ -343,7 +343,7 @@ export default function App() {
     if (CONFIG.COUPONS[code as keyof typeof CONFIG.COUPONS]) {
       vibrate([30, 50]);
       setAppliedCoupon(code);
-      setGiftApplied(false); // Garante que se aplicar o cupom, tira o presente de primeira vez
+      setGiftApplied(false);
       setCouponError(false);
     } else {
       vibrate(50);
@@ -360,7 +360,7 @@ export default function App() {
 
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v20');
+    const isAdult = localStorage.getItem('thaly_adult_v21');
     setStep(isAdult === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
   };
@@ -392,32 +392,38 @@ export default function App() {
   const isStep2Valid = data.name.trim().length > 1 && data.locType !== '' && 
     (data.locType === 'studio' || (data.locType === 'home' && data.street.trim() !== '' && data.number.trim() !== '' && data.bairro.trim() !== ''));
 
+  // CÁLCULO FINANCEIRO DETALHADO E TRANSPARENTE
   const fin = useMemo(() => {
-    let sub = mood.price;
+    let basePrice = mood.price;
     let dur = mood.min;
-    let extrasValue = 0;
     
-    if (data.extras['time']) { extrasValue += 75; dur += 30; }
-    if (data.extras['aroma']) { extrasValue += 20; }
-    sub += extrasValue;
+    let extrasTotal = 0;
+    if (data.extras['time']) { extrasTotal += 75; dur += 30; }
+    if (data.extras['aroma']) { extrasTotal += 20; }
     
-    const reqFee = data.req.trim().length > 3 ? 130 : 0;
-    sub += reqFee;
-
-    const peak = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
+    let reqFee = data.req.trim().length > 3 ? 130 : 0;
+    let peakFee = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
     
-    // Apenas UM desconto pode estar ativo
-    const discountGift = giftApplied ? 15 : 0;
+    let subTotal = basePrice + extrasTotal + reqFee;
+    
+    let discountGift = giftApplied ? 15 : 0;
     let couponDiscountValue = 0;
+    
     if (appliedCoupon) {
       const val = CONFIG.COUPONS[appliedCoupon as keyof typeof CONFIG.COUPONS];
-      couponDiscountValue = val < 1 ? Math.floor(sub * val) : val;
+      couponDiscountValue = val < 1 ? Math.floor(subTotal * val) : val;
     }
     
-    const base = Math.max(0, sub - discountGift - couponDiscountValue);
-    const pix = data.payment === 'pix' ? Math.ceil(base * 0.03) : 0;
+    let totalAfterDiscounts = Math.max(0, subTotal - discountGift - couponDiscountValue);
+    let pixDiscount = data.payment === 'pix' ? Math.ceil(totalAfterDiscounts * 0.03) : 0;
     
-    return { sub, extrasValue, peak, discountGift, reqFee, pix, couponDiscount: couponDiscountValue, total: (base - pix) + peak, dur };
+    let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
+    
+    return { 
+      basePrice, extrasTotal, reqFee, peakFee, discountGift, 
+      couponDiscount: couponDiscountValue, pixDiscount, 
+      total: finalTotal, dur 
+    };
   }, [mood, data, giftApplied, appliedCoupon]);
 
   const days = useMemo(() => Array.from({length: 15}, (_, i) => {
@@ -432,7 +438,8 @@ export default function App() {
     return s;
   };
 
-  const sendWhatsApp = () => {
+  // GERAÇÃO DO LINK DO WHATSAPP REFINADA E ELEGANTE
+  const wppLink = useMemo(() => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
     const ext = Object.keys(data.extras).filter(k=>data.extras[k]).map(k=>EXTRAS.find(e=>e.id===k)?.[lang].label).join(', ');
     
@@ -442,30 +449,53 @@ export default function App() {
 
     const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
-    const text = 
-      `Oi Thalyson. Finalizei minha reserva no site e vim confirmar nosso encontro.\n\n` +
-      
-      `*Quem:* ${data.name}\n` +
-      `*O que:* ${mood[lang].title} (${mood[lang].service})\n` +
-      `*Quando:* ${dStr} às ${data.time} (aprox. ${fin.dur} min)\n` +
-      `*Onde:* ${mapsLink}\n\n` +
-      
-      (ext ? `*Adicionais:* ${ext}\n` : '') +
-      (data.req.trim() ? `*Preferência para hoje:* "${data.req.trim()}"\n\n` : (ext ? '\n' : '')) +
-      
-      `*Valor:* ${formatMoney(fin.total)} (${paymentMethod})\n\n` +
-      
-      `Estou ciente e de acordo com as regras de higiene e respeito mutuo. Aguardo sua confirmação.`;
+    let text = `Oi Thalyson, tudo bem? Finalizei a minha reserva no site e vim confirmar o nosso encontro.\n\n`;
     
-    window.open(`https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(text)}`, '_blank');
-  };
+    text += `*QUEM VEM:* ${data.name}\n\n`;
+    
+    text += `*A EXPERIÊNCIA:*\n`;
+    text += `• ${mood[lang].title} (${mood[lang].service})\n`;
+    text += `_“${mood[lang].desc}”_\n\n`;
+
+    text += `*QUANDO E ONDE:*\n`;
+    text += `• Data: ${dStr} às ${data.time}\n`;
+    text += `• Duração: até ${fin.dur} min\n`;
+    text += `• Local: ${mapsLink}\n\n`;
+
+    if (ext || data.req.trim()) {
+      text += `*DETALHES DA SESSÃO:*\n`;
+      if (ext) text += `• Adicionais: ${ext}\n`;
+      if (data.req.trim()) text += `• Pedido especial: "${data.req.trim()}"\n`;
+      text += `\n`;
+    }
+
+    text += `*O INVESTIMENTO:*\n`;
+    text += `• Valor base: ${formatMoney(fin.basePrice)}\n`;
+    if (fin.extrasTotal > 0) text += `• Adicionais extras: + ${formatMoney(fin.extrasTotal)}\n`;
+    if (fin.reqFee > 0) text += `• Taxa de pedido: + ${formatMoney(fin.reqFee)}\n`;
+    if (fin.peakFee > 0) text += `• Deslocamento: + ${formatMoney(fin.peakFee)}\n`;
+    if (fin.discountGift > 0) text += `• Presente de 1ª vez: - ${formatMoney(fin.discountGift)}\n`;
+    if (fin.couponDiscount > 0) text += `• Cupom (${appliedCoupon}): - ${formatMoney(fin.couponDiscount)}\n`;
+    if (fin.pixDiscount > 0) text += `• Desconto Pix: - ${formatMoney(fin.pixDiscount)}\n`;
+    text += `*Valor Final:* ${formatMoney(fin.total)} (via ${paymentMethod})\n\n`;
+
+    text += `*PRÓXIMA SESSÃO:*\n`;
+    text += `Já deixei anotado o cupom SESSAO2 para garantir 10% de desconto na minha próxima visita.\n\n`;
+
+    text += `Estou ciente do nosso acordo de respeito mutuo e higiene. Aguardo a sua confirmação!`;
+    
+    return `https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(text)}`;
+  }, [data, mood, fin, lang, appliedCoupon]);
 
   const finishFlow = () => {
     vibrate([30,50]);
-    // Salva permanentemente no navegador que a pessoa já é cliente
-    localStorage.setItem('thaly_returning_v20', 'yes');
-    sendWhatsApp();
+    localStorage.setItem('thaly_returning_v21', 'yes');
     setStep(5);
+    
+    // Tenta abrir direto, se o navegador bloquear, o cliente clica no botão da Etapa 5
+    setTimeout(() => {
+      window.open(wppLink, '_blank');
+    }, 100);
   };
 
   return (
@@ -762,13 +792,13 @@ export default function App() {
                 </div>
 
                 <div className="pt-8 border-t border-white/10">
-                  <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subBase}</span><span>{formatMoney(mood.price)}</span></div>
-                  {fin.extrasValue > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasValue)}</span></div>}
+                  <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subBase}</span><span>{formatMoney(fin.basePrice)}</span></div>
+                  {fin.extrasTotal > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasTotal)}</span></div>}
                   {fin.reqFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subReq}</span><span>+{formatMoney(fin.reqFee)}</span></div>}
                   {fin.discountGift > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discountGift)}</span></div>}
                   {fin.couponDiscount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subCoupon}</span><span>-{formatMoney(fin.couponDiscount)}</span></div>}
-                  {fin.peak > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peak)}</span></div>}
-                  {fin.pix > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pix)}</span></div>}
+                  {fin.peakFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peakFee)}</span></div>}
+                  {fin.pixDiscount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pixDiscount)}</span></div>}
                   
                   <div className="flex justify-between items-end mt-8 mb-10">
                     <span className="text-sm uppercase tracking-widest text-white/50">{T.total}</span>
@@ -800,9 +830,16 @@ export default function App() {
               <p className="text-sm text-white/70">Guarde o cupom <strong className="text-white">SESSAO2</strong>. Você pode aplicar ele no nosso site para garantir 10% de desconto na sua próxima visita.</p>
             </div>
 
-            <button onClick={sendWhatsApp} className="bg-transparent border border-white text-white h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none rounded-sm">
+            {/* A SOLUÇÃO: LINK NATIVO QUE NÃO É BLOQUEADO PELO NAVEGADOR */}
+            <a 
+              href={wppLink} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="bg-transparent border border-white text-white flex items-center justify-center h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none rounded-sm no-underline"
+            >
               {T.btnSend}
-            </button>
+            </a>
+
             <button onClick={resetFlow} className="mt-8 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors outline-none py-2">
               {T.btnBack}
             </button>
