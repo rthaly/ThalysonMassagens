@@ -276,6 +276,7 @@ const CinematicStyles = memo(() => (
 // ==================================================================================
 export default function App() {
   const [step, setStep] = useState(0); 
+  const [isReturningClient, setIsReturningClient] = useState(false);
   const [giftApplied, setGiftApplied] = useState(false);
   const [lang, setLang] = useState<'PT' | 'EN'>('PT');
   
@@ -305,10 +306,11 @@ export default function App() {
   });
 
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v19');
-    const hasGift = localStorage.getItem('thaly_gift_v19');
+    const isAdult = localStorage.getItem('thaly_adult_v20');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v20');
+    
     if (isAdult === 'yes') setStep(1);
-    if (hasGift === 'yes') setGiftApplied(true);
+    if (hasBookedBefore === 'yes') setIsReturningClient(true);
   }, []);
 
   useEffect(() => {
@@ -325,14 +327,15 @@ export default function App() {
 
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v19', 'yes');
+    localStorage.setItem('thaly_adult_v20', 'yes');
     setStep(1);
   };
 
   const applyGift = () => {
     vibrate([40, 60]);
-    localStorage.setItem('thaly_gift_v19', 'yes');
     setGiftApplied(true);
+    setAppliedCoupon(''); // Garante que se aplicar o presente, limpa o cupom
+    setCouponInput('');
   };
 
   const handleApplyCoupon = () => {
@@ -340,6 +343,7 @@ export default function App() {
     if (CONFIG.COUPONS[code as keyof typeof CONFIG.COUPONS]) {
       vibrate([30, 50]);
       setAppliedCoupon(code);
+      setGiftApplied(false); // Garante que se aplicar o cupom, tira o presente de primeira vez
       setCouponError(false);
     } else {
       vibrate(50);
@@ -356,7 +360,7 @@ export default function App() {
 
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v19');
+    const isAdult = localStorage.getItem('thaly_adult_v20');
     setStep(isAdult === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
   };
@@ -401,19 +405,19 @@ export default function App() {
     sub += reqFee;
 
     const peak = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
-    const discount = giftApplied ? 15 : 0;
     
-    // Cálculo inteligente de cupom (Porcentagem ou Fixo)
+    // Apenas UM desconto pode estar ativo
+    const discountGift = giftApplied ? 15 : 0;
     let couponDiscountValue = 0;
     if (appliedCoupon) {
       const val = CONFIG.COUPONS[appliedCoupon as keyof typeof CONFIG.COUPONS];
       couponDiscountValue = val < 1 ? Math.floor(sub * val) : val;
     }
     
-    const base = Math.max(0, sub - discount - couponDiscountValue);
+    const base = Math.max(0, sub - discountGift - couponDiscountValue);
     const pix = data.payment === 'pix' ? Math.ceil(base * 0.03) : 0;
     
-    return { sub, extrasValue, peak, discount, reqFee, pix, couponDiscount: couponDiscountValue, total: (base - pix) + peak, dur };
+    return { sub, extrasValue, peak, discountGift, reqFee, pix, couponDiscount: couponDiscountValue, total: (base - pix) + peak, dur };
   }, [mood, data, giftApplied, appliedCoupon]);
 
   const days = useMemo(() => Array.from({length: 15}, (_, i) => {
@@ -438,7 +442,6 @@ export default function App() {
 
     const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
-    // MENSAGEM LIMPA E HUMANA
     const text = 
       `Oi Thalyson. Finalizei minha reserva no site e vim confirmar nosso encontro.\n\n` +
       
@@ -455,6 +458,14 @@ export default function App() {
       `Estou ciente e de acordo com as regras de higiene e respeito mutuo. Aguardo sua confirmação.`;
     
     window.open(`https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const finishFlow = () => {
+    vibrate([30,50]);
+    // Salva permanentemente no navegador que a pessoa já é cliente
+    localStorage.setItem('thaly_returning_v20', 'yes');
+    sendWhatsApp();
+    setStep(5);
   };
 
   return (
@@ -677,8 +688,8 @@ export default function App() {
 
               <div className="space-y-8">
                 
-                {/* CAIXA DE CORTESIA */}
-                {!giftApplied && (
+                {/* CAIXA DE CORTESIA SÓ APARECE SE NÃO FOR CLIENTE RECORRENTE E SE AINDA NÃO TIVER APLICADO O PRESENTE */}
+                {!isReturningClient && !giftApplied && (
                   <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
                     <div className="absolute -right-4 -bottom-4 opacity-5">
                       <Icon name="gift" size={120} />
@@ -754,7 +765,7 @@ export default function App() {
                   <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subBase}</span><span>{formatMoney(mood.price)}</span></div>
                   {fin.extrasValue > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasValue)}</span></div>}
                   {fin.reqFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subReq}</span><span>+{formatMoney(fin.reqFee)}</span></div>}
-                  {fin.discount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discount)}</span></div>}
+                  {fin.discountGift > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discountGift)}</span></div>}
                   {fin.couponDiscount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subCoupon}</span><span>-{formatMoney(fin.couponDiscount)}</span></div>}
                   {fin.peak > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peak)}</span></div>}
                   {fin.pix > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pix)}</span></div>}
@@ -764,7 +775,7 @@ export default function App() {
                     <span style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl text-white">{formatMoney(fin.total)}</span>
                   </div>
 
-                  <button disabled={!data.payment} onClick={() => { vibrate([30,50]); sendWhatsApp(); setStep(5); }} className="bg-white text-black h-16 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none rounded-sm shadow-xl shadow-white/10">
+                  <button disabled={!data.payment} onClick={finishFlow} className="bg-white text-black h-16 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none rounded-sm shadow-xl shadow-white/10">
                     {T.btnFinish}
                   </button>
                 </div>
@@ -780,7 +791,7 @@ export default function App() {
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl mb-4">{T.step5Title}</h1>
             <p className="text-white/60 text-sm leading-relaxed mb-6">{T.step5Desc}</p>
             
-            {/* NOVO AVISO DE DESCONTO PARA A PRÓXIMA SESSÃO */}
+            {/* AVISO DE DESCONTO PARA A PRÓXIMA SESSÃO */}
             <div className="bg-white/5 border border-white/10 p-5 rounded-sm mb-10 text-left">
               <div className="flex items-center gap-2 mb-2">
                 <Icon name="ticket" className="text-[#4ade80]" size={16} />
