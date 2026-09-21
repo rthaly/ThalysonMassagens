@@ -57,9 +57,12 @@ const TEXTS = {
     giftTitle: "Presente Liberado",
     giftDesc: "Como é sua primeira vez marcando por aqui, deixei um pequeno desconto no valor final.",
     giftBtn: "Desbloquear Cortesia (R$ 15)",
+    giftActive: "Presente de 1ª vez ativo",
     couponLabel: "Tem um cupom?",
     couponPlace: "Digite o código",
     couponBtn: "Aplicar",
+    couponActive: "aplicado com sucesso",
+    btnRemove: "Remover",
     addons: "Vontades Extras (Hoje)",
     reqLabel: "Tem algum fetiche ou pedido?",
     reqPlace: "O que você quer que role hoje?",
@@ -113,9 +116,12 @@ const TEXTS = {
     giftTitle: "Gift Unlocked",
     giftDesc: "Since it is your first time booking here, I unlocked a small discount on the final amount.",
     giftBtn: "Unlock Courtesy (R$ 15)",
+    giftActive: "1st time gift active",
     couponLabel: "Have a coupon?",
     couponPlace: "Enter code",
     couponBtn: "Apply",
+    couponActive: "applied successfully",
+    btnRemove: "Remove",
     addons: "Extra Desires (Today)",
     reqLabel: "Any fetish or special request?",
     reqPlace: "What do you want to happen today?",
@@ -305,9 +311,10 @@ export default function App() {
     req: '', payment: ''
   });
 
+  // Atualizei a versão do localStorage para v22 para resetar os testes
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v21');
-    const hasBookedBefore = localStorage.getItem('thaly_returning_v21');
+    const isAdult = localStorage.getItem('thaly_adult_v22');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v22');
     
     if (isAdult === 'yes') setStep(1);
     if (hasBookedBefore === 'yes') setIsReturningClient(true);
@@ -325,9 +332,17 @@ export default function App() {
     }
   }, [step, isProfileOpen]);
 
+  // FUNÇÃO PARA ROLAR A TELA QUANDO O TECLADO DO CELULAR ABRIR
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const target = e.target;
+    setTimeout(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 400); // 400ms para dar tempo do teclado animar até o topo
+  };
+
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v21', 'yes');
+    localStorage.setItem('thaly_adult_v22', 'yes');
     setStep(1);
   };
 
@@ -360,7 +375,7 @@ export default function App() {
 
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v21');
+    const isAdult = localStorage.getItem('thaly_adult_v22');
     setStep(isAdult === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
   };
@@ -489,10 +504,10 @@ export default function App() {
 
   const finishFlow = () => {
     vibrate([30,50]);
-    localStorage.setItem('thaly_returning_v21', 'yes');
+    localStorage.setItem('thaly_returning_v22', 'yes');
     setStep(5);
     
-    // Tenta abrir direto, se o navegador bloquear, o cliente clica no botão da Etapa 5
+    // Tenta abrir direto, se o navegador bloquear, o cliente clica no botão nativo da Etapa 5
     setTimeout(() => {
       window.open(wppLink, '_blank');
     }, 100);
@@ -637,7 +652,7 @@ export default function App() {
 
               <div className="space-y-6">
                 <div>
-                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full modern-input text-lg font-medium" />
+                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} onFocus={handleInputFocus} className="w-full modern-input text-lg font-medium" />
                 </div>
 
                 <div className="pt-4">
@@ -652,13 +667,13 @@ export default function App() {
                 
                 {data.locType === 'home' && (
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                    <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full modern-input" />
-                    <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full modern-input" />
+                    <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} onFocus={handleInputFocus} className="w-full modern-input" />
+                    <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} onFocus={handleInputFocus} className="w-full modern-input" />
                     <div className="flex gap-4">
-                      <input ref={numberInputRef} type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 modern-input" />
-                      <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 modern-input" />
+                      <input ref={numberInputRef} type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} onFocus={handleInputFocus} className="w-1/3 modern-input" />
+                      <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} onFocus={handleInputFocus} className="w-2/3 modern-input" />
                     </div>
-                    <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full modern-input" />
+                    <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} onFocus={handleInputFocus} className="w-full modern-input" />
                   </div>
                 )}
               </div>
@@ -718,44 +733,68 @@ export default function App() {
 
               <div className="space-y-8">
                 
-                {/* CAIXA DE CORTESIA SÓ APARECE SE NÃO FOR CLIENTE RECORRENTE E SE AINDA NÃO TIVER APLICADO O PRESENTE */}
-                {!isReturningClient && !giftApplied && (
-                  <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
-                    <div className="absolute -right-4 -bottom-4 opacity-5">
-                      <Icon name="gift" size={120} />
-                    </div>
-                    <div className="relative z-10 w-full">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Icon name="gift" className="text-[#4ade80]" size={18} />
-                        <h3 className="text-[#4ade80] font-bold uppercase tracking-widest text-xs">{T.giftTitle}</h3>
+                {/* LÓGICA INTELIGENTE DE DESCONTOS EXCLUDENTES */}
+                <div className="space-y-5">
+                  {/* PRESENTE DE BOAS VINDAS (SÓ APARECE SE NÃO TIVER CUPOM ATIVO) */}
+                  {!isReturningClient && !appliedCoupon && !giftApplied && (
+                    <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
+                      <div className="absolute -right-4 -bottom-4 opacity-5">
+                        <Icon name="gift" size={120} />
                       </div>
-                      <p className="text-sm text-[#4ade80]/90 mb-5 leading-relaxed">{T.giftDesc}</p>
-                      <button onClick={applyGift} className="bg-[#4ade80] text-black w-full text-xs font-bold px-5 py-3.5 uppercase tracking-widest outline-none rounded-sm transition-transform active:scale-95 shadow-lg shadow-[#4ade80]/20">
-                        {T.giftBtn}
-                      </button>
+                      <div className="relative z-10 w-full">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Icon name="gift" className="text-[#4ade80]" size={18} />
+                          <h3 className="text-[#4ade80] font-bold uppercase tracking-widest text-xs">{T.giftTitle}</h3>
+                        </div>
+                        <p className="text-sm text-[#4ade80]/90 mb-5 leading-relaxed">{T.giftDesc}</p>
+                        <button onClick={applyGift} className="bg-[#4ade80] text-black w-full text-xs font-bold px-5 py-3.5 uppercase tracking-widest outline-none rounded-sm transition-transform active:scale-95 shadow-lg shadow-[#4ade80]/20">
+                          {T.giftBtn}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* CAIXA DE CUPOM */}
-                <div>
-                  <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
-                  <div className="flex gap-3">
-                    <input 
-                      type="text" 
-                      placeholder={T.couponPlace} 
-                      value={couponInput} 
-                      onChange={e => setCouponInput(e.target.value)}
-                      className={`flex-1 bg-white/5 border ${couponError ? 'border-red-500/50' : 'border-white/10'} text-white rounded-sm px-4 outline-none focus:border-white/50 transition-colors uppercase`}
-                    />
-                    <button 
-                      onClick={handleApplyCoupon}
-                      className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none"
-                    >
-                      {T.couponBtn}
-                    </button>
-                  </div>
-                  {appliedCoupon && <p className="text-xs text-[#4ade80] mt-2">Cupom {appliedCoupon} aplicado: menos {formatMoney(fin.couponDiscount)}</p>}
+                  {/* FEEDBACK DO PRESENTE APLICADO */}
+                  {giftApplied && (
+                    <div className="flex justify-between items-center p-4 bg-[#4ade80]/10 border border-[#4ade80]/30 rounded-sm animate-in fade-in">
+                      <span className="text-[#4ade80] text-sm font-bold flex items-center gap-2"><Icon name="gift" size={16}/> {T.giftActive}</span>
+                      <button onClick={() => setGiftApplied(false)} className="text-white/50 hover:text-white text-xs underline outline-none">{T.btnRemove}</button>
+                    </div>
+                  )}
+
+                  {/* CAIXA DE CUPOM (SÓ APARECE SE O PRESENTE NÃO ESTIVER ATIVO) */}
+                  {!giftApplied && (
+                    <div className="animate-in fade-in">
+                      <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
+                      <div className="flex gap-3">
+                        <input 
+                          type="text" 
+                          placeholder={T.couponPlace} 
+                          value={couponInput} 
+                          onChange={e => setCouponInput(e.target.value)}
+                          onFocus={handleInputFocus}
+                          disabled={!!appliedCoupon}
+                          className={`flex-1 bg-white/5 border ${couponError ? 'border-red-500/50' : 'border-white/10'} text-white rounded-sm px-4 outline-none focus:border-white/50 transition-colors uppercase disabled:opacity-50`}
+                        />
+                        {!appliedCoupon ? (
+                          <button 
+                            onClick={handleApplyCoupon}
+                            className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none"
+                          >
+                            {T.couponBtn}
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => { setAppliedCoupon(''); setCouponInput(''); }}
+                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none"
+                          >
+                            {T.btnRemove}
+                          </button>
+                        )}
+                      </div>
+                      {appliedCoupon && <p className="text-xs text-[#4ade80] mt-3">✅ Cupom <strong>{appliedCoupon}</strong> {T.couponActive} (-{formatMoney(fin.couponDiscount)})</p>}
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -778,7 +817,7 @@ export default function App() {
                     <p className="text-xs text-white/50 uppercase tracking-widest">{T.reqLabel}</p>
                     <span className="text-xs font-bold text-white/60">+ R$ 130</span>
                   </div>
-                  <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full modern-input text-sm" />
+                  <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} onFocus={handleInputFocus} className="w-full modern-input text-sm" />
                   <p className="text-[10px] text-white/40 mt-2 leading-relaxed">{T.reqDesc}</p>
                 </div>
 
@@ -830,7 +869,7 @@ export default function App() {
               <p className="text-sm text-white/70">Guarde o cupom <strong className="text-white">SESSAO2</strong>. Você pode aplicar ele no nosso site para garantir 10% de desconto na sua próxima visita.</p>
             </div>
 
-            {/* A SOLUÇÃO: LINK NATIVO QUE NÃO É BLOQUEADO PELO NAVEGADOR */}
+            {/* A SOLUÇÃO DEFINITIVA: LINK NATIVO (ANCORA) PARA O WHATSAPP. IMPOSSÍVEL O NAVEGADOR BLOQUEAR */}
             <a 
               href={wppLink} 
               target="_blank" 
