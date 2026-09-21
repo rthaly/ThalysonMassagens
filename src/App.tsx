@@ -523,11 +523,11 @@ export default function App() {
           <button onClick={openProfile} className="text-left group outline-none py-2 flex items-center gap-3">
             <img 
               src="FmtU3Ogx_400x400.jpg" 
-              alt="Thalyson" 
+              alt="Terapeuta Thalyson" 
               className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg transition-transform group-hover:scale-105"
             />
             <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
-              Thalyson.
+              Thalyson Massagens
             </span>
           </button>
           
@@ -555,9 +555,9 @@ export default function App() {
                 <Icon name="close" size={20} />
               </button>
               
-              <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt="Thalyson" />
+              <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt=" /Terapeuta Thalyson" />
               
-              <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Thalyson.</h2>
+              <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Terapeuta Thalyson.</h2>
               <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Solteiro</p>
               
               <div className="space-y-4 text-sm text-white/70 leading-relaxed">
