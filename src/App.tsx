@@ -773,4 +773,813 @@ export default function App() {
     setBooking((b) => ({ ...b, manualCouponValue: 0, manualCoupon: '' }));
   }, []);
 
-  const { isLoadingCep, handleCep } = useDebouncedCepLookup(setBooking
+  const { isLoadingCep, handleCep } = useDebouncedCepLookup(setBooking);
+  const financials = useFinancials(booking);
+
+  const scrollToRef = useCallback((ref: React.RefObject<HTMLDivElement>) => {
+    if (!ref.current) return;
+    const y = ref.current.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }, []);
+
+  const currentStepInfo = useMemo(() => {
+    const hasAddress =
+      (booking.locationType === 'home' && !!booking.address.street) ||
+      (booking.locationType === 'hotel' && !!booking.address.placeName) ||
+      booking.locationType === 'motel';
+
+    if (booking.cart.length === 0)
+      return { label: 'Escolha um serviço', action: () => scrollToRef(servicesRef), ready: false };
+
+    if (!booking.name || !booking.age || !booking.locationType || !hasAddress)
+      return { label: 'Preencha seus dados', action: () => scrollToRef(locationRef), ready: false };
+
+    if (!booking.date || !booking.time)
+      return { label: 'Escolha data e horário', action: () => scrollToRef(timeRef), ready: false };
+
+    if (!booking.payment)
+      return { label: 'Selecione o pagamento', action: () => scrollToRef(checkoutRef), ready: false };
+
+    return {
+      label: 'Finalizar e Enviar',
+      action: () => setBooking((b) => ({ ...b, finished: true })),
+      ready: true,
+    };
+  }, [booking, scrollToRef]);
+
+  // ---- Calendar & WhatsApp ----------------------------------------------------
+  const handleSaveToCalendar = useCallback(() => {
+    if (!booking.date || !booking.time) return;
+    const [h, m] = booking.time.split(':').map(Number);
+    const start = new Date(booking.date);
+    start.setHours(h, m, 0, 0);
+    const end = new Date(start.getTime() + financials.duration * 60000);
+
+    const loc =
+      booking.locationType === 'home'
+        ? `${booking.address.street}, ${booking.address.number}`
+        : booking.locationType === 'hotel'
+        ? booking.address.placeName
+        : 'Bela Vista, São Paulo';
+
+    downloadICS('sessao-thalyson.ics', buildICS({ start, end, location: loc }));
+  }, [booking, financials.duration]);
+
+  const sendWhatsApp = useCallback(() => {
+    const f = financials;
+    const dateStr = booking.date
+      ? new Date(booking.date).toLocaleDateString('pt-BR')
+      : '';
+
+    const servicesText = booking.cart.map((item) => `▪️ ${item.title}`).join('\n');
+
+    const locTxt =
+      booking.locationType === 'home'
+        ? `🏡 *Casa:* ${booking.address.street}, ${booking.address.number}${
+            booking.address.comp ? ` (${booking.address.comp})` : ''
+          }`
+        : booking.locationType === 'motel'
+        ? `🔑 *Suíte:* Bela Vista`
+        : `🏨 *Hotel:* ${booking.address.placeName} (Qto: ${booking.address.comp || '-'})`;
+
+    const extrasList = Object.keys(booking.extras)
+      .filter((k) => booking.extras[k])
+      .map((k) => `➕ ${DATA.extras.find((e) => e.id === k)?.label}`)
+      .join('\n');
+
+    const fetishText = booking.fetishRequest.trim()
+      ? `\n\n⛓️ *Fetiche / Pedido Especial (+R$ 130,00):*\n"${booking.fetishRequest.trim()}"\n_(Aguardando avaliação do terapeuta)_`
+      : '';
+
+    const msg = `*PEDIDO DE SESSÃO*\n\n👤 *Nome:* ${booking.name} (${booking.age} anos)\n📅 *Quando:* ${dateStr} às ${booking.time}\n⏳ *Duração:* ~${f.duration} min\n\n*O que faremos:*\n${servicesText}\n${
+      extrasList ? `\n*Extras:*\n${extrasList}\n` : ''
+    }\n*Onde:* \n${locTxt}${fetishText}\n\n*Pagamento:* ${booking.payment.toUpperCase()}\n💰 *Valor Total:* ${formatMoney(
+      f.total
+    )}\n\n_Estou ciente das regras de higiene e limites da sessão._`;
+
+    window.open(
+      `https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(msg)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  }, [booking, financials]);
+
+  // ---- Days & Time slots ------------------------------------------------------
+  const days = useMemo(() => {
+    const today = new Date();
+    return Array.from({ length: 30 }, (_, i) => {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      return d;
+    });
+  }, []);
+
+  const availableTimeSlots = useMemo(() => {
+    if (!booking.date) return [];
+    const slots: string[] = [];
+    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
+      slots.push(`${pad(i)}:00`);
+    }
+    const now = new Date();
+    if (isSameDay(booking.date, now)) {
+      return slots.filter((t) => parseInt(t.split(':')[0], 10) > now.getHours());
+    }
+    return slots;
+  }, [booking.date]);
+
+  // ---- Early returns ----------------------------------------------------------
+  if (isAdult === null) return null;
+  if (isAdult === false) return <AgeGateModal onConfirm={handleAdultConfirm} />;
+  if (!giftDone) return <PremiumGiftReveal onWin={handleWinGift} />;
+
+  if (booking.finished) {
+    return (
+      <>
+        <GlobalStyles />
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center animate-scale-in">
+          <div className="w-24 h-24 bg-[#25D366]/20 text-[#25D366] rounded-full flex items-center justify-center mb-6 border border-[#25D366]/30">
+            <Icon name="check" size={40} />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-3">Resumo Concluído!</h2>
+          <p className="text-zinc-400 text-sm mb-10 max-w-sm leading-relaxed">
+            Sua solicitação está pronta. Para finalizar e garantir nossa discrição, adicione
+            na sua agenda e me envie a mensagem.
+          </p>
+
+          <div className="w-full max-w-sm flex flex-col gap-4">
+            <button
+              onClick={handleSaveToCalendar}
+              className="w-full bg-white/10 text-white font-bold h-14 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/20 transition-colors border border-white/20"
+            >
+              <Icon name="calendar" size={20} /> Salvar no meu Calendário
+            </button>
+
+            <button
+              onClick={sendWhatsApp}
+              className="w-full bg-[#25D366] text-black font-bold h-14 rounded-2xl flex items-center justify-center gap-2 hover:bg-green-500 transition-colors shadow-[0_0_20px_rgba(37,211,102,0.2)]"
+            >
+              <Icon name="message" size={20} /> Enviar Pedido no WhatsApp
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  const items = activeTab === 'single' ? DATA.services : DATA.packs;
+
+  return (
+    <>
+      <GlobalStyles />
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 pt-6 pb-40 flex flex-col gap-14">
+        {/* HEADER */}
+        <header className="flex justify-end animate-fade-up">
+          <a
+            href={CONFIG.INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+            className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-zinc-400 hover:text-pink-500 transition-colors"
+          >
+            <Icon name="instagram" size={18} />
+          </a>
+        </header>
+
+        {/* HERO */}
+        <section className="animate-fade-up space-y-5 -mt-6">
+          <div className="flex flex-col items-center text-center">
+            <div className="relative mb-5">
+              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-amber-500/50 shadow-[0_0_20px_rgba(251,191,36,0.2)]">
+                <img
+                  src="https://i.ibb.co/gZxp3Dwz/Screenshot-1.png"
+                  alt="Thalyson"
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-2 -right-2 bg-emerald-500 border-2 border-[#09090b] text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse-soft" /> Ativo
+              </div>
+            </div>
+
+            <h1 className="text-3xl font-bold text-white tracking-tight mb-2">
+              Thalyson Massagens
+            </h1>
+            <p className="text-zinc-400 text-sm mb-5 leading-relaxed max-w-sm">
+              Sou eu mesmo quem atende. Um espaço simples na Bela Vista, focado exclusivamente
+              no seu relaxamento.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-2">
+              <span className="flex items-center gap-1.5 glass-panel text-xs font-bold text-zinc-300 px-3 py-2 rounded-xl">
+                <Icon name="star" size={14} className="text-amber-500" /> 5.0
+              </span>
+              <span className="flex items-center gap-1.5 glass-panel text-xs font-bold text-zinc-300 px-3 py-2 rounded-xl">
+                <Icon name="user-check" size={14} className="text-blue-400" /> 142 Sessões
+              </span>
+              <span className="flex items-center gap-1.5 glass-panel text-xs font-bold text-zinc-300 px-3 py-2 rounded-xl">
+                <Icon name="map-pin" size={14} className="text-emerald-400" /> Bela Vista
+              </span>
+              <span className="flex items-center gap-1.5 glass-panel text-xs font-bold text-zinc-300 px-3 py-2 rounded-xl">
+                <Icon name="shield" size={14} className="text-purple-400" /> Sigilo Total
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* 1. SERVIÇOS */}
+        <section ref={servicesRef} className="animate-fade-up">
+          <SectionHeader
+            step={1}
+            title="Sessões"
+            subtitle="Leia os detalhes tangíveis e escolha sua experiência."
+          />
+
+          <div className="flex gap-2 p-1.5 glass-panel rounded-2xl mb-6 w-full sm:w-fit">
+            <button
+              onClick={() => setActiveTab('single')}
+              className={`flex-1 px-6 py-2.5 rounded-xl text-xs font-bold transition-colors ${
+                activeTab === 'single' ? 'bg-white text-black' : 'text-zinc-400'
+              }`}
+            >
+              Avulsas
+            </button>
+            <button
+              onClick={() => setActiveTab('packs')}
+              className={`flex-1 px-6 py-2.5 rounded-xl text-xs font-bold transition-colors ${
+                activeTab === 'packs' ? 'bg-amber-500 text-black' : 'text-zinc-400'
+              }`}
+            >
+              Combos Mensais
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {items.map((item) => {
+              const sel = booking.cart.some((c) => c.id === item.id);
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleToggleItem(item)}
+                  className={`text-left p-5 sm:p-6 rounded-3xl border transition-all flex flex-col ${
+                    sel
+                      ? 'bg-amber-500/10 border-amber-500/50 shadow-[0_4px_20px_rgba(251,191,36,0.1)]'
+                      : 'glass-panel hover:border-white/20'
+                  }`}
+                >
+                  <div className="flex items-start gap-4 mb-3">
+                    <div
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
+                        sel ? 'bg-amber-500 text-black' : 'bg-white/10 text-white'
+                      }`}
+                    >
+                      <Icon name={item.icon} size={24} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-500 block truncate">
+                          {item.tag}
+                        </span>
+                        {sel && <Icon name="check" size={20} className="text-amber-500 shrink-0" />}
+                      </div>
+                      <h3 className="text-white font-bold text-xl mb-1 leading-tight">
+                        {item.title}
+                      </h3>
+                      <p className="text-zinc-400 text-sm font-medium">{item.desc}</p>
+                    </div>
+                  </div>
+
+                  {item.details && (
+                    <div className="mt-3 mb-5 space-y-2 pl-[4.25rem]">
+                      {item.details.map((detail, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-xs text-zinc-300">
+                          <span className="text-amber-500 mt-0.5">•</span>
+                          <span className="leading-relaxed">{detail}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-end justify-between mt-2 pt-4 border-t border-white/5 pl-[4.25rem]">
+                    <span className="text-xs text-zinc-500 font-bold">
+                      Aprox. {item.min || 60} min
+                    </span>
+                    <div className="text-right">
+                      {item.fullPrice && (
+                        <span className="text-xs text-zinc-500 line-through block mb-0.5">
+                          {formatMoney(item.fullPrice)}
+                        </span>
+                      )}
+                      <span className="text-white font-bold text-xl">
+                        {formatMoney(item.price)}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* REVIEWS */}
+        <section ref={reviewsRef} className="animate-fade-up py-6 border-y border-white/10">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-white">Relatos de quem já veio</h2>
+          </div>
+          <div className="flex gap-4 overflow-x-auto snap-x scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 pb-4">
+            {DATA.reviews.map((r, i) => (
+              <div
+                key={i}
+                className="snap-center shrink-0 w-[280px] glass-panel p-5 rounded-3xl flex flex-col h-auto"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm text-white shrink-0">
+                    {r.n.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">{r.n}</p>
+                    <p className="text-xs text-zinc-500">{r.loc}</p>
+                  </div>
+                </div>
+                <div className="flex gap-1 mb-3">
+                  {Array.from({ length: 5 }, (_, idx) => (
+                    <Icon
+                      key={idx}
+                      name="star"
+                      size={12}
+                      className="text-amber-500 fill-amber-500"
+                    />
+                  ))}
+                </div>
+                <p className="text-sm text-zinc-300 leading-relaxed italic">"{r.t}"</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 2. LOCAL & DADOS */}
+        <section
+          ref={locationRef}
+          className={`transition-opacity duration-500 ${
+            booking.cart.length ? 'opacity-100' : 'opacity-30 pointer-events-none'
+          }`}
+        >
+          <SectionHeader
+            step={2}
+            title="Local e Identificação"
+            subtitle="Apenas para saber como te chamar."
+          />
+
+          <div className="glass-panel p-5 sm:p-8 rounded-3xl space-y-6">
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-2 block pl-1">
+                  Nome ou Apelido
+                </label>
+                <input
+                  type="text"
+                  value={booking.name}
+                  onChange={(e) => setBooking((b) => ({ ...b, name: e.target.value }))}
+                  className="w-full h-14 rounded-xl px-4 input-premium text-sm"
+                  placeholder="Manteremos sigilo"
+                />
+              </div>
+              <div className="w-24 shrink-0">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-2 block pl-1">
+                  Idade
+                </label>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={2}
+                  value={booking.age}
+                  onChange={(e) =>
+                    setBooking((b) => ({ ...b, age: e.target.value.replace(/\D/g, '') }))
+                  }
+                  className="w-full h-14 rounded-xl px-4 input-premium text-sm text-center"
+                  placeholder="18+"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-3 block pl-1">
+                Onde vamos nos encontrar?
+              </label>
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
+                {(
+                  [
+                    { id: 'motel', label: 'Minha Suíte' },
+                    { id: 'home', label: 'Na sua Casa' },
+                    { id: 'hotel', label: 'Em Hotel' },
+                  ] as const
+                ).map((l) => (
+                  <button
+                    key={l.id}
+                    onClick={() => setBooking((b) => ({ ...b, locationType: l.id }))}
+                    className={`py-4 px-1 sm:px-2 text-[10px] sm:text-xs font-bold rounded-2xl border transition-colors flex flex-col items-center justify-center text-center ${
+                      booking.locationType === l.id
+                        ? 'bg-amber-500 border-amber-500 text-black'
+                        : 'bg-white/5 border-white/10 text-zinc-400'
+                    }`}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+
+              {booking.locationType === 'motel' && (
+                <p className="text-xs text-amber-500 bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 font-medium leading-relaxed">
+                  Você virá até meu espaço na Bela Vista (próximo à Av. Paulista). O endereço
+                  exato é enviado pelo WhatsApp após finalizarmos.
+                </p>
+              )}
+
+              {booking.locationType === 'home' && (
+                <div className="space-y-3 animate-fade-up">
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      maxLength={9}
+                      placeholder="CEP"
+                      value={booking.address.cep}
+                      onChange={handleCep}
+                      className="w-full h-14 rounded-xl px-4 input-premium text-sm"
+                    />
+                    {isLoadingCep && (
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Rua / Avenida"
+                    value={booking.address.street}
+                    onChange={(e) =>
+                      setBooking((b) => ({
+                        ...b,
+                        address: { ...b.address, street: e.target.value },
+                      }))
+                    }
+                    className="w-full h-14 rounded-xl px-4 input-premium text-sm"
+                    disabled={isLoadingCep}
+                  />
+                  <div className="flex gap-3">
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      placeholder="Número"
+                      value={booking.address.number}
+                      onChange={(e) =>
+                        setBooking((b) => ({
+                          ...b,
+                          address: { ...b.address, number: e.target.value },
+                        }))
+                      }
+                      className="w-1/3 h-14 rounded-xl px-4 input-premium text-sm"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Apto / Bloco"
+                      value={booking.address.comp}
+                      onChange={(e) =>
+                        setBooking((b) => ({
+                          ...b,
+                          address: { ...b.address, comp: e.target.value },
+                        }))
+                      }
+                      className="w-2/3 h-14 rounded-xl px-4 input-premium text-sm"
+                    />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Bairro"
+                    value={booking.address.district}
+                    onChange={(e) =>
+                      setBooking((b) => ({
+                        ...b,
+                        address: { ...b.address, district: e.target.value },
+                      }))
+                    }
+                    className="w-full h-14 rounded-xl px-4 input-premium text-sm"
+                    disabled={isLoadingCep}
+                  />
+                </div>
+              )}
+
+              {booking.locationType === 'hotel' && (
+                <div className="space-y-3 animate-fade-up">
+                  <input
+                    type="text"
+                    placeholder="Nome do Hotel"
+                    value={booking.address.placeName}
+                    onChange={(e) =>
+                      setBooking((b) => ({
+                        ...b,
+                        address: { ...b.address, placeName: e.target.value },
+                      }))
+                    }
+                    className="w-full h-14 rounded-xl px-4 input-premium text-sm"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Quarto / Suíte"
+                    value={booking.address.comp}
+                    onChange={(e) =>
+                      setBooking((b) => ({
+                        ...b,
+                        address: { ...b.address, comp: e.target.value },
+                      }))
+                    }
+                    className="w-full h-14 rounded-xl px-4 input-premium text-sm"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* 3. DATA E HORA */}
+        <section
+          ref={timeRef}
+          className={`transition-opacity duration-500 ${
+            booking.locationType && booking.name && booking.age
+              ? 'opacity-100'
+              : 'opacity-30 pointer-events-none'
+          }`}
+        >
+          <SectionHeader
+            step={3}
+            title="Data e Horário"
+            subtitle="Trabalho todos os dias, das 09h às 22h."
+          />
+
+          <div className="flex gap-3 overflow-x-auto snap-x scrollbar-hide mb-6 -mx-4 px-4 sm:mx-0 sm:px-0 pb-2">
+            {days.map((d, i) => {
+              const sel = booking.date ? isSameDay(booking.date, d) : false;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setBooking((b) => ({ ...b, date: d, time: '' }))}
+                  className={`snap-center shrink-0 w-[72px] h-[88px] rounded-2xl border flex flex-col items-center justify-center gap-1 transition-all ${
+                    sel
+                      ? 'bg-amber-500 border-amber-500 text-black scale-105 shadow-[0_4px_15px_rgba(251,191,36,0.3)]'
+                      : 'glass-panel text-zinc-400 hover:bg-white/10'
+                  }`}
+                >
+                  <span className="text-[10px] font-bold uppercase">
+                    {d.toLocaleDateString('pt-BR', { weekday: 'short' }).slice(0, 3)}
+                  </span>
+                  <span className="text-2xl font-bold leading-none">{d.getDate()}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {booking.date && (
+            <div className="grid grid-cols-4 gap-3 animate-fade-up">
+              {availableTimeSlots.length > 0 ? (
+                availableTimeSlots.map((t) => {
+                  const sel = booking.time === t;
+                  const isRush = RUSH_HOURS.has(t) && booking.locationType !== 'motel';
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => setBooking((b) => ({ ...b, time: t }))}
+                      className={`h-14 rounded-xl text-sm font-bold border transition-colors relative flex items-center justify-center ${
+                        sel
+                          ? 'bg-amber-500 border-amber-500 text-black'
+                          : 'glass-panel text-zinc-300 hover:bg-white/10'
+                      }`}
+                    >
+                      {t}
+                      {isRush && (
+                        <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full" />
+                      )}
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="col-span-4 p-4 text-center text-zinc-500 text-sm glass-panel rounded-xl">
+                  Nenhum horário disponível para hoje.
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* 4. EXTRAS E PAGAMENTO */}
+        <section
+          ref={checkoutRef}
+          className={`transition-opacity duration-500 ${
+            booking.time ? 'opacity-100' : 'opacity-30 pointer-events-none'
+          }`}
+        >
+          <SectionHeader
+            step={4}
+            title="Extras e Pagamento"
+            subtitle="O acerto é feito no local, após a sessão."
+          />
+
+          <div className="glass-panel p-5 sm:p-8 rounded-3xl space-y-6">
+            {/* Adicionais */}
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-3 pl-1">
+                Adicionais (Opcional)
+              </p>
+              <div className="space-y-3">
+                {DATA.extras.map((ex) => {
+                  const sel = booking.extras[ex.id];
+                  return (
+                    <button
+                      key={ex.id}
+                      onClick={() => handleToggleExtra(ex.id)}
+                      className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-colors ${
+                        sel ? 'bg-amber-500/10 border-amber-500/50' : 'bg-white/5 border-white/10'
+                      }`}
+                    >
+                      <span
+                        className={`text-sm font-bold ${
+                          sel ? 'text-amber-500' : 'text-zinc-300'
+                        }`}
+                      >
+                        {ex.label}
+                      </span>
+                      <span className="text-xs font-bold text-zinc-500">
+                        +{formatMoney(ex.price)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Fetiches */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 pl-1">
+                  Fetiches / Pedidos Especiais
+                </p>
+                <span className="text-xs font-bold text-amber-500">+ R$ 130,00</span>
+              </div>
+              <p className="text-xs text-zinc-400 mb-3 pl-1 leading-relaxed">
+                Sujeito a avaliação. Descreva o que deseja. Se não for aceito no momento do
+                atendimento, esse valor não será cobrado.
+              </p>
+              <textarea
+                value={booking.fetishRequest}
+                onChange={(e) =>
+                  setBooking((b) => ({ ...b, fetishRequest: e.target.value }))
+                }
+                placeholder="Descreva seu pedido ou fetiche com clareza..."
+                className="w-full p-4 rounded-2xl input-premium text-sm min-h-[100px] resize-none"
+              />
+            </div>
+
+            {/* Cupom */}
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-2 pl-1">
+                Possui um Cupom?
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={booking.manualCoupon}
+                  onChange={(e) =>
+                    setBooking((b) => ({ ...b, manualCoupon: e.target.value }))
+                  }
+                  placeholder="Digite o código"
+                  className="flex-1 h-12 rounded-xl px-4 input-premium text-sm uppercase"
+                  disabled={booking.manualCouponValue > 0}
+                />
+                <button
+                  onClick={
+                    booking.manualCouponValue > 0 ? handleRemoveCoupon : handleApplyCoupon
+                  }
+                  className={`h-12 px-5 rounded-xl font-bold text-xs transition-colors ${
+                    booking.manualCouponValue > 0
+                      ? 'bg-red-500/20 text-red-400'
+                      : 'bg-white/10 text-white hover:bg-white/20'
+                  }`}
+                >
+                  {booking.manualCouponValue > 0 ? 'Remover' : 'Aplicar'}
+                </button>
+              </div>
+            </div>
+
+            {/* Pagamento */}
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-3 pl-1">
+                Como vai pagar no local?
+              </p>
+              <div className="flex gap-2 sm:gap-3">
+                {(
+                  [
+                    { id: 'pix', label: 'Pix (-3%)' },
+                    { id: 'card', label: 'Cartão' },
+                    { id: 'cash', label: 'Dinheiro' },
+                  ] as const
+                ).map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setBooking((b) => ({ ...b, payment: p.id }))}
+                    className={`flex-1 h-12 rounded-xl text-xs font-bold border transition-colors ${
+                      booking.payment === p.id
+                        ? 'bg-amber-500 border-amber-500 text-black'
+                        : 'bg-white/5 border-white/10 text-zinc-400'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Resumo Financeiro */}
+            <div className="pt-6 border-t border-white/10">
+              <div className="flex justify-between text-sm text-zinc-400 mb-2">
+                <span>Subtotal</span>
+                <span>{formatMoney(financials.sub - financials.fetishFee)}</span>
+              </div>
+
+              {financials.fetishFee > 0 && (
+                <div className="flex justify-between text-sm text-zinc-400 mb-2">
+                  <span>Pedido / Fetiche</span>
+                  <span>+{formatMoney(financials.fetishFee)}</span>
+                </div>
+              )}
+
+              {booking.discount > 0 && (
+                <div className="flex justify-between text-sm text-amber-500 mb-2">
+                  <span>Cortesia (Boas Vindas)</span>
+                  <span>-{formatMoney(booking.discount)}</span>
+                </div>
+              )}
+
+              {booking.manualCouponValue > 0 && (
+                <div className="flex justify-between text-sm text-amber-500 mb-2">
+                  <span>Cupom Aplicado</span>
+                  <span>-{formatMoney(booking.manualCouponValue)}</span>
+                </div>
+              )}
+
+              {financials.rushFee > 0 && (
+                <div className="flex justify-between text-sm text-zinc-400 mb-2">
+                  <span>Taxa de Pico (Deslocamento)</span>
+                  <span>+{formatMoney(financials.rushFee)}</span>
+                </div>
+              )}
+
+              {financials.pixDisc > 0 && (
+                <div className="flex justify-between text-sm text-emerald-400 mb-2">
+                  <span>Desconto Pix</span>
+                  <span>-{formatMoney(financials.pixDisc)}</span>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center mt-6">
+                <span className="text-white font-bold text-lg">Total</span>
+                <span className="text-3xl font-bold text-amber-500 tracking-tight">
+                  {formatMoney(financials.total)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="bg-[#121214] border-t border-white/5 py-10 pb-36 text-center text-zinc-500 text-xs mt-auto">
+        <div className="max-w-xl mx-auto px-6">
+          <p className="font-bold text-white mb-2">Thalyson Massagens</p>
+          <p className="mb-4 leading-relaxed">
+            Atendimento exclusivo, discreto e focado no bem-estar masculino. Não realizamos
+            serviços ilegais ou que desrespeitem nossos termos de uso e higiene.
+          </p>
+          <p>© {new Date().getFullYear()} Thalyson Massagens. Bela Vista, SP.</p>
+        </div>
+      </footer>
+
+      {/* BOTTOM STICKY CTA */}
+      <div className="fixed bottom-0 inset-x-0 p-4 sm:p-6 z-40 bg-gradient-to-t from-[#09090b] via-[#09090b]/90 to-transparent pt-12 pointer-events-none">
+        <div className="max-w-2xl mx-auto pointer-events-auto">
+          <button
+            onClick={currentStepInfo.action}
+            className={`w-full h-14 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-2xl ${
+              currentStepInfo.ready
+                ? 'bg-amber-500 text-black hover:bg-amber-400 hover:scale-[1.02]'
+                : 'glass-panel text-white hover:bg-white/10'
+            }`}
+          >
+            {currentStepInfo.label}
+            {!currentStepInfo.ready ? (
+              <Icon name="arrow-down" size={18} />
+            ) : (
+              <Icon name="check" size={18} />
+            )}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
