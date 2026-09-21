@@ -1,14 +1,3 @@
-Para criar algo **único e nunca feito antes**, precisamos abandonar o formato tradicional de "formulário de loja virtual" (onde você coloca itens no carrinho) e adotar uma **jornada sensorial e interativa**.
-
-Agendar um momento íntimo e relaxante não deve parecer uma compra na Amazon. Deve parecer o início da própria sessão.
-
-Nesta versão, criei o conceito **"Frequência"**. O design é cinematográfico, inspirado no minimalismo tátil, com textura analógica (granulado de filme) e iluminação dinâmica que muda de cor dependendo do "clima" que o cliente escolhe. A cópia (textos) segue exatamente sua diretriz: conversa direta, inteligente, sem jargões corporativos, sem exageros e sem travessões.
-
-O sistema de etapas guia o usuário por uma tela limpa, reduzindo a ansiedade e aumentando muito a conversão.
-
-Aqui está o código completo. Copie e substitua no seu ambiente:
-
-```tsx
 import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 
 // ==================================================================================
@@ -486,5 +475,3 @@ export default function App() {
     </>
   );
 }
-
-```
