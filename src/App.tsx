@@ -64,8 +64,8 @@ const TEXTS = {
     total: "Total Final",
     btnFinish: "Finalizar Pedido",
     step5Title: "Tudo Pronto.",
-    step5Desc: "O seu resumo foi gerado. Como prezo pelo sigilo, seus dados não ficam salvos em nenhum site. Envie a solicitação direto no WhatsApp para travar o seu horário e receber o endereço.",
-    btnSend: "Mandar no WhatsApp",
+    step5Desc: "O seu resumo foi gerado e o WhatsApp deve ter aberto automaticamente. Caso o seu navegador tenha bloqueado a janela (ou se quiser tentar novamente), clique no botão abaixo.",
+    btnSend: "Reenviar no WhatsApp",
     btnBack: "Voltar para o início",
     wtsNew: "NOVA SOLICITAÇÃO DE AGENDAMENTO",
     wtsId: "Identificação",
@@ -135,8 +135,8 @@ const TEXTS = {
     total: "Final Total",
     btnFinish: "Finish Order",
     step5Title: "All Set.",
-    step5Desc: "Your summary is ready. To ensure your privacy, no data is stored on this website. Send the request directly on WhatsApp to lock in your slot and get the address.",
-    btnSend: "Send on WhatsApp",
+    step5Desc: "Your summary is ready and WhatsApp should have opened automatically. If your browser blocked the window (or if you need to try again), click the button below.",
+    btnSend: "Resend on WhatsApp",
     btnBack: "Back to start",
     wtsNew: "NEW BOOKING REQUEST",
     wtsId: "Identification",
@@ -636,7 +636,7 @@ export default function App() {
               </div>
             </div>
 
-            <button disabled={!data.payment} onClick={() => { vibrate([30,50]); setStep(5); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
+            <button disabled={!data.payment} onClick={() => { vibrate([30,50]); sendWhatsApp(); setStep(5); }} className="mt-12 bg-white text-black h-14 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none">
               {T.btnFinish}
             </button>
           </div>
