@@ -10,9 +10,10 @@ const CONFIG = {
   START_HOUR: 9,
   END_HOUR: 22,
   
-  // CRIE SEUS CUPONS AQUI (Nome do Cupom : Valor de desconto em Reais)
+  // CUPONS (Valores menores que 1 são porcentagem. Ex: 0.08 = 8%. Valores maiores são Reais. Ex: 50 = R$ 50)
   COUPONS: {
-    "GOZAR10": 10,
+    "SESSAO2": 0.08,
+    "RELAXAR13": 0.13,
     "THALY20": 20,
     "BEMVINDO50": 50
   }
@@ -32,6 +33,7 @@ const TEXTS = {
     step1Label: "Etapa 01",
     step1Title: "Como você quer se sentir hoje?",
     tabSingle: "Só Hoje",
+    tabEstetica: "Estética",
     tabCombo: "Ciclos de Prazer",
     upTo: "Até",
     btnContinue: "Continuar para Local",
@@ -56,9 +58,12 @@ const TEXTS = {
     giftTitle: "Presente Liberado",
     giftDesc: "Como é sua primeira vez marcando por aqui, deixei um pequeno desconto no valor final.",
     giftBtn: "Desbloquear Cortesia (R$ 15)",
+    giftActive: "Presente de 1ª vez ativo",
     couponLabel: "Tem um cupom?",
     couponPlace: "Digite o código",
     couponBtn: "Aplicar",
+    couponActive: "aplicado com sucesso",
+    btnRemove: "Remover",
     addons: "Vontades Extras (Hoje)",
     reqLabel: "Tem algum fetiche ou pedido?",
     reqPlace: "O que você quer que role hoje?",
@@ -77,32 +82,9 @@ const TEXTS = {
     total: "Valor Final",
     btnFinish: "Finalizar Pedido",
     step5Title: "Tudo Pronto.",
-    step5Desc: "O seu resumo foi gerado e o WhatsApp deve ter aberto automaticamente. Caso o seu navegador tenha bloqueado a janela (ou se quiser tentar novamente), clique no botão abaixo.",
-    btnSend: "Reenviar no WhatsApp",
+    step5Desc: "A sua solicitação foi gerada e enviada para o WhatsApp. Caso o aplicativo não tenha aberto automaticamente, clique no botão abaixo.",
+    btnSend: "Confirmar no WhatsApp",
     btnBack: "Voltar para o início",
-    
-    // WHATSAPP TEXTS
-    wtsNew: "NOVO PEDIDO DE ENCONTRO",
-    wtsSystem: "Chegou pelo formulário",
-    wtsId: "QUEM VEM",
-    wtsName: "Nome",
-    wtsSession: "O MOMENTO",
-    wtsDate: "Data marcada",
-    wtsDur: "Tempo na maca",
-    wtsMood: "Sessão",
-    wtsServ: "Estilo",
-    wtsLoc: "ONDE VAI ROLAR",
-    wtsLocStudio: "Minha Suíte Privativa (Bela Vista, São Paulo)\n🗺️ _Te mando o endereço exato e como entrar assim que a gente confirmar._",
-    wtsLocHome: "Seu Espaço",
-    wtsAddons: "VONTADES EXTRAS",
-    wtsReq: "Pedido Específico",
-    wtsFin: "OS VALORES",
-    wtsInvestFinal: "VALOR FINAL",
-    wtsPay: "Vai pagar no",
-    wtsRulesTitle: "O NOSSO ACORDO",
-    wtsRule1: "Higiene é inegociável. Venha de banho tomado.",
-    wtsRule2: "Pode confiar, tudo que rolar fica só entre a gente.",
-    wtsRule3: "Se rolar desrespeito aos meus limites, a sessão acaba na hora.",
   },
   EN: {
     ageTitle: "Private\nEnvironment.",
@@ -111,6 +93,7 @@ const TEXTS = {
     step1Label: "Step 01",
     step1Title: "How do you want to feel today?",
     tabSingle: "Just Today",
+    tabEstetica: "Aesthetics",
     tabCombo: "Pleasure Cycles",
     upTo: "Up to",
     btnContinue: "Continue to Location",
@@ -135,9 +118,12 @@ const TEXTS = {
     giftTitle: "Gift Unlocked",
     giftDesc: "Since it is your first time booking here, I unlocked a small discount on the final amount.",
     giftBtn: "Unlock Courtesy (R$ 15)",
+    giftActive: "1st time gift active",
     couponLabel: "Have a coupon?",
     couponPlace: "Enter code",
     couponBtn: "Apply",
+    couponActive: "applied successfully",
+    btnRemove: "Remove",
     addons: "Extra Desires (Today)",
     reqLabel: "Any fetish or special request?",
     reqPlace: "What do you want to happen today?",
@@ -156,32 +142,9 @@ const TEXTS = {
     total: "Final Value",
     btnFinish: "Finish Order",
     step5Title: "All Set.",
-    step5Desc: "Your summary is ready and WhatsApp should have opened automatically. If your browser blocked the window (or if you need to try again), click the button below.",
-    btnSend: "Resend on WhatsApp",
+    step5Desc: "Your request was generated and sent to WhatsApp. If the app did not open automatically, click the button below.",
+    btnSend: "Confirm on WhatsApp",
     btnBack: "Back to start",
-    
-    // WHATSAPP TEXTS
-    wtsNew: "NEW ENCOUNTER REQUEST",
-    wtsSystem: "Arrived via form",
-    wtsId: "WHO IS COMING",
-    wtsName: "Name",
-    wtsSession: "THE MOMENT",
-    wtsDate: "Booked for",
-    wtsDur: "Time on the table",
-    wtsMood: "Session",
-    wtsServ: "Style",
-    wtsLoc: "WHERE IT HAPPENS",
-    wtsLocStudio: "My Private Suite (Bela Vista, São Paulo)\n🗺️ _I'll send the exact address once we confirm._",
-    wtsLocHome: "Your Space",
-    wtsAddons: "EXTRA DESIRES",
-    wtsReq: "Specific Request",
-    wtsFin: "THE VALUES",
-    wtsInvestFinal: "FINAL VALUE",
-    wtsPay: "Paying with",
-    wtsRulesTitle: "OUR AGREEMENT",
-    wtsRule1: "Hygiene is non-negotiable. Please shower before.",
-    wtsRule2: "You can trust me, everything stays between us.",
-    wtsRule3: "Disrespecting my boundaries ends the session immediately.",
   }
 };
 
@@ -213,7 +176,20 @@ const MOODS = [
   }
 ];
 
+const ESTETICA = [
+  {
+    id: 'depilacao_solo', color: '#0f766e', accent: '#2dd4bf', price: 107, min: 40, isCombo: false,
+    PT: { title: 'Limpeza e Cuidado', subtitle: 'Depilação na máquina e hidratação.', service: 'Estética Corporal', desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo, usando o pente 0 ou o pente 3. Finalizamos com uma hidratação com creme para acalmar a pele logo após depilar.' },
+    EN: { title: 'Clean and Care', subtitle: 'Clipper trim and moisturizing.', service: 'Body Aesthetics', desc: 'Hygienic hair trimming using clippers (guards 0 and 3). Choose up to 3 body areas. Finished with a moisturizing cream to soothe the skin after trimming.' }
+  }
+];
+
 const COMBOS = [
+  {
+    id: 'combo_depil_classica', color: '#0369a1', accent: '#38bdf8', price: 270, min: 100, isCombo: true,
+    PT: { title: 'Renovação Completa', subtitle: 'Depilação + Massagem Clássica.', service: '1 Encontro Duplo', desc: 'Primeiro fazemos o aparo na máquina em até 3 lugares usando pente 0 e 3, seguido de hidratação com creme. Logo depois, partimos para uma Massagem Clássica para destravar a musculatura do corpo todo. De R$ 287 por R$ 270 (Economia de R$ 17).' },
+    EN: { title: 'Complete Renewal', subtitle: 'Trimming + Classic Massage.', service: '1 Double Encounter', desc: 'First, machine trimming (up to 3 areas, guards 0/3) with moisturizing. Followed by a full body Classic Massage to release tension. From R$ 287 to R$ 270 (Save R$ 17).' }
+  },
   {
     id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true,
     PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Uma sessão Nuru e uma Reversa. Ambas começam relaxando e destravando seu corpo inteiro primeiro. Corpo solto, mente leve e finalização intensa. De R$ 750 por R$ 590 (Economia de R$ 160).' },
@@ -238,7 +214,8 @@ const COMBOS = [
 
 const EXTRAS = [
   { id: 'aroma', price: 20, PT: { label: 'Óleos essenciais relaxantes' }, EN: { label: 'Relaxing essential oils' } },
-  { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' }, EN: { label: 'Stay longer (+30min)' } }
+  { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' }, EN: { label: 'Stay longer (+30min)' } },
+  { id: 'depilacao_extra', price: 107, PT: { label: 'Depilação máq (3 lugares, pente 0 e 3) + Creme' }, EN: { label: 'Trimming (3 areas, 0/3 guards) + Cream' } }
 ];
 
 // ==================================================================================
@@ -251,7 +228,9 @@ const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-
 const ICON_PATHS: Record<string, string> = {
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
   'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
-  'gift': 'M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z'
+  'gift': 'M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z',
+  'close': 'M18 6L6 18 M6 6l12 12',
+  'ticket': 'M15 5.5a4 4 0 0 0-4 4v3a4 4 0 0 1-4 4H3M21 5.5a4 4 0 0 1-4 4v3a4 4 0 0 0-4 4h-8M3 13h18M3 5.5v13M21 5.5v13'
 };
 
 const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: number; className?: string }) => (
@@ -319,18 +298,20 @@ const CinematicStyles = memo(() => (
 // ==================================================================================
 export default function App() {
   const [step, setStep] = useState(0); 
+  const [isReturningClient, setIsReturningClient] = useState(false);
   const [giftApplied, setGiftApplied] = useState(false);
   const [lang, setLang] = useState<'PT' | 'EN'>('PT');
   
-  const [bookingMode, setBookingMode] = useState<'single'|'combo'>('single');
-  const activeList = bookingMode === 'single' ? MOODS : COMBOS;
+  const [bookingMode, setBookingMode] = useState<'single'|'estetica'|'combo'>('single');
+  const activeList = bookingMode === 'single' ? MOODS : bookingMode === 'estetica' ? ESTETICA : COMBOS;
   const [moodId, setMoodId] = useState(MOODS[0].id);
 
-  // Estados do Cupom
   const [couponInput, setCouponInput] = useState('');
-  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState(false);
   
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
   useEffect(() => {
     setMoodId(activeList[0].id);
   }, [bookingMode, activeList]);
@@ -347,14 +328,15 @@ export default function App() {
   });
 
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v17');
-    const hasGift = localStorage.getItem('thaly_gift_v17');
+    const isAdult = localStorage.getItem('thaly_adult_v24');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v24');
+    
     if (isAdult === 'yes') setStep(1);
-    if (hasGift === 'yes') setGiftApplied(true);
+    if (hasBookedBefore === 'yes') setIsReturningClient(true);
   }, []);
 
   useEffect(() => {
-    if (step > 0 && step < 5) {
+    if (step > 0 && step < 5 && !isProfileOpen) {
       setTimeout(() => {
         const el = document.getElementById(`step-${step}`);
         if (el) {
@@ -363,37 +345,65 @@ export default function App() {
         }
       }, 150);
     }
-  }, [step]);
+  }, [step, isProfileOpen]);
+
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const target = e.target;
+    setTimeout(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 400);
+  };
 
   const acceptAdult = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v17', 'yes');
+    localStorage.setItem('thaly_adult_v24', 'yes');
     setStep(1);
   };
 
   const applyGift = () => {
     vibrate([40, 60]);
-    localStorage.setItem('thaly_gift_v17', 'yes');
     setGiftApplied(true);
+    setAppliedCoupon('');
+    setCouponInput('');
   };
 
-  const applyCoupon = () => {
+  const handleApplyCoupon = () => {
     const code = couponInput.trim().toUpperCase();
     if (CONFIG.COUPONS[code as keyof typeof CONFIG.COUPONS]) {
       vibrate([30, 50]);
-      setCouponDiscount(CONFIG.COUPONS[code as keyof typeof CONFIG.COUPONS]);
+      setAppliedCoupon(code);
+      setGiftApplied(false);
       setCouponError(false);
     } else {
       vibrate(50);
-      setCouponDiscount(0);
+      setAppliedCoupon('');
       setCouponError(true);
       setTimeout(() => setCouponError(false), 2000);
     }
   };
 
+  const openProfile = () => {
+    vibrate(15);
+    setIsProfileOpen(true);
+  };
+
   const resetFlow = () => {
     vibrate(20);
-    const isAdult = localStorage.getItem('thaly_adult_v17');
+    
+    const isAdult = localStorage.getItem('thaly_adult_v24');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v24');
+    
+    setIsReturningClient(hasBookedBefore === 'yes');
+    
+    setGiftApplied(false);
+    setAppliedCoupon('');
+    setCouponInput('');
+    
+    setData({
+      name: '', locType: '', cep: '', street: '', number: '', comp: '', bairro: '', 
+      date: null, time: '', extras: {}, req: '', payment: ''
+    });
+
     setStep(isAdult === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
   };
@@ -426,25 +436,38 @@ export default function App() {
     (data.locType === 'studio' || (data.locType === 'home' && data.street.trim() !== '' && data.number.trim() !== '' && data.bairro.trim() !== ''));
 
   const fin = useMemo(() => {
-    let sub = mood.price;
+    let basePrice = mood.price;
     let dur = mood.min;
-    let extrasValue = 0;
     
-    if (data.extras['time']) { extrasValue += 75; dur += 30; }
-    if (data.extras['aroma']) { extrasValue += 20; }
-    sub += extrasValue;
+    let extrasTotal = 0;
+    if (data.extras['time']) { extrasTotal += 75; dur += 30; }
+    if (data.extras['aroma']) { extrasTotal += 20; }
+    if (data.extras['depilacao_extra']) { extrasTotal += 107; dur += 30; }
     
-    const reqFee = data.req.trim().length > 3 ? 130 : 0;
-    sub += reqFee;
-
-    const peak = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
-    const discount = giftApplied ? 15 : 0;
+    let reqFee = data.req.trim().length > 3 ? 130 : 0;
+    let peakFee = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
     
-    const base = Math.max(0, sub - discount - couponDiscount);
-    const pix = data.payment === 'pix' ? Math.ceil(base * 0.03) : 0;
+    let subTotal = basePrice + extrasTotal + reqFee;
     
-    return { sub, extrasValue, peak, discount, reqFee, pix, total: (base - pix) + peak, dur };
-  }, [mood, data, giftApplied, couponDiscount]);
+    let discountGift = giftApplied ? 15 : 0;
+    let couponDiscountValue = 0;
+    
+    if (appliedCoupon) {
+      const val = CONFIG.COUPONS[appliedCoupon as keyof typeof CONFIG.COUPONS];
+      couponDiscountValue = val < 1 ? Math.floor(subTotal * val) : val;
+    }
+    
+    let totalAfterDiscounts = Math.max(0, subTotal - discountGift - couponDiscountValue);
+    let pixDiscount = data.payment === 'pix' ? Math.ceil(totalAfterDiscounts * 0.03) : 0;
+    
+    let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
+    
+    return { 
+      basePrice, extrasTotal, reqFee, peakFee, discountGift, 
+      couponDiscount: couponDiscountValue, pixDiscount, 
+      total: finalTotal, dur 
+    };
+  }, [mood, data, giftApplied, appliedCoupon]);
 
   const days = useMemo(() => Array.from({length: 15}, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() + i); return d;
@@ -458,56 +481,71 @@ export default function App() {
     return s;
   };
 
-  const sendWhatsApp = () => {
+  const wppLink = useMemo(() => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
     const ext = Object.keys(data.extras).filter(k=>data.extras[k]).map(k=>EXTRAS.find(e=>e.id===k)?.[lang].label).join(', ');
+    const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
+
+    let locationText = '';
+    if (data.locType === 'studio') {
+      locationText = `Você vem até o meu espaço (Minha Suíte, Bela Vista)`;
+    } else {
+      locationText = `Eu vou até você (${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro})`;
+    }
+
+    let text = `Oi Thalyson, tudo bem? Finalizei a minha reserva no site e vim confirmar o nosso encontro.\n\n`;
     
-    const mapsLink = data.locType === 'studio' 
-      ? `• ${T.wtsLocStudio}` 
-      : `• ${data.street}, ${data.number} ${data.comp ? `(${data.comp})` : ''}, ${data.bairro}\n🗺️ _Maps:_ https://maps.google.com/?q=${encodeURIComponent(`${data.street}, ${data.number},${data.bairro}, São Paulo`)}`;
-
-    const isComboText = mood.isCombo ? " (1ª Sessão)" : "";
-
-    const text = 
-      `🔥 *${T.wtsNew}* 🔥\n` +
-      `_${T.wtsSystem}_\n\n` +
-      
-      `*👤 ${T.wtsId}*\n` +
-      `• *${T.wtsName}:* ${data.name}\n\n` +
-      
-      `*💦 ${T.wtsSession}${isComboText}*\n` +
-      `• *${T.wtsDate}:* ${dStr} às ${data.time}\n` +
-      `• *${T.wtsDur}:* ~${fin.dur} min\n` +
-      `• *${T.wtsMood}:* ${mood[lang].title}\n` +
-      `• *${T.wtsServ}:* ${mood[lang].service}\n\n` +
-      
-      `*📍 ${T.wtsLoc}*\n` +
-      `${mapsLink}\n\n` +
-
-      (ext || data.req.trim() ? `*✨ ${T.wtsAddons}*\n` : '') +
-      (ext ? `• *Extra:* ${ext}\n` : '') +
-      (data.req.trim() ? `• *${T.wtsReq}:* "${data.req.trim()}"\n` : '') +
-      (ext || data.req.trim() ? '\n' : '') +
-
-      `*💸 ${T.wtsFin}*\n` +
-      `• ${T.subBase}: ${formatMoney(mood.price)}\n` +
-      (fin.extrasValue > 0 ? `• ${T.subExtras}: +${formatMoney(fin.extrasValue)}\n` : '') +
-      (fin.reqFee > 0 ? `• ${T.subReq}: +${formatMoney(fin.reqFee)}\n` : '') +
-      (fin.peak > 0 ? `• ${T.subPeak}: +${formatMoney(fin.peak)}\n` : '') +
-      (fin.discount > 0 ? `• ${T.subGift}: -${formatMoney(fin.discount)}\n` : '') +
-      (couponDiscount > 0 ? `• ${T.subCoupon} (${couponInput.toUpperCase()}): -${formatMoney(couponDiscount)}\n` : '') +
-      (fin.pix > 0 ? `• ${T.subPix}: -${formatMoney(fin.pix)}\n` : '') +
-      `──────────────────\n` +
-      `*${T.wtsInvestFinal}:* *${formatMoney(fin.total)}*\n` +
-      `• *${T.wtsPay}:* ${data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? T.payCard : T.payCash}\n\n` +
-      
-      `*🤝 ${T.wtsRulesTitle}*\n` +
-      `✓ ${T.wtsRule1}\n` +
-      `✓ ${T.wtsRule2}\n` +
-      `✓ ${T.wtsRule3}`;
+    text += `*QUEM VEM:* ${data.name}\n\n`;
     
-    window.open(`https://wa.me/${CONFIG.PHONE}?text=${encodeURIComponent(text)}`, '_blank');
+    text += `*A EXPERIÊNCIA:*\n`;
+    text += `• ${mood[lang].title} (${mood[lang].service})\n`;
+    text += `_“${mood[lang].desc}”_\n\n`;
+
+    text += `*QUANDO E ONDE:*\n`;
+    text += `• Data: ${dStr} às ${data.time}\n`;
+    text += `• Duração: até ${fin.dur} min\n`;
+    text += `• Local: ${locationText}\n\n`;
+
+    if (ext || data.req.trim()) {
+      text += `*DETALHES DA SESSÃO:*\n`;
+      if (ext) text += `• Adicionais: ${ext}\n`;
+      if (data.req.trim()) text += `• Pedido especial: "${data.req.trim()}"\n`;
+      text += `\n`;
+    }
+
+    text += `*O INVESTIMENTO:*\n`;
+    text += `• Valor base: ${formatMoney(fin.basePrice)}\n`;
+    if (fin.extrasTotal > 0) text += `• Adicionais extras: + ${formatMoney(fin.extrasTotal)}\n`;
+    if (fin.reqFee > 0) text += `• Taxa de pedido: + ${formatMoney(fin.reqFee)}\n`;
+    if (fin.peakFee > 0) text += `• Deslocamento: + ${formatMoney(fin.peakFee)}\n`;
+    if (fin.discountGift > 0) text += `• Presente de 1ª vez: - ${formatMoney(fin.discountGift)}\n`;
+    if (fin.couponDiscount > 0) text += `• Cupom (${appliedCoupon}): - ${formatMoney(fin.couponDiscount)}\n`;
+    if (fin.pixDiscount > 0) text += `• Desconto Pix: - ${formatMoney(fin.pixDiscount)}\n`;
+    text += `*Valor Final:* ${formatMoney(fin.total)} (via ${paymentMethod})\n\n`;
+
+    text += `*PRÓXIMA SESSÃO:*\n`;
+    text += `Já deixei anotado o cupom SESSAO2 para garantir 8% de desconto na minha próxima visita.\n\n`;
+
+    text += `Estou ciente do nosso acordo de respeito mutuo e higiene. Aguardo a sua confirmação!`;
+    
+    return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
+  }, [data, mood, fin, lang, appliedCoupon]);
+
+  const finishFlow = () => {
+    vibrate([30,50]);
+    localStorage.setItem('thaly_returning_v24', 'yes');
+    
+    setIsReturningClient(true);
+    setGiftApplied(false); 
+    
+    setStep(5);
+    window.location.href = wppLink;
   };
+
+  const visibleExtras = EXTRAS.filter(ex => {
+    if (ex.id === 'depilacao_extra' && (bookingMode === 'estetica' || mood.id.includes('depil'))) return false;
+    return true;
+  });
 
   return (
     <>
@@ -519,11 +557,11 @@ export default function App() {
         
         {/* CABEÇALHO */}
         <header className="flex justify-between items-center mb-10">
-          <button onClick={resetFlow} className="text-left group outline-none py-2 flex items-center gap-3">
+          <button onClick={openProfile} className="text-left group outline-none py-2 flex items-center gap-3">
             <img 
               src="FmtU3Ogx_400x400.jpg" 
               alt="Thalyson" 
-              className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg"
+              className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg transition-transform group-hover:scale-105"
             />
             <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
               Thalyson Massagens.
@@ -543,12 +581,40 @@ export default function App() {
               <Icon name="globe" size={14} />
               {lang}
             </button>
-
-            <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors outline-none py-2">
-              <Icon name="instagram" size={18} />
-            </a>
           </div>
         </header>
+
+        {/* MODAL DO PERFIL */}
+        {isProfileOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in" onClick={() => setIsProfileOpen(false)}>
+            <div className="bg-[#09090b] border border-white/10 rounded-md w-full max-w-sm p-8 relative shadow-2xl" onClick={e => e.stopPropagation()}>
+              <button onClick={() => setIsProfileOpen(false)} className="absolute top-4 right-4 p-2 text-white/50 hover:text-white transition-colors outline-none">
+                <Icon name="close" size={20} />
+              </button>
+              
+              <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt="Thalyson" />
+              
+              <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Terapeuta Thalyson.</h2>
+              <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Solteiro</p>
+              
+              <div className="space-y-4 text-sm text-white/70 leading-relaxed">
+                <p>
+                  Nasci em Santa Fé do Sul, no interior de São Paulo. Hoje meu espaço fica aqui na capital, na Bela Vista.
+                </p>
+                <p>
+                  Trabalho como terapeuta há mais de um ano. O que eu faço é simples: uso minhas mãos e o toque para tirar o peso da sua rotina e te entregar uma experiência onde você só precisa fechar os olhos, relaxar e aproveitar.
+                </p>
+              </div>
+              
+              <div className="mt-8 pt-6 border-t border-white/10 flex justify-center">
+                <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors outline-none">
+                  <Icon name="instagram" size={16} />
+                  Acompanhe no Instagram
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* STEP 0: O AVISO (+18) */}
         {step === 0 && (
@@ -564,18 +630,22 @@ export default function App() {
         {/* O FLUXO CONTÍNUO */}
         <div className={step >= 1 && step < 5 ? "block" : "hidden"}>
           
-          {/* STEP 1: A FREQUÊNCIA */}
+          {/* STEP 1: A FREQUÊNCIA E CATEGORIAS */}
           <div id="step-1" className="step-enter mb-16">
             <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step1Label}</h2>
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step1Title}</h1>
             
-            <div className="flex bg-white/5 p-1 rounded-sm border border-white/10 mb-6">
+            <div className="flex bg-white/5 p-1 rounded-sm border border-white/10 mb-6 overflow-x-auto hide-scrollbar">
               <button onClick={() => { vibrate(10); setBookingMode('single'); }} 
-                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none ${bookingMode === 'single' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}>
+                className={`flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none whitespace-nowrap ${bookingMode === 'single' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}>
                 {T.tabSingle}
               </button>
+              <button onClick={() => { vibrate(10); setBookingMode('estetica'); }} 
+                className={`flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none whitespace-nowrap ${bookingMode === 'estetica' ? 'bg-[#2dd4bf] text-black shadow-[0_0_15px_rgba(45,212,191,0.2)]' : 'text-white/40 hover:text-white'}`}>
+                {T.tabEstetica}
+              </button>
               <button onClick={() => { vibrate(10); setBookingMode('combo'); }} 
-                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none ${bookingMode === 'combo' ? 'bg-[#f59e0b] text-black shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'text-white/40 hover:text-white'}`}>
+                className={`flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none whitespace-nowrap ${bookingMode === 'combo' ? 'bg-[#f59e0b] text-black shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'text-white/40 hover:text-white'}`}>
                 {T.tabCombo}
               </button>
             </div>
@@ -620,7 +690,7 @@ export default function App() {
 
               <div className="space-y-6">
                 <div>
-                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full modern-input text-lg font-medium" />
+                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} onFocus={handleInputFocus} className="w-full modern-input text-lg font-medium" />
                 </div>
 
                 <div className="pt-4">
@@ -635,13 +705,13 @@ export default function App() {
                 
                 {data.locType === 'home' && (
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                    <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full modern-input" />
-                    <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full modern-input" />
+                    <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} onFocus={handleInputFocus} className="w-full modern-input" />
+                    <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} onFocus={handleInputFocus} className="w-full modern-input" />
                     <div className="flex gap-4">
-                      <input ref={numberInputRef} type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 modern-input" />
-                      <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 modern-input" />
+                      <input ref={numberInputRef} type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} onFocus={handleInputFocus} className="w-1/3 modern-input" />
+                      <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} onFocus={handleInputFocus} className="w-2/3 modern-input" />
                     </div>
-                    <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full modern-input" />
+                    <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} onFocus={handleInputFocus} className="w-full modern-input" />
                   </div>
                 )}
               </div>
@@ -701,55 +771,75 @@ export default function App() {
 
               <div className="space-y-8">
                 
-                {/* CAIXA DE CORTESIA */}
-                {!giftApplied && (
-                  <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
-                    <div className="absolute -right-4 -bottom-4 opacity-5">
-                      <Icon name="gift" size={120} />
-                    </div>
-                    <div className="relative z-10 w-full">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Icon name="gift" className="text-[#4ade80]" size={18} />
-                        <h3 className="text-[#4ade80] font-bold uppercase tracking-widest text-xs">{T.giftTitle}</h3>
+                <div className="space-y-5">
+                  {!isReturningClient && !appliedCoupon && !giftApplied && (
+                    <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
+                      <div className="absolute -right-4 -bottom-4 opacity-5">
+                        <Icon name="gift" size={120} />
                       </div>
-                      <p className="text-sm text-[#4ade80]/90 mb-5 leading-relaxed">{T.giftDesc}</p>
-                      <button onClick={applyGift} className="bg-[#4ade80] text-black w-full text-xs font-bold px-5 py-3.5 uppercase tracking-widest outline-none rounded-sm transition-transform active:scale-95 shadow-lg shadow-[#4ade80]/20">
-                        {T.giftBtn}
-                      </button>
+                      <div className="relative z-10 w-full">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Icon name="gift" className="text-[#4ade80]" size={18} />
+                          <h3 className="text-[#4ade80] font-bold uppercase tracking-widest text-xs">{T.giftTitle}</h3>
+                        </div>
+                        <p className="text-sm text-[#4ade80]/90 mb-5 leading-relaxed">{T.giftDesc}</p>
+                        <button onClick={applyGift} className="bg-[#4ade80] text-black w-full text-xs font-bold px-5 py-3.5 uppercase tracking-widest outline-none rounded-sm transition-transform active:scale-95 shadow-lg shadow-[#4ade80]/20">
+                          {T.giftBtn}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* CAIXA DE CUPOM */}
-                <div>
-                  <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
-                  <div className="flex gap-3">
-                    <input 
-                      type="text" 
-                      placeholder={T.couponPlace} 
-                      value={couponInput} 
-                      onChange={e => setCouponInput(e.target.value)}
-                      className={`flex-1 bg-white/5 border ${couponError ? 'border-red-500/50' : 'border-white/10'} text-white rounded-sm px-4 outline-none focus:border-white/50 transition-colors uppercase`}
-                    />
-                    <button 
-                      onClick={applyCoupon}
-                      className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none"
-                    >
-                      {T.couponBtn}
-                    </button>
-                  </div>
-                  {couponDiscount > 0 && <p className="text-xs text-[#4ade80] mt-2">Cupom aplicado: -{formatMoney(couponDiscount)}</p>}
+                  {!isReturningClient && giftApplied && (
+                    <div className="flex justify-between items-center p-4 bg-[#4ade80]/10 border border-[#4ade80]/30 rounded-sm animate-in fade-in">
+                      <span className="text-[#4ade80] text-sm font-bold flex items-center gap-2"><Icon name="gift" size={16}/> {T.giftActive}</span>
+                      <button onClick={() => setGiftApplied(false)} className="text-white/50 hover:text-white text-xs underline outline-none">{T.btnRemove}</button>
+                    </div>
+                  )}
+
+                  {!giftApplied && (
+                    <div className="animate-in fade-in">
+                      <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
+                      <div className="flex gap-3">
+                        <input 
+                          type="text" 
+                          placeholder={T.couponPlace} 
+                          value={couponInput} 
+                          onChange={e => setCouponInput(e.target.value)}
+                          onFocus={handleInputFocus}
+                          disabled={!!appliedCoupon}
+                          className={`flex-1 bg-white/5 border ${couponError ? 'border-red-500/50' : 'border-white/10'} text-white rounded-sm px-4 outline-none focus:border-white/50 transition-colors uppercase disabled:opacity-50`}
+                        />
+                        {!appliedCoupon ? (
+                          <button 
+                            onClick={handleApplyCoupon}
+                            className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none"
+                          >
+                            {T.couponBtn}
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => { setAppliedCoupon(''); setCouponInput(''); }}
+                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none"
+                          >
+                            {T.btnRemove}
+                          </button>
+                        )}
+                      </div>
+                      {appliedCoupon && <p className="text-xs text-[#4ade80] mt-3">✅ Cupom <strong>{appliedCoupon}</strong> {T.couponActive} (-{formatMoney(fin.couponDiscount)})</p>}
+                    </div>
+                  )}
                 </div>
 
                 <div>
                   <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.addons}</p>
                   <div className="space-y-3">
-                    {EXTRAS.map(ex => {
+                    {visibleExtras.map(ex => {
                       const sel = data.extras[ex.id];
                       return (
                         <button key={ex.id} onClick={()=>setData({...data, extras:{...data.extras, [ex.id]:!sel}})} className={`w-full outline-none flex justify-between p-4 border rounded-sm text-sm transition-colors ${sel ? 'border-white bg-white/10 text-white' : 'border-white/10 text-white/60'}`}>
-                          <span>{ex[lang].label}</span>
-                          <span>+{formatMoney(ex.price)}</span>
+                          <span className="text-left max-w-[70%]">{ex[lang].label}</span>
+                          <span className="shrink-0">+{formatMoney(ex.price)}</span>
                         </button>
                       )
                     })}
@@ -761,7 +851,7 @@ export default function App() {
                     <p className="text-xs text-white/50 uppercase tracking-widest">{T.reqLabel}</p>
                     <span className="text-xs font-bold text-white/60">+ R$ 130</span>
                   </div>
-                  <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full modern-input text-sm" />
+                  <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} onFocus={handleInputFocus} className="w-full modern-input text-sm" />
                   <p className="text-[10px] text-white/40 mt-2 leading-relaxed">{T.reqDesc}</p>
                 </div>
 
@@ -775,20 +865,20 @@ export default function App() {
                 </div>
 
                 <div className="pt-8 border-t border-white/10">
-                  <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subBase}</span><span>{formatMoney(mood.price)}</span></div>
-                  {fin.extrasValue > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasValue)}</span></div>}
+                  <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subBase}</span><span>{formatMoney(fin.basePrice)}</span></div>
+                  {fin.extrasTotal > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasTotal)}</span></div>}
                   {fin.reqFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subReq}</span><span>+{formatMoney(fin.reqFee)}</span></div>}
-                  {fin.discount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discount)}</span></div>}
-                  {couponDiscount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subCoupon}</span><span>-{formatMoney(couponDiscount)}</span></div>}
-                  {fin.peak > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peak)}</span></div>}
-                  {fin.pix > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pix)}</span></div>}
+                  {fin.discountGift > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subGift}</span><span>-{formatMoney(fin.discountGift)}</span></div>}
+                  {fin.couponDiscount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subCoupon}</span><span>-{formatMoney(fin.couponDiscount)}</span></div>}
+                  {fin.peakFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peakFee)}</span></div>}
+                  {fin.pixDiscount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pixDiscount)}</span></div>}
                   
                   <div className="flex justify-between items-end mt-8 mb-10">
                     <span className="text-sm uppercase tracking-widest text-white/50">{T.total}</span>
                     <span style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl text-white">{formatMoney(fin.total)}</span>
                   </div>
 
-                  <button disabled={!data.payment} onClick={() => { vibrate([30,50]); sendWhatsApp(); setStep(5); }} className="bg-white text-black h-16 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none rounded-sm shadow-xl shadow-white/10">
+                  <button disabled={!data.payment} onClick={finishFlow} className="bg-white text-black h-16 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none rounded-sm shadow-xl shadow-white/10">
                     {T.btnFinish}
                   </button>
                 </div>
@@ -802,11 +892,23 @@ export default function App() {
         {step === 5 && (
           <div className="flex-1 flex flex-col justify-center text-center step-enter pb-20">
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl mb-4">{T.step5Title}</h1>
-            <p className="text-white/60 text-sm leading-relaxed mb-10">{T.step5Desc}</p>
+            <p className="text-white/60 text-sm leading-relaxed mb-6">{T.step5Desc}</p>
             
-            <button onClick={sendWhatsApp} className="bg-transparent border border-white text-white h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none rounded-sm">
+            <div className="bg-white/5 border border-white/10 p-5 rounded-sm mb-10 text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <Icon name="ticket" className="text-[#4ade80]" size={16} />
+                <p className="text-[#4ade80] text-xs font-bold uppercase tracking-widest">Para o próximo encontro</p>
+              </div>
+              <p className="text-sm text-white/70">Guarde o cupom <strong className="text-white">SESSAO2</strong>. Você pode aplicar ele no nosso site para garantir 8% de desconto na sua próxima visita.</p>
+            </div>
+
+            <a 
+              href={wppLink} 
+              className="bg-transparent border border-white text-white flex items-center justify-center h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none rounded-sm no-underline"
+            >
               {T.btnSend}
-            </button>
+            </a>
+
             <button onClick={resetFlow} className="mt-8 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors outline-none py-2">
               {T.btnBack}
             </button>
