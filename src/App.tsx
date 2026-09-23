@@ -33,6 +33,7 @@ const TEXTS = {
     step1Label: "Etapa 01",
     step1Title: "Como você quer se sentir hoje?",
     tabSingle: "Só Hoje",
+    tabEstetica: "Estética",
     tabCombo: "Ciclos de Prazer",
     upTo: "Até",
     btnContinue: "Continuar para Local",
@@ -92,6 +93,7 @@ const TEXTS = {
     step1Label: "Step 01",
     step1Title: "How do you want to feel today?",
     tabSingle: "Just Today",
+    tabEstetica: "Aesthetics",
     tabCombo: "Pleasure Cycles",
     upTo: "Up to",
     btnContinue: "Continue to Location",
@@ -174,7 +176,20 @@ const MOODS = [
   }
 ];
 
+const ESTETICA = [
+  {
+    id: 'depilacao_solo', color: '#0f766e', accent: '#2dd4bf', price: 107, min: 40, isCombo: false,
+    PT: { title: 'Limpeza e Cuidado', subtitle: 'Depilação na máquina e hidratação.', service: 'Estética Corporal', desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo, usando o pente 0 ou o pente 3. Finalizamos com uma hidratação com creme para acalmar a pele logo após depilar.' },
+    EN: { title: 'Clean and Care', subtitle: 'Clipper trim and moisturizing.', service: 'Body Aesthetics', desc: 'Hygienic hair trimming using clippers (guards 0 and 3). Choose up to 3 body areas. Finished with a moisturizing cream to soothe the skin after trimming.' }
+  }
+];
+
 const COMBOS = [
+  {
+    id: 'combo_depil_classica', color: '#0369a1', accent: '#38bdf8', price: 270, min: 100, isCombo: true,
+    PT: { title: 'Renovação Completa', subtitle: 'Depilação + Massagem Clássica.', service: '1 Encontro Duplo', desc: 'Primeiro fazemos o aparo na máquina em até 3 lugares usando pente 0 e 3, seguido de hidratação com creme. Logo depois, partimos para uma Massagem Clássica para destravar a musculatura do corpo todo. De R$ 287 por R$ 270 (Economia de R$ 17).' },
+    EN: { title: 'Complete Renewal', subtitle: 'Trimming + Classic Massage.', service: '1 Double Encounter', desc: 'First, machine trimming (up to 3 areas, guards 0/3) with moisturizing. Followed by a full body Classic Massage to release tension. From R$ 287 to R$ 270 (Save R$ 17).' }
+  },
   {
     id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true,
     PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Uma sessão Nuru e uma Reversa. Ambas começam relaxando e destravando seu corpo inteiro primeiro. Corpo solto, mente leve e finalização intensa. De R$ 750 por R$ 590 (Economia de R$ 160).' },
@@ -199,7 +214,8 @@ const COMBOS = [
 
 const EXTRAS = [
   { id: 'aroma', price: 20, PT: { label: 'Óleos essenciais relaxantes' }, EN: { label: 'Relaxing essential oils' } },
-  { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' }, EN: { label: 'Stay longer (+30min)' } }
+  { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' }, EN: { label: 'Stay longer (+30min)' } },
+  { id: 'depilacao_extra', price: 107, PT: { label: 'Depilação máq (3 lugares, pente 0 e 3) + Creme' }, EN: { label: 'Trimming (3 areas, 0/3 guards) + Cream' } }
 ];
 
 // ==================================================================================
@@ -286,8 +302,8 @@ export default function App() {
   const [giftApplied, setGiftApplied] = useState(false);
   const [lang, setLang] = useState<'PT' | 'EN'>('PT');
   
-  const [bookingMode, setBookingMode] = useState<'single'|'combo'>('single');
-  const activeList = bookingMode === 'single' ? MOODS : COMBOS;
+  const [bookingMode, setBookingMode] = useState<'single'|'estetica'|'combo'>('single');
+  const activeList = bookingMode === 'single' ? MOODS : bookingMode === 'estetica' ? ESTETICA : COMBOS;
   const [moodId, setMoodId] = useState(MOODS[0].id);
 
   const [couponInput, setCouponInput] = useState('');
@@ -371,22 +387,18 @@ export default function App() {
     setIsProfileOpen(true);
   };
 
-  // ZERA TUDO QUANDO CLICA EM VOLTAR PARA O INÍCIO
   const resetFlow = () => {
     vibrate(20);
     
-    // Confirma mais uma vez os status
     const isAdult = localStorage.getItem('thaly_adult_v24');
     const hasBookedBefore = localStorage.getItem('thaly_returning_v24');
     
     setIsReturningClient(hasBookedBefore === 'yes');
     
-    // Limpa todos os estados de cupom para ter certeza que não sobrou nada
     setGiftApplied(false);
     setAppliedCoupon('');
     setCouponInput('');
     
-    // Limpa os dados do formulário
     setData({
       name: '', locType: '', cep: '', street: '', number: '', comp: '', bairro: '', 
       date: null, time: '', extras: {}, req: '', payment: ''
@@ -430,6 +442,7 @@ export default function App() {
     let extrasTotal = 0;
     if (data.extras['time']) { extrasTotal += 75; dur += 30; }
     if (data.extras['aroma']) { extrasTotal += 20; }
+    if (data.extras['depilacao_extra']) { extrasTotal += 107; dur += 30; }
     
     let reqFee = data.req.trim().length > 3 ? 130 : 0;
     let peakFee = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
@@ -518,18 +531,21 @@ export default function App() {
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
   }, [data, mood, fin, lang, appliedCoupon]);
 
-  // FINALIZAÇÃO ONDE O ESTADO É ATUALIZADO IMEDIATAMENTE
   const finishFlow = () => {
     vibrate([30,50]);
     localStorage.setItem('thaly_returning_v24', 'yes');
     
-    // Atualiza o estado na hora para sumir com a caixa
     setIsReturningClient(true);
     setGiftApplied(false); 
     
     setStep(5);
     window.location.href = wppLink;
   };
+
+  const visibleExtras = EXTRAS.filter(ex => {
+    if (ex.id === 'depilacao_extra' && (bookingMode === 'estetica' || mood.id.includes('depil'))) return false;
+    return true;
+  });
 
   return (
     <>
@@ -614,18 +630,22 @@ export default function App() {
         {/* O FLUXO CONTÍNUO */}
         <div className={step >= 1 && step < 5 ? "block" : "hidden"}>
           
-          {/* STEP 1: A FREQUÊNCIA */}
+          {/* STEP 1: A FREQUÊNCIA E CATEGORIAS */}
           <div id="step-1" className="step-enter mb-16">
             <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step1Label}</h2>
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step1Title}</h1>
             
-            <div className="flex bg-white/5 p-1 rounded-sm border border-white/10 mb-6">
+            <div className="flex bg-white/5 p-1 rounded-sm border border-white/10 mb-6 overflow-x-auto hide-scrollbar">
               <button onClick={() => { vibrate(10); setBookingMode('single'); }} 
-                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none ${bookingMode === 'single' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}>
+                className={`flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none whitespace-nowrap ${bookingMode === 'single' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}>
                 {T.tabSingle}
               </button>
+              <button onClick={() => { vibrate(10); setBookingMode('estetica'); }} 
+                className={`flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none whitespace-nowrap ${bookingMode === 'estetica' ? 'bg-[#2dd4bf] text-black shadow-[0_0_15px_rgba(45,212,191,0.2)]' : 'text-white/40 hover:text-white'}`}>
+                {T.tabEstetica}
+              </button>
               <button onClick={() => { vibrate(10); setBookingMode('combo'); }} 
-                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none ${bookingMode === 'combo' ? 'bg-[#f59e0b] text-black shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'text-white/40 hover:text-white'}`}>
+                className={`flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none whitespace-nowrap ${bookingMode === 'combo' ? 'bg-[#f59e0b] text-black shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'text-white/40 hover:text-white'}`}>
                 {T.tabCombo}
               </button>
             </div>
@@ -752,7 +772,6 @@ export default function App() {
               <div className="space-y-8">
                 
                 <div className="space-y-5">
-                  {/* CAIXA DE PRESENTE: Só aparece se o cliente for novo E não tiver digitado nenhum cupom manual */}
                   {!isReturningClient && !appliedCoupon && !giftApplied && (
                     <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
                       <div className="absolute -right-4 -bottom-4 opacity-5">
@@ -771,7 +790,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* AVISO DO PRESENTE APLICADO */}
                   {!isReturningClient && giftApplied && (
                     <div className="flex justify-between items-center p-4 bg-[#4ade80]/10 border border-[#4ade80]/30 rounded-sm animate-in fade-in">
                       <span className="text-[#4ade80] text-sm font-bold flex items-center gap-2"><Icon name="gift" size={16}/> {T.giftActive}</span>
@@ -779,7 +797,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* CAMPO DE CUPOM MANUAL: Sempre visível, a não ser que o presente esteja aplicado */}
                   {!giftApplied && (
                     <div className="animate-in fade-in">
                       <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
@@ -817,12 +834,12 @@ export default function App() {
                 <div>
                   <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.addons}</p>
                   <div className="space-y-3">
-                    {EXTRAS.map(ex => {
+                    {visibleExtras.map(ex => {
                       const sel = data.extras[ex.id];
                       return (
                         <button key={ex.id} onClick={()=>setData({...data, extras:{...data.extras, [ex.id]:!sel}})} className={`w-full outline-none flex justify-between p-4 border rounded-sm text-sm transition-colors ${sel ? 'border-white bg-white/10 text-white' : 'border-white/10 text-white/60'}`}>
-                          <span>{ex[lang].label}</span>
-                          <span>+{formatMoney(ex.price)}</span>
+                          <span className="text-left max-w-[70%]">{ex[lang].label}</span>
+                          <span className="shrink-0">+{formatMoney(ex.price)}</span>
                         </button>
                       )
                     })}
