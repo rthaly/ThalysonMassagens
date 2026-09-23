@@ -13,7 +13,7 @@ const CONFIG = {
   // CUPONS (Valores menores que 1 são porcentagem. Ex: 0.08 = 8%. Valores maiores são Reais. Ex: 50 = R$ 50)
   COUPONS: {
     "SESSAO2": 0.08,
-    "GOZAR10": 10,
+    "RELAXAR13": 0.13,
     "THALY20": 20,
     "BEMVINDO50": 50
   }
