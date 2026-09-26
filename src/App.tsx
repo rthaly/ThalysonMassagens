@@ -161,17 +161,17 @@ const MOODS = [
   },
   {
     id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false,
-    PT: { title: 'Opção 3: Fusion', subtitle: 'Mais intimidade, Abraços e minha barba passando no seu corpo.', service: 'Experiência Fusion', desc: 'Começo relaxando seu corpo inteiro para soltar a tensão. Depois, fico só de cueca. O contato fica intenso, corpo a corpo, com o toque da minha barba. Finalização íntima prolongada.' },
+    PT: { title: 'Opção 3: Fusion', subtitle: 'Mais intimidade, abraços e minha barba passando no seu corpo.', service: 'Experiência Fusion', desc: 'Começo relaxando seu corpo inteiro para soltar a tensão. Depois, fico só de cueca. O contato fica intenso, corpo a corpo, com o toque da minha barba. Finalização íntima prolongada.' },
     EN: { title: 'Closeness', subtitle: 'More intimacy, skin on skin.', service: 'Fusion Experience', desc: 'I start by relaxing your whole body. Then, I stay only in underwear. Intense body-to-body contact. Prolonged intimate finish.' }
   },
   {
     id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false,
-    PT: { title: 'Opção 4: Corpo a Corpo Nuru', subtitle: 'Nós dois suados e escorregadios.', service: 'Massagem Nuru (Gel)', desc: 'Iniciamos relaxando toda a sua musculatura. Depois, a gente tira tudo. Muito gel ultra deslizante. Nossos corpos colados deslizando um no outro até você chegar lá.' },
+    PT: { title: 'Opção 4: Corpo a Corpo Nuru', subtitle: 'Massagem, depois corpo a corpo com gel.', service: 'Massagem Nuru (Gel)', desc: 'Iniciamos relaxando toda a sua musculatura. Depois, a gente tira tudo. Muito gel ultra deslizante. Nossos corpos colados deslizando um no outro até você chegar lá.' },
     EN: { title: 'Total Immersion', subtitle: 'Both of us sweaty and slippery.', service: 'Nuru Massage (Gel)', desc: 'We begin by relaxing your muscles. Then we take it all off. Lots of ultra-gliding gel. Bodies glued sliding on each other.' }
   },
   {
     id: 'reversa', color: '#14532d', accent: '#4ade80', price: 400, min: 60, isCombo: false,
-    PT: { title: 'Opção 5: Interação Reversa', subtitle: 'Aproveite o meu corpo.', service: 'Massagem Reversa', desc: 'Eu começo relaxando o seu corpo e tirando sua tensão, mas depois você assume. Você dita o ritmo, toca onde quiser e explora o meu corpo livremente até gozarmos juntos.' },
+    PT: { title: 'Opção 5: Interação Reversa', subtitle: 'Troca de massagens com interação', service: 'Massagem Reversa', desc: 'Eu começo relaxando o seu corpo e tirando sua tensão, mas depois você assume. Você faz a massagem do seu jeito e explora o meu corpo livremente até gozarmos juntos.' },
     EN: { title: 'Take Control', subtitle: 'Enjoy my body.', service: 'Reverse Massage', desc: 'I start by relaxing your body, then you take over. Set the pace, touch anywhere, explore my body freely until mutual release.' }
   }
 ];
