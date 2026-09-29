@@ -23,22 +23,15 @@ const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 const PEAK_FEE = 15;
 
 // ==================================================================================
-// DICIONÁRIO E TEXTOS (i18n)
+// DICIONÁRIO E TEXTOS
 // ==================================================================================
 const TEXTS = {
   PT: {
-    privacyTitle: "Privacidade Garantida",
-    privacyDesc: "Fique tranquilo. Nenhum dado preenchido aqui fica salvo em banco de dados ou servidores. Tudo acontece apenas no seu celular e é enviado diretamente para o meu WhatsApp.",
-    privacyBtn: "Entendi",
-    ageTitle: "Ambiente Reservado",
-    ageDesc: "O atendimento é feito de forma individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no prazer e relaxamento. Você confirma ter mais de 18 anos para prosseguir?",
-    ageBtn: "Sim, sou maior de 18 anos",
     step1Label: "Passo 1",
     step1Title: "O que você busca hoje?",
     tabSingle: "Só Hoje",
     tabEstetica: "Estética",
     tabCombo: "Ciclos",
-    upTo: "Até",
     btnContinue: "Continuar",
     step2Label: "Passo 2",
     step2Title: "Quem e Onde",
@@ -70,7 +63,7 @@ const TEXTS = {
     addons: "Adicionais para hoje",
     reqLabel: "Algum pedido especial?",
     reqPlace: "Fetiche, detalhe ou vontade...",
-    reqDesc: "Sujeito a avaliação na hora. Caso não seja possível realizar o pedido, o valor da taxa não será cobrado.",
+    reqDesc: "Sujeito a avaliação na hora. Caso não seja possível realizar o pedido, a taxa não será cobrada.",
     payLabel: "Forma de pagamento na hora",
     payPix: "Pix (3% OFF)",
     payCard: "Cartão",
@@ -200,6 +193,8 @@ const ICON_PATHS: Record<string, string> = {
   'close': 'M18 6L6 18 M6 6l12 12',
   'ticket': 'M15 5.5a4 4 0 0 0-4 4v3a4 4 0 0 1-4 4H3M21 5.5a4 4 0 0 1-4 4v3a4 4 0 0 0-4 4h-8M3 13h18M3 5.5v13M21 5.5v13',
   'shield': 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+  'lock': 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z M7 11V7a5 5 0 0 1 10 0v4',
+  'user': 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
   'check': 'M20 6L9 17l-5-5'
 };
 
@@ -234,7 +229,6 @@ const IosStyles = memo(() => (
       scroll-behavior: smooth;
     }
 
-    /* Fundo com desfoque tipo VisionOS/iOS18 */
     .glass-panel {
       background: rgba(28, 28, 30, 0.6);
       backdrop-filter: blur(24px);
@@ -267,6 +261,7 @@ const IosStyles = memo(() => (
       border-radius: 20px;
       font-weight: 600;
       transition: transform 0.2s, opacity 0.2s;
+      cursor: pointer;
     }
     .ios-button:active { transform: scale(0.97); opacity: 0.8; }
 
@@ -286,7 +281,6 @@ const IosStyles = memo(() => (
 // ==================================================================================
 export default function App() {
   const [step, setStep] = useState(0); 
-  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [isReturningClient, setIsReturningClient] = useState(false);
   const [giftApplied, setGiftApplied] = useState(false);
   
@@ -309,8 +303,13 @@ export default function App() {
   });
 
   useEffect(() => {
-    const hasBookedBefore = localStorage.getItem('thaly_returning_v26');
+    // Verifica se já aceitou os termos para pular o Gatekeeper (Step 0)
+    const hasOnboarded = localStorage.getItem('thaly_onboard_v27');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v27');
+    
+    if (hasOnboarded === 'yes') setStep(1);
     if (hasBookedBefore === 'yes') setIsReturningClient(true);
+    
     setMoodId(activeList[0].id);
   }, [bookingMode, activeList]);
 
@@ -328,13 +327,9 @@ export default function App() {
 
   const mood = useMemo(() => activeList.find(m => m.id === moodId) || activeList[0], [moodId, activeList]);
 
-  const acceptPrivacy = () => {
-    vibrate(20);
-    setPrivacyAccepted(true);
-  };
-
-  const acceptAdult = () => {
+  const acceptTermsAndContinue = () => {
     vibrate(30);
+    localStorage.setItem('thaly_onboard_v27', 'yes');
     setStep(1);
   };
 
@@ -352,7 +347,9 @@ export default function App() {
 
   const resetFlow = () => {
     vibrate(20);
-    const hasBookedBefore = localStorage.getItem('thaly_returning_v26');
+    const hasOnboarded = localStorage.getItem('thaly_onboard_v27');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v27');
+    
     setIsReturningClient(hasBookedBefore === 'yes');
     setGiftApplied(false);
     setAppliedCoupon('');
@@ -360,7 +357,8 @@ export default function App() {
       name: '', locType: '', cep: '', street: '', number: '', comp: '', bairro: '', 
       date: null, time: '', extras: {}, req: '', payment: ''
     });
-    setStep(1);
+    
+    setStep(hasOnboarded === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
   };
 
@@ -462,7 +460,7 @@ export default function App() {
 
   const finishFlow = () => {
     vibrate([30,50]);
-    localStorage.setItem('thaly_returning_v26', 'yes');
+    localStorage.setItem('thaly_returning_v27', 'yes');
     setIsReturningClient(true);
     setStep(5);
     window.location.href = wppLink;
@@ -473,42 +471,26 @@ export default function App() {
     return true;
   });
 
-  // Modal de Privacidade
-  if (!privacyAccepted) {
-    return (
-      <div className="min-h-[100dvh] flex flex-col items-center justify-center p-6 bg-black">
-        <div className="glass-panel p-8 w-full max-w-sm flex flex-col items-center text-center step-enter">
-          <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-6">
-            <Icon name="shield" size={32} className="text-white" />
-          </div>
-          <h2 className="text-xl font-semibold mb-3">{T.privacyTitle}</h2>
-          <p className="text-[#86868b] text-sm leading-relaxed mb-8">{T.privacyDesc}</p>
-          <button onClick={acceptPrivacy} className="ios-button w-full py-4 text-lg">
-            {T.privacyBtn}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="relative min-h-[100dvh] pb-24">
       {/* Background suave que muda conforme a sessão escolhida */}
-      <div className="fixed inset-0 z-0 transition-colors duration-1000 ease-in-out opacity-20" style={{ backgroundColor: mood.color }} />
+      <div className="fixed inset-0 z-0 transition-colors duration-1000 ease-in-out opacity-20" style={{ backgroundColor: step === 0 ? '#1c1c1e' : mood.color }} />
       <IosStyles />
 
       <div className="relative z-10 px-5 pt-8 max-w-md mx-auto">
         
-        {/* CABEÇALHO IOS */}
-        <header className="flex justify-between items-center mb-8">
-          <button onClick={() => setIsProfileOpen(true)} className="flex items-center gap-3 active:scale-95 transition-transform">
-            <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-12 h-12 rounded-full object-cover border border-white/20" />
-            <div className="text-left">
-              <p className="text-sm font-semibold text-white">Thalyson Massagens</p>
-              <p className="text-xs text-[#86868b]">Terapeuta</p>
-            </div>
-          </button>
-        </header>
+        {/* CABEÇALHO IOS (Escondido na tela inicial de Gatekeeper) */}
+        {step > 0 && (
+          <header className="flex justify-between items-center mb-8 step-enter">
+            <button onClick={() => setIsProfileOpen(true)} className="flex items-center gap-3 active:scale-95 transition-transform">
+              <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-12 h-12 rounded-full object-cover border border-white/20" />
+              <div className="text-left">
+                <p className="text-sm font-semibold text-white">Thalyson Massagens</p>
+                <p className="text-xs text-[#86868b]">Terapeuta</p>
+              </div>
+            </button>
+          </header>
+        )}
 
         {/* MODAL DO PERFIL */}
         {isProfileOpen && (
@@ -530,17 +512,44 @@ export default function App() {
           </div>
         )}
 
-        {/* STEP 0: AVISO +18 */}
+        {/* STEP 0: GATEKEEPER (Boas-Vindas, Privacidade e +18) */}
         {step === 0 && (
-          <div className="step-enter pt-10">
-            <h1 className="text-3xl font-bold mb-4">{T.ageTitle}</h1>
-            <p className="text-[#86868b] text-base leading-relaxed mb-10">{T.ageDesc}</p>
-            <button onClick={acceptAdult} className="ios-button w-full py-4 text-lg">
-              {T.ageBtn}
+          <div className="flex-1 flex flex-col justify-center step-enter pt-12 pb-10">
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 mx-auto rounded-full bg-white/10 flex items-center justify-center mb-6">
+                <Icon name="lock" size={32} className="text-white" />
+              </div>
+              <h1 className="text-3xl font-bold mb-3">Bem-vindo(a)</h1>
+              <p className="text-[#86868b] text-sm px-4">Antes de agendar sua sessão, por favor, confirme os termos abaixo.</p>
+            </div>
+
+            <div className="space-y-4 mb-10">
+              {/* Card Privacidade */}
+              <div className="glass-panel p-5 rounded-3xl flex gap-4 items-start">
+                <div className="mt-1"><Icon name="shield" size={24} className="text-[#64d2ff]"/></div>
+                <div>
+                  <h3 className="font-semibold text-white mb-1">Privacidade Total</h3>
+                  <p className="text-[#86868b] text-sm leading-relaxed">Fique tranquilo, nenhum dado preenchido aqui é salvo. Tudo acontece no seu celular e vai direto para o WhatsApp.</p>
+                </div>
+              </div>
+              
+              {/* Card +18 */}
+              <div className="glass-panel p-5 rounded-3xl flex gap-4 items-start">
+                <div className="mt-1"><Icon name="user" size={24} className="text-[#ff375f]"/></div>
+                <div>
+                  <h3 className="font-semibold text-white mb-1">Ambiente Reservado</h3>
+                  <p className="text-[#86868b] text-sm leading-relaxed">O atendimento é estritamente individual. As sessões focam no relaxamento e algumas opções envolvem nudez e toques íntimos.</p>
+                </div>
+              </div>
+            </div>
+
+            <button onClick={acceptTermsAndContinue} className="ios-button w-full py-4 text-lg">
+              Tenho mais de 18 anos e Concordo
             </button>
           </div>
         )}
 
+        {/* O FLUXO DE AGENDAMENTO (Steps 1 ao 5) */}
         <div className={step >= 1 && step < 5 ? "block" : "hidden"}>
           
           {/* STEP 1: CATEGORIAS E SERVIÇOS */}
