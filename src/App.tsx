@@ -23,161 +23,161 @@ const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 const PEAK_FEE = 15;
 
 // ==================================================================================
-// DICIONÁRIO E TEXTOS
+// DICIONÁRIO E TEXTOS (AIDA, Simples e Tangível)
 // ==================================================================================
 const TEXTS = {
   PT: {
-    step1Label: "Passo 1",
-    step1Title: "O que você busca hoje?",
+    step1Label: "Passo 01",
+    step1Title: "O que o seu corpo precisa hoje?",
     tabSingle: "Só Hoje",
     tabEstetica: "Estética",
     tabCombo: "Ciclos",
-    btnContinue: "Continuar",
-    step2Label: "Passo 2",
-    step2Title: "Quem e Onde",
-    namePlace: "Como prefere ser chamado?",
-    locLabel: "Onde será a sessão?",
-    locStudio: "Minha Suíte (Bela Vista)",
-    locHome: "Seu Espaço (Vou até você)",
-    studioDesc: "Atendo sozinho em uma suíte privativa na Bela Vista. O endereço completo e as instruções eu te mando no WhatsApp assim que confirmarmos o horário.",
+    btnContinue: "Escolher essa e continuar",
+    step2Label: "Passo 02",
+    step2Title: "Para onde eu vou?",
+    namePlace: "Seu nome ou apelido",
+    locLabel: "Onde vamos fazer a sessão?",
+    locStudio: "Na sua Suíte (Bela Vista)",
+    locHome: "No meu espaço (Você vem)",
+    studioDesc: "Eu atendo sozinho em uma suíte privativa e discreta na Bela Vista. Assim que a gente confirmar o horário, eu te mando o endereço certinho e as instruções no WhatsApp.",
     cep: "CEP (opcional)",
     street: "Rua ou Avenida",
     number: "Número",
     comp: "Apto / Quarto (opcional)",
     bairroPlace: "Bairro",
     btnNext: "Avançar para Horários",
-    step3Label: "Passo 3",
-    step3Title: "Qual o melhor horário?",
-    noSlots: "Nenhum horário disponível hoje.",
-    step4Label: "Passo 4",
-    step4Title: "Resumo e Pagamento",
-    giftTitle: "Presente Liberado",
-    giftDesc: "Como é sua primeira vez marcando por aqui, deixei um pequeno desconto no valor final.",
-    giftBtn: "Desbloquear Cortesia (R$ 15)",
-    giftActive: "Presente de 1ª vez ativo",
-    couponLabel: "Tem um cupom?",
-    couponPlace: "Digite o código",
+    step3Label: "Passo 03",
+    step3Title: "Qual horário fica melhor?",
+    noSlots: "Sem horários livres hoje.",
+    step4Label: "Passo 04",
+    step4Title: "Resumo e Acerto",
+    giftTitle: "Presente de Primeira Vez",
+    giftDesc: "Como é o nosso primeiro encontro, deixei um desconto separado para você usar agora.",
+    giftBtn: "Usar desconto de R$ 15",
+    giftActive: "Desconto de 1ª vez ativado",
+    couponLabel: "Você tem algum cupom?",
+    couponPlace: "Código do cupom",
     couponBtn: "Aplicar",
-    couponActive: "aplicado",
-    btnRemove: "Remover",
-    addons: "Adicionais para hoje",
-    reqLabel: "Algum pedido especial?",
-    reqPlace: "Fetiche, detalhe ou vontade...",
-    reqDesc: "Sujeito a avaliação na hora. Caso não seja possível realizar o pedido, a taxa não será cobrada.",
-    payLabel: "Forma de pagamento na hora",
-    payPix: "Pix (3% OFF)",
+    couponActive: "aplicado com sucesso",
+    btnRemove: "Tirar",
+    addons: "Quer adicionar algo hoje?",
+    reqLabel: "Tem algum pedido especial?",
+    reqPlace: "Fetiche, vontade, ideia...",
+    reqDesc: "A gente avalia na hora se dá para fazer. Se não rolar, eu não te cobro esse valor extra.",
+    payLabel: "Como prefere pagar na hora?",
+    payPix: "Pix (3% de desconto)",
     payCard: "Cartão",
     payCash: "Dinheiro",
-    subBase: "Valor Base",
-    subExtras: "Extras",
+    subBase: "Sessão",
+    subExtras: "Adicionais",
     subReq: "Pedido Especial",
-    subGift: "Cortesia (1ª Vez)",
-    subCoupon: "Cupom Aplicado",
+    subGift: "Cortesia",
+    subCoupon: "Cupom",
     subPeak: "Deslocamento",
     subPix: "Desconto Pix",
-    total: "Total",
-    btnFinish: "Finalizar Agendamento",
-    step5Title: "Tudo Pronto",
-    step5Desc: "Sua solicitação foi gerada e enviada para o WhatsApp. Caso o aplicativo não abra sozinho, clique no botão abaixo.",
-    btnSend: "Confirmar no WhatsApp",
-    btnBack: "Voltar para o início",
+    total: "Valor Final",
+    btnFinish: "Confirmar Agendamento",
+    step5Title: "Tudo certo",
+    step5Desc: "O seu pedido já foi montado. Agora é só me mandar a mensagem no WhatsApp para eu confirmar na agenda.",
+    btnSend: "Abrir o WhatsApp",
+    btnBack: "Voltar para o começo",
   }
 };
 
 const MOODS = [
   {
-    id: 'classica', color: '#1c1c1e', accent: '#ffffff', price: 180, min: 60, isCombo: false,
+    id: 'classica', color: '#334155', accent: '#f8fafc', price: 180, min: 60, isCombo: false,
     PT: { 
-      title: 'Opção 1: Clássica', 
-      subtitle: 'Tensão e peso nas costas.', 
+      title: 'Massagem Clássica', 
+      subtitle: 'Tira o peso e solta a musculatura.', 
       service: 'Massagem Clássica', 
-      desc: 'Suas costas estão pesadas? A clássica resolve. Uso pressão firme nos pontos certos para desmanchar a tensão. O foco aqui é puramente muscular, sem nenhum toque íntimo. Você entra travado e sai renovado.' 
+      desc: 'Sabe aquele peso nos ombros e a nuca travada? A clássica resolve. Eu uso pressão firme com as mãos para desmanchar cada nó de tensão. Não tem toque íntimo. Você chega travado e sai leve.' 
     }
   },
   {
-    id: 'naturista', color: '#2c2c2e', accent: '#a8a8aa', price: 240, min: 60, isCombo: false,
+    id: 'naturista', color: '#0f766e', accent: '#ccfbf1', price: 240, min: 60, isCombo: false,
     PT: { 
-      title: 'Opção 2: Clássica Naturista', 
-      subtitle: 'Relaxamento profundo em total liberdade.', 
+      title: 'Clássica Naturista', 
+      subtitle: 'Sem roupas, sem amarras.', 
       service: 'Massagem Naturista', 
-      desc: 'Quer relaxar sem amarras? Essa é a massagem clássica, mas nós dois ficamos completamente nus. A pele respira e o toque flui melhor. O foco é soltar a musculatura. Não rola toque íntimo, apenas a troca, o respeito e a leveza do naturismo.' 
+      desc: 'O mesmo alívio muscular da massagem clássica, mas nós dois ficamos totalmente sem roupa. O corpo respira e as mãos deslizam bem melhor. Não rola toque íntimo, é puramente a liberdade e o respeito do naturismo.' 
     }
   },
   {
-    id: 'sensitiva', color: '#4a3000', accent: '#f5a623', price: 200, min: 60, isCombo: false,
+    id: 'sensitiva', color: '#b45309', accent: '#fef3c7', price: 200, min: 60, isCombo: false,
     PT: { 
-      title: 'Opção 3: Sensorial', 
+      title: 'Sensorial (Tântrica)', 
       subtitle: 'Começa relaxando, termina aliviando.', 
       service: 'Sensitiva / Tântrica', 
-      desc: 'Uma jornada que começa nas costas e termina onde você precisa. Eu destravo seus músculos primeiro. Depois a gente evolui para toques mais sutis na pele até chegar na técnica íntima final. Corpo leve e mente vazia.' 
+      desc: 'A gente começa pelas costas para tirar sua tensão. Quando seu corpo solta, o toque muda. Fica mais leve, sentindo mais a pele, e evolui aos poucos até a técnica íntima final para você gozar.' 
     }
   },
   {
-    id: 'fusion', color: '#4a001a', accent: '#ff2d55', price: 250, min: 60, isCombo: false,
+    id: 'fusion', color: '#9f1239', accent: '#ffe4e6', price: 250, min: 60, isCombo: false,
     PT: { 
-      title: 'Opção 4: Fusion', 
-      subtitle: 'Mais contato físico e calor.', 
+      title: 'Experiência Fusion', 
+      subtitle: 'Corpo a corpo e calor.', 
       service: 'Experiência Fusion', 
-      desc: 'Mais proximidade. Eu fico de cueca e a massagem ganha muito contato corpo a corpo. O toque da minha barba ajuda a arrepiar a pele enquanto relaxamos seu corpo. Finalizamos com uma técnica íntima bem prolongada.' 
+      desc: 'O contato fica muito mais perto. Eu fico só de cueca e a gente tem muito atrito de pele. O toque da minha barba ajuda a arrepiar o corpo todo, e a gente termina com uma finalização bem demorada.' 
     }
   },
   {
-    id: 'nuru', color: '#001a4a', accent: '#0a84ff', price: 350, min: 60, isCombo: false,
+    id: 'nuru', color: '#1e3a8a', accent: '#dbeafe', price: 350, min: 60, isCombo: false,
     PT: { 
-      title: 'Opção 5: Nuru', 
-      subtitle: 'Escorregadio e intenso.', 
+      title: 'Massagem Nuru', 
+      subtitle: 'Muito gel e imersão total.', 
       service: 'Massagem Nuru', 
-      desc: 'Imersão total. A gente tira tudo e usa muito gel deslizante. O contato é cem por cento corpo a corpo, escorregando pele na pele até você chegar no ápice. Sem pressa e muito intenso.' 
+      desc: 'A gente tira tudo. Eu uso muito gel para escorregar sem esforço. É o meu corpo colado no seu, pele na pele, deslizando devagar até você chegar no limite do prazer.' 
     }
   },
   {
-    id: 'reversa', color: '#003314', accent: '#30d158', price: 400, min: 60, isCombo: false,
+    id: 'reversa', color: '#166534', accent: '#dcfce3', price: 400, min: 60, isCombo: false,
     PT: { 
-      title: 'Opção 6: Reversa', 
-      subtitle: 'Você no controle.', 
+      title: 'Massagem Reversa', 
+      subtitle: 'Você no controle de tudo.', 
       service: 'Massagem Reversa', 
-      desc: 'Aqui a regra muda. Eu começo cuidando do seu corpo para tirar o estresse, mas logo você assume o controle. Você explora, toca e dita o ritmo no meu corpo até nós dois chegarmos lá juntos.' 
+      desc: 'Eu começo relaxando o seu corpo, mas logo você assume o comando. Você tem a liberdade de tocar, explorar e ditar o ritmo no meu corpo até nós dois gozarmos juntos.' 
     }
   }
 ];
 
 const ESTETICA = [
   {
-    id: 'depilacao_solo', color: '#004040', accent: '#64d2ff', price: 107, min: 40, isCombo: false,
+    id: 'depilacao_solo', color: '#374151', accent: '#e5e7eb', price: 107, min: 40, isCombo: false,
     PT: { 
       title: 'Limpeza e Cuidado', 
-      subtitle: 'Aparo na máquina e hidratação.', 
+      subtitle: 'Máquina e hidratação na pele.', 
       service: 'Estética Corporal', 
-      desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo usando o pente 0 ou o pente 3. Finalizamos com um creme para acalmar e hidratar a pele.' 
+      desc: 'Aparo de pelos no corpo usando máquina com os pentes 0 ou 3. Você escolhe até 3 áreas para limpar. Fechamos passando um creme para acalmar a pele recém-aparada.' 
     }
   }
 ];
 
 const COMBOS = [
   {
-    id: 'combo_depil_classica', color: '#1a1a1c', accent: '#ffffff', price: 270, min: 100, isCombo: true,
+    id: 'combo_depil_classica', color: '#111827', accent: '#ffffff', price: 270, min: 100, isCombo: true,
     PT: { 
       title: 'Renovação Completa', 
-      subtitle: 'Depilação + Clássica.', 
+      subtitle: 'Aparo na máquina + Massagem Clássica.', 
       service: '1 Encontro Duplo', 
-      desc: 'Aparo na máquina em até 3 lugares. Depois partimos para a Massagem Clássica para destravar o corpo todo. De R$ 287 por R$ 270.' 
+      desc: 'Limpamos até 3 áreas do seu corpo na máquina e já emendamos com a Massagem Clássica pesada para soltar toda a sua musculatura de uma vez só.' 
     }
   },
   {
-    id: 'combo_tantrica_2', color: '#2c1a2c', accent: '#ff375f', price: 590, min: 60, isCombo: true,
+    id: 'combo_tantrica_2', color: '#4c1d95', accent: '#ede9fe', price: 590, min: 60, isCombo: true,
     PT: { 
-      title: 'Intensidade (Nuru + Reversa)', 
-      subtitle: 'Exploração em duas visitas.', 
+      title: 'Intensidade Extrema', 
+      subtitle: 'Uma sessão Nuru e uma Reversa.', 
       service: '2 Encontros', 
-      desc: 'Uma sessão Nuru e uma Reversa marcadas em dias diferentes. Ambas começam soltando o corpo para uma finalização intensa. De R$ 750 por R$ 590.' 
+      desc: 'Você marca dois dias diferentes no mês. Um dia fazemos a Nuru com gel, no outro você assume o controle na Reversa. As duas começam relaxando o corpo primeiro.' 
     }
   }
 ];
 
 const EXTRAS = [
-  { id: 'aroma', price: 20, PT: { label: 'Óleos essenciais relaxantes' } },
-  { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' } },
-  { id: 'depilacao_extra', price: 107, PT: { label: 'Aparo máq (3 lugares) + Creme' } }
+  { id: 'aroma', price: 20, PT: { label: 'Óleos de essência relaxantes' } },
+  { id: 'time', price: 75, PT: { label: 'Adicionar mais 30 minutos' } },
+  { id: 'depilacao_extra', price: 107, PT: { label: 'Aparo com máquina (3 lugares)' } }
 ];
 
 // ==================================================================================
@@ -203,71 +203,88 @@ const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: n
 ));
 
 // ==================================================================================
-// ESTILOS IOS 2026
+// ESTILOS UX/UI PREMIUM
 // ==================================================================================
-const IosStyles = memo(() => (
+const PremiumStyles = memo(() => (
   <style dangerouslySetInnerHTML={{ __html: `
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
     :root {
-      --bg: #000000;
-      --surface: #1c1c1e;
-      --surface-elevated: #2c2c2e;
-      --text: #f5f5f7;
-      --text-muted: #86868b;
+      --bg-base: #09090b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
       --accent: #ffffff;
     }
 
-    *, *::before, *::after { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+    *, *::before, *::after { 
+      box-sizing: border-box; 
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
+    }
     
     body, html { 
-      background-color: var(--bg); 
-      color: var(--text); 
+      background-color: var(--bg-base); 
+      color: var(--text-main); 
       margin: 0; padding: 0;
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior-y: none;
       scroll-behavior: smooth;
     }
 
+    /* Fundo com orbes para realçar o efeito de vidro */
+    .bg-orbs {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+      background: var(--bg-base);
+    }
+    .orb-1, .orb-2 {
+      position: absolute; border-radius: 50%; filter: blur(100px);
+      transition: all 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+      opacity: 0.4;
+    }
+    .orb-1 { top: -10%; left: -20%; width: 70vw; height: 70vw; }
+    .orb-2 { bottom: -10%; right: -20%; width: 80vw; height: 80vw; }
+
+    /* Efeito de Vidro Refinado */
     .glass-panel {
-      background: rgba(28, 28, 30, 0.6);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(25, 25, 28, 0.35);
+      backdrop-filter: blur(32px);
+      -webkit-backdrop-filter: blur(32px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
       border-radius: 24px;
     }
 
-    .ios-input {
-      background: var(--surface-elevated);
-      border: 1px solid transparent;
-      color: var(--text);
+    .glass-input {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
       border-radius: 16px;
-      padding: 16px;
+      padding: 18px 20px;
       width: 100%;
-      font-size: 16px;
-      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.3s ease;
       outline: none;
     }
-    .ios-input:focus {
-      background: rgba(44, 44, 46, 0.8);
-      border-color: rgba(255,255,255,0.2);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    .glass-input:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.25);
     }
-    .ios-input::placeholder { color: var(--text-muted); }
+    .glass-input::placeholder { color: var(--text-muted); font-weight: 400; }
 
-    .ios-button {
+    .primary-btn {
       background: var(--accent);
       color: #000;
       border-radius: 20px;
-      font-weight: 600;
-      transition: transform 0.2s, opacity 0.2s;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      transition: transform 0.2s, opacity 0.2s, background-color 0.2s;
       cursor: pointer;
     }
-    .ios-button:active { transform: scale(0.97); opacity: 0.8; }
+    .primary-btn:active { transform: scale(0.97); opacity: 0.9; }
 
-    .step-enter { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    @keyframes slideUp {
-      0% { opacity: 0; transform: translateY(20px); }
+    .step-enter { animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    @keyframes fadeSlideUp {
+      0% { opacity: 0; transform: translateY(24px); }
       100% { opacity: 1; transform: translateY(0); }
     }
 
@@ -303,9 +320,8 @@ export default function App() {
   });
 
   useEffect(() => {
-    // Verifica se já aceitou os termos para pular o Gatekeeper (Step 0)
-    const hasOnboarded = localStorage.getItem('thaly_onboard_v27');
-    const hasBookedBefore = localStorage.getItem('thaly_returning_v27');
+    const hasOnboarded = localStorage.getItem('thaly_onboard_v28');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v28');
     
     if (hasOnboarded === 'yes') setStep(1);
     if (hasBookedBefore === 'yes') setIsReturningClient(true);
@@ -318,7 +334,7 @@ export default function App() {
       setTimeout(() => {
         const el = document.getElementById(`step-${step}`);
         if (el) {
-          const y = el.getBoundingClientRect().top + window.scrollY - 20;
+          const y = el.getBoundingClientRect().top + window.scrollY - 30;
           window.scrollTo({ top: y, behavior: 'smooth' });
         }
       }, 150);
@@ -329,7 +345,7 @@ export default function App() {
 
   const acceptTermsAndContinue = () => {
     vibrate(30);
-    localStorage.setItem('thaly_onboard_v27', 'yes');
+    localStorage.setItem('thaly_onboard_v28', 'yes');
     setStep(1);
   };
 
@@ -347,8 +363,8 @@ export default function App() {
 
   const resetFlow = () => {
     vibrate(20);
-    const hasOnboarded = localStorage.getItem('thaly_onboard_v27');
-    const hasBookedBefore = localStorage.getItem('thaly_returning_v27');
+    const hasOnboarded = localStorage.getItem('thaly_onboard_v28');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_v28');
     
     setIsReturningClient(hasBookedBefore === 'yes');
     setGiftApplied(false);
@@ -435,10 +451,10 @@ export default function App() {
     const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
     let locationText = data.locType === 'studio' ? 
-      `Minha Suíte (Bela Vista)` : 
+      `Sua Suíte (Bela Vista)` : 
       `${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''} - ${data.bairro}`;
 
-    let text = `Oi Thalyson, fechei a reserva no site e vim confirmar.\n\n`;
+    let text = `Oi Thalyson, fechei pelo site e vim confirmar meu horário.\n\n`;
     text += `*Nome:* ${data.name}\n`;
     text += `*Sessão:* ${mood.PT.title}\n`;
     text += `*Data:* ${dStr} às ${data.time} (Até ${fin.dur} min)\n`;
@@ -453,14 +469,14 @@ export default function App() {
 
     text += `*Acerto:* ${formatMoney(fin.total)} (via ${paymentMethod})\n`;
     if (appliedCoupon) text += `_Cupom usado: ${appliedCoupon}_\n`;
-    text += `\nAguardo a confirmação do endereço!`;
+    text += `\nAguardo você me confirmar o endereço!`;
     
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
   }, [data, mood, fin, appliedCoupon]);
 
   const finishFlow = () => {
     vibrate([30,50]);
-    localStorage.setItem('thaly_returning_v27', 'yes');
+    localStorage.setItem('thaly_returning_v28', 'yes');
     setIsReturningClient(true);
     setStep(5);
     window.location.href = wppLink;
@@ -473,20 +489,24 @@ export default function App() {
 
   return (
     <div className="relative min-h-[100dvh] pb-24">
-      {/* Background suave que muda conforme a sessão escolhida */}
-      <div className="fixed inset-0 z-0 transition-colors duration-1000 ease-in-out opacity-20" style={{ backgroundColor: step === 0 ? '#1c1c1e' : mood.color }} />
-      <IosStyles />
+      <PremiumStyles />
+      
+      {/* Background com orbes para o efeito de vidro funcionar bem */}
+      <div className="bg-orbs">
+        <div className="orb-1" style={{ backgroundColor: step === 0 ? '#1f2937' : mood.color }} />
+        <div className="orb-2" style={{ backgroundColor: step === 0 ? '#0f172a' : mood.color, opacity: 0.2 }} />
+      </div>
 
       <div className="relative z-10 px-5 pt-8 max-w-md mx-auto">
         
-        {/* CABEÇALHO IOS (Escondido na tela inicial de Gatekeeper) */}
+        {/* CABEÇALHO */}
         {step > 0 && (
-          <header className="flex justify-between items-center mb-8 step-enter">
-            <button onClick={() => setIsProfileOpen(true)} className="flex items-center gap-3 active:scale-95 transition-transform">
-              <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-12 h-12 rounded-full object-cover border border-white/20" />
+          <header className="flex justify-between items-center mb-10 step-enter">
+            <button onClick={() => setIsProfileOpen(true)} className="flex items-center gap-4 active:scale-95 transition-transform">
+              <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-lg" />
               <div className="text-left">
-                <p className="text-sm font-semibold text-white">Thalyson Massagens</p>
-                <p className="text-xs text-[#86868b]">Terapeuta</p>
+                <p className="text-[15px] font-bold text-white tracking-tight">Thalyson Massagens</p>
+                <p className="text-[13px] text-white/60 font-medium">Bela Vista, SP</p>
               </div>
             </button>
           </header>
@@ -494,96 +514,98 @@ export default function App() {
 
         {/* MODAL DO PERFIL */}
         {isProfileOpen && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setIsProfileOpen(false)}>
-            <div className="glass-panel w-full sm:max-w-sm m-2 sm:m-0 p-8 relative step-enter" onClick={e => e.stopPropagation()}>
-              <button onClick={() => setIsProfileOpen(false)} className="absolute top-4 right-4 p-2 bg-white/10 rounded-full active:scale-90">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-md" onClick={() => setIsProfileOpen(false)}>
+            <div className="glass-panel w-full sm:max-w-sm m-3 sm:m-0 p-8 relative step-enter" onClick={e => e.stopPropagation()}>
+              <button onClick={() => setIsProfileOpen(false)} className="absolute top-5 right-5 p-2 bg-white/10 rounded-full active:scale-90 transition-transform">
                 <Icon name="close" size={20} className="text-white" />
               </button>
-              <img src="FmtU3Ogx_400x400.jpg" className="w-20 h-20 rounded-full object-cover mb-4" alt="Thalyson" />
-              <h2 className="text-2xl font-semibold mb-1">Thalyson</h2>
-              <p className="text-[#86868b] text-sm mb-6">30 anos • Bela Vista, SP</p>
-              <div className="space-y-4 text-sm text-[#d1d1d6] leading-relaxed">
-                <p>O que eu faço é simples: uso o toque para tirar o peso da sua rotina e entregar uma experiência onde você só precisa fechar os olhos e aproveitar.</p>
+              
+              <img src="FmtU3Ogx_400x400.jpg" className="w-20 h-20 rounded-full object-cover mb-5 border border-white/20 shadow-xl" alt="Thalyson" />
+              <h2 className="text-2xl font-bold tracking-tight mb-1 text-white">Thalyson</h2>
+              <p className="text-white/60 text-sm font-medium mb-6">30 anos • Atendimento individual</p>
+              
+              <div className="space-y-4 text-[15px] text-white/90 leading-relaxed font-medium">
+                <p>Eu atendo de forma simples e discreta aqui na Bela Vista.</p>
+                <p>O foco do meu trabalho é usar o toque para tirar o peso e o cansaço do seu dia a dia. Você só precisa chegar, deitar e deixar o corpo aproveitar.</p>
               </div>
-              <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="mt-8 flex items-center justify-center gap-2 bg-white/10 py-3 rounded-xl text-sm font-semibold active:scale-95 transition-transform">
-                <Icon name="instagram" size={18} /> Instagram
+              
+              <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="mt-8 flex items-center justify-center gap-2 bg-white text-black py-4 rounded-2xl text-[15px] font-bold active:scale-95 transition-transform">
+                <Icon name="instagram" size={18} /> Ver no Instagram
               </a>
             </div>
           </div>
         )}
 
-        {/* STEP 0: GATEKEEPER (Boas-Vindas, Privacidade e +18) */}
+        {/* STEP 0: BOAS-VINDAS E TERMOS */}
         {step === 0 && (
           <div className="flex-1 flex flex-col justify-center step-enter pt-12 pb-10">
-            <div className="text-center mb-8">
-              <div className="w-20 h-20 mx-auto rounded-full bg-white/10 flex items-center justify-center mb-6">
-                <Icon name="lock" size={32} className="text-white" />
+            <div className="text-center mb-10">
+              <div className="w-16 h-16 mx-auto rounded-2xl glass-panel flex items-center justify-center mb-6 shadow-xl">
+                <Icon name="lock" size={28} className="text-white" />
               </div>
-              <h1 className="text-3xl font-bold mb-3">Bem-vindo(a)</h1>
-              <p className="text-[#86868b] text-sm px-4">Antes de agendar sua sessão, por favor, confirme os termos abaixo.</p>
+              <h1 className="text-3xl font-bold tracking-tight mb-3 text-white">Antes de começar</h1>
+              <p className="text-white/60 text-[15px] px-2 font-medium">Por favor, leia os avisos abaixo antes de seguir para a agenda.</p>
             </div>
 
             <div className="space-y-4 mb-10">
-              {/* Card Privacidade */}
-              <div className="glass-panel p-5 rounded-3xl flex gap-4 items-start">
-                <div className="mt-1"><Icon name="shield" size={24} className="text-[#64d2ff]"/></div>
+              <div className="glass-panel p-6 flex gap-5 items-start">
+                <div className="mt-0.5"><Icon name="shield" size={24} className="text-white/80"/></div>
                 <div>
-                  <h3 className="font-semibold text-white mb-1">Privacidade Total</h3>
-                  <p className="text-[#86868b] text-sm leading-relaxed">Fique tranquilo, nenhum dado preenchido aqui é salvo. Tudo acontece no seu celular e vai direto para o WhatsApp.</p>
+                  <h3 className="font-bold text-white text-[16px] mb-2 tracking-tight">Privacidade Garantida</h3>
+                  <p className="text-white/60 text-[14px] leading-relaxed font-medium">Nada que você digita aqui fica salvo. Suas escolhas vão direto para o meu WhatsApp de forma segura.</p>
                 </div>
               </div>
               
-              {/* Card +18 */}
-              <div className="glass-panel p-5 rounded-3xl flex gap-4 items-start">
-                <div className="mt-1"><Icon name="user" size={24} className="text-[#ff375f]"/></div>
+              <div className="glass-panel p-6 flex gap-5 items-start">
+                <div className="mt-0.5"><Icon name="user" size={24} className="text-white/80"/></div>
                 <div>
-                  <h3 className="font-semibold text-white mb-1">Ambiente Reservado</h3>
-                  <p className="text-[#86868b] text-sm leading-relaxed">O atendimento é estritamente individual. As sessões focam no relaxamento e algumas opções envolvem nudez e toques íntimos.</p>
+                  <h3 className="font-bold text-white text-[16px] mb-2 tracking-tight">Ambiente Reservado</h3>
+                  <p className="text-white/60 text-[14px] leading-relaxed font-medium">O atendimento é individual. Algumas massagens envolvem nudez total e toque íntimo. Você precisa ser maior de 18 anos.</p>
                 </div>
               </div>
             </div>
 
-            <button onClick={acceptTermsAndContinue} className="ios-button w-full py-4 text-lg">
-              Tenho mais de 18 anos e Concordo
+            <button onClick={acceptTermsAndContinue} className="primary-btn w-full py-5 text-[16px]">
+              Sou maior de 18 anos e Concordo
             </button>
           </div>
         )}
 
-        {/* O FLUXO DE AGENDAMENTO (Steps 1 ao 5) */}
+        {/* FLUXO PRINCIPAL */}
         <div className={step >= 1 && step < 5 ? "block" : "hidden"}>
           
           {/* STEP 1: CATEGORIAS E SERVIÇOS */}
-          <div id="step-1" className="step-enter mb-12">
-            <p className="text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-1">{T.step1Label}</p>
-            <h1 className="text-3xl font-bold mb-6">{T.step1Title}</h1>
+          <div id="step-1" className="step-enter mb-14">
+            <p className="text-[13px] font-bold text-white/50 uppercase tracking-widest mb-2">{T.step1Label}</p>
+            <h1 className="text-3xl font-bold tracking-tight mb-8 text-white">{T.step1Title}</h1>
             
-            <div className="flex bg-[#1c1c1e] p-1 rounded-[20px] mb-6 border border-white/5">
+            <div className="flex glass-panel p-1.5 mb-8">
               <button onClick={() => { vibrate(10); setBookingMode('single'); }} 
-                className={`flex-1 py-3 text-sm font-semibold rounded-2xl transition-all ${bookingMode === 'single' ? 'bg-[#2c2c2e] text-white shadow-sm' : 'text-[#86868b]'}`}>
+                className={`flex-1 py-3 text-[14px] font-bold rounded-[18px] transition-all ${bookingMode === 'single' ? 'bg-white/10 text-white shadow-sm' : 'text-white/40'}`}>
                 {T.tabSingle}
               </button>
               <button onClick={() => { vibrate(10); setBookingMode('combo'); }} 
-                className={`flex-1 py-3 text-sm font-semibold rounded-2xl transition-all ${bookingMode === 'combo' ? 'bg-[#2c2c2e] text-white shadow-sm' : 'text-[#86868b]'}`}>
+                className={`flex-1 py-3 text-[14px] font-bold rounded-[18px] transition-all ${bookingMode === 'combo' ? 'bg-white/10 text-white shadow-sm' : 'text-white/40'}`}>
                 {T.tabCombo}
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {activeList.map(m => {
                 const active = mood.id === m.id;
                 return (
                   <button key={m.id} onClick={() => { vibrate(15); setMoodId(m.id); }}
-                    className={`w-full text-left p-5 transition-all duration-300 rounded-[24px] border ${active ? 'glass-panel border-white/30' : 'bg-[#1c1c1e] border-white/5'}`}>
-                    <div className="flex justify-between items-start mb-1">
-                      <p className={`font-semibold ${active ? 'text-white' : 'text-[#d1d1d6]'}`}>{m.PT.title}</p>
-                      <span className="text-sm font-semibold">{formatMoney(m.price)}</span>
+                    className={`w-full text-left p-6 transition-all duration-300 rounded-[24px] border ${active ? 'glass-panel border-white/20 shadow-2xl' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}>
+                    <div className="flex justify-between items-center mb-2">
+                      <p className={`text-[17px] font-bold tracking-tight ${active ? 'text-white' : 'text-white/80'}`}>{m.PT.title}</p>
+                      <span className={`text-[15px] font-bold ${active ? 'text-white' : 'text-white/60'}`}>{formatMoney(m.price)}</span>
                     </div>
-                    <p className={`text-sm ${active ? 'text-[#e5e5ea]' : 'text-[#86868b]'}`}>{m.PT.subtitle}</p>
+                    <p className={`text-[14px] font-medium ${active ? 'text-white/80' : 'text-white/50'}`}>{m.PT.subtitle}</p>
                     
                     {active && (
-                      <div className="mt-4 pt-4 border-t border-white/10 step-enter">
-                        <p className="text-sm text-[#d1d1d6] leading-relaxed">{m.PT.desc}</p>
-                        <p className="text-xs text-[#86868b] mt-3">• Duração de até {m.min} min</p>
+                      <div className="mt-5 pt-5 border-t border-white/10 step-enter">
+                        <p className="text-[15px] text-white/90 leading-relaxed font-medium">{m.PT.desc}</p>
+                        <p className="text-[13px] font-bold text-white/40 mt-4 uppercase tracking-wider">Até {m.min} minutos</p>
                       </div>
                     )}
                   </button>
@@ -592,7 +614,7 @@ export default function App() {
             </div>
 
             {step === 1 && (
-              <button onClick={() => { vibrate(20); setStep(2); }} className="ios-button mt-8 w-full py-4 text-lg">
+              <button onClick={() => { vibrate(20); setStep(2); }} className="primary-btn mt-10 w-full py-5 text-[16px]">
                 {T.btnContinue}
               </button>
             )}
@@ -600,35 +622,35 @@ export default function App() {
 
           {/* STEP 2: DADOS E LOCAL */}
           {step >= 2 && (
-            <div id="step-2" className="step-enter mb-12 pt-8 border-t border-white/10">
-              <p className="text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-1">{T.step2Label}</p>
-              <h1 className="text-3xl font-bold mb-6">{T.step2Title}</h1>
+            <div id="step-2" className="step-enter mb-14 pt-10 border-t border-white/10">
+              <p className="text-[13px] font-bold text-white/50 uppercase tracking-widest mb-2">{T.step2Label}</p>
+              <h1 className="text-3xl font-bold tracking-tight mb-8 text-white">{T.step2Title}</h1>
 
-              <div className="space-y-4">
-                <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="ios-input" />
+              <div className="space-y-5">
+                <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="glass-input" />
 
-                <div className="pt-4 grid grid-cols-2 gap-3">
-                  <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-sm font-semibold rounded-2xl transition-all border ${data.locType==='studio' ? 'glass-panel border-white/30 text-white' : 'bg-[#1c1c1e] border-white/5 text-[#86868b]'}`}>Suíte (Bela Vista)</button>
-                  <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-sm font-semibold rounded-2xl transition-all border ${data.locType==='home' ? 'glass-panel border-white/30 text-white' : 'bg-[#1c1c1e] border-white/5 text-[#86868b]'}`}>Vou até você</button>
+                <div className="pt-2 grid grid-cols-2 gap-3">
+                  <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-[15px] font-bold rounded-[20px] transition-all border ${data.locType==='studio' ? 'glass-panel border-white/20 text-white' : 'bg-white/5 border-white/5 text-white/50'}`}>Minha Suíte</button>
+                  <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-[15px] font-bold rounded-[20px] transition-all border ${data.locType==='home' ? 'glass-panel border-white/20 text-white' : 'bg-white/5 border-white/5 text-white/50'}`}>Vou até você</button>
                 </div>
 
-                {data.locType === 'studio' && <p className="text-sm text-[#86868b] bg-[#1c1c1e] p-4 rounded-2xl step-enter">{T.studioDesc}</p>}
+                {data.locType === 'studio' && <p className="text-[14px] text-white/70 glass-panel p-5 font-medium leading-relaxed step-enter">{T.studioDesc}</p>}
                 
                 {data.locType === 'home' && (
-                  <div className="space-y-3 step-enter">
-                    <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} className="ios-input" />
-                    <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="ios-input" />
-                    <div className="flex gap-3">
-                      <input ref={numberInputRef} type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="ios-input w-1/3" />
-                      <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="ios-input w-2/3" />
+                  <div className="space-y-4 step-enter">
+                    <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} className="glass-input" />
+                    <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="glass-input" />
+                    <div className="flex gap-4">
+                      <input ref={numberInputRef} type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="glass-input w-1/3" />
+                      <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="glass-input w-2/3" />
                     </div>
-                    <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="ios-input" />
+                    <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="glass-input" />
                   </div>
                 )}
               </div>
 
               {step === 2 && (
-                <button disabled={!isStep2Valid} onClick={() => { vibrate(20); setStep(3); }} className="ios-button mt-8 w-full py-4 text-lg disabled:opacity-30">
+                <button disabled={!isStep2Valid} onClick={() => { vibrate(20); setStep(3); }} className="primary-btn mt-10 w-full py-5 text-[16px] disabled:opacity-20 disabled:cursor-not-allowed">
                   {T.btnNext}
                 </button>
               )}
@@ -637,18 +659,18 @@ export default function App() {
 
           {/* STEP 3: DATA E HORA */}
           {step >= 3 && (
-            <div id="step-3" className="step-enter mb-12 pt-8 border-t border-white/10">
-              <p className="text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-1">{T.step3Label}</p>
-              <h1 className="text-3xl font-bold mb-6">{T.step3Title}</h1>
+            <div id="step-3" className="step-enter mb-14 pt-10 border-t border-white/10">
+              <p className="text-[13px] font-bold text-white/50 uppercase tracking-widest mb-2">{T.step3Label}</p>
+              <h1 className="text-3xl font-bold tracking-tight mb-8 text-white">{T.step3Title}</h1>
 
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-5 px-5 pb-2 mb-6">
+              <div className="flex gap-4 overflow-x-auto hide-scrollbar -mx-5 px-5 pb-4 mb-6">
                 {days.map((d, i) => {
                   const sel = data.date?.toDateString() === d.toDateString();
                   const dayName = d.toLocaleDateString('pt-BR', {weekday:'short'}).slice(0,3);
                   return (
-                    <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 w-16 h-[88px] flex flex-col items-center justify-center rounded-[20px] transition-all border ${sel ? 'glass-panel border-white/30 text-white' : 'bg-[#1c1c1e] border-white/5 text-[#86868b]'}`}>
-                      <span className="text-[11px] uppercase font-bold mb-1">{dayName}</span>
-                      <span className="text-2xl font-semibold">{d.getDate()}</span>
+                    <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 w-[72px] h-[96px] flex flex-col items-center justify-center rounded-[24px] transition-all border ${sel ? 'glass-panel border-white/20 text-white shadow-xl' : 'bg-white/5 border-white/5 text-white/40'}`}>
+                      <span className="text-[12px] uppercase font-bold tracking-widest mb-1.5">{dayName}</span>
+                      <span className="text-[26px] font-bold">{d.getDate()}</span>
                     </button>
                   )
                 })}
@@ -660,12 +682,12 @@ export default function App() {
                     const sel = data.time === t;
                     return (
                       <button key={t} onClick={() => { vibrate(15); setData({...data, time: t}); if (step === 3) setStep(4); }} 
-                        className={`py-4 text-sm font-semibold rounded-2xl transition-all border ${sel ? 'glass-panel border-white/30 text-white' : 'bg-[#1c1c1e] border-white/5 text-[#86868b]'}`}>
+                        className={`py-4 text-[15px] font-bold rounded-[20px] transition-all border ${sel ? 'glass-panel border-white/20 text-white' : 'bg-white/5 border-white/5 text-white/50 hover:bg-white/10'}`}>
                         {t}
                       </button>
                     )
                   })}
-                  {getSlots().length === 0 && <p className="col-span-3 text-sm text-[#86868b] text-center py-4 bg-[#1c1c1e] rounded-2xl">{T.noSlots}</p>}
+                  {getSlots().length === 0 && <p className="col-span-3 text-[14px] font-medium text-white/50 text-center py-5 glass-panel">{T.noSlots}</p>}
                 </div>
               )}
             </div>
@@ -673,55 +695,55 @@ export default function App() {
 
           {/* STEP 4: ACORDO */}
           {step >= 4 && (
-            <div id="step-4" className="step-enter mb-8 pt-8 border-t border-white/10">
-              <p className="text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-1">{T.step4Label}</p>
-              <h1 className="text-3xl font-bold mb-6">{T.step4Title}</h1>
+            <div id="step-4" className="step-enter mb-10 pt-10 border-t border-white/10">
+              <p className="text-[13px] font-bold text-white/50 uppercase tracking-widest mb-2">{T.step4Label}</p>
+              <h1 className="text-3xl font-bold tracking-tight mb-8 text-white">{T.step4Title}</h1>
 
-              <div className="space-y-6">
+              <div className="space-y-8">
                 
                 {/* Cupons e Presentes */}
-                <div className="bg-[#1c1c1e] border border-white/5 p-5 rounded-3xl space-y-4">
+                <div className="glass-panel p-6 space-y-5">
                   {!isReturningClient && !appliedCoupon && !giftApplied && (
-                    <div className="bg-[#30d158]/10 p-4 rounded-2xl flex justify-between items-center">
+                    <div className="bg-white/5 border border-white/10 p-5 rounded-[20px] flex justify-between items-center">
                       <div>
-                        <p className="text-[#30d158] font-semibold text-sm">{T.giftTitle}</p>
-                        <p className="text-[#30d158]/70 text-xs mt-1">R$ 15 OFF na primeira vez</p>
+                        <p className="text-white font-bold text-[15px]">{T.giftTitle}</p>
+                        <p className="text-white/60 font-medium text-[13px] mt-1">R$ 15 OFF agora</p>
                       </div>
-                      <button onClick={() => { vibrate(20); setGiftApplied(true); }} className="bg-[#30d158] text-black text-xs font-bold px-4 py-2 rounded-full active:scale-95">Usar</button>
+                      <button onClick={() => { vibrate(20); setGiftApplied(true); }} className="bg-white text-black text-[13px] font-bold px-5 py-2.5 rounded-full active:scale-95 transition-transform">Pegar</button>
                     </div>
                   )}
                   {giftApplied && (
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-[#30d158] font-semibold flex items-center gap-2"><Icon name="check" size={16}/> Presente Ativo</span>
-                      <button onClick={() => setGiftApplied(false)} className="text-[#86868b] text-xs underline">Remover</button>
+                    <div className="flex justify-between items-center text-[14px] bg-white/10 p-4 rounded-[16px]">
+                      <span className="text-white font-bold flex items-center gap-2"><Icon name="check" size={18}/> Presente aplicado</span>
+                      <button onClick={() => setGiftApplied(false)} className="text-white/50 font-medium underline">Remover</button>
                     </div>
                   )}
 
                   {!giftApplied && (
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                       <input type="text" placeholder={T.couponPlace} value={couponInput} onChange={e => setCouponInput(e.target.value)} disabled={!!appliedCoupon}
-                        className="bg-[#2c2c2e] text-white border-none rounded-xl px-4 py-3 w-full text-sm outline-none uppercase disabled:opacity-50" />
+                        className="glass-input uppercase disabled:opacity-40" />
                       {!appliedCoupon ? (
-                        <button onClick={handleApplyCoupon} className="bg-white/10 text-white font-semibold text-sm px-5 rounded-xl active:scale-95">Aplicar</button>
+                        <button onClick={handleApplyCoupon} className="bg-white/10 text-white font-bold text-[14px] px-6 rounded-[16px] active:scale-95 transition-transform">Aplicar</button>
                       ) : (
-                        <button onClick={() => { setAppliedCoupon(''); setCouponInput(''); }} className="bg-red-500/20 text-red-400 font-semibold text-sm px-5 rounded-xl active:scale-95">Tirar</button>
+                        <button onClick={() => { setAppliedCoupon(''); setCouponInput(''); }} className="bg-white/10 text-white font-bold text-[14px] px-6 rounded-[16px] active:scale-95 transition-transform">Tirar</button>
                       )}
                     </div>
                   )}
-                  {appliedCoupon && <p className="text-xs text-[#30d158]">Cupom {appliedCoupon} aplicado.</p>}
+                  {appliedCoupon && <p className="text-[14px] font-medium text-white px-2">Cupom <strong className="text-white">{appliedCoupon}</strong> funcionando.</p>}
                 </div>
 
                 {/* Extras */}
                 <div>
-                  <p className="text-sm font-semibold text-white mb-3">{T.addons}</p>
-                  <div className="space-y-2">
+                  <p className="text-[16px] font-bold text-white mb-4 tracking-tight">{T.addons}</p>
+                  <div className="space-y-3">
                     {visibleExtras.map(ex => {
                       const sel = data.extras[ex.id];
                       return (
                         <button key={ex.id} onClick={()=>setData({...data, extras:{...data.extras, [ex.id]:!sel}})} 
-                          className={`w-full flex justify-between p-4 rounded-2xl text-sm transition-all border ${sel ? 'glass-panel border-white/30 text-white' : 'bg-[#1c1c1e] border-white/5 text-[#86868b]'}`}>
+                          className={`w-full flex justify-between p-5 rounded-[20px] text-[15px] font-medium transition-all border ${sel ? 'glass-panel border-white/20 text-white shadow-lg' : 'bg-white/5 border-white/5 text-white/60'}`}>
                           <span>{ex.PT.label}</span>
-                          <span className="font-semibold">+{formatMoney(ex.price)}</span>
+                          <span className="font-bold">+{formatMoney(ex.price)}</span>
                         </button>
                       )
                     })}
@@ -730,21 +752,21 @@ export default function App() {
 
                 {/* Pedido Especial */}
                 <div>
-                  <div className="flex justify-between items-end mb-2">
-                    <p className="text-sm font-semibold text-white">{T.reqLabel}</p>
-                    <span className="text-xs text-[#86868b]">+ R$ 130</span>
+                  <div className="flex justify-between items-end mb-3">
+                    <p className="text-[16px] font-bold text-white tracking-tight">{T.reqLabel}</p>
+                    <span className="text-[13px] font-bold text-white/50">+ R$ 130</span>
                   </div>
-                  <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="ios-input" />
-                  <p className="text-xs text-[#86868b] mt-2">{T.reqDesc}</p>
+                  <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="glass-input" />
+                  <p className="text-[13px] font-medium text-white/50 mt-3 leading-relaxed px-1">{T.reqDesc}</p>
                 </div>
 
                 {/* Pagamento */}
                 <div>
-                  <p className="text-sm font-semibold text-white mb-3">{T.payLabel}</p>
-                  <div className="grid grid-cols-3 gap-2">
+                  <p className="text-[16px] font-bold text-white mb-4 tracking-tight">{T.payLabel}</p>
+                  <div className="grid grid-cols-3 gap-3">
                     {[{id:'pix', l:T.payPix},{id:'card', l:T.payCard},{id:'cash', l:T.payCash}].map(p => (
                       <button key={p.id} onClick={()=>setData({...data, payment:p.id})} 
-                        className={`py-3 text-xs font-semibold rounded-xl border transition-all ${data.payment === p.id ? 'glass-panel border-white/30 text-white' : 'bg-[#1c1c1e] border-white/5 text-[#86868b]'}`}>
+                        className={`py-4 px-2 text-[13px] font-bold rounded-[16px] border transition-all ${data.payment === p.id ? 'glass-panel border-white/20 text-white' : 'bg-white/5 border-white/5 text-white/50'}`}>
                         {p.l}
                       </button>
                     ))}
@@ -752,23 +774,23 @@ export default function App() {
                 </div>
 
                 {/* Resumo Final */}
-                <div className="pt-6 border-t border-white/10">
-                  <div className="space-y-2 text-sm text-[#86868b]">
+                <div className="pt-8 border-t border-white/10">
+                  <div className="space-y-3 text-[15px] font-medium text-white/60">
                     <div className="flex justify-between"><span>{T.subBase}</span><span>{formatMoney(fin.basePrice)}</span></div>
                     {fin.extrasTotal > 0 && <div className="flex justify-between"><span>{T.subExtras}</span><span>+{formatMoney(fin.extrasTotal)}</span></div>}
                     {fin.reqFee > 0 && <div className="flex justify-between"><span>{T.subReq}</span><span>+{formatMoney(fin.reqFee)}</span></div>}
-                    {fin.discountGift > 0 && <div className="flex justify-between text-[#30d158]"><span>{T.subGift}</span><span>-{formatMoney(fin.discountGift)}</span></div>}
-                    {fin.couponDiscount > 0 && <div className="flex justify-between text-[#30d158]"><span>{T.subCoupon}</span><span>-{formatMoney(fin.couponDiscount)}</span></div>}
+                    {fin.discountGift > 0 && <div className="flex justify-between text-white"><span>{T.subGift}</span><span>-{formatMoney(fin.discountGift)}</span></div>}
+                    {fin.couponDiscount > 0 && <div className="flex justify-between text-white"><span>{T.subCoupon}</span><span>-{formatMoney(fin.couponDiscount)}</span></div>}
                     {fin.peakFee > 0 && <div className="flex justify-between"><span>{T.subPeak}</span><span>+{formatMoney(fin.peakFee)}</span></div>}
-                    {fin.pixDiscount > 0 && <div className="flex justify-between text-[#30d158]"><span>{T.subPix}</span><span>-{formatMoney(fin.pixDiscount)}</span></div>}
+                    {fin.pixDiscount > 0 && <div className="flex justify-between text-white"><span>{T.subPix}</span><span>-{formatMoney(fin.pixDiscount)}</span></div>}
                   </div>
                   
-                  <div className="flex justify-between items-center mt-6 mb-8">
-                    <span className="text-lg font-semibold">{T.total}</span>
-                    <span className="text-3xl font-bold">{formatMoney(fin.total)}</span>
+                  <div className="flex justify-between items-center mt-8 mb-10">
+                    <span className="text-[18px] font-bold tracking-tight text-white">{T.total}</span>
+                    <span className="text-[36px] font-bold tracking-tight text-white">{formatMoney(fin.total)}</span>
                   </div>
 
-                  <button disabled={!data.payment} onClick={finishFlow} className="ios-button w-full py-4 text-lg disabled:opacity-30">
+                  <button disabled={!data.payment} onClick={finishFlow} className="primary-btn w-full py-5 text-[17px] disabled:opacity-20 disabled:cursor-not-allowed shadow-2xl">
                     {T.btnFinish}
                   </button>
                 </div>
@@ -780,22 +802,22 @@ export default function App() {
         {/* STEP 5: FINALIZADO */}
         {step === 5 && (
           <div className="step-enter pt-16 text-center">
-            <h1 className="text-3xl font-bold mb-4">{T.step5Title}</h1>
-            <p className="text-[#86868b] text-base leading-relaxed mb-8">{T.step5Desc}</p>
+            <h1 className="text-4xl font-bold tracking-tight mb-5 text-white">{T.step5Title}</h1>
+            <p className="text-white/70 text-[16px] font-medium leading-relaxed mb-10 px-4">{T.step5Desc}</p>
             
-            <div className="glass-panel p-5 rounded-3xl mb-8 text-left flex items-start gap-3">
-              <Icon name="ticket" className="text-[#30d158] mt-0.5" size={20} />
+            <div className="glass-panel p-6 rounded-[24px] mb-10 text-left flex items-start gap-4">
+              <div className="mt-1"><Icon name="ticket" className="text-white" size={24} /></div>
               <div>
-                <p className="text-white font-semibold text-sm mb-1">Guarde seu cupom</p>
-                <p className="text-[#86868b] text-sm">Use o código <strong className="text-white">SESSAO2</strong> no site para garantir 8% de desconto na sua próxima visita.</p>
+                <p className="text-white font-bold text-[16px] mb-2 tracking-tight">Um presente para a volta</p>
+                <p className="text-white/60 font-medium text-[14px] leading-relaxed">Guarde o código <strong className="text-white">SESSAO2</strong>. Na sua próxima vez aqui no site, ele te dá 8% de desconto.</p>
               </div>
             </div>
 
-            <a href={wppLink} className="ios-button flex items-center justify-center py-4 text-lg no-underline w-full mb-4">
+            <a href={wppLink} className="primary-btn flex items-center justify-center py-5 text-[17px] no-underline w-full mb-6 shadow-2xl">
               {T.btnSend}
             </a>
 
-            <button onClick={resetFlow} className="text-[#86868b] font-semibold text-sm py-4 active:scale-95">
+            <button onClick={resetFlow} className="text-white/50 font-bold text-[14px] py-4 active:scale-95 transition-transform">
               {T.btnBack}
             </button>
           </div>
