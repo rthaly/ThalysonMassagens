@@ -96,7 +96,7 @@ const MOODS = [
       title: 'Clássica Relaxante', 
       subtitle: 'Tensão e relaxamento corporal', 
       service: 'Massagem Clássica', 
-      desc: 'Começamos relaxando todo o seu corpo para tirar a dor e relaxar o seu corpo com pressão firme. Estritamente para amassar a musculatura. Sem toques íntimos.' 
+      desc: 'Massagem Relaxante, aplicada no corpo todo, (exceção das partes íntimas), ativando toda a circulação sanguínea, trazendo relaxamento profundo e sensação de bem-estar, descanso, paz e felicidade!.' 
     }
   },
   {
