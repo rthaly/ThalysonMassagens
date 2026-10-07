@@ -1,3 +1,21 @@
+Entendi exatamente o que você quer. Analisando o print que você mandou, o layout do card estava diferente do código anterior (título e preço na mesma linha, categoria e tempo embaixo).
+
+Fiz a engenharia reversa da sua imagem e recriei **exatamente a mesma estrutura visual** do seu print, mantendo os textos originais bem tangíveis e as lógicas inteligentes (sinalização tântrica, slider e pagamentos).
+
+### O que mudou nesta versão final:
+
+1. **Layout Fiel ao Print:**
+* **Linha 1:** Título da massagem na esquerda e Preço na direita.
+* **Linha 2:** Categoria da massagem embaixo do título e Tempo ("ATÉ 60M") embaixo do preço.
+* **Linha 3:** Subtítulo de impacto (ex: "Tensão e relaxamento corporal").
+* **Linha 4:** Texto tangível completo explicando exatamente o que rola.
+
+
+2. **Tag Inteligente:** A tag vermelha `"✅ INCLUI MASSAGEM TÂNTRICA (ÍNTIMA)"` continua aparecendo automaticamente apenas na **Sensorial, Fusion, Nuru, Reversa** e nos **Pacotes** que incluem essas sessões. Na Clássica e Naturista ela fica invisível.
+
+Aqui está o código completo, corrigido e idêntico ao seu layout:
+
+```tsx
 import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 
 // ==================================================================================
@@ -5,13 +23,13 @@ import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
-  PIX_KEY: "5517991360413", // Chave Pix para o botão de copiar
+  PIX_KEY: "5517991360413",
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Bela Vista, São Paulo",
   START_HOUR: 9,
   END_HOUR: 22,
   
-  // CUPONS (Valores menores que 1 são porcentagem. Ex: 0.13 = 13%. Valores maiores são Reais. Ex: 50 = R$ 50)
+  // CUPONS
   COUPONS: {
     "SESSAO2": 0.08,
     "RELAXAR13": 0.13,
@@ -24,7 +42,7 @@ const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 const PEAK_FEE = 15;
 
 // ==================================================================================
-// DICIONÁRIO E TEXTOS (UI Simplificada)
+// DICIONÁRIO E TEXTOS
 // ==================================================================================
 const TEXTS = {
   PT: {
@@ -37,7 +55,7 @@ const TEXTS = {
     tabSingle: "Avulsas",
     tabEstetica: "Depilação",
     tabCombo: "Pacotes",
-    upTo: "Até",
+    upTo: "ATÉ",
     btnContinue: "Continuar para Local",
     step2Label: "Etapa 02",
     step2Title: "Quem e Onde.",
@@ -91,9 +109,8 @@ const TEXTS = {
 };
 
 // ==================================================================================
-// MASSAGENS COM TEXTOS ORIGINAIS E FLAG DE TÂNTRICA
+// MASSAGENS E SERVIÇOS (LÓGICA TÂNTRICA APLICADA)
 // ==================================================================================
-// Ordenados por valor/intensidade para o slider funcionar de forma lógica
 const MOODS = [
   {
     id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false, hasTantrica: false,
@@ -179,7 +196,7 @@ const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: n
 ));
 
 // ==================================================================================
-// ESTILOS E ANIMAÇÕES
+// ESTILOS CINEMATOGRÁFICOS
 // ==================================================================================
 const CinematicStyles = memo(() => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -190,7 +207,7 @@ const CinematicStyles = memo(() => (
     :root {
       --font-ui: 'DM Sans', sans-serif;
       --font-serif: 'Newsreader', serif;
-      --c-bg: #09090b;
+      --c-bg: #111111; /* Fundo levemente mais escuro para combinar com o print */
       --c-text: #fafafa;
     }
 
@@ -239,13 +256,13 @@ const CinematicStyles = memo(() => (
       -webkit-appearance: none; width: 100%; background: transparent; outline: none; margin: 0;
     }
     .custom-slider::-webkit-slider-thumb {
-      -webkit-appearance: none; height: 32px; width: 32px; border-radius: 50%;
-      background: white; margin-top: -13px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      -webkit-appearance: none; height: 28px; width: 28px; border-radius: 50%;
+      background: white; margin-top: -11px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
       cursor: grab; transition: transform 0.15s ease;
     }
     .custom-slider::-webkit-slider-thumb:active { transform: scale(1.15); cursor: grabbing; }
     .custom-slider::-webkit-slider-runnable-track {
-      width: 100%; height: 6px; background: transparent; border-radius: 4px;
+      width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px;
     }
 
     .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -426,8 +443,6 @@ export default function App() {
     let pixDiscount = data.payment === 'pix' ? Math.ceil(totalAfterDiscounts * 0.03) : 0;
     
     let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
-    
-    // Cálculo do sinal (50%)
     let sinal = Math.ceil(finalTotal / 2);
     
     return { 
@@ -614,7 +629,7 @@ export default function App() {
               </button>
             </div>
 
-            {/* LÓGICA DO SLIDER (SÓ APARECE NAS AVULSAS) */}
+            {/* SLIDER (SÓ APARECE NAS AVULSAS) */}
             {bookingMode === 'single' ? (
               <>
                 <div className="mb-10">
@@ -625,7 +640,7 @@ export default function App() {
                   <div className="relative py-2">
                     <div className="absolute top-1/2 left-0 w-full h-1.5 bg-white/10 rounded-full -translate-y-1/2 pointer-events-none" />
                     <div className="absolute top-1/2 left-0 h-1.5 rounded-full -translate-y-1/2 pointer-events-none transition-all duration-300"
-                      style={{ width: `${(moodIndex / Math.max(1, activeList.length - 1)) * 100}%`, backgroundColor: mood.accent }}
+                      style={{ width: `${(moodIndex / Math.max(1, activeList.length - 1)) * 100}%`, backgroundColor: 'white' }}
                     />
                     <input type="range" min="0" max={Math.max(0, activeList.length - 1)} value={moodIndex} 
                       onChange={(e) => { vibrate(10); setMoodIndex(Number(e.target.value)); }}
@@ -634,35 +649,39 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* CARD SIMPLIFICADO E LIMPO */}
-                <div className="p-6 backdrop-blur-xl border min-h-[220px] rounded-xl relative overflow-hidden transition-all duration-500 shadow-2xl flex flex-col justify-between"
-                     style={{ backgroundColor: `${mood.color}40`, borderColor: `${mood.accent}50` }}>
-                  <div className="absolute top-0 left-0 w-full h-1 transition-colors duration-500" style={{ backgroundColor: mood.accent }} />
+                {/* CARD REFEITO: EXATAMENTE IGUAL AO PRINT */}
+                <div className="p-6 backdrop-blur-xl border rounded-xl relative transition-all duration-500 shadow-2xl bg-[#1c1c1e] border-white/10 flex flex-col justify-between">
                   
                   <div>
-                    <div className="flex justify-between items-start mb-4 relative z-10">
-                      <div className="pr-4">
-                        <h3 className="font-bold text-xl mb-1 text-white">{mood.PT.title}</h3>
-                        <p className="text-xs text-white/60 uppercase tracking-widest">{mood.PT.service}</p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-xl font-bold block transition-colors duration-500" style={{ color: mood.accent }}>
-                          {formatMoney(mood.price)}
-                        </span>
-                        {!mood.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest mt-1 block">{T.upTo} {mood.min}m</span>}
-                      </div>
+                    {/* LINHA 1: Título e Preço */}
+                    <div className="flex justify-between items-center mb-1 relative z-10">
+                      <h3 className="font-bold text-xl text-white tracking-wide">{mood.PT.title}</h3>
+                      <span className="text-xl font-bold text-white/80 transition-colors duration-500">
+                        {formatMoney(mood.price)}
+                      </span>
                     </div>
                     
+                    {/* LINHA 2: Categoria e Duração */}
+                    <div className="flex justify-between items-center mb-6 relative z-10">
+                      <p className="text-[10px] text-white/50 uppercase tracking-widest">{mood.PT.service}</p>
+                      {!mood.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest">{T.upTo} {mood.min}M</span>}
+                    </div>
+                    
+                    {/* LINHA 3: Benefício/Subtítulo */}
+                    <div className="relative z-10 mb-3">
+                      <p className="text-[15px] font-medium text-white/90">{mood.PT.subtitle}</p>
+                    </div>
+
+                    {/* LINHA 4: Descrição completa */}
                     <div className="relative z-10">
-                      <p className="text-sm font-medium text-white/90 mb-2">{mood.PT.subtitle}</p>
-                      <p className="text-sm text-white/60 leading-relaxed">{mood.PT.desc}</p>
+                      <p className="text-[13px] text-white/60 leading-relaxed">{mood.PT.desc}</p>
                     </div>
                   </div>
 
-                  {/* FLAG INTELIGENTE DE TÂNTRICA */}
+                  {/* FLAG INTELIGENTE DE TÂNTRICA (só aparece se hasTantrica for true) */}
                   {mood.hasTantrica && (
-                    <div className="mt-5 relative z-10">
-                      <span className="inline-block bg-[#f43f5e]/10 border border-[#f43f5e]/30 text-[#f43f5e] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
+                    <div className="mt-6 relative z-10">
+                      <span className="inline-block bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
                         ✅ Inclui Massagem Tântrica (Íntima)
                       </span>
                     </div>
@@ -670,27 +689,36 @@ export default function App() {
                 </div>
               </>
             ) : (
-              // LISTA VERTICAL SIMPLES (DEPILAÇÃO E PACOTES)
+              // LISTA VERTICAL (DEPILAÇÃO E PACOTES) - Adaptada ao novo visual limpo
               <div className="space-y-4">
                 {activeList.map((m, idx) => {
                   const active = moodIndex === idx;
                   return (
                     <button key={m.id} onClick={() => { vibrate(20); setMoodIndex(idx); }}
-                      className={`w-full text-left p-5 transition-all duration-300 border outline-none rounded-xl flex flex-col justify-between min-h-[100px] ${active ? 'bg-white/10 backdrop-blur-md scale-100' : 'border-white/5 bg-transparent opacity-60 hover:opacity-100 scale-[0.98]'}`}
-                      style={{ borderColor: active ? m.accent : '' }}>
+                      className={`w-full text-left p-6 transition-all duration-300 border outline-none rounded-xl flex flex-col justify-between ${active ? 'bg-[#1c1c1e] border-white/20 scale-100' : 'bg-transparent border-white/5 opacity-60 hover:opacity-100 scale-[0.98]'}`}>
                       
                       <div className="w-full">
-                        <div className="flex justify-between items-start mb-2">
-                          <p className="text-sm font-bold uppercase tracking-wider pr-4" style={{ color: active ? m.accent : 'white' }}>{m.PT.title}</p>
-                          <span className="text-sm font-bold text-white shrink-0">{formatMoney(m.price)}</span>
+                        {/* Linha 1 */}
+                        <div className="flex justify-between items-center mb-1">
+                          <h3 className={`font-bold text-lg tracking-wide ${active ? 'text-white' : 'text-white/70'}`}>{m.PT.title}</h3>
+                          <span className={`text-lg font-bold shrink-0 ${active ? 'text-white/80' : 'text-white/50'}`}>{formatMoney(m.price)}</span>
                         </div>
-                        <p className="text-sm text-white/80 mb-2">{m.PT.subtitle}</p>
-                        {active && <p className="text-xs text-white/50 leading-relaxed mt-3">{m.PT.desc}</p>}
+                        
+                        {/* Linha 2 */}
+                        <div className="flex justify-between items-center mb-4">
+                          <p className="text-[10px] text-white/50 uppercase tracking-widest">{m.PT.service}</p>
+                        </div>
+                        
+                        {/* Linha 3 (Subtítulo) */}
+                        <p className={`text-[14px] font-medium mb-2 ${active ? 'text-white/90' : 'text-white/60'}`}>{m.PT.subtitle}</p>
+                        
+                        {/* Linha 4 (Desc - só mostra se tiver ativo) */}
+                        {active && <p className="text-[13px] text-white/60 leading-relaxed">{m.PT.desc}</p>}
                       </div>
 
                       {active && m.hasTantrica && (
-                        <div className="mt-4">
-                          <span className="inline-block bg-[#f43f5e]/10 border border-[#f43f5e]/30 text-[#f43f5e] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
+                        <div className="mt-5">
+                          <span className="inline-block bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
                             ✅ Inclui Massagem Tântrica
                           </span>
                         </div>
@@ -702,7 +730,7 @@ export default function App() {
             )}
 
             {step === 1 && (
-              <button onClick={() => { vibrate(30); setStep(2); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none rounded-sm">
+              <button onClick={() => { vibrate(30); setStep(2); }} className="mt-8 bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none rounded-sm">
                 {T.btnContinue}
               </button>
             )}
@@ -925,3 +953,5 @@ export default function App() {
     </>
   );
 }
+
+```
