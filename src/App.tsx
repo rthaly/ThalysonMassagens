@@ -5,7 +5,7 @@ import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
-  PIX_KEY: "5517991360413", // Chave Pix para cópia
+  PIX_KEY: "5517991360413", // Chave Pix para o botão de copiar
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Bela Vista, São Paulo",
   START_HOUR: 9,
@@ -24,7 +24,7 @@ const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 const PEAK_FEE = 15;
 
 // ==================================================================================
-// DICIONÁRIO E TEXTOS (Originais)
+// DICIONÁRIO E TEXTOS (UI Simplificada)
 // ==================================================================================
 const TEXTS = {
   PT: {
@@ -90,60 +90,63 @@ const TEXTS = {
   }
 };
 
-// Textos e descrições originais, mas ordenados por preço para o slider funcionar
+// ==================================================================================
+// MASSAGENS COM TEXTOS ORIGINAIS E FLAG DE TÂNTRICA
+// ==================================================================================
+// Ordenados por valor/intensidade para o slider funcionar de forma lógica
 const MOODS = [
   {
-    id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false,
+    id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false, hasTantrica: false,
     PT: { title: 'Clássica Relaxante', subtitle: 'Tensão e relaxamento corporal', service: 'Massagem Clássica', desc: 'Massagem Relaxante, aplicada no corpo todo, (exceção das partes íntimas), ativando toda a circulação sanguínea, trazendo relaxamento profundo e sensação de bem-estar, descanso, paz e felicidade!.' }
   },
   {
-    id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false,
+    id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false, hasTantrica: true,
     PT: { title: 'Massagem Sensorial', subtitle: 'Começa relaxando, termina gozando.', service: 'Sensorial / Tântrica', desc: 'Toda sessão começa com a massagem clássica no corpo todo para preparar e destravar sua musculatura. Só com o corpo solto é que a gente evolui pros toques mais sutis na pele e pra técnica íntima final (Lingam).' }
   },
   {
-    id: 'naturista', color: '#14532d', accent: '#4ade80', price: 240, min: 60, isCombo: false,
+    id: 'naturista', color: '#14532d', accent: '#4ade80', price: 240, min: 60, isCombo: false, hasTantrica: false,
     PT: { title: 'Clássica Naturista', subtitle: 'Relaxamento total, livres de roupas.', service: 'Massagem Naturista', desc: 'A mesma massagem no corpo todo da clássica, mas o diferencial é a liberdade: cliente e massagista completamente nus. O foco é soltar a musculatura e sentir o atrito natural da pele. Sem toques íntimos, apenas puro relaxamento e respeito naturista.' }
   },
   {
-    id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false,
+    id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false, hasTantrica: true,
     PT: { title: 'Massagem Fusion', subtitle: 'Mais intimidade, abraços e minha barba passando no seu corpo.', service: 'Experiência Fusion', desc: 'Iniciamos preparando o corpo com a clássica. Depois, fico só de cueca. Unindo a massagem com o toque da minha barba, de costas e frente. Evolui para uma finalização íntima bem prolongada.' }
   },
   {
-    id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false,
+    id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false, hasTantrica: true,
     PT: { title: 'Corpo a Corpo Nuru', subtitle: 'Massagem clássica, depois corpo a corpo com gel.', service: 'Massagem Nuru (Gel)', desc: 'Começamos com a clássica ambos nús. Uso gel deslizante. Deslizando meu corpo no seu de costas e de frente e depois finalizamos com a massagem íntima.' }
   },
   {
-    id: 'reversa', color: '#312e81', accent: '#a5b4fc', price: 400, min: 60, isCombo: false,
+    id: 'reversa', color: '#312e81', accent: '#a5b4fc', price: 400, min: 60, isCombo: false, hasTantrica: true,
     PT: { title: 'Massagem Reversa', subtitle: 'Troca de massagens com interação.', service: 'Massagem Reversa', desc: 'Eu começo fazendo a clássica para você relaxar por completo. Depois você faz massagem no meu corpo todo. Você faz do seu jeito e depois finalizamos com a massagem íntima.' }
   }
 ];
 
 const ESTETICA = [
   {
-    id: 'depilacao_solo', color: '#0f766e', accent: '#2dd4bf', price: 107, min: 40, isCombo: false,
+    id: 'depilacao_solo', color: '#0f766e', accent: '#2dd4bf', price: 107, min: 40, isCombo: false, hasTantrica: false,
     PT: { title: 'Limpeza e Cuidado', subtitle: 'Depilação na máquina e hidratação.', service: 'Estética Corporal', desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo, usando o pente 0 ou o pente 3. Finalizamos com uma hidratação com creme para acalmar a pele logo após depilar.' }
   }
 ];
 
 const COMBOS = [
   {
-    id: 'combo_depil_classica', color: '#0369a1', accent: '#38bdf8', price: 270, min: 100, isCombo: true,
+    id: 'combo_depil_classica', color: '#0369a1', accent: '#38bdf8', price: 270, min: 100, isCombo: true, hasTantrica: false,
     PT: { title: 'Renovação Completa', subtitle: 'Depilação + Massagem Clássica.', service: '1 Encontro Duplo', desc: 'Primeiro fazemos o aparo na máquina em até 3 lugares usando pente 0 e 3. Logo depois, partimos para uma Massagem Clássica para destravar a musculatura do corpo todo. De R$ 287 por R$ 270 (Economia de R$ 17).' }
   },
   {
-    id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true,
+    id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true, hasTantrica: false,
     PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar dores. Sem toques íntimos. De R$ 360 por R$ 320 (Economia de R$ 40).' }
   },
   {
-    id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true,
+    id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true, hasTantrica: false,
     PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve. De R$ 720 por R$ 560 (Economia de R$ 160).' }
   },
   {
-    id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true,
+    id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true, hasTantrica: true,
     PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Uma sessão Nuru e uma Reversa marcadas em dias diferentes. Ambas sempre começam relaxando e destravando seu corpo inteiro primeiro na clássica. De R$ 750 por R$ 590 (Economia de R$ 160).' }
   },
   {
-    id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true,
+    id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true, hasTantrica: true,
     PT: { title: 'Exploração Total (As 4 Fases)', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros', desc: 'Você vem uma vez por semana. Todo encontro começa com a clássica, evoluindo a intimidade a cada visita até a explosão da Reversa. De R$ 1.200 por R$ 890 (Economia de R$ 310).' }
   }
 ];
@@ -176,7 +179,7 @@ const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: n
 ));
 
 // ==================================================================================
-// ESTILOS CINEMATOGRÁFICOS + ESTILOS DO SLIDER E TOAST
+// ESTILOS E ANIMAÇÕES
 // ==================================================================================
 const CinematicStyles = memo(() => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -232,34 +235,17 @@ const CinematicStyles = memo(() => (
     .modern-input:focus { outline: none; border-bottom-color: rgba(255,255,255,0.8); }
     .modern-input::placeholder { color: rgba(255,255,255,0.2); }
 
-    /* ESTILOS DO SLIDER DE INTENSIDADE */
     .custom-slider {
-      -webkit-appearance: none;
-      width: 100%;
-      background: transparent;
-      outline: none;
-      margin: 0;
+      -webkit-appearance: none; width: 100%; background: transparent; outline: none; margin: 0;
     }
     .custom-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      height: 32px;
-      width: 32px;
-      border-radius: 50%;
-      background: white;
-      margin-top: -13px;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-      cursor: grab;
-      transition: transform 0.15s ease;
+      -webkit-appearance: none; height: 32px; width: 32px; border-radius: 50%;
+      background: white; margin-top: -13px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      cursor: grab; transition: transform 0.15s ease;
     }
-    .custom-slider::-webkit-slider-thumb:active {
-      transform: scale(1.15);
-      cursor: grabbing;
-    }
+    .custom-slider::-webkit-slider-thumb:active { transform: scale(1.15); cursor: grabbing; }
     .custom-slider::-webkit-slider-runnable-track {
-      width: 100%;
-      height: 6px;
-      background: transparent;
-      border-radius: 4px;
+      width: 100%; height: 6px; background: transparent; border-radius: 4px;
     }
 
     .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -402,7 +388,7 @@ export default function App() {
     if (method === 'pix') {
       try {
         navigator.clipboard.writeText(CONFIG.PIX_KEY);
-        showToast('✅ Chave Pix copiada!');
+        showToast('✅ Chave Pix copiada com sucesso!');
         vibrate([20, 40]);
       } catch (err) {
         console.error('Falha ao copiar:', err);
@@ -440,6 +426,8 @@ export default function App() {
     let pixDiscount = data.payment === 'pix' ? Math.ceil(totalAfterDiscounts * 0.03) : 0;
     
     let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
+    
+    // Cálculo do sinal (50%)
     let sinal = Math.ceil(finalTotal / 2);
     
     return { 
@@ -646,44 +634,67 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="p-6 backdrop-blur-xl border min-h-[240px] rounded-xl relative overflow-hidden transition-all duration-500 shadow-2xl"
+                {/* CARD SIMPLIFICADO E LIMPO */}
+                <div className="p-6 backdrop-blur-xl border min-h-[220px] rounded-xl relative overflow-hidden transition-all duration-500 shadow-2xl flex flex-col justify-between"
                      style={{ backgroundColor: `${mood.color}40`, borderColor: `${mood.accent}50` }}>
                   <div className="absolute top-0 left-0 w-full h-1 transition-colors duration-500" style={{ backgroundColor: mood.accent }} />
                   
-                  <div className="flex justify-between items-start mb-5 relative z-10">
-                    <div className="pr-4">
-                      <h3 className="font-bold text-xl mb-1 text-white">{mood.PT.title}</h3>
-                      <p className="text-xs text-white/60 uppercase tracking-widest">{mood.PT.service}</p>
+                  <div>
+                    <div className="flex justify-between items-start mb-4 relative z-10">
+                      <div className="pr-4">
+                        <h3 className="font-bold text-xl mb-1 text-white">{mood.PT.title}</h3>
+                        <p className="text-xs text-white/60 uppercase tracking-widest">{mood.PT.service}</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-xl font-bold block transition-colors duration-500" style={{ color: mood.accent }}>
+                          {formatMoney(mood.price)}
+                        </span>
+                        {!mood.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest mt-1 block">{T.upTo} {mood.min}m</span>}
+                      </div>
                     </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-xl font-bold block transition-colors duration-500" style={{ color: mood.accent }}>
-                        {formatMoney(mood.price)}
+                    
+                    <div className="relative z-10">
+                      <p className="text-sm font-medium text-white/90 mb-2">{mood.PT.subtitle}</p>
+                      <p className="text-sm text-white/60 leading-relaxed">{mood.PT.desc}</p>
+                    </div>
+                  </div>
+
+                  {/* FLAG INTELIGENTE DE TÂNTRICA */}
+                  {mood.hasTantrica && (
+                    <div className="mt-5 relative z-10">
+                      <span className="inline-block bg-[#f43f5e]/10 border border-[#f43f5e]/30 text-[#f43f5e] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
+                        ✅ Inclui Massagem Tântrica (Íntima)
                       </span>
-                      {!mood.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest mt-1 block">{T.upTo} {mood.min}m</span>}
                     </div>
-                  </div>
-                  
-                  <div className="relative z-10">
-                    <p className="text-sm font-medium text-white/90 mb-3">{mood.PT.subtitle}</p>
-                    <p className="text-sm text-white/60 leading-relaxed">{mood.PT.desc}</p>
-                  </div>
+                  )}
                 </div>
               </>
             ) : (
-              // SE FOR PACOTE OU DEPILAÇÃO, EXIBE LISTA VERTICAL SIMPLES (SEM SLIDER)
+              // LISTA VERTICAL SIMPLES (DEPILAÇÃO E PACOTES)
               <div className="space-y-4">
                 {activeList.map((m, idx) => {
                   const active = moodIndex === idx;
                   return (
                     <button key={m.id} onClick={() => { vibrate(20); setMoodIndex(idx); }}
-                      className={`w-full text-left p-5 transition-all duration-300 border outline-none rounded-xl ${active ? 'bg-white/10 backdrop-blur-md scale-100' : 'border-white/5 bg-transparent opacity-60 hover:opacity-100 scale-[0.98]'}`}
+                      className={`w-full text-left p-5 transition-all duration-300 border outline-none rounded-xl flex flex-col justify-between min-h-[100px] ${active ? 'bg-white/10 backdrop-blur-md scale-100' : 'border-white/5 bg-transparent opacity-60 hover:opacity-100 scale-[0.98]'}`}
                       style={{ borderColor: active ? m.accent : '' }}>
-                      <div className="flex justify-between items-start mb-2">
-                        <p className="text-sm font-bold uppercase tracking-wider" style={{ color: active ? m.accent : 'white' }}>{m.PT.title}</p>
-                        <span className="text-sm font-bold text-white">{formatMoney(m.price)}</span>
+                      
+                      <div className="w-full">
+                        <div className="flex justify-between items-start mb-2">
+                          <p className="text-sm font-bold uppercase tracking-wider pr-4" style={{ color: active ? m.accent : 'white' }}>{m.PT.title}</p>
+                          <span className="text-sm font-bold text-white shrink-0">{formatMoney(m.price)}</span>
+                        </div>
+                        <p className="text-sm text-white/80 mb-2">{m.PT.subtitle}</p>
+                        {active && <p className="text-xs text-white/50 leading-relaxed mt-3">{m.PT.desc}</p>}
                       </div>
-                      <p className="text-sm text-white/80 mb-2">{m.PT.subtitle}</p>
-                      {active && <p className="text-xs text-white/50 leading-relaxed mt-3">{m.PT.desc}</p>}
+
+                      {active && m.hasTantrica && (
+                        <div className="mt-4">
+                          <span className="inline-block bg-[#f43f5e]/10 border border-[#f43f5e]/30 text-[#f43f5e] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
+                            ✅ Inclui Massagem Tântrica
+                          </span>
+                        </div>
+                      )}
                     </button>
                   )
                 })}
