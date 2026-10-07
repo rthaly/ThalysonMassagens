@@ -5,13 +5,13 @@ import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
-  PIX_KEY: "5517991360413",
+  PIX_KEY: "5517991360413", // Chave Pix para cópia
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Bela Vista, São Paulo",
   START_HOUR: 9,
   END_HOUR: 22,
   
-  // CUPONS
+  // CUPONS (Valores menores que 1 são porcentagem. Ex: 0.13 = 13%. Valores maiores são Reais. Ex: 50 = R$ 50)
   COUPONS: {
     "SESSAO2": 0.08,
     "RELAXAR13": 0.13,
@@ -24,136 +24,134 @@ const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 const PEAK_FEE = 15;
 
 // ==================================================================================
-// DICIONÁRIO E TEXTOS (i18n) - LINGUAGEM HUMANA
+// DICIONÁRIO E TEXTOS (Originais)
 // ==================================================================================
 const TEXTS = {
   PT: {
-    gateTitle: "Privacidade e\nRespeito.",
-    gatePrivacyDesc: "Pode ficar tranquilo. Nada que você preencher aqui fica salvo na internet. Suas escolhas vão direto para o meu WhatsApp particular.",
-    gateAgeDesc: "O atendimento é focado em homens. Algumas sessões envolvem nudez e massagem íntima para relaxar. Você confirma que tem mais de 18 anos?",
-    gateBtn: "Sim, sou maior de 18 anos",
+    gateTitle: "Privacidade &\nAmbiente Reservado.",
+    gatePrivacyDesc: "Fique tranquilo. Nenhum dado preenchido aqui fica salvo em nossos servidores. Suas escolhas são geradas apenas no seu celular e enviadas diretamente para o meu WhatsApp.",
+    gateAgeDesc: "O atendimento é individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no prazer e relaxamento. Confirma ter mais de 18 anos para prosseguir?",
+    gateBtn: "Concordar e Acessar",
     step1Label: "Etapa 01",
-    step1Title: "O que você está buscando hoje?",
-    tabSingle: "Massagens",
+    step1Title: "Como você quer se sentir hoje?",
+    tabSingle: "Avulsas",
     tabEstetica: "Depilação",
     tabCombo: "Pacotes",
     upTo: "Até",
-    btnContinue: "Continuar para o Local",
+    btnContinue: "Continuar para Local",
     step2Label: "Etapa 02",
-    step2Title: "Seus dados e o Local.",
-    namePlace: "Qual seu nome ou apelido?",
-    locLabel: "Onde vai ser o nosso encontro?",
-    locStudio: "No seu espaço (Bela Vista)",
-    locHome: "Na minha casa / hotel",
-    studioDesc: "Eu atendo em uma suíte super discreta e confortável na Bela Vista. Assim que a gente confirmar, te mando o endereço certinho e as instruções de como chegar.",
+    step2Title: "Quem e Onde.",
+    namePlace: "Como prefere ser chamado?",
+    locLabel: "Onde será a 1ª sessão?",
+    locStudio: "Minha Suíte (Bela Vista)",
+    locHome: "Seu Espaço (Vou até você)",
+    studioDesc: "Atendo em uma suíte privativa na Bela Vista. O endereço completo e as instruções eu te mando no WhatsApp assim que confirmarmos o horário.",
     cep: "CEP (opcional)",
-    street: "Nome da Rua ou Avenida",
+    street: "Rua ou Avenida",
     number: "Número",
     comp: "Apto / Quarto (opcional)",
     bairroPlace: "Bairro",
     btnNext: "Avançar para Horários",
     step3Label: "Etapa 03",
-    step3Title: "Qual o melhor dia e horário?",
-    noSlots: "Nenhum horário livre pra hoje.",
+    step3Title: "O Momento.",
+    noSlots: "Nenhum horário disponível hoje.",
     step4Label: "Etapa 04",
-    step4Title: "Resumo e Pagamento.",
-    giftTitle: "Presente de Primeira Vez",
-    giftDesc: "Como é a sua primeira vez marcando comigo, deixei um desconto de R$ 15 para você no final.",
-    giftBtn: "Usar Desconto (R$ 15)",
-    giftActive: "Desconto aplicado",
-    couponLabel: "Você tem algum cupom?",
-    couponPlace: "Digite o código aqui",
+    step4Title: "O Acordo.",
+    giftTitle: "Presente Liberado",
+    giftDesc: "Como é sua primeira vez marcando por aqui, deixei um pequeno desconto no valor final.",
+    giftBtn: "Desbloquear Cortesia (R$ 15)",
+    giftActive: "Presente de 1ª vez ativo",
+    couponLabel: "Tem um cupom?",
+    couponPlace: "Digite o código",
     couponBtn: "Aplicar",
     couponActive: "aplicado com sucesso",
-    btnRemove: "Tirar",
-    addons: "Quer adicionar algo a mais?",
-    reqLabel: "Tem algum fetiche ou pedido especial?",
-    reqPlace: "Me conta, o que você quer que role hoje?",
-    reqDesc: "Se tiver alguma vontade específica, me fala. Na hora a gente conversa e vê se rola. Se não rolar, não te cobro essa taxa.",
-    payLabel: "Como você vai pagar a outra metade na hora?",
-    payPix: "Pix (3% OFF)",
+    btnRemove: "Remover",
+    addons: "Vontades Extras (Hoje)",
+    reqLabel: "Tem algum fetiche ou pedido?",
+    reqPlace: "O que você quer que role hoje?",
+    reqDesc: "Sujeito a avaliação na hora. Caso não seja possível realizar o pedido, o valor da taxa não será cobrado.",
+    payLabel: "Como vai pagar na hora?",
+    payPix: "Pix + (3% DESCONTO)",
     payCard: "Cartão",
     payCash: "Dinheiro",
     subBase: "Valor Base",
-    subExtras: "Adicionais",
-    subReq: "Pedido Especial",
-    subGift: "Desconto (1ª Vez)",
+    subExtras: "Extras (Hoje)",
+    subReq: "Pedido Especial (Hoje)",
+    subGift: "Cortesia (Primeira Vez)",
     subCoupon: "Cupom Aplicado",
-    subPeak: "Taxa (Horário de Pico)",
+    subPeak: "Horário de Pico",
     subPix: "Desconto Pix",
-    total: "Valor Total",
-    btnFinish: "Finalizar Agendamento",
-    step5Title: "Quase lá!",
-    step5Desc: "Seu agendamento está pronto. É só me mandar no WhatsApp para a gente confirmar.",
-    btnSend: "Confirmar pelo WhatsApp",
+    total: "Valor Final",
+    btnFinish: "Finalizar Pedido",
+    step5Title: "Tudo Pronto.",
+    step5Desc: "A sua solicitação foi gerada e enviada para o WhatsApp. Caso o aplicativo não tenha aberto automaticamente, clique no botão abaixo.",
+    btnSend: "Confirmar no WhatsApp",
     btnBack: "Voltar para o início",
   }
 };
 
-// ==================================================================================
-// MASSAGENS E SERVIÇOS (COM LÓGICA DE TÂNTRICA E TEXTOS MELHORADOS)
-// ==================================================================================
+// Textos e descrições originais, mas ordenados por preço para o slider funcionar
 const MOODS = [
   {
-    id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false, hasTantrica: false,
-    PT: { title: 'Clássica Relaxante', subtitle: 'Para tirar o peso das costas.', service: 'Massagem Clássica', desc: 'Sabe aquele dia que seu corpo tá todo travado? Eu uso movimentos firmes para amassar a musculatura e soltar a tensão do seu corpo inteiro. Você sai daqui leve e descansado. (Não tem toque íntimo).' }
+    id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false,
+    PT: { title: 'Clássica Relaxante', subtitle: 'Tensão e relaxamento corporal', service: 'Massagem Clássica', desc: 'Massagem Relaxante, aplicada no corpo todo, (exceção das partes íntimas), ativando toda a circulação sanguínea, trazendo relaxamento profundo e sensação de bem-estar, descanso, paz e felicidade!.' }
   },
   {
-    id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Sensorial', subtitle: 'O corpo todo relaxado até o limite.', service: 'Massagem Tântrica', desc: 'Começo soltando as tensões das suas costas e pernas. Quando você estiver bem relaxado, passo para toques bem lentos e suaves na pele do corpo todo, e finalizamos com a massagem íntima.' }
+    id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false,
+    PT: { title: 'Massagem Sensorial', subtitle: 'Começa relaxando, termina gozando.', service: 'Sensorial / Tântrica', desc: 'Toda sessão começa com a massagem clássica no corpo todo para preparar e destravar sua musculatura. Só com o corpo solto é que a gente evolui pros toques mais sutis na pele e pra técnica íntima final (Lingam).' }
   },
   {
-    id: 'naturista', color: '#14532d', accent: '#4ade80', price: 240, min: 60, isCombo: false, hasTantrica: false,
-    PT: { title: 'Naturista Livre', subtitle: 'Massagem clássica, mas ambos pelados.', service: 'Massagem Naturista', desc: 'É a mesma massagem para soltar as costas e os músculos, mas nós dois ficamos totalmente sem roupa. É ideal para quem curte a liberdade do naturismo e o contato pele com pele. (Atenção: Não tem toque íntimo nesta sessão).' }
+    id: 'naturista', color: '#14532d', accent: '#4ade80', price: 240, min: 60, isCombo: false,
+    PT: { title: 'Clássica Naturista', subtitle: 'Relaxamento total, livres de roupas.', service: 'Massagem Naturista', desc: 'A mesma massagem no corpo todo da clássica, mas o diferencial é a liberdade: cliente e massagista completamente nus. O foco é soltar a musculatura e sentir o atrito natural da pele. Sem toques íntimos, apenas puro relaxamento e respeito naturista.' }
   },
   {
-    id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Experiência Fusion', subtitle: 'Toques com as mãos e com a barba.', service: 'Massagem Fusion', desc: 'Uma massagem com muito mais contato. Fico só de cueca, e uso o toque da minha barba deslizando pelo seu corpo para causar arrepios intensos. Termina com uma massagem íntima bem demorada.' }
+    id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false,
+    PT: { title: 'Massagem Fusion', subtitle: 'Mais intimidade, abraços e minha barba passando no seu corpo.', service: 'Experiência Fusion', desc: 'Iniciamos preparando o corpo com a clássica. Depois, fico só de cueca. Unindo a massagem com o toque da minha barba, de costas e frente. Evolui para uma finalização íntima bem prolongada.' }
   },
   {
-    id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Corpo a Corpo (Nuru)', subtitle: 'Muito gel e contato total.', service: 'Massagem Nuru', desc: 'Nós dois totalmente nus. Uso bastante gel para deslizar meu corpo inteiro em cima do seu, de frente e de costas. É uma experiência bem molhada, escorregadia e intensa, que fecha com a massagem íntima.' }
+    id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false,
+    PT: { title: 'Corpo a Corpo Nuru', subtitle: 'Massagem clássica, depois corpo a corpo com gel.', service: 'Massagem Nuru (Gel)', desc: 'Começamos com a clássica ambos nús. Uso gel deslizante. Deslizando meu corpo no seu de costas e de frente e depois finalizamos com a massagem íntima.' }
   },
   {
-    id: 'reversa', color: '#312e81', accent: '#a5b4fc', price: 400, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Reversa Interativa', subtitle: 'Você também faz em mim.', service: 'Massagem Reversa', desc: 'Primeiro você relaxa enquanto eu faço massagem em você. Depois, você assume o controle e faz massagem no meu corpo do jeito que tiver vontade. No fim, encerramos juntos com a massagem íntima.' }
+    id: 'reversa', color: '#312e81', accent: '#a5b4fc', price: 400, min: 60, isCombo: false,
+    PT: { title: 'Massagem Reversa', subtitle: 'Troca de massagens com interação.', service: 'Massagem Reversa', desc: 'Eu começo fazendo a clássica para você relaxar por completo. Depois você faz massagem no meu corpo todo. Você faz do seu jeito e depois finalizamos com a massagem íntima.' }
   }
 ];
 
 const ESTETICA = [
   {
-    id: 'depilacao_solo', color: '#0f766e', accent: '#2dd4bf', price: 107, min: 40, isCombo: false, hasTantrica: false,
-    PT: { title: 'Limpeza e Cuidado', subtitle: 'Depilação na máquina e hidratação.', service: 'Estética Corporal', desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo, usando o pente 0 ou o pente 3. Passo um creme de hidratação para acalmar a pele logo depois.' }
+    id: 'depilacao_solo', color: '#0f766e', accent: '#2dd4bf', price: 107, min: 40, isCombo: false,
+    PT: { title: 'Limpeza e Cuidado', subtitle: 'Depilação na máquina e hidratação.', service: 'Estética Corporal', desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo, usando o pente 0 ou o pente 3. Finalizamos com uma hidratação com creme para acalmar a pele logo após depilar.' }
   }
 ];
 
 const COMBOS = [
   {
-    id: 'combo_depil_classica', color: '#0369a1', accent: '#38bdf8', price: 270, min: 100, isCombo: true, hasTantrica: false,
-    PT: { title: 'Renovação Completa', subtitle: 'Depilação + Massagem Clássica.', service: 'Encontro Duplo', desc: 'Primeiro damos um trato nos pelos na máquina em até 3 lugares. Em seguida, deitamos na maca para uma Massagem Clássica para destravar sua musculatura do corpo todo.' }
+    id: 'combo_depil_classica', color: '#0369a1', accent: '#38bdf8', price: 270, min: 100, isCombo: true,
+    PT: { title: 'Renovação Completa', subtitle: 'Depilação + Massagem Clássica.', service: '1 Encontro Duplo', desc: 'Primeiro fazemos o aparo na máquina em até 3 lugares usando pente 0 e 3. Logo depois, partimos para uma Massagem Clássica para destravar a musculatura do corpo todo. De R$ 287 por R$ 270 (Economia de R$ 17).' }
   },
   {
-    id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true, hasTantrica: false,
-    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros no mês', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar as dores e a tensão do dia a dia.' }
+    id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true,
+    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar dores. Sem toques íntimos. De R$ 360 por R$ 320 (Economia de R$ 40).' }
   },
   {
-    id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true, hasTantrica: false,
-    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros no mês', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve, o mês inteiro.' }
+    id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true,
+    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve. De R$ 720 por R$ 560 (Economia de R$ 160).' }
   },
   {
-    id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true, hasTantrica: true,
-    PT: { title: 'Pacote Intensidade', subtitle: 'Sessão Nuru + Sessão Reversa.', service: '2 Encontros no mês', desc: 'Dois dias de muito prazer. Uma sessão Nuru e uma Reversa marcadas em dias diferentes. Ambas sempre começam relaxando e destravando as costas primeiro.' }
+    id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true,
+    PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Uma sessão Nuru e uma Reversa marcadas em dias diferentes. Ambas sempre começam relaxando e destravando seu corpo inteiro primeiro na clássica. De R$ 750 por R$ 590 (Economia de R$ 160).' }
   },
   {
-    id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true, hasTantrica: true,
-    PT: { title: 'As 4 Fases', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros no mês', desc: 'Você vem uma vez por semana. Cada encontro evolui na intimidade: começa na Sensorial, passa pela Fusion, Nuru, até fechar o mês na Reversa.' }
+    id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true,
+    PT: { title: 'Exploração Total (As 4 Fases)', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros', desc: 'Você vem uma vez por semana. Todo encontro começa com a clássica, evoluindo a intimidade a cada visita até a explosão da Reversa. De R$ 1.200 por R$ 890 (Economia de R$ 310).' }
   }
 ];
 
 const EXTRAS = [
-  { id: 'aroma', price: 20, PT: { label: 'Usar óleos essenciais relaxantes' } },
+  { id: 'aroma', price: 20, PT: { label: 'Óleos essenciais relaxantes' } },
   { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' } },
-  { id: 'depilacao_extra', price: 107, PT: { label: 'Depilar com máquina (3 lugares)' } }
+  { id: 'depilacao_extra', price: 107, PT: { label: 'Depilação máq (3 lugares) + Creme' } }
 ];
 
 // ==================================================================================
@@ -178,7 +176,7 @@ const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: n
 ));
 
 // ==================================================================================
-// ESTILOS
+// ESTILOS CINEMATOGRÁFICOS + ESTILOS DO SLIDER E TOAST
 // ==================================================================================
 const CinematicStyles = memo(() => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -234,17 +232,34 @@ const CinematicStyles = memo(() => (
     .modern-input:focus { outline: none; border-bottom-color: rgba(255,255,255,0.8); }
     .modern-input::placeholder { color: rgba(255,255,255,0.2); }
 
+    /* ESTILOS DO SLIDER DE INTENSIDADE */
     .custom-slider {
-      -webkit-appearance: none; width: 100%; background: transparent; outline: none; margin: 0;
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+      outline: none;
+      margin: 0;
     }
     .custom-slider::-webkit-slider-thumb {
-      -webkit-appearance: none; height: 32px; width: 32px; border-radius: 50%;
-      background: white; margin-top: -13px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-      cursor: grab; transition: transform 0.15s ease;
+      -webkit-appearance: none;
+      height: 32px;
+      width: 32px;
+      border-radius: 50%;
+      background: white;
+      margin-top: -13px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      cursor: grab;
+      transition: transform 0.15s ease;
     }
-    .custom-slider::-webkit-slider-thumb:active { transform: scale(1.15); cursor: grabbing; }
+    .custom-slider::-webkit-slider-thumb:active {
+      transform: scale(1.15);
+      cursor: grabbing;
+    }
     .custom-slider::-webkit-slider-runnable-track {
-      width: 100%; height: 6px; background: transparent; border-radius: 4px;
+      width: 100%;
+      height: 6px;
+      background: transparent;
+      border-radius: 4px;
     }
 
     .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -329,7 +344,7 @@ export default function App() {
 
     if (usedCoupons.includes(code)) {
       vibrate(50);
-      setCouponError('Esse cupom já foi usado antes.');
+      setCouponError('Cupom já utilizado.');
       setTimeout(() => setCouponError(''), 2500);
       return;
     }
@@ -387,7 +402,7 @@ export default function App() {
     if (method === 'pix') {
       try {
         navigator.clipboard.writeText(CONFIG.PIX_KEY);
-        showToast('✅ Chave Pix copiada! Pode colar no seu banco.');
+        showToast('✅ Chave Pix copiada!');
         vibrate([20, 40]);
       } catch (err) {
         console.error('Falha ao copiar:', err);
@@ -452,37 +467,42 @@ export default function App() {
     const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
     let locationText = data.locType === 'studio' ? 
-      `No seu espaço (Minha Suíte, Bela Vista)` : 
-      `Na minha casa (${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro})`;
+      `Você vem até o meu espaço (Minha Suíte, Bela Vista)` : 
+      `Eu vou até você (${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro})`;
 
-    let text = `Opa Thalyson, tudo bem? Fechei meu agendamento pelo site.\n\n`;
-    text += `*NOME:* ${data.name}\n`;
-    text += `*O QUE VAMOS FAZER:* ${mood.PT.title} (${mood.PT.service})\n\n`;
+    let text = `Oi Thalyson, tudo bem? Finalizei a minha reserva no site e vim confirmar o nosso encontro.\n\n`;
+    text += `*QUEM VEM:* ${data.name}\n\n`;
+    
+    text += `*A EXPERIÊNCIA:*\n`;
+    text += `• ${mood.PT.title} (${mood.PT.service})\n`;
+    text += `_“${mood.PT.desc}”_\n\n`;
 
     text += `*QUANDO E ONDE:*\n`;
-    text += `• Data: ${dStr} às ${data.time} (Até ${fin.dur} min)\n`;
+    text += `• Data: ${dStr} às ${data.time}\n`;
+    text += `• Duração: até ${fin.dur} min\n`;
     text += `• Local: ${locationText}\n\n`;
 
     if (ext || data.req.trim()) {
-      text += `*MAIS DETALHES:*\n`;
+      text += `*DETALHES DA SESSÃO:*\n`;
       if (ext) text += `• Adicionais: ${ext}\n`;
-      if (data.req.trim()) text += `• Quero que role: "${data.req.trim()}"\n`;
+      if (data.req.trim()) text += `• Pedido especial: "${data.req.trim()}"\n`;
       text += `\n`;
     }
 
-    text += `*OS VALORES:*\n`;
+    text += `*O INVESTIMENTO:*\n`;
     if (fin.extrasTotal > 0) text += `• Adicionais extras: + ${formatMoney(fin.extrasTotal)}\n`;
-    if (fin.reqFee > 0) text += `• Taxa de pedido especial: + ${formatMoney(fin.reqFee)}\n`;
+    if (fin.reqFee > 0) text += `• Taxa de pedido: + ${formatMoney(fin.reqFee)}\n`;
+    if (fin.peakFee > 0) text += `• Horário de Pico: + ${formatMoney(fin.peakFee)}\n`;
     if (fin.discountGift > 0 || fin.couponDiscount > 0 || fin.pixDiscount > 0) {
       let totalDesc = fin.discountGift + fin.couponDiscount + fin.pixDiscount;
       text += `• Descontos aplicados: - ${formatMoney(totalDesc)}\n`;
     }
     
-    text += `*VALOR TOTAL:* ${formatMoney(fin.total)} (via ${paymentMethod})\n`;
-    text += `*SINAL AGORA (50%):* ${formatMoney(fin.sinal)}\n`;
-    text += `*PAGO COM VOCÊ NA HORA:* ${formatMoney(fin.total - fin.sinal)}\n\n`;
+    text += `*Valor Total:* ${formatMoney(fin.total)} (via ${paymentMethod})\n`;
+    text += `*Sinal para Agendar (50%):* ${formatMoney(fin.sinal)}\n`;
+    text += `*Restante na hora (50%):* ${formatMoney(fin.total - fin.sinal)}\n\n`;
 
-    text += `Tudo certo, já sei que o sinal é para confirmar o horário e concordo com o respeito mútuo. Aguardo você confirmar!`;
+    text += `Estou ciente do pagamento do sinal para reservar o horário e do acordo de respeito mútuo. Aguardo a sua confirmação!`;
     
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
   }, [data, mood, fin, appliedCoupon]);
@@ -551,7 +571,7 @@ export default function App() {
               <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Terapeuta Thalyson.</h2>
               <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Atendimento Solo</p>
               <div className="space-y-4 text-sm text-white/70 leading-relaxed">
-                <p>O que eu faço é simples: uso minhas mãos e o toque para tirar o peso da sua rotina. Uma experiência para você relaxar e aproveitar, sem pressa.</p>
+                <p>O que eu faço é simples: uso minhas mãos e o toque para tirar o peso da sua rotina e te entregar uma experiência onde você só precisa fechar os olhos, relaxar e aproveitar.</p>
               </div>
               <div className="mt-8 pt-6 border-t border-white/10 flex justify-center">
                 <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors outline-none">
@@ -606,13 +626,13 @@ export default function App() {
               </button>
             </div>
 
-            {/* LÓGICA INTELIGENTE DO SLIDER (SÓ APARECE NAS AVULSAS) */}
+            {/* LÓGICA DO SLIDER (SÓ APARECE NAS AVULSAS) */}
             {bookingMode === 'single' ? (
               <>
                 <div className="mb-10">
                   <div className="flex justify-between items-center text-[10px] text-white/50 uppercase tracking-widest font-bold mb-4 px-1">
-                    <span>Só Relaxar</span>
-                    <span>Mais Prazer</span>
+                    <span>Leve</span>
+                    <span>Intensidade Máxima</span>
                   </div>
                   <div className="relative py-2">
                     <div className="absolute top-1/2 left-0 w-full h-1.5 bg-white/10 rounded-full -translate-y-1/2 pointer-events-none" />
@@ -624,7 +644,6 @@ export default function App() {
                       className="custom-slider relative z-10 w-full"
                     />
                   </div>
-                  <p className="text-center text-[10px] text-white/40 uppercase tracking-widest mt-6">Arraste a bolinha para mudar o tipo de sessão</p>
                 </div>
 
                 <div className="p-6 backdrop-blur-xl border min-h-[240px] rounded-xl relative overflow-hidden transition-all duration-500 shadow-2xl"
@@ -647,12 +666,6 @@ export default function App() {
                   <div className="relative z-10">
                     <p className="text-sm font-medium text-white/90 mb-3">{mood.PT.subtitle}</p>
                     <p className="text-sm text-white/60 leading-relaxed">{mood.PT.desc}</p>
-                    
-                    {mood.hasTantrica && (
-                      <span className="inline-block mt-4 bg-[#f43f5e]/10 border border-[#f43f5e]/30 text-[#f43f5e] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
-                        ✅ Inclui Massagem Tântrica (Íntima)
-                      </span>
-                    )}
                   </div>
                 </div>
               </>
