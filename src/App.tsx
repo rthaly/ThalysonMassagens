@@ -10,7 +10,7 @@ const CONFIG = {
   START_HOUR: 9,
   END_HOUR: 22,
   
-  // CUPONS (Valores menores que 1 são porcentagem. Ex: 0.08 = 8%. Valores maiores são Reais. Ex: 50 = R$ 50)
+  // CUPONS (Valores menores que 1 são porcentagem. Ex: 0.13 = 13%. Valores maiores são Reais. Ex: 50 = R$ 50)
   COUPONS: {
     "SESSAO2": 0.08,
     "RELAXAR13": 0.13,
@@ -27,14 +27,15 @@ const PEAK_FEE = 15;
 // ==================================================================================
 const TEXTS = {
   PT: {
-    ageTitle: "Ambiente\nReservado.",
-    ageDesc: "O atendimento é feito de forma individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no prazer e relaxamento. Confirma ter mais de 18 anos para prosseguir?",
-    ageBtn: "Sim, tenho mais de 18 anos",
+    gateTitle: "Privacidade &\nAmbiente Reservado.",
+    gatePrivacyDesc: "Fique tranquilo. Nenhum dado preenchido aqui fica salvo em nossos servidores. Suas escolhas são geradas apenas no seu celular e enviadas diretamente para o meu WhatsApp.",
+    gateAgeDesc: "O atendimento é individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no prazer e relaxamento. Confirma ter mais de 18 anos para prosseguir?",
+    gateBtn: "Concordar e Acessar",
     step1Label: "Etapa 01",
     step1Title: "Como você quer se sentir hoje?",
-    tabSingle: "Só Hoje",
-    tabEstetica: "Estética",
-    tabCombo: "Ciclos de Prazer",
+    tabSingle: "Avulsas",
+    tabEstetica: "Depilação",
+    tabCombo: "Pacotes",
     upTo: "Até",
     btnContinue: "Continuar para Local",
     step2Label: "Etapa 02",
@@ -43,7 +44,7 @@ const TEXTS = {
     locLabel: "Onde será a 1ª sessão?",
     locStudio: "Minha Suíte (Bela Vista)",
     locHome: "Seu Espaço (Vou até você)",
-    studioDesc: "Atendo sozinho em uma suíte privativa na Bela Vista. O endereço completo e as instruções eu te mando no WhatsApp assim que confirmarmos o horário.",
+    studioDesc: "Atendo em uma suíte privativa na Bela Vista. O endereço completo e as instruções eu te mando no WhatsApp assim que confirmarmos o horário.",
     cep: "CEP (opcional)",
     street: "Rua ou Avenida",
     number: "Número",
@@ -69,7 +70,7 @@ const TEXTS = {
     reqPlace: "O que você quer que role hoje?",
     reqDesc: "Sujeito a avaliação na hora. Caso não seja possível realizar o pedido, o valor da taxa não será cobrado.",
     payLabel: "Como vai pagar na hora?",
-    payPix: "Pix (3% OFF)",
+    payPix: "Pix + (3% DESCONTO)",
     payCard: "Cartão",
     payCash: "Dinheiro",
     subBase: "Valor Base",
@@ -77,7 +78,7 @@ const TEXTS = {
     subReq: "Pedido Especial (Hoje)",
     subGift: "Cortesia (Primeira Vez)",
     subCoupon: "Cupom Aplicado",
-    subPeak: "Deslocamento",
+    subPeak: "Horário de Pico",
     subPix: "Desconto Pix",
     total: "Valor Final",
     btnFinish: "Finalizar Pedido",
@@ -85,137 +86,130 @@ const TEXTS = {
     step5Desc: "A sua solicitação foi gerada e enviada para o WhatsApp. Caso o aplicativo não tenha aberto automaticamente, clique no botão abaixo.",
     btnSend: "Confirmar no WhatsApp",
     btnBack: "Voltar para o início",
-  },
-  EN: {
-    ageTitle: "Private\nEnvironment.",
-    ageDesc: "The service is strictly individual. Experiences include intense physical contact and intimate techniques focused on pleasure and release. Confirm you are over 18?",
-    ageBtn: "Yes, I am over 18",
-    step1Label: "Step 01",
-    step1Title: "How do you want to feel today?",
-    tabSingle: "Just Today",
-    tabEstetica: "Aesthetics",
-    tabCombo: "Pleasure Cycles",
-    upTo: "Up to",
-    btnContinue: "Continue to Location",
-    step2Label: "Step 02",
-    step2Title: "Who and Where.",
-    namePlace: "How should I call you?",
-    locLabel: "Where will the 1st session be?",
-    locStudio: "My Suite (Bela Vista)",
-    locHome: "Your Space (I go to you)",
-    studioDesc: "I receive alone in a private suite in Bela Vista. Exact address and instructions sent on WhatsApp after confirming.",
-    cep: "ZIP Code (optional)",
-    street: "Street or Avenue",
-    number: "Number",
-    comp: "Apt / Room (optional)",
-    bairroPlace: "Neighborhood",
-    btnNext: "Next to Schedule",
-    step3Label: "Step 03",
-    step3Title: "The Moment.",
-    noSlots: "No slots available today.",
-    step4Label: "Step 04",
-    step4Title: "The Agreement.",
-    giftTitle: "Gift Unlocked",
-    giftDesc: "Since it is your first time booking here, I unlocked a small discount on the final amount.",
-    giftBtn: "Unlock Courtesy (R$ 15)",
-    giftActive: "1st time gift active",
-    couponLabel: "Have a coupon?",
-    couponPlace: "Enter code",
-    couponBtn: "Apply",
-    couponActive: "applied successfully",
-    btnRemove: "Remove",
-    addons: "Extra Desires (Today)",
-    reqLabel: "Any fetish or special request?",
-    reqPlace: "What do you want to happen today?",
-    reqDesc: "Subject to evaluation on site. If not possible, the fee will not be charged.",
-    payLabel: "How will you pay on site?",
-    payPix: "Pix (3% OFF)",
-    payCard: "Credit Card",
-    payCash: "Cash",
-    subBase: "Base Value",
-    subExtras: "Extras (Today)",
-    subReq: "Special Request (Today)",
-    subGift: "Courtesy (First Time)",
-    subCoupon: "Coupon Applied",
-    subPeak: "Travel Fee",
-    subPix: "Pix Discount",
-    total: "Final Value",
-    btnFinish: "Finish Order",
-    step5Title: "All Set.",
-    step5Desc: "Your request was generated and sent to WhatsApp. If the app did not open automatically, click the button below.",
-    btnSend: "Confirm on WhatsApp",
-    btnBack: "Back to start",
   }
 };
 
 const MOODS = [
   {
     id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false,
-    PT: { title: 'Desatar os nós', subtitle: 'Tensão e peso nas costas.', service: 'Massagem Clássica', desc: 'Começamos relaxando todo o seu corpo para tirar a dor com pressão firme. Estritamente para amassar a musculatura. Sem toques íntimos.' },
-    EN: { title: 'Untie the knots', subtitle: 'Tension and back weight.', service: 'Classic Massage', desc: 'We start by relaxing your entire body to relieve pain. Strictly to knead muscles. No intimate touch.' }
+    PT: { 
+      title: 'Clássica Relaxante', 
+      subtitle: 'Tensão e relaxamento corporal', 
+      service: 'Massagem Clássica', 
+      desc: 'Massagem Relaxante, aplicada no corpo todo, (exceção das partes íntimas), ativando toda a circulação sanguínea, trazendo relaxamento profundo e sensação de bem-estar, descanso, paz e felicidade!.' 
+    }
+  },
+  {
+    id: 'naturista', color: '#14532d', accent: '#4ade80', price: 240, min: 60, isCombo: false,
+    PT: { 
+      title: 'Clássica Naturista', 
+      subtitle: 'Relaxamento total, livres de roupas.', 
+      service: 'Massagem Naturista', 
+      desc: 'A mesma massagem no corpo todo da clássica, mas o diferencial é a liberdade: cliente e massagista completamente nus. O foco é soltar a musculatura e sentir o atrito natural da pele. Sem toques íntimos, apenas puro relaxamento e respeito naturista.' 
+    }
   },
   {
     id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false,
-    PT: { title: 'A Jornada Tântrica', subtitle: 'Começa relaxando, termina gozando.', service: 'Massagem Sensitiva / Tântrica', desc: 'Toda sessão começa relaxando e destravando seu corpo com a massagem clássica. Só com o corpo solto é que a gente evolui pros toques na pele e pra técnica íntima final (Lingam).' },
-    EN: { title: 'The Tantric Journey', subtitle: 'Starts relaxing, ends releasing.', service: 'Sensitive / Tantric Massage', desc: 'Every session starts relaxing and unlocking your body. Then we evolve to skin touches and final intimate technique (Lingam).' }
+    PT: { 
+      title: 'Massagem Sensorial', 
+      subtitle: 'Começa relaxando, termina gozando.', 
+      service: 'Sensorial / Tântrica', 
+      desc: 'Toda sessão começa com a massagem clássica no corpo todo para preparar e destravar sua musculatura. Só com o corpo solto é que a gente evolui pros toques mais sutis na pele e pra técnica íntima final (Lingam).' 
+    }
   },
   {
     id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false,
-    PT: { title: 'Proximidade', subtitle: 'Mais intimidade, pele na pele.', service: 'Experiência Fusion', desc: 'Começo relaxando seu corpo inteiro para soltar a tensão. Depois, fico só de cueca. O contato fica intenso, corpo a corpo, com o toque da minha barba. Finalização íntima prolongada.' },
-    EN: { title: 'Closeness', subtitle: 'More intimacy, skin on skin.', service: 'Fusion Experience', desc: 'I start by relaxing your whole body. Then, I stay only in underwear. Intense body-to-body contact. Prolonged intimate finish.' }
+    PT: { 
+      title: 'Massagem Fusion', 
+      subtitle: 'Mais intimidade, abraços e minha barba passando no seu corpo.', 
+      service: 'Experiência Fusion', 
+      desc: 'Iniciamos preparando o corpo com a clássica. Depois, fico só de cueca. Unindo a massagem com o toque da minha barba, de costas e frente. Evolui para uma finalização íntima bem prolongada.' 
+    }
   },
   {
     id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false,
-    PT: { title: 'Imersão Total', subtitle: 'Nós dois suados e escorregadios.', service: 'Massagem Nuru (Gel)', desc: 'Iniciamos relaxando toda a sua musculatura. Depois, a gente tira tudo. Muito gel ultra deslizante. Nossos corpos colados deslizando um no outro até você chegar lá.' },
-    EN: { title: 'Total Immersion', subtitle: 'Both of us sweaty and slippery.', service: 'Nuru Massage (Gel)', desc: 'We begin by relaxing your muscles. Then we take it all off. Lots of ultra-gliding gel. Bodies glued sliding on each other.' }
+    PT: { 
+      title: 'Corpo a Corpo Nuru', 
+      subtitle: 'Massagem clássica, depois corpo a corpo com gel.', 
+      service: 'Massagem Nuru (Gel)', 
+      desc: 'Começamos com a clássica ambos nús. Uso gel deslizante. Deslizando meu corpo no seu de costas e de frente e depois finalizamos com a massagem íntima.' 
+    }
   },
   {
-    id: 'reversa', color: '#14532d', accent: '#4ade80', price: 400, min: 60, isCombo: false,
-    PT: { title: 'Assumir o Controle', subtitle: 'Aproveite o meu corpo.', service: 'Massagem Reversa', desc: 'Eu começo relaxando o seu corpo e tirando sua tensão, mas depois você assume. Você dita o ritmo, toca onde quiser e explora o meu corpo livremente até gozarmos juntos.' },
-    EN: { title: 'Take Control', subtitle: 'Enjoy my body.', service: 'Reverse Massage', desc: 'I start by relaxing your body, then you take over. Set the pace, touch anywhere, explore my body freely until mutual release.' }
+    id: 'reversa', color: '#312e81', accent: '#a5b4fc', price: 400, min: 60, isCombo: false,
+    PT: { 
+      title: 'Massagem Reversa', 
+      subtitle: 'Troca de massagens com interação.', 
+      service: 'Massagem Reversa', 
+      desc: 'Eu começo fazendo a clássica para você relaxar por completo. Depois você faz massagem no meu corpo todo. Você faz do seu jeito e depois finalizamos com a massagem íntima.' 
+    }
   }
 ];
 
 const ESTETICA = [
   {
     id: 'depilacao_solo', color: '#0f766e', accent: '#2dd4bf', price: 107, min: 40, isCombo: false,
-    PT: { title: 'Limpeza e Cuidado', subtitle: 'Depilação na máquina e hidratação.', service: 'Estética Corporal', desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo, usando o pente 0 ou o pente 3. Finalizamos com uma hidratação com creme para acalmar a pele logo após depilar.' },
-    EN: { title: 'Clean and Care', subtitle: 'Clipper trim and moisturizing.', service: 'Body Aesthetics', desc: 'Hygienic hair trimming using clippers (guards 0 and 3). Choose up to 3 body areas. Finished with a moisturizing cream to soothe the skin after trimming.' }
+    PT: { 
+      title: 'Limpeza e Cuidado', 
+      subtitle: 'Depilação na máquina e hidratação.', 
+      service: 'Estética Corporal', 
+      desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo, usando o pente 0 ou o pente 3. Finalizamos com uma hidratação com creme para acalmar a pele logo após depilar.' 
+    }
   }
 ];
 
 const COMBOS = [
   {
     id: 'combo_depil_classica', color: '#0369a1', accent: '#38bdf8', price: 270, min: 100, isCombo: true,
-    PT: { title: 'Renovação Completa', subtitle: 'Depilação + Massagem Clássica.', service: '1 Encontro Duplo', desc: 'Primeiro fazemos o aparo na máquina em até 3 lugares usando pente 0 e 3, seguido de hidratação com creme. Logo depois, partimos para uma Massagem Clássica para destravar a musculatura do corpo todo. De R$ 287 por R$ 270 (Economia de R$ 17).' },
-    EN: { title: 'Complete Renewal', subtitle: 'Trimming + Classic Massage.', service: '1 Double Encounter', desc: 'First, machine trimming (up to 3 areas, guards 0/3) with moisturizing. Followed by a full body Classic Massage to release tension. From R$ 287 to R$ 270 (Save R$ 17).' }
+    PT: { 
+      title: 'Renovação Completa', 
+      subtitle: 'Depilação + Massagem Clássica.', 
+      service: '1 Encontro Duplo', 
+      desc: 'Primeiro fazemos o aparo na máquina em até 3 lugares usando pente 0 e 3. Logo depois, partimos para uma Massagem Clássica para destravar a musculatura do corpo todo. De R$ 287 por R$ 270 (Economia de R$ 17).' 
+    }
   },
   {
     id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true,
-    PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Uma sessão Nuru e uma Reversa. Ambas começam relaxando e destravando seu corpo inteiro primeiro. Corpo solto, mente leve e finalização intensa. De R$ 750 por R$ 590 (Economia de R$ 160).' },
-    EN: { title: 'Intensity (Nuru + Reverse)', subtitle: 'Exploration and release without rush.', service: '2 Encounters', desc: 'One Nuru and one Reverse. Both start by completely relaxing your body first. From R$ 750 for R$ 590 (Save R$ 160).' }
+    PT: { 
+      title: 'Intensidade (Nuru + Reversa)', 
+      subtitle: 'Exploração e gozo sem pressa.', 
+      service: '2 Encontros', 
+      desc: 'Uma sessão Nuru e uma Reversa marcadas em dias diferentes. Ambas sempre começam relaxando e destravando seu corpo inteiro primeiro na clássica. De R$ 750 por R$ 590 (Economia de R$ 160).' 
+    }
   },
   {
     id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true,
-    PT: { title: 'Exploração Total (As 4 Fases)', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros', desc: 'Você vem uma vez por semana. Todo encontro começa relaxando sua musculatura, evoluindo a intimidade a cada visita até a explosão da Reversa. De R$ 1.200 por R$ 890 (Economia de R$ 310).' },
-    EN: { title: 'Total Exploration (All 4 Phases)', subtitle: 'A whole month of discoveries.', service: '4 Encounters', desc: 'Come once a week. Every session starts by relaxing your muscles, evolving intimacy each visit. From R$ 1,200 for R$ 890 (Save R$ 310).' }
+    PT: { 
+      title: 'Exploração Total (As 4 Fases)', 
+      subtitle: 'Um mês inteiro de descobertas.', 
+      service: '4 Encontros', 
+      desc: 'Você vem uma vez por semana. Todo encontro começa com a clássica, evoluindo a intimidade a cada visita até a explosão da Reversa. De R$ 1.200 por R$ 890 (Economia de R$ 310).' 
+    }
   },
   {
     id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true,
-    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar dores. Sem toques íntimos. De R$ 360 por R$ 320 (Economia de R$ 40).' },
-    EN: { title: 'Biweekly Relief (2 Sessions)', subtitle: 'Taking the weight off.', service: '2 Encounters', desc: 'Two visits a month purely to relax your body and relieve pain. No intimate touch. From R$ 360 for R$ 320 (Save R$ 40).' }
+    PT: { 
+      title: 'Alívio Quinzenal (2 Sessões)', 
+      subtitle: 'Tirando o peso dos ombros.', 
+      service: '2 Encontros', 
+      desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar dores. Sem toques íntimos. De R$ 360 por R$ 320 (Economia de R$ 40).' 
+    }
   },
   {
     id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true,
-    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve. De R$ 720 por R$ 560 (Economia de R$ 160).' },
-    EN: { title: 'Light Routine (4 Sessions)', subtitle: 'Pain-free body all month.', service: '4 Encounters', desc: 'One hour a week to relax your entire body. Arrive stiff, leave light. From R$ 720 for R$ 560 (Save R$ 160).' }
+    PT: { 
+      title: 'Rotina Leve (4 Sessões)', 
+      subtitle: 'Corpo sem dores o mês todo.', 
+      service: '4 Encontros', 
+      desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve. De R$ 720 por R$ 560 (Economia de R$ 160).' 
+    }
   }
 ];
 
 const EXTRAS = [
-  { id: 'aroma', price: 20, PT: { label: 'Óleos essenciais relaxantes' }, EN: { label: 'Relaxing essential oils' } },
-  { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' }, EN: { label: 'Stay longer (+30min)' } },
-  { id: 'depilacao_extra', price: 107, PT: { label: 'Depilação máq (3 lugares, pente 0 e 3) + Creme' }, EN: { label: 'Trimming (3 areas, 0/3 guards) + Cream' } }
+  { id: 'aroma', price: 20, PT: { label: 'Óleos essenciais relaxantes' } },
+  { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' } },
+  { id: 'depilacao_extra', price: 107, PT: { label: 'Depilação máq (3 lugares) + Creme' } }
 ];
 
 // ==================================================================================
@@ -227,10 +221,12 @@ const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-
 
 const ICON_PATHS: Record<string, string> = {
   'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
-  'globe': 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
   'gift': 'M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z',
   'close': 'M18 6L6 18 M6 6l12 12',
-  'ticket': 'M15 5.5a4 4 0 0 0-4 4v3a4 4 0 0 1-4 4H3M21 5.5a4 4 0 0 1-4 4v3a4 4 0 0 0-4 4h-8M3 13h18M3 5.5v13M21 5.5v13'
+  'ticket': 'M15 5.5a4 4 0 0 0-4 4v3a4 4 0 0 1-4 4H3M21 5.5a4 4 0 0 1-4 4v3a4 4 0 0 0-4 4h-8M3 13h18M3 5.5v13M21 5.5v13',
+  'shield': 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+  'lock': 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z M7 11V7a5 5 0 0 1 10 0v4',
+  'check': 'M20 6L9 17l-5-5'
 };
 
 const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: number; className?: string }) => (
@@ -299,8 +295,9 @@ const CinematicStyles = memo(() => (
 export default function App() {
   const [step, setStep] = useState(0); 
   const [isReturningClient, setIsReturningClient] = useState(false);
+  const [usedCoupons, setUsedCoupons] = useState<string[]>([]);
+  
   const [giftApplied, setGiftApplied] = useState(false);
-  const [lang, setLang] = useState<'PT' | 'EN'>('PT');
   
   const [bookingMode, setBookingMode] = useState<'single'|'estetica'|'combo'>('single');
   const activeList = bookingMode === 'single' ? MOODS : bookingMode === 'estetica' ? ESTETICA : COMBOS;
@@ -308,18 +305,12 @@ export default function App() {
 
   const [couponInput, setCouponInput] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState('');
-  const [couponError, setCouponError] = useState(false);
+  const [couponError, setCouponError] = useState('');
   
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-
-  useEffect(() => {
-    setMoodId(activeList[0].id);
-  }, [bookingMode, activeList]);
-
-  const mood = useMemo(() => activeList.find(m => m.id === moodId) || activeList[0], [moodId, activeList]);
-  
-  const T = TEXTS[lang];
   const numberInputRef = useRef<HTMLInputElement>(null);
+
+  const T = TEXTS.PT;
 
   const [data, setData] = useState({
     name: '', locType: '', cep: '', street: '', number: '', comp: '', bairro: '', 
@@ -328,12 +319,18 @@ export default function App() {
   });
 
   useEffect(() => {
-    const isAdult = localStorage.getItem('thaly_adult_v24');
-    const hasBookedBefore = localStorage.getItem('thaly_returning_v24');
+    const hasOnboarded = localStorage.getItem('thaly_onboard_final');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_final');
+    const storedCoupons = localStorage.getItem('thaly_used_coupons');
     
-    if (isAdult === 'yes') setStep(1);
+    if (storedCoupons) {
+      try { setUsedCoupons(JSON.parse(storedCoupons)); } catch(e) {}
+    }
+    if (hasOnboarded === 'yes') setStep(1);
     if (hasBookedBefore === 'yes') setIsReturningClient(true);
-  }, []);
+    
+    setMoodId(activeList[0].id);
+  }, [bookingMode, activeList]);
 
   useEffect(() => {
     if (step > 0 && step < 5 && !isProfileOpen) {
@@ -347,70 +344,55 @@ export default function App() {
     }
   }, [step, isProfileOpen]);
 
-  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    const target = e.target;
-    setTimeout(() => {
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 400);
-  };
+  const mood = useMemo(() => activeList.find(m => m.id === moodId) || activeList[0], [moodId, activeList]);
 
-  const acceptAdult = () => {
+  const acceptTermsAndContinue = () => {
     vibrate(30);
-    localStorage.setItem('thaly_adult_v24', 'yes');
+    localStorage.setItem('thaly_onboard_final', 'yes');
     setStep(1);
-  };
-
-  const applyGift = () => {
-    vibrate([40, 60]);
-    setGiftApplied(true);
-    setAppliedCoupon('');
-    setCouponInput('');
   };
 
   const handleApplyCoupon = () => {
     const code = couponInput.trim().toUpperCase();
+    
+    if (!code) return;
+
+    if (usedCoupons.includes(code)) {
+      vibrate(50);
+      setCouponError('Cupom já utilizado.');
+      setTimeout(() => setCouponError(''), 2500);
+      return;
+    }
+
     if (CONFIG.COUPONS[code as keyof typeof CONFIG.COUPONS]) {
-      vibrate([30, 50]);
+      vibrate([20, 40]);
       setAppliedCoupon(code);
       setGiftApplied(false);
-      setCouponError(false);
+      setCouponError('');
     } else {
       vibrate(50);
+      setCouponError('Cupom inválido.');
+      setTimeout(() => setCouponError(''), 2500);
       setAppliedCoupon('');
-      setCouponError(true);
-      setTimeout(() => setCouponError(false), 2000);
     }
-  };
-
-  const openProfile = () => {
-    vibrate(15);
-    setIsProfileOpen(true);
   };
 
   const resetFlow = () => {
     vibrate(20);
-    
-    const isAdult = localStorage.getItem('thaly_adult_v24');
-    const hasBookedBefore = localStorage.getItem('thaly_returning_v24');
+    const hasOnboarded = localStorage.getItem('thaly_onboard_final');
+    const hasBookedBefore = localStorage.getItem('thaly_returning_final');
     
     setIsReturningClient(hasBookedBefore === 'yes');
-    
     setGiftApplied(false);
     setAppliedCoupon('');
     setCouponInput('');
-    
     setData({
       name: '', locType: '', cep: '', street: '', number: '', comp: '', bairro: '', 
       date: null, time: '', extras: {}, req: '', payment: ''
     });
-
-    setStep(isAdult === 'yes' ? 1 : 0);
+    
+    setStep(hasOnboarded === 'yes' ? 1 : 0);
     window.scrollTo(0,0);
-  };
-
-  const toggleLang = () => {
-    vibrate(15);
-    setLang(l => l === 'PT' ? 'EN' : 'PT');
   };
 
   const handleCep = async (val: string) => {
@@ -448,7 +430,6 @@ export default function App() {
     let peakFee = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
     
     let subTotal = basePrice + extrasTotal + reqFee;
-    
     let discountGift = giftApplied ? 15 : 0;
     let couponDiscountValue = 0;
     
@@ -483,23 +464,19 @@ export default function App() {
 
   const wppLink = useMemo(() => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
-    const ext = Object.keys(data.extras).filter(k=>data.extras[k]).map(k=>EXTRAS.find(e=>e.id===k)?.[lang].label).join(', ');
+    const ext = Object.keys(data.extras).filter(k=>data.extras[k]).map(k=>EXTRAS.find(e=>e.id===k)?.PT.label).join(', ');
     const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
-    let locationText = '';
-    if (data.locType === 'studio') {
-      locationText = `Você vem até o meu espaço (Minha Suíte, Bela Vista)`;
-    } else {
-      locationText = `Eu vou até você (${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro})`;
-    }
+    let locationText = data.locType === 'studio' ? 
+      `Você vem até o meu espaço (Minha Suíte, Bela Vista)` : 
+      `Eu vou até você (${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro})`;
 
     let text = `Oi Thalyson, tudo bem? Finalizei a minha reserva no site e vim confirmar o nosso encontro.\n\n`;
-    
     text += `*QUEM VEM:* ${data.name}\n\n`;
     
     text += `*A EXPERIÊNCIA:*\n`;
-    text += `• ${mood[lang].title} (${mood[lang].service})\n`;
-    text += `_“${mood[lang].desc}”_\n\n`;
+    text += `• ${mood.PT.title} (${mood.PT.service})\n`;
+    text += `_“${mood.PT.desc}”_\n\n`;
 
     text += `*QUANDO E ONDE:*\n`;
     text += `• Data: ${dStr} às ${data.time}\n`;
@@ -517,27 +494,28 @@ export default function App() {
     text += `• Valor base: ${formatMoney(fin.basePrice)}\n`;
     if (fin.extrasTotal > 0) text += `• Adicionais extras: + ${formatMoney(fin.extrasTotal)}\n`;
     if (fin.reqFee > 0) text += `• Taxa de pedido: + ${formatMoney(fin.reqFee)}\n`;
-    if (fin.peakFee > 0) text += `• Deslocamento: + ${formatMoney(fin.peakFee)}\n`;
+    if (fin.peakFee > 0) text += `• Horário de Pico: + ${formatMoney(fin.peakFee)}\n`;
     if (fin.discountGift > 0) text += `• Presente de 1ª vez: - ${formatMoney(fin.discountGift)}\n`;
     if (fin.couponDiscount > 0) text += `• Cupom (${appliedCoupon}): - ${formatMoney(fin.couponDiscount)}\n`;
     if (fin.pixDiscount > 0) text += `• Desconto Pix: - ${formatMoney(fin.pixDiscount)}\n`;
     text += `*Valor Final:* ${formatMoney(fin.total)} (via ${paymentMethod})\n\n`;
 
-    text += `*PRÓXIMA SESSÃO:*\n`;
-    text += `Já deixei anotado o cupom SESSAO2 para garantir 8% de desconto na minha próxima visita.\n\n`;
-
-    text += `Estou ciente do nosso acordo de respeito mutuo e higiene. Aguardo a sua confirmação!`;
+    text += `Estou ciente do nosso acordo de respeito mútuo e higiene. Aguardo a sua confirmação!`;
     
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
-  }, [data, mood, fin, lang, appliedCoupon]);
+  }, [data, mood, fin, appliedCoupon]);
 
   const finishFlow = () => {
     vibrate([30,50]);
-    localStorage.setItem('thaly_returning_v24', 'yes');
+    localStorage.setItem('thaly_returning_final', 'yes');
+    
+    if (appliedCoupon && !usedCoupons.includes(appliedCoupon)) {
+      const newUsed = [...usedCoupons, appliedCoupon];
+      setUsedCoupons(newUsed);
+      localStorage.setItem('thaly_used_coupons', JSON.stringify(newUsed));
+    }
     
     setIsReturningClient(true);
-    setGiftApplied(false); 
-    
     setStep(5);
     window.location.href = wppLink;
   };
@@ -556,33 +534,21 @@ export default function App() {
       <div className="relative z-10 min-h-[100dvh] flex flex-col px-6 py-10 max-w-md mx-auto">
         
         {/* CABEÇALHO */}
-        <header className="flex justify-between items-center mb-10">
-          <button onClick={openProfile} className="text-left group outline-none py-2 flex items-center gap-3">
-            <img 
-              src="FmtU3Ogx_400x400.jpg" 
-              alt="Thalyson" 
-              className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg transition-transform group-hover:scale-105"
-            />
-            <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
-              Thalyson Massagens.
-            </span>
-          </button>
-          
-          <div className="flex items-center gap-5">
-            {step > 0 && step < 5 && (
-              <div className="flex gap-1.5 mr-2">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className={`h-[3px] rounded-full transition-all duration-500 ${step >= i ? 'w-5 bg-white' : 'w-2 bg-white/20'}`} />
-                ))}
-              </div>
-            )}
-            
-            <button onClick={toggleLang} className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-white/50 hover:text-white transition-colors outline-none py-2">
-              <Icon name="globe" size={14} />
-              {lang}
+        {step > 0 && (
+          <header className="flex justify-between items-center mb-10 step-enter">
+            <button onClick={() => setIsProfileOpen(true)} className="text-left group outline-none py-2 flex items-center gap-3">
+              <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg transition-transform group-hover:scale-105" />
+              <span style={{ fontFamily: 'var(--font-serif)' }} className="text-xl italic text-white/90 group-hover:text-white transition-colors">
+                Thalyson Massagens.
+              </span>
             </button>
-          </div>
-        </header>
+            <div className="flex gap-1.5 mr-2">
+              {[1,2,3,4].map(i => (
+                <div key={i} className={`h-[3px] rounded-full transition-all duration-500 ${step >= i ? 'w-5 bg-white' : 'w-2 bg-white/20'}`} />
+              ))}
+            </div>
+          </header>
+        )}
 
         {/* MODAL DO PERFIL */}
         {isProfileOpen && (
@@ -595,47 +561,52 @@ export default function App() {
               <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt="Thalyson" />
               
               <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Terapeuta Thalyson.</h2>
-              <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Solteiro</p>
+              <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Atendimento Solo</p>
               
               <div className="space-y-4 text-sm text-white/70 leading-relaxed">
-                <p>
-                  Nasci em Santa Fé do Sul, no interior de São Paulo. Hoje meu espaço fica aqui na capital, na Bela Vista.
-                </p>
-                <p>
-                  Trabalho como terapeuta há mais de um ano. O que eu faço é simples: uso minhas mãos e o toque para tirar o peso da sua rotina e te entregar uma experiência onde você só precisa fechar os olhos, relaxar e aproveitar.
-                </p>
+                <p>O que eu faço é simples: uso minhas mãos e o toque para tirar o peso da sua rotina e te entregar uma experiência onde você só precisa fechar os olhos, relaxar e aproveitar.</p>
               </div>
               
               <div className="mt-8 pt-6 border-t border-white/10 flex justify-center">
                 <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors outline-none">
-                  <Icon name="instagram" size={16} />
-                  Acompanhe no Instagram
+                  <Icon name="instagram" size={16} /> Acompanhe no Instagram
                 </a>
               </div>
             </div>
           </div>
         )}
 
-        {/* STEP 0: O AVISO (+18) */}
+        {/* STEP 0: GATEKEEPER */}
         {step === 0 && (
           <div className="flex-1 flex flex-col justify-center step-enter pb-10">
-            <h1 style={{ fontFamily: 'var(--font-serif)', whiteSpace: 'pre-line' }} className="text-4xl leading-tight mb-6">{T.ageTitle}</h1>
-            <p className="text-white/60 text-sm leading-relaxed mb-12">{T.ageDesc}</p>
-            <button onClick={acceptAdult} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none rounded-sm">
-              {T.ageBtn}
+            <h1 style={{ fontFamily: 'var(--font-serif)', whiteSpace: 'pre-line' }} className="text-4xl leading-tight mb-10">{T.gateTitle}</h1>
+            
+            <div className="space-y-6 mb-12">
+              <div className="flex gap-4 p-4 border border-white/10 bg-white/5 rounded-sm">
+                <div className="mt-1"><Icon name="shield" size={20} className="text-white/60"/></div>
+                <p className="text-white/60 text-sm leading-relaxed">{T.gatePrivacyDesc}</p>
+              </div>
+              
+              <div className="flex gap-4 p-4 border border-white/10 bg-white/5 rounded-sm">
+                <div className="mt-1"><Icon name="lock" size={20} className="text-white/60"/></div>
+                <p className="text-white/60 text-sm leading-relaxed">{T.gateAgeDesc}</p>
+              </div>
+            </div>
+
+            <button onClick={acceptTermsAndContinue} className="bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none rounded-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+              {T.gateBtn}
             </button>
           </div>
         )}
 
-        {/* O FLUXO CONTÍNUO */}
         <div className={step >= 1 && step < 5 ? "block" : "hidden"}>
           
-          {/* STEP 1: A FREQUÊNCIA E CATEGORIAS */}
+          {/* STEP 1: CATEGORIAS E SERVIÇOS */}
           <div id="step-1" className="step-enter mb-16">
             <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step1Label}</h2>
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step1Title}</h1>
             
-            <div className="flex bg-white/5 p-1 rounded-sm border border-white/10 mb-6 overflow-x-auto hide-scrollbar">
+            <div className="flex bg-white/5 p-1 rounded-sm border border-white/10 mb-8 overflow-x-auto hide-scrollbar">
               <button onClick={() => { vibrate(10); setBookingMode('single'); }} 
                 className={`flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none whitespace-nowrap ${bookingMode === 'single' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}>
                 {T.tabSingle}
@@ -650,29 +621,33 @@ export default function App() {
               </button>
             </div>
 
-            <div className="flex flex-col gap-3">
-              {activeList.map(m => {
+            {/* LINHA DO TEMPO HORIZONTAL (NOVO CARROSSEL) */}
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-6 -mx-6 px-6 items-stretch">
+              {activeList.map((m, idx) => {
                 const active = mood.id === m.id;
                 return (
                   <button key={m.id} onClick={() => { vibrate(20); setMoodId(m.id); }}
-                    className={`text-left p-5 transition-all duration-500 border outline-none rounded-sm ${active ? 'bg-white/10 backdrop-blur-md' : 'border-white/5 hover:border-white/20 bg-transparent'}`}
+                    className={`shrink-0 w-[85%] sm:w-[280px] snap-center flex flex-col justify-between text-left p-6 transition-all duration-500 border outline-none rounded-xl relative ${active ? 'bg-white/10 backdrop-blur-md scale-100 shadow-xl' : 'border-white/5 hover:border-white/20 bg-transparent scale-[0.95] opacity-50'}`}
                     style={{ borderColor: active ? m.accent : '' }}>
-                    <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: active ? m.accent : 'rgba(255,255,255,0.4)' }}>{m[lang].title}</p>
-                    <p className={`text-sm ${active ? 'text-white' : 'text-white/60'}`}>{m[lang].subtitle}</p>
+                    
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: active ? m.accent : 'rgba(255,255,255,0.4)' }}>{m.PT.title}</p>
+                      <p className={`text-sm leading-relaxed ${active ? 'text-white' : 'text-white/60'}`}>{m.PT.subtitle}</p>
+                    </div>
+
+                    <div className="flex justify-between items-end mt-6 pt-4 border-t" style={{ borderColor: active ? `${m.accent}40` : 'rgba(255,255,255,0.1)' }}>
+                      <span className="text-base font-bold" style={{ color: active ? m.accent : 'rgba(255,255,255,0.4)' }}>{formatMoney(m.price)}</span>
+                      {!m.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest">{T.upTo} {m.min}m</span>}
+                    </div>
                   </button>
                 )
               })}
             </div>
 
-            <div className="mt-8 p-6 bg-black/40 backdrop-blur-xl border border-white/10 min-h-[140px] rounded-sm">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-medium text-lg pr-4">{mood[lang].service}</h3>
-                <div className="text-right flex flex-col items-end shrink-0">
-                  <span className="text-base font-bold block" style={{ color: mood.accent }}>{formatMoney(mood.price)}</span>
-                  {!mood.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest mt-0.5">{T.upTo} {mood.min}m</span>}
-                </div>
-              </div>
-              <p className="text-sm text-white/60 leading-relaxed mt-2">{mood[lang].desc}</p>
+            {/* CAIXA DE DESCRIÇÃO DA SESSÃO */}
+            <div className="mt-4 p-6 bg-black/40 backdrop-blur-xl border border-white/10 min-h-[120px] rounded-xl relative overflow-hidden">
+              <h3 className="font-medium text-lg mb-2 relative z-10" style={{ color: mood.accent }}>{mood.PT.service}</h3>
+              <p className="text-sm text-white/60 leading-relaxed relative z-10">{mood.PT.desc}</p>
             </div>
 
             {step === 1 && (
@@ -689,9 +664,7 @@ export default function App() {
               <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step2Title}</h1>
 
               <div className="space-y-6">
-                <div>
-                  <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} onFocus={handleInputFocus} className="w-full modern-input text-lg font-medium" />
-                </div>
+                <input type="text" placeholder={T.namePlace} value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full modern-input text-lg font-medium" />
 
                 <div className="pt-4">
                   <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.locLabel}</p>
@@ -701,17 +674,17 @@ export default function App() {
                   </div>
                 </div>
 
-                {data.locType === 'studio' && <p className="text-sm text-white/60 bg-white/5 p-4 border border-white/10 leading-relaxed rounded-sm animate-in fade-in">{T.studioDesc}</p>}
+                {data.locType === 'studio' && <p className="text-sm text-white/60 bg-white/5 p-4 border border-white/10 leading-relaxed rounded-sm step-enter">{T.studioDesc}</p>}
                 
                 {data.locType === 'home' && (
-                  <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                    <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} onFocus={handleInputFocus} className="w-full modern-input" />
-                    <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} onFocus={handleInputFocus} className="w-full modern-input" />
+                  <div className="space-y-4 step-enter">
+                    <input type="tel" maxLength={9} placeholder={T.cep} value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full modern-input" />
+                    <input type="text" placeholder={T.street} value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full modern-input" />
                     <div className="flex gap-4">
-                      <input ref={numberInputRef} type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} onFocus={handleInputFocus} className="w-1/3 modern-input" />
-                      <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} onFocus={handleInputFocus} className="w-2/3 modern-input" />
+                      <input ref={numberInputRef} type="text" placeholder={T.number} value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 modern-input" />
+                      <input type="text" placeholder={T.comp} value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 modern-input" />
                     </div>
-                    <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} onFocus={handleInputFocus} className="w-full modern-input" />
+                    <input type="text" placeholder={T.bairroPlace} value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full modern-input" />
                   </div>
                 )}
               </div>
@@ -733,7 +706,7 @@ export default function App() {
               <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4 mb-6">
                 {days.map((d, i) => {
                   const sel = data.date?.toDateString() === d.toDateString();
-                  const dayName = d.toLocaleDateString(lang === 'PT' ? 'pt-BR' : 'en-US', {weekday:'short'}).slice(0,3);
+                  const dayName = d.toLocaleDateString('pt-BR', {weekday:'short'}).slice(0,3);
                   return (
                     <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 w-16 h-20 outline-none flex flex-col items-center justify-center border rounded-sm transition-all ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/50'}`}>
                       <span className="text-[10px] uppercase font-bold tracking-widest">{dayName}</span>
@@ -744,15 +717,12 @@ export default function App() {
               </div>
 
               {data.date && (
-                <div className="grid grid-cols-3 gap-3 animate-in fade-in">
+                <div className="grid grid-cols-3 gap-3 step-enter">
                   {getSlots().map(t => {
                     const sel = data.time === t;
                     return (
-                      <button key={t} onClick={() => { 
-                        vibrate(20);
-                        setData({...data, time: t});
-                        if (step === 3) setStep(4);
-                      }} className={`py-4 text-sm outline-none font-medium border rounded-sm transition-colors ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>
+                      <button key={t} onClick={() => { vibrate(20); setData({...data, time: t}); if (step === 3) setStep(4); }} 
+                        className={`py-4 text-sm outline-none font-medium border rounded-sm transition-colors ${sel ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>
                         {t}
                       </button>
                     )
@@ -773,7 +743,7 @@ export default function App() {
                 
                 <div className="space-y-5">
                   {!isReturningClient && !appliedCoupon && !giftApplied && (
-                    <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md animate-in fade-in flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
+                    <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
                       <div className="absolute -right-4 -bottom-4 opacity-5">
                         <Icon name="gift" size={120} />
                       </div>
@@ -783,7 +753,7 @@ export default function App() {
                           <h3 className="text-[#4ade80] font-bold uppercase tracking-widest text-xs">{T.giftTitle}</h3>
                         </div>
                         <p className="text-sm text-[#4ade80]/90 mb-5 leading-relaxed">{T.giftDesc}</p>
-                        <button onClick={applyGift} className="bg-[#4ade80] text-black w-full text-xs font-bold px-5 py-3.5 uppercase tracking-widest outline-none rounded-sm transition-transform active:scale-95 shadow-lg shadow-[#4ade80]/20">
+                        <button onClick={() => {vibrate(30); setGiftApplied(true);}} className="bg-[#4ade80] text-black w-full text-xs font-bold px-5 py-3.5 uppercase tracking-widest outline-none rounded-sm transition-transform active:scale-95">
                           {T.giftBtn}
                         </button>
                       </div>
@@ -791,41 +761,35 @@ export default function App() {
                   )}
 
                   {!isReturningClient && giftApplied && (
-                    <div className="flex justify-between items-center p-4 bg-[#4ade80]/10 border border-[#4ade80]/30 rounded-sm animate-in fade-in">
-                      <span className="text-[#4ade80] text-sm font-bold flex items-center gap-2"><Icon name="gift" size={16}/> {T.giftActive}</span>
+                    <div className="flex justify-between items-center p-4 bg-[#4ade80]/10 border border-[#4ade80]/30 rounded-sm">
+                      <span className="text-[#4ade80] text-sm font-bold flex items-center gap-2"><Icon name="check" size={16}/> {T.giftActive}</span>
                       <button onClick={() => setGiftApplied(false)} className="text-white/50 hover:text-white text-xs underline outline-none">{T.btnRemove}</button>
                     </div>
                   )}
 
                   {!giftApplied && (
-                    <div className="animate-in fade-in">
+                    <div>
                       <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
                       <div className="flex gap-3">
                         <input 
                           type="text" 
                           placeholder={T.couponPlace} 
                           value={couponInput} 
-                          onChange={e => setCouponInput(e.target.value)}
-                          onFocus={handleInputFocus}
+                          onChange={e => {setCouponInput(e.target.value); setCouponError('');}}
                           disabled={!!appliedCoupon}
                           className={`flex-1 bg-white/5 border ${couponError ? 'border-red-500/50' : 'border-white/10'} text-white rounded-sm px-4 outline-none focus:border-white/50 transition-colors uppercase disabled:opacity-50`}
                         />
                         {!appliedCoupon ? (
-                          <button 
-                            onClick={handleApplyCoupon}
-                            className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none"
-                          >
+                          <button onClick={handleApplyCoupon} className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none">
                             {T.couponBtn}
                           </button>
                         ) : (
-                          <button 
-                            onClick={() => { setAppliedCoupon(''); setCouponInput(''); }}
-                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none"
-                          >
+                          <button onClick={() => { setAppliedCoupon(''); setCouponInput(''); }} className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none">
                             {T.btnRemove}
                           </button>
                         )}
                       </div>
+                      {couponError && <p className="text-xs text-red-400 mt-3">{couponError}</p>}
                       {appliedCoupon && <p className="text-xs text-[#4ade80] mt-3">✅ Cupom <strong>{appliedCoupon}</strong> {T.couponActive} (-{formatMoney(fin.couponDiscount)})</p>}
                     </div>
                   )}
@@ -838,7 +802,7 @@ export default function App() {
                       const sel = data.extras[ex.id];
                       return (
                         <button key={ex.id} onClick={()=>setData({...data, extras:{...data.extras, [ex.id]:!sel}})} className={`w-full outline-none flex justify-between p-4 border rounded-sm text-sm transition-colors ${sel ? 'border-white bg-white/10 text-white' : 'border-white/10 text-white/60'}`}>
-                          <span className="text-left max-w-[70%]">{ex[lang].label}</span>
+                          <span className="text-left max-w-[70%]">{ex.PT.label}</span>
                           <span className="shrink-0">+{formatMoney(ex.price)}</span>
                         </button>
                       )
@@ -851,7 +815,7 @@ export default function App() {
                     <p className="text-xs text-white/50 uppercase tracking-widest">{T.reqLabel}</p>
                     <span className="text-xs font-bold text-white/60">+ R$ 130</span>
                   </div>
-                  <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} onFocus={handleInputFocus} className="w-full modern-input text-sm" />
+                  <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full modern-input text-sm" />
                   <p className="text-[10px] text-white/40 mt-2 leading-relaxed">{T.reqDesc}</p>
                 </div>
 
@@ -885,7 +849,6 @@ export default function App() {
               </div>
             </div>
           )}
-
         </div>
 
         {/* STEP 5: FINALIZADO */}
@@ -902,10 +865,7 @@ export default function App() {
               <p className="text-sm text-white/70">Guarde o cupom <strong className="text-white">SESSAO2</strong>. Você pode aplicar ele no nosso site para garantir 8% de desconto na sua próxima visita.</p>
             </div>
 
-            <a 
-              href={wppLink} 
-              className="bg-transparent border border-white text-white flex items-center justify-center h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none rounded-sm no-underline"
-            >
+            <a href={wppLink} className="bg-transparent border border-white text-white flex items-center justify-center h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none rounded-sm no-underline">
               {T.btnSend}
             </a>
 
