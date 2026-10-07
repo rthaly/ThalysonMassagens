@@ -10,6 +10,7 @@ const CONFIG = {
   ADDRESS_AREA: "Bela Vista, São Paulo",
   START_HOUR: 9,
   END_HOUR: 22,
+  SIGNAL_AMOUNT: 50, // Added fixed signal amount
   
   // CUPONS
   COUPONS: {
@@ -440,7 +441,9 @@ export default function App() {
     let pixDiscount = data.payment === 'pix' ? Math.ceil(totalAfterDiscounts * 0.03) : 0;
     
     let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
-    let sinal = Math.ceil(finalTotal / 2);
+    
+    // The signal is now fixed to R$ 50
+    let sinal = CONFIG.SIGNAL_AMOUNT; 
     
     return { 
       basePrice, addonsTotal, reqFee, peakFee, discountGift, 
@@ -506,8 +509,8 @@ export default function App() {
     }
     
     text += `*Valor Final:* ${formatMoney(fin.total)} (vou pagar no ${paymentMethod})\n`;
-    text += `*Sinal para garantir a reserva (50%):* ${formatMoney(fin.sinal)}\n`;
-    text += `*Restante lá na hora (50%):* ${formatMoney(fin.total - fin.sinal)}\n\n`;
+    text += `*Sinal para garantir a reserva:* ${formatMoney(fin.sinal)}\n`;
+    text += `*Restante lá na hora:* ${formatMoney(fin.total - fin.sinal)}\n\n`;
 
     text += `Estou ciente do sinal para fechar o horário. Aguardo sua resposta pra confirmar!`;
     
@@ -888,7 +891,7 @@ export default function App() {
 
                   <div className="bg-white/5 border border-white/10 p-5 rounded-md mb-8">
                     <p className="text-xs text-white/80 leading-relaxed text-center">
-                      Pra deixar o horário 100% fechado, me manda o sinal de <strong className="text-[#4ade80]">50% agora ({formatMoney(fin.sinal)})</strong> via Pix. A outra metade a gente acerta lá na hora.
+                      Pra deixar o horário 100% fechado, me manda o sinal de <strong className="text-[#4ade80]">R$ 50,00 agora</strong> via Pix. O restante a gente acerta lá na hora.
                     </p>
                   </div>
 
