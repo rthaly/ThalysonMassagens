@@ -43,9 +43,9 @@ const TEXTS = {
     step2Title: "Nome e Local.",
     namePlace: "Qual é o seu nome?",
     locLabel: "Onde vamos nos encontrar?",
-    locStudio: "Na sua Suíte (Bela Vista)",
-    locHome: "No meu endereço (Você vem até mim)",
-    studioDesc: "Eu te atendo na minha suíte reservada na Bela Vista. Assim que fecharmos o horário, te mando o endereço completo e como chegar lá.",
+    locStudio: "Na minha Suíte (Bela Vista)",
+    locHome: "No seu endereço (Vou até você)",
+    studioDesc: "Eu te atendo no meu espaço reservado na Bela Vista. Assim que fecharmos o horário, te mando o endereço completo e como chegar lá.",
     cep: "CEP (opcional)",
     street: "Sua Rua ou Avenida",
     number: "Número",
@@ -58,7 +58,7 @@ const TEXTS = {
     step4Label: "Passo 4",
     step4Title: "Resumo e Pagamento.",
     giftTitle: "Desconto Liberado",
-    giftDesc: "Como é a sua primeira vez marcando comigo, te dei um desconto pra gente fechar hoje.",
+    giftDesc: "Como é a sua primeira vez marcando comigo, deixei um desconto pra gente fechar hoje.",
     giftBtn: "Usar meu desconto (R$ 15)",
     giftActive: "Desconto de 1ª vez ativado",
     couponLabel: "Tem algum cupom?",
@@ -91,62 +91,62 @@ const TEXTS = {
 };
 
 // ==================================================================================
-// MASSAGENS E SERVIÇOS (LINGUAGEM TANGÍVEL, SEM ENROLAÇÃO)
+// MASSAGENS E SERVIÇOS (TANGÍVEL, CORPO TODO E PRAZER)
 // ==================================================================================
 const MOODS = [
   {
     id: 'classica', color: '#3f3f46', price: 180, min: 60, isCombo: false, hasTantrica: false,
-    PT: { title: 'Destravar as Costas e Relaxar', category: 'Massagem Clássica', desc: 'Sabe aquele peso nos ombros e a dor de ficar sentado ou muito tenso? Essa massagem resolve isso. Eu uso força para amassar seus músculos do corpo todo, tirar a tensão e te deixar muito leve. Só relaxamento puro, sem frescura e sem parte íntima.' }
+    PT: { title: 'Tirar o Peso do Corpo', category: 'Massagem Clássica', desc: 'Massagem profunda no corpo todo. Uso a força certa das minhas mãos para desfazer os nós de tensão e amassar a musculatura de ponta a ponta. Você entra cansado e sai muito leve. É apenas relaxamento, não tem toques íntimos.' }
   },
   {
     id: 'sensitiva', color: '#713f12', price: 200, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Relaxar o Corpo e Dar Prazer', category: 'Massagem Tântrica', desc: 'A mais pedida. Primeiro eu amasso bem suas costas para tirar todo o seu estresse. Quando você estiver relaxado, a massagem muda: os toques ficam mais gostosos, percorrem o corpo e terminam direto numa massagem íntima pra você gozar e aliviar tudo.' }
+    PT: { title: 'Relaxamento e Prazer', category: 'Massagem Tântrica', desc: 'Tudo começa relaxando o seu corpo inteiro, da cabeça aos pés. Quando você estiver bem entregue e solto, os toques mudam de ritmo, percorrem a sua pele e terminam direto numa massagem íntima demorada para você aliviar tudo.' }
   },
   {
     id: 'naturista', color: '#14532d', price: 240, min: 60, isCombo: false, hasTantrica: false,
-    PT: { title: 'Massagem Totalmente Nu', category: 'Massagem Naturista', desc: 'A mesma pegada de amassar os músculos da clássica, mas nós dois ficamos completamente sem roupa. O foco é te deixar super à vontade e usar o contato direto da nossa pele pra você relaxar mais rápido. Não inclui toques íntimos.' }
+    PT: { title: 'Massagem Totalmente Nu', category: 'Massagem Naturista', desc: 'A mesma massagem profunda com as mãos no seu corpo todo, mas com uma diferença: nós dois ficamos totalmente sem roupa do início ao fim. O contato direto da nossa pele ajuda você a relaxar muito mais. Apenas relaxamento, não tem toques íntimos e não tem escorrega no corpo.' }
   },
   {
     id: 'fusion', color: '#831843', price: 250, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Mais Contato e Tesão', category: 'Massagem Tântrica', desc: 'Pra quem gosta de uma pegada mais quente. Depois de soltar as suas costas, eu fico só de cueca. Uso o calor do meu corpo e o atrito da minha barba nas suas costas e no seu peito para te dar tesão. Finaliza com uma massagem íntima bem demorada.' }
+    PT: { title: 'Muito Contato e Tesão', category: 'Massagem Tântrica', desc: 'Relaxo o seu corpo inteiro primeiro. Depois, fico apenas de cueca e uso o calor do meu corpo no seu. Passo o meu peito e a minha barba em você para subir bem o clima, até chegar na parte da massagem íntima.' }
   },
   {
     id: 'nuru', color: '#1e1b4b', price: 350, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Corpo a Corpo Escorregadio', category: 'Massagem Tântrica', desc: 'A experiência mais intensa. Nós dois pelados, eu passo um gel bem liso no corpo e uso o meu peito, braços e pernas pra massagear você inteiro. Escorrega muito, é muito gostoso e termina na massagem íntima com bastante prazer.' }
+    PT: { title: 'Corpo a Corpo com Gel', category: 'Massagem Tântrica', desc: 'A experiência com mais contato físico. Nós dois sem roupa, passo um gel bem liso e uso o meu próprio corpo (peito, pernas, braços) para massagear o seu corpo todo. É muito escorregadio, quente e termina na massagem íntima.' }
   },
   {
     id: 'reversa', color: '#312e81', price: 400, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Sua Vez de Tocar', category: 'Massagem Tântrica', desc: 'Eu começo tirando toda a sua tensão muscular. Depois, eu libero você pra passar a mão e explorar o meu corpo do jeito que tiver vontade. Você curte o momento e no final eu volto para o controle e faço você gozar.' }
+    PT: { title: 'A Sua Vez de Tocar', category: 'Massagem Tântrica', desc: 'Eu começo tirando o peso do seu corpo inteiro com a massagem para você relaxar. Depois, você tem tempo e liberdade para passar a mão e explorar o meu corpo como quiser. No fim, eu retomo o controle para fazer você gozar.' }
   }
 ];
 
 const ESTETICA = [
   {
     id: 'depilacao_solo', color: '#0f766e', price: 107, min: 40, isCombo: false, hasTantrica: false,
-    PT: { title: 'Aparar os Pelos', category: 'Máquina', desc: 'Passo a maquininha (pente 0 ou 3) pra deixar os pelos baixinhos e manter a higiene em até 3 lugares do seu corpo. Depois, finalizo passando um creme pra não dar alergia e deixar sua pele macia.' }
+    PT: { title: 'Aparar os Pelos', category: 'Máquina', desc: 'Passo a maquininha para deixar os pelos baixinhos e manter a higiene em até 3 lugares do seu corpo. Depois, finalizo com um creme para não dar alergia e deixar sua pele macia.' }
   }
 ];
 
 const COMBOS = [
   {
     id: 'combo_depil_classica', color: '#0369a1', price: 270, min: 100, isCombo: true, hasTantrica: false,
-    PT: { title: 'Pelos Aparados + Costas Leves', category: 'Pacote Duplo', desc: 'Primeiro eu aparo seus pelos com a maquininha. Depois, você deita e eu faço a massagem clássica no seu corpo todo para tirar qualquer dor ou tensão muscular que você tenha. De R$ 287 por R$ 270.' }
+    PT: { title: 'Pelos Aparados + Corpo Leve', category: 'Pacote Duplo', desc: 'Primeiro eu aparo seus pelos com a maquininha. Depois, você deita e eu faço a massagem clássica no seu corpo inteiro para tirar o cansaço. De R$ 287 por R$ 270.' }
   },
   {
     id: 'combo_classica_2', color: '#3f3f46', price: 320, min: 60, isCombo: true, hasTantrica: false,
-    PT: { title: 'Manutenção Muscular', category: '2 Sessões', desc: 'Duas vezes no mês você vem me ver apenas para amassar os músculos e desestressar da rotina de trabalho. Não tem massagem íntima. De R$ 360 por R$ 320.' }
+    PT: { title: 'Manutenção do Corpo', category: '2 Sessões Clássicas', desc: 'Duas vezes no mês você vem me ver apenas para amassar os músculos do corpo todo e desestressar. Não tem massagem íntima. De R$ 360 por R$ 320.' }
   },
   {
     id: 'combo_classica_4', color: '#18181b', price: 560, min: 60, isCombo: true, hasTantrica: false,
-    PT: { title: 'Mês Zero Dores', category: '4 Sessões', desc: 'Você vem uma vez por semana durante o mês. Eu solto seus nós de tensão nas costas e te deixo novo pra aguentar a semana. De R$ 720 por R$ 560.' }
+    PT: { title: 'Mês Zero Dores', category: '4 Sessões Clássicas', desc: 'Você vem uma vez por semana. Eu solto seus nós de tensão do corpo todo e te deixo novo pra aguentar a rotina. De R$ 720 por R$ 560.' }
   },
   {
     id: 'combo_tantrica_2', color: '#831843', price: 590, min: 60, isCombo: true, hasTantrica: true,
-    PT: { title: 'Pacote do Prazer', category: '2 Sessões Tântricas', desc: 'Você vem um dia para fazer a "Corpo a Corpo Escorregadio", e em um outro dia marca a "Sua Vez de Tocar" pra passar a mão. Ambas finalizam tirando seu leite. De R$ 750 por R$ 590.' }
+    PT: { title: 'Pacote do Prazer', category: '2 Sessões Tântricas', desc: 'Você vem um dia para fazer a "Corpo a Corpo", e num outro dia marca a "Sua Vez de Tocar". Ambas começam relaxando o corpo e finalizam tirando seu leite. De R$ 750 por R$ 590.' }
   },
   {
     id: 'combo_tantrica_4', color: '#1e1b4b', price: 890, min: 60, isCombo: true, hasTantrica: true,
-    PT: { title: 'O Mês Completo', category: '4 Sessões Tântricas', desc: 'Você vem toda semana. Começamos com a massagem básica e o contato vai aumentando a cada semana até chegar nas mais pesadas e sem roupa. De R$ 1.200 por R$ 890.' }
+    PT: { title: 'O Mês Completo', category: '4 Sessões Tântricas', desc: 'Você vem toda semana. Começamos com a massagem básica e o contato vai aumentando a cada semana até chegar nas mais completas sem roupa. De R$ 1.200 por R$ 890.' }
   }
 ];
 
@@ -451,7 +451,6 @@ export default function App() {
     const ext = Object.keys(data.extras).filter(k=>data.extras[k]).map(k=>EXTRAS.find(e=>e.id===k)?.PT.label).join(', ');
     const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
-    // AQUI ENTRA A LÓGICA CORRETA PARA O CLIENTE
     let locationText = data.locType === 'studio' ? 
       `Irei até a sua Suíte (Bela Vista)` : 
       `Você virá até o meu endereço: ${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro}`;
@@ -552,9 +551,9 @@ export default function App() {
               </button>
               <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt="Thalyson" />
               <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Thalyson.</h2>
-              <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Atendimento Discreto</p>
+              <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">Atendimento Masculino</p>
               <div className="space-y-4 text-sm text-white/70 leading-relaxed">
-                <p>Sou terapeuta focado no público masculino. Meu trabalho é simples: usar as minhas mãos para amassar os seus músculos tensos, tirar o estresse das suas costas e te dar prazer num ambiente tranquilo, sem correria e bem discreto.</p>
+                <p>Sou terapeuta focado no público masculino. Meu trabalho é simples: usar as minhas mãos para tirar o peso do seu corpo inteiro, aliviar o seu estresse e te dar prazer num ambiente tranquilo e acolhedor.</p>
               </div>
               <div className="mt-8 pt-6 border-t border-white/10 flex justify-center">
                 <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors outline-none">
@@ -610,8 +609,11 @@ export default function App() {
             {bookingMode === 'single' ? (
               <>
                 <div className="mb-10">
-                  <div className="flex justify-between items-center text-[10px] text-white/50 uppercase tracking-widest font-bold mb-4 px-1">
-                    <span>Leve (Sem parte íntima)</span>
+                  <p className="text-[12px] text-white/80 font-medium mb-4 text-center">
+                    Deslize o botão abaixo para encontrar a sensação que você procura hoje:
+                  </p>
+                  <div className="flex justify-between items-center text-[10px] text-white/50 uppercase tracking-widest font-bold mb-3 px-1">
+                    <span>Apenas Relaxar</span>
                     <span>Prazer Máximo</span>
                   </div>
                   <div className="relative py-2">
@@ -626,29 +628,19 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="p-6 backdrop-blur-xl border rounded-xl relative transition-all duration-500 shadow-2xl bg-[#1c1c1e] border-white/10 flex flex-col justify-between">
-                  <div>
-                    <div className="flex justify-between items-start mb-1 relative z-10">
-                      <h3 className="font-bold text-2xl text-white tracking-wide leading-tight w-2/3">{mood.PT.title}</h3>
-                      <span className="text-xl font-bold text-white/80 transition-colors duration-500 mt-1">
-                        {formatMoney(mood.price)}
-                      </span>
-                    </div>
-                    
-                    <div className="flex justify-between items-center mb-5 relative z-10">
-                      <p className="text-[11px] text-[#4ade80] font-bold uppercase tracking-widest">{mood.PT.category}</p>
-                      {!mood.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest">{T.upTo} {mood.min}M</span>}
-                    </div>
-
-                    <div className="relative z-10">
-                      <p className="text-[14px] text-white/70 leading-relaxed">{mood.PT.desc}</p>
-                    </div>
-                  </div>
+                <div className="p-6 backdrop-blur-xl border rounded-xl relative transition-all duration-500 shadow-2xl bg-[#1c1c1e] border-white/10 flex flex-col text-left">
+                  <h3 className="font-bold text-2xl text-white tracking-wide leading-tight mb-1">{mood.PT.title}</h3>
+                  <p className="text-[11px] text-[#4ade80] font-bold uppercase tracking-widest mb-3">{mood.PT.category}</p>
+                  <span className="text-xl font-bold text-white/90 mb-4">
+                    {formatMoney(mood.price)} <span className="text-[10px] font-normal text-white/40 ml-1">{T.upTo} {mood.min}M</span>
+                  </span>
+                  
+                  <p className="text-[14px] text-white/70 leading-relaxed">{mood.PT.desc}</p>
 
                   {mood.hasTantrica && (
-                    <div className="mt-6 relative z-10">
+                    <div className="mt-6">
                       <span className="inline-block bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
-                        ✅ Tem finalização íntima
+                        ✅ Inclui Finalização Íntima
                       </span>
                     </div>
                   )}
@@ -660,25 +652,18 @@ export default function App() {
                   const active = moodIndex === idx;
                   return (
                     <button key={m.id} onClick={() => { vibrate(20); setMoodIndex(idx); }}
-                      className={`w-full text-left p-6 transition-all duration-300 border outline-none rounded-xl flex flex-col justify-between ${active ? 'bg-[#1c1c1e] border-white/20 scale-100' : 'bg-transparent border-white/5 opacity-60 hover:opacity-100 scale-[0.98]'}`}>
+                      className={`w-full text-left p-6 transition-all duration-300 border outline-none rounded-xl flex flex-col ${active ? 'bg-[#1c1c1e] border-white/20 scale-100' : 'bg-transparent border-white/5 opacity-60 hover:opacity-100 scale-[0.98]'}`}>
                       
-                      <div className="w-full">
-                        <div className="flex justify-between items-start mb-1">
-                          <h3 className={`font-bold text-lg tracking-wide w-3/4 leading-tight ${active ? 'text-white' : 'text-white/70'}`}>{m.PT.title}</h3>
-                          <span className={`text-lg font-bold shrink-0 mt-1 ${active ? 'text-white/80' : 'text-white/50'}`}>{formatMoney(m.price)}</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center mb-3">
-                          <p className={`text-[10px] font-bold uppercase tracking-widest ${active ? 'text-[#4ade80]' : 'text-[#4ade80]/60'}`}>{m.PT.category}</p>
-                        </div>
-                        
-                        {active && <p className="text-[13px] text-white/60 leading-relaxed">{m.PT.desc}</p>}
-                      </div>
+                      <h3 className={`font-bold text-xl tracking-wide leading-tight mb-1 ${active ? 'text-white' : 'text-white/70'}`}>{m.PT.title}</h3>
+                      <p className={`text-[10px] font-bold uppercase tracking-widest mb-3 ${active ? 'text-[#4ade80]' : 'text-[#4ade80]/60'}`}>{m.PT.category}</p>
+                      <span className={`text-lg font-bold mb-4 ${active ? 'text-white/90' : 'text-white/50'}`}>{formatMoney(m.price)}</span>
+                      
+                      {active && <p className="text-[13px] text-white/60 leading-relaxed">{m.PT.desc}</p>}
 
                       {active && m.hasTantrica && (
                         <div className="mt-5">
                           <span className="inline-block bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
-                            ✅ Tem finalização íntima
+                            ✅ Inclui Finalização Íntima
                           </span>
                         </div>
                       )}
