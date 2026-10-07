@@ -152,8 +152,8 @@ const COMBOS = [
 
 // ADICIONAIS INTELIGENTES DENTRO DO CARD
 const ADDONS_OPTIONS = [
-  { id: 'touch', label: 'Quero te tocar', price: 50 },
-  { id: 'kisses', label: 'Beijos', price: 50 },
+  { id: 'touch', label: 'Quero te tocar', price: 100 },
+  { id: 'kisses', label: 'Beijos', price: 100 },
   { id: 'time', label: '+30 minutos extras', price: 75 },
   { id: 'aparo', label: 'Aparo de Pêlos', price: 107 },
 ];
