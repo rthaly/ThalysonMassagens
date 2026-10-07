@@ -5,13 +5,13 @@ import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
-  PIX_KEY: "5517991360413", // Chave Pix que será copiada automaticamente
+  PIX_KEY: "5517991360413",
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Bela Vista, São Paulo",
   START_HOUR: 9,
   END_HOUR: 22,
   
-  // CUPONS (Valores menores que 1 são porcentagem. Ex: 0.13 = 13%. Valores maiores são Reais. Ex: 50 = R$ 50)
+  // CUPONS
   COUPONS: {
     "SESSAO2": 0.08,
     "RELAXAR13": 0.13,
@@ -24,134 +24,136 @@ const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 const PEAK_FEE = 15;
 
 // ==================================================================================
-// DICIONÁRIO E TEXTOS (i18n)
+// DICIONÁRIO E TEXTOS (i18n) - LINGUAGEM HUMANA
 // ==================================================================================
 const TEXTS = {
   PT: {
-    gateTitle: "Privacidade &\nAmbiente Reservado.",
-    gatePrivacyDesc: "Fique tranquilo. Nenhum dado preenchido aqui fica salvo em nossos servidores. Suas escolhas são geradas apenas no seu celular e enviadas diretamente para o meu WhatsApp.",
-    gateAgeDesc: "O atendimento é individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no prazer e relaxamento. Confirma ter mais de 18 anos para prosseguir?",
-    gateBtn: "Concordar e Acessar",
+    gateTitle: "Privacidade e\nRespeito.",
+    gatePrivacyDesc: "Pode ficar tranquilo. Nada que você preencher aqui fica salvo na internet. Suas escolhas vão direto para o meu WhatsApp particular.",
+    gateAgeDesc: "O atendimento é focado em homens. Algumas sessões envolvem nudez e massagem íntima para relaxar. Você confirma que tem mais de 18 anos?",
+    gateBtn: "Sim, sou maior de 18 anos",
     step1Label: "Etapa 01",
-    step1Title: "Como você quer se sentir hoje?",
-    tabSingle: "Avulsas",
+    step1Title: "O que você está buscando hoje?",
+    tabSingle: "Massagens",
     tabEstetica: "Depilação",
     tabCombo: "Pacotes",
     upTo: "Até",
-    btnContinue: "Continuar para Local",
+    btnContinue: "Continuar para o Local",
     step2Label: "Etapa 02",
-    step2Title: "Quem e Onde.",
-    namePlace: "Como prefere ser chamado?",
-    locLabel: "Onde será a 1ª sessão?",
-    locStudio: "Minha Suíte (Bela Vista)",
-    locHome: "Seu Espaço (Vou até você)",
-    studioDesc: "Atendo em uma suíte privativa na Bela Vista. O endereço completo e as instruções eu te mando no WhatsApp assim que confirmarmos o horário.",
+    step2Title: "Seus dados e o Local.",
+    namePlace: "Qual seu nome ou apelido?",
+    locLabel: "Onde vai ser o nosso encontro?",
+    locStudio: "No seu espaço (Bela Vista)",
+    locHome: "Na minha casa / hotel",
+    studioDesc: "Eu atendo em uma suíte super discreta e confortável na Bela Vista. Assim que a gente confirmar, te mando o endereço certinho e as instruções de como chegar.",
     cep: "CEP (opcional)",
-    street: "Rua ou Avenida",
+    street: "Nome da Rua ou Avenida",
     number: "Número",
     comp: "Apto / Quarto (opcional)",
     bairroPlace: "Bairro",
     btnNext: "Avançar para Horários",
     step3Label: "Etapa 03",
-    step3Title: "O Momento.",
-    noSlots: "Nenhum horário disponível hoje.",
+    step3Title: "Qual o melhor dia e horário?",
+    noSlots: "Nenhum horário livre pra hoje.",
     step4Label: "Etapa 04",
-    step4Title: "O Acordo.",
-    giftTitle: "Presente Liberado",
-    giftDesc: "Como é sua primeira vez marcando por aqui, deixei um pequeno desconto no valor final.",
-    giftBtn: "Desbloquear Cortesia (R$ 15)",
-    giftActive: "Presente de 1ª vez ativo",
-    couponLabel: "Tem um cupom?",
-    couponPlace: "Digite o código",
+    step4Title: "Resumo e Pagamento.",
+    giftTitle: "Presente de Primeira Vez",
+    giftDesc: "Como é a sua primeira vez marcando comigo, deixei um desconto de R$ 15 para você no final.",
+    giftBtn: "Usar Desconto (R$ 15)",
+    giftActive: "Desconto aplicado",
+    couponLabel: "Você tem algum cupom?",
+    couponPlace: "Digite o código aqui",
     couponBtn: "Aplicar",
     couponActive: "aplicado com sucesso",
-    btnRemove: "Remover",
-    addons: "Vontades Extras (Hoje)",
-    reqLabel: "Tem algum fetiche ou pedido?",
-    reqPlace: "O que você quer que role hoje?",
-    reqDesc: "Sujeito a avaliação na hora. Caso não seja possível realizar o pedido, o valor da taxa não será cobrado.",
-    payLabel: "Como vai pagar na hora?",
-    payPix: "Pix + (3% DESCONTO)",
+    btnRemove: "Tirar",
+    addons: "Quer adicionar algo a mais?",
+    reqLabel: "Tem algum fetiche ou pedido especial?",
+    reqPlace: "Me conta, o que você quer que role hoje?",
+    reqDesc: "Se tiver alguma vontade específica, me fala. Na hora a gente conversa e vê se rola. Se não rolar, não te cobro essa taxa.",
+    payLabel: "Como você vai pagar a outra metade na hora?",
+    payPix: "Pix (3% OFF)",
     payCard: "Cartão",
     payCash: "Dinheiro",
     subBase: "Valor Base",
-    subExtras: "Extras (Hoje)",
-    subReq: "Pedido Especial (Hoje)",
-    subGift: "Cortesia (Primeira Vez)",
+    subExtras: "Adicionais",
+    subReq: "Pedido Especial",
+    subGift: "Desconto (1ª Vez)",
     subCoupon: "Cupom Aplicado",
-    subPeak: "Horário de Pico",
+    subPeak: "Taxa (Horário de Pico)",
     subPix: "Desconto Pix",
-    total: "Valor Final",
-    btnFinish: "Finalizar Pedido",
-    step5Title: "Tudo Pronto.",
-    step5Desc: "A sua solicitação foi gerada e enviada para o WhatsApp. Caso o aplicativo não tenha aberto automaticamente, clique no botão abaixo.",
-    btnSend: "Confirmar no WhatsApp",
+    total: "Valor Total",
+    btnFinish: "Finalizar Agendamento",
+    step5Title: "Quase lá!",
+    step5Desc: "Seu agendamento está pronto. É só me mandar no WhatsApp para a gente confirmar.",
+    btnSend: "Confirmar pelo WhatsApp",
     btnBack: "Voltar para o início",
   }
 };
 
-// Ordenados por valor/intensidade para o slider funcionar de forma lógica
+// ==================================================================================
+// MASSAGENS E SERVIÇOS (COM LÓGICA DE TÂNTRICA E TEXTOS MELHORADOS)
+// ==================================================================================
 const MOODS = [
   {
-    id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false,
-    PT: { title: 'Clássica Relaxante', subtitle: 'A pausa que seu corpo implora.', service: 'Massagem Clássica', desc: 'Sinta o peso da rotina derreter. Movimentos firmes e envolventes que soltam todos os nós de tensão do corpo, trazendo uma sensação imediata de paz, alívio e um descanso profundo para a mente.' }
+    id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false, hasTantrica: false,
+    PT: { title: 'Clássica Relaxante', subtitle: 'Para tirar o peso das costas.', service: 'Massagem Clássica', desc: 'Sabe aquele dia que seu corpo tá todo travado? Eu uso movimentos firmes para amassar a musculatura e soltar a tensão do seu corpo inteiro. Você sai daqui leve e descansado. (Não tem toque íntimo).' }
   },
   {
-    id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false,
-    PT: { title: 'Sensorial Tântrica', subtitle: 'Começa relaxando, termina arrepiando.', service: 'Massagem Tântrica', desc: 'Uma jornada de sensações que desperta cada centímetro seu. O relaxamento profundo evolui para toques sutis e provocantes na pele, culminando em uma explosão de prazer prolongado e inesquecível.' }
+    id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false, hasTantrica: true,
+    PT: { title: 'Sensorial', subtitle: 'O corpo todo relaxado até o limite.', service: 'Massagem Tântrica', desc: 'Começo soltando as tensões das suas costas e pernas. Quando você estiver bem relaxado, passo para toques bem lentos e suaves na pele do corpo todo, e finalizamos com a massagem íntima.' }
   },
   {
-    id: 'naturista', color: '#14532d', accent: '#4ade80', price: 240, min: 60, isCombo: false,
-    PT: { title: 'Naturista Livre', subtitle: 'Conexão e liberdade, sem amarras.', service: 'Massagem Naturista', desc: 'A liberdade de estar completamente à vontade. Sinta o deslizar quente e natural da pele contra a pele. Uma troca de energias pura que renova o corpo inteiro, mantendo o foco no relaxamento e sem toques íntimos.' }
+    id: 'naturista', color: '#14532d', accent: '#4ade80', price: 240, min: 60, isCombo: false, hasTantrica: false,
+    PT: { title: 'Naturista Livre', subtitle: 'Massagem clássica, mas ambos pelados.', service: 'Massagem Naturista', desc: 'É a mesma massagem para soltar as costas e os músculos, mas nós dois ficamos totalmente sem roupa. É ideal para quem curte a liberdade do naturismo e o contato pele com pele. (Atenção: Não tem toque íntimo nesta sessão).' }
   },
   {
-    id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false,
-    PT: { title: 'Experiência Fusion', subtitle: 'Intimidade, toques intensos e proximidade.', service: 'Massagem Fusion', desc: 'A intimidade levada a outro nível. O calor das minhas mãos se mistura ao atrito suave da minha barba deslizando pelo seu corpo inteiro, criando ondas de arrepios que terminam em um ápice intenso e libertador.' }
+    id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false, hasTantrica: true,
+    PT: { title: 'Experiência Fusion', subtitle: 'Toques com as mãos e com a barba.', service: 'Massagem Fusion', desc: 'Uma massagem com muito mais contato. Fico só de cueca, e uso o toque da minha barba deslizando pelo seu corpo para causar arrepios intensos. Termina com uma massagem íntima bem demorada.' }
   },
   {
-    id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false,
-    PT: { title: 'Corpo a Corpo Nuru', subtitle: 'Nenhum espaço entre nós.', service: 'Massagem Nuru (Gel)', desc: 'Uma experiência úmida, escorregadia e absurdamente envolvente. Cobertos por gel deslizante morno, movimento meu corpo sobre o seu de ponta a ponta, conectando nossa pele até a liberação íntima final.' }
+    id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false, hasTantrica: true,
+    PT: { title: 'Corpo a Corpo (Nuru)', subtitle: 'Muito gel e contato total.', service: 'Massagem Nuru', desc: 'Nós dois totalmente nus. Uso bastante gel para deslizar meu corpo inteiro em cima do seu, de frente e de costas. É uma experiência bem molhada, escorregadia e intensa, que fecha com a massagem íntima.' }
   },
   {
-    id: 'reversa', color: '#312e81', accent: '#a5b4fc', price: 400, min: 60, isCombo: false,
-    PT: { title: 'Reversa Interativa', subtitle: 'Você no controle da situação.', service: 'Massagem Reversa', desc: 'O ápice da conexão. Relaxe primeiro recendo meu toque, e depois assuma o controle para explorar e massagear meu corpo livremente. Finalizamos juntos, do seu jeito, com um gozo de tirar o fôlego.' }
+    id: 'reversa', color: '#312e81', accent: '#a5b4fc', price: 400, min: 60, isCombo: false, hasTantrica: true,
+    PT: { title: 'Reversa Interativa', subtitle: 'Você também faz em mim.', service: 'Massagem Reversa', desc: 'Primeiro você relaxa enquanto eu faço massagem em você. Depois, você assume o controle e faz massagem no meu corpo do jeito que tiver vontade. No fim, encerramos juntos com a massagem íntima.' }
   }
 ];
 
 const ESTETICA = [
   {
-    id: 'depilacao_solo', color: '#0f766e', accent: '#2dd4bf', price: 107, min: 40, isCombo: false,
-    PT: { title: 'Limpeza e Cuidado', subtitle: 'Depilação na máquina e hidratação.', service: 'Estética Corporal', desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo, usando o pente 0 ou o pente 3. Finalizamos com uma hidratação com creme para acalmar a pele logo após depilar.' }
+    id: 'depilacao_solo', color: '#0f766e', accent: '#2dd4bf', price: 107, min: 40, isCombo: false, hasTantrica: false,
+    PT: { title: 'Limpeza e Cuidado', subtitle: 'Depilação na máquina e hidratação.', service: 'Estética Corporal', desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo, usando o pente 0 ou o pente 3. Passo um creme de hidratação para acalmar a pele logo depois.' }
   }
 ];
 
 const COMBOS = [
   {
-    id: 'combo_depil_classica', color: '#0369a1', accent: '#38bdf8', price: 270, min: 100, isCombo: true,
-    PT: { title: 'Renovação Completa', subtitle: 'Depilação + Massagem Clássica.', service: '1 Encontro Duplo', desc: 'Primeiro fazemos o aparo na máquina em até 3 lugares usando pente 0 e 3. Logo depois, partimos para uma Massagem Clássica para destravar a musculatura do corpo todo. De R$ 287 por R$ 270.' }
+    id: 'combo_depil_classica', color: '#0369a1', accent: '#38bdf8', price: 270, min: 100, isCombo: true, hasTantrica: false,
+    PT: { title: 'Renovação Completa', subtitle: 'Depilação + Massagem Clássica.', service: 'Encontro Duplo', desc: 'Primeiro damos um trato nos pelos na máquina em até 3 lugares. Em seguida, deitamos na maca para uma Massagem Clássica para destravar sua musculatura do corpo todo.' }
   },
   {
-    id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true,
-    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar dores. Sem toques íntimos. De R$ 360 por R$ 320.' }
+    id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true, hasTantrica: false,
+    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros no mês', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar as dores e a tensão do dia a dia.' }
   },
   {
-    id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true,
-    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve. De R$ 720 por R$ 560.' }
+    id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true, hasTantrica: false,
+    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros no mês', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve, o mês inteiro.' }
   },
   {
-    id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true,
-    PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Uma sessão Nuru e uma Reversa marcadas em dias diferentes. Ambas sempre começam relaxando e destravando seu corpo inteiro primeiro na clássica. De R$ 750 por R$ 590.' }
+    id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true, hasTantrica: true,
+    PT: { title: 'Pacote Intensidade', subtitle: 'Sessão Nuru + Sessão Reversa.', service: '2 Encontros no mês', desc: 'Dois dias de muito prazer. Uma sessão Nuru e uma Reversa marcadas em dias diferentes. Ambas sempre começam relaxando e destravando as costas primeiro.' }
   },
   {
-    id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true,
-    PT: { title: 'Exploração Total (As 4 Fases)', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros', desc: 'Você vem uma vez por semana. Todo encontro começa com a clássica, evoluindo a intimidade a cada visita até a explosão da Reversa. De R$ 1.200 por R$ 890.' }
+    id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true, hasTantrica: true,
+    PT: { title: 'As 4 Fases', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros no mês', desc: 'Você vem uma vez por semana. Cada encontro evolui na intimidade: começa na Sensorial, passa pela Fusion, Nuru, até fechar o mês na Reversa.' }
   }
 ];
 
 const EXTRAS = [
-  { id: 'aroma', price: 20, PT: { label: 'Óleos essenciais relaxantes' } },
+  { id: 'aroma', price: 20, PT: { label: 'Usar óleos essenciais relaxantes' } },
   { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' } },
-  { id: 'depilacao_extra', price: 107, PT: { label: 'Depilação máq (3 lugares) + Creme' } }
+  { id: 'depilacao_extra', price: 107, PT: { label: 'Depilar com máquina (3 lugares)' } }
 ];
 
 // ==================================================================================
@@ -176,7 +178,7 @@ const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: n
 ));
 
 // ==================================================================================
-// ESTILOS CINEMATOGRÁFICOS + ESTILOS DO SLIDER E TOAST
+// ESTILOS
 // ==================================================================================
 const CinematicStyles = memo(() => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -232,34 +234,17 @@ const CinematicStyles = memo(() => (
     .modern-input:focus { outline: none; border-bottom-color: rgba(255,255,255,0.8); }
     .modern-input::placeholder { color: rgba(255,255,255,0.2); }
 
-    /* ESTILOS DO SLIDER DE INTENSIDADE */
     .custom-slider {
-      -webkit-appearance: none;
-      width: 100%;
-      background: transparent;
-      outline: none;
-      margin: 0;
+      -webkit-appearance: none; width: 100%; background: transparent; outline: none; margin: 0;
     }
     .custom-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      height: 32px;
-      width: 32px;
-      border-radius: 50%;
-      background: white;
-      margin-top: -13px;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-      cursor: grab;
-      transition: transform 0.15s ease;
+      -webkit-appearance: none; height: 32px; width: 32px; border-radius: 50%;
+      background: white; margin-top: -13px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      cursor: grab; transition: transform 0.15s ease;
     }
-    .custom-slider::-webkit-slider-thumb:active {
-      transform: scale(1.15);
-      cursor: grabbing;
-    }
+    .custom-slider::-webkit-slider-thumb:active { transform: scale(1.15); cursor: grabbing; }
     .custom-slider::-webkit-slider-runnable-track {
-      width: 100%;
-      height: 6px;
-      background: transparent;
-      border-radius: 4px;
+      width: 100%; height: 6px; background: transparent; border-radius: 4px;
     }
 
     .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -340,12 +325,11 @@ export default function App() {
 
   const handleApplyCoupon = () => {
     const code = couponInput.trim().toUpperCase();
-    
     if (!code) return;
 
     if (usedCoupons.includes(code)) {
       vibrate(50);
-      setCouponError('Cupom já utilizado.');
+      setCouponError('Esse cupom já foi usado antes.');
       setTimeout(() => setCouponError(''), 2500);
       return;
     }
@@ -390,9 +374,7 @@ export default function App() {
         const json = await res.json();
         if (!json.erro) {
           setData(prev => ({ 
-            ...prev, 
-            street: json.logradouro || '', 
-            bairro: json.bairro || '' 
+            ...prev, street: json.logradouro || '', bairro: json.bairro || '' 
           }));
           setTimeout(() => numberInputRef.current?.focus(), 150);
         }
@@ -405,7 +387,7 @@ export default function App() {
     if (method === 'pix') {
       try {
         navigator.clipboard.writeText(CONFIG.PIX_KEY);
-        showToast('Chave Pix copiada com sucesso!');
+        showToast('✅ Chave Pix copiada! Pode colar no seu banco.');
         vibrate([20, 40]);
       } catch (err) {
         console.error('Falha ao copiar:', err);
@@ -443,7 +425,7 @@ export default function App() {
     let pixDiscount = data.payment === 'pix' ? Math.ceil(totalAfterDiscounts * 0.03) : 0;
     
     let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
-    let sinal = finalTotal / 2;
+    let sinal = Math.ceil(finalTotal / 2);
     
     return { 
       basePrice, extrasTotal, reqFee, peakFee, discountGift, 
@@ -470,41 +452,37 @@ export default function App() {
     const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
     let locationText = data.locType === 'studio' ? 
-      `Você vem até o meu espaço (Minha Suíte, Bela Vista)` : 
-      `Eu vou até você (${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro})`;
+      `No seu espaço (Minha Suíte, Bela Vista)` : 
+      `Na minha casa (${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro})`;
 
-    let text = `Oi Thalyson, tudo bem? Finalizei a minha reserva no site e vim confirmar o nosso encontro.\n\n`;
-    text += `*QUEM VEM:* ${data.name}\n\n`;
-    
-    text += `*A EXPERIÊNCIA:*\n`;
-    text += `• ${mood.PT.title} (${mood.PT.service})\n`;
-    text += `_“${mood.PT.desc}”_\n\n`;
+    let text = `Opa Thalyson, tudo bem? Fechei meu agendamento pelo site.\n\n`;
+    text += `*NOME:* ${data.name}\n`;
+    text += `*O QUE VAMOS FAZER:* ${mood.PT.title} (${mood.PT.service})\n\n`;
 
     text += `*QUANDO E ONDE:*\n`;
-    text += `• Data: ${dStr} às ${data.time}\n`;
-    text += `• Duração: até ${fin.dur} min\n`;
+    text += `• Data: ${dStr} às ${data.time} (Até ${fin.dur} min)\n`;
     text += `• Local: ${locationText}\n\n`;
 
     if (ext || data.req.trim()) {
-      text += `*DETALHES DA SESSÃO:*\n`;
+      text += `*MAIS DETALHES:*\n`;
       if (ext) text += `• Adicionais: ${ext}\n`;
-      if (data.req.trim()) text += `• Pedido especial: "${data.req.trim()}"\n`;
+      if (data.req.trim()) text += `• Quero que role: "${data.req.trim()}"\n`;
       text += `\n`;
     }
 
-    text += `*O INVESTIMENTO:*\n`;
-    text += `• Valor base: ${formatMoney(fin.basePrice)}\n`;
+    text += `*OS VALORES:*\n`;
     if (fin.extrasTotal > 0) text += `• Adicionais extras: + ${formatMoney(fin.extrasTotal)}\n`;
-    if (fin.reqFee > 0) text += `• Taxa de pedido: + ${formatMoney(fin.reqFee)}\n`;
-    if (fin.peakFee > 0) text += `• Horário de Pico: + ${formatMoney(fin.peakFee)}\n`;
-    if (fin.discountGift > 0) text += `• Presente de 1ª vez: - ${formatMoney(fin.discountGift)}\n`;
-    if (fin.couponDiscount > 0) text += `• Cupom (${appliedCoupon}): - ${formatMoney(fin.couponDiscount)}\n`;
-    if (fin.pixDiscount > 0) text += `• Desconto Pix: - ${formatMoney(fin.pixDiscount)}\n`;
-    text += `*Valor Total:* ${formatMoney(fin.total)} (via ${paymentMethod})\n`;
-    text += `*Sinal p/ Agendar (50%):* ${formatMoney(fin.sinal)}\n`;
-    text += `*Restante na hora (50%):* ${formatMoney(fin.total - fin.sinal)}\n\n`;
+    if (fin.reqFee > 0) text += `• Taxa de pedido especial: + ${formatMoney(fin.reqFee)}\n`;
+    if (fin.discountGift > 0 || fin.couponDiscount > 0 || fin.pixDiscount > 0) {
+      let totalDesc = fin.discountGift + fin.couponDiscount + fin.pixDiscount;
+      text += `• Descontos aplicados: - ${formatMoney(totalDesc)}\n`;
+    }
+    
+    text += `*VALOR TOTAL:* ${formatMoney(fin.total)} (via ${paymentMethod})\n`;
+    text += `*SINAL AGORA (50%):* ${formatMoney(fin.sinal)}\n`;
+    text += `*PAGO COM VOCÊ NA HORA:* ${formatMoney(fin.total - fin.sinal)}\n\n`;
 
-    text += `Estou ciente do pagamento do sinal para reservar o horário e do acordo de respeito mútuo. Aguardo a sua confirmação!`;
+    text += `Tudo certo, já sei que o sinal é para confirmar o horário e concordo com o respeito mútuo. Aguardo você confirmar!`;
     
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
   }, [data, mood, fin, appliedCoupon]);
@@ -535,11 +513,11 @@ export default function App() {
       <div className="grain-overlay" />
       <div className="ambient-glow" style={{ backgroundColor: mood.color }} />
 
-      {/* TOAST NOTIFICATION */}
+      {/* TOAST DO PIX */}
       {toastMsg && (
-        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-[#4ade80] text-black px-6 py-3 flex items-center gap-2 rounded-full shadow-2xl toast-enter">
-          <Icon name="check" size={16} />
-          <span className="text-[10px] font-bold uppercase tracking-widest">{toastMsg}</span>
+        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-[#4ade80] text-black px-5 py-3 flex items-center gap-2 rounded-full shadow-2xl toast-enter">
+          <Icon name="check" size={18} />
+          <span className="text-[11px] font-bold uppercase tracking-widest">{toastMsg}</span>
         </div>
       )}
 
@@ -562,23 +540,19 @@ export default function App() {
           </header>
         )}
 
-        {/* MODAL DO PERFIL */}
+        {/* PERFIL (MODAL) */}
         {isProfileOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in" onClick={() => setIsProfileOpen(false)}>
             <div className="bg-[#09090b] border border-white/10 rounded-md w-full max-w-sm p-8 relative shadow-2xl" onClick={e => e.stopPropagation()}>
               <button onClick={() => setIsProfileOpen(false)} className="absolute top-4 right-4 p-2 text-white/50 hover:text-white transition-colors outline-none">
                 <Icon name="close" size={20} />
               </button>
-              
               <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt="Thalyson" />
-              
               <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Terapeuta Thalyson.</h2>
               <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Atendimento Solo</p>
-              
               <div className="space-y-4 text-sm text-white/70 leading-relaxed">
-                <p>O que eu faço é simples: uso minhas mãos e o toque para tirar o peso da sua rotina e te entregar uma experiência onde você só precisa fechar os olhos, relaxar e aproveitar.</p>
+                <p>O que eu faço é simples: uso minhas mãos e o toque para tirar o peso da sua rotina. Uma experiência para você relaxar e aproveitar, sem pressa.</p>
               </div>
-              
               <div className="mt-8 pt-6 border-t border-white/10 flex justify-center">
                 <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors outline-none">
                   <Icon name="instagram" size={16} /> Acompanhe no Instagram
@@ -588,7 +562,7 @@ export default function App() {
           </div>
         )}
 
-        {/* STEP 0: GATEKEEPER */}
+        {/* STEP 0: ENTRADA */}
         {step === 0 && (
           <div className="flex-1 flex flex-col justify-center step-enter pb-10">
             <h1 style={{ fontFamily: 'var(--font-serif)', whiteSpace: 'pre-line' }} className="text-4xl leading-tight mb-10">{T.gateTitle}</h1>
@@ -598,7 +572,6 @@ export default function App() {
                 <div className="mt-1"><Icon name="shield" size={20} className="text-white/60"/></div>
                 <p className="text-white/60 text-sm leading-relaxed">{T.gatePrivacyDesc}</p>
               </div>
-              
               <div className="flex gap-4 p-4 border border-white/10 bg-white/5 rounded-sm">
                 <div className="mt-1"><Icon name="lock" size={20} className="text-white/60"/></div>
                 <p className="text-white/60 text-sm leading-relaxed">{T.gateAgeDesc}</p>
@@ -613,12 +586,12 @@ export default function App() {
 
         <div className={step >= 1 && step < 5 ? "block" : "hidden"}>
           
-          {/* STEP 1: CATEGORIAS E SERVIÇOS */}
+          {/* STEP 1: A ESCOLHA */}
           <div id="step-1" className="step-enter mb-16">
             <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step1Label}</h2>
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step1Title}</h1>
             
-            <div className="flex bg-white/5 p-1 rounded-sm border border-white/10 mb-10 overflow-x-auto hide-scrollbar">
+            <div className="flex bg-white/5 p-1 rounded-sm border border-white/10 mb-8 overflow-x-auto hide-scrollbar">
               <button onClick={() => { vibrate(10); setBookingMode('single'); }} 
                 className={`flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-colors rounded-sm outline-none whitespace-nowrap ${bookingMode === 'single' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}>
                 {T.tabSingle}
@@ -633,58 +606,76 @@ export default function App() {
               </button>
             </div>
 
-            {/* O NOVO CONTROLE DESLIZANTE DE INTENSIDADE/PREÇO */}
-            <div className="mb-10">
-              <div className="flex justify-between items-center text-[10px] text-white/50 uppercase tracking-widest font-bold mb-4 px-1">
-                <span>Leve</span>
-                <span>Intensidade Máxima</span>
-              </div>
-              
-              <div className="relative py-2">
-                <div className="absolute top-1/2 left-0 w-full h-1.5 bg-white/10 rounded-full -translate-y-1/2 pointer-events-none" />
-                <div 
-                  className="absolute top-1/2 left-0 h-1.5 rounded-full -translate-y-1/2 pointer-events-none transition-all duration-300"
-                  style={{ width: `${(moodIndex / Math.max(1, activeList.length - 1)) * 100}%`, backgroundColor: mood.accent }}
-                />
-                
-                <input 
-                  type="range" 
-                  min="0" 
-                  max={Math.max(0, activeList.length - 1)} 
-                  value={moodIndex} 
-                  disabled={activeList.length <= 1}
-                  onChange={(e) => { vibrate(10); setMoodIndex(Number(e.target.value)); }}
-                  className="custom-slider relative z-10 w-full"
-                />
-              </div>
-              <p className="text-center text-[10px] text-white/40 uppercase tracking-widest mt-6">
-                Deslize a bolinha para ajustar o valor e a experiência
-              </p>
-            </div>
+            {/* LÓGICA INTELIGENTE DO SLIDER (SÓ APARECE NAS AVULSAS) */}
+            {bookingMode === 'single' ? (
+              <>
+                <div className="mb-10">
+                  <div className="flex justify-between items-center text-[10px] text-white/50 uppercase tracking-widest font-bold mb-4 px-1">
+                    <span>Só Relaxar</span>
+                    <span>Mais Prazer</span>
+                  </div>
+                  <div className="relative py-2">
+                    <div className="absolute top-1/2 left-0 w-full h-1.5 bg-white/10 rounded-full -translate-y-1/2 pointer-events-none" />
+                    <div className="absolute top-1/2 left-0 h-1.5 rounded-full -translate-y-1/2 pointer-events-none transition-all duration-300"
+                      style={{ width: `${(moodIndex / Math.max(1, activeList.length - 1)) * 100}%`, backgroundColor: mood.accent }}
+                    />
+                    <input type="range" min="0" max={Math.max(0, activeList.length - 1)} value={moodIndex} 
+                      onChange={(e) => { vibrate(10); setMoodIndex(Number(e.target.value)); }}
+                      className="custom-slider relative z-10 w-full"
+                    />
+                  </div>
+                  <p className="text-center text-[10px] text-white/40 uppercase tracking-widest mt-6">Arraste a bolinha para mudar o tipo de sessão</p>
+                </div>
 
-            {/* O CARD PRINCIPAL QUE SE TRANSFORMA */}
-            <div className="p-6 backdrop-blur-xl border min-h-[240px] rounded-xl relative overflow-hidden transition-all duration-500 shadow-2xl"
-                 style={{ backgroundColor: `${mood.color}40`, borderColor: `${mood.accent}50` }}>
-              <div className="absolute top-0 left-0 w-full h-1 transition-colors duration-500" style={{ backgroundColor: mood.accent }} />
-              
-              <div className="flex justify-between items-start mb-5 relative z-10">
-                <div className="pr-4">
-                  <h3 className="font-bold text-xl mb-1 text-white">{mood.PT.title}</h3>
-                  <p className="text-xs text-white/60 uppercase tracking-widest">{mood.PT.service}</p>
+                <div className="p-6 backdrop-blur-xl border min-h-[240px] rounded-xl relative overflow-hidden transition-all duration-500 shadow-2xl"
+                     style={{ backgroundColor: `${mood.color}40`, borderColor: `${mood.accent}50` }}>
+                  <div className="absolute top-0 left-0 w-full h-1 transition-colors duration-500" style={{ backgroundColor: mood.accent }} />
+                  
+                  <div className="flex justify-between items-start mb-5 relative z-10">
+                    <div className="pr-4">
+                      <h3 className="font-bold text-xl mb-1 text-white">{mood.PT.title}</h3>
+                      <p className="text-xs text-white/60 uppercase tracking-widest">{mood.PT.service}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-xl font-bold block transition-colors duration-500" style={{ color: mood.accent }}>
+                        {formatMoney(mood.price)}
+                      </span>
+                      {!mood.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest mt-1 block">{T.upTo} {mood.min}m</span>}
+                    </div>
+                  </div>
+                  
+                  <div className="relative z-10">
+                    <p className="text-sm font-medium text-white/90 mb-3">{mood.PT.subtitle}</p>
+                    <p className="text-sm text-white/60 leading-relaxed">{mood.PT.desc}</p>
+                    
+                    {mood.hasTantrica && (
+                      <span className="inline-block mt-4 bg-[#f43f5e]/10 border border-[#f43f5e]/30 text-[#f43f5e] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
+                        ✅ Inclui Massagem Tântrica (Íntima)
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <span className="text-xl font-bold block transition-colors duration-500" style={{ color: mood.accent }}>
-                    {formatMoney(mood.price)}
-                  </span>
-                  {!mood.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest mt-1 block">{T.upTo} {mood.min}m</span>}
-                </div>
+              </>
+            ) : (
+              // SE FOR PACOTE OU DEPILAÇÃO, EXIBE LISTA VERTICAL SIMPLES (SEM SLIDER)
+              <div className="space-y-4">
+                {activeList.map((m, idx) => {
+                  const active = moodIndex === idx;
+                  return (
+                    <button key={m.id} onClick={() => { vibrate(20); setMoodIndex(idx); }}
+                      className={`w-full text-left p-5 transition-all duration-300 border outline-none rounded-xl ${active ? 'bg-white/10 backdrop-blur-md scale-100' : 'border-white/5 bg-transparent opacity-60 hover:opacity-100 scale-[0.98]'}`}
+                      style={{ borderColor: active ? m.accent : '' }}>
+                      <div className="flex justify-between items-start mb-2">
+                        <p className="text-sm font-bold uppercase tracking-wider" style={{ color: active ? m.accent : 'white' }}>{m.PT.title}</p>
+                        <span className="text-sm font-bold text-white">{formatMoney(m.price)}</span>
+                      </div>
+                      <p className="text-sm text-white/80 mb-2">{m.PT.subtitle}</p>
+                      {active && <p className="text-xs text-white/50 leading-relaxed mt-3">{m.PT.desc}</p>}
+                    </button>
+                  )
+                })}
               </div>
-              
-              <div className="relative z-10">
-                <p className="text-sm font-medium text-white/90 mb-3">{mood.PT.subtitle}</p>
-                <p className="text-sm text-white/60 leading-relaxed">{mood.PT.desc}</p>
-              </div>
-            </div>
+            )}
 
             {step === 1 && (
               <button onClick={() => { vibrate(30); setStep(2); }} className="mt-10 bg-white text-black h-14 w-full font-bold tracking-widest uppercase transition-transform active:scale-95 outline-none rounded-sm">
@@ -769,7 +760,7 @@ export default function App() {
             </div>
           )}
 
-          {/* STEP 4: O ACORDO */}
+          {/* STEP 4: PAGAMENTO */}
           {step >= 4 && (
             <div id="step-4" className="step-enter mb-8 pt-8 border-t border-white/10">
               <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step4Label}</h2>
@@ -780,9 +771,7 @@ export default function App() {
                 <div className="space-y-5">
                   {!isReturningClient && !appliedCoupon && !giftApplied && (
                     <div className="p-6 border border-[#4ade80]/40 bg-[#4ade80]/10 rounded-md flex flex-col items-start relative overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.05)]">
-                      <div className="absolute -right-4 -bottom-4 opacity-5">
-                        <Icon name="gift" size={120} />
-                      </div>
+                      <div className="absolute -right-4 -bottom-4 opacity-5"><Icon name="gift" size={120} /></div>
                       <div className="relative z-10 w-full">
                         <div className="flex items-center gap-2 mb-2">
                           <Icon name="gift" className="text-[#4ade80]" size={18} />
@@ -807,22 +796,13 @@ export default function App() {
                     <div>
                       <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.couponLabel}</p>
                       <div className="flex gap-3">
-                        <input 
-                          type="text" 
-                          placeholder={T.couponPlace} 
-                          value={couponInput} 
-                          onChange={e => {setCouponInput(e.target.value); setCouponError('');}}
-                          disabled={!!appliedCoupon}
+                        <input type="text" placeholder={T.couponPlace} value={couponInput} onChange={e => {setCouponInput(e.target.value); setCouponError('');}} disabled={!!appliedCoupon}
                           className={`flex-1 bg-white/5 border ${couponError ? 'border-red-500/50' : 'border-white/10'} text-white rounded-sm px-4 outline-none focus:border-white/50 transition-colors uppercase disabled:opacity-50`}
                         />
                         {!appliedCoupon ? (
-                          <button onClick={handleApplyCoupon} className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none">
-                            {T.couponBtn}
-                          </button>
+                          <button onClick={handleApplyCoupon} className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none">{T.couponBtn}</button>
                         ) : (
-                          <button onClick={() => { setAppliedCoupon(''); setCouponInput(''); }} className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none">
-                            {T.btnRemove}
-                          </button>
+                          <button onClick={() => { setAppliedCoupon(''); setCouponInput(''); }} className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-sm transition-colors outline-none">{T.btnRemove}</button>
                         )}
                       </div>
                       {couponError && <p className="text-xs text-red-400 mt-3">{couponError}</p>}
@@ -859,7 +839,7 @@ export default function App() {
                   <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.payLabel}</p>
                   <div className="grid grid-cols-3 gap-3">
                     {[{id:'pix', l:T.payPix},{id:'card', l:T.payCard},{id:'cash', l:T.payCash}].map(p => (
-                      <button key={p.id} onClick={() => handlePaymentSelect(p.id)} className={`py-4 outline-none text-xs font-bold uppercase tracking-wider border rounded-sm transition-colors ${data.payment === p.id ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{p.l}</button>
+                      <button key={p.id} onClick={() => handlePaymentSelect(p.id)} className={`py-4 outline-none text-[11px] sm:text-xs font-bold uppercase tracking-wider border rounded-sm transition-colors ${data.payment === p.id ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{p.l}</button>
                     ))}
                   </div>
                 </div>
@@ -878,9 +858,11 @@ export default function App() {
                     <span style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl text-white">{formatMoney(fin.total)}</span>
                   </div>
 
-                  <p className="text-[10px] text-center text-white/50 bg-white/5 py-3 px-4 rounded-sm mb-10 leading-relaxed border border-white/10">
-                    * É necessário o pagamento de <strong>50% ({formatMoney(fin.sinal)})</strong> agora para confirmar seu horário. O restante é pago após a nossa sessão.
-                  </p>
+                  <div className="bg-white/5 border border-white/10 p-5 rounded-md mb-8">
+                    <p className="text-xs text-white/80 leading-relaxed text-center">
+                      Para confirmar seu horário, preciso de um sinal de <strong className="text-[#4ade80]">50% agora ({formatMoney(fin.sinal)})</strong> via Pix. A outra metade a gente acerta na hora.
+                    </p>
+                  </div>
 
                   <button disabled={!data.payment} onClick={finishFlow} className="bg-white text-black h-16 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none rounded-sm shadow-xl shadow-white/10">
                     {T.btnFinish}
