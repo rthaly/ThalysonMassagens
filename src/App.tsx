@@ -24,136 +24,136 @@ const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 const PEAK_FEE = 15;
 
 // ==================================================================================
-// DICIONÁRIO E TEXTOS
+// DICIONÁRIO E TEXTOS (DIRETO E MASCULINO)
 // ==================================================================================
 const TEXTS = {
   PT: {
-    gateTitle: "Privacidade &\nAmbiente Reservado.",
-    gatePrivacyDesc: "Fique tranquilo. Nenhum dado preenchido aqui fica salvo em nossos servidores. Suas escolhas são geradas apenas no seu celular e enviadas diretamente para o meu WhatsApp.",
-    gateAgeDesc: "O atendimento é individual. Algumas das experiências incluem contato físico intenso e técnicas íntimas focadas no prazer e relaxamento. Confirma ter mais de 18 anos para prosseguir?",
-    gateBtn: "Concordar e Acessar",
-    step1Label: "Etapa 01",
-    step1Title: "Como você quer se sentir hoje?",
-    tabSingle: "Avulsas",
-    tabEstetica: "Depilação",
+    gateTitle: "Seu momento\nreservado.",
+    gatePrivacyDesc: "Pode ficar tranquilo. Nada que você preenche aqui fica salvo na internet. Tudo vai direto e apenas para o meu WhatsApp particular.",
+    gateAgeDesc: "O atendimento é focado em tirar o seu estresse e te dar prazer. Envolve contato físico intenso e massagem íntima. Você confirma que tem mais de 18 anos?",
+    gateBtn: "Confirmar e Entrar",
+    step1Label: "Passo 1",
+    step1Title: "O que você está precisando hoje?",
+    tabSingle: "Sessões",
+    tabEstetica: "Aparar Pelos",
     tabCombo: "Pacotes",
     upTo: "ATÉ",
-    btnContinue: "Continuar para Local",
-    step2Label: "Etapa 02",
-    step2Title: "Quem e Onde.",
-    namePlace: "Como prefere ser chamado?",
-    locLabel: "Onde será a 1ª sessão?",
-    locStudio: "Minha Suíte (Bela Vista)",
-    locHome: "Seu Espaço (Vou até você)",
-    studioDesc: "Atendo em uma suíte privativa na Bela Vista. O endereço completo e as instruções eu te mando no WhatsApp assim que confirmarmos o horário.",
+    btnContinue: "Escolher essa e avançar",
+    step2Label: "Passo 2",
+    step2Title: "Nome e Local.",
+    namePlace: "Qual é o seu nome?",
+    locLabel: "Onde vamos nos encontrar?",
+    locStudio: "Na sua Suíte (Bela Vista)",
+    locHome: "No meu endereço (Você vem até mim)",
+    studioDesc: "Eu te atendo na minha suíte reservada na Bela Vista. Assim que fecharmos o horário, te mando o endereço completo e como chegar lá.",
     cep: "CEP (opcional)",
-    street: "Rua ou Avenida",
+    street: "Sua Rua ou Avenida",
     number: "Número",
     comp: "Apto / Quarto (opcional)",
-    bairroPlace: "Bairro",
+    bairroPlace: "Seu Bairro",
     btnNext: "Avançar para Horários",
-    step3Label: "Etapa 03",
-    step3Title: "O Momento.",
-    noSlots: "Nenhum horário disponível hoje.",
-    step4Label: "Etapa 04",
-    step4Title: "O Acordo.",
-    giftTitle: "Presente Liberado",
-    giftDesc: "Como é sua primeira vez marcando por aqui, deixei um pequeno desconto no valor final.",
-    giftBtn: "Desbloquear Cortesia (R$ 15)",
-    giftActive: "Presente de 1ª vez ativo",
-    couponLabel: "Tem um cupom?",
-    couponPlace: "Digite o código",
+    step3Label: "Passo 3",
+    step3Title: "Que dia e horário?",
+    noSlots: "Nenhum horário livre pra hoje.",
+    step4Label: "Passo 4",
+    step4Title: "Resumo e Pagamento.",
+    giftTitle: "Desconto Liberado",
+    giftDesc: "Como é a sua primeira vez marcando comigo, te dei um desconto pra gente fechar hoje.",
+    giftBtn: "Usar meu desconto (R$ 15)",
+    giftActive: "Desconto de 1ª vez ativado",
+    couponLabel: "Tem algum cupom?",
+    couponPlace: "Código do cupom",
     couponBtn: "Aplicar",
-    couponActive: "aplicado com sucesso",
-    btnRemove: "Remover",
-    addons: "Vontades Extras (Hoje)",
-    reqLabel: "Tem algum fetiche ou pedido?",
-    reqPlace: "O que você quer que role hoje?",
-    reqDesc: "Sujeito a avaliação na hora. Caso não seja possível realizar o pedido, o valor da taxa não será cobrado.",
-    payLabel: "Como vai pagar na hora?",
-    payPix: "Pix + (3% DESCONTO)",
+    couponActive: "aplicado no valor",
+    btnRemove: "Tirar",
+    addons: "Quer adicionar algo a mais?",
+    reqLabel: "Tem alguma vontade específica?",
+    reqPlace: "Se tiver alguma fantasia ou fetiche, escreve aqui",
+    reqDesc: "A gente avalia na hora. Se não der pra fazer o que você pediu, eu não te cobro essa taxa, fica tranquilo.",
+    payLabel: "Como você vai pagar na hora?",
+    payPix: "Pix (3% Desconto)",
     payCard: "Cartão",
     payCash: "Dinheiro",
-    subBase: "Valor Base",
-    subExtras: "Extras (Hoje)",
-    subReq: "Pedido Especial (Hoje)",
-    subGift: "Cortesia (Primeira Vez)",
-    subCoupon: "Cupom Aplicado",
-    subPeak: "Horário de Pico",
-    subPix: "Desconto Pix",
+    subBase: "Valor da Massagem",
+    subExtras: "Adicionais",
+    subReq: "Vontade Específica",
+    subGift: "Desconto de Primeira Vez",
+    subCoupon: "Cupom",
+    subPeak: "Taxa de Horário de Pico",
+    subPix: "Desconto pagando no Pix",
     total: "Valor Final",
-    btnFinish: "Finalizar Pedido",
-    step5Title: "Tudo Pronto.",
-    step5Desc: "A sua solicitação foi gerada e enviada para o WhatsApp. Caso o aplicativo não tenha aberto automaticamente, clique no botão abaixo.",
-    btnSend: "Confirmar no WhatsApp",
-    btnBack: "Voltar para o início",
+    btnFinish: "Gerar meu Pedido",
+    step5Title: "Pedido Gerado.",
+    step5Desc: "Tudo certo. As suas escolhas viraram uma mensagem pro meu WhatsApp. É só clicar no botão abaixo para me enviar e a gente confirmar o horário.",
+    btnSend: "Me enviar no WhatsApp",
+    btnBack: "Começar do zero",
   }
 };
 
 // ==================================================================================
-// MASSAGENS E SERVIÇOS (FOCADO NA SENSAÇÃO E CLAREZA)
+// MASSAGENS E SERVIÇOS (LINGUAGEM TANGÍVEL, SEM ENROLAÇÃO)
 // ==================================================================================
 const MOODS = [
   {
     id: 'classica', color: '#3f3f46', price: 180, min: 60, isCombo: false, hasTantrica: false,
-    PT: { title: 'Corpo Leve e Destravado', category: 'Massagem Clássica', desc: 'Sabe aquela tensão acumulada nos ombros e nas costas? Aqui a gente dissolve tudo. Uma hora de toques firmes e contínuos para amassar a musculatura, ativar a circulação e deixar você flutuando. Ideal para desligar a mente do estresse pesado.' }
+    PT: { title: 'Destravar as Costas e Relaxar', category: 'Massagem Clássica', desc: 'Sabe aquele peso nos ombros e a dor de ficar sentado ou muito tenso? Essa massagem resolve isso. Eu uso força para amassar seus músculos do corpo todo, tirar a tensão e te deixar muito leve. Só relaxamento puro, sem frescura e sem parte íntima.' }
   },
   {
     id: 'sensitiva', color: '#713f12', price: 200, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'O Despertar do Corpo', category: 'Massagem Tântrica', desc: 'Tudo começa com uma massagem profunda para soltar o peso do dia a dia. Quando você estiver totalmente entregue e relaxado, os toques mudam. Ficam sutis, percorrem a pele inteira e preparam o terreno para uma finalização íntima focada no seu prazer absoluto.' }
+    PT: { title: 'Relaxar o Corpo e Dar Prazer', category: 'Massagem Tântrica', desc: 'A mais pedida. Primeiro eu amasso bem suas costas para tirar todo o seu estresse. Quando você estiver relaxado, a massagem muda: os toques ficam mais gostosos, percorrem o corpo e terminam direto numa massagem íntima pra você gozar e aliviar tudo.' }
   },
   {
     id: 'naturista', color: '#14532d', price: 240, min: 60, isCombo: false, hasTantrica: false,
-    PT: { title: 'Liberdade e Pele na Pele', category: 'Massagem Naturista', desc: 'A mesma técnica de relaxamento profundo da clássica, mas com um nível a mais de entrega. Nós dois ficamos completamente nus. Sem roupas atrapalhando, o atrito natural da pele potencializa o relaxamento. É sobre respeito e a sensação de estar totalmente livre. Não inclui toques íntimos.' }
+    PT: { title: 'Massagem Totalmente Nu', category: 'Massagem Naturista', desc: 'A mesma pegada de amassar os músculos da clássica, mas nós dois ficamos completamente sem roupa. O foco é te deixar super à vontade e usar o contato direto da nossa pele pra você relaxar mais rápido. Não inclui toques íntimos.' }
   },
   {
     id: 'fusion', color: '#831843', price: 250, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Intimidade e Calor', category: 'Massagem Tântrica (Fusion)', desc: 'Uma experiência muito mais quente e próxima. Preparo seu corpo primeiro e depois fico só de cueca. A massagem mistura o calor do abraço com o toque da minha barba deslizando nas suas costas e no peito. O ritmo sobe até chegar em uma finalização íntima intensa e demorada.' }
+    PT: { title: 'Mais Contato e Tesão', category: 'Massagem Tântrica', desc: 'Pra quem gosta de uma pegada mais quente. Depois de soltar as suas costas, eu fico só de cueca. Uso o calor do meu corpo e o atrito da minha barba nas suas costas e no seu peito para te dar tesão. Finaliza com uma massagem íntima bem demorada.' }
   },
   {
     id: 'nuru', color: '#1e1b4b', price: 350, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Imersão Deslizante', category: 'Massagem Tântrica (Nuru)', desc: 'A experiência mais imersiva de todas. Ambos nus, uso um gel especial ultra deslizante para que o meu corpo massageie o seu. O peito, as pernas e os braços se encontram em movimentos contínuos de frente e de costas, terminando em uma explosão de prazer na massagem íntima.' }
+    PT: { title: 'Corpo a Corpo Escorregadio', category: 'Massagem Tântrica', desc: 'A experiência mais intensa. Nós dois pelados, eu passo um gel bem liso no corpo e uso o meu peito, braços e pernas pra massagear você inteiro. Escorrega muito, é muito gostoso e termina na massagem íntima com bastante prazer.' }
   },
   {
     id: 'reversa', color: '#312e81', price: 400, min: 60, isCombo: false, hasTantrica: true,
-    PT: { title: 'Troca e Conexão', category: 'Massagem Tântrica (Reversa)', desc: 'Aqui a gente divide o controle. Eu começo soltando toda a sua musculatura para você relaxar de verdade. Depois, é a sua vez de explorar o meu corpo com as suas mãos, no seu ritmo e do seu jeito. No fim, retomo o controle para te levar ao ápice com a técnica íntima.' }
+    PT: { title: 'Sua Vez de Tocar', category: 'Massagem Tântrica', desc: 'Eu começo tirando toda a sua tensão muscular. Depois, eu libero você pra passar a mão e explorar o meu corpo do jeito que tiver vontade. Você curte o momento e no final eu volto para o controle e faço você gozar.' }
   }
 ];
 
 const ESTETICA = [
   {
     id: 'depilacao_solo', color: '#0f766e', price: 107, min: 40, isCombo: false, hasTantrica: false,
-    PT: { title: 'Limpeza e Cuidado', category: 'Estética Corporal', desc: 'Aparo higiênico dos pelos usando máquina. Você escolhe até 3 áreas do corpo, usando o pente 0 ou o pente 3. Finalizamos com uma hidratação usando creme para acalmar a pele logo após depilar.' }
+    PT: { title: 'Aparar os Pelos', category: 'Máquina', desc: 'Passo a maquininha (pente 0 ou 3) pra deixar os pelos baixinhos e manter a higiene em até 3 lugares do seu corpo. Depois, finalizo passando um creme pra não dar alergia e deixar sua pele macia.' }
   }
 ];
 
 const COMBOS = [
   {
     id: 'combo_depil_classica', color: '#0369a1', price: 270, min: 100, isCombo: true, hasTantrica: false,
-    PT: { title: 'Depilação e Alívio', category: 'Combo (1 Encontro)', desc: 'Primeiro fazemos o aparo na máquina em até 3 lugares. Logo depois, partimos para uma Massagem Clássica completa para destravar a musculatura do corpo todo. De R$ 287 por R$ 270 (Economia de R$ 17).' }
+    PT: { title: 'Pelos Aparados + Costas Leves', category: 'Pacote Duplo', desc: 'Primeiro eu aparo seus pelos com a maquininha. Depois, você deita e eu faço a massagem clássica no seu corpo todo para tirar qualquer dor ou tensão muscular que você tenha. De R$ 287 por R$ 270.' }
   },
   {
     id: 'combo_classica_2', color: '#3f3f46', price: 320, min: 60, isCombo: true, hasTantrica: false,
-    PT: { title: 'Manutenção do Corpo', category: 'Pacote (2 Sessões)', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e tirar o peso dos ombros. Sem toques íntimos. De R$ 360 por R$ 320 (Economia de R$ 40).' }
+    PT: { title: 'Manutenção Muscular', category: '2 Sessões', desc: 'Duas vezes no mês você vem me ver apenas para amassar os músculos e desestressar da rotina de trabalho. Não tem massagem íntima. De R$ 360 por R$ 320.' }
   },
   {
     id: 'combo_classica_4', color: '#18181b', price: 560, min: 60, isCombo: true, hasTantrica: false,
-    PT: { title: 'Rotina Zero Estresse', category: 'Pacote (4 Sessões)', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve o mês todo. De R$ 720 por R$ 560 (Economia de R$ 160).' }
+    PT: { title: 'Mês Zero Dores', category: '4 Sessões', desc: 'Você vem uma vez por semana durante o mês. Eu solto seus nós de tensão nas costas e te deixo novo pra aguentar a semana. De R$ 720 por R$ 560.' }
   },
   {
     id: 'combo_tantrica_2', color: '#831843', price: 590, min: 60, isCombo: true, hasTantrica: true,
-    PT: { title: 'Dobro de Prazer', category: 'Pacote Tântrico (2 Sessões)', desc: 'Uma sessão Nuru e uma Reversa marcadas em dias diferentes. Ambas começam relaxando e destravando seu corpo inteiro primeiro na clássica. De R$ 750 por R$ 590 (Economia de R$ 160).' }
+    PT: { title: 'Pacote do Prazer', category: '2 Sessões Tântricas', desc: 'Você vem um dia para fazer a "Corpo a Corpo Escorregadio", e em um outro dia marca a "Sua Vez de Tocar" pra passar a mão. Ambas finalizam tirando seu leite. De R$ 750 por R$ 590.' }
   },
   {
     id: 'combo_tantrica_4', color: '#1e1b4b', price: 890, min: 60, isCombo: true, hasTantrica: true,
-    PT: { title: 'Jornada Completa', category: 'Pacote Tântrico (4 Sessões)', desc: 'Você vem uma vez por semana. Todo encontro começa com a massagem clássica, evoluindo a intimidade a cada visita até a explosão final da massagem Reversa. De R$ 1.200 por R$ 890 (Economia de R$ 310).' }
+    PT: { title: 'O Mês Completo', category: '4 Sessões Tântricas', desc: 'Você vem toda semana. Começamos com a massagem básica e o contato vai aumentando a cada semana até chegar nas mais pesadas e sem roupa. De R$ 1.200 por R$ 890.' }
   }
 ];
 
 const EXTRAS = [
-  { id: 'aroma', price: 20, PT: { label: 'Óleos essenciais relaxantes' } },
-  { id: 'time', price: 75, PT: { label: 'Ficar mais tempo (+30min)' } },
-  { id: 'depilacao_extra', price: 107, PT: { label: 'Depilação máq (3 lugares) + Creme' } }
+  { id: 'aroma', price: 20, PT: { label: 'Usar óleos que ajudam a relaxar mais' } },
+  { id: 'time', price: 75, PT: { label: 'Aumentar 30 minutos na sessão' } },
+  { id: 'depilacao_extra', price: 107, PT: { label: 'Aparar pelos com máquina (3 áreas)' } }
 ];
 
 // ==================================================================================
@@ -178,7 +178,7 @@ const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: n
 ));
 
 // ==================================================================================
-// ESTILOS CINEMATOGRÁFICOS
+// ESTILOS DO SITE
 // ==================================================================================
 const CinematicStyles = memo(() => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -329,7 +329,7 @@ export default function App() {
 
     if (usedCoupons.includes(code)) {
       vibrate(50);
-      setCouponError('Cupom já utilizado.');
+      setCouponError('Esse cupom já foi usado.');
       setTimeout(() => setCouponError(''), 2500);
       return;
     }
@@ -387,7 +387,7 @@ export default function App() {
     if (method === 'pix') {
       try {
         navigator.clipboard.writeText(CONFIG.PIX_KEY);
-        showToast('✅ Chave Pix copiada com sucesso!');
+        showToast('✅ Chave Pix copiada!');
         vibrate([20, 40]);
       } catch (err) {
         console.error('Falha ao copiar:', err);
@@ -451,44 +451,44 @@ export default function App() {
     const ext = Object.keys(data.extras).filter(k=>data.extras[k]).map(k=>EXTRAS.find(e=>e.id===k)?.PT.label).join(', ');
     const paymentMethod = data.payment === 'pix' ? 'Pix' : data.payment === 'card' ? 'Cartão' : 'Dinheiro';
 
-    // Correção: Perspectiva de quem envia a mensagem (o cliente falando com você)
+    // AQUI ENTRA A LÓGICA CORRETA PARA O CLIENTE
     let locationText = data.locType === 'studio' ? 
-      `Vou até a sua Suíte (Bela Vista)` : 
-      `Você vem até mim no endereço: ${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro}`;
+      `Irei até a sua Suíte (Bela Vista)` : 
+      `Você virá até o meu endereço: ${data.street}, ${data.number}${data.comp ? ', ' + data.comp : ''}, ${data.bairro}`;
 
-    let text = `Oi Thalyson, tudo bem? Finalizei a minha reserva no site e vim confirmar o nosso encontro.\n\n`;
-    text += `*QUEM VEM:* ${data.name}\n\n`;
+    let text = `Oi Thalyson, tudo bem? Fechei pelo seu site e quero confirmar nosso horário.\n\n`;
+    text += `*MEU NOME:* ${data.name}\n\n`;
     
-    text += `*A EXPERIÊNCIA:*\n`;
+    text += `*A MASSAGEM QUE EU QUERO:*\n`;
     text += `• ${mood.PT.title} (${mood.PT.category})\n`;
     text += `_“${mood.PT.desc}”_\n\n`;
 
-    text += `*QUANDO E ONDE:*\n`;
-    text += `• Data: ${dStr} às ${data.time}\n`;
+    text += `*DIA E LOCAL:*\n`;
+    text += `• Dia: ${dStr} às ${data.time}\n`;
     text += `• Duração: até ${fin.dur} min\n`;
     text += `• Local: ${locationText}\n\n`;
 
     if (ext || data.req.trim()) {
-      text += `*DETALHES DA SESSÃO:*\n`;
-      if (ext) text += `• Adicionais: ${ext}\n`;
-      if (data.req.trim()) text += `• Pedido especial: "${data.req.trim()}"\n`;
+      text += `*DETALHES A MAIS:*\n`;
+      if (ext) text += `• Eu adicionei: ${ext}\n`;
+      if (data.req.trim()) text += `• Meu pedido: "${data.req.trim()}"\n`;
       text += `\n`;
     }
 
-    text += `*O INVESTIMENTO:*\n`;
+    text += `*OS VALORES:*\n`;
     if (fin.extrasTotal > 0) text += `• Adicionais extras: + ${formatMoney(fin.extrasTotal)}\n`;
     if (fin.reqFee > 0) text += `• Taxa de pedido: + ${formatMoney(fin.reqFee)}\n`;
-    if (fin.peakFee > 0) text += `• Horário de Pico: + ${formatMoney(fin.peakFee)}\n`;
+    if (fin.peakFee > 0) text += `• Taxa de Deslocamento/Pico: + ${formatMoney(fin.peakFee)}\n`;
     if (fin.discountGift > 0 || fin.couponDiscount > 0 || fin.pixDiscount > 0) {
       let totalDesc = fin.discountGift + fin.couponDiscount + fin.pixDiscount;
-      text += `• Descontos aplicados: - ${formatMoney(totalDesc)}\n`;
+      text += `• Meus descontos: - ${formatMoney(totalDesc)}\n`;
     }
     
-    text += `*Valor Total:* ${formatMoney(fin.total)} (via ${paymentMethod})\n`;
-    text += `*Sinal para Agendar (50%):* ${formatMoney(fin.sinal)}\n`;
-    text += `*Restante na hora (50%):* ${formatMoney(fin.total - fin.sinal)}\n\n`;
+    text += `*Valor Final:* ${formatMoney(fin.total)} (vou pagar no ${paymentMethod})\n`;
+    text += `*Sinal para garantir a reserva (50%):* ${formatMoney(fin.sinal)}\n`;
+    text += `*Restante lá na hora (50%):* ${formatMoney(fin.total - fin.sinal)}\n\n`;
 
-    text += `Estou ciente do pagamento do sinal para reservar o horário e do acordo de respeito mútuo. Aguardo a sua confirmação!`;
+    text += `Estou ciente do sinal para fechar o horário. Aguardo sua resposta pra confirmar!`;
     
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
   }, [data, mood, fin, appliedCoupon]);
@@ -519,7 +519,6 @@ export default function App() {
       <div className="grain-overlay" />
       <div className="ambient-glow" style={{ backgroundColor: mood.color }} />
 
-      {/* TOAST DO PIX */}
       {toastMsg && (
         <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-[#4ade80] text-black px-5 py-3 flex items-center gap-2 rounded-full shadow-2xl toast-enter">
           <Icon name="check" size={18} />
@@ -529,7 +528,6 @@ export default function App() {
 
       <div className="relative z-10 min-h-[100dvh] flex flex-col px-6 py-10 max-w-md mx-auto">
         
-        {/* CABEÇALHO */}
         {step > 0 && (
           <header className="flex justify-between items-center mb-10 step-enter">
             <button onClick={() => setIsProfileOpen(true)} className="text-left group outline-none py-2 flex items-center gap-3">
@@ -546,7 +544,6 @@ export default function App() {
           </header>
         )}
 
-        {/* PERFIL (MODAL) */}
         {isProfileOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in" onClick={() => setIsProfileOpen(false)}>
             <div className="bg-[#09090b] border border-white/10 rounded-md w-full max-w-sm p-8 relative shadow-2xl" onClick={e => e.stopPropagation()}>
@@ -554,21 +551,20 @@ export default function App() {
                 <Icon name="close" size={20} />
               </button>
               <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/10 shadow-lg" alt="Thalyson" />
-              <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Terapeuta Thalyson.</h2>
-              <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Atendimento Solo</p>
+              <h2 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl text-white mb-1">Thalyson.</h2>
+              <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-6">30 anos • Atendimento Discreto</p>
               <div className="space-y-4 text-sm text-white/70 leading-relaxed">
-                <p>O que eu faço é simples: uso minhas mãos e o toque para tirar o peso da sua rotina e te entregar uma experiência onde você só precisa fechar os olhos, relaxar e aproveitar.</p>
+                <p>Sou terapeuta focado no público masculino. Meu trabalho é simples: usar as minhas mãos para amassar os seus músculos tensos, tirar o estresse das suas costas e te dar prazer num ambiente tranquilo, sem correria e bem discreto.</p>
               </div>
               <div className="mt-8 pt-6 border-t border-white/10 flex justify-center">
                 <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors outline-none">
-                  <Icon name="instagram" size={16} /> Acompanhe no Instagram
+                  <Icon name="instagram" size={16} /> Meu Instagram
                 </a>
               </div>
             </div>
           </div>
         )}
 
-        {/* STEP 0: ENTRADA */}
         {step === 0 && (
           <div className="flex-1 flex flex-col justify-center step-enter pb-10">
             <h1 style={{ fontFamily: 'var(--font-serif)', whiteSpace: 'pre-line' }} className="text-4xl leading-tight mb-10">{T.gateTitle}</h1>
@@ -592,7 +588,6 @@ export default function App() {
 
         <div className={step >= 1 && step < 5 ? "block" : "hidden"}>
           
-          {/* STEP 1: A ESCOLHA */}
           <div id="step-1" className="step-enter mb-16">
             <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step1Label}</h2>
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-3xl mb-8">{T.step1Title}</h1>
@@ -612,13 +607,12 @@ export default function App() {
               </button>
             </div>
 
-            {/* SLIDER (SÓ APARECE NAS AVULSAS) */}
             {bookingMode === 'single' ? (
               <>
                 <div className="mb-10">
                   <div className="flex justify-between items-center text-[10px] text-white/50 uppercase tracking-widest font-bold mb-4 px-1">
-                    <span>Leve</span>
-                    <span>Intensidade Máxima</span>
+                    <span>Leve (Sem parte íntima)</span>
+                    <span>Prazer Máximo</span>
                   </div>
                   <div className="relative py-2">
                     <div className="absolute top-1/2 left-0 w-full h-1.5 bg-white/10 rounded-full -translate-y-1/2 pointer-events-none" />
@@ -632,11 +626,8 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* CARD REFEITO: HIERARQUIA LIMPA */}
                 <div className="p-6 backdrop-blur-xl border rounded-xl relative transition-all duration-500 shadow-2xl bg-[#1c1c1e] border-white/10 flex flex-col justify-between">
-                  
                   <div>
-                    {/* LINHA 1: Título e Preço */}
                     <div className="flex justify-between items-start mb-1 relative z-10">
                       <h3 className="font-bold text-2xl text-white tracking-wide leading-tight w-2/3">{mood.PT.title}</h3>
                       <span className="text-xl font-bold text-white/80 transition-colors duration-500 mt-1">
@@ -644,30 +635,26 @@ export default function App() {
                       </span>
                     </div>
                     
-                    {/* LINHA 2: Categoria e Duração */}
                     <div className="flex justify-between items-center mb-5 relative z-10">
                       <p className="text-[11px] text-[#4ade80] font-bold uppercase tracking-widest">{mood.PT.category}</p>
                       {!mood.isCombo && <span className="text-[10px] text-white/50 uppercase tracking-widest">{T.upTo} {mood.min}M</span>}
                     </div>
 
-                    {/* LINHA 3: Descrição completa */}
                     <div className="relative z-10">
                       <p className="text-[14px] text-white/70 leading-relaxed">{mood.PT.desc}</p>
                     </div>
                   </div>
 
-                  {/* FLAG INTELIGENTE DE TÂNTRICA */}
                   {mood.hasTantrica && (
                     <div className="mt-6 relative z-10">
                       <span className="inline-block bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
-                        ✅ Inclui Massagem Tântrica (Íntima)
+                        ✅ Tem finalização íntima
                       </span>
                     </div>
                   )}
                 </div>
               </>
             ) : (
-              // LISTA VERTICAL (DEPILAÇÃO E PACOTES) - Adaptada para a nova hierarquia
               <div className="space-y-4">
                 {activeList.map((m, idx) => {
                   const active = moodIndex === idx;
@@ -676,25 +663,22 @@ export default function App() {
                       className={`w-full text-left p-6 transition-all duration-300 border outline-none rounded-xl flex flex-col justify-between ${active ? 'bg-[#1c1c1e] border-white/20 scale-100' : 'bg-transparent border-white/5 opacity-60 hover:opacity-100 scale-[0.98]'}`}>
                       
                       <div className="w-full">
-                        {/* Linha 1 */}
                         <div className="flex justify-between items-start mb-1">
                           <h3 className={`font-bold text-lg tracking-wide w-3/4 leading-tight ${active ? 'text-white' : 'text-white/70'}`}>{m.PT.title}</h3>
                           <span className={`text-lg font-bold shrink-0 mt-1 ${active ? 'text-white/80' : 'text-white/50'}`}>{formatMoney(m.price)}</span>
                         </div>
                         
-                        {/* Linha 2 (Categoria) */}
                         <div className="flex justify-between items-center mb-3">
                           <p className={`text-[10px] font-bold uppercase tracking-widest ${active ? 'text-[#4ade80]' : 'text-[#4ade80]/60'}`}>{m.PT.category}</p>
                         </div>
                         
-                        {/* Linha 3 (Desc - só mostra se tiver ativo) */}
                         {active && <p className="text-[13px] text-white/60 leading-relaxed">{m.PT.desc}</p>}
                       </div>
 
                       {active && m.hasTantrica && (
                         <div className="mt-5">
                           <span className="inline-block bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
-                            ✅ Inclui Massagem Tântrica
+                            ✅ Tem finalização íntima
                           </span>
                         </div>
                       )}
@@ -711,7 +695,6 @@ export default function App() {
             )}
           </div>
 
-          {/* STEP 2: COORDENADAS */}
           {step >= 2 && (
             <div id="step-2" className="step-enter mb-16 pt-8 border-t border-white/10">
               <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step2Label}</h2>
@@ -723,8 +706,8 @@ export default function App() {
                 <div className="pt-4">
                   <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.locLabel}</p>
                   <div className="grid grid-cols-2 gap-3">
-                    <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 text-sm font-medium outline-none transition-colors border rounded-sm ${data.locType==='studio' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locStudio}</button>
-                    <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 text-sm font-medium outline-none transition-colors border rounded-sm ${data.locType==='home' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locHome}</button>
+                    <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 px-2 text-sm font-medium outline-none transition-colors border rounded-sm ${data.locType==='studio' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locStudio}</button>
+                    <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 px-2 text-sm font-medium outline-none transition-colors border rounded-sm ${data.locType==='home' ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{T.locHome}</button>
                   </div>
                 </div>
 
@@ -751,7 +734,6 @@ export default function App() {
             </div>
           )}
 
-          {/* STEP 3: TEMPO */}
           {step >= 3 && (
             <div id="step-3" className="step-enter mb-16 pt-8 border-t border-white/10">
               <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step3Label}</h2>
@@ -787,7 +769,6 @@ export default function App() {
             </div>
           )}
 
-          {/* STEP 4: PAGAMENTO */}
           {step >= 4 && (
             <div id="step-4" className="step-enter mb-8 pt-8 border-t border-white/10">
               <h2 className="text-xs font-medium tracking-widest text-white/40 uppercase mb-2">{T.step4Label}</h2>
@@ -856,7 +837,6 @@ export default function App() {
                 <div>
                   <div className="flex justify-between items-end mb-2">
                     <p className="text-xs text-white/50 uppercase tracking-widest">{T.reqLabel}</p>
-                    <span className="text-xs font-bold text-white/60">+ R$ 130</span>
                   </div>
                   <input type="text" placeholder={T.reqPlace} value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full modern-input text-sm" />
                   <p className="text-[10px] text-white/40 mt-2 leading-relaxed">{T.reqDesc}</p>
@@ -887,7 +867,7 @@ export default function App() {
 
                   <div className="bg-white/5 border border-white/10 p-5 rounded-md mb-8">
                     <p className="text-xs text-white/80 leading-relaxed text-center">
-                      Para confirmar seu horário, preciso de um sinal de <strong className="text-[#4ade80]">50% agora ({formatMoney(fin.sinal)})</strong> via Pix. A outra metade a gente acerta na hora.
+                      Pra deixar o horário 100% fechado, me manda o sinal de <strong className="text-[#4ade80]">50% agora ({formatMoney(fin.sinal)})</strong> via Pix. A outra metade a gente acerta lá na hora.
                     </p>
                   </div>
 
@@ -900,7 +880,6 @@ export default function App() {
           )}
         </div>
 
-        {/* STEP 5: FINALIZADO */}
         {step === 5 && (
           <div className="flex-1 flex flex-col justify-center text-center step-enter pb-20">
             <h1 style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl mb-4">{T.step5Title}</h1>
@@ -909,9 +888,9 @@ export default function App() {
             <div className="bg-white/5 border border-white/10 p-5 rounded-sm mb-10 text-left">
               <div className="flex items-center gap-2 mb-2">
                 <Icon name="ticket" className="text-[#4ade80]" size={16} />
-                <p className="text-[#4ade80] text-xs font-bold uppercase tracking-widest">Para o próximo encontro</p>
+                <p className="text-[#4ade80] text-xs font-bold uppercase tracking-widest">Desconto pra próxima</p>
               </div>
-              <p className="text-sm text-white/70">Guarde o cupom <strong className="text-white">SESSAO2</strong>. Você pode aplicar ele no nosso site para garantir 8% de desconto na sua próxima visita.</p>
+              <p className="text-sm text-white/70">Guarde o cupom <strong className="text-white">SESSAO2</strong>. Quando for marcar a próxima vez, coloca ele lá pra ganhar 8% de desconto.</p>
             </div>
 
             <a href={wppLink} className="bg-transparent border border-white text-white flex items-center justify-center h-14 w-full font-bold tracking-widest uppercase transition-colors hover:bg-white hover:text-black outline-none rounded-sm no-underline">
