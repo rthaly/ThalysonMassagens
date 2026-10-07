@@ -1,21 +1,3 @@
-Entendi exatamente o que você quer. Analisando o print que você mandou, o layout do card estava diferente do código anterior (título e preço na mesma linha, categoria e tempo embaixo).
-
-Fiz a engenharia reversa da sua imagem e recriei **exatamente a mesma estrutura visual** do seu print, mantendo os textos originais bem tangíveis e as lógicas inteligentes (sinalização tântrica, slider e pagamentos).
-
-### O que mudou nesta versão final:
-
-1. **Layout Fiel ao Print:**
-* **Linha 1:** Título da massagem na esquerda e Preço na direita.
-* **Linha 2:** Categoria da massagem embaixo do título e Tempo ("ATÉ 60M") embaixo do preço.
-* **Linha 3:** Subtítulo de impacto (ex: "Tensão e relaxamento corporal").
-* **Linha 4:** Texto tangível completo explicando exatamente o que rola.
-
-
-2. **Tag Inteligente:** A tag vermelha `"✅ INCLUI MASSAGEM TÂNTRICA (ÍNTIMA)"` continua aparecendo automaticamente apenas na **Sensorial, Fusion, Nuru, Reversa** e nos **Pacotes** que incluem essas sessões. Na Clássica e Naturista ela fica invisível.
-
-Aqui está o código completo, corrigido e idêntico ao seu layout:
-
-```tsx
 import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 
 // ==================================================================================
@@ -953,5 +935,3 @@ export default function App() {
     </>
   );
 }
-
-```
