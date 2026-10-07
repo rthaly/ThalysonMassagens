@@ -5,6 +5,7 @@ import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
+  PIX_KEY: "5517991360413", // Chave Pix que será copiada automaticamente
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Bela Vista, São Paulo",
   START_HOUR: 9,
@@ -93,27 +94,27 @@ const TEXTS = {
 const MOODS = [
   {
     id: 'classica', color: '#3f3f46', accent: '#a1a1aa', price: 180, min: 60, isCombo: false,
-    PT: { title: 'Clássica Relaxante', subtitle: 'Tensão e relaxamento corporal', service: 'Massagem Clássica', desc: 'Massagem Relaxante, aplicada no corpo todo, (exceção das partes íntimas), ativando toda a circulação sanguínea, trazendo relaxamento profundo e sensação de bem-estar, descanso, paz e felicidade!.' }
+    PT: { title: 'Clássica Relaxante', subtitle: 'A pausa que seu corpo implora.', service: 'Massagem Clássica', desc: 'Sinta o peso da rotina derreter. Movimentos firmes e envolventes que soltam todos os nós de tensão do corpo, trazendo uma sensação imediata de paz, alívio e um descanso profundo para a mente.' }
   },
   {
     id: 'sensitiva', color: '#713f12', accent: '#fbbf24', price: 200, min: 60, isCombo: false,
-    PT: { title: 'Massagem Sensorial', subtitle: 'Começa relaxando, termina gozando.', service: 'Sensorial / Tântrica', desc: 'Toda sessão começa com a massagem clássica no corpo todo para preparar e destravar sua musculatura. Só com o corpo solto é que a gente evolui pros toques mais sutis na pele e pra técnica íntima final (Lingam).' }
+    PT: { title: 'Sensorial Tântrica', subtitle: 'Começa relaxando, termina arrepiando.', service: 'Massagem Tântrica', desc: 'Uma jornada de sensações que desperta cada centímetro seu. O relaxamento profundo evolui para toques sutis e provocantes na pele, culminando em uma explosão de prazer prolongado e inesquecível.' }
   },
   {
     id: 'naturista', color: '#14532d', accent: '#4ade80', price: 240, min: 60, isCombo: false,
-    PT: { title: 'Clássica Naturista', subtitle: 'Relaxamento total, livres de roupas.', service: 'Massagem Naturista', desc: 'A mesma massagem no corpo todo da clássica, mas o diferencial é a liberdade: cliente e massagista completamente nus. O foco é soltar a musculatura e sentir o atrito natural da pele. Sem toques íntimos, apenas puro relaxamento e respeito naturista.' }
+    PT: { title: 'Naturista Livre', subtitle: 'Conexão e liberdade, sem amarras.', service: 'Massagem Naturista', desc: 'A liberdade de estar completamente à vontade. Sinta o deslizar quente e natural da pele contra a pele. Uma troca de energias pura que renova o corpo inteiro, mantendo o foco no relaxamento e sem toques íntimos.' }
   },
   {
     id: 'fusion', color: '#831843', accent: '#f43f5e', price: 250, min: 60, isCombo: false,
-    PT: { title: 'Massagem Fusion', subtitle: 'Mais intimidade, abraços e minha barba passando no seu corpo.', service: 'Experiência Fusion', desc: 'Iniciamos preparando o corpo com a clássica. Depois, fico só de cueca. Unindo a massagem com o toque da minha barba, de costas e frente. Evolui para uma finalização íntima bem prolongada.' }
+    PT: { title: 'Experiência Fusion', subtitle: 'Intimidade, toques intensos e proximidade.', service: 'Massagem Fusion', desc: 'A intimidade levada a outro nível. O calor das minhas mãos se mistura ao atrito suave da minha barba deslizando pelo seu corpo inteiro, criando ondas de arrepios que terminam em um ápice intenso e libertador.' }
   },
   {
     id: 'nuru', color: '#1e1b4b', accent: '#818cf8', price: 350, min: 60, isCombo: false,
-    PT: { title: 'Corpo a Corpo Nuru', subtitle: 'Massagem clássica, depois corpo a corpo com gel.', service: 'Massagem Nuru (Gel)', desc: 'Começamos com a clássica ambos nús. Uso gel deslizante. Deslizando meu corpo no seu de costas e de frente e depois finalizamos com a massagem íntima.' }
+    PT: { title: 'Corpo a Corpo Nuru', subtitle: 'Nenhum espaço entre nós.', service: 'Massagem Nuru (Gel)', desc: 'Uma experiência úmida, escorregadia e absurdamente envolvente. Cobertos por gel deslizante morno, movimento meu corpo sobre o seu de ponta a ponta, conectando nossa pele até a liberação íntima final.' }
   },
   {
     id: 'reversa', color: '#312e81', accent: '#a5b4fc', price: 400, min: 60, isCombo: false,
-    PT: { title: 'Massagem Reversa', subtitle: 'Troca de massagens com interação.', service: 'Massagem Reversa', desc: 'Eu começo fazendo a clássica para você relaxar por completo. Depois você faz massagem no meu corpo todo. Você faz do seu jeito e depois finalizamos com a massagem íntima.' }
+    PT: { title: 'Reversa Interativa', subtitle: 'Você no controle da situação.', service: 'Massagem Reversa', desc: 'O ápice da conexão. Relaxe primeiro recendo meu toque, e depois assuma o controle para explorar e massagear meu corpo livremente. Finalizamos juntos, do seu jeito, com um gozo de tirar o fôlego.' }
   }
 ];
 
@@ -127,23 +128,23 @@ const ESTETICA = [
 const COMBOS = [
   {
     id: 'combo_depil_classica', color: '#0369a1', accent: '#38bdf8', price: 270, min: 100, isCombo: true,
-    PT: { title: 'Renovação Completa', subtitle: 'Depilação + Massagem Clássica.', service: '1 Encontro Duplo', desc: 'Primeiro fazemos o aparo na máquina em até 3 lugares usando pente 0 e 3. Logo depois, partimos para uma Massagem Clássica para destravar a musculatura do corpo todo. De R$ 287 por R$ 270 (Economia de R$ 17).' }
+    PT: { title: 'Renovação Completa', subtitle: 'Depilação + Massagem Clássica.', service: '1 Encontro Duplo', desc: 'Primeiro fazemos o aparo na máquina em até 3 lugares usando pente 0 e 3. Logo depois, partimos para uma Massagem Clássica para destravar a musculatura do corpo todo. De R$ 287 por R$ 270.' }
   },
   {
     id: 'combo_classica_2', color: '#3f3f46', accent: '#a1a1aa', price: 320, min: 60, isCombo: true,
-    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar dores. Sem toques íntimos. De R$ 360 por R$ 320 (Economia de R$ 40).' }
+    PT: { title: 'Alívio Quinzenal (2 Sessões)', subtitle: 'Tirando o peso dos ombros.', service: '2 Encontros', desc: 'Duas visitas no mês focadas apenas em amassar a musculatura e relaxar seu corpo para tirar dores. Sem toques íntimos. De R$ 360 por R$ 320.' }
   },
   {
     id: 'combo_classica_4', color: '#18181b', accent: '#71717a', price: 560, min: 60, isCombo: true,
-    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve. De R$ 720 por R$ 560 (Economia de R$ 160).' }
+    PT: { title: 'Rotina Leve (4 Sessões)', subtitle: 'Corpo sem dores o mês todo.', service: '4 Encontros', desc: 'Uma hora por semana para a gente relaxar seu corpo inteiro e soltar todos os nós. Você chega travado e sai leve. De R$ 720 por R$ 560.' }
   },
   {
     id: 'combo_tantrica_2', color: '#831843', accent: '#f43f5e', price: 590, min: 60, isCombo: true,
-    PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Uma sessão Nuru e uma Reversa marcadas em dias diferentes. Ambas sempre começam relaxando e destravando seu corpo inteiro primeiro na clássica. De R$ 750 por R$ 590 (Economia de R$ 160).' }
+    PT: { title: 'Intensidade (Nuru + Reversa)', subtitle: 'Exploração e gozo sem pressa.', service: '2 Encontros', desc: 'Uma sessão Nuru e uma Reversa marcadas em dias diferentes. Ambas sempre começam relaxando e destravando seu corpo inteiro primeiro na clássica. De R$ 750 por R$ 590.' }
   },
   {
     id: 'combo_tantrica_4', color: '#1e1b4b', accent: '#818cf8', price: 890, min: 60, isCombo: true,
-    PT: { title: 'Exploração Total (As 4 Fases)', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros', desc: 'Você vem uma vez por semana. Todo encontro começa com a clássica, evoluindo a intimidade a cada visita até a explosão da Reversa. De R$ 1.200 por R$ 890 (Economia de R$ 310).' }
+    PT: { title: 'Exploração Total (As 4 Fases)', subtitle: 'Um mês inteiro de descobertas.', service: '4 Encontros', desc: 'Você vem uma vez por semana. Todo encontro começa com a clássica, evoluindo a intimidade a cada visita até a explosão da Reversa. De R$ 1.200 por R$ 890.' }
   }
 ];
 
@@ -175,7 +176,7 @@ const Icon = memo(({ name, size = 24, className = '' }: { name: string; size?: n
 ));
 
 // ==================================================================================
-// ESTILOS CINEMATOGRÁFICOS + ESTILOS DO SLIDER
+// ESTILOS CINEMATOGRÁFICOS + ESTILOS DO SLIDER E TOAST
 // ==================================================================================
 const CinematicStyles = memo(() => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -216,6 +217,12 @@ const CinematicStyles = memo(() => (
     @keyframes stepEnter {
       0% { opacity: 0; transform: translateY(15px); }
       100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .toast-enter { animation: toastEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    @keyframes toastEnter {
+      0% { opacity: 0; transform: translate(-50%, -20px); }
+      100% { opacity: 1; transform: translate(-50%, 0); }
     }
 
     .modern-input {
@@ -273,7 +280,6 @@ export default function App() {
   const [bookingMode, setBookingMode] = useState<'single'|'estetica'|'combo'>('single');
   const activeList = bookingMode === 'single' ? MOODS : bookingMode === 'estetica' ? ESTETICA : COMBOS;
   
-  // O estado agora é baseado no INDEX do array
   const [moodIndex, setMoodIndex] = useState(0);
 
   const [couponInput, setCouponInput] = useState('');
@@ -281,6 +287,8 @@ export default function App() {
   const [couponError, setCouponError] = useState('');
   
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
+  
   const numberInputRef = useRef<HTMLInputElement>(null);
 
   const T = TEXTS.PT;
@@ -290,6 +298,11 @@ export default function App() {
     date: null as Date | null, time: '', extras: {} as Record<string, boolean>,
     req: '', payment: ''
   });
+
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(''), 3500);
+  };
 
   useEffect(() => {
     const hasOnboarded = localStorage.getItem('thaly_onboard_final');
@@ -302,7 +315,7 @@ export default function App() {
     if (hasOnboarded === 'yes') setStep(1);
     if (hasBookedBefore === 'yes') setIsReturningClient(true);
     
-    setMoodIndex(0); // Reseta o slider ao trocar de aba
+    setMoodIndex(0);
   }, [bookingMode, activeList]);
 
   useEffect(() => {
@@ -317,7 +330,6 @@ export default function App() {
     }
   }, [step, isProfileOpen]);
 
-  // Pega o mood atual baseado no index do slider
   const mood = useMemo(() => activeList[moodIndex] || activeList[0], [moodIndex, activeList]);
 
   const acceptTermsAndContinue = () => {
@@ -388,6 +400,21 @@ export default function App() {
     }
   };
 
+  const handlePaymentSelect = (method: string) => {
+    setData({...data, payment: method});
+    if (method === 'pix') {
+      try {
+        navigator.clipboard.writeText(CONFIG.PIX_KEY);
+        showToast('Chave Pix copiada com sucesso!');
+        vibrate([20, 40]);
+      } catch (err) {
+        console.error('Falha ao copiar:', err);
+      }
+    } else {
+      vibrate(20);
+    }
+  };
+
   const isStep2Valid = data.name.trim().length > 1 && data.locType !== '' && 
     (data.locType === 'studio' || (data.locType === 'home' && data.street.trim() !== '' && data.number.trim() !== '' && data.bairro.trim() !== ''));
 
@@ -416,11 +443,12 @@ export default function App() {
     let pixDiscount = data.payment === 'pix' ? Math.ceil(totalAfterDiscounts * 0.03) : 0;
     
     let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
+    let sinal = finalTotal / 2;
     
     return { 
       basePrice, extrasTotal, reqFee, peakFee, discountGift, 
       couponDiscount: couponDiscountValue, pixDiscount, 
-      total: finalTotal, dur 
+      total: finalTotal, sinal, dur 
     };
   }, [mood, data, giftApplied, appliedCoupon]);
 
@@ -472,9 +500,11 @@ export default function App() {
     if (fin.discountGift > 0) text += `• Presente de 1ª vez: - ${formatMoney(fin.discountGift)}\n`;
     if (fin.couponDiscount > 0) text += `• Cupom (${appliedCoupon}): - ${formatMoney(fin.couponDiscount)}\n`;
     if (fin.pixDiscount > 0) text += `• Desconto Pix: - ${formatMoney(fin.pixDiscount)}\n`;
-    text += `*Valor Final:* ${formatMoney(fin.total)} (via ${paymentMethod})\n\n`;
+    text += `*Valor Total:* ${formatMoney(fin.total)} (via ${paymentMethod})\n`;
+    text += `*Sinal p/ Agendar (50%):* ${formatMoney(fin.sinal)}\n`;
+    text += `*Restante na hora (50%):* ${formatMoney(fin.total - fin.sinal)}\n\n`;
 
-    text += `Estou ciente do nosso acordo de respeito mútuo e higiene. Aguardo a sua confirmação!`;
+    text += `Estou ciente do pagamento do sinal para reservar o horário e do acordo de respeito mútuo. Aguardo a sua confirmação!`;
     
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
   }, [data, mood, fin, appliedCoupon]);
@@ -504,6 +534,14 @@ export default function App() {
       <CinematicStyles />
       <div className="grain-overlay" />
       <div className="ambient-glow" style={{ backgroundColor: mood.color }} />
+
+      {/* TOAST NOTIFICATION */}
+      {toastMsg && (
+        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-[#4ade80] text-black px-6 py-3 flex items-center gap-2 rounded-full shadow-2xl toast-enter">
+          <Icon name="check" size={16} />
+          <span className="text-[10px] font-bold uppercase tracking-widest">{toastMsg}</span>
+        </div>
+      )}
 
       <div className="relative z-10 min-h-[100dvh] flex flex-col px-6 py-10 max-w-md mx-auto">
         
@@ -603,29 +641,19 @@ export default function App() {
               </div>
               
               <div className="relative py-2">
-                {/* Linha de fundo */}
                 <div className="absolute top-1/2 left-0 w-full h-1.5 bg-white/10 rounded-full -translate-y-1/2 pointer-events-none" />
-                
-                {/* Linha preenchida com a cor da massagem */}
                 <div 
                   className="absolute top-1/2 left-0 h-1.5 rounded-full -translate-y-1/2 pointer-events-none transition-all duration-300"
-                  style={{ 
-                    width: `${(moodIndex / Math.max(1, activeList.length - 1)) * 100}%`, 
-                    backgroundColor: mood.accent 
-                  }}
+                  style={{ width: `${(moodIndex / Math.max(1, activeList.length - 1)) * 100}%`, backgroundColor: mood.accent }}
                 />
                 
-                {/* O input nativo (invisível exceto pela bolinha) */}
                 <input 
                   type="range" 
                   min="0" 
                   max={Math.max(0, activeList.length - 1)} 
                   value={moodIndex} 
                   disabled={activeList.length <= 1}
-                  onChange={(e) => { 
-                    vibrate(10); 
-                    setMoodIndex(Number(e.target.value)); 
-                  }}
+                  onChange={(e) => { vibrate(10); setMoodIndex(Number(e.target.value)); }}
                   className="custom-slider relative z-10 w-full"
                 />
               </div>
@@ -635,14 +663,8 @@ export default function App() {
             </div>
 
             {/* O CARD PRINCIPAL QUE SE TRANSFORMA */}
-            <div 
-              className="p-6 backdrop-blur-xl border min-h-[240px] rounded-xl relative overflow-hidden transition-all duration-500 shadow-2xl"
-              style={{ 
-                backgroundColor: `${mood.color}40`, 
-                borderColor: `${mood.accent}50` 
-              }}
-            >
-              {/* Faixa superior colorida */}
+            <div className="p-6 backdrop-blur-xl border min-h-[240px] rounded-xl relative overflow-hidden transition-all duration-500 shadow-2xl"
+                 style={{ backgroundColor: `${mood.color}40`, borderColor: `${mood.accent}50` }}>
               <div className="absolute top-0 left-0 w-full h-1 transition-colors duration-500" style={{ backgroundColor: mood.accent }} />
               
               <div className="flex justify-between items-start mb-5 relative z-10">
@@ -837,7 +859,7 @@ export default function App() {
                   <p className="text-xs text-white/50 uppercase tracking-widest mb-4">{T.payLabel}</p>
                   <div className="grid grid-cols-3 gap-3">
                     {[{id:'pix', l:T.payPix},{id:'card', l:T.payCard},{id:'cash', l:T.payCash}].map(p => (
-                      <button key={p.id} onClick={()=>setData({...data, payment:p.id})} className={`py-4 outline-none text-xs font-bold uppercase tracking-wider border rounded-sm transition-colors ${data.payment === p.id ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{p.l}</button>
+                      <button key={p.id} onClick={() => handlePaymentSelect(p.id)} className={`py-4 outline-none text-xs font-bold uppercase tracking-wider border rounded-sm transition-colors ${data.payment === p.id ? 'bg-white text-black border-white' : 'border-white/10 text-white/60'}`}>{p.l}</button>
                     ))}
                   </div>
                 </div>
@@ -851,10 +873,14 @@ export default function App() {
                   {fin.peakFee > 0 && <div className="flex justify-between text-sm text-white/60 mb-2"><span>{T.subPeak}</span><span>+{formatMoney(fin.peakFee)}</span></div>}
                   {fin.pixDiscount > 0 && <div className="flex justify-between text-sm text-[#4ade80] mb-2"><span>{T.subPix}</span><span>-{formatMoney(fin.pixDiscount)}</span></div>}
                   
-                  <div className="flex justify-between items-end mt-8 mb-10">
+                  <div className="flex justify-between items-end mt-8 mb-4">
                     <span className="text-sm uppercase tracking-widest text-white/50">{T.total}</span>
                     <span style={{ fontFamily: 'var(--font-serif)' }} className="text-4xl text-white">{formatMoney(fin.total)}</span>
                   </div>
+
+                  <p className="text-[10px] text-center text-white/50 bg-white/5 py-3 px-4 rounded-sm mb-10 leading-relaxed border border-white/10">
+                    * É necessário o pagamento de <strong>50% ({formatMoney(fin.sinal)})</strong> agora para confirmar seu horário. O restante é pago após a nossa sessão.
+                  </p>
 
                   <button disabled={!data.payment} onClick={finishFlow} className="bg-white text-black h-16 w-full font-bold tracking-widest uppercase disabled:opacity-20 transition-opacity outline-none rounded-sm shadow-xl shadow-white/10">
                     {T.btnFinish}
