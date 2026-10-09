@@ -10,7 +10,7 @@ const CONFIG = {
   ADDRESS_AREA: "Bela Vista, São Paulo",
   START_HOUR: 9,
   END_HOUR: 22,
-  SIGNAL_AMOUNT: 50, // Added fixed signal amount
+  SIGNAL_AMOUNT: 50,
   
   // CUPONS
   COUPONS: {
@@ -91,7 +91,7 @@ const TEXTS = {
 };
 
 // ==================================================================================
-// MASSAGENS E SERVIÇOS (TANGÍVEL, CORPO TODO E PRAZER)
+// MASSAGENS E SERVIÇOS
 // ==================================================================================
 const MOODS = [
   {
@@ -100,11 +100,11 @@ const MOODS = [
   },
   {
     id: 'sensitiva', color: '#713f12', price: 200, min: 60, isCombo: false, hasTantrica: true, hideTouch: false,
-    PT: { title: 'Relaxamento e Prazer', category: 'Massagem Tântrica', desc: 'Tudo começa relaxando o seu corpo inteiro com bastante força, da cabeça aos pés. Quando você estiver bem entregue e sem dores, os toques mudam de ritmo, percorrem a sua pele e terminam direto numa massagem íntima demorada para você aliviar tudo.' }
+    PT: { title: 'Relaxamento e Prazer', category: 'Massagem Tântrica', desc: 'Tudo começa relaxando o seu corpo inteiro com bastante força, da cabeça aos pés. Quando você estiver bem entregue e sem dores, os toques leves causam arrepios, percorrem a sua pele e terminam direto numa massagem íntima você aliviar tudo.' }
   },
   {
     id: 'naturista', color: '#14532d', price: 240, min: 60, isCombo: false, hasTantrica: false, hideTouch: false,
-    PT: { title: 'Massagem Totalmente Nu', category: 'Massagem Naturista', desc: 'A mesma massagem profunda com as mãos no seu corpo todo, mas com uma diferença: nós dois ficamos totalmente sem roupa do início ao fim. O contato direto da nossa pele ajuda você a relaxar muito mais. Apenas relaxamento, não tem toques íntimos e não tem escorrega no corpo.' }
+    PT: { title: 'Massagem Totalmente Nu', category: 'Massagem Naturista', desc: 'A mesma massagem profunda com as mãos no seu corpo todo, mas com uma diferença: nós dois ficamos totalmente sem roupa do início ao fim. Naturista ajuda você a relaxar muito mais. Apenas relaxamento, não tem toques íntimos.' }
   },
   {
     id: 'fusion', color: '#831843', price: 250, min: 60, isCombo: false, hasTantrica: true, hideTouch: false,
@@ -116,7 +116,7 @@ const MOODS = [
   },
   {
     id: 'reversa', color: '#312e81', price: 400, min: 60, isCombo: false, hasTantrica: true, hideTouch: true,
-    PT: { title: 'A Sua Vez de Tocar', category: 'Massagem Tântrica', desc: 'Eu começo tirando o peso do seu corpo inteiro com a massagem para você relaxar. Depois, você tem tempo e liberdade para passar a mão e explorar o meu corpo como quiser. No fim, eu retomo o controle para fazer você gozar na massagem íntima.' }
+    PT: { title: 'A Sua Vez de Tocar', category: 'Massagem Tântrica', desc: 'Eu começo tirando o peso do seu corpo inteiro com a massagem para você relaxar. Depois você faz massagem em mim, do seu jeito no meu corpo todo. No fim, eu retomo o controle e começo a massagem íntima.' }
   }
 ];
 
@@ -150,12 +150,10 @@ const COMBOS = [
   }
 ];
 
-// ADICIONAIS INTELIGENTES DENTRO DO CARD
+// ADICIONAIS INTELIGENTES DENTRO DO CARD (Sem beijos e toques)
 const ADDONS_OPTIONS = [
-  { id: 'touch', label: 'Quero te tocar', price: 100 },
-  { id: 'kisses', label: 'Beijos', price: 100 },
   { id: 'time', label: '+30 minutos extras', price: 75 },
-  { id: 'aparo', label: 'Aparo de Pêlos', price: 107 },
+  { id: 'aparo', label: 'Aparo de Pelos', price: 107 },
 ];
 
 // ==================================================================================
@@ -442,7 +440,7 @@ export default function App() {
     
     let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
     
-    // The signal is now fixed to R$ 50
+    // O sinal agora é fixado em R$ 50
     let sinal = CONFIG.SIGNAL_AMOUNT; 
     
     return { 
@@ -534,7 +532,10 @@ export default function App() {
 
   // Renderiza a área de botões de personalização (Add-ons)
   const renderAddons = () => {
-    const available = ADDONS_OPTIONS.filter(a => !(a.id === 'touch' && mood.hideTouch));
+    // Esconde os adicionais nas abas Aparar Pelos (Estética) e Pacotes (Combo)
+    if (bookingMode !== 'single') return null;
+
+    const available = ADDONS_OPTIONS;
     
     if (available.length === 0) return null;
 
