@@ -10,7 +10,7 @@ const CONFIG = {
   ADDRESS_AREA: "Bela Vista, São Paulo",
   START_HOUR: 9,
   END_HOUR: 22,
-  SIGNAL_AMOUNT: 50, // Added fixed signal amount
+  SIGNAL_AMOUNT: 50,
   
   // CUPONS
   COUPONS: {
@@ -22,7 +22,7 @@ const CONFIG = {
 };
 
 const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
-const PEAK_FEE = 15;
+const PEAK_FEE = 18;
 
 // ==================================================================================
 // DICIONÁRIO E TEXTOS (DIRETO E MASCULINO)
@@ -91,7 +91,7 @@ const TEXTS = {
 };
 
 // ==================================================================================
-// MASSAGENS E SERVIÇOS (TANGÍVEL, CORPO TODO E PRAZER)
+// MASSAGENS E SERVIÇOS
 // ==================================================================================
 const MOODS = [
   {
@@ -150,12 +150,10 @@ const COMBOS = [
   }
 ];
 
-// ADICIONAIS INTELIGENTES DENTRO DO CARD
+// ADICIONAIS INTELIGENTES DENTRO DO CARD (Sem beijos e toques)
 const ADDONS_OPTIONS = [
-  { id: 'touch', label: 'Quero poder te tocar', price: 50 },
-  { id: 'kisses', label: 'Beijos na boca', price: 50 },
   { id: 'time', label: '+30 minutos extras', price: 75 },
-  { id: 'oil', label: 'Óleo quente no corpo', price: 20 },
+  { id: 'aparo', label: 'Aparo de Pelos', price: 107 },
 ];
 
 // ==================================================================================
@@ -442,7 +440,7 @@ export default function App() {
     
     let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
     
-    // The signal is now fixed to R$ 50
+    // O sinal agora é fixado em R$ 50
     let sinal = CONFIG.SIGNAL_AMOUNT; 
     
     return { 
@@ -534,7 +532,10 @@ export default function App() {
 
   // Renderiza a área de botões de personalização (Add-ons)
   const renderAddons = () => {
-    const available = ADDONS_OPTIONS.filter(a => !(a.id === 'touch' && mood.hideTouch));
+    // Esconde os adicionais nas abas Aparar Pelos (Estética) e Pacotes (Combo)
+    if (bookingMode !== 'single') return null;
+
+    const available = ADDONS_OPTIONS;
     
     if (available.length === 0) return null;
 
