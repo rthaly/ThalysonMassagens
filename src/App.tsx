@@ -208,6 +208,7 @@ export default function App() {
     };
   }, [data, selectedPackage, isReturningClient, appliedCoupon]);
 
+  // Janela de exatos 14 dias
   const days = useMemo(() => Array.from({length: 14}, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() + i); return d;
   }), []);
@@ -215,18 +216,15 @@ export default function App() {
   const getSlots = () => {
     if (!data.date) return [];
     
-    // Semente baseada na data para manter bloqueios fixos por dia, não por renderização
-    const seed = data.date.getDate() + data.date.getMonth() * 31;
     let s = [];
     
     for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
       const timeStr = `${i < 10 ? '0' : ''}${i}:00`;
       
-      // Bloqueia ~25% dos horários de forma estável para gerar escassez sutil
-      const isFakeBusy = (seed * i) % 7 < 2; 
+      // Filtra apenas se o horário já passou hoje
       const isPast = data.date.toDateString() === new Date().toDateString() && i <= new Date().getHours();
       
-      if (!isFakeBusy && !isPast) {
+      if (!isPast) {
         s.push(timeStr);
       }
     }
@@ -236,13 +234,19 @@ export default function App() {
   const generateWhatsAppLink = () => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
     
-    const locationText = data.locType === 'studio' 
-      ? `Irei até a sua suíte.\n📍 *Região:* ${CONFIG.STUDIO_MAPS_LINK}\n_(Me confirme o número exato e como chegar)_` 
-      : `Você virá até mim: ${data.street}, ${data.number}, ${data.bairro}`;
+    let locationText = '';
+    
+    if (data.locType === 'studio') {
+      locationText = `📍 *Local:* Irei até o seu espaço no Centro Histórico.`;
+    } else {
+      const fullAddress = `${data.street}, ${data.number}${data.comp ? ' - ' + data.comp : ''} - ${data.bairro}, São Paulo`;
+      const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(fullAddress)}`;
+      locationText = `📍 *Local:* Você virá até mim.\n*Endereço:* ${fullAddress}\n*Mapa:* ${mapsUrl}`;
+    }
 
     let text = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n`;
     text += `*NOME:* ${data.name}\n`;
-    text += `*DIA E LOCAL:* ${dStr} às ${data.time}\n${locationText}\n\n`;
+    text += `*DIA E HORA:* ${dStr} às ${data.time}\n${locationText}\n\n`;
     
     text += `*MEU PACOTE (Até ${invoice.dur} min):*\n`;
     text += `✅ ${selectedPackage.title}\n`;
@@ -467,7 +471,7 @@ export default function App() {
               <div>
                 <div className="flex justify-between items-center mb-3">
                   <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest">Qual Dia?</label>
-                  <span className="text-[10px] bg-zinc-900 px-2 py-1 rounded text-zinc-500">Agenda Atualizada</span>
+                  <span className="text-[10px] bg-zinc-900 px-2 py-1 rounded text-zinc-500">Próximos 14 Dias</span>
                 </div>
                 <div className="flex gap-3 overflow-x-auto pb-4 snap-x hide-scrollbar -mx-6 px-6">
                   {days.map((d, i) => {
@@ -498,7 +502,7 @@ export default function App() {
                         </button>
                       )
                     })}
-                    {getSlots().length === 0 && <p className="col-span-3 text-sm text-zinc-500 text-center py-6">Agenda lotada pra esta data.</p>}
+                    {getSlots().length === 0 && <p className="col-span-3 text-sm text-zinc-500 text-center py-6">Não há mais horários hoje.</p>}
                   </div>
                 </div>
               )}
