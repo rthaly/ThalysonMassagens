@@ -26,7 +26,8 @@ const PACKAGES = [
   {
     id: 'classica',
     title: 'Massagem Clássica',
-    price: 180,
+    originalPrice: 220, // Preço âncora (riscado)
+    price: 180,         // Preço atual
     min: 40,
     tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
     desc: 'O essencial para quem está moído da rotina. Uso a força das minhas mãos para desfazer os nós de tensão e soltar sua musculatura. Você entra pesado e sai leve.'
@@ -34,6 +35,7 @@ const PACKAGES = [
   {
     id: 'sensitiva',
     title: 'Sensitiva & Prazer',
+    originalPrice: 280,
     price: 220,
     min: 60,
     tags: ['Toques Leves', 'Finalização Íntima'],
@@ -42,6 +44,7 @@ const PACKAGES = [
   {
     id: 'fusion',
     title: 'Combo Corpo a Corpo',
+    originalPrice: 350,
     price: 290,
     min: 60,
     tags: ['Naturista', 'Uso de Barba e Peito'],
@@ -50,10 +53,20 @@ const PACKAGES = [
   {
     id: 'completa',
     title: 'A Experiência Completa',
+    originalPrice: 480,
     price: 390,
     min: 60,
     tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
     desc: 'O pacote sem barreiras. Muita proximidade física com gel escorregadio e liberdade total para você interagir, tocar e explorar o meu corpo do seu jeito.'
+  },
+  {
+    id: 'aparo_solo',
+    title: 'Apenas Depilação (Máquina)',
+    originalPrice: 150,
+    price: 107,
+    min: 40,
+    tags: ['Estética', 'Sem Massagem'],
+    desc: 'Serviço isolado para quem busca apenas estética. Aparo completo dos pelos do corpo utilizando máquina profissional.'
   }
 ];
 
@@ -139,6 +152,13 @@ export default function App() {
   useEffect(() => {
     if (step > 0 && !isProfileOpen) window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step, isProfileOpen]);
+
+  // Se trocar de pacote e o novo pacote for "Aparar Pelos", desmarca o addon de aparar pelos automaticamente
+  useEffect(() => {
+    if (data.packageId === 'aparo_solo' && data.addons['aparo']) {
+      setData(prev => ({ ...prev, addons: { ...prev.addons, aparo: false } }));
+    }
+  }, [data.packageId]);
 
   const handleApplyCoupon = () => {
     const code = couponInput.trim().toUpperCase();
@@ -385,7 +405,10 @@ export default function App() {
                   >
                     <div className="flex justify-between items-start mb-2">
                       <h3 className={`font-bold text-xl ${isActive ? 'text-white' : 'text-zinc-300'}`}>{pkg.title}</h3>
-                      <span className={`font-bold text-lg ${isActive ? 'text-emerald-400' : 'text-zinc-500'}`}>{formatMoney(pkg.price)}</span>
+                      <div className="text-right">
+                        {pkg.originalPrice && <span className="text-xs line-through text-zinc-500 block mb-0.5">{formatMoney(pkg.originalPrice)}</span>}
+                        <span className={`font-bold text-lg ${isActive ? 'text-emerald-400' : 'text-zinc-400'}`}>{formatMoney(pkg.price)}</span>
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-2 mb-4">
                       <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm border ${isActive ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-transparent text-zinc-600 border-zinc-800'}`}>
@@ -406,6 +429,9 @@ export default function App() {
                 <h3 className="text-sm font-bold text-white mb-3">Extras Práticos (Opcional)</h3>
                 <div className="flex flex-col gap-3">
                   {ADDONS.map(addon => {
+                    // Se o usuário selecionou o pacote APENAS DEPILAÇÃO, oculta o extra de "Aparar Pelos"
+                    if (data.packageId === 'aparo_solo' && addon.id === 'aparo') return null;
+
                     const isActive = data.addons[addon.id];
                     return (
                       <button 
