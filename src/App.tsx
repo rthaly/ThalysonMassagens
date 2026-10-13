@@ -21,11 +21,36 @@ const BASE_SESSION = {
 };
 
 const SESSION_UPGRADES = [
-  { id: 'up_naturista', label: 'Sessão Totalmente Nu', price: 60, desc: 'Nós dois sem roupa do início ao fim para maior liberdade e relaxamento profundo.' },
-  { id: 'up_fusion', label: 'Contato Corpo a Corpo', price: 70, desc: 'Fico apenas de cueca e uso o calor do meu corpo e a textura da minha barba no seu. O contato é total e envolvente para subir o clima.' },
-  { id: 'up_interacao', label: 'Massagem com Interação', price: 100, desc: 'A sua vez de tocar. Você tem liberdade para explorar e massagear o meu corpo da forma que sentir vontade durante a sessão.' },
-  { id: 'up_nuru', label: 'Massagem Escorregadia com Gel', price: 170, desc: 'Experiência máxima de contato físico. Nós dois sem roupa e muito gel no corpo todo.' },
-  { id: 'up_tantrica', label: 'Finalização Íntima', price: 20, desc: 'Toques leves que percorrem a pele e terminam direto no alívio completo do prazer.' }
+  { 
+    id: 'up_tantrica', 
+    label: 'Finalização Íntima', 
+    price: 40, 
+    desc: 'A transição do relaxamento para o prazer. Toques leves e focados que terminam no alívio completo da tensão acumulada.' 
+  },
+  { 
+    id: 'up_naturista', 
+    label: 'Sessão Totalmente Nu', 
+    price: 60, 
+    desc: 'Removemos a barreira da roupa. Nós dois ficamos sem nada do início ao fim para aumentar a liberdade e a conexão visual.' 
+  },
+  { 
+    id: 'up_fusion', 
+    label: 'Contato Corpo a Corpo', 
+    price: 90, 
+    desc: 'Fico de cueca e abandono o uso apenas das mãos. Uso o calor do meu peito, pernas e a textura da minha barba deslizando no seu corpo.' 
+  },
+  { 
+    id: 'up_nuru', 
+    label: 'Massagem Nuru com Gel', 
+    price: 150, 
+    desc: 'A quebra total do espaço pessoal. Nós dois sem roupa, muito gel escorregadio e uso o meu corpo inteiro colado no seu para a massagem.' 
+  },
+  { 
+    id: 'up_interacao', 
+    label: 'Interação e Troca (A Sua Vez)', 
+    price: 200, 
+    desc: 'Você assume o controle. Total liberdade para tocar, explorar e retribuir a massagem no meu corpo da forma que você sentir vontade.' 
+  }
 ];
 
 const ADDONS = [
