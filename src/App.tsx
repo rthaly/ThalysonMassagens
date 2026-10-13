@@ -13,49 +13,45 @@ const CONFIG = {
   FIRST_TIME_DISCOUNT: 15,
 };
 
-const BASE_SESSION = {
-  price: 180,
-  min: 60,
-  title: 'Relaxamento Base',
-  desc: 'Massagem profunda no corpo todo. Uso a força certa das minhas mãos para desfazer os nós de tensão e amassar a musculatura. Você entra cansado e sai leve.'
-};
-
-const SESSION_UPGRADES = [
-  { 
-    id: 'up_tantrica', 
-    label: 'Finalização Íntima', 
-    price: 40, 
-    desc: 'A transição do relaxamento para o prazer. Toques leves e focados que terminam no alívio completo da tensão acumulada.' 
+// Venda por Pacotes Fechados (Mixes) - Reduz a fadiga de decisão e ancora valor
+const PACKAGES = [
+  {
+    id: 'classica',
+    title: 'Massagem Clássica',
+    price: 180,
+    min: 60,
+    tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
+    desc: 'Massagem profunda no corpo todo. Uso a força certa das minhas mãos para desfazer os nós de tensão e amassar a musculatura. Você entra cansado e sai muito leve.'
   },
-  { 
-    id: 'up_naturista', 
-    label: 'Sessão Totalmente Nu', 
-    price: 60, 
-    desc: 'Removemos a barreira da roupa. Nós dois ficamos sem nada do início ao fim para aumentar a liberdade e a conexão visual.' 
+  {
+    id: 'sensitiva',
+    title: 'Sensitiva & Prazer',
+    price: 220,
+    min: 60,
+    tags: ['Toques Leves', 'Finalização Íntima'],
+    desc: 'Tudo começa relaxando o seu corpo com bastante força. Quando você estiver entregue, os toques mudam, causam arrepios e terminam direto no alívio completo.'
   },
-  { 
-    id: 'up_fusion', 
-    label: 'Contato Corpo a Corpo', 
-    price: 90, 
-    desc: 'Fico de cueca e abandono o uso apenas das mãos. Uso o calor do meu peito, pernas e a textura da minha barba deslizando no seu corpo.' 
+  {
+    id: 'fusion',
+    title: 'Combo Corpo a Corpo',
+    price: 290,
+    min: 60,
+    tags: ['Naturista', 'Uso de Barba e Peito'],
+    desc: 'Nós dois ficamos sem roupa. Uso não só as mãos, mas o calor do meu peito, pernas e a textura da minha barba deslizando no seu corpo para subir o clima ao máximo.'
   },
-  { 
-    id: 'up_nuru', 
-    label: 'Massagem Nuru com Gel', 
-    price: 150, 
-    desc: 'A quebra total do espaço pessoal. Nós dois sem roupa, muito gel escorregadio e uso o meu corpo inteiro colado no seu para a massagem.' 
-  },
-  { 
-    id: 'up_interacao', 
-    label: 'Interação e Troca (A Sua Vez)', 
-    price: 200, 
-    desc: 'Você assume o controle. Total liberdade para tocar, explorar e retribuir a massagem no meu corpo da forma que você sentir vontade.' 
+  {
+    id: 'premium',
+    title: 'A Experiência Premium',
+    price: 390,
+    min: 60,
+    tags: ['Gel Escorregadio', 'A Sua Vez de Tocar'],
+    desc: 'O pacote absoluto. Envolve a técnica Nuru com gel no corpo todo e a Interação Total: você tem liberdade para explorar e massagear o meu corpo do seu jeito.'
   }
 ];
 
 const ADDONS = [
   { id: 'time', label: '+30 minutos extras', price: 75 },
-  { id: 'aparo', label: 'Aparo de Pelos (Máquina)', price: 107 },
+  { id: 'aparo', label: 'Aparar Pelos (Máquina)', price: 107 },
 ];
 
 const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
@@ -73,7 +69,7 @@ const ICON_PATHS = {
   'shield': 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
   'lock': 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z M7 11V7a5 5 0 0 1 10 0v4',
   'check': 'M20 6L9 17l-5-5',
-  'plus': 'M12 5v14M5 12h14'
+  'close': 'M18 6L6 18 M6 6l12 12',
 };
 
 const Icon = memo(({ name, size = 24, className = '' }) => (
@@ -88,15 +84,15 @@ const Icon = memo(({ name, size = 24, className = '' }) => (
 export default function App() {
   const [step, setStep] = useState(0); 
   const [isReturningClient, setIsReturningClient] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const numberInputRef = useRef(null);
 
   const [data, setData] = useState({
     name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', 
     date: null, time: '', req: '', payment: '',
-    upgrades: {}, addons: {}
+    packageId: PACKAGES[0].id, addons: {}
   });
 
-  // Inicialização
   useEffect(() => {
     const hasOnboarded = localStorage.getItem('thaly_onboard_final');
     const hasBookedBefore = localStorage.getItem('thaly_returning_final');
@@ -104,26 +100,18 @@ export default function App() {
     if (hasBookedBefore === 'yes') setIsReturningClient(true);
   }, []);
 
-  // Rola a tela suavemente ao trocar de passo
   useEffect(() => {
-    if (step > 0) window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [step]);
+    if (step > 0 && !isProfileOpen) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step, isProfileOpen]);
+
+  const selectedPackage = useMemo(() => PACKAGES.find(p => p.id === data.packageId) || PACKAGES[0], [data.packageId]);
 
   // Matemática Centralizada
   const invoice = useMemo(() => {
-    let subtotal = BASE_SESSION.price;
-    let dur = BASE_SESSION.min;
-    let upgradesTotal = 0;
+    let subtotal = selectedPackage.price;
+    let dur = selectedPackage.min;
     let addonsTotal = 0;
-    let activeUpgrades = [];
     let activeAddons = [];
-    
-    SESSION_UPGRADES.forEach(up => {
-      if (data.upgrades[up.id]) {
-        upgradesTotal += up.price;
-        activeUpgrades.push(up);
-      }
-    });
 
     ADDONS.forEach(addon => {
       if (data.addons[addon.id]) {
@@ -133,7 +121,7 @@ export default function App() {
       }
     });
     
-    subtotal += upgradesTotal + addonsTotal;
+    subtotal += addonsTotal;
     
     let reqFee = data.req.trim().length > 3 ? 130 : 0;
     let peakFee = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
@@ -145,11 +133,11 @@ export default function App() {
     let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
     
     return { 
-      base: BASE_SESSION.price, upgradesTotal, addonsTotal, reqFee, peakFee, 
+      base: selectedPackage.price, addonsTotal, reqFee, peakFee, 
       autoDiscount, pixDiscount, total: finalTotal, sinal: CONFIG.SIGNAL_AMOUNT, dur,
-      activeUpgrades, activeAddons
+      activeAddons
     };
-  }, [data, isReturningClient]);
+  }, [data, selectedPackage, isReturningClient]);
 
   const days = useMemo(() => Array.from({length: 14}, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() + i); return d;
@@ -176,8 +164,7 @@ export default function App() {
     text += `*DIA E LOCAL:* ${dStr} às ${data.time} | ${locationText}\n\n`;
     
     text += `*MEU PACOTE (Até ${invoice.dur} min):*\n`;
-    text += `✅ ${BASE_SESSION.title}\n`;
-    invoice.activeUpgrades.forEach(u => text += `✅ ${u.label}\n`);
+    text += `✅ ${selectedPackage.title}\n`;
     invoice.activeAddons.forEach(a => text += `➕ ${a.label}\n`);
     
     if (data.req.trim()) text += `\n*VONTADE ESPECÍFICA:* "${data.req.trim()}"\n`;
@@ -210,16 +197,38 @@ export default function App() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 pb-20">
       
+      {/* MODAL DE PERFIL */}
+      {isProfileOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm animate-in fade-in" onClick={() => setIsProfileOpen(false)}>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-8 relative shadow-2xl" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setIsProfileOpen(false)} className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-white transition-colors outline-none">
+              <Icon name="close" size={24} />
+            </button>
+            <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border-2 border-zinc-700 shadow-xl" alt="Thalyson" />
+            <h2 className="text-3xl font-medium text-white tracking-tight mb-1">Thalyson.</h2>
+            <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6">Atendimento Masculino</p>
+            <div className="space-y-4 text-sm text-zinc-400 leading-relaxed">
+              <p>Sou terapeuta focado no público masculino. Meu trabalho é direto: usar as minhas mãos (e meu corpo, se você escolher) para tirar o peso da sua rotina, aliviar o seu estresse e te proporcionar um momento intenso em um ambiente totalmente discreto e acolhedor na Bela Vista.</p>
+            </div>
+            <div className="mt-8 pt-6 border-t border-zinc-800 flex justify-center">
+              <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-colors outline-none">
+                <Icon name="instagram" size={18} /> Meu Instagram
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* HEADER (Mostrado após o Gate) */}
       {step > 0 && (
         <header className="px-6 py-8 max-w-lg mx-auto flex justify-between items-center border-b border-zinc-800/50 mb-8">
-          <div className="flex items-center gap-4">
-            <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-12 h-12 rounded-full border border-zinc-800 object-cover" />
+          <button onClick={() => { vibrate(10); setIsProfileOpen(true); }} className="flex items-center gap-4 group text-left outline-none">
+            <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-12 h-12 rounded-full border border-zinc-700 object-cover group-hover:scale-105 transition-transform shadow-lg" />
             <div>
-              <h1 className="text-xl font-medium tracking-tight text-white">Thalyson.</h1>
-              <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Atendimento Masculino</p>
+              <h1 className="text-xl font-medium tracking-tight text-white group-hover:text-zinc-200 transition-colors">Thalyson.</h1>
+              <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest group-hover:text-emerald-400/70 transition-colors">Ver Perfil</p>
             </div>
-          </div>
+          </button>
           <div className="flex gap-1.5">
             {[1,2,3].map(i => (
               <div key={i} className={`h-1 rounded-full transition-all duration-500 ${step >= i ? 'w-6 bg-white' : 'w-2 bg-zinc-800'}`} />
@@ -255,56 +264,46 @@ export default function App() {
           </div>
         )}
 
-        {/* PASSO 1: MONTE SUA SESSÃO */}
+        {/* PASSO 1: ESCOLHA O PACOTE */}
         {step === 1 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 1</h2>
-            <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">O que você quer sentir hoje?</h1>
+            <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">O que você está precisando?</h1>
 
             <div className="space-y-4 mb-10">
-              {/* Card Base */}
-              <div className="p-6 bg-zinc-900 border border-zinc-700 rounded-2xl shadow-lg">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-xl text-white">{BASE_SESSION.title}</h3>
-                  <span className="font-bold text-lg text-emerald-400">{formatMoney(BASE_SESSION.price)}</span>
-                </div>
-                <p className="text-sm text-zinc-400 leading-relaxed mb-4">{BASE_SESSION.desc}</p>
-                <span className="inline-block px-3 py-1 bg-zinc-800 text-zinc-300 text-xs font-bold uppercase tracking-wider rounded-md">Até {BASE_SESSION.min} Minutos</span>
-              </div>
-
-              <div className="pt-6 pb-2">
-                <h3 className="text-sm font-bold text-white mb-1">Evolua sua sessão (Opcional)</h3>
-                <p className="text-xs text-zinc-500">Selecione os toques adicionais que você deseja incluir.</p>
-              </div>
-
-              {/* Upgrades */}
-              {SESSION_UPGRADES.map(up => {
-                const isActive = data.upgrades[up.id];
+              
+              {/* Opções de Mixes / Pacotes */}
+              {PACKAGES.map(pkg => {
+                const isActive = data.packageId === pkg.id;
                 return (
                   <button 
-                    key={up.id}
-                    onClick={() => { vibrate(15); setData(p => ({...p, upgrades: {...p.upgrades, [up.id]: !isActive}})); }}
-                    className={`w-full text-left p-5 rounded-2xl border transition-all duration-200 outline-none flex gap-4 items-center ${
-                      isActive ? 'bg-pink-950/30 border-pink-500/50' : 'bg-zinc-900/40 border-zinc-800 hover:border-zinc-700'
+                    key={pkg.id}
+                    onClick={() => { vibrate(15); setData({...data, packageId: pkg.id}); }}
+                    className={`w-full text-left p-6 rounded-2xl border transition-all duration-300 outline-none block ${
+                      isActive ? 'bg-zinc-900 border-white shadow-xl scale-[1.02]' : 'bg-zinc-950 border-zinc-800 hover:border-zinc-600 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${isActive ? 'border-pink-500 bg-pink-500' : 'border-zinc-700'}`}>
-                      {isActive && <Icon name="check" size={14} className="text-white" />}
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className={`font-bold text-xl ${isActive ? 'text-white' : 'text-zinc-300'}`}>{pkg.title}</h3>
+                      <span className={`font-bold text-lg ${isActive ? 'text-emerald-400' : 'text-zinc-500'}`}>{formatMoney(pkg.price)}</span>
                     </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <h4 className={`font-bold text-base ${isActive ? 'text-pink-400' : 'text-zinc-200'}`}>{up.label}</h4>
-                        <span className={`font-bold text-sm ${isActive ? 'text-pink-400' : 'text-zinc-500'}`}>+ {formatMoney(up.price)}</span>
-                      </div>
-                      <p className="text-xs text-zinc-400 leading-relaxed">{up.desc}</p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {pkg.tags.map((tag, idx) => (
+                        <span key={idx} className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm border ${isActive ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-transparent text-zinc-600 border-zinc-800'}`}>
+                          {tag}
+                        </span>
+                      ))}
                     </div>
+
+                    <p className={`text-sm leading-relaxed ${isActive ? 'text-zinc-400' : 'text-zinc-600'}`}>{pkg.desc}</p>
                   </button>
                 )
               })}
               
               {/* Addons Práticos */}
               <div className="pt-6">
-                <h3 className="text-sm font-bold text-white mb-3">Extras Práticos</h3>
+                <h3 className="text-sm font-bold text-white mb-3">Extras Práticos (Opcional)</h3>
                 <div className="flex flex-col gap-3">
                   {ADDONS.map(addon => {
                     const isActive = data.addons[addon.id];
@@ -325,11 +324,11 @@ export default function App() {
               </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 w-full p-4 bg-zinc-950/80 backdrop-blur-md border-t border-zinc-900 z-50">
+            <div className="fixed bottom-0 left-0 w-full p-4 bg-zinc-950/90 backdrop-blur-md border-t border-zinc-900 z-50">
               <div className="max-w-lg mx-auto flex gap-4 items-center">
                 <div className="flex-1">
-                  <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Subtotal</p>
-                  <p className="text-2xl font-bold text-white">{formatMoney(invoice.base + invoice.upgradesTotal + invoice.addonsTotal)}</p>
+                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Até {invoice.dur} minutos</p>
+                  <p className="text-2xl font-bold text-white">{formatMoney(invoice.base + invoice.addonsTotal)}</p>
                 </div>
                 <button 
                   onClick={() => { vibrate(30); setStep(2); }} 
@@ -440,20 +439,19 @@ export default function App() {
               {/* Resumo Financeiro */}
               <div className="p-6 bg-zinc-900 rounded-2xl border border-zinc-800">
                 <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-sm"><span className="text-zinc-400">Sessão Base</span><span className="text-white font-medium">{formatMoney(invoice.base)}</span></div>
-                  {invoice.upgradesTotal > 0 && <div className="flex justify-between text-sm"><span className="text-zinc-400">Upgrades</span><span className="text-pink-400 font-medium">+{formatMoney(invoice.upgradesTotal)}</span></div>}
-                  {invoice.addonsTotal > 0 && <div className="flex justify-between text-sm"><span className="text-zinc-400">Adicionais</span><span className="text-emerald-400 font-medium">+{formatMoney(invoice.addonsTotal)}</span></div>}
+                  <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Pacote Escolhido</span><span className="text-white font-medium">{formatMoney(invoice.base)}</span></div>
+                  {invoice.addonsTotal > 0 && <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Adicionais</span><span className="text-emerald-400 font-medium">+{formatMoney(invoice.addonsTotal)}</span></div>}
                   
                   {/* Desconto Automático 1a Vez */}
                   {!isReturningClient && (
-                    <div className="flex justify-between text-sm items-center py-2 border-y border-zinc-800 my-2">
+                    <div className="flex justify-between text-sm items-center py-3 border-y border-zinc-800 my-2">
                       <span className="text-emerald-400 font-bold flex items-center gap-2"><Icon name="check" size={16}/> Presente de 1ª Vez</span>
                       <span className="text-emerald-400 font-bold">-{formatMoney(invoice.autoDiscount)}</span>
                     </div>
                   )}
                   
-                  {invoice.peakFee > 0 && <div className="flex justify-between text-sm"><span className="text-zinc-400">Taxa Deslocamento/Pico</span><span className="text-white font-medium">+{formatMoney(invoice.peakFee)}</span></div>}
-                  {invoice.pixDiscount > 0 && <div className="flex justify-between text-sm"><span className="text-emerald-400">Desconto Pix (3%)</span><span className="text-emerald-400 font-medium">-{formatMoney(invoice.pixDiscount)}</span></div>}
+                  {invoice.peakFee > 0 && <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Taxa Deslocamento/Pico</span><span className="text-white font-medium">+{formatMoney(invoice.peakFee)}</span></div>}
+                  {invoice.pixDiscount > 0 && <div className="flex justify-between text-sm items-center"><span className="text-emerald-400">Desconto Pix (3%)</span><span className="text-emerald-400 font-medium">-{formatMoney(invoice.pixDiscount)}</span></div>}
                 </div>
 
                 <div className="flex justify-between items-end pt-4 border-t border-zinc-800">
