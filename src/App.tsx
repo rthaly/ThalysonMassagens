@@ -8,7 +8,7 @@ const CONFIG = {
   PIX_KEY: "62922530000144",
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Centro Histórico (Próx. Metrô Anhangabaú)",
-  STUDIO_MAPS_LINK: "https://maps.app.goo.gl/search/Metrô+Anhangabaú", // Coloque o link exato do seu Maps aqui
+  STUDIO_MAPS_LINK: "https://maps.app.goo.gl/search/Metrô+Anhangabaú", 
   SIGNAL_AMOUNT: 50,
   START_HOUR: 9,
   END_HOUR: 22,
@@ -27,7 +27,7 @@ const PACKAGES = [
     id: 'classica',
     title: 'Massagem Clássica',
     price: 180,
-    min: 60,
+    min: 40,
     tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
     desc: 'O essencial para quem está moído da rotina. Uso a força das minhas mãos para desfazer os nós de tensão e soltar sua musculatura. Você entra pesado e sai leve.'
   },
@@ -208,7 +208,6 @@ export default function App() {
     };
   }, [data, selectedPackage, isReturningClient, appliedCoupon]);
 
-  // Janela de exatos 14 dias
   const days = useMemo(() => Array.from({length: 14}, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() + i); return d;
   }), []);
@@ -217,11 +216,8 @@ export default function App() {
     if (!data.date) return [];
     
     let s = [];
-    
     for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
       const timeStr = `${i < 10 ? '0' : ''}${i}:00`;
-      
-      // Filtra apenas se o horário já passou hoje
       const isPast = data.date.toDateString() === new Date().toDateString() && i <= new Date().getHours();
       
       if (!isPast) {
@@ -235,7 +231,6 @@ export default function App() {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
     
     let locationText = '';
-    
     if (data.locType === 'studio') {
       locationText = `📍 *Local:* Irei até o seu espaço no Centro Histórico.`;
     } else {
@@ -248,11 +243,23 @@ export default function App() {
     text += `*NOME:* ${data.name}\n`;
     text += `*DIA E HORA:* ${dStr} às ${data.time}\n${locationText}\n\n`;
     
-    text += `*MEU PACOTE (Até ${invoice.dur} min):*\n`;
-    text += `✅ ${selectedPackage.title}\n`;
-    invoice.activeAddons.forEach(a => text += `➕ ${a.label}\n`);
+    text += `*MEU PACOTE (Duração: ${invoice.dur} minutos):*\n`;
+    text += `✅ ${selectedPackage.title} (${formatMoney(selectedPackage.price)})\n`;
     
-    if (data.req.trim()) text += `\n*VONTADE ESPECÍFICA:* "${data.req.trim()}" (Ciente da taxa se rolar)\n`;
+    invoice.activeAddons.forEach(a => text += `➕ ${a.label} (+${formatMoney(a.price)})\n`);
+    
+    if (data.req.trim()) {
+      text += `\n*VONTADE ESPECÍFICA:* "${data.req.trim()}" (Ciente da taxa de +${formatMoney(CONFIG.FETISH_FEE)} se rolar)\n`;
+    }
+
+    if (invoice.discount > 0) {
+      const discountName = appliedCoupon ? `Cupom ${appliedCoupon}` : 'Presente de 1ª Vez';
+      text += `\n🎁 *Desconto:* ${discountName} (-${formatMoney(invoice.discount)})\n`;
+    }
+
+    if (invoice.peakFee > 0) {
+      text += `📈 *Taxa de Pico:* (+${formatMoney(invoice.peakFee)})\n`;
+    }
 
     text += `\n*VALOR FINAL:* ${formatMoney(invoice.total)} no ${data.payment.toUpperCase()}\n`;
     text += `*Sinal:* ${formatMoney(invoice.sinal)} (Restante lá na hora)\n\n`;
@@ -283,9 +290,6 @@ export default function App() {
     return 'Boa noite';
   };
 
-  // ==================================================================================
-  // 4. RENDERIZAÇÃO DAS ETAPAS
-  // ==================================================================================
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 pb-24 relative">
       
@@ -384,6 +388,9 @@ export default function App() {
                       <span className={`font-bold text-lg ${isActive ? 'text-emerald-400' : 'text-zinc-500'}`}>{formatMoney(pkg.price)}</span>
                     </div>
                     <div className="flex flex-wrap gap-2 mb-4">
+                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm border ${isActive ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-transparent text-zinc-600 border-zinc-800'}`}>
+                        {pkg.min} MIN
+                      </span>
                       {pkg.tags.map((tag, idx) => (
                         <span key={idx} className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm border ${isActive ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-transparent text-zinc-600 border-zinc-800'}`}>
                           {tag}
@@ -420,7 +427,7 @@ export default function App() {
             <div className="fixed bottom-0 left-0 w-full p-4 bg-zinc-950/90 backdrop-blur-md border-t border-zinc-900 z-50">
               <div className="max-w-lg mx-auto flex gap-4 items-center">
                 <div className="flex-1">
-                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Até {invoice.dur} minutos</p>
+                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Duração: {invoice.dur} minutos</p>
                   <p className="text-2xl font-bold text-white">{formatMoney(invoice.base + invoice.addonsTotal)}</p>
                 </div>
                 <button onClick={() => { vibrate(30); setStep(2); }} className="bg-emerald-500 text-zinc-950 px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-xl transition-transform active:scale-[0.98]">
