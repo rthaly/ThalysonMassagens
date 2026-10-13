@@ -8,6 +8,7 @@ const CONFIG = {
   PIX_KEY: "62922530000144",
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Centro Histórico (Próx. Metrô Anhangabaú)",
+  STUDIO_MAPS_LINK: "https://maps.app.goo.gl/search/Metrô+Anhangabaú", // Coloque o link exato do seu Maps aqui
   SIGNAL_AMOUNT: 50,
   START_HOUR: 9,
   END_HOUR: 22,
@@ -207,20 +208,22 @@ export default function App() {
     };
   }, [data, selectedPackage, isReturningClient, appliedCoupon]);
 
-  const days = useMemo(() => Array.from({length: 30}, (_, i) => {
+  const days = useMemo(() => Array.from({length: 14}, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() + i); return d;
   }), []);
 
   const getSlots = () => {
     if (!data.date) return [];
     
+    // Semente baseada na data para manter bloqueios fixos por dia, não por renderização
     const seed = data.date.getDate() + data.date.getMonth() * 31;
     let s = [];
     
     for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
       const timeStr = `${i < 10 ? '0' : ''}${i}:00`;
       
-      const isFakeBusy = (seed * i) % 7 < 3;
+      // Bloqueia ~25% dos horários de forma estável para gerar escassez sutil
+      const isFakeBusy = (seed * i) % 7 < 2; 
       const isPast = data.date.toDateString() === new Date().toDateString() && i <= new Date().getHours();
       
       if (!isFakeBusy && !isPast) {
@@ -232,13 +235,14 @@ export default function App() {
 
   const generateWhatsAppLink = () => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
+    
     const locationText = data.locType === 'studio' 
-      ? `Irei até o seu local no Centro Histórico` 
+      ? `Irei até a sua suíte.\n📍 *Região:* ${CONFIG.STUDIO_MAPS_LINK}\n_(Me confirme o número exato e como chegar)_` 
       : `Você virá até mim: ${data.street}, ${data.number}, ${data.bairro}`;
 
     let text = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n`;
     text += `*NOME:* ${data.name}\n`;
-    text += `*DIA E LOCAL:* ${dStr} às ${data.time} | ${locationText}\n\n`;
+    text += `*DIA E LOCAL:* ${dStr} às ${data.time}\n${locationText}\n\n`;
     
     text += `*MEU PACOTE (Até ${invoice.dur} min):*\n`;
     text += `✅ ${selectedPackage.title}\n`;
