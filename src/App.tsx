@@ -7,13 +7,20 @@ const CONFIG = {
   PHONE: "5517991360413",
   PIX_KEY: "5517991360413",
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
+  ADDRESS_AREA: "Centro Histórico (Próx. Metrô Anhangabaú)",
   SIGNAL_AMOUNT: 50,
   START_HOUR: 9,
   END_HOUR: 22,
   FIRST_TIME_DISCOUNT: 15,
+  FETISH_FEE: 130,
+  COUPONS: {
+    "SESSAO2": 0.08,
+    "RELAXAR13": 0.13,
+    "THALY20": 20,
+    "BEMVINDO50": 50
+  }
 };
 
-// Venda por Pacotes Fechados (Mixes) - Reduz a fadiga de decisão e ancora valor
 const PACKAGES = [
   {
     id: 'classica',
@@ -21,7 +28,7 @@ const PACKAGES = [
     price: 180,
     min: 60,
     tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
-    desc: 'Massagem profunda no corpo todo. Uso a força certa das minhas mãos para desfazer os nós de tensão e amassar a musculatura. Você entra cansado e sai muito leve.'
+    desc: 'O essencial para quem está moído da rotina. Uso a força das minhas mãos para desfazer os nós de tensão e soltar sua musculatura. Você entra pesado e sai leve.'
   },
   {
     id: 'sensitiva',
@@ -29,7 +36,7 @@ const PACKAGES = [
     price: 220,
     min: 60,
     tags: ['Toques Leves', 'Finalização Íntima'],
-    desc: 'Tudo começa relaxando o seu corpo com bastante força. Quando você estiver entregue, os toques mudam, causam arrepios e terminam direto no alívio completo.'
+    desc: 'Começamos desmanchando o cansaço do seu corpo. Quando você estiver entregue, os toques mudam, causam arrepios e vamos até o alívio completo.'
   },
   {
     id: 'fusion',
@@ -37,15 +44,15 @@ const PACKAGES = [
     price: 290,
     min: 60,
     tags: ['Naturista', 'Uso de Barba e Peito'],
-    desc: 'Nós dois ficamos sem roupa. Uso não só as mãos, mas o calor do meu peito, pernas e a textura da minha barba deslizando no seu corpo para subir o clima ao máximo.'
+    desc: 'Ficamos totalmente à vontade. Uso o calor do meu peito, o peso das pernas e a textura da barba deslizando no seu corpo para uma imersão física profunda.'
   },
   {
-    id: 'premium',
-    title: 'A Experiência Premium',
+    id: 'completa',
+    title: 'A Experiência Completa',
     price: 390,
     min: 60,
-    tags: ['Gel Escorregadio', 'A Sua Vez de Tocar'],
-    desc: 'O pacote absoluto. Envolve a técnica Nuru com gel no corpo todo e a Interação Total: você tem liberdade para explorar e massagear o meu corpo do seu jeito.'
+    tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
+    desc: 'O pacote sem barreiras. Muita proximidade física com gel escorregadio e liberdade total para você interagir, tocar e explorar o meu corpo do seu jeito.'
   }
 ];
 
@@ -70,6 +77,7 @@ const ICON_PATHS = {
   'lock': 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z M7 11V7a5 5 0 0 1 10 0v4',
   'check': 'M20 6L9 17l-5-5',
   'close': 'M18 6L6 18 M6 6l12 12',
+  'map': 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'
 };
 
 const Icon = memo(({ name, size = 24, className = '' }) => (
@@ -85,7 +93,12 @@ export default function App() {
   const [step, setStep] = useState(0); 
   const [isReturningClient, setIsReturningClient] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
   const numberInputRef = useRef(null);
+
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState('');
+  const [couponError, setCouponError] = useState('');
 
   const [data, setData] = useState({
     name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', 
@@ -93,20 +106,72 @@ export default function App() {
     packageId: PACKAGES[0].id, addons: {}
   });
 
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(''), 3500);
+  };
+
+  // Inicialização e Recuperação Inteligente de Dados (Auto-Save)
   useEffect(() => {
     const hasOnboarded = localStorage.getItem('thaly_onboard_final');
     const hasBookedBefore = localStorage.getItem('thaly_returning_final');
+    const savedDraft = localStorage.getItem('thaly_draft_booking');
+    
     if (hasOnboarded === 'yes') setStep(1);
     if (hasBookedBefore === 'yes') setIsReturningClient(true);
+    
+    if (savedDraft) {
+      try {
+        const parsed = JSON.parse(savedDraft);
+        // Não recuperamos data/hora para evitar horários expirados
+        setData(prev => ({ ...prev, name: parsed.name || '', locType: parsed.locType || 'studio', street: parsed.street || '', number: parsed.number || '', bairro: parsed.bairro || '' }));
+      } catch(e) {}
+    }
   }, []);
+
+  // Salva rascunho invisível a cada mudança nos campos de texto
+  useEffect(() => {
+    if (data.name.length > 2) {
+      localStorage.setItem('thaly_draft_booking', JSON.stringify({
+        name: data.name, locType: data.locType, street: data.street, number: data.number, bairro: data.bairro
+      }));
+    }
+  }, [data.name, data.locType, data.street, data.number, data.bairro]);
 
   useEffect(() => {
     if (step > 0 && !isProfileOpen) window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step, isProfileOpen]);
 
+  const handleApplyCoupon = () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    
+    if (CONFIG.COUPONS[code]) {
+      vibrate([20, 40]);
+      setAppliedCoupon(code);
+      setCouponError('');
+      showToast('✅ Cupom ativado com sucesso!');
+    } else {
+      vibrate(50);
+      setCouponError('Cupom inválido ou expirado.');
+      setAppliedCoupon('');
+    }
+  };
+
+  const handlePaymentSelect = (method) => {
+    vibrate(15);
+    setData({...data, payment: method});
+    if (method === 'pix') {
+      try {
+        navigator.clipboard.writeText(CONFIG.PIX_KEY);
+        showToast('✅ Chave Pix copiada para o teclado!');
+      } catch (err) {}
+    }
+  };
+
   const selectedPackage = useMemo(() => PACKAGES.find(p => p.id === data.packageId) || PACKAGES[0], [data.packageId]);
 
-  // Matemática Centralizada
+  // Matemática Centralizada e Robusta
   const invoice = useMemo(() => {
     let subtotal = selectedPackage.price;
     let dur = selectedPackage.min;
@@ -121,23 +186,31 @@ export default function App() {
       }
     });
     
-    subtotal += addonsTotal;
+    let reqFee = data.req.trim().length > 3 ? CONFIG.FETISH_FEE : 0;
+    let baseWithAddons = subtotal + addonsTotal + reqFee;
     
-    let reqFee = data.req.trim().length > 3 ? 130 : 0;
     let peakFee = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
-    let autoDiscount = !isReturningClient ? CONFIG.FIRST_TIME_DISCOUNT : 0;
     
-    let totalAfterDiscounts = Math.max(0, subtotal + reqFee - autoDiscount);
+    // Cupons e Descontos
+    let discountValue = 0;
+    if (appliedCoupon) {
+      const val = CONFIG.COUPONS[appliedCoupon];
+      discountValue = val < 1 ? Math.floor(baseWithAddons * val) : val;
+    } else if (!isReturningClient) {
+      discountValue = CONFIG.FIRST_TIME_DISCOUNT;
+    }
+    
+    let totalAfterDiscounts = Math.max(0, baseWithAddons - discountValue);
     let pixDiscount = data.payment === 'pix' ? Math.ceil(totalAfterDiscounts * 0.03) : 0;
     
     let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
     
     return { 
       base: selectedPackage.price, addonsTotal, reqFee, peakFee, 
-      autoDiscount, pixDiscount, total: finalTotal, sinal: CONFIG.SIGNAL_AMOUNT, dur,
+      discount: discountValue, pixDiscount, total: finalTotal, sinal: CONFIG.SIGNAL_AMOUNT, dur,
       activeAddons
     };
-  }, [data, selectedPackage, isReturningClient]);
+  }, [data, selectedPackage, isReturningClient, appliedCoupon]);
 
   const days = useMemo(() => Array.from({length: 14}, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() + i); return d;
@@ -156,7 +229,7 @@ export default function App() {
   const generateWhatsAppLink = () => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
     const locationText = data.locType === 'studio' 
-      ? `Irei até a sua Suíte (Bela Vista)` 
+      ? `Irei até o seu local no Centro Histórico` 
       : `Você virá até mim: ${data.street}, ${data.number}, ${data.bairro}`;
 
     let text = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n`;
@@ -167,11 +240,11 @@ export default function App() {
     text += `✅ ${selectedPackage.title}\n`;
     invoice.activeAddons.forEach(a => text += `➕ ${a.label}\n`);
     
-    if (data.req.trim()) text += `\n*VONTADE ESPECÍFICA:* "${data.req.trim()}"\n`;
+    if (data.req.trim()) text += `\n*VONTADE ESPECÍFICA:* "${data.req.trim()}" (Ciente da taxa se rolar)\n`;
 
     text += `\n*VALOR FINAL:* ${formatMoney(invoice.total)} no ${data.payment.toUpperCase()}\n`;
-    text += `*Sinal:* ${formatMoney(invoice.sinal)} (Restante na hora)\n\n`;
-    text += `Aguardo sua chave Pix para mandar o sinal!`;
+    text += `*Sinal:* ${formatMoney(invoice.sinal)} (Restante lá na hora)\n\n`;
+    text += `Aguardo sua resposta para mandar o comprovante do sinal!`;
     
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
   };
@@ -191,12 +264,27 @@ export default function App() {
     }
   };
 
+  // Saudação Inteligente pelo Horário
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bom dia';
+    if (hour < 18) return 'Boa tarde';
+    return 'Boa noite';
+  };
+
   // ==================================================================================
   // 4. RENDERIZAÇÃO DAS ETAPAS
   // ==================================================================================
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 pb-20">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 pb-24 relative">
       
+      {/* FEEDBACK VISUAL (TOAST) */}
+      {toastMsg && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-emerald-500 text-zinc-950 px-5 py-3 rounded-full font-bold text-sm flex items-center gap-2 shadow-2xl animate-in fade-in slide-in-from-top-4">
+          {toastMsg}
+        </div>
+      )}
+
       {/* MODAL DE PERFIL */}
       {isProfileOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm animate-in fade-in" onClick={() => setIsProfileOpen(false)}>
@@ -206,11 +294,15 @@ export default function App() {
             </button>
             <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border-2 border-zinc-700 shadow-xl" alt="Thalyson" />
             <h2 className="text-3xl font-medium text-white tracking-tight mb-1">Thalyson.</h2>
-            <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6">Atendimento Masculino</p>
-            <div className="space-y-4 text-sm text-zinc-400 leading-relaxed">
-              <p>Sou terapeuta focado no público masculino. Meu trabalho é direto: usar as minhas mãos (e meu corpo, se você escolher) para tirar o peso da sua rotina, aliviar o seu estresse e te proporcionar um momento intenso em um ambiente totalmente discreto e acolhedor na Bela Vista.</p>
+            <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6">Terapeuta Masculino</p>
+            <div className="space-y-4 text-sm text-zinc-400 leading-relaxed mb-6">
+              <p>{getGreeting()}. Sou focado no público masculino e meu trabalho é direto: usar minhas mãos (e meu corpo, dependendo do pacote) para aliviar o peso da sua rotina.</p>
+              <p className="flex items-start gap-2 text-zinc-300 bg-zinc-950/50 p-3 rounded-lg border border-zinc-800">
+                <Icon name="map" size={18} className="mt-0.5 shrink-0 text-emerald-500" />
+                Atendo em um espaço super acolhedor e discreto no Centro Histórico de SP, a 5 minutinhos do Metrô Anhangabaú. Um refúgio seguro no meio do caos.
+              </p>
             </div>
-            <div className="mt-8 pt-6 border-t border-zinc-800 flex justify-center">
+            <div className="pt-6 border-t border-zinc-800 flex justify-center">
               <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-colors outline-none">
                 <Icon name="instagram" size={18} /> Meu Instagram
               </a>
@@ -221,17 +313,17 @@ export default function App() {
 
       {/* HEADER (Mostrado após o Gate) */}
       {step > 0 && (
-        <header className="px-6 py-8 max-w-lg mx-auto flex justify-between items-center border-b border-zinc-800/50 mb-8">
-          <button onClick={() => { vibrate(10); setIsProfileOpen(true); }} className="flex items-center gap-4 group text-left outline-none">
-            <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-12 h-12 rounded-full border border-zinc-700 object-cover group-hover:scale-105 transition-transform shadow-lg" />
+        <header className="px-6 py-6 max-w-lg mx-auto flex justify-between items-center border-b border-zinc-900 mb-8 sticky top-0 bg-zinc-950/80 backdrop-blur-md z-40">
+          <button onClick={() => { vibrate(10); setIsProfileOpen(true); }} className="flex items-center gap-3 group text-left outline-none">
+            <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-10 h-10 rounded-full border border-zinc-700 object-cover group-hover:scale-105 transition-transform shadow-lg" />
             <div>
-              <h1 className="text-xl font-medium tracking-tight text-white group-hover:text-zinc-200 transition-colors">Thalyson.</h1>
-              <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest group-hover:text-emerald-400/70 transition-colors">Ver Perfil</p>
+              <h1 className="text-lg font-medium tracking-tight text-white group-hover:text-zinc-200 transition-colors">Thalyson.</h1>
+              <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest group-hover:text-emerald-400/70 transition-colors">Conhecer Local</p>
             </div>
           </button>
           <div className="flex gap-1.5">
             {[1,2,3].map(i => (
-              <div key={i} className={`h-1 rounded-full transition-all duration-500 ${step >= i ? 'w-6 bg-white' : 'w-2 bg-zinc-800'}`} />
+              <div key={i} className={`h-1 rounded-full transition-all duration-500 ${step >= i ? 'w-5 bg-white' : 'w-2 bg-zinc-800'}`} />
             ))}
           </div>
         </header>
@@ -242,16 +334,16 @@ export default function App() {
         {/* PASSO 0: GATE DE ENTRADA */}
         {step === 0 && (
           <div className="flex flex-col justify-center min-h-[85vh] animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h1 className="text-4xl md:text-5xl font-medium tracking-tight mb-10 leading-tight text-white">Seu momento<br/>reservado.</h1>
+            <h1 className="text-4xl md:text-5xl font-medium tracking-tight mb-10 leading-tight text-white">O seu refúgio<br/>em São Paulo.</h1>
             
             <div className="space-y-4 mb-12">
               <div className="flex gap-4 p-5 border border-zinc-800 bg-zinc-900/50 rounded-xl">
                 <Icon name="shield" className="text-zinc-400 mt-0.5" size={22} />
-                <p className="text-zinc-400 text-sm leading-relaxed">Sigilo total. Nada que você preenche aqui fica salvo. Os dados vão direto para o meu WhatsApp particular.</p>
+                <p className="text-zinc-400 text-sm leading-relaxed">Sigilo total. Nada que você preenche aqui fica salvo na internet. Os dados vão direto para o meu celular pessoal.</p>
               </div>
               <div className="flex gap-4 p-5 border border-zinc-800 bg-zinc-900/50 rounded-xl">
                 <Icon name="lock" className="text-zinc-400 mt-0.5" size={22} />
-                <p className="text-zinc-400 text-sm leading-relaxed">O atendimento envolve contato físico intenso. Você confirma que é maior de 18 anos?</p>
+                <p className="text-zinc-400 text-sm leading-relaxed">O atendimento é intenso, focado no corpo masculino. Você confirma que tem mais de 18 anos?</p>
               </div>
             </div>
 
@@ -267,12 +359,10 @@ export default function App() {
         {/* PASSO 1: ESCOLHA O PACOTE */}
         {step === 1 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 1</h2>
-            <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">O que você está precisando?</h1>
+            <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 1 de 3</h2>
+            <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">Como posso te ajudar hoje?</h1>
 
             <div className="space-y-4 mb-10">
-              
-              {/* Opções de Mixes / Pacotes */}
               {PACKAGES.map(pkg => {
                 const isActive = data.packageId === pkg.id;
                 return (
@@ -287,7 +377,6 @@ export default function App() {
                       <h3 className={`font-bold text-xl ${isActive ? 'text-white' : 'text-zinc-300'}`}>{pkg.title}</h3>
                       <span className={`font-bold text-lg ${isActive ? 'text-emerald-400' : 'text-zinc-500'}`}>{formatMoney(pkg.price)}</span>
                     </div>
-                    
                     <div className="flex flex-wrap gap-2 mb-4">
                       {pkg.tags.map((tag, idx) => (
                         <span key={idx} className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm border ${isActive ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-transparent text-zinc-600 border-zinc-800'}`}>
@@ -295,13 +384,11 @@ export default function App() {
                         </span>
                       ))}
                     </div>
-
                     <p className={`text-sm leading-relaxed ${isActive ? 'text-zinc-400' : 'text-zinc-600'}`}>{pkg.desc}</p>
                   </button>
                 )
               })}
               
-              {/* Addons Práticos */}
               <div className="pt-6">
                 <h3 className="text-sm font-bold text-white mb-3">Extras Práticos (Opcional)</h3>
                 <div className="flex flex-col gap-3">
@@ -330,10 +417,7 @@ export default function App() {
                   <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Até {invoice.dur} minutos</p>
                   <p className="text-2xl font-bold text-white">{formatMoney(invoice.base + invoice.addonsTotal)}</p>
                 </div>
-                <button 
-                  onClick={() => { vibrate(30); setStep(2); }} 
-                  className="bg-emerald-500 text-zinc-950 px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-xl transition-transform active:scale-[0.98]"
-                >
+                <button onClick={() => { vibrate(30); setStep(2); }} className="bg-emerald-500 text-zinc-950 px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-xl transition-transform active:scale-[0.98]">
                   Avançar
                 </button>
               </div>
@@ -344,27 +428,27 @@ export default function App() {
         {/* PASSO 2: DADOS E HORÁRIO */}
         {step === 2 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 2</h2>
+            <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 2 de 3</h2>
             <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">Onde e Quando?</h1>
 
             <div className="space-y-8 mb-10">
-              {/* Nome */}
               <div>
                 <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Seu Nome</label>
                 <input type="text" value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-base text-white focus:outline-none focus:border-zinc-500 transition-colors placeholder:text-zinc-600" placeholder="Como gosta de ser chamado?" />
               </div>
 
-              {/* Local */}
               <div>
                 <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Local do Atendimento</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-xl ${data.locType==='studio' ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>Na minha Suíte</button>
+                  <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-xl ${data.locType==='studio' ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>No meu Espaço</button>
                   <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-xl ${data.locType==='home' ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>Vou até você</button>
                 </div>
               </div>
 
               {data.locType === 'studio' && (
-                <p className="text-sm text-zinc-400 bg-zinc-900 p-5 rounded-xl border border-zinc-800 leading-relaxed">Meu espaço fica na <strong>Bela Vista</strong>. Após o agendamento, envio o endereço completo e as instruções no WhatsApp.</p>
+                <p className="text-sm text-zinc-400 bg-zinc-900 p-5 rounded-xl border border-zinc-800 leading-relaxed">
+                  A suíte fica no <strong>Centro Histórico (próximo ao Metrô Anhangabaú)</strong>. Um ambiente seguro, limpo e preparado pra você relaxar. O endereço completo vai no WhatsApp.
+                </p>
               )}
 
               {data.locType === 'home' && (
@@ -379,9 +463,11 @@ export default function App() {
                 </div>
               )}
 
-              {/* Data */}
               <div>
-                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Qual Dia?</label>
+                <div className="flex justify-between items-center mb-3">
+                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest">Qual Dia?</label>
+                  <span className="text-[10px] bg-zinc-900 px-2 py-1 rounded text-zinc-500">Poucos horários hoje</span>
+                </div>
                 <div className="flex gap-3 overflow-x-auto pb-4 snap-x hide-scrollbar -mx-6 px-6">
                   {days.map((d, i) => {
                     const sel = data.date?.toDateString() === d.toDateString();
@@ -395,7 +481,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Horário */}
               {data.date && (
                 <div className="animate-in fade-in">
                   <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Qual Horário?</label>
@@ -408,14 +493,13 @@ export default function App() {
                         </button>
                       )
                     })}
-                    {getSlots().length === 0 && <p className="col-span-3 text-sm text-zinc-500 text-center py-6">Nenhum horário disponível hoje.</p>}
+                    {getSlots().length === 0 && <p className="col-span-3 text-sm text-zinc-500 text-center py-6">Agenda lotada pra hoje.</p>}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Botoes de Navegação */}
-            <div className="flex gap-3 mb-24">
+            <div className="flex gap-3 mb-8">
               <button onClick={() => setStep(1)} className="bg-zinc-900 text-zinc-300 w-1/3 py-4 text-xs font-bold tracking-widest uppercase rounded-xl border border-zinc-800">Voltar</button>
               <button 
                 disabled={!(data.name.length > 2 && data.date && data.time && (data.locType === 'studio' || (data.street && data.number && data.bairro)))} 
@@ -428,27 +512,32 @@ export default function App() {
           </div>
         )}
 
-        {/* PASSO 3: CHECKOUT */}
+        {/* PASSO 3: CHECKOUT E PAGAMENTO */}
         {step === 3 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 3</h2>
-            <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">Resumo e Pagamento</h1>
+            <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 3 de 3</h2>
+            <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">Resumo Final</h1>
 
             <div className="space-y-8 mb-10">
               
-              {/* Resumo Financeiro */}
               <div className="p-6 bg-zinc-900 rounded-2xl border border-zinc-800">
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Pacote Escolhido</span><span className="text-white font-medium">{formatMoney(invoice.base)}</span></div>
                   {invoice.addonsTotal > 0 && <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Adicionais</span><span className="text-emerald-400 font-medium">+{formatMoney(invoice.addonsTotal)}</span></div>}
+                  {invoice.reqFee > 0 && <div className="flex justify-between text-sm items-center"><span className="text-pink-400">Taxa de Fetiche/Pedido Especial</span><span className="text-pink-400 font-medium">+{formatMoney(invoice.reqFee)}</span></div>}
                   
-                  {/* Desconto Automático 1a Vez */}
-                  {!isReturningClient && (
-                    <div className="flex justify-between text-sm items-center py-3 border-y border-zinc-800 my-2">
-                      <span className="text-emerald-400 font-bold flex items-center gap-2"><Icon name="check" size={16}/> Presente de 1ª Vez</span>
-                      <span className="text-emerald-400 font-bold">-{formatMoney(invoice.autoDiscount)}</span>
+                  {/* Lógica de Desconto Exibida */}
+                  {appliedCoupon ? (
+                    <div className="flex justify-between text-sm items-center py-2 border-y border-zinc-800 my-2">
+                      <span className="text-emerald-400 font-bold flex items-center gap-2"><Icon name="check" size={16}/> Cupom {appliedCoupon}</span>
+                      <span className="text-emerald-400 font-bold">-{formatMoney(invoice.discount)}</span>
                     </div>
-                  )}
+                  ) : (!isReturningClient && (
+                    <div className="flex justify-between text-sm items-center py-2 border-y border-zinc-800 my-2">
+                      <span className="text-emerald-400 font-bold flex items-center gap-2"><Icon name="check" size={16}/> Presente de 1ª Vez</span>
+                      <span className="text-emerald-400 font-bold">-{formatMoney(invoice.discount)}</span>
+                    </div>
+                  ))}
                   
                   {invoice.peakFee > 0 && <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Taxa Deslocamento/Pico</span><span className="text-white font-medium">+{formatMoney(invoice.peakFee)}</span></div>}
                   {invoice.pixDiscount > 0 && <div className="flex justify-between text-sm items-center"><span className="text-emerald-400">Desconto Pix (3%)</span><span className="text-emerald-400 font-medium">-{formatMoney(invoice.pixDiscount)}</span></div>}
@@ -460,32 +549,43 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Vontade Específica */}
+              {/* Sistema de Cupons */}
+              {!appliedCoupon && (
+                <div className="animate-in fade-in">
+                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Tem um cupom?</label>
+                  <div className="flex gap-3">
+                    <input type="text" placeholder="Código" value={couponInput} onChange={e => {setCouponInput(e.target.value); setCouponError('');}} className={`flex-1 bg-zinc-900 border ${couponError ? 'border-red-500' : 'border-zinc-800'} rounded-xl px-4 py-4 text-sm text-white focus:outline-none uppercase`} />
+                    <button onClick={handleApplyCoupon} className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-xl transition-colors outline-none">Aplicar</button>
+                  </div>
+                  {couponError && <p className="text-xs text-red-400 mt-2">{couponError}</p>}
+                </div>
+              )}
+
+              {/* Vontade Específica c/ Taxa Clara */}
               <div>
-                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Vontade Específica (Opcional)</label>
-                <input type="text" placeholder="Alguma fantasia ou pedido especial?" value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600" />
-                <p className="text-xs text-zinc-500 mt-2">Avaliamos na hora. Se não rolar, não tem taxa.</p>
+                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Vontade Específica (+ R$ {CONFIG.FETISH_FEE})</label>
+                <input type="text" placeholder="Ex: Alguma fantasia, roleplay..." value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600" />
+                <p className="text-xs text-zinc-500 mt-2 leading-relaxed">Avaliamos na hora. Se não for possível realizar o seu pedido com segurança, eu tiro essa taxa de R$ 130 do valor final, fica tranquilo.</p>
               </div>
 
-              {/* Pagamento */}
+              {/* Pagamento e Copia Pix */}
               <div>
                 <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Como vai pagar na hora?</label>
                 <div className="grid grid-cols-3 gap-3">
                   {[{id:'pix', l:'Pix (-3%)'},{id:'card', l:'Cartão'},{id:'cash', l:'Dinheiro'}].map(p => (
-                    <button key={p.id} onClick={() => { vibrate(15); setData({...data, payment: p.id}) }} className={`py-4 text-xs font-bold uppercase tracking-wider border rounded-xl transition-colors ${data.payment === p.id ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>{p.l}</button>
+                    <button key={p.id} onClick={() => handlePaymentSelect(p.id)} className={`py-4 text-xs font-bold uppercase tracking-wider border rounded-xl transition-colors ${data.payment === p.id ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>{p.l}</button>
                   ))}
                 </div>
               </div>
 
-              {/* Aviso de Sinal */}
               <div className="bg-emerald-500/10 border border-emerald-500/20 p-5 rounded-xl text-center">
                 <p className="text-sm text-emerald-400/90 leading-relaxed">
-                  Para garantir o horário na agenda, o sinal é de <strong className="text-emerald-400">R$ 50 via Pix</strong>. O restante acerta lá na hora!
+                  Pra eu segurar seu horário na agenda, o sinal é de <strong className="text-emerald-400">R$ 50 via Pix</strong>. Acertamos a diferença lá na hora.
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-3 mb-24">
+            <div className="flex gap-3 mb-8">
               <button onClick={() => setStep(2)} className="bg-zinc-900 text-zinc-300 w-1/4 py-5 text-xs font-bold tracking-widest uppercase rounded-xl border border-zinc-800">Voltar</button>
               <a 
                 href={data.payment ? generateWhatsAppLink() : '#'}
@@ -493,12 +593,13 @@ export default function App() {
                   if (!data.payment) e.preventDefault();
                   else {
                     localStorage.setItem('thaly_returning_final', 'yes');
+                    localStorage.removeItem('thaly_draft_booking'); // limpa o rascunho
                     vibrate([30, 50]);
                   }
                 }}
                 className={`flex-1 py-5 text-sm font-bold tracking-widest uppercase rounded-xl flex items-center justify-center text-center transition-all ${data.payment ? 'bg-white text-black hover:bg-zinc-200' : 'bg-zinc-900 text-zinc-600 cursor-not-allowed border border-zinc-800'}`}
               >
-                Gerar meu Pedido
+                Mandar no WhatsApp
               </a>
             </div>
           </div>
