@@ -22,9 +22,10 @@ const BASE_SESSION = {
 
 const SESSION_UPGRADES = [
   { id: 'up_naturista', label: 'Sessão Totalmente Nu', price: 60, desc: 'Nós dois sem roupa do início ao fim para maior liberdade e relaxamento profundo.' },
-  { id: 'up_fusion', label: 'Contato Corpo a Corpo', price: 70, desc: 'Uso o calor do meu corpo no seu, passando peito e barba para subir o clima.' },
+  { id: 'up_fusion', label: 'Contato Corpo a Corpo', price: 70, desc: 'Fico apenas de cueca e uso o calor do meu corpo e a textura da minha barba no seu. O contato é total e envolvente para subir o clima.' },
+  { id: 'up_interacao', label: 'Massagem com Interação', price: 100, desc: 'A sua vez de tocar. Você tem liberdade para explorar e massagear o meu corpo da forma que sentir vontade durante a sessão.' },
   { id: 'up_nuru', label: 'Massagem Escorregadia com Gel', price: 170, desc: 'Experiência máxima de contato físico. Nós dois sem roupa e muito gel no corpo todo.' },
-  { id: 'up_tantrica', label: 'Finalização Íntima', price: 20, desc: 'Toques leves que percorrem a pele e terminam direto no alívio completo.' }
+  { id: 'up_tantrica', label: 'Finalização Íntima', price: 20, desc: 'Toques leves que percorrem a pele e terminam direto no alívio completo do prazer.' }
 ];
 
 const ADDONS = [
