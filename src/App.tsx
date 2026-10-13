@@ -5,7 +5,7 @@ import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 // ==================================================================================
 const CONFIG = {
   PHONE: "5517991360413",
-  PIX_KEY: "5517991360413",
+  PIX_KEY: "62922530000144",
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Centro Histórico (Próx. Metrô Anhangabaú)",
   SIGNAL_AMOUNT: 50,
@@ -111,7 +111,6 @@ export default function App() {
     setTimeout(() => setToastMsg(''), 3500);
   };
 
-  // Inicialização e Recuperação Inteligente de Dados (Auto-Save)
   useEffect(() => {
     const hasOnboarded = localStorage.getItem('thaly_onboard_final');
     const hasBookedBefore = localStorage.getItem('thaly_returning_final');
@@ -123,13 +122,11 @@ export default function App() {
     if (savedDraft) {
       try {
         const parsed = JSON.parse(savedDraft);
-        // Não recuperamos data/hora para evitar horários expirados
         setData(prev => ({ ...prev, name: parsed.name || '', locType: parsed.locType || 'studio', street: parsed.street || '', number: parsed.number || '', bairro: parsed.bairro || '' }));
       } catch(e) {}
     }
   }, []);
 
-  // Salva rascunho invisível a cada mudança nos campos de texto
   useEffect(() => {
     if (data.name.length > 2) {
       localStorage.setItem('thaly_draft_booking', JSON.stringify({
@@ -164,14 +161,13 @@ export default function App() {
     if (method === 'pix') {
       try {
         navigator.clipboard.writeText(CONFIG.PIX_KEY);
-        showToast('✅ Chave Pix copiada para o teclado!');
+        showToast('✅ CNPJ copiado para o teclado!');
       } catch (err) {}
     }
   };
 
   const selectedPackage = useMemo(() => PACKAGES.find(p => p.id === data.packageId) || PACKAGES[0], [data.packageId]);
 
-  // Matemática Centralizada e Robusta
   const invoice = useMemo(() => {
     let subtotal = selectedPackage.price;
     let dur = selectedPackage.min;
@@ -191,7 +187,6 @@ export default function App() {
     
     let peakFee = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
     
-    // Cupons e Descontos
     let discountValue = 0;
     if (appliedCoupon) {
       const val = CONFIG.COUPONS[appliedCoupon];
@@ -212,16 +207,25 @@ export default function App() {
     };
   }, [data, selectedPackage, isReturningClient, appliedCoupon]);
 
-  const days = useMemo(() => Array.from({length: 14}, (_, i) => {
+  const days = useMemo(() => Array.from({length: 30}, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() + i); return d;
   }), []);
 
   const getSlots = () => {
     if (!data.date) return [];
+    
+    const seed = data.date.getDate() + data.date.getMonth() * 31;
     let s = [];
-    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) s.push(`${i<10?'0':''}${i}:00`);
-    if (data.date.toDateString() === new Date().toDateString()) {
-      s = s.filter(t => parseInt(t.split(':')[0]) > new Date().getHours());
+    
+    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
+      const timeStr = `${i < 10 ? '0' : ''}${i}:00`;
+      
+      const isFakeBusy = (seed * i) % 7 < 3;
+      const isPast = data.date.toDateString() === new Date().toDateString() && i <= new Date().getHours();
+      
+      if (!isFakeBusy && !isPast) {
+        s.push(timeStr);
+      }
     }
     return s;
   };
@@ -264,7 +268,6 @@ export default function App() {
     }
   };
 
-  // Saudação Inteligente pelo Horário
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Bom dia';
@@ -278,14 +281,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 pb-24 relative">
       
-      {/* FEEDBACK VISUAL (TOAST) */}
       {toastMsg && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-emerald-500 text-zinc-950 px-5 py-3 rounded-full font-bold text-sm flex items-center gap-2 shadow-2xl animate-in fade-in slide-in-from-top-4">
           {toastMsg}
         </div>
       )}
 
-      {/* MODAL DE PERFIL */}
       {isProfileOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm animate-in fade-in" onClick={() => setIsProfileOpen(false)}>
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-8 relative shadow-2xl" onClick={e => e.stopPropagation()}>
@@ -311,7 +312,6 @@ export default function App() {
         </div>
       )}
 
-      {/* HEADER (Mostrado após o Gate) */}
       {step > 0 && (
         <header className="px-6 py-6 max-w-lg mx-auto flex justify-between items-center border-b border-zinc-900 mb-8 sticky top-0 bg-zinc-950/80 backdrop-blur-md z-40">
           <button onClick={() => { vibrate(10); setIsProfileOpen(true); }} className="flex items-center gap-3 group text-left outline-none">
@@ -331,7 +331,6 @@ export default function App() {
 
       <main className="px-6 max-w-lg mx-auto">
         
-        {/* PASSO 0: GATE DE ENTRADA */}
         {step === 0 && (
           <div className="flex flex-col justify-center min-h-[85vh] animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h1 className="text-4xl md:text-5xl font-medium tracking-tight mb-10 leading-tight text-white">O seu refúgio<br/>em São Paulo.</h1>
@@ -356,7 +355,6 @@ export default function App() {
           </div>
         )}
 
-        {/* PASSO 1: ESCOLHA O PACOTE */}
         {step === 1 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 1 de 3</h2>
@@ -425,7 +423,6 @@ export default function App() {
           </div>
         )}
 
-        {/* PASSO 2: DADOS E HORÁRIO */}
         {step === 2 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 2 de 3</h2>
@@ -440,8 +437,8 @@ export default function App() {
               <div>
                 <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Local do Atendimento</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={()=>setData({...data, locType:'studio'})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-xl ${data.locType==='studio' ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>No meu Espaço</button>
-                  <button onClick={()=>setData({...data, locType:'home'})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-xl ${data.locType==='home' ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>Vou até você</button>
+                  <button onClick={()=>setData({...data, locType:'studio', time:''})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-xl ${data.locType==='studio' ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>No meu Espaço</button>
+                  <button onClick={()=>setData({...data, locType:'home', time:''})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-xl ${data.locType==='home' ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>Vou até você</button>
                 </div>
               </div>
 
@@ -466,7 +463,7 @@ export default function App() {
               <div>
                 <div className="flex justify-between items-center mb-3">
                   <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest">Qual Dia?</label>
-                  <span className="text-[10px] bg-zinc-900 px-2 py-1 rounded text-zinc-500">Poucos horários hoje</span>
+                  <span className="text-[10px] bg-zinc-900 px-2 py-1 rounded text-zinc-500">Agenda Atualizada</span>
                 </div>
                 <div className="flex gap-3 overflow-x-auto pb-4 snap-x hide-scrollbar -mx-6 px-6">
                   {days.map((d, i) => {
@@ -483,17 +480,21 @@ export default function App() {
 
               {data.date && (
                 <div className="animate-in fade-in">
-                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Qual Horário?</label>
+                  <div className="flex justify-between items-center mb-3">
+                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest">Qual Horário?</label>
+                  </div>
                   <div className="grid grid-cols-3 gap-3">
                     {getSlots().map(t => {
                       const sel = data.time === t;
+                      const isPeak = PEAK_HOURS.includes(t) && data.locType !== 'studio';
                       return (
-                        <button key={t} onClick={() => { vibrate(15); setData({...data, time: t}); }} className={`py-4 text-sm font-bold border rounded-xl transition-colors ${sel ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>
-                          {t}
+                        <button key={t} onClick={() => { vibrate(15); setData({...data, time: t}); }} className={`py-4 flex flex-col items-center justify-center border rounded-xl transition-colors ${sel ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>
+                          <span className="text-sm font-bold">{t}</span>
+                          {isPeak && <span className={`text-[9px] uppercase font-bold tracking-widest mt-1 ${sel ? 'text-zinc-600' : 'text-pink-500/80'}`}>+ R$ 18 Pico</span>}
                         </button>
                       )
                     })}
-                    {getSlots().length === 0 && <p className="col-span-3 text-sm text-zinc-500 text-center py-6">Agenda lotada pra hoje.</p>}
+                    {getSlots().length === 0 && <p className="col-span-3 text-sm text-zinc-500 text-center py-6">Agenda lotada pra esta data.</p>}
                   </div>
                 </div>
               )}
@@ -512,7 +513,6 @@ export default function App() {
           </div>
         )}
 
-        {/* PASSO 3: CHECKOUT E PAGAMENTO */}
         {step === 3 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 3 de 3</h2>
@@ -524,9 +524,8 @@ export default function App() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Pacote Escolhido</span><span className="text-white font-medium">{formatMoney(invoice.base)}</span></div>
                   {invoice.addonsTotal > 0 && <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Adicionais</span><span className="text-emerald-400 font-medium">+{formatMoney(invoice.addonsTotal)}</span></div>}
-                  {invoice.reqFee > 0 && <div className="flex justify-between text-sm items-center"><span className="text-pink-400">Taxa de Fetiche/Pedido Especial</span><span className="text-pink-400 font-medium">+{formatMoney(invoice.reqFee)}</span></div>}
+                  {invoice.reqFee > 0 && <div className="flex justify-between text-sm items-center"><span className="text-pink-400">Taxa de Fetiche/Especial</span><span className="text-pink-400 font-medium">+{formatMoney(invoice.reqFee)}</span></div>}
                   
-                  {/* Lógica de Desconto Exibida */}
                   {appliedCoupon ? (
                     <div className="flex justify-between text-sm items-center py-2 border-y border-zinc-800 my-2">
                       <span className="text-emerald-400 font-bold flex items-center gap-2"><Icon name="check" size={16}/> Cupom {appliedCoupon}</span>
@@ -549,7 +548,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Sistema de Cupons */}
               {!appliedCoupon && (
                 <div className="animate-in fade-in">
                   <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Tem um cupom?</label>
@@ -561,14 +559,12 @@ export default function App() {
                 </div>
               )}
 
-              {/* Vontade Específica c/ Taxa Clara */}
               <div>
                 <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Vontade Específica (+ R$ {CONFIG.FETISH_FEE})</label>
                 <input type="text" placeholder="Ex: Alguma fantasia, roleplay..." value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600" />
                 <p className="text-xs text-zinc-500 mt-2 leading-relaxed">Avaliamos na hora. Se não for possível realizar o seu pedido com segurança, eu tiro essa taxa de R$ 130 do valor final, fica tranquilo.</p>
               </div>
 
-              {/* Pagamento e Copia Pix */}
               <div>
                 <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Como vai pagar na hora?</label>
                 <div className="grid grid-cols-3 gap-3">
@@ -593,7 +589,7 @@ export default function App() {
                   if (!data.payment) e.preventDefault();
                   else {
                     localStorage.setItem('thaly_returning_final', 'yes');
-                    localStorage.removeItem('thaly_draft_booking'); // limpa o rascunho
+                    localStorage.removeItem('thaly_draft_booking');
                     vibrate([30, 50]);
                   }
                 }}
