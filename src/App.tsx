@@ -9,6 +9,7 @@ const CONFIG = {
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Centro Histórico, Bela Vista (Próx. Metrô Anhangabaú)",
   STUDIO_MAPS_LINK: "https://maps.app.goo.gl/search/Metrô+Anhangabaú",
+  REVIEW_LINK: "https://g.page/r/Cd1aEwEt0R1QEAE/review",
   SIGNAL_AMOUNT: 50,
   START_HOUR: 9,
   END_HOUR: 22,
@@ -57,7 +58,7 @@ const PACKAGES = [
     price: 390,
     min: 60,
     tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
-    desc: ' O pacote sem barreiras. Primeiro vou relaxar seu corpo com a massagem clássica, depois proximidade física com gel escorregadio corpo a corpo e liberdade total para você fazer massagem em mim e encerramos com a massagem íntima.'
+    desc: 'O pacote sem barreiras. Primeiro vou relaxar seu corpo com a massagem clássica, depois proximidade física com gel escorregadio corpo a corpo e liberdade total para você fazer massagem em mim e encerramos com a massagem íntima.'
   },
   {
     id: 'aparo_solo',
@@ -66,7 +67,7 @@ const PACKAGES = [
     price: 130,
     min: 40,
     tags: ['Estética', 'Sem Massagem'],
-    desc: 'Serviço isolado para quem busca apenas estética. Aparo de pelos (até 3 lugares) pente 1 e 3 utilizando máquina sem dores'
+    desc: 'Serviço isolado para quem busca apenas estética. Aparo de pelos (até 3 lugares) pente 1 e 3 utilizando máquina sem dores.'
   }
 ];
 
@@ -91,7 +92,8 @@ const ICON_PATHS = {
   'lock': 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z M7 11V7a5 5 0 0 1 10 0v4',
   'check': 'M20 6L9 17l-5-5',
   'close': 'M18 6L6 18 M6 6l12 12',
-  'map': 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'
+  'map': 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  'star': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'
 };
 
 const Icon = memo(({ name, size = 24, className = '' }) => (
@@ -104,6 +106,7 @@ const Icon = memo(({ name, size = 24, className = '' }) => (
 // 3. COMPONENTE PRINCIPAL
 // ==================================================================================
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [step, setStep] = useState(0); 
   const [isReturningClient, setIsReturningClient] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -126,6 +129,14 @@ export default function App() {
   };
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (isLoading) return;
     const hasOnboarded = localStorage.getItem('thaly_onboard_final');
     const hasBookedBefore = localStorage.getItem('thaly_returning_final');
     const savedDraft = localStorage.getItem('thaly_draft_booking');
@@ -139,7 +150,7 @@ export default function App() {
         setData(prev => ({ ...prev, name: parsed.name || '', locType: parsed.locType || 'studio', street: parsed.street || '', number: parsed.number || '', bairro: parsed.bairro || '' }));
       } catch(e) {}
     }
-  }, []);
+  }, [isLoading]);
 
   useEffect(() => {
     if (data.name.length > 2) {
@@ -184,6 +195,16 @@ export default function App() {
         showToast('✅ CNPJ copiado para o teclado!');
       } catch (err) {}
     }
+  };
+
+  const resetFlow = () => {
+    vibrate(15);
+    setData({
+      name: data.name, locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', 
+      date: null, time: '', req: '', payment: '',
+      packageId: PACKAGES[0].id, addons: {}
+    });
+    setStep(1);
   };
 
   const selectedPackage = useMemo(() => PACKAGES.find(p => p.id === data.packageId) || PACKAGES[0], [data.packageId]);
@@ -314,6 +335,24 @@ export default function App() {
     return 'Boa noite';
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center animate-in fade-in duration-500 px-6">
+        <h1 className="text-sm md:text-base font-light text-stone-300 tracking-[0.3em] uppercase mb-8 animate-pulse text-center">Escolha, agende e relaxe</h1>
+        <div className="w-40 h-0.5 bg-stone-900 rounded-full overflow-hidden relative">
+          <div className="absolute top-0 left-0 h-full w-1/3 bg-stone-500/80 animate-loading-bar rounded-full"></div>
+        </div>
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes loading-slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+          }
+          .animate-loading-bar { animation: loading-slide 1.2s infinite ease-in-out; }
+        `}} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-amber-600/30 pb-28 relative">
       
@@ -339,9 +378,12 @@ export default function App() {
                 <span className="leading-relaxed">Atendo num refúgio seguro e discreto no Centro Histórico de SP, próximo ao Metrô Anhangabaú.</span>
               </p>
             </div>
-            <div className="pt-6 border-t border-stone-800 flex justify-center">
+            <div className="pt-6 border-t border-stone-800 flex justify-center gap-6">
               <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-stone-400 hover:text-stone-200 transition-colors outline-none">
-                <Icon name="instagram" size={16} /> Meu Instagram
+                <Icon name="instagram" size={16} /> Instagram
+              </a>
+              <a href={CONFIG.REVIEW_LINK} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-stone-400 hover:text-stone-200 transition-colors outline-none">
+                <Icon name="star" size={16} /> Avaliações
               </a>
             </div>
           </div>
@@ -359,7 +401,7 @@ export default function App() {
           </button>
           <div className="flex gap-2">
             {[1,2,3].map(i => (
-              <div key={i} className={`h-1 rounded-full transition-all duration-500 ${step >= i ? 'w-6 bg-stone-300' : 'w-2 bg-stone-800'}`} />
+              <div key={i} className={`h-1 rounded-full transition-all duration-500 ${step >= i ? 'w-6 bg-stone-300' : (step === 4 ? 'w-6 bg-stone-700' : 'w-2 bg-stone-800')}`} />
             ))}
           </div>
         </header>
@@ -626,18 +668,55 @@ export default function App() {
               <button onClick={() => setStep(2)} className="bg-stone-900/50 text-stone-400 w-1/4 py-5 text-[11px] font-bold tracking-widest uppercase rounded-xl border border-stone-800 hover:bg-stone-900 transition-colors">Voltar</button>
               <a 
                 href={data.payment ? generateWhatsAppLink() : '#'}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={(e) => {
-                  if (!data.payment) e.preventDefault();
-                  else {
+                  if (!data.payment) {
+                    e.preventDefault();
+                  } else {
                     localStorage.setItem('thaly_returning_final', 'yes');
                     localStorage.removeItem('thaly_draft_booking');
                     vibrate([30, 50]);
+                    setTimeout(() => setStep(4), 500);
                   }
                 }}
                 className={`flex-1 py-5 text-[11px] font-bold tracking-[0.15em] uppercase rounded-xl flex items-center justify-center text-center transition-all ${data.payment ? 'bg-stone-100 text-stone-950 hover:bg-white' : 'bg-stone-900/30 text-stone-700 cursor-not-allowed border border-stone-800'}`}
               >
                 Concluir no WhatsApp
               </a>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="animate-in fade-in zoom-in-95 duration-500 flex flex-col items-center justify-center min-h-[60vh] text-center mt-10">
+            <div className="w-20 h-20 bg-emerald-900/30 rounded-full flex items-center justify-center mb-6 border border-emerald-800/50 shadow-lg shadow-emerald-900/20">
+              <Icon name="check" size={32} className="text-emerald-500" />
+            </div>
+            
+            <h1 className="text-3xl font-light tracking-wide mb-4 text-stone-100">Tudo pronto!</h1>
+            
+            <p className="text-sm text-stone-400 leading-relaxed mb-10 max-w-sm">
+              Sua solicitação de reserva foi gerada. Se o WhatsApp não abrir automaticamente, clique no botão abaixo para forçar o envio. <br/><br/>
+              <strong className="text-amber-500/90 font-medium">Não esqueça de enviar o comprovante do sinal na conversa.</strong>
+            </p>
+
+            <div className="w-full max-w-xs space-y-4">
+              <a 
+                href={generateWhatsAppLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => vibrate(15)}
+                className="block w-full bg-emerald-700 text-stone-50 py-4 text-[11px] font-bold tracking-[0.15em] uppercase rounded-xl transition-transform active:scale-[0.98]"
+              >
+                Reenviar Mensagem
+              </a>
+              <button 
+                onClick={resetFlow}
+                className="block w-full bg-stone-900/50 text-stone-400 py-4 text-[11px] font-bold tracking-widest uppercase rounded-xl border border-stone-800 hover:bg-stone-900 transition-colors"
+              >
+                Voltar ao Início
+              </button>
             </div>
           </div>
         )}
