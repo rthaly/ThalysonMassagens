@@ -315,12 +315,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d1829] text-slate-100 font-sans selection:bg-yellow-400/30 pb-24 relative overflow-hidden">
+    <div className="min-h-screen text-slate-100 font-sans selection:bg-yellow-400/30 pb-24 relative overflow-hidden bg-[#040b16]">
       
-      {/* Background Gradient Orbs */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div className="absolute -top-[20%] -left-[10%] w-[70%] h-[50%] bg-[#1a365d] rounded-full mix-blend-screen filter blur-[120px] opacity-40"></div>
-        <div className="absolute bottom-[10%] -right-[10%] w-[60%] h-[60%] bg-[#0f274a] rounded-full mix-blend-screen filter blur-[100px] opacity-50"></div>
+      {/* Sistema Real de Luzes para Refração do Vidro */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] bg-[#0c2a54] rounded-full blur-[100px] opacity-70" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-[#0b3b24] rounded-full blur-[120px] opacity-50" />
+        <div className="absolute top-[30%] left-[50%] w-[50vw] h-[50vw] bg-[#1d4ed8] rounded-full blur-[140px] opacity-20" />
       </div>
 
       {toastMsg && (
@@ -330,8 +331,8 @@ export default function App() {
       )}
 
       {isProfileOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-xl animate-in fade-in duration-300" onClick={() => setIsProfileOpen(false)}>
-          <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[2rem] w-full max-w-sm p-8 relative shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/40 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsProfileOpen(false)}>
+          <div className="bg-white/[0.04] backdrop-blur-3xl border border-white/10 rounded-[2rem] w-full max-w-sm p-8 relative shadow-[0_8px_32px_0_rgba(0,0,0,0.4)]" onClick={e => e.stopPropagation()}>
             <button onClick={() => setIsProfileOpen(false)} className="absolute top-5 right-5 p-2 text-white/50 hover:text-white transition-colors outline-none">
               <Icon name="close" size={24} />
             </button>
@@ -340,7 +341,7 @@ export default function App() {
             <p className="text-yellow-400 text-xs font-bold uppercase tracking-widest mb-6">Terapeuta Masculino</p>
             <div className="space-y-4 text-sm text-slate-200 leading-relaxed mb-6">
               <p>{getGreeting()}. Sou focado no público masculino e meu trabalho é direto: usar minhas mãos (e meu corpo, dependendo do pacote) para aliviar o peso da sua rotina.</p>
-              <p className="flex items-start gap-3 bg-black/20 p-4 rounded-2xl border border-white/10">
+              <p className="flex items-start gap-3 bg-black/20 p-4 rounded-2xl border border-white/5">
                 <Icon name="map" size={20} className="mt-0.5 shrink-0 text-yellow-400" />
                 <span>Atendo num espaço seguro e discreto no Centro Histórico de SP, próximo ao Metrô Anhangabaú. Um verdadeiro refúgio.</span>
               </p>
@@ -355,7 +356,7 @@ export default function App() {
       )}
 
       {step > 0 && (
-        <header className="px-6 py-5 max-w-lg mx-auto flex justify-between items-center mb-8 sticky top-0 bg-[#0d1829]/70 backdrop-blur-xl z-40 border-b border-white/5">
+        <header className="px-6 py-5 max-w-lg mx-auto flex justify-between items-center mb-8 sticky top-0 bg-[#040b16]/40 backdrop-blur-2xl z-40 border-b border-white/5 shadow-sm">
           <button onClick={() => { vibrate(10); setIsProfileOpen(true); }} className="flex items-center gap-3 group text-left outline-none">
             <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-10 h-10 rounded-full border border-white/20 object-cover group-hover:scale-105 transition-transform shadow-lg" />
             <div>
@@ -378,11 +379,11 @@ export default function App() {
             <h1 className="text-4xl md:text-5xl font-medium tracking-tight mb-10 leading-tight text-white drop-shadow-sm">O seu refúgio<br/>em São Paulo.</h1>
             
             <div className="space-y-4 mb-12">
-              <div className="flex gap-4 p-5 bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem]">
+              <div className="flex gap-4 p-5 bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
                 <Icon name="shield" className="text-yellow-400 mt-0.5" size={24} />
                 <p className="text-slate-300 text-sm leading-relaxed">Sigilo total. Nada que você preenche aqui fica salvo na internet. Os dados vão direto para o meu celular pessoal.</p>
               </div>
-              <div className="flex gap-4 p-5 bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem]">
+              <div className="flex gap-4 p-5 bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
                 <Icon name="lock" className="text-yellow-400 mt-0.5" size={24} />
                 <p className="text-slate-300 text-sm leading-relaxed">O atendimento é intenso, focado no corpo masculino. Você confirma que tem mais de 18 anos?</p>
               </div>
@@ -409,8 +410,8 @@ export default function App() {
                   <button 
                     key={pkg.id}
                     onClick={() => { vibrate(15); setData({...data, packageId: pkg.id}); }}
-                    className={`w-full text-left p-6 rounded-[2rem] transition-all duration-300 outline-none block backdrop-blur-md border ${
-                      isActive ? 'bg-white/10 border-yellow-400/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] scale-[1.02]' : 'bg-white/5 border-white/10 hover:border-white/20 opacity-80 hover:opacity-100'
+                    className={`w-full text-left p-6 rounded-[2rem] transition-all duration-300 outline-none block backdrop-blur-2xl border ${
+                      isActive ? 'bg-white/[0.08] border-yellow-400/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] scale-[1.02]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:border-white/20'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-3">
@@ -430,7 +431,7 @@ export default function App() {
                         </span>
                       ))}
                     </div>
-                    <p className={`text-sm leading-relaxed ${isActive ? 'text-slate-300' : 'text-slate-400'}`}>{pkg.desc}</p>
+                    <p className={`text-sm leading-relaxed ${isActive ? 'text-slate-200' : 'text-slate-400'}`}>{pkg.desc}</p>
                   </button>
                 )
               })}
@@ -446,8 +447,8 @@ export default function App() {
                       <button 
                         key={addon.id}
                         onClick={() => { vibrate(15); setData(p => ({...p, addons: {...p.addons, [addon.id]: !isActive}})); }}
-                        className={`w-full p-5 text-sm font-bold rounded-2xl border transition-colors flex justify-between items-center backdrop-blur-md ${
-                          isActive ? 'bg-yellow-400 text-slate-900 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.2)]' : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                        className={`w-full p-5 text-sm font-bold rounded-[1.5rem] border transition-all flex justify-between items-center backdrop-blur-2xl ${
+                          isActive ? 'bg-yellow-400 text-slate-900 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.3)]' : 'bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20'
                         }`}
                       >
                         <span>{addon.label}</span>
@@ -459,13 +460,13 @@ export default function App() {
               </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 w-full p-4 bg-[#0d1829]/90 backdrop-blur-xl border-t border-white/5 z-50">
+            <div className="fixed bottom-0 left-0 w-full p-4 bg-[#040b16]/70 backdrop-blur-2xl border-t border-white/10 z-50">
               <div className="max-w-lg mx-auto flex gap-4 items-center">
                 <div className="flex-1">
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Duração: {invoice.dur} min</p>
                   <p className="text-2xl font-semibold tracking-tight text-white">{formatMoney(invoice.base + invoice.addonsTotal)}</p>
                 </div>
-                <button onClick={() => { vibrate(30); setStep(2); }} className="bg-[#16a34a] text-white px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-full transition-transform active:scale-[0.98] shadow-lg">
+                <button onClick={() => { vibrate(30); setStep(2); }} className="bg-white text-slate-900 px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-full transition-transform active:scale-[0.98] shadow-lg">
                   Avançar
                 </button>
               </div>
@@ -481,32 +482,32 @@ export default function App() {
             <div className="space-y-8 mb-10">
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Seu Nome</label>
-                <input type="text" value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 transition-colors placeholder:text-slate-500" placeholder="Como gosta de ser chamado?" />
+                <input type="text" value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full bg-black/20 backdrop-blur-2xl border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 focus:bg-black/40 transition-colors placeholder:text-slate-500 shadow-[0_4px_30px_rgba(0,0,0,0.1)]" placeholder="Como gosta de ser chamado?" />
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Local do Atendimento</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={()=>setData({...data, locType:'studio', time:''})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-2xl backdrop-blur-md ${data.locType==='studio' ? 'bg-yellow-400 text-slate-900 border-yellow-400' : 'bg-white/5 border-white/10 text-slate-300'}`}>No meu Espaço</button>
-                  <button onClick={()=>setData({...data, locType:'home', time:''})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-2xl backdrop-blur-md ${data.locType==='home' ? 'bg-yellow-400 text-slate-900 border-yellow-400' : 'bg-white/5 border-white/10 text-slate-300'}`}>Vou até você</button>
+                  <button onClick={()=>setData({...data, locType:'studio', time:''})} className={`py-4 px-2 text-sm font-bold outline-none transition-all border rounded-2xl backdrop-blur-2xl ${data.locType==='studio' ? 'bg-white/[0.08] text-white border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.15)]' : 'bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.06]'}`}>No meu Espaço</button>
+                  <button onClick={()=>setData({...data, locType:'home', time:''})} className={`py-4 px-2 text-sm font-bold outline-none transition-all border rounded-2xl backdrop-blur-2xl ${data.locType==='home' ? 'bg-white/[0.08] text-white border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.15)]' : 'bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.06]'}`}>Vou até você</button>
                 </div>
               </div>
 
               {data.locType === 'studio' && (
-                <p className="text-sm text-slate-300 bg-white/5 backdrop-blur-md p-5 rounded-2xl border border-white/10 leading-relaxed">
+                <p className="text-sm text-slate-300 bg-white/[0.03] backdrop-blur-2xl p-5 rounded-2xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)] leading-relaxed">
                   A suíte fica no <strong>Centro Histórico (próximo ao Metrô Anhangabaú)</strong>. Um ambiente seguro, limpo e preparado pra você relaxar. O endereço completo vai no WhatsApp.
                 </p>
               )}
 
               {data.locType === 'home' && (
                 <div className="space-y-4 animate-in fade-in">
-                  <input type="tel" maxLength={9} placeholder="CEP (opcional)" value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 placeholder:text-slate-500 transition-colors" />
-                  <input type="text" placeholder="Rua ou Avenida" value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 placeholder:text-slate-500 transition-colors" />
+                  <input type="tel" maxLength={9} placeholder="CEP (opcional)" value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full bg-black/20 backdrop-blur-2xl border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 focus:bg-black/40 placeholder:text-slate-500 transition-colors shadow-[0_4px_30px_rgba(0,0,0,0.1)]" />
+                  <input type="text" placeholder="Rua ou Avenida" value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full bg-black/20 backdrop-blur-2xl border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 focus:bg-black/40 placeholder:text-slate-500 transition-colors shadow-[0_4px_30px_rgba(0,0,0,0.1)]" />
                   <div className="flex gap-3">
-                    <input ref={numberInputRef} type="text" placeholder="Número" value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 placeholder:text-slate-500 transition-colors" />
-                    <input type="text" placeholder="Apto / Comp." value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 placeholder:text-slate-500 transition-colors" />
+                    <input ref={numberInputRef} type="text" placeholder="Número" value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 bg-black/20 backdrop-blur-2xl border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 focus:bg-black/40 placeholder:text-slate-500 transition-colors shadow-[0_4px_30px_rgba(0,0,0,0.1)]" />
+                    <input type="text" placeholder="Apto / Comp." value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 bg-black/20 backdrop-blur-2xl border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 focus:bg-black/40 placeholder:text-slate-500 transition-colors shadow-[0_4px_30px_rgba(0,0,0,0.1)]" />
                   </div>
-                  <input type="text" placeholder="Bairro" value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 placeholder:text-slate-500 transition-colors" />
+                  <input type="text" placeholder="Bairro" value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full bg-black/20 backdrop-blur-2xl border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 focus:bg-black/40 placeholder:text-slate-500 transition-colors shadow-[0_4px_30px_rgba(0,0,0,0.1)]" />
                 </div>
               )}
 
@@ -518,7 +519,7 @@ export default function App() {
                   {days.map((d, i) => {
                     const sel = data.date?.toDateString() === d.toDateString();
                     return (
-                      <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 snap-start w-20 py-4 flex flex-col items-center justify-center border rounded-[1.5rem] transition-all backdrop-blur-md ${sel ? 'bg-yellow-400 text-slate-900 border-yellow-400 shadow-lg' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}>
+                      <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 snap-start w-20 py-4 flex flex-col items-center justify-center border rounded-[1.5rem] transition-all backdrop-blur-2xl ${sel ? 'bg-white/[0.08] text-white border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.15)]' : 'bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.06] hover:border-white/20'}`}>
                         <span className="text-xs uppercase font-bold tracking-widest mb-1">{d.toLocaleDateString('pt-BR', {weekday:'short'}).slice(0,3)}</span>
                         <span className="text-2xl font-medium tracking-tight">{d.getDate()}</span>
                       </button>
@@ -537,9 +538,9 @@ export default function App() {
                       const sel = data.time === t;
                       const isPeak = PEAK_HOURS.includes(t) && data.locType !== 'studio';
                       return (
-                        <button key={t} onClick={() => { vibrate(15); setData({...data, time: t}); }} className={`py-4 flex flex-col items-center justify-center border rounded-2xl transition-colors backdrop-blur-md ${sel ? 'bg-yellow-400 text-slate-900 border-yellow-400' : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'}`}>
+                        <button key={t} onClick={() => { vibrate(15); setData({...data, time: t}); }} className={`py-4 flex flex-col items-center justify-center border rounded-2xl transition-all backdrop-blur-2xl ${sel ? 'bg-white/[0.08] text-white border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.15)]' : 'bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20'}`}>
                           <span className="text-sm font-bold">{t}</span>
-                          {isPeak && <span className={`text-[9px] uppercase font-bold tracking-widest mt-1 ${sel ? 'text-slate-700' : 'text-pink-400'}`}>+ R$ 18 Pico</span>}
+                          {isPeak && <span className={`text-[9px] uppercase font-bold tracking-widest mt-1 ${sel ? 'text-slate-300' : 'text-pink-400'}`}>+ R$ 18 Pico</span>}
                         </button>
                       )
                     })}
@@ -550,11 +551,11 @@ export default function App() {
             </div>
 
             <div className="flex gap-3 mb-8">
-              <button onClick={() => setStep(1)} className="bg-white/5 backdrop-blur-md text-slate-300 w-1/3 py-4 text-xs font-bold tracking-widest uppercase rounded-full border border-white/10 hover:bg-white/10 transition-colors">Voltar</button>
+              <button onClick={() => setStep(1)} className="bg-white/[0.03] backdrop-blur-2xl text-slate-300 w-1/3 py-4 text-xs font-bold tracking-widest uppercase rounded-full border border-white/10 hover:bg-white/[0.06] transition-colors">Voltar</button>
               <button 
                 disabled={!(data.name.length > 2 && data.date && data.time && (data.locType === 'studio' || (data.street && data.number && data.bairro)))} 
                 onClick={() => { vibrate(30); setStep(3); }} 
-                className="bg-[#16a34a] text-white flex-1 py-4 text-sm font-bold tracking-widest uppercase rounded-full disabled:opacity-30 disabled:bg-slate-700 transition-all shadow-lg"
+                className="bg-white text-slate-900 flex-1 py-4 text-sm font-bold tracking-widest uppercase rounded-full disabled:opacity-30 disabled:bg-slate-700 transition-all shadow-lg"
               >
                 Revisar Pedido
               </button>
@@ -569,7 +570,7 @@ export default function App() {
 
             <div className="space-y-8 mb-10">
               
-              <div className="p-6 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl">
+              <div className="p-6 bg-white/[0.04] backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)]">
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm items-center"><span className="text-slate-400">Pacote Escolhido</span><span className="text-white font-medium">{formatMoney(invoice.base)}</span></div>
                   {invoice.addonsTotal > 0 && <div className="flex justify-between text-sm items-center"><span className="text-slate-400">Adicionais</span><span className="text-yellow-400 font-medium">+{formatMoney(invoice.addonsTotal)}</span></div>}
@@ -601,8 +602,8 @@ export default function App() {
                 <div className="animate-in fade-in">
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Tem um cupom?</label>
                   <div className="flex gap-3">
-                    <input type="text" placeholder="Código" value={couponInput} onChange={e => {setCouponInput(e.target.value); setCouponError('');}} className={`flex-1 bg-white/5 backdrop-blur-md border ${couponError ? 'border-red-400' : 'border-white/10'} rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-yellow-400/50 transition-colors uppercase placeholder:text-slate-500`} />
-                    <button onClick={handleApplyCoupon} className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-2xl transition-colors outline-none border border-white/10">Aplicar</button>
+                    <input type="text" placeholder="Código" value={couponInput} onChange={e => {setCouponInput(e.target.value); setCouponError('');}} className={`flex-1 bg-black/20 backdrop-blur-2xl border ${couponError ? 'border-red-400' : 'border-white/10'} rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-yellow-400/50 focus:bg-black/40 transition-colors uppercase placeholder:text-slate-500 shadow-[0_4px_30px_rgba(0,0,0,0.1)]`} />
+                    <button onClick={handleApplyCoupon} className="bg-white/[0.05] hover:bg-white/[0.1] backdrop-blur-2xl text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-2xl transition-colors outline-none border border-white/10">Aplicar</button>
                   </div>
                   {couponError && <p className="text-xs text-red-400 mt-2 ml-1">{couponError}</p>}
                 </div>
@@ -610,7 +611,7 @@ export default function App() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Vontade Específica (+ R$ {CONFIG.FETISH_FEE})</label>
-                <input type="text" placeholder="Ex: Alguma fantasia, roleplay..." value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-yellow-400/50 transition-colors placeholder:text-slate-500" />
+                <input type="text" placeholder="Ex: Alguma fantasia, roleplay..." value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full bg-black/20 backdrop-blur-2xl border border-white/10 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-yellow-400/50 focus:bg-black/40 transition-colors placeholder:text-slate-500 shadow-[0_4px_30px_rgba(0,0,0,0.1)]" />
                 <p className="text-xs text-slate-400 mt-3 leading-relaxed">Avaliamos na hora. Se não for possível realizar o seu pedido com segurança, eu tiro essa taxa de R$ 130 do valor final, fica tranquilo.</p>
               </div>
 
@@ -618,12 +619,12 @@ export default function App() {
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Como vai pagar na hora?</label>
                 <div className="grid grid-cols-3 gap-3">
                   {[{id:'pix', l:'Pix (-3%)'},{id:'card', l:'Cartão'},{id:'cash', l:'Dinheiro'}].map(p => (
-                    <button key={p.id} onClick={() => handlePaymentSelect(p.id)} className={`py-4 text-xs font-bold uppercase tracking-wider border rounded-2xl transition-colors backdrop-blur-md ${data.payment === p.id ? 'bg-yellow-400 text-slate-900 border-yellow-400' : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'}`}>{p.l}</button>
+                    <button key={p.id} onClick={() => handlePaymentSelect(p.id)} className={`py-4 text-xs font-bold uppercase tracking-wider border rounded-2xl transition-all backdrop-blur-2xl ${data.payment === p.id ? 'bg-white/[0.08] text-white border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.15)]' : 'bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.06] hover:border-white/20'}`}>{p.l}</button>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-yellow-400/10 backdrop-blur-md border border-yellow-400/20 p-5 rounded-2xl text-center">
+              <div className="bg-yellow-400/10 backdrop-blur-2xl border border-yellow-400/20 p-5 rounded-2xl text-center shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
                 <p className="text-sm text-yellow-400/90 leading-relaxed">
                   Pra eu segurar seu horário na agenda, o sinal é de <strong className="text-yellow-400">R$ 50 via Pix</strong>. Acertamos a diferença lá na hora.
                 </p>
@@ -631,7 +632,7 @@ export default function App() {
             </div>
 
             <div className="flex gap-3 mb-8">
-              <button onClick={() => setStep(2)} className="bg-white/5 backdrop-blur-md text-slate-300 w-1/4 py-5 text-xs font-bold tracking-widest uppercase rounded-full border border-white/10 hover:bg-white/10 transition-colors">Voltar</button>
+              <button onClick={() => setStep(2)} className="bg-white/[0.03] backdrop-blur-2xl text-slate-300 w-1/4 py-5 text-xs font-bold tracking-widest uppercase rounded-full border border-white/10 hover:bg-white/[0.06] transition-colors">Voltar</button>
               <a 
                 href={data.payment ? generateWhatsAppLink() : '#'}
                 onClick={(e) => {
@@ -642,7 +643,7 @@ export default function App() {
                     vibrate([30, 50]);
                   }
                 }}
-                className={`flex-1 py-5 text-sm font-bold tracking-widest uppercase rounded-full flex items-center justify-center text-center transition-all shadow-lg ${data.payment ? 'bg-[#16a34a] text-white hover:bg-[#15803d]' : 'bg-white/5 text-slate-500 cursor-not-allowed border border-white/10 backdrop-blur-md'}`}
+                className={`flex-1 py-5 text-sm font-bold tracking-widest uppercase rounded-full flex items-center justify-center text-center transition-all shadow-lg ${data.payment ? 'bg-white text-slate-900 hover:bg-slate-200' : 'bg-white/[0.02] text-slate-500 cursor-not-allowed border border-white/10 backdrop-blur-2xl'}`}
               >
                 Mandar no WhatsApp
               </a>
