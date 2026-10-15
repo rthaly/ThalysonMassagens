@@ -9,6 +9,7 @@ const CONFIG = {
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Centro Histórico, Bela Vista (Próx. Metrô Anhangabaú)",
   STUDIO_MAPS_LINK: "https://maps.app.goo.gl/search/Metrô+Anhangabaú",
+  REVIEW_LINK: "https://g.page/r/Cd1aEwEt0R1QEAE/review",
   SIGNAL_AMOUNT: 50,
   START_HOUR: 9,
   END_HOUR: 22,
@@ -91,7 +92,8 @@ const ICON_PATHS = {
   'lock': 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z M7 11V7a5 5 0 0 1 10 0v4',
   'check': 'M20 6L9 17l-5-5',
   'close': 'M18 6L6 18 M6 6l12 12',
-  'map': 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'
+  'map': 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  'star': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'
 };
 
 const Icon = memo(({ name, size = 24, className = '' }) => (
@@ -376,9 +378,12 @@ export default function App() {
                 <span className="leading-relaxed">Atendo num refúgio seguro e discreto no Centro Histórico de SP, próximo ao Metrô Anhangabaú.</span>
               </p>
             </div>
-            <div className="pt-6 border-t border-stone-800 flex justify-center">
+            <div className="pt-6 border-t border-stone-800 flex justify-center gap-6">
               <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-stone-400 hover:text-stone-200 transition-colors outline-none">
-                <Icon name="instagram" size={16} /> Meu Instagram
+                <Icon name="instagram" size={16} /> Instagram
+              </a>
+              <a href={CONFIG.REVIEW_LINK} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-stone-400 hover:text-stone-200 transition-colors outline-none">
+                <Icon name="star" size={16} /> Avaliações
               </a>
             </div>
           </div>
