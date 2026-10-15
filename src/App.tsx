@@ -8,7 +8,7 @@ const CONFIG = {
   PIX_KEY: "62922530000144",
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Centro Histórico (Próx. Metrô Anhangabaú)",
-  STUDIO_MAPS_LINK: "https://maps.app.goo.gl/search/Metrô+Anhangabaú", 
+  STUDIO_MAPS_LINK: "https://maps.app.goo.gl/search/Metrô+Anhangabaú",
   SIGNAL_AMOUNT: 50,
   START_HOUR: 9,
   END_HOUR: 22,
@@ -26,8 +26,8 @@ const PACKAGES = [
   {
     id: 'classica',
     title: 'Massagem Clássica',
-    originalPrice: 220, // Preço âncora (riscado)
-    price: 180,         // Preço atual
+    originalPrice: 220,
+    price: 180,
     min: 40,
     tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
     desc: 'O essencial para quem está moído da rotina. Uso a força das minhas mãos para desfazer os nós de tensão e soltar sua musculatura. Você entra pesado e sai leve.'
@@ -153,7 +153,6 @@ export default function App() {
     if (step > 0 && !isProfileOpen) window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step, isProfileOpen]);
 
-  // Se trocar de pacote e o novo pacote for "Aparar Pelos", desmarca o addon de aparar pelos automaticamente
   useEffect(() => {
     if (data.packageId === 'aparo_solo' && data.addons['aparo']) {
       setData(prev => ({ ...prev, addons: { ...prev.addons, aparo: false } }));
@@ -281,8 +280,13 @@ export default function App() {
       text += `📈 *Taxa de Pico:* (+${formatMoney(invoice.peakFee)})\n`;
     }
 
-    text += `\n*VALOR FINAL:* ${formatMoney(invoice.total)} no ${data.payment.toUpperCase()}\n`;
-    text += `*Sinal:* ${formatMoney(invoice.sinal)} (Restante lá na hora)\n\n`;
+    const restante = Math.max(0, invoice.total - invoice.sinal);
+
+    text += `\n*RESUMO DO PAGAMENTO:*\n`;
+    text += `*Valor Total:* ${formatMoney(invoice.total)} (${data.payment.toUpperCase()})\n`;
+    text += `*Sinal (Pix agora):* ${formatMoney(invoice.sinal)}\n`;
+    text += `*Restante (Na hora):* ${formatMoney(restante)}\n\n`;
+    
     text += `Aguardo sua resposta para mandar o comprovante do sinal!`;
     
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
@@ -429,7 +433,6 @@ export default function App() {
                 <h3 className="text-sm font-bold text-white mb-3">Extras Práticos (Opcional)</h3>
                 <div className="flex flex-col gap-3">
                   {ADDONS.map(addon => {
-                    // Se o usuário selecionou o pacote APENAS DEPILAÇÃO, oculta o extra de "Aparar Pelos"
                     if (data.packageId === 'aparo_solo' && addon.id === 'aparo') return null;
 
                     const isActive = data.addons[addon.id];
