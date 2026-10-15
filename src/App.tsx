@@ -8,7 +8,7 @@ const CONFIG = {
   PIX_KEY: "62922530000144",
   INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
   ADDRESS_AREA: "Centro Histórico (Próx. Metrô Anhangabaú)",
-  STUDIO_MAPS_LINK: "https://maps.app.goo.gl/search/Metrô+Anhangabaú", 
+  STUDIO_MAPS_LINK: "https://maps.app.goo.gl/search/Metrô+Anhangabaú",
   SIGNAL_AMOUNT: 50,
   START_HOUR: 9,
   END_HOUR: 22,
@@ -26,6 +26,7 @@ const PACKAGES = [
   {
     id: 'classica',
     title: 'Massagem Clássica',
+    originalPrice: 220,
     price: 180,
     min: 40,
     tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
@@ -34,6 +35,7 @@ const PACKAGES = [
   {
     id: 'sensitiva',
     title: 'Sensitiva & Prazer',
+    originalPrice: 280,
     price: 220,
     min: 60,
     tags: ['Toques Leves', 'Finalização Íntima'],
@@ -42,6 +44,7 @@ const PACKAGES = [
   {
     id: 'fusion',
     title: 'Combo Corpo a Corpo',
+    originalPrice: 350,
     price: 290,
     min: 60,
     tags: ['Naturista', 'Uso de Barba e Peito'],
@@ -50,10 +53,20 @@ const PACKAGES = [
   {
     id: 'completa',
     title: 'A Experiência Completa',
+    originalPrice: 480,
     price: 390,
     min: 60,
     tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
     desc: 'O pacote sem barreiras. Muita proximidade física com gel escorregadio e liberdade total para você interagir, tocar e explorar o meu corpo do seu jeito.'
+  },
+  {
+    id: 'aparo_solo',
+    title: 'Apenas Depilação (Máquina)',
+    originalPrice: 150,
+    price: 107,
+    min: 40,
+    tags: ['Estética', 'Sem Massagem'],
+    desc: 'Serviço isolado para quem busca apenas estética. Aparo completo dos pelos do corpo utilizando máquina profissional.'
   }
 ];
 
@@ -139,6 +152,12 @@ export default function App() {
   useEffect(() => {
     if (step > 0 && !isProfileOpen) window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step, isProfileOpen]);
+
+  useEffect(() => {
+    if (data.packageId === 'aparo_solo' && data.addons['aparo']) {
+      setData(prev => ({ ...prev, addons: { ...prev.addons, aparo: false } }));
+    }
+  }, [data.packageId]);
 
   const handleApplyCoupon = () => {
     const code = couponInput.trim().toUpperCase();
@@ -261,8 +280,13 @@ export default function App() {
       text += `📈 *Taxa de Pico:* (+${formatMoney(invoice.peakFee)})\n`;
     }
 
-    text += `\n*VALOR FINAL:* ${formatMoney(invoice.total)} no ${data.payment.toUpperCase()}\n`;
-    text += `*Sinal:* ${formatMoney(invoice.sinal)} (Restante lá na hora)\n\n`;
+    const restante = Math.max(0, invoice.total - invoice.sinal);
+
+    text += `\n*RESUMO DO PAGAMENTO:*\n`;
+    text += `*Valor Total:* ${formatMoney(invoice.total)} (${data.payment.toUpperCase()})\n`;
+    text += `*Sinal (Pix agora):* ${formatMoney(invoice.sinal)}\n`;
+    text += `*Restante (Na hora):* ${formatMoney(restante)}\n\n`;
+    
     text += `Aguardo sua resposta para mandar o comprovante do sinal!`;
     
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
@@ -291,32 +315,38 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 pb-24 relative">
+    <div className="min-h-screen bg-[#0d1829] text-slate-100 font-sans selection:bg-yellow-400/30 pb-24 relative overflow-hidden">
       
+      {/* Background Gradient Orbs */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div className="absolute -top-[20%] -left-[10%] w-[70%] h-[50%] bg-[#1a365d] rounded-full mix-blend-screen filter blur-[120px] opacity-40"></div>
+        <div className="absolute bottom-[10%] -right-[10%] w-[60%] h-[60%] bg-[#0f274a] rounded-full mix-blend-screen filter blur-[100px] opacity-50"></div>
+      </div>
+
       {toastMsg && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-emerald-500 text-zinc-950 px-5 py-3 rounded-full font-bold text-sm flex items-center gap-2 shadow-2xl animate-in fade-in slide-in-from-top-4">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-yellow-400 text-slate-900 px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 shadow-[0_8px_30px_rgb(0,0,0,0.5)] animate-in fade-in slide-in-from-top-4">
           {toastMsg}
         </div>
       )}
 
       {isProfileOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm animate-in fade-in" onClick={() => setIsProfileOpen(false)}>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-8 relative shadow-2xl" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setIsProfileOpen(false)} className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-white transition-colors outline-none">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-xl animate-in fade-in duration-300" onClick={() => setIsProfileOpen(false)}>
+          <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[2rem] w-full max-w-sm p-8 relative shadow-2xl" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setIsProfileOpen(false)} className="absolute top-5 right-5 p-2 text-white/50 hover:text-white transition-colors outline-none">
               <Icon name="close" size={24} />
             </button>
-            <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border-2 border-zinc-700 shadow-xl" alt="Thalyson" />
-            <h2 className="text-3xl font-medium text-white tracking-tight mb-1">Thalyson.</h2>
-            <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6">Terapeuta Masculino</p>
-            <div className="space-y-4 text-sm text-zinc-400 leading-relaxed mb-6">
+            <img src="FmtU3Ogx_400x400.jpg" className="w-24 h-24 rounded-full object-cover mb-5 border border-white/20 shadow-xl" alt="Thalyson" />
+            <h2 className="text-3xl font-semibold text-white tracking-tight mb-1">Thalyson.</h2>
+            <p className="text-yellow-400 text-xs font-bold uppercase tracking-widest mb-6">Terapeuta Masculino</p>
+            <div className="space-y-4 text-sm text-slate-200 leading-relaxed mb-6">
               <p>{getGreeting()}. Sou focado no público masculino e meu trabalho é direto: usar minhas mãos (e meu corpo, dependendo do pacote) para aliviar o peso da sua rotina.</p>
-              <p className="flex items-start gap-2 text-zinc-300 bg-zinc-950/50 p-3 rounded-lg border border-zinc-800">
-                <Icon name="map" size={18} className="mt-0.5 shrink-0 text-emerald-500" />
-                Atendo em um espaço super acolhedor e discreto no Centro Histórico de SP, a 5 minutinhos do Metrô Anhangabaú. Um refúgio seguro no meio do caos.
+              <p className="flex items-start gap-3 bg-black/20 p-4 rounded-2xl border border-white/10">
+                <Icon name="map" size={20} className="mt-0.5 shrink-0 text-yellow-400" />
+                <span>Atendo num espaço seguro e discreto no Centro Histórico de SP, próximo ao Metrô Anhangabaú. Um verdadeiro refúgio.</span>
               </p>
             </div>
-            <div className="pt-6 border-t border-zinc-800 flex justify-center">
-              <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-colors outline-none">
+            <div className="pt-6 border-t border-white/10 flex justify-center">
+              <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-slate-300 hover:text-white transition-colors outline-none">
                 <Icon name="instagram" size={18} /> Meu Instagram
               </a>
             </div>
@@ -325,17 +355,17 @@ export default function App() {
       )}
 
       {step > 0 && (
-        <header className="px-6 py-6 max-w-lg mx-auto flex justify-between items-center border-b border-zinc-900 mb-8 sticky top-0 bg-zinc-950/80 backdrop-blur-md z-40">
+        <header className="px-6 py-5 max-w-lg mx-auto flex justify-between items-center mb-8 sticky top-0 bg-[#0d1829]/70 backdrop-blur-xl z-40 border-b border-white/5">
           <button onClick={() => { vibrate(10); setIsProfileOpen(true); }} className="flex items-center gap-3 group text-left outline-none">
-            <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-10 h-10 rounded-full border border-zinc-700 object-cover group-hover:scale-105 transition-transform shadow-lg" />
+            <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-10 h-10 rounded-full border border-white/20 object-cover group-hover:scale-105 transition-transform shadow-lg" />
             <div>
-              <h1 className="text-lg font-medium tracking-tight text-white group-hover:text-zinc-200 transition-colors">Thalyson.</h1>
-              <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest group-hover:text-emerald-400/70 transition-colors">Conhecer Local</p>
+              <h1 className="text-base font-medium tracking-tight text-white group-hover:text-slate-200 transition-colors">Thalyson.</h1>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest group-hover:text-yellow-400 transition-colors">Ver Perfil</p>
             </div>
           </button>
           <div className="flex gap-1.5">
             {[1,2,3].map(i => (
-              <div key={i} className={`h-1 rounded-full transition-all duration-500 ${step >= i ? 'w-5 bg-white' : 'w-2 bg-zinc-800'}`} />
+              <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${step >= i ? 'w-6 bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]' : 'w-2 bg-white/10'}`} />
             ))}
           </div>
         </header>
@@ -345,22 +375,22 @@ export default function App() {
         
         {step === 0 && (
           <div className="flex flex-col justify-center min-h-[85vh] animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h1 className="text-4xl md:text-5xl font-medium tracking-tight mb-10 leading-tight text-white">O seu refúgio<br/>em São Paulo.</h1>
+            <h1 className="text-4xl md:text-5xl font-medium tracking-tight mb-10 leading-tight text-white drop-shadow-sm">O seu refúgio<br/>em São Paulo.</h1>
             
             <div className="space-y-4 mb-12">
-              <div className="flex gap-4 p-5 border border-zinc-800 bg-zinc-900/50 rounded-xl">
-                <Icon name="shield" className="text-zinc-400 mt-0.5" size={22} />
-                <p className="text-zinc-400 text-sm leading-relaxed">Sigilo total. Nada que você preenche aqui fica salvo na internet. Os dados vão direto para o meu celular pessoal.</p>
+              <div className="flex gap-4 p-5 bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem]">
+                <Icon name="shield" className="text-yellow-400 mt-0.5" size={24} />
+                <p className="text-slate-300 text-sm leading-relaxed">Sigilo total. Nada que você preenche aqui fica salvo na internet. Os dados vão direto para o meu celular pessoal.</p>
               </div>
-              <div className="flex gap-4 p-5 border border-zinc-800 bg-zinc-900/50 rounded-xl">
-                <Icon name="lock" className="text-zinc-400 mt-0.5" size={22} />
-                <p className="text-zinc-400 text-sm leading-relaxed">O atendimento é intenso, focado no corpo masculino. Você confirma que tem mais de 18 anos?</p>
+              <div className="flex gap-4 p-5 bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem]">
+                <Icon name="lock" className="text-yellow-400 mt-0.5" size={24} />
+                <p className="text-slate-300 text-sm leading-relaxed">O atendimento é intenso, focado no corpo masculino. Você confirma que tem mais de 18 anos?</p>
               </div>
             </div>
 
             <button 
               onClick={() => { vibrate(30); localStorage.setItem('thaly_onboard_final', 'yes'); setStep(1); }} 
-              className="bg-white text-black h-16 w-full text-sm font-bold tracking-widest uppercase rounded-xl transition-transform active:scale-[0.98]"
+              className="bg-yellow-400 text-slate-900 h-16 w-full text-sm font-bold tracking-widest uppercase rounded-2xl transition-transform active:scale-[0.98] shadow-[0_0_20px_rgba(250,204,21,0.2)]"
             >
               Confirmar e Entrar
             </button>
@@ -368,8 +398,8 @@ export default function App() {
         )}
 
         {step === 1 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 1 de 3</h2>
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-32">
+            <h2 className="text-xs font-bold tracking-widest text-slate-400 uppercase mb-2">Passo 1 de 3</h2>
             <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">Como posso te ajudar hoje?</h1>
 
             <div className="space-y-4 mb-10">
@@ -379,40 +409,45 @@ export default function App() {
                   <button 
                     key={pkg.id}
                     onClick={() => { vibrate(15); setData({...data, packageId: pkg.id}); }}
-                    className={`w-full text-left p-6 rounded-2xl border transition-all duration-300 outline-none block ${
-                      isActive ? 'bg-zinc-900 border-white shadow-xl scale-[1.02]' : 'bg-zinc-950 border-zinc-800 hover:border-zinc-600 opacity-70 hover:opacity-100'
+                    className={`w-full text-left p-6 rounded-[2rem] transition-all duration-300 outline-none block backdrop-blur-md border ${
+                      isActive ? 'bg-white/10 border-yellow-400/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] scale-[1.02]' : 'bg-white/5 border-white/10 hover:border-white/20 opacity-80 hover:opacity-100'
                     }`}
                   >
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className={`font-bold text-xl ${isActive ? 'text-white' : 'text-zinc-300'}`}>{pkg.title}</h3>
-                      <span className={`font-bold text-lg ${isActive ? 'text-emerald-400' : 'text-zinc-500'}`}>{formatMoney(pkg.price)}</span>
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className={`font-semibold text-xl tracking-tight ${isActive ? 'text-white' : 'text-slate-200'}`}>{pkg.title}</h3>
+                      <div className="text-right">
+                        {pkg.originalPrice && <span className="text-xs line-through text-slate-500 block mb-0.5">{formatMoney(pkg.originalPrice)}</span>}
+                        <span className={`font-bold text-lg ${isActive ? 'text-yellow-400' : 'text-slate-300'}`}>{formatMoney(pkg.price)}</span>
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm border ${isActive ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-transparent text-zinc-600 border-zinc-800'}`}>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${isActive ? 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20' : 'bg-white/5 text-slate-300 border-white/10'}`}>
                         {pkg.min} MIN
                       </span>
                       {pkg.tags.map((tag, idx) => (
-                        <span key={idx} className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm border ${isActive ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-transparent text-zinc-600 border-zinc-800'}`}>
+                        <span key={idx} className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${isActive ? 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20' : 'bg-white/5 text-slate-300 border-white/10'}`}>
                           {tag}
                         </span>
                       ))}
                     </div>
-                    <p className={`text-sm leading-relaxed ${isActive ? 'text-zinc-400' : 'text-zinc-600'}`}>{pkg.desc}</p>
+                    <p className={`text-sm leading-relaxed ${isActive ? 'text-slate-300' : 'text-slate-400'}`}>{pkg.desc}</p>
                   </button>
                 )
               })}
               
               <div className="pt-6">
-                <h3 className="text-sm font-bold text-white mb-3">Extras Práticos (Opcional)</h3>
+                <h3 className="text-sm font-semibold tracking-tight text-white mb-4">Extras Práticos (Opcional)</h3>
                 <div className="flex flex-col gap-3">
                   {ADDONS.map(addon => {
+                    if (data.packageId === 'aparo_solo' && addon.id === 'aparo') return null;
+
                     const isActive = data.addons[addon.id];
                     return (
                       <button 
                         key={addon.id}
                         onClick={() => { vibrate(15); setData(p => ({...p, addons: {...p.addons, [addon.id]: !isActive}})); }}
-                        className={`w-full p-4 text-sm font-bold rounded-xl border transition-colors flex justify-between items-center ${
-                          isActive ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200'
+                        className={`w-full p-5 text-sm font-bold rounded-2xl border transition-colors flex justify-between items-center backdrop-blur-md ${
+                          isActive ? 'bg-yellow-400 text-slate-900 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.2)]' : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
                         }`}
                       >
                         <span>{addon.label}</span>
@@ -424,13 +459,13 @@ export default function App() {
               </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 w-full p-4 bg-zinc-950/90 backdrop-blur-md border-t border-zinc-900 z-50">
+            <div className="fixed bottom-0 left-0 w-full p-4 bg-[#0d1829]/90 backdrop-blur-xl border-t border-white/5 z-50">
               <div className="max-w-lg mx-auto flex gap-4 items-center">
                 <div className="flex-1">
-                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Duração: {invoice.dur} minutos</p>
-                  <p className="text-2xl font-bold text-white">{formatMoney(invoice.base + invoice.addonsTotal)}</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Duração: {invoice.dur} min</p>
+                  <p className="text-2xl font-semibold tracking-tight text-white">{formatMoney(invoice.base + invoice.addonsTotal)}</p>
                 </div>
-                <button onClick={() => { vibrate(30); setStep(2); }} className="bg-emerald-500 text-zinc-950 px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-xl transition-transform active:scale-[0.98]">
+                <button onClick={() => { vibrate(30); setStep(2); }} className="bg-[#16a34a] text-white px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-full transition-transform active:scale-[0.98] shadow-lg">
                   Avançar
                 </button>
               </div>
@@ -440,53 +475,52 @@ export default function App() {
 
         {step === 2 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 2 de 3</h2>
+            <h2 className="text-xs font-bold tracking-widest text-slate-400 uppercase mb-2">Passo 2 de 3</h2>
             <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">Onde e Quando?</h1>
 
             <div className="space-y-8 mb-10">
               <div>
-                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Seu Nome</label>
-                <input type="text" value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-base text-white focus:outline-none focus:border-zinc-500 transition-colors placeholder:text-zinc-600" placeholder="Como gosta de ser chamado?" />
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Seu Nome</label>
+                <input type="text" value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 transition-colors placeholder:text-slate-500" placeholder="Como gosta de ser chamado?" />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Local do Atendimento</label>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Local do Atendimento</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={()=>setData({...data, locType:'studio', time:''})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-xl ${data.locType==='studio' ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>No meu Espaço</button>
-                  <button onClick={()=>setData({...data, locType:'home', time:''})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-xl ${data.locType==='home' ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>Vou até você</button>
+                  <button onClick={()=>setData({...data, locType:'studio', time:''})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-2xl backdrop-blur-md ${data.locType==='studio' ? 'bg-yellow-400 text-slate-900 border-yellow-400' : 'bg-white/5 border-white/10 text-slate-300'}`}>No meu Espaço</button>
+                  <button onClick={()=>setData({...data, locType:'home', time:''})} className={`py-4 px-2 text-sm font-bold outline-none transition-colors border rounded-2xl backdrop-blur-md ${data.locType==='home' ? 'bg-yellow-400 text-slate-900 border-yellow-400' : 'bg-white/5 border-white/10 text-slate-300'}`}>Vou até você</button>
                 </div>
               </div>
 
               {data.locType === 'studio' && (
-                <p className="text-sm text-zinc-400 bg-zinc-900 p-5 rounded-xl border border-zinc-800 leading-relaxed">
+                <p className="text-sm text-slate-300 bg-white/5 backdrop-blur-md p-5 rounded-2xl border border-white/10 leading-relaxed">
                   A suíte fica no <strong>Centro Histórico (próximo ao Metrô Anhangabaú)</strong>. Um ambiente seguro, limpo e preparado pra você relaxar. O endereço completo vai no WhatsApp.
                 </p>
               )}
 
               {data.locType === 'home' && (
                 <div className="space-y-4 animate-in fade-in">
-                  <input type="tel" maxLength={9} placeholder="CEP (opcional)" value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-base text-white focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600" />
-                  <input type="text" placeholder="Rua ou Avenida" value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-base text-white focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600" />
+                  <input type="tel" maxLength={9} placeholder="CEP (opcional)" value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 placeholder:text-slate-500 transition-colors" />
+                  <input type="text" placeholder="Rua ou Avenida" value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 placeholder:text-slate-500 transition-colors" />
                   <div className="flex gap-3">
-                    <input ref={numberInputRef} type="text" placeholder="Número" value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-base text-white focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600" />
-                    <input type="text" placeholder="Apto / Complemento" value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-base text-white focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600" />
+                    <input ref={numberInputRef} type="text" placeholder="Número" value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 placeholder:text-slate-500 transition-colors" />
+                    <input type="text" placeholder="Apto / Comp." value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 placeholder:text-slate-500 transition-colors" />
                   </div>
-                  <input type="text" placeholder="Bairro" value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-base text-white focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600" />
+                  <input type="text" placeholder="Bairro" value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-base text-white focus:outline-none focus:border-yellow-400/50 placeholder:text-slate-500 transition-colors" />
                 </div>
               )}
 
               <div>
                 <div className="flex justify-between items-center mb-3">
-                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest">Qual Dia?</label>
-                  <span className="text-[10px] bg-zinc-900 px-2 py-1 rounded text-zinc-500">Próximos 14 Dias</span>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">Qual Dia?</label>
                 </div>
                 <div className="flex gap-3 overflow-x-auto pb-4 snap-x hide-scrollbar -mx-6 px-6">
                   {days.map((d, i) => {
                     const sel = data.date?.toDateString() === d.toDateString();
                     return (
-                      <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 snap-start w-20 py-4 flex flex-col items-center justify-center border rounded-2xl transition-all ${sel ? 'bg-zinc-100 text-zinc-900 border-white shadow-lg' : 'bg-zinc-900 border-zinc-800 text-zinc-500'}`}>
+                      <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 snap-start w-20 py-4 flex flex-col items-center justify-center border rounded-[1.5rem] transition-all backdrop-blur-md ${sel ? 'bg-yellow-400 text-slate-900 border-yellow-400 shadow-lg' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}>
                         <span className="text-xs uppercase font-bold tracking-widest mb-1">{d.toLocaleDateString('pt-BR', {weekday:'short'}).slice(0,3)}</span>
-                        <span className="text-2xl font-medium">{d.getDate()}</span>
+                        <span className="text-2xl font-medium tracking-tight">{d.getDate()}</span>
                       </button>
                     )
                   })}
@@ -496,31 +530,31 @@ export default function App() {
               {data.date && (
                 <div className="animate-in fade-in">
                   <div className="flex justify-between items-center mb-3">
-                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest">Qual Horário?</label>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">Qual Horário?</label>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     {getSlots().map(t => {
                       const sel = data.time === t;
                       const isPeak = PEAK_HOURS.includes(t) && data.locType !== 'studio';
                       return (
-                        <button key={t} onClick={() => { vibrate(15); setData({...data, time: t}); }} className={`py-4 flex flex-col items-center justify-center border rounded-xl transition-colors ${sel ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>
+                        <button key={t} onClick={() => { vibrate(15); setData({...data, time: t}); }} className={`py-4 flex flex-col items-center justify-center border rounded-2xl transition-colors backdrop-blur-md ${sel ? 'bg-yellow-400 text-slate-900 border-yellow-400' : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'}`}>
                           <span className="text-sm font-bold">{t}</span>
-                          {isPeak && <span className={`text-[9px] uppercase font-bold tracking-widest mt-1 ${sel ? 'text-zinc-600' : 'text-pink-500/80'}`}>+ R$ 18 Pico</span>}
+                          {isPeak && <span className={`text-[9px] uppercase font-bold tracking-widest mt-1 ${sel ? 'text-slate-700' : 'text-pink-400'}`}>+ R$ 18 Pico</span>}
                         </button>
                       )
                     })}
-                    {getSlots().length === 0 && <p className="col-span-3 text-sm text-zinc-500 text-center py-6">Não há mais horários hoje.</p>}
+                    {getSlots().length === 0 && <p className="col-span-3 text-sm text-slate-500 text-center py-6">Não há mais horários hoje.</p>}
                   </div>
                 </div>
               )}
             </div>
 
             <div className="flex gap-3 mb-8">
-              <button onClick={() => setStep(1)} className="bg-zinc-900 text-zinc-300 w-1/3 py-4 text-xs font-bold tracking-widest uppercase rounded-xl border border-zinc-800">Voltar</button>
+              <button onClick={() => setStep(1)} className="bg-white/5 backdrop-blur-md text-slate-300 w-1/3 py-4 text-xs font-bold tracking-widest uppercase rounded-full border border-white/10 hover:bg-white/10 transition-colors">Voltar</button>
               <button 
                 disabled={!(data.name.length > 2 && data.date && data.time && (data.locType === 'studio' || (data.street && data.number && data.bairro)))} 
                 onClick={() => { vibrate(30); setStep(3); }} 
-                className="bg-emerald-500 text-zinc-950 flex-1 py-4 text-sm font-bold tracking-widest uppercase rounded-xl disabled:opacity-20 transition-opacity"
+                className="bg-[#16a34a] text-white flex-1 py-4 text-sm font-bold tracking-widest uppercase rounded-full disabled:opacity-30 disabled:bg-slate-700 transition-all shadow-lg"
               >
                 Revisar Pedido
               </button>
@@ -530,74 +564,74 @@ export default function App() {
 
         {step === 3 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-2">Passo 3 de 3</h2>
+            <h2 className="text-xs font-bold tracking-widest text-slate-400 uppercase mb-2">Passo 3 de 3</h2>
             <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">Resumo Final</h1>
 
             <div className="space-y-8 mb-10">
               
-              <div className="p-6 bg-zinc-900 rounded-2xl border border-zinc-800">
+              <div className="p-6 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl">
                 <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Pacote Escolhido</span><span className="text-white font-medium">{formatMoney(invoice.base)}</span></div>
-                  {invoice.addonsTotal > 0 && <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Adicionais</span><span className="text-emerald-400 font-medium">+{formatMoney(invoice.addonsTotal)}</span></div>}
+                  <div className="flex justify-between text-sm items-center"><span className="text-slate-400">Pacote Escolhido</span><span className="text-white font-medium">{formatMoney(invoice.base)}</span></div>
+                  {invoice.addonsTotal > 0 && <div className="flex justify-between text-sm items-center"><span className="text-slate-400">Adicionais</span><span className="text-yellow-400 font-medium">+{formatMoney(invoice.addonsTotal)}</span></div>}
                   {invoice.reqFee > 0 && <div className="flex justify-between text-sm items-center"><span className="text-pink-400">Taxa de Fetiche/Especial</span><span className="text-pink-400 font-medium">+{formatMoney(invoice.reqFee)}</span></div>}
                   
                   {appliedCoupon ? (
-                    <div className="flex justify-between text-sm items-center py-2 border-y border-zinc-800 my-2">
-                      <span className="text-emerald-400 font-bold flex items-center gap-2"><Icon name="check" size={16}/> Cupom {appliedCoupon}</span>
-                      <span className="text-emerald-400 font-bold">-{formatMoney(invoice.discount)}</span>
+                    <div className="flex justify-between text-sm items-center py-3 border-y border-white/10 my-3">
+                      <span className="text-yellow-400 font-bold flex items-center gap-2"><Icon name="check" size={16}/> Cupom {appliedCoupon}</span>
+                      <span className="text-yellow-400 font-bold">-{formatMoney(invoice.discount)}</span>
                     </div>
                   ) : (!isReturningClient && (
-                    <div className="flex justify-between text-sm items-center py-2 border-y border-zinc-800 my-2">
-                      <span className="text-emerald-400 font-bold flex items-center gap-2"><Icon name="check" size={16}/> Presente de 1ª Vez</span>
-                      <span className="text-emerald-400 font-bold">-{formatMoney(invoice.discount)}</span>
+                    <div className="flex justify-between text-sm items-center py-3 border-y border-white/10 my-3">
+                      <span className="text-yellow-400 font-bold flex items-center gap-2"><Icon name="check" size={16}/> Presente de 1ª Vez</span>
+                      <span className="text-yellow-400 font-bold">-{formatMoney(invoice.discount)}</span>
                     </div>
                   ))}
                   
-                  {invoice.peakFee > 0 && <div className="flex justify-between text-sm items-center"><span className="text-zinc-400">Taxa Deslocamento/Pico</span><span className="text-white font-medium">+{formatMoney(invoice.peakFee)}</span></div>}
-                  {invoice.pixDiscount > 0 && <div className="flex justify-between text-sm items-center"><span className="text-emerald-400">Desconto Pix (3%)</span><span className="text-emerald-400 font-medium">-{formatMoney(invoice.pixDiscount)}</span></div>}
+                  {invoice.peakFee > 0 && <div className="flex justify-between text-sm items-center"><span className="text-slate-400">Taxa Deslocamento/Pico</span><span className="text-white font-medium">+{formatMoney(invoice.peakFee)}</span></div>}
+                  {invoice.pixDiscount > 0 && <div className="flex justify-between text-sm items-center"><span className="text-yellow-400">Desconto Pix (3%)</span><span className="text-yellow-400 font-medium">-{formatMoney(invoice.pixDiscount)}</span></div>}
                 </div>
 
-                <div className="flex justify-between items-end pt-4 border-t border-zinc-800">
-                  <span className="text-sm uppercase tracking-widest text-zinc-500 font-bold">Total a Pagar</span>
-                  <span className="text-4xl font-medium text-white tracking-tight">{formatMoney(invoice.total)}</span>
+                <div className="flex justify-between items-end pt-5 border-t border-white/10">
+                  <span className="text-sm uppercase tracking-widest text-slate-400 font-bold">Total a Pagar</span>
+                  <span className="text-4xl font-semibold text-white tracking-tight">{formatMoney(invoice.total)}</span>
                 </div>
               </div>
 
               {!appliedCoupon && (
                 <div className="animate-in fade-in">
-                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Tem um cupom?</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Tem um cupom?</label>
                   <div className="flex gap-3">
-                    <input type="text" placeholder="Código" value={couponInput} onChange={e => {setCouponInput(e.target.value); setCouponError('');}} className={`flex-1 bg-zinc-900 border ${couponError ? 'border-red-500' : 'border-zinc-800'} rounded-xl px-4 py-4 text-sm text-white focus:outline-none uppercase`} />
-                    <button onClick={handleApplyCoupon} className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-xl transition-colors outline-none">Aplicar</button>
+                    <input type="text" placeholder="Código" value={couponInput} onChange={e => {setCouponInput(e.target.value); setCouponError('');}} className={`flex-1 bg-white/5 backdrop-blur-md border ${couponError ? 'border-red-400' : 'border-white/10'} rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-yellow-400/50 transition-colors uppercase placeholder:text-slate-500`} />
+                    <button onClick={handleApplyCoupon} className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold text-xs uppercase tracking-widest px-6 py-4 rounded-2xl transition-colors outline-none border border-white/10">Aplicar</button>
                   </div>
-                  {couponError && <p className="text-xs text-red-400 mt-2">{couponError}</p>}
+                  {couponError && <p className="text-xs text-red-400 mt-2 ml-1">{couponError}</p>}
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Vontade Específica (+ R$ {CONFIG.FETISH_FEE})</label>
-                <input type="text" placeholder="Ex: Alguma fantasia, roleplay..." value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600" />
-                <p className="text-xs text-zinc-500 mt-2 leading-relaxed">Avaliamos na hora. Se não for possível realizar o seu pedido com segurança, eu tiro essa taxa de R$ 130 do valor final, fica tranquilo.</p>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Vontade Específica (+ R$ {CONFIG.FETISH_FEE})</label>
+                <input type="text" placeholder="Ex: Alguma fantasia, roleplay..." value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-yellow-400/50 transition-colors placeholder:text-slate-500" />
+                <p className="text-xs text-slate-400 mt-3 leading-relaxed">Avaliamos na hora. Se não for possível realizar o seu pedido com segurança, eu tiro essa taxa de R$ 130 do valor final, fica tranquilo.</p>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Como vai pagar na hora?</label>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Como vai pagar na hora?</label>
                 <div className="grid grid-cols-3 gap-3">
                   {[{id:'pix', l:'Pix (-3%)'},{id:'card', l:'Cartão'},{id:'cash', l:'Dinheiro'}].map(p => (
-                    <button key={p.id} onClick={() => handlePaymentSelect(p.id)} className={`py-4 text-xs font-bold uppercase tracking-wider border rounded-xl transition-colors ${data.payment === p.id ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>{p.l}</button>
+                    <button key={p.id} onClick={() => handlePaymentSelect(p.id)} className={`py-4 text-xs font-bold uppercase tracking-wider border rounded-2xl transition-colors backdrop-blur-md ${data.payment === p.id ? 'bg-yellow-400 text-slate-900 border-yellow-400' : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'}`}>{p.l}</button>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-emerald-500/10 border border-emerald-500/20 p-5 rounded-xl text-center">
-                <p className="text-sm text-emerald-400/90 leading-relaxed">
-                  Pra eu segurar seu horário na agenda, o sinal é de <strong className="text-emerald-400">R$ 50 via Pix</strong>. Acertamos a diferença lá na hora.
+              <div className="bg-yellow-400/10 backdrop-blur-md border border-yellow-400/20 p-5 rounded-2xl text-center">
+                <p className="text-sm text-yellow-400/90 leading-relaxed">
+                  Pra eu segurar seu horário na agenda, o sinal é de <strong className="text-yellow-400">R$ 50 via Pix</strong>. Acertamos a diferença lá na hora.
                 </p>
               </div>
             </div>
 
             <div className="flex gap-3 mb-8">
-              <button onClick={() => setStep(2)} className="bg-zinc-900 text-zinc-300 w-1/4 py-5 text-xs font-bold tracking-widest uppercase rounded-xl border border-zinc-800">Voltar</button>
+              <button onClick={() => setStep(2)} className="bg-white/5 backdrop-blur-md text-slate-300 w-1/4 py-5 text-xs font-bold tracking-widest uppercase rounded-full border border-white/10 hover:bg-white/10 transition-colors">Voltar</button>
               <a 
                 href={data.payment ? generateWhatsAppLink() : '#'}
                 onClick={(e) => {
@@ -608,7 +642,7 @@ export default function App() {
                     vibrate([30, 50]);
                   }
                 }}
-                className={`flex-1 py-5 text-sm font-bold tracking-widest uppercase rounded-xl flex items-center justify-center text-center transition-all ${data.payment ? 'bg-white text-black hover:bg-zinc-200' : 'bg-zinc-900 text-zinc-600 cursor-not-allowed border border-zinc-800'}`}
+                className={`flex-1 py-5 text-sm font-bold tracking-widest uppercase rounded-full flex items-center justify-center text-center transition-all shadow-lg ${data.payment ? 'bg-[#16a34a] text-white hover:bg-[#15803d]' : 'bg-white/5 text-slate-500 cursor-not-allowed border border-white/10 backdrop-blur-md'}`}
               >
                 Mandar no WhatsApp
               </a>
