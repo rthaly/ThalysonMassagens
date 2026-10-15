@@ -330,7 +330,7 @@ export default function App() {
               <Icon name="close" size={24} />
             </button>
             <img src="FmtU3Ogx_400x400.jpg" className="w-20 h-20 rounded-full object-cover mb-6 shadow-md" alt="Thalyson" />
-            <h2 className="text-2xl font-light text-stone-100 tracking-wide mb-1">Thalyson.</h2>
+            <h2 className="text-2xl font-light text-stone-100 tracking-wide mb-1">Thalyson Massagens, SP Bela Vista</h2>
             <p className="text-amber-500/80 text-[10px] font-bold uppercase tracking-[0.2em] mb-6">Terapeuta Masculino</p>
             <div className="space-y-4 text-sm text-stone-400 leading-relaxed mb-8">
               <p>{getGreeting()}. O meu trabalho é direto e focado no corpo masculino: usar o poder do toque para desfazer o peso e a tensão da sua rotina.</p>
@@ -351,9 +351,9 @@ export default function App() {
       {step > 0 && (
         <header className="px-6 py-5 max-w-lg mx-auto flex justify-between items-center mb-6 sticky top-0 bg-stone-950/90 backdrop-blur-md z-40 border-b border-stone-900/50">
           <button onClick={() => { vibrate(10); setIsProfileOpen(true); }} className="flex items-center gap-3 group text-left outline-none">
-            <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-10 h-10 rounded-full object-cover group-hover:opacity-80 transition-opacity" />
+            <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson Santos" className="w-10 h-10 rounded-full object-cover group-hover:opacity-80 transition-opacity" />
             <div>
-              <h1 className="text-sm font-medium text-stone-200 group-hover:text-white transition-colors">Thalyson.</h1>
+              <h1 className="text-sm font-medium text-stone-200 group-hover:text-white transition-colors">Thalyson Massagens</h1>
               <p className="text-[9px] font-bold text-stone-500 uppercase tracking-widest group-hover:text-stone-400 transition-colors">Ver Perfil</p>
             </div>
           </button>
