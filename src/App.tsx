@@ -337,8 +337,8 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center animate-in fade-in duration-500">
-        <h1 className="text-xl font-light text-stone-300 tracking-[0.3em] uppercase mb-8 animate-pulse">Thalyson.</h1>
+      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center animate-in fade-in duration-500 px-6">
+        <h1 className="text-sm md:text-base font-light text-stone-300 tracking-[0.3em] uppercase mb-8 animate-pulse text-center">Escolha, agende e relaxe</h1>
         <div className="w-40 h-0.5 bg-stone-900 rounded-full overflow-hidden relative">
           <div className="absolute top-0 left-0 h-full w-1/3 bg-stone-500/80 animate-loading-bar rounded-full"></div>
         </div>
