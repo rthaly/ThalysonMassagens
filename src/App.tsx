@@ -13,9 +13,9 @@ const CONFIG = {
   AVATAR: 'FmtU3Ogx_400x400.jpg',
   SUPABASE_URL: ENV.VITE_SUPABASE_URL || '',
   SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || '',
-  COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13, THALY20: 20, BEMVINDO50: 50 } as Record<string, number>,
+  COUPONS: { SESSAO2: 0.08, THALY20: 20 } as Record<string, number>,
   SIGNAL_AMOUNT: 50,
-  FIRST_TIME_DISCOUNT: 0, // Desconto agora é via cupom manual explícito
+  FIRST_TIME_DISCOUNT: 15,
   FETISH_FEE: 130,
   PEAK_FEE: 18,
   PIX_DISCOUNT: 0.03,
@@ -138,6 +138,7 @@ interface BookingData {
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [step, setStep] = useState(0);
+  const [isReturning, setIsReturning] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [toast, setToast] = useState('');
   const [touched, setTouched] = useState(false);
@@ -164,6 +165,7 @@ export default function App() {
   useEffect(() => {
     if (isLoading) return;
     if (store.get('thaly_onboard_final') === 'yes') setStep(1);
+    if (store.get('thaly_returning_final') === 'yes') setIsReturning(true);
     const draft = store.get('thaly_draft_booking');
     if (draft) {
       try {
@@ -230,6 +232,8 @@ export default function App() {
     if (coupon.applied) {
       const v = coupon.value;
       discount = v < 1 ? Math.floor(base * v) : v;
+    } else if (!isReturning) {
+      discount = CONFIG.FIRST_TIME_DISCOUNT;
     }
     discount = Math.min(discount, base);
 
@@ -238,7 +242,7 @@ export default function App() {
     const total = afterDiscount - pixDiscount + peakFee;
     const sinal = Math.min(CONFIG.SIGNAL_AMOUNT, total);
     return { base: pkg.price, addonsTotal, reqFee, peakFee, discount, pixDiscount, total, sinal, rest: Math.max(0, total - sinal), dur, activeAddons };
-  }, [data, pkg, isHome, coupon.applied, coupon.value]);
+  }, [data, pkg, isHome, isReturning, coupon.applied, coupon.value]);
 
   const days = useMemo(() => {
     const out: { d: Date; i: number }[] = [];
@@ -340,7 +344,7 @@ export default function App() {
     t += `*MEU PACOTE (${invoice.dur} min):*\n✅ ${pkg.title} (${money(pkg.price)})\n`;
     invoice.activeAddons.forEach((a) => (t += `➕ ${a.label} (+${money(a.price)})\n`));
     if (data.req.trim()) t += `\n*VONTADE ESPECÍFICA:* "${clean(data.req)}" (Ciente da taxa de +${money(CONFIG.FETISH_FEE)} se rolar)\n`;
-    if (invoice.discount > 0) t += `\n🎁 *Desconto:* Cupom ${coupon.applied} (-${money(invoice.discount)})\n`;
+    if (invoice.discount > 0) t += `\n🎁 *Desconto:* ${coupon.applied ? 'Cupom ' + coupon.applied : 'Presente de 1ª vez'} (-${money(invoice.discount)})\n`;
     if (invoice.peakFee > 0) t += `📈 *Taxa de Pico:* (+${money(invoice.peakFee)})\n`;
     t += `\n*RESUMO DO PAGAMENTO:*\n*Valor Total:* ${money(invoice.total)} (${data.payment.toUpperCase()})\n`;
     t += `*Sinal (Pix agora):* ${money(invoice.sinal)}\n*Restante (depois da sessão):* ${money(invoice.rest)}\n\n`;
@@ -442,7 +446,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30 pb-36 relative">
+    <div className="min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30 pb-12 relative">
       {toast && (
         <div role="status" aria-live="polite" className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-stone-100 text-stone-900 px-6 py-3 rounded-full font-medium text-sm shadow-xl fade-up max-w-[90vw] text-center">{toast}</div>
       )}
@@ -496,12 +500,14 @@ export default function App() {
             <p className="text-xs font-semibold text-amber-400 mb-2">Passo 1 de 3</p>
             <h1 className="text-3xl font-light mb-8 text-stone-50">Escolha o seu pacote</h1>
             
-            <div className="bg-amber-900/20 border border-amber-500/30 p-5 rounded-3xl mb-8 flex items-start gap-4">
-              <Icon name="star" className="text-amber-400 mt-0.5 shrink-0" size={22} />
-              <p className="text-sm text-stone-200 leading-relaxed">Primeira vez? Use o cupom <strong className="text-amber-400 tracking-wider">BEMVINDO50</strong> na etapa final e ganhe R$ 50 de desconto.</p>
-            </div>
+            {!isReturning && (
+              <div className="bg-amber-900/20 border border-amber-500/30 p-5 rounded-3xl mb-8 flex items-start gap-4">
+                <Icon name="star" className="text-amber-400 mt-0.5 shrink-0" size={22} />
+                <p className="text-sm text-stone-200 leading-relaxed">Primeira vez por aqui? Um desconto de <strong className="text-amber-400">R$ {CONFIG.FIRST_TIME_DISCOUNT}</strong> será aplicado automaticamente no final.</p>
+              </div>
+            )}
 
-            <div className="space-y-4 mb-10" role="radiogroup" aria-label="Pacotes">
+            <div className="space-y-4" role="radiogroup" aria-label="Pacotes">
               {PACKAGES.map((p) => {
                 const on = data.packageId === p.id;
                 return (
@@ -539,11 +545,9 @@ export default function App() {
               </div>
             </div>
             
-            <div className="fixed bottom-0 left-0 w-full p-4 bg-stone-950/95 backdrop-blur-md border-t border-stone-800 z-50">
-              <div className="max-w-lg mx-auto flex gap-6 items-center px-2">
-                <div className="flex-1"><p className="text-xs text-stone-400">Duração: {invoice.dur} min</p><p className="text-2xl font-light text-stone-50">{money(invoice.base + invoice.addonsTotal)}</p></div>
-                <button onClick={() => { vibrate(30); setStep(2); }} className={btnPrimary}>Continuar</button>
-              </div>
+            <div className="mt-8 pt-6 border-t border-stone-800 flex gap-6 items-center">
+              <div className="flex-1"><p className="text-xs text-stone-400">Duração: {invoice.dur} min</p><p className="text-2xl font-light text-stone-50">{money(invoice.base + invoice.addonsTotal)}</p></div>
+              <button onClick={() => { vibrate(30); setStep(2); }} className={btnPrimary}>Continuar</button>
             </div>
           </div>
         )}
@@ -632,11 +636,9 @@ export default function App() {
               )}
             </div>
 
-            <div className="fixed bottom-0 left-0 w-full p-4 bg-stone-950/95 backdrop-blur-md border-t border-stone-800 z-50">
-              <div className="max-w-lg mx-auto flex gap-3 px-2">
-                <button onClick={() => setStep(1)} className={`${btnGhost} w-1/3`}>Voltar</button>
-                <button onClick={() => { if (step2Valid) { vibrate(30); setStep(3); } else { vibrate(50); setTouched(true); showToast('Complete os campos destacados'); } }} className={`${btnPrimary} flex-1`}>Revisar</button>
-              </div>
+            <div className="mt-8 pt-6 border-t border-stone-800 flex gap-3">
+              <button onClick={() => setStep(1)} className={`${btnGhost} w-1/3`}>Voltar</button>
+              <button onClick={() => { if (step2Valid) { vibrate(30); setStep(3); } else { vibrate(50); setTouched(true); showToast('Complete os campos destacados'); } }} className={`${btnPrimary} flex-1`}>Revisar</button>
             </div>
           </div>
         )}
@@ -661,7 +663,7 @@ export default function App() {
                   {invoice.reqFee > 0 && <Summary label="Pedido específico" value={`+${money(invoice.reqFee)}`} />}
                   {invoice.discount > 0 && (
                     <div className="flex justify-between text-sm py-3 border-y border-stone-700 text-amber-300 font-medium">
-                      <span className="flex items-center gap-2"><Icon name="check" size={16} />Cupom {coupon.applied}</span>
+                      <span className="flex items-center gap-2"><Icon name="check" size={16} />{coupon.applied ? `Cupom ${coupon.applied}` : 'Presente de 1ª sessão'}</span>
                       <span>-{money(invoice.discount)}</span>
                     </div>
                   )}
@@ -680,9 +682,9 @@ export default function App() {
 
               {!coupon.applied && (
                 <div>
-                  <label htmlFor="cp" className={labelCls}>Possui cupom?</label>
+                  <label htmlFor="cp" className={labelCls}>Possui cupom adicional?</label>
                   <div className="flex gap-2">
-                    <input id="cp" type="text" autoCapitalize="characters" placeholder="Código (ex: BEMVINDO50)" value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className={`${inputCls} flex-1 uppercase ${coupon.error ? 'border-red-400' : ''}`} />
+                    <input id="cp" type="text" autoCapitalize="characters" placeholder="Código" value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className={`${inputCls} flex-1 uppercase ${coupon.error ? 'border-red-400' : ''}`} />
                     <button onClick={applyCoupon} className={btnGhost}>Aplicar</button>
                   </div>
                   {coupon.error && <p className="text-sm text-red-300 mt-2" role="alert">{coupon.error}</p>}
@@ -716,11 +718,9 @@ export default function App() {
               </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 w-full p-4 bg-stone-950/95 backdrop-blur-md border-t border-stone-800 z-50">
-              <div className="max-w-lg mx-auto flex gap-3 px-2">
-                <button onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
-                <button onClick={finishBooking} disabled={submitting} aria-disabled={!data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Reservando...' : 'Concluir no WhatsApp'}</button>
-              </div>
+            <div className="mt-8 pt-6 border-t border-stone-800 flex gap-3">
+              <button onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
+              <button onClick={finishBooking} disabled={submitting} aria-disabled={!data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Reservando...' : 'Concluir no WhatsApp'}</button>
             </div>
           </div>
         )}
