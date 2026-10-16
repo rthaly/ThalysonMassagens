@@ -339,15 +339,17 @@ export default function App() {
       const full = `${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}, São Paulo`;
       loc = `📍 *Local:* Você virá até mim.\n*Endereço:* ${full}\n*Mapa:* https://maps.google.com/?q=${encodeURIComponent(full)}`;
     }
+    
     let t = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n*NOME:* ${clean(data.name)}\n`;
     t += `*DIA E HORA:* ${dStr} das ${data.time} às ${endTime}\n${loc}\n\n`;
-    t += `*MEU PACOTE (${invoice.dur} min):*\n✅ ${pkg.title} (${money(pkg.price)})\n`;
-    invoice.activeAddons.forEach((a) => (t += `➕ ${a.label} (+${money(a.price)})\n`));
-    if (data.req.trim()) t += `\n*VONTADE ESPECÍFICA:* "${clean(data.req)}" (Ciente da taxa de +${money(CONFIG.FETISH_FEE)} se rolar)\n`;
-    if (invoice.discount > 0) t += `\n🎁 *Desconto:* ${coupon.applied ? 'Cupom ' + coupon.applied : 'Presente de 1ª vez'} (-${money(invoice.discount)})\n`;
-    if (invoice.peakFee > 0) t += `📈 *Taxa de Pico:* (+${money(invoice.peakFee)})\n`;
+    
+    t += `*PACOTE (${invoice.dur} min):*\n✅ ${pkg.title}\n`;
+    invoice.activeAddons.forEach((a) => (t += `➕ ${a.label}\n`));
+    if (data.req.trim()) t += `\n*VONTADE ESPECÍFICA:* "${clean(data.req)}"\n`;
+    
     t += `\n*RESUMO DO PAGAMENTO:*\n*Valor Total:* ${money(invoice.total)} (${data.payment.toUpperCase()})\n`;
     t += `*Sinal (Pix agora):* ${money(invoice.sinal)}\n*Restante (depois da sessão):* ${money(invoice.rest)}\n\n`;
+    
     if (optIn) t += '🔔 Aceito receber lembretes e novidades por WhatsApp.\n\n';
     
     t += `🎁 *Para a próxima:* Já deixei anotado que tenho direito ao cupom SESSAO2 no meu próximo agendamento.\n\n`;
