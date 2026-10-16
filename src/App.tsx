@@ -3,29 +3,35 @@ import { useState, useEffect, useMemo, useRef, memo, type ReactNode } from 'reac
 /* ==========================================================================
    1. CONFIGURAÇÃO (edite aqui — não há backend)
    ========================================================================== */
+const ENV = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
+
 const CONFIG = {
   PHONE: '5517991360413',
   PIX_KEY: '62922530000144',
   INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
   AVATAR: 'FmtU3Ogx_400x400.jpg',
+  SUPABASE_URL: ENV.VITE_SUPABASE_URL || '',
+  SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || '',
+  COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13, THALY20: 20, BEMVINDO50: 50 } as Record<string, number>,
+  PROMO_HOUR: 18,
+  EVENING_COUPON: 'RELAXAR13',
+  EVENING_LABEL: '13% de desconto na sua sessão',
   SIGNAL_AMOUNT: 50,
   FIRST_TIME_DISCOUNT: 15,
   FETISH_FEE: 130,
   PEAK_FEE: 18,
   PIX_DISCOUNT: 0.03,
-  OPEN_MIN: 9 * 60,          // primeiro início: 09:00
-  LAST_END_MIN: 23 * 60 + 30, // sessão deve terminar até 23:30
-  SLOT_STEP: 60,             // intervalo entre horários (min)
-  BUFFER_STUDIO: 15,         // folga entre clientes no espaço
-  BUFFER_HOME: 60,           // folga p/ deslocamento
-  MIN_LEAD_STUDIO: 90,       // antecedência mínima (min)
+  OPEN_MIN: 9 * 60,
+  LAST_END_MIN: 23 * 60 + 30,
+  SLOT_STEP: 60,
+  BUFFER_STUDIO: 15,
+  BUFFER_HOME: 60,
+  MIN_LEAD_STUDIO: 90,
   MIN_LEAD_HOME: 150,
   DAYS_AHEAD: 14,
-  DAYS_OFF: [] as number[],              // dias fechados da semana: 0=dom ... 6=sáb
-  // Bloqueios manuais (você edita quando fecha um horário): 'AAAA-MM-DD': ['14:00','15:00']
+  DAYS_OFF: [] as number[],
   BLOCKED: {} as Record<string, string[]>,
-  COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13, THALY20: 20, BEMVINDO50: 50 } as Record<string, number>,
 };
 
 const PACKAGES = [
@@ -58,6 +64,35 @@ const store = {
   set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch (e) {} },
   del: (k: string) => { try { localStorage.removeItem(k); } catch (e) {} },
 };
+const BACKEND_ON = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
+
+async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<{ ok: boolean; data: T | null }> {
+  if (!BACKEND_ON) return { ok: false, data: null };
+  try {
+    const r = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}` },
+      body: JSON.stringify(args),
+    });
+    if (!r.ok) return { ok: false, data: null };
+    return { ok: true, data: (await r.json()) as T };
+  } catch { return { ok: false, data: null }; }
+}
+
+const clientId = () => {
+  let id = store.get('thaly_cid');
+  if (!id || id.length < 8) { id = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`; store.set('thaly_cid', id); }
+  return id;
+};
+
+const clean = (t: string) => t.replace(/[*_~`\r\n]+/g, ' ').trim();
+
+async function lookupCoupon(code: string): Promise<{ ok: boolean; value: number }> {
+  if (!BACKEND_ON) return { ok: true, value: CONFIG.COUPONS[code] || 0 };
+  const r = await rpc<number | null>('check_coupon', { p_code: code });
+  return { ok: r.ok, value: typeof r.data === 'number' ? r.data : 0 };
+}
+
 const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
 const dateKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const toMin = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
@@ -78,6 +113,7 @@ const ICONS = {
   copy: 'M9 9h11v11H9z M5 15H4V4h11v1',
   cal: 'M3 6h18v15H3z M3 10h18 M8 3v4 M16 3v4',
 };
+
 type IconName = keyof typeof ICONS;
 const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?: number; className?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true">
@@ -85,7 +121,6 @@ const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?:
   </svg>
 ));
 
-/* classes reutilizáveis (contraste AA: texto secundário >= stone-400 sobre stone-950) */
 const inputCls = 'w-full bg-stone-900 border border-stone-700 rounded-2xl px-5 min-h-[52px] text-base text-stone-100 placeholder:text-stone-500 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-colors';
 const labelCls = 'block text-xs font-semibold text-stone-300 mb-3';
 const chipBase = 'min-h-[52px] border rounded-2xl transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-2';
@@ -108,9 +143,10 @@ export default function App() {
   const [step, setStep] = useState(0);
   const [isReturning, setIsReturning] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [promoOpen, setPromoOpen] = useState(false);
   const [toast, setToast] = useState('');
   const [touched, setTouched] = useState(false);
-  const [coupon, setCoupon] = useState({ input: '', applied: '', error: '' });
+  const [coupon, setCoupon] = useState({ input: '', applied: '', value: 0, error: '' });
   const [now, setNow] = useState(() => new Date());
   const numberRef = useRef<HTMLInputElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -127,13 +163,9 @@ export default function App() {
     toastTimer.current = setTimeout(() => setToast(''), 3000);
   };
 
-  // loader curto
   useEffect(() => { const t = setTimeout(() => setIsLoading(false), 900); return () => clearTimeout(t); }, []);
-
-  // relógio: mantém os horários de "hoje" atualizados enquanto a tela está aberta
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t); }, []);
 
-  // restaura preferências
   useEffect(() => {
     if (isLoading) return;
     if (store.get('thaly_onboard_final') === 'yes') setStep(1);
@@ -147,7 +179,6 @@ export default function App() {
     }
   }, [isLoading]);
 
-  // salva rascunho
   useEffect(() => {
     if (data.name.length > 2) {
       store.set('thaly_draft_booking', JSON.stringify({ name: data.name, locType: data.locType, street: data.street, number: data.number, bairro: data.bairro, cep: data.cep }));
@@ -156,25 +187,48 @@ export default function App() {
 
   useEffect(() => { if (step > 0) window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
 
-  // ESC fecha perfil + trava scroll
   useEffect(() => {
-    if (!profileOpen) return undefined;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setProfileOpen(false);
+    if (!profileOpen && !promoOpen) return undefined;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setProfileOpen(false); setPromoOpen(false); } };
     document.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
-  }, [profileOpen]);
+  }, [profileOpen, promoOpen]);
 
-  // regra: depilação solo não combina com adicional de aparo
+  useEffect(() => {
+    if (isLoading) return undefined;
+    if (new Date().getHours() < CONFIG.PROMO_HOUR || store.get('thaly_promo_day') === dateKey(new Date())) return undefined;
+    const t = setTimeout(() => setPromoOpen(true), 1800);
+    return () => clearTimeout(t);
+  }, [isLoading]);
+
   useEffect(() => {
     if (data.packageId === 'aparo_solo' && data.addons.aparo) set({ addons: { ...data.addons, aparo: false } });
-  }, [data.packageId]); // eslint-disable-line
+  }, [data.packageId, data.addons.aparo]);
+
+  const [busy, setBusy] = useState<{ s: number; e: number }[] | null>(null);
+  const [busyLoading, setBusyLoading] = useState(false);
+  const [tick, setTick] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [sentLink, setSentLink] = useState('');
+  const [hp, setHp] = useState('');
+  const [optIn, setOptIn] = useState(false);
+  const lockRef = useRef({ fails: 0, until: 0 });
+
+  useEffect(() => {
+    if (!data.date) return undefined;
+    let off = false;
+    setBusyLoading(true);
+    rpc<{ s: number; e: number }[]>('get_busy', { p_date: dateKey(data.date) })
+      .then((r) => { if (!off) setBusy(r.ok ? r.data : null); })
+      .finally(() => { if (!off) setBusyLoading(false); });
+    return () => { off = true; };
+  }, [data.date, tick]);
 
   const pkg = useMemo(() => PACKAGES.find((p) => p.id === data.packageId) || PACKAGES[0], [data.packageId]);
   const isHome = data.locType === 'home';
 
-  /* ---------- cálculo da fatura ---------- */
   const invoice = useMemo(() => {
     let dur = pkg.min, addonsTotal = 0;
     const activeAddons: typeof ADDONS = [];
@@ -187,7 +241,7 @@ export default function App() {
 
     let discount = 0;
     if (coupon.applied) {
-      const v = CONFIG.COUPONS[coupon.applied];
+      const v = coupon.value;
       discount = v < 1 ? Math.floor(base * v) : v;
     } else if (!isReturning) discount = CONFIG.FIRST_TIME_DISCOUNT;
     discount = Math.min(discount, base);
@@ -197,9 +251,8 @@ export default function App() {
     const total = afterDiscount - pixDiscount + peakFee;
     const sinal = Math.min(CONFIG.SIGNAL_AMOUNT, total);
     return { base: pkg.price, addonsTotal, reqFee, peakFee, discount, pixDiscount, total, sinal, rest: Math.max(0, total - sinal), dur, activeAddons };
-  }, [data, pkg, isHome, isReturning, coupon.applied]);
+  }, [data, pkg, isHome, isReturning, coupon.applied, coupon.value]);
 
-  /* ---------- agenda inteligente ---------- */
   const days = useMemo(() => {
     const out: { d: Date; i: number }[] = [];
     for (let i = 0; out.length < CONFIG.DAYS_AHEAD && i < 40; i++) {
@@ -209,7 +262,6 @@ export default function App() {
     return out;
   }, []);
 
-  // cada horário recebe um status: ok | past | blocked | late
   const slots = useMemo(() => {
     if (!data.date) return [];
     const buffer = isHome ? CONFIG.BUFFER_HOME : CONFIG.BUFFER_STUDIO;
@@ -218,25 +270,27 @@ export default function App() {
     const today = sameDay(data.date, now);
     const blocked = (CONFIG.BLOCKED[dateKey(data.date)] || []).map(toMin);
     const out: { t: string; status: SlotStatus }[] = [];
+    
     for (let m = CONFIG.OPEN_MIN; m + invoice.dur <= CONFIG.LAST_END_MIN; m += CONFIG.SLOT_STEP) {
       const end = m + invoice.dur + buffer;
       let status: SlotStatus = 'ok';
       if (today && m < nowMin + lead) status = 'past';
       else if (blocked.some((b) => b < end && b + CONFIG.SLOT_STEP > m)) status = 'blocked';
+      else if ((busy || []).some((x) => x.s < end && (x.e + buffer) > m)) status = 'blocked';
       out.push({ t: fromMin(m), status });
     }
     return out;
-  }, [data.date, isHome, invoice.dur, now]);
+  }, [data.date, isHome, invoice.dur, now, busy]);
 
-  // se o horário escolhido deixou de ser válido (mudou pacote/local), limpa
   useEffect(() => {
-    if (data.time && !slots.some((s) => s.t === data.time && s.status === 'ok')) set({ time: '' });
-  }, [slots]); // eslint-disable-line
+    if (!busyLoading && data.time && !slots.some((s) => s.t === data.time && s.status === 'ok')) {
+      set({ time: '' });
+    }
+  }, [slots, busyLoading, data.time]);
 
   const availableCount = slots.filter((s) => s.status === 'ok').length;
   const endTime = data.time ? fromMin(toMin(data.time) + invoice.dur) : '';
 
-  /* ---------- validação ---------- */
   const errors = {
     name: data.name.trim().length < 3 ? 'Informe seu nome (mín. 3 letras).' : '',
     date: !data.date ? 'Escolha uma data.' : '',
@@ -245,12 +299,32 @@ export default function App() {
   };
   const step2Valid = !errors.name && data.date && data.time && !errors.address;
 
-  /* ---------- ações ---------- */
-  const applyCoupon = () => {
-    const code = coupon.input.trim().toUpperCase();
+  const applyCoupon = async () => {
+    const code = coupon.input.trim().toUpperCase().slice(0, 30);
     if (!code) return;
-    if (CONFIG.COUPONS[code]) { vibrate([20, 40]); setCoupon({ input: '', applied: code, error: '' }); showToast('Cupom ativado'); }
-    else { vibrate(50); setCoupon((c) => ({ ...c, error: 'Cupom inválido ou expirado.' })); }
+    const L = lockRef.current;
+    if (Date.now() < L.until) { setCoupon((c) => ({ ...c, error: 'Muitas tentativas. Aguarde alguns segundos.' })); return; }
+    const r = await lookupCoupon(code);
+    if (r.value > 0) {
+      L.fails = 0; vibrate([20, 40]); setCoupon({ input: '', applied: code, value: r.value, error: '' }); showToast('Cupom ativado');
+    } else {
+      vibrate(50); L.fails += 1;
+      if (L.fails >= 3) { L.until = Date.now() + 30000; L.fails = 0; }
+      setCoupon((c) => ({ ...c, error: r.ok ? 'Cupom inválido ou expirado.' : 'Sem conexão. Tente novamente.' }));
+    }
+  };
+
+  const closePromo = () => { store.set('thaly_promo_day', dateKey(new Date())); setPromoOpen(false); };
+  const acceptPromo = async () => {
+    closePromo();
+    const r = await lookupCoupon(CONFIG.EVENING_COUPON);
+    if (r.value > 0) { setCoupon({ input: '', applied: CONFIG.EVENING_COUPON, value: r.value, error: '' }); showToast(`Cupom ${CONFIG.EVENING_COUPON} ativado`); }
+  };
+  
+  const forgetMe = () => {
+    store.del('thaly_draft_booking'); store.del('thaly_cid');
+    set({ name: '', cep: '', street: '', number: '', comp: '', bairro: '' });
+    showToast('Dados apagados deste aparelho');
   };
 
   const copyPix = async () => {
@@ -278,18 +352,19 @@ export default function App() {
     let loc;
     if (!isHome) loc = '📍 *Local:* Irei até o seu espaço no Centro Histórico.';
     else {
-      const full = `${data.street}, ${data.number}${data.comp ? ' - ' + data.comp : ''} - ${data.bairro}, São Paulo`;
+      const full = `${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}, São Paulo`;
       loc = `📍 *Local:* Você virá até mim.\n*Endereço:* ${full}\n*Mapa:* https://maps.google.com/?q=${encodeURIComponent(full)}`;
     }
-    let t = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n*NOME:* ${data.name.trim()}\n`;
+    let t = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n*NOME:* ${clean(data.name)}\n`;
     t += `*DIA E HORA:* ${dStr} das ${data.time} às ${endTime}\n${loc}\n\n`;
     t += `*MEU PACOTE (${invoice.dur} min):*\n✅ ${pkg.title} (${money(pkg.price)})\n`;
     invoice.activeAddons.forEach((a) => (t += `➕ ${a.label} (+${money(a.price)})\n`));
-    if (data.req.trim()) t += `\n*VONTADE ESPECÍFICA:* "${data.req.trim()}" (Ciente da taxa de +${money(CONFIG.FETISH_FEE)} se rolar)\n`;
+    if (data.req.trim()) t += `\n*VONTADE ESPECÍFICA:* "${clean(data.req)}" (Ciente da taxa de +${money(CONFIG.FETISH_FEE)} se rolar)\n`;
     if (invoice.discount > 0) t += `\n🎁 *Desconto:* ${coupon.applied ? 'Cupom ' + coupon.applied : 'Presente de 1ª Vez'} (-${money(invoice.discount)})\n`;
     if (invoice.peakFee > 0) t += `📈 *Taxa de Pico:* (+${money(invoice.peakFee)})\n`;
     t += `\n*RESUMO DO PAGAMENTO:*\n*Valor Total:* ${money(invoice.total)} (${data.payment.toUpperCase()})\n`;
     t += `*Sinal (Pix agora):* ${money(invoice.sinal)}\n*Restante (depois da sessão):* ${money(invoice.rest)}\n\n`;
+    if (optIn) t += '🔔 Aceito receber lembretes e novidades por WhatsApp.\n\n';
     t += 'Aguardo sua resposta para mandar o comprovante do sinal!';
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
   };
@@ -305,6 +380,60 @@ export default function App() {
       'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
     const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
     const a = document.createElement('a'); a.href = url; a.download = 'sessao.ics'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const finishBooking = async () => {
+    if (!data.payment) { vibrate(50); showToast('Escolha a forma de pagamento'); return; }
+    if (submitting || !data.date) return;
+    setSubmitting(true);
+    
+    if (hp) {
+      setSubmitting(false);
+      setSentLink('#');
+      setStep(4);
+      return;
+    }
+
+    const w = window.open('', '_blank');
+    const link = whatsappLink();
+    let held = true;
+    
+    const r = await rpc<{ ok: boolean; error?: string }>('book_slot', {
+      p_date: dateKey(data.date), p_start: toMin(data.time), p_dur: invoice.dur, p_home: isHome,
+      p_name: data.name.trim(), p_pkg: pkg.id, p_client: clientId(),
+    });
+    
+    if (r.ok && r.data && !r.data.ok) {
+      const err = r.data.error;
+      w?.close(); setSubmitting(false); vibrate(50);
+      showToast(err === 'taken' ? 'Esse horário acabou de ser reservado. Escolha outro.'
+        : err === 'limit' ? 'Você já tem reservas aguardando confirmação.'
+        : err === 'busy_system' ? 'Muitas reservas pendentes agora. Tente em alguns minutos.'
+        : 'Não foi possível reservar. Revise os dados.');
+      setTick((t) => t + 1); set({ time: '' }); setStep(2); return;
+    }
+    
+    if (!r.ok) held = false;
+    if (!held && BACKEND_ON) showToast('Sem trava de horário agora. Confirme direto pelo WhatsApp.');
+    
+    store.set('thaly_returning_final', 'yes'); store.del('thaly_draft_booking');
+    setSentLink(link); setIsReturning(true); vibrate([30, 50]);
+    if (w) { w.opener = null; w.location.href = link; }
+    setSubmitting(false); setStep(4);
+  };
+
+  const downloadReminder = () => {
+    const d = new Date(); d.setDate(d.getDate() + 14);
+    const ds = dateKey(d).replace(/-/g, '');
+    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Thalyson//Lembrete//PT', 'BEGIN:VEVENT',
+      `UID:rem-${Date.now()}@thalyson`, `DTSTAMP:${dateKey(new Date()).replace(/-/g, '')}T000000Z`,
+      `DTSTART:${ds}T180000`, `DTEND:${ds}T183000`, 'SUMMARY:Hora de relaxar - Thalyson Massagens',
+      `DESCRIPTION:Agende em ${window.location.origin} e use o cupom ${CONFIG.EVENING_COUPON}.`,
+      'BEGIN:VALARM', 'TRIGGER:PT0S', 'ACTION:DISPLAY', 'DESCRIPTION:Hora de relaxar', 'END:VALARM',
+      'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'lembrete.ics'; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
@@ -360,10 +489,27 @@ export default function App() {
               <p>{greeting}. Meu trabalho é direto e focado no corpo masculino: usar o toque para desfazer o peso e a tensão da sua rotina.</p>
               <p className="flex items-start gap-3 bg-stone-950 p-4 rounded-2xl"><Icon name="map" size={18} className="mt-0.5 text-stone-400" /><span>Atendo em um refúgio seguro e discreto no Centro Histórico de SP, próximo ao Metrô Anhangabaú.</span></p>
             </div>
+            <button onClick={forgetMe} className="w-full text-xs text-stone-400 hover:text-stone-200 underline underline-offset-4 min-h-[44px] mb-4">Apagar meus dados deste aparelho</button>
             <div className="pt-6 border-t border-stone-700 flex justify-center gap-6">
               <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-stone-300 hover:text-white min-h-[44px]"><Icon name="instagram" size={18} /> Instagram</a>
               <a href={CONFIG.REVIEW_LINK} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-stone-300 hover:text-white min-h-[44px]"><Icon name="star" size={18} /> Avaliações</a>
             </div>
+          </div>
+        </div>
+      )}
+
+      {promoOpen && (
+        <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-4 bg-stone-950/85 backdrop-blur-sm" onClick={closePromo}>
+          <div role="dialog" aria-modal="true" aria-labelledby="promo-title" className="bg-stone-900 border border-amber-400/40 rounded-3xl w-full max-w-sm p-7 shadow-2xl fade-up text-center" onClick={(e) => e.stopPropagation()}>
+            <p className="text-xs font-semibold text-amber-400 mb-2">{greeting}</p>
+            <h2 id="promo-title" className="text-2xl font-light text-stone-50 mb-3">Que tal fechar o dia relaxando?</h2>
+            <p className="text-sm text-stone-300 leading-relaxed mb-5">Depois de um dia pesado, seu corpo agradece. Hoje você tem um cupom para agendar:</p>
+            <div className="border border-dashed border-amber-400 rounded-2xl py-3 mb-6">
+              <span className="text-xl font-semibold tracking-widest text-amber-300">{CONFIG.EVENING_COUPON}</span>
+              <p className="text-xs text-stone-400 mt-1">{CONFIG.EVENING_LABEL}</p>
+            </div>
+            <button autoFocus onClick={acceptPromo} className={`${btnPrimary} w-full`}>Ativar cupom</button>
+            <button onClick={closePromo} className="w-full min-h-[48px] mt-2 text-sm text-stone-400 hover:text-stone-200">Agora não</button>
           </div>
         </div>
       )}
@@ -385,7 +531,7 @@ export default function App() {
           <div className="flex flex-col justify-center min-h-[85vh] fade-up">
             <h1 className="text-4xl md:text-5xl font-light mb-12 leading-tight text-stone-50">O seu momento<br /><span className="text-stone-300">de pausa.</span></h1>
             <div className="space-y-4 mb-12">
-              <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="shield" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">Sigilo e respeito total. Nada fica salvo online. Os dados preenchidos vão direto para o meu WhatsApp pessoal.</p></div>
+              <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="shield" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">{BACKEND_ON ? 'Sigilo e respeito total. Seu nome e horário ficam guardados só para segurar a vaga e vão para o meu WhatsApp pessoal.' : 'Sigilo e respeito total. Não guardo seus dados em nenhum servidor: o que você preenche fica só neste aparelho e segue direto para o meu WhatsApp pessoal quando você enviar.'}</p></div>
               <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="lock" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">Atendimento estritamente para maiores de 18 anos, focado no relaxamento do corpo masculino.</p></div>
             </div>
             <button onClick={() => { vibrate(30); store.set('thaly_onboard_final', 'yes'); setStep(1); }} className="bg-stone-100 text-stone-950 min-h-[60px] w-full text-sm font-bold rounded-2xl active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-2">Iniciar agendamento</button>
@@ -449,8 +595,9 @@ export default function App() {
             <div className="space-y-9 mb-10">
               <div>
                 <label htmlFor="nm" className={labelCls}>Como devo te chamar?</label>
-                <input id="nm" autoComplete="given-name" type="text" value={data.name} onChange={(e) => set({ name: e.target.value })} className={inputCls} placeholder="Seu nome" aria-invalid={touched && !!errors.name} />
+                <input id="nm" autoComplete="given-name" type="text" value={data.name} onChange={(e) => set({ name: e.target.value })} className={inputCls} placeholder="Seu nome" maxLength={60} aria-invalid={touched && !!errors.name} />
                 {touched && errors.name && <p className="text-sm text-red-300 mt-2" role="alert">{errors.name}</p>}
+                <input type="text" name="website" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
               </div>
 
               <div>
@@ -470,12 +617,12 @@ export default function App() {
               ) : (
                 <div className="space-y-4 fade-up">
                   <input type="tel" inputMode="numeric" autoComplete="postal-code" maxLength={9} placeholder="CEP (preenche o endereço)" aria-label="CEP" value={data.cep} onChange={(e) => handleCep(e.target.value)} className={inputCls} />
-                  <input type="text" autoComplete="street-address" placeholder="Rua ou Avenida" aria-label="Rua ou Avenida" value={data.street} onChange={(e) => set({ street: e.target.value })} className={inputCls} />
+                  <input type="text" autoComplete="street-address" placeholder="Rua ou Avenida" aria-label="Rua ou Avenida" maxLength={100} value={data.street} onChange={(e) => set({ street: e.target.value })} className={inputCls} />
                   <div className="flex gap-3">
-                    <input ref={numberRef} type="text" inputMode="numeric" placeholder="Nº" aria-label="Número" value={data.number} onChange={(e) => set({ number: e.target.value })} className={`${inputCls} w-1/3`} />
-                    <input type="text" placeholder="Complemento" aria-label="Complemento" value={data.comp} onChange={(e) => set({ comp: e.target.value })} className={`${inputCls} w-2/3`} />
+                    <input ref={numberRef} type="text" inputMode="numeric" placeholder="Nº" aria-label="Número" maxLength={10} value={data.number} onChange={(e) => set({ number: e.target.value })} className={`${inputCls} w-1/3`} />
+                    <input type="text" placeholder="Complemento" aria-label="Complemento" maxLength={40} value={data.comp} onChange={(e) => set({ comp: e.target.value })} className={`${inputCls} w-2/3`} />
                   </div>
-                  <input type="text" placeholder="Bairro" aria-label="Bairro" value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} className={inputCls} />
+                  <input type="text" placeholder="Bairro" aria-label="Bairro" maxLength={60} value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} className={inputCls} />
                   {touched && errors.address && <p className="text-sm text-red-300" role="alert">{errors.address}</p>}
                 </div>
               )}
@@ -486,7 +633,7 @@ export default function App() {
                   {days.map(({ d, i }) => {
                     const sel = sameDay(data.date, d);
                     return (
-                      <button key={dateKey(d)} role="radio" aria-checked={sel} onClick={() => set({ date: d, time: '' })} className={`${chipBase} shrink-0 snap-start w-[74px] py-3 flex flex-col items-center ${sel ? chipOn : chipOff}`}>
+                      <button key={dateKey(d)} role="radio" aria-checked={sel} onClick={() => { set({ date: d, time: '' }); setBusy(null); }} className={`${chipBase} shrink-0 snap-start w-[74px] py-3 flex flex-col items-center ${sel ? chipOn : chipOff}`}>
                         <span className="text-xs font-semibold capitalize">{dayLabel(d, i)}</span>
                         <span className="text-2xl font-light">{d.getDate()}</span>
                         <span className={`text-xs ${sel ? 'text-stone-600' : 'text-stone-400'}`}>{d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}</span>
@@ -501,7 +648,7 @@ export default function App() {
                 <div className="fade-up">
                   <div className="flex justify-between items-baseline mb-3">
                     <span className="text-xs font-semibold text-stone-300">Horário de início</span>
-                    <span className="text-xs text-stone-400">Sessão de {invoice.dur} min</span>
+                    <span className="text-xs text-stone-400" aria-live="polite">{busyLoading ? 'Verificando agenda…' : `Sessão de ${invoice.dur} min`}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-3" role="radiogroup" aria-label="Horários">
                     {slots.map(({ t, status }) => {
@@ -582,7 +729,7 @@ export default function App() {
 
               <div>
                 <label htmlFor="rq" className={labelCls}>Pedido específico ou fetiche? (+ {money(CONFIG.FETISH_FEE)})</label>
-                <input id="rq" type="text" placeholder="Opcional: algum detalhe ou vontade para a sessão" value={data.req} onChange={(e) => set({ req: e.target.value })} className={inputCls} />
+                <input id="rq" type="text" placeholder="Opcional: algum detalhe ou vontade para a sessão" maxLength={140} value={data.req} onChange={(e) => set({ req: e.target.value })} className={inputCls} />
                 <p className="text-xs text-stone-400 mt-3 leading-relaxed">Pedido avaliado no momento do atendimento. Se inviável, o valor não é cobrado.</p>
               </div>
 
@@ -596,6 +743,11 @@ export default function App() {
                 {data.payment === 'card' && <p className="text-xs text-stone-400 mt-3">Taxas do cartão são combinadas pelo WhatsApp.</p>}
               </div>
 
+              <label className="flex items-start gap-3 text-sm text-stone-300 leading-relaxed cursor-pointer min-h-[44px]">
+                <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} className="mt-1 w-5 h-5 accent-amber-400 shrink-0" />
+                <span>Quero receber lembretes e novidades pelo WhatsApp. Posso pedir para parar a qualquer momento.</span>
+              </label>
+
               <div className="bg-amber-950/40 border border-amber-700/50 p-6 rounded-3xl">
                 <p className="text-sm text-amber-100 leading-relaxed text-center">Para confirmar o horário, envie um sinal de <strong className="text-amber-300">{money(invoice.sinal)} via Pix</strong>. O restante é acertado após a sessão.</p>
                 <button onClick={copyPix} className="mt-4 mx-auto flex items-center gap-2 text-sm font-semibold text-amber-200 underline underline-offset-4 min-h-[44px]"><Icon name="copy" size={16} /> Copiar chave Pix (CNPJ)</button>
@@ -604,15 +756,7 @@ export default function App() {
 
             <div className="flex gap-3 mb-8">
               <button onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
-              <a href={data.payment ? whatsappLink() : undefined} target="_blank" rel="noopener noreferrer" aria-disabled={!data.payment} role={data.payment ? undefined : 'link'}
-                onClick={(e) => {
-                  if (!data.payment) { e.preventDefault(); vibrate(50); showToast('Escolha a forma de pagamento'); return; }
-                  store.set('thaly_returning_final', 'yes'); store.del('thaly_draft_booking'); setIsReturning(true);
-                  vibrate([30, 50]); setTimeout(() => setStep(4), 500);
-                }}
-                className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>
-                Concluir no WhatsApp
-              </a>
+              <button onClick={finishBooking} disabled={submitting} aria-disabled={!data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Reservando horário…' : 'Concluir no WhatsApp'}</button>
             </div>
           </div>
         )}
@@ -626,9 +770,10 @@ export default function App() {
               <strong className="text-amber-300 font-medium">Envie o comprovante do sinal ({money(invoice.sinal)}) na conversa para confirmar.</strong>
             </p>
             <div className="w-full max-w-xs space-y-3">
-              <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" onClick={() => vibrate(15)} className={`${btnPrimary} flex items-center justify-center w-full`}>Reenviar mensagem</a>
+              <a href={sentLink || whatsappLink()} target="_blank" rel="noopener noreferrer" onClick={() => vibrate(15)} className={`${btnPrimary} flex items-center justify-center w-full`}>Reenviar mensagem</a>
               <button onClick={copyPix} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="copy" size={16} /> Copiar chave Pix</button>
               <button onClick={downloadICS} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="cal" size={16} /> Adicionar à agenda</button>
+              <button onClick={downloadReminder} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="clock" size={16} /> Me lembrar de relaxar em 14 dias</button>
               <button onClick={resetFlow} className="w-full min-h-[48px] text-sm text-stone-400 hover:text-stone-200 underline underline-offset-4">Voltar ao início</button>
             </div>
           </div>
