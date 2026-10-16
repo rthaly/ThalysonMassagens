@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, memo, type ReactNode } from 'react';
 
 /* ==========================================================================
-   1. CONFIGURAÇÃO (edite aqui — não há backend)
+   1. CONFIGURAÇÃO
    ========================================================================== */
 const ENV = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
 
@@ -14,11 +14,8 @@ const CONFIG = {
   SUPABASE_URL: ENV.VITE_SUPABASE_URL || '',
   SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || '',
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13, THALY20: 20, BEMVINDO50: 50 } as Record<string, number>,
-  PROMO_HOUR: 18,
-  EVENING_COUPON: 'RELAXAR13',
-  EVENING_LABEL: '13% de desconto na sua sessão',
   SIGNAL_AMOUNT: 50,
-  FIRST_TIME_DISCOUNT: 15,
+  FIRST_TIME_DISCOUNT: 0, // Desconto agora é via cupom manual explícito
   FETISH_FEE: 130,
   PEAK_FEE: 18,
   PIX_DISCOUNT: 0.03,
@@ -141,9 +138,7 @@ interface BookingData {
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [step, setStep] = useState(0);
-  const [isReturning, setIsReturning] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [promoOpen, setPromoOpen] = useState(false);
   const [toast, setToast] = useState('');
   const [touched, setTouched] = useState(false);
   const [coupon, setCoupon] = useState({ input: '', applied: '', value: 0, error: '' });
@@ -169,7 +164,6 @@ export default function App() {
   useEffect(() => {
     if (isLoading) return;
     if (store.get('thaly_onboard_final') === 'yes') setStep(1);
-    if (store.get('thaly_returning_final') === 'yes') setIsReturning(true);
     const draft = store.get('thaly_draft_booking');
     if (draft) {
       try {
@@ -188,20 +182,13 @@ export default function App() {
   useEffect(() => { if (step > 0) window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
 
   useEffect(() => {
-    if (!profileOpen && !promoOpen) return undefined;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setProfileOpen(false); setPromoOpen(false); } };
+    if (!profileOpen) return undefined;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setProfileOpen(false); };
     document.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
-  }, [profileOpen, promoOpen]);
-
-  useEffect(() => {
-    if (isLoading) return undefined;
-    if (new Date().getHours() < CONFIG.PROMO_HOUR || store.get('thaly_promo_day') === dateKey(new Date())) return undefined;
-    const t = setTimeout(() => setPromoOpen(true), 1800);
-    return () => clearTimeout(t);
-  }, [isLoading]);
+  }, [profileOpen]);
 
   useEffect(() => {
     if (data.packageId === 'aparo_solo' && data.addons.aparo) set({ addons: { ...data.addons, aparo: false } });
@@ -243,7 +230,7 @@ export default function App() {
     if (coupon.applied) {
       const v = coupon.value;
       discount = v < 1 ? Math.floor(base * v) : v;
-    } else if (!isReturning) discount = CONFIG.FIRST_TIME_DISCOUNT;
+    }
     discount = Math.min(discount, base);
 
     const afterDiscount = base - discount;
@@ -251,7 +238,7 @@ export default function App() {
     const total = afterDiscount - pixDiscount + peakFee;
     const sinal = Math.min(CONFIG.SIGNAL_AMOUNT, total);
     return { base: pkg.price, addonsTotal, reqFee, peakFee, discount, pixDiscount, total, sinal, rest: Math.max(0, total - sinal), dur, activeAddons };
-  }, [data, pkg, isHome, isReturning, coupon.applied, coupon.value]);
+  }, [data, pkg, isHome, coupon.applied, coupon.value]);
 
   const days = useMemo(() => {
     const out: { d: Date; i: number }[] = [];
@@ -314,13 +301,6 @@ export default function App() {
     }
   };
 
-  const closePromo = () => { store.set('thaly_promo_day', dateKey(new Date())); setPromoOpen(false); };
-  const acceptPromo = async () => {
-    closePromo();
-    const r = await lookupCoupon(CONFIG.EVENING_COUPON);
-    if (r.value > 0) { setCoupon({ input: '', applied: CONFIG.EVENING_COUPON, value: r.value, error: '' }); showToast(`Cupom ${CONFIG.EVENING_COUPON} ativado`); }
-  };
-  
   const forgetMe = () => {
     store.del('thaly_draft_booking'); store.del('thaly_cid');
     set({ name: '', cep: '', street: '', number: '', comp: '', bairro: '' });
@@ -360,12 +340,15 @@ export default function App() {
     t += `*MEU PACOTE (${invoice.dur} min):*\n✅ ${pkg.title} (${money(pkg.price)})\n`;
     invoice.activeAddons.forEach((a) => (t += `➕ ${a.label} (+${money(a.price)})\n`));
     if (data.req.trim()) t += `\n*VONTADE ESPECÍFICA:* "${clean(data.req)}" (Ciente da taxa de +${money(CONFIG.FETISH_FEE)} se rolar)\n`;
-    if (invoice.discount > 0) t += `\n🎁 *Desconto:* ${coupon.applied ? 'Cupom ' + coupon.applied : 'Presente de 1ª Vez'} (-${money(invoice.discount)})\n`;
+    if (invoice.discount > 0) t += `\n🎁 *Desconto:* Cupom ${coupon.applied} (-${money(invoice.discount)})\n`;
     if (invoice.peakFee > 0) t += `📈 *Taxa de Pico:* (+${money(invoice.peakFee)})\n`;
     t += `\n*RESUMO DO PAGAMENTO:*\n*Valor Total:* ${money(invoice.total)} (${data.payment.toUpperCase()})\n`;
     t += `*Sinal (Pix agora):* ${money(invoice.sinal)}\n*Restante (depois da sessão):* ${money(invoice.rest)}\n\n`;
     if (optIn) t += '🔔 Aceito receber lembretes e novidades por WhatsApp.\n\n';
+    
+    t += `🎁 *Para a próxima:* Já deixei anotado que tenho direito ao cupom SESSAO2 no meu próximo agendamento.\n\n`;
     t += 'Aguardo sua resposta para mandar o comprovante do sinal!';
+    
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
   };
 
@@ -418,23 +401,9 @@ export default function App() {
     if (!held && BACKEND_ON) showToast('Sem trava de horário agora. Confirme direto pelo WhatsApp.');
     
     store.set('thaly_returning_final', 'yes'); store.del('thaly_draft_booking');
-    setSentLink(link); setIsReturning(true); vibrate([30, 50]);
+    setSentLink(link); vibrate([30, 50]);
     if (w) { w.opener = null; w.location.href = link; }
     setSubmitting(false); setStep(4);
-  };
-
-  const downloadReminder = () => {
-    const d = new Date(); d.setDate(d.getDate() + 14);
-    const ds = dateKey(d).replace(/-/g, '');
-    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Thalyson//Lembrete//PT', 'BEGIN:VEVENT',
-      `UID:rem-${Date.now()}@thalyson`, `DTSTAMP:${dateKey(new Date()).replace(/-/g, '')}T000000Z`,
-      `DTSTART:${ds}T180000`, `DTEND:${ds}T183000`, 'SUMMARY:Hora de relaxar - Thalyson Massagens',
-      `DESCRIPTION:Agende em ${window.location.origin} e use o cupom ${CONFIG.EVENING_COUPON}.`,
-      'BEGIN:VALARM', 'TRIGGER:PT0S', 'ACTION:DISPLAY', 'DESCRIPTION:Hora de relaxar', 'END:VALARM',
-      'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
-    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
-    const a = document.createElement('a'); a.href = url; a.download = 'lembrete.ics'; a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const resetFlow = () => {
@@ -473,7 +442,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30 pb-28 relative">
+    <div className="min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30 pb-36 relative">
       {toast && (
         <div role="status" aria-live="polite" className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-stone-100 text-stone-900 px-6 py-3 rounded-full font-medium text-sm shadow-xl fade-up max-w-[90vw] text-center">{toast}</div>
       )}
@@ -494,22 +463,6 @@ export default function App() {
               <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-stone-300 hover:text-white min-h-[44px]"><Icon name="instagram" size={18} /> Instagram</a>
               <a href={CONFIG.REVIEW_LINK} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-stone-300 hover:text-white min-h-[44px]"><Icon name="star" size={18} /> Avaliações</a>
             </div>
-          </div>
-        </div>
-      )}
-
-      {promoOpen && (
-        <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-4 bg-stone-950/85 backdrop-blur-sm" onClick={closePromo}>
-          <div role="dialog" aria-modal="true" aria-labelledby="promo-title" className="bg-stone-900 border border-amber-400/40 rounded-3xl w-full max-w-sm p-7 shadow-2xl fade-up text-center" onClick={(e) => e.stopPropagation()}>
-            <p className="text-xs font-semibold text-amber-400 mb-2">{greeting}</p>
-            <h2 id="promo-title" className="text-2xl font-light text-stone-50 mb-3">Que tal fechar o dia relaxando?</h2>
-            <p className="text-sm text-stone-300 leading-relaxed mb-5">Depois de um dia pesado, seu corpo agradece. Hoje você tem um cupom para agendar:</p>
-            <div className="border border-dashed border-amber-400 rounded-2xl py-3 mb-6">
-              <span className="text-xl font-semibold tracking-widest text-amber-300">{CONFIG.EVENING_COUPON}</span>
-              <p className="text-xs text-stone-400 mt-1">{CONFIG.EVENING_LABEL}</p>
-            </div>
-            <button autoFocus onClick={acceptPromo} className={`${btnPrimary} w-full`}>Ativar cupom</button>
-            <button onClick={closePromo} className="w-full min-h-[48px] mt-2 text-sm text-stone-400 hover:text-stone-200">Agora não</button>
           </div>
         </div>
       )}
@@ -539,9 +492,15 @@ export default function App() {
         )}
 
         {step === 1 && (
-          <div className="fade-up pb-32">
+          <div className="fade-up">
             <p className="text-xs font-semibold text-amber-400 mb-2">Passo 1 de 3</p>
             <h1 className="text-3xl font-light mb-8 text-stone-50">Escolha o seu pacote</h1>
+            
+            <div className="bg-amber-900/20 border border-amber-500/30 p-5 rounded-3xl mb-8 flex items-start gap-4">
+              <Icon name="star" className="text-amber-400 mt-0.5 shrink-0" size={22} />
+              <p className="text-sm text-stone-200 leading-relaxed">Primeira vez? Use o cupom <strong className="text-amber-400 tracking-wider">BEMVINDO50</strong> na etapa final e ganhe R$ 50 de desconto.</p>
+            </div>
+
             <div className="space-y-4 mb-10" role="radiogroup" aria-label="Pacotes">
               {PACKAGES.map((p) => {
                 const on = data.packageId === p.id;
@@ -579,6 +538,7 @@ export default function App() {
                 </div>
               </div>
             </div>
+            
             <div className="fixed bottom-0 left-0 w-full p-4 bg-stone-950/95 backdrop-blur-md border-t border-stone-800 z-50">
               <div className="max-w-lg mx-auto flex gap-6 items-center px-2">
                 <div className="flex-1"><p className="text-xs text-stone-400">Duração: {invoice.dur} min</p><p className="text-2xl font-light text-stone-50">{money(invoice.base + invoice.addonsTotal)}</p></div>
@@ -592,7 +552,7 @@ export default function App() {
           <div className="fade-up">
             <p className="text-xs font-semibold text-amber-400 mb-2">Passo 2 de 3</p>
             <h1 className="text-3xl font-light mb-8 text-stone-50">Agendamento</h1>
-            <div className="space-y-9 mb-10">
+            <div className="space-y-9">
               <div>
                 <label htmlFor="nm" className={labelCls}>Como devo te chamar?</label>
                 <input id="nm" autoComplete="given-name" type="text" value={data.name} onChange={(e) => set({ name: e.target.value })} className={inputCls} placeholder="Seu nome" maxLength={60} aria-invalid={touched && !!errors.name} />
@@ -672,9 +632,11 @@ export default function App() {
               )}
             </div>
 
-            <div className="flex gap-3 mb-8">
-              <button onClick={() => setStep(1)} className={`${btnGhost} w-1/3`}>Voltar</button>
-              <button onClick={() => { if (step2Valid) { vibrate(30); setStep(3); } else { vibrate(50); setTouched(true); showToast('Complete os campos destacados'); } }} className={`${btnPrimary} flex-1`}>Revisar</button>
+            <div className="fixed bottom-0 left-0 w-full p-4 bg-stone-950/95 backdrop-blur-md border-t border-stone-800 z-50">
+              <div className="max-w-lg mx-auto flex gap-3 px-2">
+                <button onClick={() => setStep(1)} className={`${btnGhost} w-1/3`}>Voltar</button>
+                <button onClick={() => { if (step2Valid) { vibrate(30); setStep(3); } else { vibrate(50); setTouched(true); showToast('Complete os campos destacados'); } }} className={`${btnPrimary} flex-1`}>Revisar</button>
+              </div>
             </div>
           </div>
         )}
@@ -683,7 +645,7 @@ export default function App() {
           <div className="fade-up">
             <p className="text-xs font-semibold text-amber-400 mb-2">Passo 3 de 3</p>
             <h1 className="text-3xl font-light mb-8 text-stone-50">Resumo</h1>
-            <div className="space-y-8 mb-10">
+            <div className="space-y-8">
               <div className="p-6 bg-stone-900 rounded-3xl border border-stone-700 space-y-3">
                 <Summary label="Pacote" value={pkg.title} />
                 <Summary label="Data" value={data.date?.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })} />
@@ -699,7 +661,7 @@ export default function App() {
                   {invoice.reqFee > 0 && <Summary label="Pedido específico" value={`+${money(invoice.reqFee)}`} />}
                   {invoice.discount > 0 && (
                     <div className="flex justify-between text-sm py-3 border-y border-stone-700 text-amber-300 font-medium">
-                      <span className="flex items-center gap-2"><Icon name="check" size={16} />{coupon.applied ? `Cupom ${coupon.applied}` : 'Presente de 1ª sessão'}</span>
+                      <span className="flex items-center gap-2"><Icon name="check" size={16} />Cupom {coupon.applied}</span>
                       <span>-{money(invoice.discount)}</span>
                     </div>
                   )}
@@ -720,7 +682,7 @@ export default function App() {
                 <div>
                   <label htmlFor="cp" className={labelCls}>Possui cupom?</label>
                   <div className="flex gap-2">
-                    <input id="cp" type="text" autoCapitalize="characters" placeholder="Código" value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className={`${inputCls} flex-1 uppercase ${coupon.error ? 'border-red-400' : ''}`} />
+                    <input id="cp" type="text" autoCapitalize="characters" placeholder="Código (ex: BEMVINDO50)" value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className={`${inputCls} flex-1 uppercase ${coupon.error ? 'border-red-400' : ''}`} />
                     <button onClick={applyCoupon} className={btnGhost}>Aplicar</button>
                   </div>
                   {coupon.error && <p className="text-sm text-red-300 mt-2" role="alert">{coupon.error}</p>}
@@ -754,9 +716,11 @@ export default function App() {
               </div>
             </div>
 
-            <div className="flex gap-3 mb-8">
-              <button onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
-              <button onClick={finishBooking} disabled={submitting} aria-disabled={!data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Reservando horário…' : 'Concluir no WhatsApp'}</button>
+            <div className="fixed bottom-0 left-0 w-full p-4 bg-stone-950/95 backdrop-blur-md border-t border-stone-800 z-50">
+              <div className="max-w-lg mx-auto flex gap-3 px-2">
+                <button onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
+                <button onClick={finishBooking} disabled={submitting} aria-disabled={!data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Reservando...' : 'Concluir no WhatsApp'}</button>
+              </div>
             </div>
           </div>
         )}
@@ -773,7 +737,6 @@ export default function App() {
               <a href={sentLink || whatsappLink()} target="_blank" rel="noopener noreferrer" onClick={() => vibrate(15)} className={`${btnPrimary} flex items-center justify-center w-full`}>Reenviar mensagem</a>
               <button onClick={copyPix} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="copy" size={16} /> Copiar chave Pix</button>
               <button onClick={downloadICS} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="cal" size={16} /> Adicionar à agenda</button>
-              <button onClick={downloadReminder} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="clock" size={16} /> Me lembrar de relaxar em 14 dias</button>
               <button onClick={resetFlow} className="w-full min-h-[48px] text-sm text-stone-400 hover:text-stone-200 underline underline-offset-4">Voltar ao início</button>
             </div>
           </div>
