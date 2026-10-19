@@ -12,7 +12,7 @@ const CONFIG = {
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
   AVATAR: 'FmtU3Ogx_400x400.jpg',
   SUPABASE_URL: ENV.VITE_SUPABASE_URL || '',
-  SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || '',
+  SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || ENV.VITE_SUPABASE_PUBLISHABLE_KEY || '',
   COUPONS: { SESSAO2: 0.08, THALY20: 20 } as Record<string, number>,
   SIGNAL_AMOUNT: 40,
   FIRST_TIME_DISCOUNT: 15,
@@ -92,7 +92,7 @@ const clean = (t: string) => t.replace(/[*_~`\r\n]+/g, ' ').trim();
 
 async function lookupCoupon(code: string): Promise<{ ok: boolean; value: number }> {
   if (!BACKEND_ON) return { ok: true, value: CONFIG.COUPONS[code] || 0 };
-  const r = await rpc<number | null>('check_coupon', { p_code: code });
+  const r = await rpc<number | null>('check_coupon_thalyson', { p_code: code });
   return { ok: r.ok, value: typeof r.data === 'number' ? r.data : 0 };
 }
 
@@ -215,7 +215,7 @@ export default function App() {
     if (!data.date) return undefined;
     let off = false;
     setBusyLoading(true);
-    rpc<{ s: number; e: number }[]>('get_busy', { p_date: dateKey(data.date) })
+    rpc<{ s: number; e: number }[]>('get_busy_thalyson', { p_date: dateKey(data.date) })
       .then((r) => { if (!off) setBusy(r.ok ? r.data : null); })
       .finally(() => { if (!off) setBusyLoading(false); });
     return () => { off = true; };
@@ -337,7 +337,7 @@ export default function App() {
     }
   };
 
-  const whatsappLink = () => {
+  const whatsappLink = (bookingCode = '') => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' }) : '';
     let loc;
     if (!isHome) loc = '📍 *Local:* Atendimento no meu espaço, região da Bela Vista/Centro Histórico. O endereço exato será enviado após a confirmação.';
@@ -347,6 +347,7 @@ export default function App() {
     }
     
     let t = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n*NOME:* ${clean(data.name)}\n`;
+    if (bookingCode) t += `*CÓDIGO DA SOLICITAÇÃO:* ${bookingCode}\n`;
     t += `*DIA E HORA:* ${dStr} das ${data.time} às ${endTime}\n${loc}\n\n`;
     
     t += `*PACOTE (${invoice.dur} min):*\n✅ ${pkg.title}\n`;
@@ -380,9 +381,13 @@ export default function App() {
 
   const finishBooking = async () => {
     if (!data.payment) { vibrate(50); showToast('Escolha a forma de pagamento'); return; }
-    if (submitting || !data.date) return;
+    if (submitting || !data.date || !data.time) return;
+    if (BACKEND_ON && (busyLoading || busy === null)) {
+      showToast('Ainda não consegui verificar os horários. Tente novamente.');
+      return;
+    }
     setSubmitting(true);
-    
+
     if (hp) {
       setSubmitting(false);
       setSentLink('#');
@@ -390,33 +395,54 @@ export default function App() {
       return;
     }
 
+    // Abre a janela dentro do clique do usuário para reduzir bloqueios de pop-up.
     const w = window.open('', '_blank');
-    const link = whatsappLink();
-    let held = true;
-    
-    const r = await rpc<{ ok: boolean; error?: string }>('book_slot', {
-      p_date: dateKey(data.date), p_start: toMin(data.time), p_dur: invoice.dur, p_home: isHome,
-      p_name: data.name.trim(), p_pkg: pkg.id, p_client: clientId(),
-    });
-    
-    if (r.ok && r.data && !r.data.ok) {
-      const err = r.data.error;
-      w?.close(); setSubmitting(false); vibrate(50);
-      showToast(err === 'taken' ? 'Esse horário acabou de ser reservado. Escolha outro.'
-        : err === 'limit' ? 'Você já tem reservas aguardando confirmação.'
-        : err === 'busy_system' ? 'Muitas reservas pendentes agora. Tente em alguns minutos.'
-        : 'Não foi possível reservar. Revise os dados.');
-      setTick((t) => t + 1); set({ time: '' }); setStep(2); return;
+    let bookingCode = '';
+
+    if (BACKEND_ON) {
+      const r = await rpc<{ ok: boolean; error?: string; booking_code?: string }>('book_slot_thalyson', {
+        p_date: dateKey(data.date),
+        p_start_minute: toMin(data.time),
+        p_service_id: pkg.id,
+        p_duration: invoice.dur,
+        p_customer_name: data.name.trim(),
+        p_client_key: clientId(),
+        p_total: Number(invoice.total.toFixed(2)),
+        p_signal: Number(invoice.sinal.toFixed(2)),
+        p_remaining: Number(invoice.rest.toFixed(2)),
+        p_is_home: isHome,
+      });
+
+      if (!r.ok || !r.data) {
+        w?.close();
+        setSubmitting(false);
+        showToast('Não consegui registrar no banco. Nada foi reservado. Tente novamente em instantes.');
+        return;
+      }
+
+      if (!r.data.ok) {
+        const err = r.data.error;
+        w?.close(); setSubmitting(false); vibrate(50);
+        showToast(err === 'taken' ? 'Esse horário acabou de ser ocupado. Escolha outro.'
+          : err === 'limit' ? 'Você já tem solicitações aguardando confirmação.'
+          : err === 'pending_limit' ? 'Você já tem solicitações pendentes. Aguarde a confirmação.'
+          : err === 'busy_system' ? 'Muitas solicitações pendentes agora. Tente em alguns minutos.'
+          : err === 'outside_hours' ? 'Esse horário está fora do período de atendimento.'
+          : err === 'past' ? 'Esse horário já passou ou está muito próximo. Escolha outro.'
+          : err === 'invalid_service' ? 'O pacote não está cadastrado no banco. Avise o suporte antes de tentar reservar.'
+          : 'Não foi possível registrar a solicitação. Revise os dados e tente novamente.');
+        setTick((t) => t + 1); set({ time: '' }); setStep(2); return;
+      }
+      bookingCode = r.data.booking_code || '';
     }
-    
-    if (!r.ok || !r.data) held = false;
-    if (!BACKEND_ON) showToast('Pedido enviado pelo WhatsApp; o horário só fica confirmado após resposta.');
-    else if (!held) showToast('Não foi possível travar o horário automaticamente. Aguarde a confirmação pelo WhatsApp.');
-    
+
+    const link = whatsappLink(bookingCode);
     store.set('thaly_returning_final', 'yes'); store.del('thaly_draft_booking');
     setSentLink(link); vibrate([30, 50]);
     if (w) { w.opener = null; w.location.href = link; }
+    else window.location.href = link;
     setSubmitting(false); setStep(4);
+    if (!BACKEND_ON) showToast('Solicitação enviada. Sem o banco conectado, o horário precisa ser confirmado manualmente pelo WhatsApp.');
   };
 
   const resetFlow = () => {
