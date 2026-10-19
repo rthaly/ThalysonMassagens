@@ -495,7 +495,7 @@ export default function App() {
             <p className="text-amber-400 text-xs font-semibold mb-6">Terapeuta masculino</p>
             <div className="space-y-4 text-sm text-stone-300 leading-relaxed mb-8">
               <p>{greeting}. Meu trabalho é direto e focado no corpo masculino: usar o toque para desfazer o peso e a tensão da sua rotina.</p>
-              <p className="flex items-start gap-3 bg-stone-950 p-4 rounded-2xl"><Icon name="map" size={18} className="mt-0.5 text-stone-400" /><span>Atendo em um refúgio seguro e discreto no Centro Histórico de SP, próximo ao Metrô Anhangabaú.</span></p>
+              <p className="flex items-start gap-3 bg-stone-950 p-4 rounded-2xl"><Icon name="map" size={18} className="mt-0.5 text-stone-400" /><span>Atendo em uma suíte no Centro Histórico de SP, próximo ao Metrô Anhangabaú.</span></p>
             </div>
             <button onClick={forgetMe} className="w-full text-xs text-stone-400 hover:text-stone-200 underline underline-offset-4 min-h-[44px] mb-4">Apagar meus dados deste aparelho</button>
             <div className="pt-6 border-t border-stone-700 flex justify-center gap-6">
