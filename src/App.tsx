@@ -1,652 +1,175 @@
-import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
+import { useMemo, useState } from 'react';
+import type { CSSProperties } from 'react';
 
-// ==================================================================================
-// 1. CONFIGURAÇÕES E DADOS DE NEGÓCIO
-// ==================================================================================
-const CONFIG = {
-  PHONE: "5517991360413",
-  PIX_KEY: "62922530000144",
-  INSTAGRAM: "https://www.instagram.com/relaxarhojesp",
-  ADDRESS_AREA: "Centro Histórico (Próx. Metrô Anhangabaú)",
-  STUDIO_MAPS_LINK: "https://maps.app.goo.gl/search/Metrô+Anhangabaú",
-  SIGNAL_AMOUNT: 50,
-  START_HOUR: 9,
-  END_HOUR: 22,
-  FIRST_TIME_DISCOUNT: 15,
-  FETISH_FEE: 130,
-  COUPONS: {
-    "SESSAO2": 0.08,
-    "RELAXAR13": 0.13,
-    "THALY20": 20,
-    "BEMVINDO50": 50
-  }
+/**
+ * DEMONSTRAÇÃO DE AGENDAMENTO — mobile-first
+ * Um único App.tsx, sem Tailwind e sem dependências adicionais.
+ * Personalize nomes, telefone, endereço, fotos e serviços no objeto PROFILES.
+ * Os horários são exemplos; disponibilidade real exige agenda/backend compartilhado.
+ */
+
+type ProfileId = 'feminino' | 'masculino';
+type Service = { id: string; name: string; description: string; minutes: number; price: number; image: string };
+type Profile = {
+  id: ProfileId; name: string; role: string; intro: string; location: string; phone: string; instagram: string;
+  cover: string; theme: { bg: string; surface: string; ink: string; muted: string; line: string; accent: string; accentInk: string };
+  services: Service[];
 };
 
-const PACKAGES = [
-  {
-    id: 'classica',
-    title: 'Massagem Clássica',
-    originalPrice: 220,
-    price: 180,
-    min: 40,
-    tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
-    desc: 'O essencial para quem está moído da rotina. Uso a força das minhas mãos para desfazer os nós de tensão e soltar sua musculatura. Você entra pesado e sai leve.'
-  },
-  {
-    id: 'sensitiva',
-    title: 'Sensitiva & Prazer',
-    originalPrice: 280,
-    price: 220,
-    min: 60,
-    tags: ['Toques Leves', 'Finalização Íntima'],
-    desc: 'Começamos desmanchando o cansaço do seu corpo. Quando você estiver entregue, os toques mudam, causam arrepios e vamos até o alívio completo.'
-  },
-  {
-    id: 'fusion',
-    title: 'Combo Corpo a Corpo',
-    originalPrice: 350,
-    price: 290,
-    min: 60,
-    tags: ['Naturista', 'Uso de Barba e Peito'],
-    desc: 'Ficamos totalmente à vontade. Uso o calor do meu peito, o peso das pernas e a textura da barba deslizando no seu corpo para uma imersão física profunda.'
-  },
-  {
-    id: 'completa',
-    title: 'A Experiência Completa',
-    originalPrice: 480,
-    price: 390,
-    min: 60,
-    tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
-    desc: 'O pacote sem barreiras. Muita proximidade física com gel escorregadio e liberdade total para você interagir, tocar e explorar o meu corpo do seu jeito.'
-  },
-  {
-    id: 'aparo_solo',
-    title: 'Apenas Depilação (Máquina)',
-    originalPrice: 150,
-    price: 107,
-    min: 40,
-    tags: ['Estética', 'Sem Massagem'],
-    desc: 'Serviço isolado para quem busca apenas estética. Aparo completo dos pelos do corpo utilizando máquina profissional.'
-  }
-];
-
-const ADDONS = [
-  { id: 'time', label: '+30 minutos extras', price: 75 },
-  { id: 'aparo', label: 'Aparar Pelos (Máquina)', price: 107 },
-];
-
-const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
-const PEAK_FEE = 18;
-
-// ==================================================================================
-// 2. UTILITÁRIOS E ÍCONES
-// ==================================================================================
-const formatMoney = (val) => `R$ ${val.toFixed(2).replace('.', ',')}`;
-const vibrate = (pattern = 20) => { try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} };
-const maskCEP = (v) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
-
-const ICON_PATHS = {
-  'instagram': 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
-  'shield': 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
-  'lock': 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z M7 11V7a5 5 0 0 1 10 0v4',
-  'check': 'M20 6L9 17l-5-5',
-  'close': 'M18 6L6 18 M6 6l12 12',
-  'map': 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'
+const PHOTO = {
+  spa: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=85',
+  massage: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=900&q=80',
+  facial: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80',
+  stones: 'https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=900&q=80',
+  male: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1200&q=85',
+  recovery: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=900&q=80',
 };
 
-const Icon = memo(({ name, size = 24, className = '' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true">
-    <path d={ICON_PATHS[name] || ''} />
-  </svg>
-));
+const PROFILES: Record<ProfileId, Profile> = {
+  feminino: {
+    id: 'feminino', name: 'Marina Albuquerque', role: 'Massoterapia & bem-estar',
+    intro: 'Um momento só seu.', location: 'Jardins · São Paulo', phone: '', instagram: 'https://www.instagram.com/', cover: PHOTO.spa,
+    theme: { bg: '#fffdfd', surface: '#ffffff', ink: '#33262b', muted: '#81747b', line: '#eee3e6', accent: '#b66f83', accentInk: '#ffffff' },
+    services: [
+      { id: 'relaxante', name: 'Massagem relaxante', description: 'Para desacelerar e aliviar as tensões do dia.', minutes: 60, price: 180, image: PHOTO.massage },
+      { id: 'drenagem', name: 'Drenagem linfática', description: 'Manobras suaves e sensação de leveza.', minutes: 60, price: 200, image: PHOTO.stones },
+      { id: 'facial', name: 'Ritual facial', description: 'Limpeza e hidratação em uma pausa restauradora.', minutes: 50, price: 160, image: PHOTO.facial },
+    ],
+  },
+  masculino: {
+    id: 'masculino', name: 'Rafael Mendes', role: 'Terapia corporal & recovery',
+    intro: 'Recupere seu ritmo.', location: 'Itaim Bibi · São Paulo', phone: '', instagram: 'https://www.instagram.com/', cover: PHOTO.male,
+    theme: { bg: '#f8fafc', surface: '#ffffff', ink: '#192a43', muted: '#69778b', line: '#e1e7ef', accent: '#29476f', accentInk: '#ffffff' },
+    services: [
+      { id: 'deep', name: 'Massagem deep tissue', description: 'Pressão direcionada para pontos de tensão.', minutes: 60, price: 210, image: PHOTO.recovery },
+      { id: 'recovery', name: 'Recovery esportivo', description: 'Cuidado corporal após treinos e dias intensos.', minutes: 60, price: 230, image: PHOTO.massage },
+      { id: 'reset', name: 'Reset antiestresse', description: 'Uma pausa para reduzir o ritmo da rotina.', minutes: 50, price: 170, image: PHOTO.stones },
+    ],
+  },
+};
 
-// ==================================================================================
-// 3. COMPONENTE PRINCIPAL
-// ==================================================================================
+const ADDONS = [ { id: 'aroma', name: 'Aromaterapia', price: 25 }, { id: 'escalda', name: 'Escalda-pés botânico', price: 35 } ];
+const TIMES = ['09:00', '10:00', '11:30', '13:00', '14:30', '16:00', '17:00', '18:30'];
+const money = (n: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n);
+const dateKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const clean = (s: string) => s.replace(/[<>\u0000-\u001f]/g, ' ').trim().slice(0, 160);
+
 export default function App() {
-  const [step, setStep] = useState(0); 
-  const [isReturningClient, setIsReturningClient] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [toastMsg, setToastMsg] = useState('');
-  const numberInputRef = useRef(null);
+  const [profileId, setProfileId] = useState<ProfileId>('feminino');
+  const profile = PROFILES[profileId];
+  const [step, setStep] = useState<0 | 1 | 2>(0);
+  const [serviceId, setServiceId] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [addons, setAddons] = useState<string[]>([]);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [note, setNote] = useState('');
+  const [error, setError] = useState('');
+  const [sent, setSent] = useState(false);
 
-  const [couponInput, setCouponInput] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState('');
-  const [couponError, setCouponError] = useState('');
+  const service = profile.services.find((s) => s.id === serviceId);
+  const total = (service?.price ?? 0) + ADDONS.filter((a) => addons.includes(a.id)).reduce((sum, a) => sum + a.price, 0);
+  const dates = useMemo(() => Array.from({ length: 10 }, (_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; }), [profileId]);
+  const selectedDate = date ? new Date(`${date}T12:00:00`) : null;
+  const dateLabel = selectedDate ? selectedDate.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }) : '';
+  const themeVars = { '--bg': profile.theme.bg, '--surface': profile.theme.surface, '--ink': profile.theme.ink, '--muted': profile.theme.muted, '--line': profile.theme.line, '--accent': profile.theme.accent, '--accent-ink': profile.theme.accentInk } as CSSProperties;
 
-  const [data, setData] = useState({
-    name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', 
-    date: null, time: '', req: '', payment: '',
-    packageId: PACKAGES[0].id, addons: {}
-  });
-
-  const showToast = (msg) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(''), 3500);
+  const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  const changeProfile = (id: ProfileId) => {
+    if (id === profileId) return;
+    setProfileId(id); setStep(0); setServiceId(''); setDate(''); setTime(''); setAddons([]); setName(''); setPhone(''); setNote(''); setError(''); setSent(false); scrollTop();
+  };
+  const goToSchedule = () => {
+    if (!service) { setError('Escolha uma experiência para continuar.'); return; }
+    setError(''); setStep(1); scrollTop();
+  };
+  const goToDetails = () => {
+    if (!date || !time) { setError('Escolha uma data e um horário.'); return; }
+    setError(''); setStep(2); scrollTop();
+  };
+  const sendRequest = () => {
+    if (!service) { setStep(0); setError('Escolha uma experiência.'); return; }
+    if (name.trim().split(/\s+/).filter(Boolean).length < 2) { setError('Informe seu nome e sobrenome.'); return; }
+    if (phone.replace(/\D/g, '').length < 10) { setError('Informe um telefone válido para contato.'); return; }
+    const extraText = ADDONS.filter((a) => addons.includes(a.id)).map((a) => `• ${a.name}: ${money(a.price)}`).join('\n');
+    const message = `Olá, ${profile.name}! Gostaria de solicitar um agendamento.\n\nServiço: ${service.name} (${service.minutes} min)\nData: ${dateLabel}\nHorário: ${time}\n${extraText ? `Adicionais:\n${extraText}\n` : ''}Valor estimado: ${money(total)}\nNome: ${clean(name)}\nContato: ${clean(phone)}${note.trim() ? `\nObservações: ${clean(note)}` : ''}\n\nSei que o horário precisa ser confirmado.`;
+    const target = profile.phone.replace(/\D/g, '');
+    const url = target ? `https://wa.me/${target}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank', 'noopener,noreferrer'); setSent(true); setError('');
   };
 
-  useEffect(() => {
-    const hasOnboarded = localStorage.getItem('thaly_onboard_final');
-    const hasBookedBefore = localStorage.getItem('thaly_returning_final');
-    const savedDraft = localStorage.getItem('thaly_draft_booking');
-    
-    if (hasOnboarded === 'yes') setStep(1);
-    if (hasBookedBefore === 'yes') setIsReturningClient(true);
-    
-    if (savedDraft) {
-      try {
-        const parsed = JSON.parse(savedDraft);
-        setData(prev => ({ ...prev, name: parsed.name || '', locType: parsed.locType || 'studio', street: parsed.street || '', number: parsed.number || '', bairro: parsed.bairro || '' }));
-      } catch(e) {}
-    }
-  }, []);
+  return <div className="booking-app" style={themeVars}>
+    <style>{`
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap');
+      .booking-app{min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Manrope','DM Sans',Arial,sans-serif;transition:background .2s,color .2s;padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+      .booking-app *{box-sizing:border-box}.booking-app button,.booking-app input,.booking-app textarea{font:inherit}.booking-app button{cursor:pointer;touch-action:manipulation}.booking-app button:focus-visible,.booking-app input:focus-visible,.booking-app textarea:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+      .booking-wrap{width:min(100% - 32px,680px);margin:0 auto}.booking-top{height:70px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line)}.booking-brand{min-width:0}.booking-brand strong{display:block;font:500 20px/1.1 'Playfair Display',Georgia,serif;white-space:nowrap;letter-spacing:-.02em}.booking-brand span{display:block;color:var(--muted);font-size:10px;margin-top:4px}.booking-switch{display:flex;gap:3px;border:1px solid var(--line);padding:3px;border-radius:99px;background:var(--surface);flex-shrink:0}.booking-switch button{border:0;border-radius:99px;background:transparent;color:var(--muted);font-size:11px;font-weight:700;padding:9px 12px;white-space:nowrap}.booking-switch button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+      .booking-hero{padding:22px 0 18px}.booking-hero-image{height:174px;border-radius:17px;overflow:hidden;background:var(--line);position:relative;box-shadow:0 10px 28px rgba(35,28,31,.07)}.booking-hero-image img{width:100%;height:100%;object-fit:cover;object-position:center 55%;display:block}.booking-hero-image:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.36),transparent 80%)}.booking-hero-copy{position:absolute;z-index:1;left:22px;right:18px;bottom:20px;color:#fff}.booking-kicker{text-transform:uppercase;letter-spacing:.15em;font-size:9px;font-weight:700;opacity:.96}.booking-hero h1{font:400 clamp(31px,8vw,43px)/1.04 'Playfair Display',Georgia,serif;letter-spacing:-.025em;white-space:pre-line;margin:8px 0 0;max-width:340px}.booking-location{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11px;margin-top:13px}
+      .booking-step-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0}.booking-step-head h2{font:400 27px/1.1 'Playfair Display',Georgia,serif;margin:0}.booking-step-head span{font-size:10px;color:var(--muted);white-space:nowrap}.booking-progress{height:3px;display:flex;gap:5px;margin:18px 0 22px}.booking-progress i{height:3px;flex:1;background:var(--line);border-radius:8px}.booking-progress i.on{background:var(--accent)}.booking-section-label{font-size:11px;font-weight:700;margin:20px 0 10px}.booking-services{display:grid;gap:10px}.booking-service{width:100%;display:flex;align-items:center;gap:12px;text-align:left;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px;min-height:100px;transition:border-color .16s,background .16s,box-shadow .16s}.booking-service[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent),0 4px 14px rgba(25,30,45,.04)}.booking-service img{width:78px;height:78px;object-fit:cover;border-radius:8px;flex-shrink:0}.booking-service-info{flex:1;min-width:0}.booking-service-info strong{display:block;font-size:13px;line-height:1.3}.booking-service-info small{display:block;color:var(--muted);font-size:11px;line-height:1.45;margin-top:4px}.booking-service-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}.booking-service-meta b{font-size:13px}.booking-service-meta span{font-size:10px;color:var(--muted)}.booking-radio{width:20px;height:20px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;flex-shrink:0}.booking-service[aria-pressed="true"] .booking-radio{border-color:var(--accent)}.booking-service[aria-pressed="true"] .booking-radio:after{content:'';width:10px;height:10px;border-radius:50%;background:var(--accent)}
+      .booking-card{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:16px;margin-top:12px;box-shadow:0 4px 18px rgba(25,30,45,.025)}.booking-date-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.booking-date{min-width:0;padding:11px 2px;border:1px solid var(--line);border-radius:11px;background:transparent;color:var(--ink);text-align:center}.booking-date small{display:block;color:var(--muted);font-size:9px;text-transform:capitalize;margin-bottom:7px}.booking-date strong{font-size:15px}.booking-date[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}.booking-date[aria-pressed="true"] small{color:inherit;opacity:.8}.booking-time-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.booking-time{padding:13px 2px;border:1px solid var(--line);border-radius:11px;background:transparent;color:var(--ink);font-size:12px}.booking-time[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface));box-shadow:inset 0 0 0 1px var(--accent)}.booking-addon{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);font-size:12px}.booking-addon:last-child{border-bottom:0}.booking-addon input{width:18px;height:18px;accent-color:var(--accent)}.booking-addon span:nth-child(2){flex:1}.booking-addon b{font-size:12px}.booking-field{display:block;margin:14px 0}.booking-field span{display:block;font-size:11px;font-weight:700;margin-bottom:7px}.booking-field input,.booking-field textarea{display:block;width:100%;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);padding:13px 12px;font-size:14px;min-height:46px}.booking-field textarea{min-height:76px;resize:vertical}.booking-field input::placeholder,.booking-field textarea::placeholder{color:var(--muted)}.booking-summary{background:var(--bg);border-radius:10px;padding:14px;margin:14px 0}.booking-summary-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:12px}.booking-summary-row span{color:var(--muted)}.booking-summary-row strong{text-align:right}.booking-summary-total{border-top:1px solid var(--line);margin-top:5px;padding-top:13px;font-size:15px}.booking-error{color:#c04e4e;font-size:12px;margin:12px 0}.booking-note{font-size:11px;color:var(--muted);line-height:1.55;margin:12px 0}.booking-actions{display:flex;gap:10px;margin-top:20px}.booking-btn{min-height:48px;border-radius:12px;padding:0 17px;border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.booking-btn.primary{flex:1;background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.booking-btn:disabled{opacity:.45;cursor:not-allowed}.booking-bottom{position:fixed;z-index:20;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px rgba(25,30,45,.055)}.booking-bottom-inner{width:min(100%,720px);margin:auto;display:flex;align-items:center;gap:12px}.booking-bottom-price{min-width:82px}.booking-bottom-price small{display:block;font-size:10px;color:var(--muted);margin-bottom:3px}.booking-bottom-price strong{font-size:16px}.booking-bottom .booking-btn{flex:1}.booking-success{text-align:center;padding:36px 8px 22px}.booking-success-mark{width:54px;height:54px;margin:0 auto 18px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:24px}.booking-success h2{font:400 30px/1.1 'Playfair Display',Georgia,serif;margin:0 0 10px}.booking-success p{font-size:13px;line-height:1.65;color:var(--muted);max-width:330px;margin:0 auto 20px}.booking-footer{text-align:center;color:var(--muted);font-size:10px;padding:26px 0 10px}
+      @media(min-width:640px){.booking-wrap{width:min(100% - 48px,680px)}.booking-hero{padding-top:30px}.booking-hero-image{height:240px}.booking-service img{width:88px;height:88px}.booking-services{gap:12px}.booking-card{padding:20px}.booking-bottom{padding-left:24px;padding-right:24px}}
+      @media(max-width:360px){.booking-wrap{width:calc(100% - 24px)}.booking-brand strong{font-size:16px}.booking-switch button{padding:8px;font-size:10px}.booking-hero-image{height:155px}.booking-service{gap:8px;padding:8px}.booking-service img{width:66px;height:72px}.booking-service-info small{font-size:10px}.booking-time-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.booking-bottom-inner{gap:8px}.booking-bottom-price{min-width:68px}}
+      @media(prefers-reduced-motion:reduce){.booking-app *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+    `}</style>
 
-  useEffect(() => {
-    if (data.name.length > 2) {
-      localStorage.setItem('thaly_draft_booking', JSON.stringify({
-        name: data.name, locType: data.locType, street: data.street, number: data.number, bairro: data.bairro
-      }));
-    }
-  }, [data.name, data.locType, data.street, data.number, data.bairro]);
+    <header className="booking-wrap booking-top">
+      <div className="booking-brand"><strong>{profile.name}</strong><span>{profile.role}</span></div>
+      <div className="booking-switch" role="group" aria-label="Escolher demonstração">
+        <button type="button" aria-pressed={profileId === 'feminino'} onClick={() => changeProfile('feminino')}>Feminino</button>
+        <button type="button" aria-pressed={profileId === 'masculino'} onClick={() => changeProfile('masculino')}>Masculino</button>
+      </div>
+    </header>
 
-  useEffect(() => {
-    if (step > 0 && !isProfileOpen) window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [step, isProfileOpen]);
+    <main className="booking-wrap">
+      <section className="booking-hero" aria-label={`Apresentação de ${profile.name}`}>
+        <div className="booking-hero-image"><img src={profile.cover} alt="Ambiente de bem-estar" /><div className="booking-hero-copy"><div className="booking-kicker">{profile.role}</div><h1>{profile.intro}</h1></div></div>
+        <div className="booking-location">⌖ <span>{profile.location}</span><span>·</span><span>Atendimento com hora marcada</span></div>
+      </section>
 
-  useEffect(() => {
-    if (data.packageId === 'aparo_solo' && data.addons['aparo']) {
-      setData(prev => ({ ...prev, addons: { ...prev.addons, aparo: false } }));
-    }
-  }, [data.packageId]);
+      {!sent ? <>
+        <div className="booking-progress" aria-label={`Etapa ${step + 1} de 3`}>{[0, 1, 2].map((n) => <i key={n} className={n <= step ? 'on' : ''} />)}</div>
 
-  const handleApplyCoupon = () => {
-    const code = couponInput.trim().toUpperCase();
-    if (!code) return;
-    
-    if (CONFIG.COUPONS[code]) {
-      vibrate([20, 40]);
-      setAppliedCoupon(code);
-      setCouponError('');
-      showToast('✅ Cupom ativado com sucesso!');
-    } else {
-      vibrate(50);
-      setCouponError('Cupom inválido ou expirado.');
-      setAppliedCoupon('');
-    }
-  };
+        {step === 0 && <section aria-labelledby="booking-title">
+          <div className="booking-step-head"><h2 id="booking-title">Escolha seu cuidado</h2><span>1 de 3</span></div>
+          <div className="booking-services">{profile.services.map((s) => <button key={`${profileId}-${s.id}`} type="button" className="booking-service" aria-pressed={serviceId === s.id} onClick={() => { setServiceId(s.id); setError(''); }}>
+            <img src={s.image} alt="" loading="lazy" /><span className="booking-service-info"><strong>{s.name}</strong><small>{s.description}</small><span className="booking-service-meta"><b>{money(s.price)}</b><span>{s.minutes} min</span></span></span><span className="booking-radio" aria-hidden="true" />
+          </button>)}</div>
+          {error && <p className="booking-error" role="alert">{error}</p>}
+          <p className="booking-note">Escolha uma experiência para ver os horários disponíveis nesta demonstração.</p>
+        </section>}
 
-  const handlePaymentSelect = (method) => {
-    vibrate(15);
-    setData({...data, payment: method});
-    if (method === 'pix') {
-      try {
-        navigator.clipboard.writeText(CONFIG.PIX_KEY);
-        showToast('✅ CNPJ copiado para o teclado!');
-      } catch (err) {}
-    }
-  };
+        {step === 1 && <section aria-labelledby="booking-title">
+          <div className="booking-step-head"><h2 id="booking-title">Quando fica melhor?</h2><span>2 de 3</span></div>
+          {service && <div className="booking-card"><div className="booking-summary-row"><span>Experiência</span><strong>{service.name}</strong></div><div className="booking-summary-row"><span>Duração</span><strong>{service.minutes} minutos</strong></div></div>}
+          <div className="booking-section-label">Escolha o dia</div>
+          <div className="booking-date-grid">{dates.map((d, i) => { const key = dateKey(d); return <button key={key} type="button" className="booking-date" aria-pressed={date === key} onClick={() => { setDate(key); setTime(''); setError(''); }}><small>{i === 0 ? 'Hoje' : i === 1 ? 'Amanhã' : d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}</small><strong>{d.getDate()}</strong></button>; })}</div>
+          <div className="booking-section-label">Horários</div>
+          <div className="booking-time-grid">{TIMES.map((t) => <button key={t} type="button" className="booking-time" aria-pressed={time === t} onClick={() => { setTime(t); setError(''); }}>{t}</button>)}</div>
+          <div className="booking-section-label">Torne a experiência ainda mais especial <span style={{ fontWeight: 400, color: 'var(--muted)' }}>· opcional</span></div>
+          <div className="booking-card">{ADDONS.map((a) => <label key={a.id} className="booking-addon"><input type="checkbox" checked={addons.includes(a.id)} onChange={(e) => setAddons((old) => e.target.checked ? [...old, a.id] : old.filter((id) => id !== a.id))} /><span>{a.name}</span><b>+ {money(a.price)}</b></label>)}</div>
+          {error && <p className="booking-error" role="alert">{error}</p>}
+          <p className="booking-note">Os horários são ilustrativos e precisam ser confirmados pelo profissional.</p>
+          <div className="booking-actions"><button type="button" className="booking-btn" onClick={() => { setStep(0); setError(''); }}>← Voltar</button></div>
+        </section>}
 
-  const selectedPackage = useMemo(() => PACKAGES.find(p => p.id === data.packageId) || PACKAGES[0], [data.packageId]);
+        {step === 2 && <section aria-labelledby="booking-title">
+          <div className="booking-step-head"><h2 id="booking-title">Seus dados</h2><span>3 de 3</span></div>
+          <div className="booking-card"><div className="booking-summary-row"><span>Experiência</span><strong>{service?.name}</strong></div><div className="booking-summary-row"><span>Data</span><strong>{dateLabel}</strong></div><div className="booking-summary-row"><span>Horário</span><strong>{time}</strong></div>{ADDONS.filter((a) => addons.includes(a.id)).map((a) => <div key={a.id} className="booking-summary-row"><span>{a.name}</span><strong>{money(a.price)}</strong></div>)}<div className="booking-summary-row booking-summary-total"><span>Total estimado</span><strong>{money(total)}</strong></div></div>
+          <label className="booking-field"><span>Nome completo</span><input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Seu nome e sobrenome" maxLength={80} /></label>
+          <label className="booking-field"><span>WhatsApp para contato</span><input value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" inputMode="tel" placeholder="(11) 99999-9999" maxLength={20} /></label>
+          <label className="booking-field"><span>Observação <span style={{ display: 'inline', fontWeight: 400, color: 'var(--muted)' }}>· opcional</span></span><textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Alguma preferência ou informação importante?" maxLength={160} /></label>
+          {error && <p className="booking-error" role="alert">{error}</p>}
+          <p className="booking-note">Ao enviar, o WhatsApp abrirá com sua solicitação pronta. O agendamento só será confirmado após resposta do profissional.</p>
+          <div className="booking-actions"><button type="button" className="booking-btn" onClick={() => { setStep(1); setError(''); }}>← Voltar</button></div>
+        </section>}
+      </> : <section className="booking-success" aria-live="polite"><div className="booking-success-mark">✓</div><h2>Pedido preparado</h2><p>O WhatsApp foi aberto com os detalhes. Aguarde a confirmação de disponibilidade antes de considerar o horário reservado.</p><button type="button" className="booking-btn primary" onClick={() => { setSent(false); setStep(0); setServiceId(''); setDate(''); setTime(''); setAddons([]); setName(''); setPhone(''); setNote(''); setError(''); scrollTop(); }}>Fazer novo agendamento</button></section>}
+      <footer className="booking-footer">Demonstração de experiência de agendamento · {profile.name}</footer>
+    </main>
 
-  const invoice = useMemo(() => {
-    let subtotal = selectedPackage.price;
-    let dur = selectedPackage.min;
-    let addonsTotal = 0;
-    let activeAddons = [];
-
-    ADDONS.forEach(addon => {
-      if (data.addons[addon.id]) {
-        addonsTotal += addon.price;
-        activeAddons.push(addon);
-        if (addon.id === 'time') dur += 30;
-      }
-    });
-    
-    let reqFee = data.req.trim().length > 3 ? CONFIG.FETISH_FEE : 0;
-    let baseWithAddons = subtotal + addonsTotal + reqFee;
-    
-    let peakFee = (PEAK_HOURS.includes(data.time) && data.locType !== 'studio') ? PEAK_FEE : 0;
-    
-    let discountValue = 0;
-    if (appliedCoupon) {
-      const val = CONFIG.COUPONS[appliedCoupon];
-      discountValue = val < 1 ? Math.floor(baseWithAddons * val) : val;
-    } else if (!isReturningClient) {
-      discountValue = CONFIG.FIRST_TIME_DISCOUNT;
-    }
-    
-    let totalAfterDiscounts = Math.max(0, baseWithAddons - discountValue);
-    let pixDiscount = data.payment === 'pix' ? Math.ceil(totalAfterDiscounts * 0.03) : 0;
-    
-    let finalTotal = totalAfterDiscounts - pixDiscount + peakFee;
-    
-    return { 
-      base: selectedPackage.price, addonsTotal, reqFee, peakFee, 
-      discount: discountValue, pixDiscount, total: finalTotal, sinal: CONFIG.SIGNAL_AMOUNT, dur,
-      activeAddons
-    };
-  }, [data, selectedPackage, isReturningClient, appliedCoupon]);
-
-  const days = useMemo(() => Array.from({length: 14}, (_, i) => {
-    const d = new Date(); d.setDate(d.getDate() + i); return d;
-  }), []);
-
-  const getSlots = () => {
-    if (!data.date) return [];
-    
-    let s = [];
-    for (let i = CONFIG.START_HOUR; i <= CONFIG.END_HOUR; i++) {
-      const timeStr = `${i < 10 ? '0' : ''}${i}:00`;
-      const isPast = data.date.toDateString() === new Date().toDateString() && i <= new Date().getHours();
-      
-      if (!isPast) {
-        s.push(timeStr);
-      }
-    }
-    return s;
-  };
-
-  const generateWhatsAppLink = () => {
-    const dStr = data.date ? data.date.toLocaleDateString('pt-BR') : '';
-    
-    let locationText = '';
-    if (data.locType === 'studio') {
-      locationText = `📍 *Local:* Irei até o seu espaço no Centro Histórico.`;
-    } else {
-      const fullAddress = `${data.street}, ${data.number}${data.comp ? ' - ' + data.comp : ''} - ${data.bairro}, São Paulo`;
-      const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(fullAddress)}`;
-      locationText = `📍 *Local:* Você virá até mim.\n*Endereço:* ${fullAddress}\n*Mapa:* ${mapsUrl}`;
-    }
-
-    let text = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n`;
-    text += `*NOME:* ${data.name}\n`;
-    text += `*DIA E HORA:* ${dStr} às ${data.time}\n${locationText}\n\n`;
-    
-    text += `*MEU PACOTE (Duração: ${invoice.dur} minutos):*\n`;
-    text += `✅ ${selectedPackage.title} (${formatMoney(selectedPackage.price)})\n`;
-    
-    invoice.activeAddons.forEach(a => text += `➕ ${a.label} (+${formatMoney(a.price)})\n`);
-    
-    if (data.req.trim()) {
-      text += `\n*VONTADE ESPECÍFICA:* "${data.req.trim()}" (Ciente da taxa de +${formatMoney(CONFIG.FETISH_FEE)} se rolar)\n`;
-    }
-
-    if (invoice.discount > 0) {
-      const discountName = appliedCoupon ? `Cupom ${appliedCoupon}` : 'Presente de 1ª Vez';
-      text += `\n🎁 *Desconto:* ${discountName} (-${formatMoney(invoice.discount)})\n`;
-    }
-
-    if (invoice.peakFee > 0) {
-      text += `📈 *Taxa de Pico:* (+${formatMoney(invoice.peakFee)})\n`;
-    }
-
-    const restante = Math.max(0, invoice.total - invoice.sinal);
-
-    text += `\n*RESUMO DO PAGAMENTO:*\n`;
-    text += `*Valor Total:* ${formatMoney(invoice.total)} (${data.payment.toUpperCase()})\n`;
-    text += `*Sinal (Pix agora):* ${formatMoney(invoice.sinal)}\n`;
-    text += `*Restante (Na hora):* ${formatMoney(restante)}\n\n`;
-    
-    text += `Aguardo sua resposta para mandar o comprovante do sinal!`;
-    
-    return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(text)}`;
-  };
-
-  const handleCep = async (val) => {
-    const masked = maskCEP(val);
-    setData(prev => ({ ...prev, cep: masked }));
-    if (masked.length === 9) {
-      try {
-        const res = await fetch(`https://viacep.com.br/ws/${masked.replace('-', '')}/json/`);
-        const json = await res.json();
-        if (!json.erro) {
-          setData(prev => ({ ...prev, street: json.logradouro || '', bairro: json.bairro || '' }));
-          setTimeout(() => numberInputRef.current?.focus(), 150);
-        }
-      } catch (e) {}
-    }
-  };
-
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Bom dia';
-    if (hour < 18) return 'Boa tarde';
-    return 'Boa noite';
-  };
-
-  return (
-    <div className="min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-amber-600/30 pb-28 relative">
-      
-      {toastMsg && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-stone-100 text-stone-900 px-6 py-3 rounded-full font-medium text-sm flex items-center gap-2 shadow-xl animate-in fade-in slide-in-from-top-4">
-          {toastMsg}
-        </div>
-      )}
-
-      {isProfileOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-stone-950/80 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setIsProfileOpen(false)}>
-          <div className="bg-stone-900 border border-stone-800 rounded-3xl w-full max-w-sm p-8 relative shadow-2xl" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setIsProfileOpen(false)} className="absolute top-6 right-6 p-2 text-stone-500 hover:text-stone-300 transition-colors outline-none">
-              <Icon name="close" size={24} />
-            </button>
-            <img src="FmtU3Ogx_400x400.jpg" className="w-20 h-20 rounded-full object-cover mb-6 shadow-md" alt="Thalyson" />
-            <h2 className="text-2xl font-light text-stone-100 tracking-wide mb-1">Thalyson.</h2>
-            <p className="text-amber-500/80 text-[10px] font-bold uppercase tracking-[0.2em] mb-6">Terapeuta Masculino</p>
-            <div className="space-y-4 text-sm text-stone-400 leading-relaxed mb-8">
-              <p>{getGreeting()}. O meu trabalho é direto e focado no corpo masculino: usar o poder do toque para desfazer o peso e a tensão da sua rotina.</p>
-              <p className="flex items-start gap-3 bg-stone-950/50 p-5 rounded-2xl">
-                <Icon name="map" size={18} className="mt-0.5 shrink-0 text-stone-500" />
-                <span className="leading-relaxed">Atendo num refúgio seguro e discreto no Centro Histórico de SP, próximo ao Metrô Anhangabaú.</span>
-              </p>
-            </div>
-            <div className="pt-6 border-t border-stone-800 flex justify-center">
-              <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-stone-400 hover:text-stone-200 transition-colors outline-none">
-                <Icon name="instagram" size={16} /> Meu Instagram
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {step > 0 && (
-        <header className="px-6 py-5 max-w-lg mx-auto flex justify-between items-center mb-6 sticky top-0 bg-stone-950/90 backdrop-blur-md z-40 border-b border-stone-900/50">
-          <button onClick={() => { vibrate(10); setIsProfileOpen(true); }} className="flex items-center gap-3 group text-left outline-none">
-            <img src="FmtU3Ogx_400x400.jpg" alt="Thalyson" className="w-10 h-10 rounded-full object-cover group-hover:opacity-80 transition-opacity" />
-            <div>
-              <h1 className="text-sm font-medium text-stone-200 group-hover:text-white transition-colors">Thalyson.</h1>
-              <p className="text-[9px] font-bold text-stone-500 uppercase tracking-widest group-hover:text-stone-400 transition-colors">Ver Perfil</p>
-            </div>
-          </button>
-          <div className="flex gap-2">
-            {[1,2,3].map(i => (
-              <div key={i} className={`h-1 rounded-full transition-all duration-500 ${step >= i ? 'w-6 bg-stone-300' : 'w-2 bg-stone-800'}`} />
-            ))}
-          </div>
-        </header>
-      )}
-
-      <main className="px-6 max-w-lg mx-auto">
-        
-        {step === 0 && (
-          <div className="flex flex-col justify-center min-h-[85vh] animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h1 className="text-4xl md:text-5xl font-light tracking-wide mb-12 leading-tight text-stone-100">
-              O seu momento<br/><span className="text-stone-400">de pausa.</span>
-            </h1>
-            
-            <div className="space-y-4 mb-12">
-              <div className="flex gap-4 p-6 bg-stone-900/50 rounded-3xl border border-stone-800/50">
-                <Icon name="shield" className="text-stone-500 mt-0.5" size={22} />
-                <p className="text-stone-400 text-sm leading-relaxed">Sigilo e respeito total. Nada fica salvo online. Os dados preenchidos vão diretamente para o meu WhatsApp pessoal.</p>
-              </div>
-              <div className="flex gap-4 p-6 bg-stone-900/50 rounded-3xl border border-stone-800/50">
-                <Icon name="lock" className="text-stone-500 mt-0.5" size={22} />
-                <p className="text-stone-400 text-sm leading-relaxed">Atendimento estritamente para maiores de 18 anos, focado inteiramente no relaxamento do corpo masculino.</p>
-              </div>
-            </div>
-
-            <button 
-              onClick={() => { vibrate(30); localStorage.setItem('thaly_onboard_final', 'yes'); setStep(1); }} 
-              className="bg-stone-100 text-stone-950 h-16 w-full text-sm font-bold tracking-[0.15em] uppercase rounded-2xl transition-transform active:scale-[0.98]"
-            >
-              Iniciar Agendamento
-            </button>
-          </div>
-        )}
-
-        {step === 1 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-32">
-            <h2 className="text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase mb-3">Passo 1</h2>
-            <h1 className="text-3xl font-light tracking-wide mb-10 text-stone-100">Escolha o seu pacote</h1>
-
-            <div className="space-y-4 mb-10">
-              {PACKAGES.map(pkg => {
-                const isActive = data.packageId === pkg.id;
-                return (
-                  <button 
-                    key={pkg.id}
-                    onClick={() => { vibrate(15); setData({...data, packageId: pkg.id}); }}
-                    className={`w-full text-left p-6 rounded-3xl transition-all duration-300 outline-none block border ${
-                      isActive ? 'bg-stone-900 border-amber-700/30 shadow-md scale-[1.02]' : 'bg-stone-950 border-stone-800/80 hover:bg-stone-900/50 hover:border-stone-800'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-4">
-                      <h3 className={`font-medium text-lg tracking-wide ${isActive ? 'text-stone-100' : 'text-stone-300'}`}>{pkg.title}</h3>
-                      <div className="text-right">
-                        {pkg.originalPrice && <span className="text-xs line-through text-stone-600 block mb-0.5">{formatMoney(pkg.originalPrice)}</span>}
-                        <span className={`font-medium text-lg ${isActive ? 'text-amber-200' : 'text-stone-400'}`}>{formatMoney(pkg.price)}</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      <span className={`text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-md ${isActive ? 'bg-stone-800 text-stone-300' : 'bg-stone-900 text-stone-500'}`}>
-                        {pkg.min} MIN
-                      </span>
-                      {pkg.tags.map((tag, idx) => (
-                        <span key={idx} className={`text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-md ${isActive ? 'bg-stone-800 text-stone-300' : 'bg-stone-900 text-stone-500'}`}>
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <p className={`text-sm leading-relaxed ${isActive ? 'text-stone-400' : 'text-stone-500'}`}>{pkg.desc}</p>
-                  </button>
-                )
-              })}
-              
-              <div className="pt-8">
-                <h3 className="text-sm font-medium tracking-wide text-stone-300 mb-4">Adicionais</h3>
-                <div className="flex flex-col gap-3">
-                  {ADDONS.map(addon => {
-                    if (data.packageId === 'aparo_solo' && addon.id === 'aparo') return null;
-
-                    const isActive = data.addons[addon.id];
-                    return (
-                      <button 
-                        key={addon.id}
-                        onClick={() => { vibrate(15); setData(p => ({...p, addons: {...p.addons, [addon.id]: !isActive}})); }}
-                        className={`w-full p-5 text-sm font-medium rounded-2xl border transition-all flex justify-between items-center ${
-                          isActive ? 'bg-stone-800 text-stone-200 border-stone-600' : 'bg-stone-950 border-stone-800/80 text-stone-500 hover:bg-stone-900'
-                        }`}
-                      >
-                        <span>{addon.label}</span>
-                        <span>+ {formatMoney(addon.price)}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-
-            <div className="fixed bottom-0 left-0 w-full p-5 bg-stone-950/95 backdrop-blur-md border-t border-stone-900 z-50">
-              <div className="max-w-lg mx-auto flex gap-6 items-center">
-                <div className="flex-1">
-                  <p className="text-[9px] text-stone-500 font-bold uppercase tracking-widest mb-0.5">Duração: {invoice.dur} min</p>
-                  <p className="text-2xl font-light tracking-wide text-stone-100">{formatMoney(invoice.base + invoice.addonsTotal)}</p>
-                </div>
-                <button onClick={() => { vibrate(30); setStep(2); }} className="bg-emerald-700 text-stone-50 px-8 py-4 text-[11px] font-bold tracking-widest uppercase rounded-xl transition-transform active:scale-[0.98]">
-                  Continuar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase mb-3">Passo 2</h2>
-            <h1 className="text-3xl font-light tracking-wide mb-10 text-stone-100">Agendamento</h1>
-
-            <div className="space-y-10 mb-10">
-              <div>
-                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-3">Como devo te chamar?</label>
-                <input type="text" value={data.name} onChange={e=>setData({...data, name: e.target.value})} className="w-full bg-stone-900/50 border border-stone-800 rounded-2xl px-5 py-4 text-base text-stone-200 focus:outline-none focus:border-stone-600 focus:bg-stone-900 transition-colors placeholder:text-stone-600" placeholder="Seu nome" />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-3">Local da Sessão</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={()=>setData({...data, locType:'studio', time:''})} className={`py-4 px-3 text-sm font-medium outline-none transition-all border rounded-2xl ${data.locType==='studio' ? 'bg-stone-800 text-stone-200 border-stone-600' : 'bg-stone-900/30 border-stone-800/80 text-stone-500 hover:bg-stone-900'}`}>No meu Espaço</button>
-                  <button onClick={()=>setData({...data, locType:'home', time:''})} className={`py-4 px-3 text-sm font-medium outline-none transition-all border rounded-2xl ${data.locType==='home' ? 'bg-stone-800 text-stone-200 border-stone-600' : 'bg-stone-900/30 border-stone-800/80 text-stone-500 hover:bg-stone-900'}`}>Vou até você</button>
-                </div>
-              </div>
-
-              {data.locType === 'studio' && (
-                <p className="text-sm text-stone-400 bg-stone-900/50 p-6 rounded-3xl border border-stone-800/80 leading-relaxed">
-                  A suíte fica no <strong>Centro Histórico (próximo ao Metrô Anhangabaú)</strong>. Um ambiente higienizado e climatizado. O endereço exato é enviado junto com a confirmação.
-                </p>
-              )}
-
-              {data.locType === 'home' && (
-                <div className="space-y-4 animate-in fade-in">
-                  <input type="tel" maxLength={9} placeholder="CEP (opcional)" value={data.cep} onChange={e=>handleCep(e.target.value)} className="w-full bg-stone-900/50 border border-stone-800 rounded-2xl px-5 py-4 text-base text-stone-200 focus:outline-none focus:border-stone-600 focus:bg-stone-900 placeholder:text-stone-600 transition-colors" />
-                  <input type="text" placeholder="Rua ou Avenida" value={data.street} onChange={e=>setData({...data, street: e.target.value})} className="w-full bg-stone-900/50 border border-stone-800 rounded-2xl px-5 py-4 text-base text-stone-200 focus:outline-none focus:border-stone-600 focus:bg-stone-900 placeholder:text-stone-600 transition-colors" />
-                  <div className="flex gap-3">
-                    <input ref={numberInputRef} type="text" placeholder="Nº" value={data.number} onChange={e=>setData({...data, number: e.target.value})} className="w-1/3 bg-stone-900/50 border border-stone-800 rounded-2xl px-5 py-4 text-base text-stone-200 focus:outline-none focus:border-stone-600 focus:bg-stone-900 placeholder:text-stone-600 transition-colors" />
-                    <input type="text" placeholder="Complemento" value={data.comp} onChange={e=>setData({...data, comp: e.target.value})} className="w-2/3 bg-stone-900/50 border border-stone-800 rounded-2xl px-5 py-4 text-base text-stone-200 focus:outline-none focus:border-stone-600 focus:bg-stone-900 placeholder:text-stone-600 transition-colors" />
-                  </div>
-                  <input type="text" placeholder="Bairro" value={data.bairro} onChange={e=>setData({...data, bairro: e.target.value})} className="w-full bg-stone-900/50 border border-stone-800 rounded-2xl px-5 py-4 text-base text-stone-200 focus:outline-none focus:border-stone-600 focus:bg-stone-900 placeholder:text-stone-600 transition-colors" />
-                </div>
-              )}
-
-              <div>
-                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-4">Data</label>
-                <div className="flex gap-3 overflow-x-auto pb-4 snap-x hide-scrollbar -mx-6 px-6">
-                  {days.map((d, i) => {
-                    const sel = data.date?.toDateString() === d.toDateString();
-                    return (
-                      <button key={i} onClick={() => setData({...data, date: d, time: ''})} className={`shrink-0 snap-start w-20 py-4 flex flex-col items-center justify-center border rounded-2xl transition-all ${sel ? 'bg-stone-200 text-stone-950 border-stone-200' : 'bg-stone-900/30 border-stone-800/80 text-stone-500 hover:bg-stone-900'}`}>
-                        <span className="text-[10px] uppercase font-bold tracking-widest mb-1">{d.toLocaleDateString('pt-BR', {weekday:'short'}).slice(0,3)}</span>
-                        <span className="text-2xl font-light">{d.getDate()}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {data.date && (
-                <div className="animate-in fade-in">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-4">Horário</label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {getSlots().map(t => {
-                      const sel = data.time === t;
-                      const isPeak = PEAK_HOURS.includes(t) && data.locType !== 'studio';
-                      return (
-                        <button key={t} onClick={() => { vibrate(15); setData({...data, time: t}); }} className={`py-4 flex flex-col items-center justify-center border rounded-2xl transition-all ${sel ? 'bg-stone-800 text-stone-200 border-stone-600' : 'bg-stone-900/30 border-stone-800/80 text-stone-500 hover:bg-stone-900'}`}>
-                          <span className="text-sm font-medium">{t}</span>
-                          {isPeak && <span className={`text-[8px] uppercase font-bold tracking-[0.2em] mt-1 ${sel ? 'text-amber-200/70' : 'text-amber-700/50'}`}>Pico +R$18</span>}
-                        </button>
-                      )
-                    })}
-                    {getSlots().length === 0 && <p className="col-span-3 text-sm text-stone-600 text-center py-6">Agenda encerrada para hoje.</p>}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-3 mb-8">
-              <button onClick={() => setStep(1)} className="bg-stone-900/50 text-stone-400 w-1/3 py-4 text-[11px] font-bold tracking-widest uppercase rounded-xl border border-stone-800 hover:bg-stone-900 transition-colors">Voltar</button>
-              <button 
-                disabled={!(data.name.length > 2 && data.date && data.time && (data.locType === 'studio' || (data.street && data.number && data.bairro)))} 
-                onClick={() => { vibrate(30); setStep(3); }} 
-                className="bg-emerald-700 text-stone-50 flex-1 py-4 text-[11px] font-bold tracking-widest uppercase rounded-xl disabled:opacity-20 disabled:bg-stone-800 transition-all"
-              >
-                Revisar 
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase mb-3">Passo 3</h2>
-            <h1 className="text-3xl font-light tracking-wide mb-10 text-stone-100">Resumo</h1>
-
-            <div className="space-y-8 mb-10">
-              
-              <div className="p-7 bg-stone-900 rounded-3xl border border-stone-800/50">
-                <div className="space-y-4 mb-8">
-                  <div className="flex justify-between text-sm items-center"><span className="text-stone-400">Pacote Escolhido</span><span className="text-stone-200 font-medium">{formatMoney(invoice.base)}</span></div>
-                  {invoice.addonsTotal > 0 && <div className="flex justify-between text-sm items-center"><span className="text-stone-400">Adicionais</span><span className="text-stone-400 font-medium">+{formatMoney(invoice.addonsTotal)}</span></div>}
-                  {invoice.reqFee > 0 && <div className="flex justify-between text-sm items-center"><span className="text-stone-500">Adicional Específico</span><span className="text-stone-500 font-medium">+{formatMoney(invoice.reqFee)}</span></div>}
-                  
-                  {appliedCoupon ? (
-                    <div className="flex justify-between text-sm items-center py-4 border-y border-stone-800/50 my-2">
-                      <span className="text-amber-500 font-medium flex items-center gap-2"><Icon name="check" size={16}/> Cupom {appliedCoupon}</span>
-                      <span className="text-amber-500 font-medium">-{formatMoney(invoice.discount)}</span>
-                    </div>
-                  ) : (!isReturningClient && (
-                    <div className="flex justify-between text-sm items-center py-4 border-y border-stone-800/50 my-2">
-                      <span className="text-amber-500 font-medium flex items-center gap-2"><Icon name="check" size={16}/> Presente de 1ª Sessão</span>
-                      <span className="text-amber-500 font-medium">-{formatMoney(invoice.discount)}</span>
-                    </div>
-                  ))}
-                  
-                  {invoice.peakFee > 0 && <div className="flex justify-between text-sm items-center"><span className="text-stone-400">Deslocamento/Pico</span><span className="text-stone-300 font-medium">+{formatMoney(invoice.peakFee)}</span></div>}
-                  {invoice.pixDiscount > 0 && <div className="flex justify-between text-sm items-center"><span className="text-amber-500">Desconto Pix (3%)</span><span className="text-amber-500 font-medium">-{formatMoney(invoice.pixDiscount)}</span></div>}
-                </div>
-
-                <div className="flex justify-between items-end pt-6 border-t border-stone-800/80">
-                  <span className="text-[10px] uppercase tracking-widest text-stone-500 font-bold">Total a Pagar</span>
-                  <span className="text-4xl font-light text-stone-100 tracking-wide">{formatMoney(invoice.total)}</span>
-                </div>
-              </div>
-
-              {!appliedCoupon && (
-                <div className="animate-in fade-in">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-3">Possui Cupom?</label>
-                  <div className="flex gap-2">
-                    <input type="text" placeholder="Código" value={couponInput} onChange={e => {setCouponInput(e.target.value); setCouponError('');}} className={`flex-1 bg-stone-900/50 border ${couponError ? 'border-red-900/50' : 'border-stone-800'} rounded-2xl px-5 py-4 text-sm text-stone-200 focus:outline-none focus:bg-stone-900 transition-colors uppercase placeholder:text-stone-600`} />
-                    <button onClick={handleApplyCoupon} className="bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold text-[10px] uppercase tracking-widest px-6 py-4 rounded-2xl transition-colors outline-none border border-stone-700/50">Aplicar</button>
-                  </div>
-                  {couponError && <p className="text-xs text-red-400/80 mt-2 ml-2">{couponError}</p>}
-                </div>
-              )}
-
-              <div>
-                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-3">Pedido Específico (+ R$ {CONFIG.FETISH_FEE})</label>
-                <input type="text" placeholder="Ex: Algum detalhe ou vontade para a sessão..." value={data.req} onChange={e=>setData({...data, req:e.target.value})} className="w-full bg-stone-900/50 border border-stone-800 rounded-2xl px-5 py-4 text-sm text-stone-200 focus:outline-none focus:border-stone-600 focus:bg-stone-900 transition-colors placeholder:text-stone-600" />
-                <p className="text-[11px] text-stone-500 mt-3 leading-relaxed">Pedidos avaliados no momento do atendimento. Se inviável por segurança, o valor não será cobrado.</p>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-4">Pagamento do Restante</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {[{id:'pix', l:'Pix (-3%)'},{id:'card', l:'Cartão'},{id:'cash', l:'Dinheiro'}].map(p => (
-                    <button key={p.id} onClick={() => handlePaymentSelect(p.id)} className={`py-4 text-[10px] font-bold uppercase tracking-wider border rounded-2xl transition-all ${data.payment === p.id ? 'bg-stone-800 text-stone-200 border-stone-600' : 'bg-stone-900/30 border-stone-800/80 text-stone-500 hover:bg-stone-900'}`}>{p.l}</button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-amber-900/10 border border-amber-900/20 p-6 rounded-3xl text-center">
-                <p className="text-sm text-amber-500/90 leading-relaxed">
-                  Para confirmar o horário, é necessário um sinal de <strong className="text-amber-400">R$ 50 via Pix</strong> agora. O restante é acertado na hora.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-3 mb-8">
-              <button onClick={() => setStep(2)} className="bg-stone-900/50 text-stone-400 w-1/4 py-5 text-[11px] font-bold tracking-widest uppercase rounded-xl border border-stone-800 hover:bg-stone-900 transition-colors">Voltar</button>
-              <a 
-                href={data.payment ? generateWhatsAppLink() : '#'}
-                onClick={(e) => {
-                  if (!data.payment) e.preventDefault();
-                  else {
-                    localStorage.setItem('thaly_returning_final', 'yes');
-                    localStorage.removeItem('thaly_draft_booking');
-                    vibrate([30, 50]);
-                  }
-                }}
-                className={`flex-1 py-5 text-[11px] font-bold tracking-[0.15em] uppercase rounded-xl flex items-center justify-center text-center transition-all ${data.payment ? 'bg-stone-100 text-stone-950 hover:bg-white' : 'bg-stone-900/30 text-stone-700 cursor-not-allowed border border-stone-800'}`}
-              >
-                Concluir no WhatsApp
-              </a>
-            </div>
-          </div>
-        )}
-      </main>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}} />
-    </div>
-  );
+    {!sent && <div className="booking-bottom"><div className="booking-bottom-inner">
+      <div className="booking-bottom-price"><small>{step === 0 ? (service ? 'Selecionado' : 'A partir de') : 'Total estimado'}</small><strong>{step === 0 ? money(service?.price ?? Math.min(...profile.services.map((s) => s.price))) : money(total)}</strong></div>
+      {step === 0 ? <button type="button" className="booking-btn primary" disabled={!service} onClick={goToSchedule}>Escolher horário →</button> : step === 1 ? <button type="button" className="booking-btn primary" disabled={!date || !time} onClick={goToDetails}>Continuar →</button> : <button type="button" className="booking-btn primary" onClick={sendRequest}>Enviar pedido ↗</button>}
+    </div></div>}
+  </div>;
 }
