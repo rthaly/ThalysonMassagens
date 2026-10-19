@@ -4,8 +4,9 @@ import type { CSSProperties } from 'react';
 /**
  * DEMONSTRAÇÃO DE AGENDAMENTO — mobile-first
  * Um único App.tsx, sem Tailwind e sem dependências adicionais.
- * Personalize nomes, telefone, endereço, fotos e serviços no objeto PROFILES.
- * Os horários são exemplos; disponibilidade real exige agenda/backend compartilhado.
+ * Personalize nomes, WhatsApp do PROFISSIONAL, endereço, fotos e serviços em PROFILES.
+ * O cliente não informa o próprio WhatsApp: a conversa já identifica a conta dele.
+ * Para bloquear horários entre vários clientes/dispositivos, conecte uma agenda/backend compartilhado.
  */
 
 type ProfileId = 'feminino' | 'masculino';
@@ -49,7 +50,23 @@ const PROFILES: Record<ProfileId, Profile> = {
 };
 
 const ADDONS = [ { id: 'aroma', name: 'Aromaterapia', price: 25 }, { id: 'escalda', name: 'Escalda-pés botânico', price: 35 } ];
-const TIMES = ['09:00', '10:00', '11:30', '13:00', '14:30', '16:00', '17:00', '18:30'];
+const OPEN_MINUTES = 9 * 60;
+const CLOSE_MINUTES = 19 * 60;
+const SLOT_STEP = 30;
+const getAvailableTimes = (date: string, duration: number) => {
+  if (!date) return [];
+  const day = new Date(`${date}T12:00:00`);
+  if (day.getDay() === 0) return []; // domingo fechado nesta demonstração
+  const now = new Date();
+  const sameDay = dateKey(now) === date;
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const result: string[] = [];
+  for (let start = OPEN_MINUTES; start + duration <= CLOSE_MINUTES; start += SLOT_STEP) {
+    if (sameDay && start <= currentMinutes) continue;
+    result.push(`${String(Math.floor(start / 60)).padStart(2, '0')}:${String(start % 60).padStart(2, '0')}`);
+  }
+  return result;
+};
 const money = (n: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n);
 const dateKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const clean = (s: string) => s.replace(/[<>\u0000-\u001f]/g, ' ').trim().slice(0, 160);
@@ -63,22 +80,22 @@ export default function App() {
   const [time, setTime] = useState('');
   const [addons, setAddons] = useState<string[]>([]);
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
 
   const service = profile.services.find((s) => s.id === serviceId);
   const total = (service?.price ?? 0) + ADDONS.filter((a) => addons.includes(a.id)).reduce((sum, a) => sum + a.price, 0);
-  const dates = useMemo(() => Array.from({ length: 10 }, (_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; }), [profileId]);
+  const dates = useMemo(() => Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; }).filter((d) => d.getDay() !== 0), [profileId]);
   const selectedDate = date ? new Date(`${date}T12:00:00`) : null;
+  const availableTimes = getAvailableTimes(date, service?.minutes ?? 60);
   const dateLabel = selectedDate ? selectedDate.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }) : '';
   const themeVars = { '--bg': profile.theme.bg, '--surface': profile.theme.surface, '--ink': profile.theme.ink, '--muted': profile.theme.muted, '--line': profile.theme.line, '--accent': profile.theme.accent, '--accent-ink': profile.theme.accentInk } as CSSProperties;
 
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   const changeProfile = (id: ProfileId) => {
     if (id === profileId) return;
-    setProfileId(id); setStep(0); setServiceId(''); setDate(''); setTime(''); setAddons([]); setName(''); setPhone(''); setNote(''); setError(''); setSent(false); scrollTop();
+    setProfileId(id); setStep(0); setServiceId(''); setDate(''); setTime(''); setAddons([]); setName(''); setNote(''); setError(''); setSent(false); scrollTop();
   };
   const goToSchedule = () => {
     if (!service) { setError('Escolha uma experiência para continuar.'); return; }
@@ -91,11 +108,11 @@ export default function App() {
   const sendRequest = () => {
     if (!service) { setStep(0); setError('Escolha uma experiência.'); return; }
     if (name.trim().split(/\s+/).filter(Boolean).length < 2) { setError('Informe seu nome e sobrenome.'); return; }
-    if (phone.replace(/\D/g, '').length < 10) { setError('Informe um telefone válido para contato.'); return; }
     const extraText = ADDONS.filter((a) => addons.includes(a.id)).map((a) => `• ${a.name}: ${money(a.price)}`).join('\n');
-    const message = `Olá, ${profile.name}! Gostaria de solicitar um agendamento.\n\nServiço: ${service.name} (${service.minutes} min)\nData: ${dateLabel}\nHorário: ${time}\n${extraText ? `Adicionais:\n${extraText}\n` : ''}Valor estimado: ${money(total)}\nNome: ${clean(name)}\nContato: ${clean(phone)}${note.trim() ? `\nObservações: ${clean(note)}` : ''}\n\nSei que o horário precisa ser confirmado.`;
+    const message = `Olá, ${profile.name}! Gostaria de solicitar um agendamento.\n\nServiço: ${service.name} (${service.minutes} min)\nData: ${dateLabel}\nHorário: ${time}\n${extraText ? `Adicionais:\n${extraText}\n` : ''}Valor estimado: ${money(total)}\nNome: ${clean(name)}${note.trim() ? `\nObservações: ${clean(note)}` : ''}\n\nSei que o horário precisa ser confirmado.`;
     const target = profile.phone.replace(/\D/g, '');
-    const url = target ? `https://wa.me/${target}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`;
+    if (!target) { setError('Falta configurar o WhatsApp do profissional. No objeto PROFILES, preencha o campo phone com código do país + DDD + número (ex.: 5511999999999), sem +, espaços ou traços.'); return; }
+    const url = `https://wa.me/${target}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank', 'noopener,noreferrer'); setSent(true); setError('');
   };
 
@@ -132,24 +149,24 @@ export default function App() {
 
         {step === 0 && <section aria-labelledby="booking-title">
           <div className="booking-step-head"><h2 id="booking-title">Escolha seu cuidado</h2><span>1 de 3</span></div>
-          <div className="booking-services">{profile.services.map((s) => <button key={`${profileId}-${s.id}`} type="button" className="booking-service" aria-pressed={serviceId === s.id} onClick={() => { setServiceId(s.id); setError(''); }}>
+          <div className="booking-services">{profile.services.map((s) => <button key={`${profileId}-${s.id}`} type="button" className="booking-service" aria-pressed={serviceId === s.id} onClick={() => { if (serviceId !== s.id) { setDate(''); setTime(''); } setServiceId(s.id); setError(''); }}>
             <img src={s.image} alt="" loading="lazy" /><span className="booking-service-info"><strong>{s.name}</strong><small>{s.description}</small><span className="booking-service-meta"><b>{money(s.price)}</b><span>{s.minutes} min</span></span></span><span className="booking-radio" aria-hidden="true" />
           </button>)}</div>
           {error && <p className="booking-error" role="alert">{error}</p>}
-          <p className="booking-note">Escolha uma experiência para ver os horários disponíveis nesta demonstração.</p>
+          <p className="booking-note">Selecione um serviço, escolha um horário e envie o pedido diretamente ao WhatsApp do profissional.</p>
         </section>}
 
         {step === 1 && <section aria-labelledby="booking-title">
           <div className="booking-step-head"><h2 id="booking-title">Quando fica melhor?</h2><span>2 de 3</span></div>
           {service && <div className="booking-card"><div className="booking-summary-row"><span>Experiência</span><strong>{service.name}</strong></div><div className="booking-summary-row"><span>Duração</span><strong>{service.minutes} minutos</strong></div></div>}
           <div className="booking-section-label">Escolha o dia</div>
-          <div className="booking-date-grid">{dates.map((d, i) => { const key = dateKey(d); return <button key={key} type="button" className="booking-date" aria-pressed={date === key} onClick={() => { setDate(key); setTime(''); setError(''); }}><small>{i === 0 ? 'Hoje' : i === 1 ? 'Amanhã' : d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}</small><strong>{d.getDate()}</strong></button>; })}</div>
+          <div className="booking-date-grid">{dates.map((d, i) => { const key = dateKey(d); return <button key={key} type="button" className="booking-date" aria-pressed={date === key} onClick={() => { setDate(key); setTime(''); setError(''); }}><small>{dateKey(d) === dateKey(new Date()) ? 'Hoje' : dateKey(d) === dateKey(new Date(Date.now() + 86400000)) ? 'Amanhã' : d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}</small><strong>{d.getDate()}</strong></button>; })}</div>
           <div className="booking-section-label">Horários</div>
-          <div className="booking-time-grid">{TIMES.map((t) => <button key={t} type="button" className="booking-time" aria-pressed={time === t} onClick={() => { setTime(t); setError(''); }}>{t}</button>)}</div>
+          <div className="booking-time-grid">{availableTimes.length ? availableTimes.map((t) => <button key={t} type="button" className="booking-time" aria-pressed={time === t} onClick={() => { setTime(t); setError(''); }}>{t}</button>) : <p className="booking-note">Não há horários para esta data. Escolha outro dia.</p>}</div>
           <div className="booking-section-label">Torne a experiência ainda mais especial <span style={{ fontWeight: 400, color: 'var(--muted)' }}>· opcional</span></div>
           <div className="booking-card">{ADDONS.map((a) => <label key={a.id} className="booking-addon"><input type="checkbox" checked={addons.includes(a.id)} onChange={(e) => setAddons((old) => e.target.checked ? [...old, a.id] : old.filter((id) => id !== a.id))} /><span>{a.name}</span><b>+ {money(a.price)}</b></label>)}</div>
           {error && <p className="booking-error" role="alert">{error}</p>}
-          <p className="booking-note">Os horários são ilustrativos e precisam ser confirmados pelo profissional.</p>
+          <p className="booking-note">Horários calculados para atendimento de segunda a sábado, das 9h às 19h, respeitando a duração do serviço e ocultando horários passados de hoje. Ajuste esses horários ao funcionamento real do espaço. O pedido ainda precisa ser confirmado pelo profissional.</p>
           <div className="booking-actions"><button type="button" className="booking-btn" onClick={() => { setStep(0); setError(''); }}>← Voltar</button></div>
         </section>}
 
@@ -157,13 +174,13 @@ export default function App() {
           <div className="booking-step-head"><h2 id="booking-title">Seus dados</h2><span>3 de 3</span></div>
           <div className="booking-card"><div className="booking-summary-row"><span>Experiência</span><strong>{service?.name}</strong></div><div className="booking-summary-row"><span>Data</span><strong>{dateLabel}</strong></div><div className="booking-summary-row"><span>Horário</span><strong>{time}</strong></div>{ADDONS.filter((a) => addons.includes(a.id)).map((a) => <div key={a.id} className="booking-summary-row"><span>{a.name}</span><strong>{money(a.price)}</strong></div>)}<div className="booking-summary-row booking-summary-total"><span>Total estimado</span><strong>{money(total)}</strong></div></div>
           <label className="booking-field"><span>Nome completo</span><input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Seu nome e sobrenome" maxLength={80} /></label>
-          <label className="booking-field"><span>WhatsApp para contato</span><input value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" inputMode="tel" placeholder="(11) 99999-9999" maxLength={20} /></label>
+          <div className="booking-note" style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 10, padding: 12 }}>Não precisa informar seu WhatsApp. Ao abrir a conversa, o profissional verá o número da sua própria conta e poderá responder por lá.</div>
           <label className="booking-field"><span>Observação <span style={{ display: 'inline', fontWeight: 400, color: 'var(--muted)' }}>· opcional</span></span><textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Alguma preferência ou informação importante?" maxLength={160} /></label>
           {error && <p className="booking-error" role="alert">{error}</p>}
-          <p className="booking-note">Ao enviar, o WhatsApp abrirá com sua solicitação pronta. O agendamento só será confirmado após resposta do profissional.</p>
+          <p className="booking-note">Ao enviar, o WhatsApp do profissional abrirá com todos os detalhes. Você não precisa digitar seu próprio número: o WhatsApp já identifica sua conta. O horário só fica confirmado após resposta do profissional.</p>
           <div className="booking-actions"><button type="button" className="booking-btn" onClick={() => { setStep(1); setError(''); }}>← Voltar</button></div>
         </section>}
-      </> : <section className="booking-success" aria-live="polite"><div className="booking-success-mark">✓</div><h2>Pedido preparado</h2><p>O WhatsApp foi aberto com os detalhes. Aguarde a confirmação de disponibilidade antes de considerar o horário reservado.</p><button type="button" className="booking-btn primary" onClick={() => { setSent(false); setStep(0); setServiceId(''); setDate(''); setTime(''); setAddons([]); setName(''); setPhone(''); setNote(''); setError(''); scrollTop(); }}>Fazer novo agendamento</button></section>}
+      </> : <section className="booking-success" aria-live="polite"><div className="booking-success-mark">✓</div><h2>Pedido preparado</h2><p>O WhatsApp foi aberto com os detalhes. Aguarde a confirmação de disponibilidade antes de considerar o horário reservado.</p><button type="button" className="booking-btn primary" onClick={() => { setSent(false); setStep(0); setServiceId(''); setDate(''); setTime(''); setAddons([]); setName(''); setNote(''); setError(''); scrollTop(); }}>Fazer novo agendamento</button></section>}
       <footer className="booking-footer">Demonstração de experiência de agendamento · {profile.name}</footer>
     </main>
 
