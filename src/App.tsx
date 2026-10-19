@@ -12,8 +12,8 @@ const CONFIG = {
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
   AVATAR: 'FmtU3Ogx_400x400.jpg',
   SUPABASE_URL: ENV.VITE_SUPABASE_URL || '',
-  SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || '',
-  COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
+  SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || ENV.VITE_SUPABASE_PUBLISHABLE_KEY || '',
+  COUPONS: { SESSAO2: 0.08, THALY20: 20 } as Record<string, number>,
   SIGNAL_AMOUNT: 40,
   FIRST_TIME_DISCOUNT: 15,
   FETISH_FEE: 130,
@@ -78,7 +78,13 @@ async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<{ ok: 
 
 const clientId = () => {
   let id = store.get('thaly_cid');
-  if (!id || id.length < 8) { id = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`; store.set('thaly_cid', id); }
+  if (!id || id.length < 8) {
+    const randomId = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    id = randomId;
+    store.set('thaly_cid', id);
+  }
   return id;
 };
 
@@ -86,7 +92,7 @@ const clean = (t: string) => t.replace(/[*_~`\r\n]+/g, ' ').trim();
 
 async function lookupCoupon(code: string): Promise<{ ok: boolean; value: number }> {
   if (!BACKEND_ON) return { ok: true, value: CONFIG.COUPONS[code] || 0 };
-  const r = await rpc<number | null>('check_coupon', { p_code: code });
+  const r = await rpc<number | null>('check_coupon_thalyson', { p_code: code });
   return { ok: r.ok, value: typeof r.data === 'number' ? r.data : 0 };
 }
 
@@ -209,7 +215,7 @@ export default function App() {
     if (!data.date) return undefined;
     let off = false;
     setBusyLoading(true);
-    rpc<{ s: number; e: number }[]>('get_busy', { p_date: dateKey(data.date) })
+    rpc<{ s: number; e: number }[]>('get_busy_thalyson', { p_date: dateKey(data.date) })
       .then((r) => { if (!off) setBusy(r.ok ? r.data : null); })
       .finally(() => { if (!off) setBusyLoading(false); });
     return () => { off = true; };
@@ -331,16 +337,17 @@ export default function App() {
     }
   };
 
-  const whatsappLink = () => {
+  const whatsappLink = (bookingCode = '') => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' }) : '';
     let loc;
-    if (!isHome) loc = '📍 *Local:* Irei até o seu espaço no Centro Histórico.';
+    if (!isHome) loc = '📍 *Local:* Atendimento no meu espaço, região da Bela Vista/Centro Histórico. O endereço exato será enviado após a confirmação.';
     else {
       const full = `${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}, São Paulo`;
-      loc = `📍 *Local:* Você virá até mim.\n*Endereço:* ${full}\n*Mapa:* https://maps.google.com/?q=${encodeURIComponent(full)}`;
+      loc = `📍 *Local:* Atendimento no seu endereço.\n*Endereço informado:* ${full}\n*Mapa:* https://maps.google.com/?q=${encodeURIComponent(full)}`;
     }
     
     let t = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n*NOME:* ${clean(data.name)}\n`;
+    if (bookingCode) t += `*CÓDIGO DA SOLICITAÇÃO:* ${bookingCode}\n`;
     t += `*DIA E HORA:* ${dStr} das ${data.time} às ${endTime}\n${loc}\n\n`;
     
     t += `*PACOTE (${invoice.dur} min):*\n✅ ${pkg.title}\n`;
@@ -374,9 +381,13 @@ export default function App() {
 
   const finishBooking = async () => {
     if (!data.payment) { vibrate(50); showToast('Escolha a forma de pagamento'); return; }
-    if (submitting || !data.date) return;
+    if (submitting || !data.date || !data.time) return;
+    if (BACKEND_ON && (busyLoading || busy === null)) {
+      showToast('Ainda não consegui verificar os horários. Tente novamente.');
+      return;
+    }
     setSubmitting(true);
-    
+
     if (hp) {
       setSubmitting(false);
       setSentLink('#');
@@ -384,32 +395,54 @@ export default function App() {
       return;
     }
 
+    // Abre a janela dentro do clique do usuário para reduzir bloqueios de pop-up.
     const w = window.open('', '_blank');
-    const link = whatsappLink();
-    let held = true;
-    
-    const r = await rpc<{ ok: boolean; error?: string }>('book_slot', {
-      p_date: dateKey(data.date), p_start: toMin(data.time), p_dur: invoice.dur, p_home: isHome,
-      p_name: data.name.trim(), p_pkg: pkg.id, p_client: clientId(),
-    });
-    
-    if (r.ok && r.data && !r.data.ok) {
-      const err = r.data.error;
-      w?.close(); setSubmitting(false); vibrate(50);
-      showToast(err === 'taken' ? 'Esse horário acabou de ser reservado. Escolha outro.'
-        : err === 'limit' ? 'Você já tem reservas aguardando confirmação.'
-        : err === 'busy_system' ? 'Muitas reservas pendentes agora. Tente em alguns minutos.'
-        : 'Não foi possível reservar. Revise os dados.');
-      setTick((t) => t + 1); set({ time: '' }); setStep(2); return;
+    let bookingCode = '';
+
+    if (BACKEND_ON) {
+      const r = await rpc<{ ok: boolean; error?: string; booking_code?: string }>('book_slot_thalyson', {
+        p_date: dateKey(data.date),
+        p_start_minute: toMin(data.time),
+        p_service_id: pkg.id,
+        p_duration: invoice.dur,
+        p_customer_name: data.name.trim(),
+        p_client_key: clientId(),
+        p_total: Number(invoice.total.toFixed(2)),
+        p_signal: Number(invoice.sinal.toFixed(2)),
+        p_remaining: Number(invoice.rest.toFixed(2)),
+        p_is_home: isHome,
+      });
+
+      if (!r.ok || !r.data) {
+        w?.close();
+        setSubmitting(false);
+        showToast('Não consegui registrar no banco. Nada foi reservado. Tente novamente em instantes.');
+        return;
+      }
+
+      if (!r.data.ok) {
+        const err = r.data.error;
+        w?.close(); setSubmitting(false); vibrate(50);
+        showToast(err === 'taken' ? 'Esse horário acabou de ser ocupado. Escolha outro.'
+          : err === 'limit' ? 'Você já tem solicitações aguardando confirmação.'
+          : err === 'pending_limit' ? 'Você já tem solicitações pendentes. Aguarde a confirmação.'
+          : err === 'busy_system' ? 'Muitas solicitações pendentes agora. Tente em alguns minutos.'
+          : err === 'outside_hours' ? 'Esse horário está fora do período de atendimento.'
+          : err === 'past' ? 'Esse horário já passou ou está muito próximo. Escolha outro.'
+          : err === 'invalid_service' ? 'O pacote não está cadastrado no banco. Avise o suporte antes de tentar reservar.'
+          : 'Não foi possível registrar a solicitação. Revise os dados e tente novamente.');
+        setTick((t) => t + 1); set({ time: '' }); setStep(2); return;
+      }
+      bookingCode = r.data.booking_code || '';
     }
-    
-    if (!r.ok) held = false;
-    if (!held && BACKEND_ON) showToast('Sem trava de horário agora. Confirme direto pelo WhatsApp.');
-    
+
+    const link = whatsappLink(bookingCode);
     store.set('thaly_returning_final', 'yes'); store.del('thaly_draft_booking');
     setSentLink(link); vibrate([30, 50]);
     if (w) { w.opener = null; w.location.href = link; }
+    else window.location.href = link;
     setSubmitting(false); setStep(4);
+    if (!BACKEND_ON) showToast('Solicitação enviada. Sem o banco conectado, o horário precisa ser confirmado manualmente pelo WhatsApp.');
   };
 
   const resetFlow = () => {
@@ -490,7 +523,7 @@ export default function App() {
           <div className="flex flex-col justify-center min-h-[85vh] fade-up">
             <h1 className="text-4xl md:text-5xl font-light mb-12 leading-tight text-stone-50">O seu momento<br /><span className="text-stone-300">de pausa.</span></h1>
             <div className="space-y-4 mb-12">
-              <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="shield" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">{BACKEND_ON ? 'Sigilo e respeito total. Seu nome e horário ficam guardados só para segurar a vaga e vão para o meu WhatsApp pessoal.' : 'Sigilo e respeito total. Não guardo seus dados em nenhum servidor: o que você preenche fica só neste aparelho e segue direto para o meu WhatsApp pessoal quando você enviar.'}</p></div>
+              <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="shield" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">{BACKEND_ON ? 'Privacidade e respeito. Os dados necessários podem ser enviados ao sistema de agenda para verificar e solicitar a reserva; ao concluir, os detalhes seguem para o WhatsApp.' : 'Privacidade e respeito.  Os seus dados ficam neste aparelho até você concluir e seguem para o WhatsApp quando você enviar.'}</p></div>
               <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="lock" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">Atendimento estritamente para maiores de 18 anos, focado no relaxamento do corpo masculino.</p></div>
             </div>
             <button onClick={() => { vibrate(30); store.set('thaly_onboard_final', 'yes'); setStep(1); }} className="bg-stone-100 text-stone-950 min-h-[60px] w-full text-sm font-bold rounded-2xl active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-2">Iniciar agendamento</button>
@@ -622,7 +655,7 @@ export default function App() {
                       const ok = status === 'ok';
                       const peak = isHome && PEAK_HOURS.includes(t);
                       return (
-                        <button key={t} role="radio" aria-checked={sel} disabled={!ok} aria-label={`${t}${ok ? '' : ', indisponível'}${peak ? ', horário de pico' : ''}`}
+                        <button key={t} role="radio" aria-checked={sel} disabled={!ok || busyLoading || (BACKEND_ON && busy === null)} aria-label={`${t}${ok && !busyLoading && (!BACKEND_ON || busy !== null) ? '' : ', indisponível ou aguardando verificação'}${peak ? ', horário de pico' : ''}`}
                           onClick={() => { vibrate(15); set({ time: t }); }}
                           className={`${chipBase} py-3 flex flex-col items-center justify-center ${sel ? chipOn : ok ? chipOff : 'bg-stone-950 border-stone-800 text-stone-600 line-through cursor-not-allowed'}`}>
                           <span className="text-sm font-medium">{t}</span>
@@ -631,7 +664,9 @@ export default function App() {
                       );
                     })}
                   </div>
-                  {availableCount === 0 && <p className="text-sm text-stone-300 text-center py-6">Sem horários livres neste dia. Tente outra data.</p>}
+                  {BACKEND_ON && busy === null && !busyLoading && <div className="text-sm text-amber-200 text-center py-5 space-y-3"><p>Não foi possível verificar a agenda agora. Por segurança, os horários ficam desativados até a verificação funcionar.</p><button type="button" onClick={() => setTick((v) => v + 1)} className="underline underline-offset-4 min-h-[44px]">Tentar novamente</button></div>}
+                  {!busyLoading && !(BACKEND_ON && busy === null) && availableCount === 0 && <p className="text-sm text-stone-300 text-center py-6">Sem horários livres neste dia. Tente outra data.</p>}
+                  {!BACKEND_ON && <p className="text-xs text-stone-500 mt-3">Disponibilidade demonstrativa: a reserva só será confirmada após resposta pelo WhatsApp.</p>}
                   {data.time && <p className="text-sm text-emerald-300 mt-4 flex items-center gap-2"><Icon name="check" size={16} /> Das {data.time} às {endTime}</p>}
                   {touched && errors.time && <p className="text-sm text-red-300 mt-2" role="alert">{errors.time}</p>}
                 </div>
@@ -722,7 +757,7 @@ export default function App() {
 
             <div className="mt-8 pt-6 border-t border-stone-800 flex gap-3">
               <button onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
-              <button onClick={finishBooking} disabled={submitting} aria-disabled={!data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Reservando...' : 'Concluir no WhatsApp'}</button>
+              <button onClick={finishBooking} disabled={submitting} aria-disabled={!data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Preparando...' : 'Enviar solicitação pelo WhatsApp'}</button>
             </div>
           </div>
         )}
@@ -732,7 +767,7 @@ export default function App() {
             <div className="w-20 h-20 bg-emerald-900/40 rounded-full flex items-center justify-center mb-6 border border-emerald-600/60"><Icon name="check" size={32} className="text-emerald-400" /></div>
             <h1 className="text-3xl font-light mb-4 text-stone-50">Tudo pronto!</h1>
             <p className="text-sm text-stone-300 leading-relaxed mb-8 max-w-sm">
-              Sua solicitação foi gerada. Se o WhatsApp não abriu, use o botão abaixo.<br /><br />
+              Sua solicitação foi preparada. O horário só está confirmado depois da resposta pelo WhatsApp. Se o WhatsApp não abriu, use o botão abaixo.<br /><br />
               <strong className="text-amber-300 font-medium">Envie o comprovante do sinal ({money(invoice.sinal)}) na conversa para confirmar.</strong>
             </p>
             <div className="w-full max-w-xs space-y-3">
