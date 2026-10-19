@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 
 type ProfileId = 'marina' | 'rafael' | 'camila' | 'lucas' | 'beatriz';
@@ -143,17 +143,9 @@ const buildWhatsAppMessage = ({
   name,
   note,
   selectedAddons,
-  addonsTotal,
-  subtotal,
-  discount,
-  appliedCoupon,
-  pixDiscount,
   total,
   signal,
   rest,
-  paymentLabel,
-  pixKey,
-  serviceSavings,
 }: {
   profileName: string;
   service: Service;
@@ -162,41 +154,21 @@ const buildWhatsAppMessage = ({
   name: string;
   note: string;
   selectedAddons: Addon[];
-  addonsTotal: number;
-  subtotal: number;
-  discount: number;
-  appliedCoupon: AppliedCoupon | null;
-  pixDiscount: number;
   total: number;
   signal: number;
   rest: number;
-  paymentLabel: string;
-  pixKey: string;
-  serviceSavings: number;
 }) => {
-  const extraText = selectedAddons.map((addon) => `• ${addon.name}: ${money(addon.price)}`).join('\n');
-  const discountLine = appliedCoupon
-    ? `Desconto do cupom ${appliedCoupon.code}: -${money(discount)}`
-    : discount > 0 ? `Desconto de primeira sessão: -${money(discount)}` : '';
-  const priceBreakdown = [
-    `Preço de tabela do atendimento: ${money(service.originalPrice)}`,
-    `Preço promocional aplicado: ${money(service.price)}`,
-    `Economia já aplicada na promoção: ${money(serviceSavings)}`,
-    ...(extraText ? [`Adicionais:\n${extraText}`, `Total dos adicionais: ${money(addonsTotal)}`] : []),
-    `Subtotal: ${money(subtotal)}`,
-    ...(discountLine ? [discountLine] : []),
-    ...(pixDiscount > 0 ? [`Desconto Pix (5%): -${money(pixDiscount)}`] : []),
-    `*VALOR TOTAL: ${money(total)}*`,
-    `*SINAL PARA RESERVA (Pix): ${money(signal)}*`,
-    `*SALDO RESTANTE: ${money(rest)}*`,
-    `Pagamento do saldo: ${paymentLabel}`,
-  ].join('\n');
-  const pixLine = pixKey ? `Chave Pix para o sinal: ${pixKey}` : 'Chave Pix para o sinal: solicitar ao profissional nesta conversa.';
-  return `Olá, ${profileName}! Gostaria de solicitar um agendamento.\n\n*DADOS DO CLIENTE*\nNome: ${clean(name)}${note.trim() ? `\nObservações: ${clean(note)}` : ''}\n\n*AGENDAMENTO*\nAtendimento: ${service.name} (${service.minutes} min)\nData: ${dateLabel}\nHorário: ${time}\n\n*RESUMO DOS VALORES*\n${priceBreakdown}\n\n${pixLine}\n\nPara confirmar o horário, aguardarei a confirmação de disponibilidade e enviarei o comprovante do sinal.`;
+  const addonsText = selectedAddons.length
+    ? `\nAdicionais: ${selectedAddons.map((addon) => clean(addon.name)).join(', ')}`
+    : '';
+
+  return `Olá, ${clean(profileName)}! Gostaria de solicitar um agendamento.\n\n*CLIENTE*\nNome: ${clean(name)}${note.trim() ? `\nObservações: ${clean(note)}` : ''}\n\n*AGENDAMENTO*\nAtendimento: ${clean(service.name)} (${service.minutes} min)\nData: ${dateLabel}\nHorário: ${time}${addonsText}\n\n*RESUMO DOS VALORES*\n*Valor total: ${money(total)}*\n*Sinal para reserva via Pix: ${money(signal)}*\n*Saldo restante: ${money(rest)}*\n\nO sinal faz parte do valor total. Aguardo a confirmação de disponibilidade para concluir a reserva.`;
 };
 
 export default function App() {
   const [profileId, setProfileId] = useState<ProfileId>('marina');
+  const [showProfileControls, setShowProfileControls] = useState(false);
+  const brandTapRef = useRef({ count: 0, startedAt: 0 });
   const profile = PROFILES[profileId];
   const [step, setStep] = useState<0 | 1 | 2>(0);
   const [serviceId, setServiceId] = useState('');
@@ -223,13 +195,37 @@ export default function App() {
     }
   }, [profileId]);
 
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      if (event.altKey && event.shiftKey && event.key.toLowerCase() === 'p') {
+        event.preventDefault();
+        setShowProfileControls((visible) => !visible);
+      }
+      if (event.key === 'Escape') setShowProfileControls(false);
+    };
+    window.addEventListener('keydown', handleShortcut);
+    return () => window.removeEventListener('keydown', handleShortcut);
+  }, []);
+
+  const handleBrandTap = () => {
+    const now = Date.now();
+    if (now - brandTapRef.current.startedAt > 1800) {
+      brandTapRef.current = { count: 1, startedAt: now };
+      return;
+    }
+    brandTapRef.current.count += 1;
+    if (brandTapRef.current.count >= 5) {
+      setShowProfileControls(true);
+      brandTapRef.current = { count: 0, startedAt: 0 };
+    }
+  };
+
   const service = profile.services.find((s) => s.id === serviceId);
   const selectedAddons = profile.addons.filter((a) => addons.includes(a.id));
   const addonsTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
   const invoice = calculateInvoice({ servicePrice: service?.price ?? 0, addonsTotal, isReturning, appliedCoupon, payment });
   const { subtotal, discount, pixDiscount, total, signal, rest } = invoice;
   const serviceSavings = service ? Math.max(0, service.originalPrice - service.price) : 0;
-  const paymentLabel = payment === 'pix' ? 'Pix (desconto de 5%)' : payment === 'card' ? 'Cartão (taxas a combinar)' : payment === 'cash' ? 'Dinheiro' : 'A definir';
   const dates = useMemo(() => Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; }).filter((d) => d.getDay() !== 0), [profileId]);
   const selectedDate = date ? new Date(`${date}T12:00:00`) : null;
   const availableTimes = getAvailableTimes(date, service?.minutes ?? 60);
@@ -238,6 +234,7 @@ export default function App() {
 
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   const changeProfile = (id: ProfileId) => {
+    setShowProfileControls(false);
     if (id === profileId) return;
     setProfileId(id); setStep(0); setServiceId(''); setDate(''); setTime(''); setAddons([]); setName(''); setNote(''); setError(''); setSent(false); setSentToConfiguredContact(false); setIsReturning(false); setPayment(''); setCouponInput(''); setAppliedCoupon(null); setCouponError(''); setBillingNotice(''); scrollTop();
   };
@@ -299,17 +296,9 @@ export default function App() {
       name,
       note,
       selectedAddons,
-      addonsTotal,
-      subtotal,
-      discount,
-      appliedCoupon,
-      pixDiscount,
       total,
       signal,
       rest,
-      paymentLabel,
-      pixKey: profile.pixKey.trim(),
-      serviceSavings,
     });
     const target = profile.phone.replace(/\D/g, '');
     if (target && (target.length < 10 || target.length > 15)) {
@@ -332,20 +321,30 @@ export default function App() {
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap');
       .booking-app{min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Manrope','DM Sans',Arial,sans-serif;transition:background .2s,color .2s;padding-bottom:calc(92px + env(safe-area-inset-bottom))}
       .booking-app *{box-sizing:border-box}.booking-app button,.booking-app input,.booking-app textarea{font:inherit}.booking-app button{cursor:pointer;touch-action:manipulation}.booking-app button:focus-visible,.booking-app input:focus-visible,.booking-app textarea:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-      .booking-wrap{width:min(100% - 32px,680px);margin:0 auto}.booking-top{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:12px;padding:14px 0 12px;border-bottom:1px solid var(--line)}.booking-brand{min-width:0}.booking-brand strong{display:block;font:500 20px/1.1 'Playfair Display',Georgia,serif;white-space:nowrap;letter-spacing:-.02em}.booking-brand span{display:block;color:var(--muted);font-size:10px;margin-top:4px}.booking-switch{display:flex;gap:4px;max-width:100%;overflow-x:auto;border:1px solid var(--line);padding:4px;border-radius:14px;background:var(--surface);scrollbar-width:none}.booking-switch::-webkit-scrollbar{display:none}.booking-switch button{flex:1 0 auto;border:0;border-radius:10px;background:transparent;color:var(--muted);font-size:11px;font-weight:700;padding:10px 12px;white-space:nowrap}.booking-switch button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+      .booking-wrap{width:min(100% - 32px,680px);margin:0 auto}.booking-top{display:flex;align-items:center;justify-content:center;padding:18px 0 14px;border-bottom:1px solid var(--line)}.booking-brand{min-width:0;text-align:center}.booking-brand strong{display:block;font:500 20px/1.1 'Playfair Display',Georgia,serif;white-space:nowrap;letter-spacing:-.02em}.booking-brand span{display:block;color:var(--muted);font-size:10px;margin-top:4px}.booking-brand-trigger{display:block;border:0;background:transparent;color:inherit;padding:0;text-align:center;cursor:pointer}.booking-studio-panel{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:2147483647;width:min(720px,calc(100% - 20px));padding:12px;border:1px solid #d8dce4;border-radius:16px;background:rgba(255,255,255,.97);color:#172033;box-shadow:0 14px 48px rgba(10,20,40,.25);backdrop-filter:blur(16px);font-family:Manrope,Arial,sans-serif}.booking-studio-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.booking-studio-head strong{display:block;font-size:12px;letter-spacing:.02em}.booking-studio-head small{display:block;font-size:10px;color:#667085;margin-top:3px}.booking-studio-close{width:34px;height:34px;border:1px solid #e1e5ec;border-radius:10px;background:#fff;color:#344054;font-size:20px;line-height:1}.booking-studio-buttons{display:flex;gap:7px;overflow-x:auto;padding-bottom:1px;scrollbar-width:none}.booking-studio-buttons::-webkit-scrollbar{display:none}.booking-studio-buttons button{flex:1 0 auto;min-height:42px;border:1px solid #e1e5ec;border-radius:10px;padding:8px 12px;background:#f8fafc;color:#344054;font-size:11px;font-weight:700;white-space:nowrap}.booking-studio-buttons button[aria-pressed="true"]{background:#172b4d;border-color:#172b4d;color:#fff}.booking-studio-tip{font-size:10px;line-height:1.4;color:#667085;margin:9px 1px 0}
       .booking-hero{padding:22px 0 18px}.booking-hero-image{height:174px;border-radius:17px;overflow:hidden;background:var(--line);position:relative;box-shadow:0 10px 28px rgba(35,28,31,.07)}.booking-hero-image img{width:100%;height:100%;object-fit:cover;object-position:center 55%;display:block}.booking-hero-image:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.36),transparent 80%)}.booking-hero-copy{position:absolute;z-index:1;left:22px;right:18px;bottom:20px;color:#fff}.booking-kicker{text-transform:uppercase;letter-spacing:.15em;font-size:9px;font-weight:700;opacity:.96}.booking-hero h1{font:400 clamp(31px,8vw,43px)/1.04 'Playfair Display',Georgia,serif;letter-spacing:-.025em;white-space:pre-line;margin:8px 0 0;max-width:340px}.booking-location{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11px;margin-top:13px}
       .booking-step-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0}.booking-step-head h2{font:400 27px/1.1 'Playfair Display',Georgia,serif;margin:0}.booking-step-head span{font-size:10px;color:var(--muted);white-space:nowrap}.booking-progress{height:3px;display:flex;gap:5px;margin:18px 0 22px}.booking-progress i{height:3px;flex:1;background:var(--line);border-radius:8px}.booking-progress i.on{background:var(--accent)}.booking-section-label{font-size:11px;font-weight:700;margin:20px 0 10px}.booking-services{display:grid;gap:10px}.booking-service{width:100%;display:flex;align-items:center;gap:12px;text-align:left;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px;min-height:100px;transition:border-color .16s,background .16s,box-shadow .16s}.booking-service[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent),0 4px 14px rgba(25,30,45,.04)}.booking-service img{width:78px;height:78px;object-fit:cover;border-radius:8px;flex-shrink:0}.booking-service-info{flex:1;min-width:0}.booking-service-info strong{display:block;font-size:13px;line-height:1.3}.booking-service-info small{display:block;color:var(--muted);font-size:11px;line-height:1.45;margin-top:4px}.booking-service-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}.booking-service-meta b{font-size:13px}.booking-service-meta span{font-size:10px;color:var(--muted)}.booking-price-old{color:var(--muted);text-decoration:line-through;font-size:10px;font-weight:500}.booking-discount-pill{background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--accent)!important;font-weight:800;font-size:9px!important;border-radius:999px;padding:4px 6px}.booking-promo-note{display:flex;flex-direction:column;gap:4px;padding:13px 14px;margin:-4px 0 14px;border-radius:12px;background:color-mix(in srgb,var(--accent) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 20%,var(--line));font-size:11px;line-height:1.5}.booking-promo-note strong{font-size:12px}.booking-returning{display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.5;margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--surface)}.booking-returning input{width:17px;height:17px;accent-color:var(--accent);margin-top:1px;flex-shrink:0}.booking-coupon-box{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:14px;margin-top:10px}.booking-coupon-label{display:block;font-size:12px;font-weight:700;margin-bottom:9px}.booking-coupon-row{display:flex;gap:8px}.booking-coupon-row input{min-width:0;flex:1;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);padding:11px;font-size:13px}.booking-coupon-applied{display:flex;align-items:center;justify-content:space-between;gap:10px}.booking-coupon-applied span{display:flex;flex-direction:column;gap:3px}.booking-coupon-applied small{color:var(--muted);font-size:11px}.booking-payment-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.booking-payment-choice{border:1px solid var(--line);border-radius:11px;background:var(--surface);padding:12px 7px;min-height:70px;text-align:center;color:var(--ink)}.booking-payment-choice strong,.booking-payment-choice span{display:block}.booking-payment-choice strong{font-size:12px}.booking-payment-choice span{font-size:9px;color:var(--muted);margin-top:5px;line-height:1.35}.booking-payment-choice[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:color-mix(in srgb,var(--accent) 7%,var(--surface))}.booking-saving-row,.booking-saving-row strong{color:#16805d!important}.booking-deposit-block{border-top:1px solid var(--line);margin-top:12px;padding-top:13px;display:grid;gap:10px}.booking-deposit-block>div{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}.booking-deposit-block>div span{color:var(--muted)}.booking-deposit-block>div strong{font-size:15px}.booking-deposit-block>div:first-child strong{color:var(--accent)}.booking-deposit-block small{color:var(--muted);font-size:10px;line-height:1.4}.booking-pix-panel{margin-top:14px;padding:15px;border-radius:13px;border:1px solid var(--line);background:var(--bg);display:grid;gap:10px}.booking-pix-panel>div:first-child{display:flex;flex-direction:column;gap:5px}.booking-pix-panel>div:first-child strong{font-size:13px}.booking-pix-panel>div:first-child span{font-size:11px;color:var(--muted);line-height:1.5}.booking-pix-key{border:1px dashed var(--line);background:var(--surface);border-radius:9px;padding:11px;word-break:break-all;font-size:12px}.booking-billing-notice{font-size:11px;color:var(--accent);line-height:1.45}.booking-radio{width:20px;height:20px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;flex-shrink:0}.booking-service[aria-pressed="true"] .booking-radio{border-color:var(--accent)}.booking-service[aria-pressed="true"] .booking-radio:after{content:'';width:10px;height:10px;border-radius:50%;background:var(--accent)}
       .booking-card{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:16px;margin-top:12px;box-shadow:0 4px 18px rgba(25,30,45,.025)}.booking-date-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.booking-date{min-width:0;padding:11px 2px;border:1px solid var(--line);border-radius:11px;background:transparent;color:var(--ink);text-align:center}.booking-date small{display:block;color:var(--muted);font-size:9px;text-transform:capitalize;margin-bottom:7px}.booking-date strong{font-size:15px}.booking-date[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}.booking-date[aria-pressed="true"] small{color:inherit;opacity:.8}.booking-time-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.booking-time{padding:13px 2px;border:1px solid var(--line);border-radius:11px;background:transparent;color:var(--ink);font-size:12px}.booking-time[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface));box-shadow:inset 0 0 0 1px var(--accent)}.booking-addon{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);font-size:12px}.booking-addon:last-child{border-bottom:0}.booking-addon input{width:18px;height:18px;accent-color:var(--accent)}.booking-addon span:nth-child(2){flex:1}.booking-addon b{font-size:12px}.booking-field{display:block;margin:14px 0}.booking-field span{display:block;font-size:11px;font-weight:700;margin-bottom:7px}.booking-field input,.booking-field textarea{display:block;width:100%;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);padding:13px 12px;font-size:14px;min-height:46px}.booking-field textarea{min-height:76px;resize:vertical}.booking-field input::placeholder,.booking-field textarea::placeholder{color:var(--muted)}.booking-summary{background:var(--bg);border-radius:10px;padding:14px;margin:14px 0}.booking-summary-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:12px}.booking-summary-row span{color:var(--muted)}.booking-summary-row strong{text-align:right}.booking-summary-total{border-top:1px solid var(--line);margin-top:5px;padding-top:13px;font-size:15px}.booking-error{color:#c04e4e;font-size:12px;margin:12px 0}.booking-note{font-size:11px;color:var(--muted);line-height:1.55;margin:12px 0}.booking-actions{display:flex;gap:10px;margin-top:20px}.booking-btn{min-height:48px;border-radius:12px;padding:0 17px;border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.booking-btn.primary{flex:1;background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.booking-btn:disabled{opacity:.45;cursor:not-allowed}.booking-bottom{position:fixed;z-index:20;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px rgba(25,30,45,.055)}.booking-bottom-inner{width:min(100%,720px);margin:auto;display:flex;align-items:center;gap:12px}.booking-bottom-price{min-width:82px}.booking-bottom-price small{display:block;font-size:10px;color:var(--muted);margin-bottom:3px}.booking-bottom-price strong{font-size:16px}.booking-bottom .booking-btn{flex:1}.booking-success{text-align:center;padding:36px 8px 22px}.booking-success-mark{width:54px;height:54px;margin:0 auto 18px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:24px}.booking-success h2{font:400 30px/1.1 'Playfair Display',Georgia,serif;margin:0 0 10px}.booking-success p{font-size:13px;line-height:1.65;color:var(--muted);max-width:330px;margin:0 auto 20px}.booking-footer{text-align:center;color:var(--muted);font-size:10px;padding:26px 0 10px}
       @media(min-width:640px){.booking-wrap{width:min(100% - 48px,680px)}.booking-hero{padding-top:30px}.booking-hero-image{height:240px}.booking-service img{width:88px;height:88px}.booking-services{gap:12px}.booking-card{padding:20px}.booking-bottom{padding-left:24px;padding-right:24px}}
-      @media(max-width:360px){.booking-payment-choices{gap:5px}.booking-payment-choice{padding:10px 4px}.booking-payment-choice span{font-size:8px}.booking-coupon-row{flex-direction:column}.booking-wrap{width:calc(100% - 24px)}.booking-brand strong{font-size:16px}.booking-switch button{padding:8px 10px;font-size:10px}.booking-hero-image{height:155px}.booking-service{gap:8px;padding:8px}.booking-service img{width:66px;height:72px}.booking-service-info small{font-size:10px}.booking-time-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.booking-bottom-inner{gap:8px}.booking-bottom-price{min-width:68px}}
+      @media(max-width:360px){.booking-payment-choices{gap:5px}.booking-payment-choice{padding:10px 4px}.booking-payment-choice span{font-size:8px}.booking-coupon-row{flex-direction:column}.booking-wrap{width:calc(100% - 24px)}.booking-brand strong{font-size:16px}.booking-studio-panel{padding:9px}.booking-studio-buttons button{padding:8px 10px;font-size:10px}.booking-hero-image{height:155px}.booking-service{gap:8px;padding:8px}.booking-service img{width:66px;height:72px}.booking-service-info small{font-size:10px}.booking-time-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.booking-bottom-inner{gap:8px}.booking-bottom-price{min-width:68px}}
       @media(prefers-reduced-motion:reduce){.booking-app *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
     `}</style>
 
-    <header className="booking-wrap booking-top">
-      <div className="booking-brand"><strong>{profile.name}</strong><span>{profile.role}</span></div>
-      <nav className="booking-switch" role="group" aria-label="Escolher profissional">
+    {showProfileControls && <aside className="booking-studio-panel" role="dialog" aria-label="Controles privados de demonstração">
+      <div className="booking-studio-head">
+        <span><strong>CONTROLE DE GRAVAÇÃO</strong><small>Escolha um perfil; os controles se ocultam automaticamente.</small></span>
+        <button type="button" className="booking-studio-close" aria-label="Ocultar controles" onClick={() => setShowProfileControls(false)}>×</button>
+      </div>
+      <nav className="booking-studio-buttons" role="group" aria-label="Trocar perfil da demonstração">
         {PROFILE_IDS.map((id) => <button key={id} type="button" aria-pressed={profileId === id} onClick={() => changeProfile(id)}>{PROFILES[id].shortName}</button>)}
       </nav>
+      <p className="booking-studio-tip">Atalho: Alt + Shift + P · toque 5 vezes no nome no topo para abrir no celular. Esc oculta os controles.</p>
+    </aside>}
+
+    <header className="booking-wrap booking-top">
+      <button type="button" className="booking-brand booking-brand-trigger" onClick={handleBrandTap} aria-label="Marca do profissional">
+        <strong>{profile.name}</strong><span>{profile.role}</span>
+      </button>
     </header>
 
     <main className="booking-wrap">
