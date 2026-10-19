@@ -1,187 +1,208 @@
-import { useState, useEffect, useMemo, useRef, memo, type ReactNode } from 'react';
+import { useState, useEffect, useMemo, useRef, memo, type ReactNode, type CSSProperties } from 'react';
 
 /* ==========================================================================
-   1. CONFIGURAÇÃO (MUDE AQUI OS DADOS DO SEU CLIENTE ANTES DE MOSTRAR)
+   1. CONFIGURAÇÃO — É SÓ AQUI QUE VOCÊ TROCA OS DADOS DE CADA CLIENTE
    ========================================================================== */
 const CONFIG = {
-  NOME_PROFISSIONAL: 'Marina Albuquerque', // Nome do cliente que vai comprar de você
-  SUBTITULO: 'Especialista em Massoterapia & Estética',
-  PHONE: '5511999999999', // WhatsApp do cliente
-  PIX_KEY: '123.456.789-00', // Chave Pix do cliente
+  NOME_PROFISSIONAL: 'Marina Albuquerque',
+  SUBTITULO: 'Massoterapia e estética',
+  BIO: 'Terapias manuais com foco em resultado: menos dor, mais descanso. Atendo no studio ou na sua casa, com maca, toalhas e óleos por minha conta.',
+  PHONE: '5511999999999', // formato: 55 + DDD + número (só dígitos)
+  PIX_KEY: '123.456.789-00',
   INSTAGRAM: 'https://www.instagram.com/',
-  REVIEW_LINK: 'https://g.page/',
-  // Foto profissional real de terapeuta para o cliente se identificar
-  COVER_IMAGE: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', 
-  AVATAR: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-  COUPONS: { BEMVINDA: 15, VIPS: 0.15 } as Record<string, number>,
-  SIGNAL_AMOUNT: 50, // Valor fixo do sinal
+  // Deixe vazio '' para usar monograma/gradiente. Use SÓ fotos da própria cliente (foto de banco de imagem = risco de confiança e de direito de imagem).
+  AVATAR: '',
+  COVER_IMAGE: '',
+  TEMA: 'pinho' as 'pinho' | 'ameixa' | 'oceano',
+  PREFIXO_STORAGE: 'agenda_marina', // troque por cliente, evita conflito entre sites no mesmo domínio
+  // Cupons guardados como hash SHA-256 (não aparecem em texto puro no código). Gere novos: echo -n "CODIGO" | sha256sum
+  CUPONS: {
+    '97f3d191265f088b2c6c27a1007e5ea39bb59af039bb622273198ef4249fa2ce': { label: 'Boas-vindas', value: 15 }, // R$ 15 fixo
+    '6750db4abc5d9f40baba4b6284cfbfb5ff8e8e2573a8625ae936d4a6e6515e6d': { label: 'VIP', value: 0.15 }, // 15%
+  } as Record<string, { label: string; value: number }>,
+  SIGNAL_AMOUNT: 50,
   FIRST_TIME_DISCOUNT: 20,
   PEAK_FEE: 35,
   PIX_DISCOUNT: 0.05,
-  OPEN_MIN: 9 * 60, 
-  LAST_END_MIN: 20 * 60, 
-  SLOT_STEP: 30, 
-  BUFFER_STUDIO: 30, 
+  OPEN_MIN: 9 * 60,
+  LAST_END_MIN: 20 * 60,
+  SLOT_STEP: 30,
+  BUFFER_STUDIO: 30,
   BUFFER_HOME: 60,
-  MIN_LEAD_STUDIO: 120, 
-  MIN_LEAD_HOME: 240, 
+  MIN_LEAD_STUDIO: 120,
+  MIN_LEAD_HOME: 240,
   DAYS_AHEAD: 14,
-  DAYS_OFF: [0], 
+  DAYS_OFF: [0], // 0 = domingo
+  // Agenda manual (sem banco): bloqueie aqui o que a profissional já tem ocupado. Formato 'AAAA-MM-DD': ['HH:MM-HH:MM']
+  BLOQUEIOS: {
+    // '2026-10-23': ['09:00-12:00'],
+    // '2026-12-25': ['00:00-23:59'],
+  } as Record<string, string[]>,
+};
+
+const THEMES = {
+  pinho: { brand: '#23403A', dark: '#162B27', accent: '#B08D57', paper: '#F3F5F2', soft: '#E3EAE5' },
+  ameixa: { brand: '#4A2C4A', dark: '#321D32', accent: '#C9A27A', paper: '#F7F3F6', soft: '#EBE0EA' },
+  oceano: { brand: '#1F3B57', dark: '#14283C', accent: '#C7A97B', paper: '#F2F5F8', soft: '#DFE8F0' },
 };
 
 const PACKAGES = [
-  { id: 'relaxante', title: 'Massagem Relaxante', originalPrice: 190, price: 160, min: 60, tags: ['Aromaterapia', 'Corpo Inteiro'],
-    desc: 'Desperte os sentidos e elimine a tensão acumulada. Movimentos contínuos e fluidos com óleos essenciais puros para induzir a um estado de relaxamento profundo.' },
-  { id: 'drenagem', title: 'Drenagem Linfática Método Exclusivo', originalPrice: 220, price: 180, min: 60, tags: ['Detox', 'Modeladora'],
-    desc: 'Estímulo suave do sistema linfático para redução de edemas e eliminação de toxinas. O contorno corporal mais leve desde a primeira sessão.' },
-  { id: 'pedras', title: 'Terapia das Pedras Quentes', originalPrice: 260, price: 220, min: 90, tags: ['Termoterapia', 'Energia'],
-    desc: 'O calor profundo das pedras vulcânicas derrete tensões musculares crônicas, alinhando centros energéticos e trazendo um conforto térmico ímpar.' },
-  { id: 'spa_facial', title: 'Spa Facial Iluminador', originalPrice: 180, price: 140, min: 50, tags: ['Revitalização', 'Glow'],
-    desc: 'Limpeza, esfoliação com bioativos e máscara nutritiva de argila dourada. Devolve o viço natural e a hidratação da pele cansada.' },
+  { id: 'relaxante', title: 'Massagem relaxante', originalPrice: 190, price: 160, min: 60, tags: ['Aromaterapia', 'Corpo inteiro'],
+    desc: 'Movimentos contínuos com óleos essenciais para soltar a tensão do dia a dia e ajudar no sono.' },
+  { id: 'drenagem', title: 'Drenagem linfática', originalPrice: 220, price: 180, min: 60, tags: ['Redução de inchaço', 'Modeladora'],
+    desc: 'Toques leves que estimulam o sistema linfático e reduzem a retenção de líquido.' },
+  { id: 'pedras', title: 'Pedras quentes', originalPrice: 260, price: 220, min: 90, tags: ['Termoterapia'],
+    desc: 'O calor das pedras vulcânicas relaxa a musculatura profunda, indicado para dores crônicas e estresse.' },
+  { id: 'spa_facial', title: 'Spa facial', originalPrice: 180, price: 140, min: 50, tags: ['Limpeza', 'Hidratação'],
+    desc: 'Limpeza, esfoliação suave e máscara nutritiva para devolver viço à pele cansada.' },
 ];
 
 const ADDONS = [
-  { id: 'esfoliacao', label: 'Esfoliação Corporal Renovadora', price: 50 },
-  { id: 'escalda', label: 'Escalda-pés com Ervas Frescas', price: 40 },
+  { id: 'esfoliacao', label: 'Esfoliação corporal', price: 50 },
+  { id: 'escalda', label: 'Escalda-pés com ervas', price: 40 },
 ];
 
 const PEAK_HOURS = ['18:00', '18:30', '19:00', '19:30'];
 
 /* ==========================================================================
-   2. UTILITÁRIOS & ESTILO
+   2. UTILITÁRIOS E SEGURANÇA
    ========================================================================== */
-const money = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;
-const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+const money = (v: number) => brl.format(v).replace(/\u00a0/g, ' ');
+const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate?.(p); } catch (e) {} };
 const store = {
-  get: (k: string): string | null => { try { return localStorage.getItem(k); } catch (e) { return null; } },
-  set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch (e) {} },
-  del: (k: string) => { try { localStorage.removeItem(k); } catch (e) {} },
+  get: (k: string): string | null => { try { return localStorage.getItem(`${CONFIG.PREFIXO_STORAGE}_${k}`); } catch (e) { return null; } },
+  set: (k: string, v: string) => { try { localStorage.setItem(`${CONFIG.PREFIXO_STORAGE}_${k}`, v); } catch (e) {} },
+};
+// Privacidade: NENHUM dado pessoal (nome, endereço, CEP) é gravado no aparelho. Só a marca "cliente recorrente".
+
+// Remove caracteres de controle e de formatação do WhatsApp (* _ ~ `), links e limita tamanho.
+const clean = (t: string, max = 140) =>
+  t.replace(/[\u0000-\u001f\u007f<>]/g, ' ').replace(/[*_~`]+/g, '').replace(/https?:\/\/\S+/gi, '[link removido]').replace(/\s+/g, ' ').trim().slice(0, max);
+const cleanName = (t: string) => t.replace(/[^\p{L}\p{M}\s'.-]/gu, '').replace(/\s+/g, ' ').slice(0, 60);
+const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
+const safeUrl = (u: string) => { try { return new URL(u).protocol === 'https:' ? u : '#'; } catch (e) { return '#'; } };
+const PHONE_OK = /^55\d{10,11}$/.test(CONFIG.PHONE);
+
+const sha256 = async (s: string) => {
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(b)).map((x) => x.toString(16).padStart(2, '0')).join('');
 };
 
-const clean = (t: string) => t.replace(/[*_~`\r\n]+/g, ' ').trim();
-const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
 const dateKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const toMin = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
 const fromMin = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
-const sameDay = (a: Date | null, b: Date): boolean => !!a && dateKey(a) === dateKey(b);
+const sameDay = (a: Date | null, b: Date) => !!a && dateKey(a) === dateKey(b);
 const dayLabel = (d: Date, i: number) => (i === 0 ? 'Hoje' : i === 1 ? 'Amanhã' : d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', ''));
 const copyText = async (t: string) => { try { await navigator.clipboard.writeText(t); return true; } catch (e) { return false; } };
 
 const ICONS = {
   instagram: 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
-  leaf: 'M11 20A7 7 0 0 1 4 13c0-3.5 3-7 8-11 5 4 8 7.5 8 11a7 7 0 0 1-7 7z M12 2v20 M12 12l3-3 M12 16l3-3',
   check: 'M20 6L9 17l-5-5',
   close: 'M18 6L6 18 M6 6l12 12',
   map: 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
   clock: 'M12 6v6l4 2 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0z',
   copy: 'M9 9h11v11H9z M5 15H4V4h11v1',
-  sparkles: 'M9 3v4 M7 5h4 M19 8v4 M17 10h4 M12 15l-3 6 1.5-6-3-2h4l1.5-4 1.5 4h4l-3 2 1.5 6z',
+  lock: 'M5 11h14v10H5z M8 11V7a4 4 0 0 1 8 0v4',
   chevronLeft: 'M15 18l-6-6 6-6',
 };
-
 type IconName = keyof typeof ICONS;
 const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?: number; className?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true">
-    <path d={ICONS[name] || ''} />
+    <path d={ICONS[name]} />
   </svg>
 ));
 
-const inputCls = 'w-full bg-transparent border-b-2 border-stone-300 px-2 py-4 text-lg text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-stone-900 transition-colors rounded-none';
-const labelCls = 'block text-[11px] font-bold tracking-widest text-stone-900 uppercase mt-8 mb-3';
-const chipBase = 'min-h-[60px] border-2 rounded-2xl transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-stone-900 shadow-sm';
-const chipOn = 'bg-stone-900 text-white border-stone-900 font-semibold transform scale-[1.02] shadow-md';
-const chipOff = 'bg-white border-stone-200 text-stone-700 hover:border-stone-400 hover:bg-stone-50';
-const btnPrimary = 'min-h-[60px] px-8 text-[15px] tracking-wide font-bold rounded-2xl bg-[#3E4233] text-white hover:bg-[#2A2D23] shadow-lg shadow-[#3E4233]/30 active:scale-[0.98] transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#3E4233] focus-visible:outline-offset-2 disabled:bg-stone-300 disabled:text-stone-500 disabled:shadow-none disabled:cursor-not-allowed';
+const initials = CONFIG.NOME_PROFISSIONAL.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+const Avatar = ({ size = 48 }: { size?: number }) => {
+  const [failed, setFailed] = useState(false);
+  if (CONFIG.AVATAR && !failed) {
+    return <img src={CONFIG.AVATAR} alt="" width={size} height={size} onError={() => setFailed(true)} referrerPolicy="no-referrer" className="rounded-full object-cover shrink-0" style={{ width: size, height: size }} />;
+  }
+  return (
+    <span className="rounded-full shrink-0 inline-flex items-center justify-center font-serif font-semibold bg-[var(--brand)] text-[var(--paper)]" style={{ width: size, height: size, fontSize: size * 0.38 }} aria-hidden="true">{initials}</span>
+  );
+};
+
+const inputCls = 'w-full bg-white border border-stone-300 rounded-xl px-4 min-h-[56px] text-[16px] text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)]/20 transition';
+const labelCls = 'block text-[15px] font-semibold text-stone-900 mb-2';
+const errCls = 'text-[14px] font-medium text-red-700 mt-2';
+const chipOn = 'bg-[var(--brand)] text-white border-[var(--brand)]';
+const chipOff = 'bg-white border-stone-300 text-stone-800 hover:border-stone-500';
+const btnPrimary = 'min-h-[56px] px-8 text-[16px] font-semibold rounded-xl bg-[var(--brand)] text-white hover:bg-[var(--dark)] active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed';
 
 /* ==========================================================================
    3. APP
    ========================================================================== */
-type SlotStatus = 'ok' | 'past';
+type SlotStatus = 'ok' | 'past' | 'busy';
 interface BookingData {
   name: string; locType: 'studio' | 'home'; cep: string; street: string; number: string; comp: string; bairro: string;
   date: Date | null; time: string; req: string; payment: string; packageId: string; addons: Record<string, boolean>;
 }
+const EMPTY: BookingData = { name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', date: null, time: '', req: '', payment: '', packageId: PACKAGES[0].id, addons: {} };
+
+const SummaryRow = ({ label, value, bold = false }: { label: string; value: ReactNode; bold?: boolean }) => (
+  <div className={`flex justify-between items-baseline gap-4 py-2 text-[15px] ${bold ? 'text-stone-900 font-semibold' : 'text-stone-600'}`}>
+    <span>{label}</span><span className="text-right text-stone-900">{value}</span>
+  </div>
+);
+
+const BottomBar = ({ children }: { children: ReactNode }) => (
+  <div className="fixed bottom-0 inset-x-0 z-30 bg-[var(--paper)]/95 backdrop-blur border-t border-stone-300" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-4">{children}</div>
+  </div>
+);
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
   const [step, setStep] = useState(0);
   const [isReturning, setIsReturning] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [toast, setToast] = useState('');
   const [touched, setTouched] = useState(false);
-  const [coupon, setCoupon] = useState({ input: '', applied: '', value: 0, error: '' });
+  const [coupon, setCoupon] = useState({ input: '', applied: '', value: 0, error: '', open: false });
   const [now, setNow] = useState(() => new Date());
+  const [ref] = useState(() => Math.random().toString(36).slice(2, 7).toUpperCase());
   const numberRef = useRef<HTMLInputElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [whatsappSent, setWhatsappSent] = useState(false);
-
-  const [data, setData] = useState<BookingData>({
-    name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '',
-    date: null, time: '', req: '', payment: '', packageId: PACKAGES[0].id, addons: {},
-  });
+  const cepAbort = useRef<AbortController | null>(null);
+  const attempts = useRef({ fails: 0, lockUntil: 0 });
+  const [data, setData] = useState<BookingData>(EMPTY);
   const set = (patch: Partial<BookingData>) => setData((p) => ({ ...p, ...patch }));
+
+  const theme = THEMES[CONFIG.TEMA] || THEMES.pinho;
+  const themeVars = { '--brand': theme.brand, '--dark': theme.dark, '--accent': theme.accent, '--paper': theme.paper, '--soft': theme.soft } as CSSProperties;
 
   const showToast = (msg: string) => {
     setToast(msg);
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(''), 3000);
+    toastTimer.current = setTimeout(() => setToast(''), 3200);
   };
 
-  useEffect(() => { const t = setTimeout(() => setIsLoading(false), 1200); return () => clearTimeout(t); }, []);
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t); }, []);
-
-  useEffect(() => {
-    if (isLoading) return;
-    if (store.get('agenda_pro_onboard') === 'yes') setStep(1);
-    if (store.get('agenda_pro_ret') === 'yes') setIsReturning(true);
-    const draft = store.get('agenda_pro_draft');
-    if (draft) {
-      try {
-        const d = JSON.parse(draft);
-        setData((p) => ({ ...p, name: d.name || '', locType: d.locType || 'studio', street: d.street || '', number: d.number || '', bairro: d.bairro || '', cep: d.cep || '' }));
-      } catch (e) {}
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
-    if (data.name.length > 2) {
-      store.set('agenda_pro_draft', JSON.stringify({ name: data.name, locType: data.locType, street: data.street, number: data.number, bairro: data.bairro, cep: data.cep }));
-    }
-  }, [data.name, data.locType, data.street, data.number, data.bairro, data.cep]);
-
-  useEffect(() => { if (step > 0) window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
+  useEffect(() => { if (store.get('ret') === 'yes') setIsReturning(true); }, []);
+  useEffect(() => { if (step > 0) window.scrollTo({ top: 0 }); }, [step]);
+  useEffect(() => { document.title = `${CONFIG.NOME_PROFISSIONAL} · Agendamento`; }, []);
 
   const pkg = useMemo(() => PACKAGES.find((p) => p.id === data.packageId) || PACKAGES[0], [data.packageId]);
   const isHome = data.locType === 'home';
 
   const invoice = useMemo(() => {
-    let dur = pkg.min, addonsTotal = 0;
-    const activeAddons: typeof ADDONS = [];
-    ADDONS.forEach((a) => {
-      if (data.addons[a.id]) { addonsTotal += a.price; activeAddons.push(a); }
-    });
-    
+    const activeAddons = ADDONS.filter((a) => data.addons[a.id]);
+    const addonsTotal = activeAddons.reduce((s, a) => s + a.price, 0);
     const base = pkg.price + addonsTotal;
     const peakFee = isHome && PEAK_HOURS.includes(data.time) ? CONFIG.PEAK_FEE : 0;
-
     let discount = 0;
-    if (coupon.applied) {
-      const v = coupon.value;
-      discount = v < 1 ? Math.floor(base * v) : v;
-    } else if (!isReturning) {
-      discount = CONFIG.FIRST_TIME_DISCOUNT;
-    }
+    if (coupon.applied) discount = coupon.value < 1 ? Math.floor(base * coupon.value) : coupon.value;
+    else if (!isReturning) discount = CONFIG.FIRST_TIME_DISCOUNT;
     discount = Math.min(discount, base);
-
     const afterDiscount = base - discount;
     const pixDiscount = data.payment === 'pix' ? Math.ceil(afterDiscount * CONFIG.PIX_DISCOUNT) : 0;
     const total = afterDiscount - pixDiscount + peakFee;
     const sinal = Math.min(CONFIG.SIGNAL_AMOUNT, total);
-    const rest = Math.max(0, total - sinal); // Valor exato que falta pagar após o sinal de 50
-    
-    return { base: pkg.price, addonsTotal, peakFee, discount, pixDiscount, total, sinal, rest, dur, activeAddons };
-  }, [data, pkg, isHome, isReturning, coupon.applied, coupon.value]);
+    return { base: pkg.price, addonsTotal, peakFee, discount, pixDiscount, total, sinal, rest: Math.max(0, total - sinal), dur: pkg.min, activeAddons };
+  }, [data.addons, data.time, data.payment, pkg, isHome, isReturning, coupon.applied, coupon.value]);
 
+  const todayKey = dateKey(now);
   const days = useMemo(() => {
     const out: { d: Date; i: number }[] = [];
     for (let i = 0; out.length < CONFIG.DAYS_AHEAD && i < 40; i++) {
@@ -189,7 +210,8 @@ export default function App() {
       if (!CONFIG.DAYS_OFF.includes(d.getDay())) out.push({ d, i });
     }
     return out;
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todayKey]);
 
   const slots = useMemo(() => {
     if (!data.date) return [];
@@ -197,11 +219,12 @@ export default function App() {
     const lead = isHome ? CONFIG.MIN_LEAD_HOME : CONFIG.MIN_LEAD_STUDIO;
     const nowMin = now.getHours() * 60 + now.getMinutes();
     const today = sameDay(data.date, now);
+    const blocks = (CONFIG.BLOQUEIOS[dateKey(data.date)] || []).map((r) => { const [a, b] = r.split('-'); return [toMin(a), toMin(b)]; });
     const out: { t: string; status: SlotStatus }[] = [];
-    
-    for (let m = CONFIG.OPEN_MIN; (m + invoice.dur + buffer) <= (CONFIG.LAST_END_MIN + buffer); m += CONFIG.SLOT_STEP) {
+    for (let m = CONFIG.OPEN_MIN; m + invoice.dur <= CONFIG.LAST_END_MIN; m += CONFIG.SLOT_STEP) {
       let status: SlotStatus = 'ok';
       if (today && m < nowMin + lead) status = 'past';
+      else if (blocks.some(([a, b]) => m < b + buffer && m + invoice.dur + buffer > a)) status = 'busy';
       out.push({ t: fromMin(m), status });
     }
     return out;
@@ -209,481 +232,388 @@ export default function App() {
 
   const availableCount = slots.filter((s) => s.status === 'ok').length;
   const endTime = data.time ? fromMin(toMin(data.time) + invoice.dur) : '';
+  const periods = [
+    { label: 'Manhã', items: slots.filter((s) => toMin(s.t) < 720) },
+    { label: 'Tarde', items: slots.filter((s) => toMin(s.t) >= 720 && toMin(s.t) < 1080) },
+    { label: 'Noite', items: slots.filter((s) => toMin(s.t) >= 1080) },
+  ].filter((p) => p.items.length);
 
   const errors = {
-    name: data.name.trim().length < 3 ? 'Preencha seu nome completo.' : '',
-    date: !data.date ? 'Escolha uma data disponível.' : '',
-    time: data.date && !data.time ? 'Selecione um horário.' : '',
-    address: isHome && !(data.street && data.number && data.bairro) ? 'Preencha o endereço de destino completo.' : '',
+    name: data.name.trim().split(' ').filter(Boolean).length < 2 ? 'Informe nome e sobrenome.' : '',
+    date: !data.date ? 'Escolha uma data.' : '',
+    time: data.date && !data.time ? 'Escolha um horário.' : '',
+    address: isHome && !(data.street.trim() && data.number.trim() && data.bairro.trim()) ? 'Preencha rua, número e bairro.' : '',
   };
-  const step2Valid = !errors.name && data.date && data.time && !errors.address;
+  const step2Valid = !errors.name && !errors.date && !errors.time && !errors.address;
 
-  const applyCoupon = () => {
-    const code = coupon.input.trim().toUpperCase();
+  const applyCoupon = async () => {
+    const code = coupon.input.trim().toUpperCase().slice(0, 30);
     if (!code) return;
-    const val = CONFIG.COUPONS[code];
-    if (val) {
-      vibrate([20, 40]); setCoupon({ input: '', applied: code, value: val, error: '' }); showToast('Vantagem aplicada com sucesso.');
+    if (Date.now() < attempts.current.lockUntil) { setCoupon((c) => ({ ...c, error: 'Muitas tentativas. Aguarde 1 minuto.' })); return; }
+    const found = CONFIG.CUPONS[await sha256(code)];
+    if (found) {
+      attempts.current.fails = 0;
+      vibrate([20, 40]); setCoupon({ input: '', applied: found.label, value: found.value, error: '', open: false }); showToast('Cupom aplicado.');
     } else {
-      vibrate(50); setCoupon((c) => ({ ...c, error: 'Código inválido ou expirado.' }));
+      attempts.current.fails += 1;
+      if (attempts.current.fails >= 5) { attempts.current = { fails: 0, lockUntil: Date.now() + 60000 }; }
+      vibrate(50); setCoupon((c) => ({ ...c, error: 'Cupom inválido ou expirado.' }));
     }
   };
 
-  const copyPix = async () => {
-    const ok = await copyText(CONFIG.PIX_KEY);
-    showToast(ok ? 'Chave Pix copiada' : `Chave Pix: ${CONFIG.PIX_KEY}`);
-  };
-
-  const selectPayment = (m: string) => { vibrate(15); set({ payment: m }); };
+  const copyPix = async () => showToast((await copyText(CONFIG.PIX_KEY)) ? 'Chave Pix copiada.' : `Chave Pix: ${CONFIG.PIX_KEY}`);
 
   const handleCep = async (val: string) => {
     const masked = maskCEP(val);
     set({ cep: masked });
-    if (masked.length === 9) {
-      try {
-        const res = await fetch(`https://viacep.com.br/ws/${masked.replace('-', '')}/json/`);
-        const j = await res.json();
-        if (!j.erro) { setData((p) => ({ ...p, street: j.logradouro || p.street, bairro: j.bairro || p.bairro })); setTimeout(() => numberRef.current?.focus(), 150); }
-        else showToast('CEP não encontrado.');
-      } catch (e) { showToast('Erro ao buscar o CEP.'); }
-    }
+    if (masked.length !== 9) return;
+    cepAbort.current?.abort();
+    const ctl = new AbortController(); cepAbort.current = ctl;
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${masked.replace(/\D/g, '')}/json/`, { signal: ctl.signal, referrerPolicy: 'no-referrer' });
+      if (!res.ok) throw new Error('bad');
+      const j = await res.json();
+      if (j && !j.erro) {
+        setData((p) => ({ ...p, street: clean(String(j.logradouro || ''), 100) || p.street, bairro: clean(String(j.bairro || ''), 60) || p.bairro }));
+        setTimeout(() => numberRef.current?.focus(), 150);
+      } else showToast('CEP não encontrado. Preencha o endereço manualmente.');
+    } catch (e) { if ((e as Error).name !== 'AbortError') showToast('Não foi possível buscar o CEP. Preencha manualmente.'); }
   };
 
   const whatsappLink = () => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' }) : '';
-    let loc;
-    if (!isHome) loc = '📍 *Local:* Atendimento no Studio';
-    else {
-      const full = `${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}`;
-      loc = `📍 *Atendimento em Domicílio*\n*Endereço:* ${full}`;
-    }
-    
-    // MENSAGEM DO WHATSAPP CORRIGIDA COM OS VALORES EXATOS DE TOTAL, SINAL E RESTANTE
-    let t = `Olá, ${CONFIG.NOME_PROFISSIONAL.split(' ')[0]}! Finalizei a solicitação de agendamento no site e gostaria de confirmar meu horário.\n\n`;
-    t += `👤 *NOME:* ${clean(data.name)}\n`;
-    t += `📅 *DIA E HORA:* ${dStr} das ${data.time} às ${endTime}\n${loc}\n\n`;
-    
-    t += `💆‍♀️ *SESSÃO ESCOLHIDA (${invoice.dur} min):*\n▪ ${pkg.title}\n`;
-    invoice.activeAddons.forEach((a) => (t += `▪ Adicional: ${a.label}\n`));
-    if (data.req.trim()) t += `\n*OBSERVAÇÃO:* "${clean(data.req)}"\n`;
-    
-    t += `\n*====================*\n`;
-    t += `*💰 RESUMO FINANCEIRO*\n`;
-    t += `*====================*\n`;
-    t += `*Valor Total:* ${money(invoice.total)}\n\n`;
-    t += `*1️⃣ PIX AGORA (Sinal):* ${money(invoice.sinal)}\n`;
-    t += `*2️⃣ RESTANTE A PAGAR NO DIA:* ${money(invoice.rest)} (${data.payment.toUpperCase()})\n\n`;
-    
-    t += `*Chave Pix para o Sinal:* ${CONFIG.PIX_KEY}\n\n`;
-    t += 'Segue em anexo o comprovante do sinal. Aguardo sua confirmação!';
-    
+    const loc = !isHome
+      ? 'Local: Studio'
+      : `Atendimento em domicílio\nEndereço: ${clean(data.street, 100)}, ${clean(data.number, 10)}${data.comp ? ' - ' + clean(data.comp, 40) : ''} - ${clean(data.bairro, 60)}`;
+    let t = `Olá, ${CONFIG.NOME_PROFISSIONAL.split(' ')[0]}! Quero confirmar meu agendamento (ref. ${ref}).\n\n`;
+    t += `*Nome:* ${clean(data.name, 60)}\n*Dia e hora:* ${dStr}, ${data.time} às ${endTime}\n${loc}\n\n`;
+    t += `*Sessão (${invoice.dur} min):* ${pkg.title}\n`;
+    invoice.activeAddons.forEach((a) => (t += `Adicional: ${a.label}\n`));
+    if (data.req.trim()) t += `Observação: "${clean(data.req)}"\n`;
+    t += `\n*Total:* ${money(invoice.total)}\n*Sinal via Pix:* ${money(invoice.sinal)}\n*Restante no dia:* ${money(invoice.rest)} (${{ pix: 'Pix', card: 'cartão', cash: 'dinheiro' }[data.payment] || ''})\n\n`;
+    t += 'Vou enviar o comprovante do sinal em seguida.';
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
   };
 
+  const openWhatsapp = () => {
+    const w = window.open(whatsappLink(), '_blank');
+    if (w) w.opener = null; else window.location.href = whatsappLink();
+  };
+
   const finishBooking = () => {
-    if (!data.payment) { vibrate(50); showToast('Selecione como irá pagar o restante no local.'); return; }
-    if (!data.date) return;
-    
-    store.set('agenda_pro_ret', 'yes'); 
-    store.del('agenda_pro_draft');
-    
-    setWhatsappSent(true);
-    setStep(4);
-    
+    if (!PHONE_OK) { showToast('Número de WhatsApp inválido na configuração.'); return; }
+    if (!data.payment) { vibrate(50); setTouched(true); showToast('Escolha como vai pagar o restante.'); return; }
+    if (!data.date || !step2Valid) return;
+    store.set('ret', 'yes');
     vibrate([30, 50]);
-    setTimeout(() => {
-        window.location.href = whatsappLink();
-    }, 600);
+    openWhatsapp();
+    setStep(4);
+  };
+
+  const restart = () => { setData(EMPTY); setCoupon({ input: '', applied: '', value: 0, error: '', open: false }); setTouched(false); setStep(1); };
+
+  const goStep3 = () => {
+    if (step2Valid) { vibrate(30); setStep(3); return; }
+    vibrate(50); setTouched(true); showToast('Falta preencher alguns campos.');
+    setTimeout(() => document.querySelector('[data-err]')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
   };
 
   const css = (
     <style dangerouslySetInnerHTML={{ __html: `
-      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap');
-      
-      body { font-family: 'Outfit', sans-serif; background-color: #F8F8F6; color: #1C1917; }
-      .font-serif { font-family: 'Playfair Display', serif; }
-      
-      @keyframes fadeUp { from { opacity:0; transform: translateY(20px) } to { opacity:1; transform:none } }
-      @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
-      @keyframes pulseSlow { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .8; transform: scale(0.98); } }
-      
-      .fade-up { animation: fadeUp .6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-      .stagger-1 { animation-delay: 100ms; }
-      .stagger-2 { animation-delay: 200ms; }
-      .stagger-3 { animation-delay: 300ms; }
-      .fade-in { animation: fadeIn .8s ease both; }
-      .load-pulse { animation: pulseSlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-      
-      .hide-scrollbar::-webkit-scrollbar { display:none } .hide-scrollbar { scrollbar-width:none }
-      
-      .glass-header {
-        background: rgba(248, 248, 246, 0.9);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-bottom: 1px solid rgba(0,0,0,0.06);
-      }
+      @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
+      body { font-family: 'Figtree', system-ui, sans-serif; background: var(--paper); color: #1c1917; -webkit-tap-highlight-color: transparent; }
+      .font-serif { font-family: 'Fraunces', Georgia, serif; }
+      @keyframes rise { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+      @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+      .rise { animation: rise .5s cubic-bezier(.16,1,.3,1) both; }
+      .fade { animation: fade .3s ease both; }
+      .hide-scrollbar::-webkit-scrollbar { display: none } .hide-scrollbar { scrollbar-width: none }
+      button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
     ` }} />
   );
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#F8F8F6] flex flex-col items-center justify-center px-6" role="status">
-        <Icon name="leaf" size={48} className="text-[#3E4233] mb-6 load-pulse" />
-        <h1 className="text-sm font-bold tracking-[0.4em] uppercase text-stone-900 mb-2 text-center">Iniciando</h1>
-        {css}
-      </div>
-    );
-  }
-
-  const SummaryRow = ({ label, value, bold = false }: { label: string; value: ReactNode; bold?: boolean }) => (
-    <div className={`flex justify-between items-center py-2.5 ${bold ? 'text-stone-900 font-bold' : 'text-stone-700 font-medium'}`}>
-      <span className="text-[15px]">{label}</span>
-      <span className="text-[15px] text-right">{value}</span>
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-[#F8F8F6] text-stone-900 selection:bg-[#3E4233]/20 pb-16 relative">
-      {toast && (
-        <div role="status" aria-live="polite" className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-stone-900 text-white px-8 py-4 rounded-2xl font-bold text-[14px] tracking-wide shadow-2xl fade-up max-w-[90vw] text-center border border-stone-800">{toast}</div>
-      )}
+    <div className="min-h-screen text-stone-900 relative" style={{ ...themeVars, background: 'var(--paper)' }}>
+      {toast && <div role="status" aria-live="polite" className="fixed top-5 left-1/2 -translate-x-1/2 z-[200] bg-stone-900 text-white px-6 py-3.5 rounded-xl font-medium text-[15px] shadow-2xl rise max-w-[90vw] text-center">{toast}</div>}
 
       {profileOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-stone-900/70 backdrop-blur-md fade-in" onClick={() => setProfileOpen(false)}>
-          <div role="dialog" aria-modal="true" className="bg-white w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl p-0 relative shadow-2xl fade-up overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            <div className="h-40 bg-stone-200 relative">
-               <img src={CONFIG.COVER_IMAGE} className="w-full h-full object-cover" alt="Ambiente do Spa" />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-               <button aria-label="Fechar" autoFocus onClick={() => setProfileOpen(false)} className="absolute top-4 right-4 p-2.5 bg-white/20 backdrop-blur-md text-white rounded-full hover:bg-white/40 transition"><Icon name="close" size={20} /></button>
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-stone-900/60 fade" onClick={() => setProfileOpen(false)}>
+          <div role="dialog" aria-modal="true" aria-label="Perfil" className="bg-white w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl p-7 rise" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-start mb-5">
+              <Avatar size={72} />
+              <button aria-label="Fechar" autoFocus onClick={() => setProfileOpen(false)} className="p-3 -m-2 rounded-full hover:bg-stone-100"><Icon name="close" /></button>
             </div>
-            
-            <div className="px-8 pb-10 -mt-14 relative z-10">
-              <img src={CONFIG.AVATAR} className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-xl mb-4" alt={CONFIG.NOME_PROFISSIONAL} />
-              <h2 className="text-3xl font-serif font-semibold text-stone-900">{CONFIG.NOME_PROFISSIONAL}</h2>
-              <p className="text-[#3E4233] text-[15px] font-bold tracking-wide mb-6">{CONFIG.SUBTITULO}</p>
-              
-              <div className="space-y-4 text-[16px] text-stone-700 leading-relaxed mb-8">
-                <p>O luxo de pausar. Especialista em terapias manuais focadas em resultados reais de bem-estar, unindo ciência biomecânica e elementos da natureza.</p>
-                <div className="bg-stone-50 p-5 rounded-2xl flex gap-4 items-start border border-stone-200 shadow-sm">
-                  <Icon name="map" size={20} className="mt-0.5 text-[#3E4233]" />
-                  <p className="text-[14px] font-medium text-stone-800">Atendimento em clínica com cromoterapia ou no conforto do seu domicílio.</p>
-                </div>
-              </div>
-              
-              <div className="pt-6 border-t border-stone-200">
-                <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-[15px] font-bold text-stone-900 hover:text-white bg-stone-100 hover:bg-stone-900 px-6 py-4 rounded-xl transition-all w-full"><Icon name="instagram" size={20} /> Instagram Oficial</a>
-              </div>
-            </div>
+            <h2 className="text-2xl font-serif font-semibold">{CONFIG.NOME_PROFISSIONAL}</h2>
+            <p className="text-[var(--brand)] font-medium mb-4">{CONFIG.SUBTITULO}</p>
+            <p className="text-stone-700 leading-relaxed mb-6">{CONFIG.BIO}</p>
+            <a href={safeUrl(CONFIG.INSTAGRAM)} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 font-semibold bg-stone-100 hover:bg-stone-200 min-h-[52px] rounded-xl transition"><Icon name="instagram" /> Ver Instagram</a>
           </div>
         </div>
       )}
 
       {step > 0 && step < 4 && (
-        <header className="glass-header px-6 py-4 max-w-lg mx-auto flex justify-between items-center mb-8 sticky top-0 z-40 transition-all shadow-sm">
-          <button onClick={() => { vibrate(10); setProfileOpen(true); }} className="flex items-center gap-3 text-left rounded-xl group">
-            <img src={CONFIG.AVATAR} alt="" className="w-12 h-12 rounded-full object-cover shadow-sm group-hover:shadow-md transition-all" />
-            <div>
-              <span className="block text-[16px] font-serif font-semibold text-stone-900">{CONFIG.NOME_PROFISSIONAL}</span>
-              <span className="block text-[11px] font-bold uppercase tracking-widest text-[#3E4233]">Ver Perfil</span>
-            </div>
-          </button>
-          <div className="flex gap-1.5" role="progressbar" aria-valuemin={1} aria-valuemax={3} aria-valuenow={step}>
-            {[1, 2, 3].map((i) => (
-              <div key={i} className={`h-1.5 rounded-full transition-all duration-700 ${step >= i ? 'w-6 bg-stone-900' : 'w-2 bg-stone-300'}`} />
-            ))}
+        <header className="sticky top-0 z-40 bg-[var(--paper)]/95 backdrop-blur border-b border-stone-300">
+          <div className="max-w-lg mx-auto px-5 py-3 flex justify-between items-center">
+            <button onClick={() => setProfileOpen(true)} className="flex items-center gap-3 text-left rounded-xl" aria-label="Abrir perfil">
+              <Avatar size={40} />
+              <span className="font-serif font-semibold text-[17px]">{CONFIG.NOME_PROFISSIONAL}</span>
+            </button>
+            <p className="text-[14px] font-medium text-stone-600" aria-live="polite">Passo {step} de 3</p>
+          </div>
+          <div className="h-1 bg-stone-200" role="progressbar" aria-valuemin={1} aria-valuemax={3} aria-valuenow={step}>
+            <div className="h-full bg-[var(--brand)] transition-all duration-500" style={{ width: `${(step / 3) * 100}%` }} />
           </div>
         </header>
       )}
 
-      <main className="px-6 max-w-lg mx-auto">
-        
+      <main className={`max-w-lg mx-auto ${step === 0 ? '' : 'px-5 pt-8 pb-36'}`}>
         {step === 0 && (
-          <div className="flex flex-col justify-between min-h-[100dvh] pb-10 pt-16 fade-up">
-            <div className="stagger-1">
-              <div className="w-24 h-24 bg-stone-200 rounded-full overflow-hidden mb-8 shadow-md">
-                 <img src={CONFIG.AVATAR} alt="Logo" className="w-full h-full object-cover" />
+          <div className="min-h-[100dvh] flex flex-col">
+            <div className="relative h-[42dvh] min-h-[260px] overflow-hidden rounded-b-[2.5rem] bg-[var(--brand)]">
+              {CONFIG.COVER_IMAGE ? (
+                <img src={CONFIG.COVER_IMAGE} alt="" referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover" />
+              ) : (
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                  <g fill="none" stroke="var(--accent)" strokeOpacity=".45" strokeWidth="1">
+                    {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => <ellipse key={i} cx="200" cy="330" rx={90 + i * 38} ry={70 + i * 30} />)}
+                  </g>
+                </svg>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+              <div className="absolute bottom-6 left-6 flex items-center gap-3 text-white">
+                <Avatar size={52} />
+                <div><p className="font-serif text-xl font-semibold leading-tight">{CONFIG.NOME_PROFISSIONAL}</p><p className="text-[14px] text-white/85">{CONFIG.SUBTITULO}</p></div>
               </div>
-              <h2 className="text-[11px] font-bold tracking-[0.3em] text-[#3E4233] uppercase mb-3">Bem-vindo(a)</h2>
-              <h1 className="text-5xl md:text-6xl font-serif font-semibold mb-6 leading-[1.1] text-stone-900">Seu <span className="italic text-[#3E4233]">refúgio</span> de autocuidado.</h1>
-              <p className="text-stone-700 text-lg md:text-xl leading-relaxed font-medium mb-12 pr-4">
-                Agende sua sessão exclusiva em poucos segundos e garanta um momento de pausa real na sua rotina.
-              </p>
             </div>
-            
-            <div className="space-y-6 stagger-2">
-              <div className="flex gap-5 items-start bg-white p-5 rounded-3xl shadow-sm border border-stone-200">
-                <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center shrink-0 text-stone-900"><Icon name="sparkles" size={22} /></div>
-                <p className="text-[15px] font-medium text-stone-800 leading-relaxed pt-1">Experiência impecável garantida desde o clique do agendamento até a finalização da terapia.</p>
+            <div className="px-6 pt-10 pb-8 flex-1 flex flex-col justify-between rise">
+              <div>
+                <h1 className="text-[2.6rem] leading-[1.08] font-serif font-semibold mb-5">Escolha a sessão, o horário e confirme pelo WhatsApp.</h1>
+                <p className="text-stone-700 text-lg leading-relaxed">Leva cerca de 2 minutos. Seus dados vão direto para o WhatsApp da profissional e não ficam guardados neste site.</p>
               </div>
-              <button onClick={() => { vibrate(30); store.set('agenda_pro_onboard', 'yes'); setStep(1); }} className={`${btnPrimary} w-full mt-6 text-lg py-5 shadow-2xl`}>
-                Reservar Horário
-              </button>
+              <button onClick={() => { vibrate(30); store.set('onboard', 'yes'); setStep(1); }} className={`${btnPrimary} w-full mt-10 text-lg`}>Agendar horário</button>
             </div>
           </div>
         )}
 
         {step === 1 && (
-          <div className="fade-up">
-            <p className="text-[11px] font-bold tracking-widest text-[#3E4233] uppercase mb-2">Etapa 01</p>
-            <h1 className="text-4xl font-serif font-semibold mb-10 text-stone-900">O que você <span className="italic">precisa hoje?</span></h1>
-            
+          <div className="rise">
+            <h1 className="text-[2rem] leading-tight font-serif font-semibold mb-6">Qual sessão você quer?</h1>
             {!isReturning && (
-              <div className="bg-[#3E4233] text-white p-6 rounded-3xl mb-10 shadow-lg flex items-start gap-5 stagger-1">
-                <Icon name="leaf" className="mt-0.5 shrink-0" size={24} />
-                <p className="text-[15px] leading-relaxed font-medium">Primeira experiência no Studio? Você ganha <strong className="font-bold underline decoration-[#899076] decoration-2 underline-offset-4">R$ {CONFIG.FIRST_TIME_DISCOUNT} de cortesia</strong> no resumo final do seu pedido.</p>
-              </div>
+              <p className="bg-[var(--soft)] text-stone-900 p-4 rounded-xl mb-6 text-[15px] leading-relaxed">Primeira vez? Você ganha <strong>{money(CONFIG.FIRST_TIME_DISCOUNT)} de desconto</strong> no resumo final.</p>
             )}
-
-            <div className="space-y-6 stagger-2" role="radiogroup">
+            <div className="space-y-4" role="radiogroup" aria-label="Sessões">
               {PACKAGES.map((p) => {
                 const on = data.packageId === p.id;
                 return (
-                  <button key={p.id} role="radio" aria-checked={on} onClick={() => { vibrate(15); set({ packageId: p.id }); }}
-                    className={`w-full text-left p-7 rounded-[2rem] transition-all duration-300 border-2 focus-visible:outline focus-visible:outline-stone-900 relative overflow-hidden ${on ? 'bg-stone-900 border-stone-900 shadow-xl transform scale-[1.01]' : 'bg-white border-stone-200 hover:border-stone-400 hover:shadow-md'}`}>
-                    {on && <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>}
-                    <div className="flex justify-between items-start gap-4 mb-5 relative z-10">
-                      <h3 className={`font-serif text-2xl ${on ? 'text-white font-semibold' : 'text-stone-900 font-bold'}`}>{p.title}</h3>
+                  <button key={p.id} role="radio" aria-checked={on} onClick={() => { vibrate(15); set({ packageId: p.id, time: '' }); }}
+                    className={`w-full text-left p-5 rounded-2xl border-2 transition ${on ? 'bg-[var(--brand)] border-[var(--brand)] text-white' : 'bg-white border-stone-200 hover:border-stone-400'}`}>
+                    <div className="flex justify-between items-start gap-4 mb-2">
+                      <h3 className="font-serif text-[1.35rem] font-semibold leading-snug">{p.title}</h3>
                       <div className="text-right shrink-0">
-                        <span className={`text-[12px] line-through font-bold block mb-1 ${on ? 'text-stone-400' : 'text-stone-400'}`}>{money(p.originalPrice)}</span>
-                        <span className={`font-bold text-xl ${on ? 'text-white' : 'text-stone-900'}`}>{money(p.price)}</span>
+                        <span className={`text-[13px] line-through block ${on ? 'text-white/60' : 'text-stone-500'}`}>{money(p.originalPrice)}</span>
+                        <span className="font-bold text-lg">{money(p.price)}</span>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-2 mb-5 relative z-10">
-                      <span className={`text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 ${on ? 'bg-stone-800 text-stone-200' : 'bg-stone-100 text-stone-700'}`}><Icon name="clock" size={14} /> {p.min} min</span>
-                      {p.tags.map((t) => <span key={t} className={`text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-lg ${on ? 'bg-stone-800 text-stone-300' : 'bg-stone-100 text-stone-600'}`}>{t}</span>)}
-                    </div>
-                    <p className={`text-[15px] leading-relaxed font-medium relative z-10 ${on ? 'text-stone-300' : 'text-stone-600'}`}>{p.desc}</p>
+                    <p className={`text-[15px] leading-relaxed mb-3 ${on ? 'text-white/85' : 'text-stone-600'}`}>{p.desc}</p>
+                    <p className={`text-[14px] flex items-center gap-1.5 ${on ? 'text-white/85' : 'text-stone-600'}`}><Icon name="clock" size={15} /> {p.min} min · {p.tags.join(', ')}</p>
                   </button>
                 );
               })}
-              
-              <div className="pt-8 stagger-3">
-                <h3 className="font-serif text-2xl font-semibold text-stone-900 mb-6">Complementos</h3>
-                <div className="flex flex-col gap-4">
-                  {ADDONS.map((a) => {
-                    const on = !!data.addons[a.id];
-                    return (
-                      <button key={a.id} role="checkbox" aria-checked={on} onClick={() => { vibrate(15); set({ addons: { ...data.addons, [a.id]: !on } }); }}
-                        className={`w-full p-6 text-[15px] rounded-3xl border-2 flex justify-between items-center gap-4 transition-all duration-300 ${on ? 'bg-stone-900 border-stone-900 text-white shadow-md' : 'bg-white border-stone-200 text-stone-800 hover:border-stone-400 font-medium'}`}>
-                        <span className="flex items-center gap-4">
-                          <span className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${on ? 'bg-white border-white text-stone-900' : 'border-stone-300'}`}>{on && <Icon name="check" size={14} />}</span>
-                          <span className={on ? 'font-bold' : ''}>{a.label}</span>
-                        </span>
-                        <span className={`font-bold ${on ? 'text-stone-300' : 'text-stone-500'}`}>+ {money(a.price)}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
             </div>
-            
-            <div className="mt-12 pt-8 border-t-2 border-stone-200 flex gap-6 items-center bg-[#F8F8F6]/90 backdrop-blur-md sticky bottom-0 pb-8 -mx-6 px-6 z-20">
-              <div className="flex-1">
-                 <p className="text-[12px] font-bold tracking-widest text-stone-500 uppercase mb-1">Duração: {invoice.dur} min</p>
-                 <p className="text-4xl font-serif font-bold text-stone-900">{money(invoice.base + invoice.addonsTotal)}</p>
-              </div>
+            <h2 className="font-serif text-xl font-semibold mt-9 mb-3">Quer adicionar algo?</h2>
+            <div className="flex flex-col gap-3">
+              {ADDONS.map((a) => {
+                const on = !!data.addons[a.id];
+                return (
+                  <button key={a.id} role="checkbox" aria-checked={on} onClick={() => { vibrate(15); set({ addons: { ...data.addons, [a.id]: !on } }); }}
+                    className={`w-full p-4 min-h-[60px] rounded-xl border-2 flex justify-between items-center gap-3 transition ${on ? 'border-[var(--brand)] bg-[var(--soft)]' : 'bg-white border-stone-200 hover:border-stone-400'}`}>
+                    <span className="flex items-center gap-3 font-medium">
+                      <span className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${on ? 'bg-[var(--brand)] border-[var(--brand)] text-white' : 'border-stone-400'}`}>{on && <Icon name="check" size={14} />}</span>
+                      {a.label}
+                    </span>
+                    <span className="font-semibold text-stone-700">+ {money(a.price)}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <BottomBar>
+              <div className="flex-1"><p className="text-[13px] text-stone-600">{invoice.dur} min</p><p className="text-2xl font-serif font-semibold">{money(invoice.base + invoice.addonsTotal)}</p></div>
               <button onClick={() => { vibrate(30); setStep(2); }} className={btnPrimary}>Continuar</button>
-            </div>
+            </BottomBar>
           </div>
         )}
 
         {step === 2 && (
-          <div className="fade-up pb-10">
-            <button onClick={() => setStep(1)} className="text-stone-500 hover:text-stone-900 flex items-center gap-2 text-[14px] mb-8 font-bold transition"><Icon name="chevronLeft" size={18} /> Voltar</button>
-            <p className="text-[11px] font-bold tracking-widest text-[#3E4233] uppercase mb-2">Etapa 02</p>
-            <h1 className="text-4xl font-serif font-semibold mb-10 text-stone-900">Seus dados</h1>
-            
-            <div className="space-y-10 bg-white p-6 sm:p-8 rounded-[2rem] border border-stone-200 shadow-sm stagger-1">
-              <div>
-                <label htmlFor="nm" className={labelCls}>Nome Completo</label>
-                <input id="nm" autoComplete="name" type="text" value={data.name} onChange={(e) => set({ name: e.target.value })} className={inputCls} placeholder="Digite seu nome" maxLength={60} />
-                {touched && errors.name && <p className="text-[13px] font-bold text-red-600 mt-2">{errors.name}</p>}
-              </div>
+          <div className="rise">
+            <button onClick={() => setStep(1)} className="text-stone-600 hover:text-stone-900 flex items-center gap-1 text-[15px] mb-5 font-medium min-h-[44px]"><Icon name="chevronLeft" size={18} /> Voltar</button>
+            <h1 className="text-[2rem] leading-tight font-serif font-semibold mb-6">Quando e onde?</h1>
 
-              <div className="pt-4">
-                <span className={labelCls}>Local do Atendimento</span>
-                <div className="grid grid-cols-2 gap-4" role="radiogroup">
-                  {[['studio', 'No Studio'], ['home', 'Em Domicílio']].map(([v, l]) => (
-                    <button key={v} role="radio" aria-checked={data.locType === v} onClick={() => set({ locType: v as 'studio'|'home' })} className={`${chipBase} text-[15px] ${data.locType === v ? chipOn : chipOff}`}>{l}</button>
-                  ))}
-                </div>
-                {isHome && <p className="text-[13px] font-medium text-stone-600 mt-4 leading-relaxed bg-stone-50 p-4 rounded-xl border border-stone-200">Horários de pico (18h-20h) em domicílio possuem acréscimo de deslocamento de <strong className="text-stone-900">{money(CONFIG.PEAK_FEE)}</strong>.</p>}
-              </div>
+            <section className="mb-8">
+              <label htmlFor="nm" className={labelCls}>Seu nome completo</label>
+              <input id="nm" autoComplete="name" type="text" value={data.name} onChange={(e) => set({ name: cleanName(e.target.value) })} className={inputCls} placeholder="Ex.: Ana Souza" maxLength={60} aria-invalid={touched && !!errors.name} />
+              {touched && errors.name && <p data-err className={errCls}>{errors.name}</p>}
+            </section>
 
+            <section className="mb-8">
+              <span className={labelCls}>Onde será o atendimento?</span>
+              <div className="grid grid-cols-2 gap-3" role="radiogroup">
+                {[['studio', 'No studio'], ['home', 'Na minha casa']].map(([v, l]) => (
+                  <button key={v} role="radio" aria-checked={data.locType === v} onClick={() => set({ locType: v as 'studio' | 'home', time: '' })} className={`min-h-[56px] rounded-xl border-2 font-semibold transition ${data.locType === v ? chipOn : chipOff}`}>{l}</button>
+                ))}
+              </div>
               {!isHome ? (
-                <div className="bg-stone-900 text-white p-6 rounded-2xl flex gap-5 items-start shadow-md">
-                   <Icon name="map" size={24} className="text-[#899076] shrink-0 mt-0.5" />
-                   <p className="text-[15px] font-medium leading-relaxed">
-                     O Studio fica na área central. O endereço completo e as instruções de chegada são enviadas junto com a confirmação.
-                   </p>
-                </div>
+                <p className="text-[14px] text-stone-600 mt-3 flex gap-2"><Icon name="map" size={18} className="mt-0.5" />O endereço do studio e como chegar chegam junto com a confirmação.</p>
               ) : (
-                <div className="space-y-5 fade-up bg-stone-50 p-6 rounded-2xl border border-stone-200 shadow-inner">
-                  <p className="text-[14px] font-bold text-stone-800 mb-4">A terapeuta levará maca profissional, toalhas e óleos.</p>
-                  <input type="tel" inputMode="numeric" autoComplete="postal-code" maxLength={9} placeholder="CEP" value={data.cep} onChange={(e) => handleCep(e.target.value)} className={inputCls} />
-                  <input type="text" autoComplete="street-address" placeholder="Rua ou Avenida" maxLength={100} value={data.street} onChange={(e) => set({ street: e.target.value })} className={inputCls} />
-                  <div className="flex gap-5">
-                    <input ref={numberRef} type="text" inputMode="numeric" placeholder="Número" maxLength={10} value={data.number} onChange={(e) => set({ number: e.target.value })} className={`${inputCls} w-1/3`} />
-                    <input type="text" placeholder="Complemento" maxLength={40} value={data.comp} onChange={(e) => set({ comp: e.target.value })} className={`${inputCls} w-2/3`} />
+                <div className="mt-4 space-y-3 bg-white p-4 rounded-2xl border border-stone-200">
+                  <p className="text-[14px] text-stone-600">Levo maca, toalhas e óleos. Horários das 18h às 20h têm acréscimo de {money(CONFIG.PEAK_FEE)} de deslocamento.</p>
+                  <input type="tel" inputMode="numeric" autoComplete="postal-code" maxLength={9} placeholder="CEP (preenche o endereço)" aria-label="CEP" value={data.cep} onChange={(e) => handleCep(e.target.value)} className={inputCls} />
+                  <input type="text" autoComplete="address-line1" placeholder="Rua ou avenida" aria-label="Rua ou avenida" maxLength={100} value={data.street} onChange={(e) => set({ street: e.target.value })} className={inputCls} />
+                  <div className="flex gap-3">
+                    <input ref={numberRef} type="text" inputMode="numeric" placeholder="Número" aria-label="Número" maxLength={10} value={data.number} onChange={(e) => set({ number: e.target.value })} className={`${inputCls} w-2/5`} />
+                    <input type="text" placeholder="Complemento" aria-label="Complemento" maxLength={40} value={data.comp} onChange={(e) => set({ comp: e.target.value })} className={`${inputCls} w-3/5`} />
                   </div>
-                  <input type="text" placeholder="Bairro" maxLength={60} value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} className={inputCls} />
-                  {touched && errors.address && <p className="text-[13px] font-bold text-red-600">{errors.address}</p>}
+                  <input type="text" placeholder="Bairro" aria-label="Bairro" maxLength={60} value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} className={inputCls} />
+                  {touched && errors.address && <p data-err className={errCls}>{errors.address}</p>}
                 </div>
               )}
+            </section>
 
-              <div className="pt-6">
-                <span className={labelCls}>Data do agendamento</span>
-                <div className="flex gap-4 overflow-x-auto pb-4 pt-2 snap-x hide-scrollbar -mx-6 px-6 sm:mx-0 sm:px-0" role="radiogroup">
-                  {days.map(({ d, i }) => {
-                    const sel = sameDay(data.date, d);
-                    return (
-                      <button key={dateKey(d)} role="radio" aria-checked={sel} onClick={() => { set({ date: d, time: '' }); }} 
-                        className={`shrink-0 snap-start w-[88px] py-5 flex flex-col items-center border-2 rounded-2xl transition-all ${sel ? 'bg-stone-900 border-stone-900 text-white shadow-lg transform scale-[1.03]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}>
-                        <span className={`text-[11px] font-bold tracking-widest uppercase mb-1.5 ${sel ? 'text-stone-400' : 'text-stone-500'}`}>{dayLabel(d, i)}</span>
-                        <span className={`text-3xl font-serif font-bold mb-1.5 ${sel ? 'text-white' : 'text-stone-900'}`}>{d.getDate()}</span>
-                        <span className="text-[12px] font-bold uppercase tracking-wide">{d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                {touched && errors.date && <p className="text-[13px] font-bold text-red-600">{errors.date}</p>}
+            <section className="mb-8">
+              <span className={labelCls}>Dia</span>
+              <div className="flex gap-3 overflow-x-auto pb-2 snap-x hide-scrollbar -mx-5 px-5" role="radiogroup">
+                {days.map(({ d, i }) => {
+                  const sel = sameDay(data.date, d);
+                  return (
+                    <button key={dateKey(d)} role="radio" aria-checked={sel} onClick={() => { vibrate(10); set({ date: d, time: '' }); }}
+                      className={`shrink-0 snap-start w-[76px] py-3.5 flex flex-col items-center border-2 rounded-xl transition ${sel ? chipOn : chipOff}`}>
+                      <span className={`text-[13px] capitalize ${sel ? 'text-white/80' : 'text-stone-500'}`}>{dayLabel(d, i)}</span>
+                      <span className="text-2xl font-serif font-semibold my-0.5">{d.getDate()}</span>
+                      <span className={`text-[13px] ${sel ? 'text-white/80' : 'text-stone-500'}`}>{d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}</span>
+                    </button>
+                  );
+                })}
               </div>
+              {touched && errors.date && <p data-err className={errCls}>{errors.date}</p>}
+            </section>
 
-              {data.date && (
-                <div className="fade-up pt-4">
-                  <span className={labelCls}>Horário de Início</span>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-4" role="radiogroup">
-                    {slots.map(({ t, status }) => {
-                      const sel = data.time === t;
-                      const ok = status === 'ok';
-                      const peak = isHome && PEAK_HOURS.includes(t);
-                      return (
-                        <button key={t} role="radio" aria-checked={sel} disabled={!ok}
-                          onClick={() => { vibrate(15); set({ time: t }); }}
-                          className={`min-h-[64px] py-2 border-2 rounded-2xl flex flex-col items-center justify-center transition-all ${sel ? 'bg-[#3E4233] border-[#3E4233] text-white shadow-lg transform scale-[1.05]' : ok ? 'bg-white border-stone-200 text-stone-800 font-bold hover:border-stone-400' : 'bg-stone-100 border-stone-100 text-stone-400 cursor-not-allowed'}`}>
-                          <span className={`text-[17px] tracking-wide ${sel ? 'font-bold' : ''}`}>{t}</span>
-                          {peak && ok && <span className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${sel ? 'text-stone-300' : 'text-stone-500'}`}>Pico</span>}
-                        </button>
-                      );
-                    })}
+            {data.date && (
+              <section className="fade">
+                <span className={labelCls}>Horário de início <span className="font-normal text-stone-500">({invoice.dur} min de sessão)</span></span>
+                {availableCount === 0 ? (
+                  <p className="text-[15px] text-stone-700 bg-white border border-stone-200 rounded-xl p-5">Sem horários livres neste dia. Escolha outra data.</p>
+                ) : periods.map((p) => (
+                  <div key={p.label} className="mb-5">
+                    <p className="text-[14px] text-stone-500 mb-2">{p.label}</p>
+                    <div className="grid grid-cols-4 gap-2.5" role="radiogroup">
+                      {p.items.map(({ t, status }) => {
+                        const sel = data.time === t, ok = status === 'ok', peak = isHome && PEAK_HOURS.includes(t);
+                        return (
+                          <button key={t} role="radio" aria-checked={sel} disabled={!ok} aria-label={`${t}${ok ? '' : ', indisponível'}`} onClick={() => { vibrate(15); set({ time: t }); }}
+                            className={`min-h-[52px] border-2 rounded-xl flex flex-col items-center justify-center transition text-[16px] ${sel ? chipOn + ' font-semibold' : ok ? 'bg-white border-stone-300 hover:border-stone-500' : 'bg-stone-100 border-stone-100 text-stone-400 line-through cursor-not-allowed'}`}>
+                            {t}{peak && ok && <span className={`text-[10px] leading-none mt-0.5 ${sel ? 'text-white/80' : 'text-stone-500'}`}>+{money(CONFIG.PEAK_FEE)}</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  {availableCount === 0 && <p className="text-[14px] font-bold text-stone-600 text-center py-8 bg-stone-50 rounded-xl mt-4">Agenda completa neste dia. Selecione outra data.</p>}
-                  {touched && errors.time && <p className="text-[13px] font-bold text-red-600 mt-4">{errors.time}</p>}
-                </div>
-              )}
-            </div>
+                ))}
+                {data.time && <p className="text-[14px] text-stone-600">Sessão das {data.time} às {endTime}.</p>}
+                {touched && errors.time && <p data-err className={errCls}>{errors.time}</p>}
+              </section>
+            )}
 
-            <div className="mt-10 flex justify-end">
-              <button onClick={() => { if (step2Valid) { vibrate(30); setStep(3); } else { vibrate(50); setTouched(true); showToast('Preencha os campos obrigatórios'); } }} className={`${btnPrimary} w-full py-5 text-lg`}>Ir para o Pagamento</button>
-            </div>
+            <BottomBar>
+              <div className="flex-1"><p className="text-[13px] text-stone-600">{pkg.title}</p><p className="text-xl font-serif font-semibold">{money(invoice.base + invoice.addonsTotal)}</p></div>
+              <button onClick={goStep3} className={btnPrimary}>Revisar e pagar</button>
+            </BottomBar>
           </div>
         )}
 
         {step === 3 && (
-          <div className="fade-up pb-10">
-            <button onClick={() => setStep(2)} className="text-stone-500 hover:text-stone-900 flex items-center gap-2 text-[14px] mb-8 font-bold transition"><Icon name="chevronLeft" size={18} /> Voltar e alterar</button>
-            <p className="text-[11px] font-bold tracking-widest text-[#3E4233] uppercase mb-2">Etapa 03</p>
-            <h1 className="text-4xl font-serif font-semibold mb-10 text-stone-900">Finalizar Reserva</h1>
-            
-            <div className="space-y-8">
-              
-              <div className="bg-white p-7 sm:p-10 rounded-[2rem] border border-stone-200 shadow-md relative overflow-hidden stagger-1">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-stone-100 rounded-bl-full -mr-10 -mt-10 opacity-60 pointer-events-none"></div>
-                <h3 className="font-serif text-2xl font-bold text-stone-900 mb-8 relative z-10">Resumo do Pedido</h3>
-                
-                <div className="space-y-4 mb-8 relative z-10">
-                  <SummaryRow bold label="Serviço" value={pkg.title} />
-                  <SummaryRow label="Data" value={<span className="capitalize">{data.date?.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'long' })}</span>} />
-                  <SummaryRow label="Horário" value={`${data.time} às ${endTime}`} />
-                  <SummaryRow label="Local" value={isHome ? 'Em Domicílio' : 'No Studio'} />
-                  {isHome && <p className="text-right text-[13px] font-bold text-stone-500 mt-2">{data.street}, {data.number}</p>}
-                </div>
-                
-                <div className="h-0.5 bg-stone-100 my-8"></div>
-                
-                <div className="space-y-4 mb-8">
-                  <SummaryRow label="Valor base" value={money(invoice.base)} />
-                  {invoice.addonsTotal > 0 && <SummaryRow label="Adicionais" value={`+ ${money(invoice.addonsTotal)}`} />}
-                  {invoice.discount > 0 && (
-                    <div className="flex justify-between items-center py-3 px-4 bg-[#3E4233] text-white font-bold rounded-xl shadow-inner mt-4 mb-4">
-                      <span className="text-[15px] flex items-center gap-2"><Icon name="check" size={16} />{coupon.applied ? `Cupom ${coupon.applied}` : 'Cortesia 1ª Sessão'}</span>
-                      <span className="text-[15px]">- {money(invoice.discount)}</span>
-                    </div>
-                  )}
-                  {invoice.peakFee > 0 && <SummaryRow label="Taxa de deslocamento" value={`+ ${money(invoice.peakFee)}`} />}
-                  {invoice.pixDiscount > 0 && <SummaryRow bold label="Desconto Pix (5%)" value={<span className="text-[#3E4233]">- {money(invoice.pixDiscount)}</span>} />}
-                </div>
+          <div className="rise">
+            <button onClick={() => setStep(2)} className="text-stone-600 hover:text-stone-900 flex items-center gap-1 text-[15px] mb-5 font-medium min-h-[44px]"><Icon name="chevronLeft" size={18} /> Alterar dados</button>
+            <h1 className="text-[2rem] leading-tight font-serif font-semibold mb-6">Revise e confirme</h1>
 
-                <div className="flex justify-between items-end pt-6 border-t-2 border-stone-200 mt-8">
-                  <span className="text-[13px] text-stone-600 uppercase tracking-widest font-bold">Total Final</span>
-                  <span className="text-5xl font-serif font-bold text-stone-900">{money(invoice.total)}</span>
-                </div>
+            <section className="bg-white p-6 rounded-2xl border border-stone-200 mb-6">
+              <SummaryRow bold label="Sessão" value={pkg.title} />
+              <SummaryRow label="Dia" value={<span className="capitalize">{data.date?.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}</span>} />
+              <SummaryRow label="Horário" value={`${data.time} às ${endTime}`} />
+              <SummaryRow label="Local" value={isHome ? `${clean(data.street, 100)}, ${clean(data.number, 10)}` : 'Studio'} />
+              <div className="h-px bg-stone-200 my-3" />
+              <SummaryRow label="Sessão" value={money(invoice.base)} />
+              {invoice.activeAddons.map((a) => <SummaryRow key={a.id} label={a.label} value={`+ ${money(a.price)}`} />)}
+              {invoice.discount > 0 && <SummaryRow label={coupon.applied ? `Cupom ${coupon.applied}` : 'Desconto 1ª sessão'} value={<span className="text-emerald-800 font-semibold">- {money(invoice.discount)}</span>} />}
+              {invoice.peakFee > 0 && <SummaryRow label="Deslocamento (horário de pico)" value={`+ ${money(invoice.peakFee)}`} />}
+              {invoice.pixDiscount > 0 && <SummaryRow label="Desconto Pix (5%)" value={<span className="text-emerald-800 font-semibold">- {money(invoice.pixDiscount)}</span>} />}
+              <div className="flex justify-between items-baseline pt-4 mt-3 border-t border-stone-300">
+                <span className="font-semibold">Total</span>
+                <span className="text-4xl font-serif font-semibold">{money(invoice.total)}</span>
               </div>
+            </section>
 
-              <div className="bg-stone-50 p-7 sm:p-10 rounded-[2rem] border border-stone-200 shadow-inner stagger-2">
-                <h3 className="font-serif text-xl font-bold text-stone-900 mb-8">Como deseja acertar o restante?</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10" role="radiogroup">
-                  {[['pix', 'Pix (-5%)'], ['card', 'Cartão no local'], ['cash', 'Dinheiro']].map(([id, l]) => (
-                    <button key={id} role="radio" aria-checked={data.payment === id} onClick={() => selectPayment(id)} className={`${chipBase} text-[15px] font-bold ${data.payment === id ? chipOn : chipOff}`}>{l}</button>
-                  ))}
-                </div>
-
-                <label htmlFor="rq" className={labelCls}>Observações (Opcional)</label>
-                <input id="rq" type="text" placeholder="Alguma sensibilidade ou foco específico?" maxLength={140} value={data.req} onChange={(e) => set({ req: e.target.value })} className={`${inputCls} mb-10 bg-transparent`} />
-                
-                {!coupon.applied && (
-                  <div className="mb-10">
-                    <label htmlFor="cp" className={labelCls}>Possui voucher?</label>
-                    <div className="flex gap-3">
-                      <input id="cp" type="text" autoCapitalize="characters" placeholder="Digite o código" value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className={`${inputCls} flex-1 uppercase tracking-widest bg-transparent ${coupon.error ? 'border-red-500' : ''}`} />
-                      <button onClick={applyCoupon} className="min-h-[60px] px-8 text-[14px] font-bold rounded-xl border-2 border-stone-900 text-stone-900 hover:bg-stone-900 hover:text-white transition-colors">Aplicar</button>
-                    </div>
-                    {coupon.error && <p className="text-[13px] font-bold text-red-600 mt-3">{coupon.error}</p>}
-                  </div>
-                )}
-
-                <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-lg text-center mt-6">
-                  <p className="text-[12px] text-stone-500 uppercase tracking-widest font-bold mb-4">Divisão do Pagamento</p>
-                  
-                  <div className="bg-stone-50 rounded-2xl p-6 mb-6 border border-stone-100 space-y-4">
-                     <div className="flex justify-between items-center border-b border-stone-200 pb-3">
-                       <span className="text-stone-600 font-medium text-[15px]">1. Sinal (Pix agora):</span>
-                       <span className="text-stone-900 font-bold text-lg">{money(invoice.sinal)}</span>
-                     </div>
-                     <div className="flex justify-between items-center">
-                       <span className="text-stone-600 font-medium text-[15px]">2. Restante (No dia):</span>
-                       <span className="text-[#3E4233] font-extrabold text-xl">{money(invoice.rest)}</span>
-                     </div>
-                  </div>
-
-                  <button onClick={copyPix} className="flex items-center justify-center gap-3 text-[15px] font-bold text-stone-800 hover:text-white bg-stone-200 hover:bg-stone-900 px-6 py-4 rounded-xl transition-all w-full sm:w-auto mx-auto"><Icon name="copy" size={20} /> Copiar Chave Pix ({CONFIG.PIX_KEY})</button>
-                </div>
+            <section className="mb-6">
+              <h2 className="font-serif text-xl font-semibold mb-3">Como paga o restante no dia?</h2>
+              <div className="grid grid-cols-3 gap-2.5" role="radiogroup">
+                {[['pix', 'Pix (-5%)'], ['card', 'Cartão'], ['cash', 'Dinheiro']].map(([id, l]) => (
+                  <button key={id} role="radio" aria-checked={data.payment === id} onClick={() => { vibrate(15); set({ payment: id }); }} className={`min-h-[56px] rounded-xl border-2 text-[15px] font-semibold transition ${data.payment === id ? chipOn : chipOff}`}>{l}</button>
+                ))}
               </div>
-            </div>
+              {touched && !data.payment && <p data-err className={errCls}>Escolha uma forma de pagamento.</p>}
+            </section>
 
-            <div className="mt-10 flex flex-col gap-4 stagger-3">
-              <button onClick={finishBooking} disabled={whatsappSent} className={`${btnPrimary} w-full py-6 text-xl flex items-center justify-center gap-3 shadow-2xl`}>
-                {whatsappSent ? 'Gerando pedido...' : 'Confirmar via WhatsApp'}
-              </button>
-              <p className="text-center text-[13px] font-bold text-stone-500 mt-4 px-4">
-                Você será direcionado(a) ao WhatsApp para enviar o comprovante do sinal e aprovar o horário.
-              </p>
-            </div>
+            <section className="mb-6">
+              <label htmlFor="rq" className={labelCls}>Alguma observação? <span className="font-normal text-stone-500">(opcional)</span></label>
+              <input id="rq" type="text" placeholder="Sensibilidade, região com dor, preferência de pressão" maxLength={140} value={data.req} onChange={(e) => set({ req: e.target.value })} className={inputCls} />
+            </section>
+
+            <section className="mb-6">
+              {!coupon.applied && (coupon.open ? (
+                <div>
+                  <label htmlFor="cp" className={labelCls}>Código do cupom</label>
+                  <div className="flex gap-3">
+                    <input id="cp" type="text" autoCapitalize="characters" autoComplete="off" maxLength={30} value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className={`${inputCls} flex-1 uppercase ${coupon.error ? 'border-red-600' : ''}`} />
+                    <button onClick={applyCoupon} className="min-h-[56px] px-6 font-semibold rounded-xl border-2 border-[var(--brand)] text-[var(--brand)] hover:bg-[var(--brand)] hover:text-white transition">Aplicar</button>
+                  </div>
+                  {coupon.error && <p className={errCls}>{coupon.error}</p>}
+                </div>
+              ) : (
+                <button onClick={() => setCoupon({ ...coupon, open: true })} className="text-[15px] font-semibold text-[var(--brand)] underline underline-offset-4 min-h-[44px]">Tenho um cupom</button>
+              ))}
+            </section>
+
+            <section className="bg-[var(--soft)] p-6 rounded-2xl mb-4">
+              <h2 className="font-serif text-xl font-semibold mb-1">Sinal para reservar o horário</h2>
+              <p className="text-[14px] text-stone-700 mb-4">Pague o sinal por Pix e envie o comprovante no WhatsApp.</p>
+              <div className="bg-white rounded-xl p-4 space-y-2 mb-4">
+                <div className="flex justify-between"><span className="text-stone-600">Sinal agora (Pix)</span><strong>{money(invoice.sinal)}</strong></div>
+                <div className="flex justify-between"><span className="text-stone-600">Restante no dia</span><strong>{money(invoice.rest)}</strong></div>
+              </div>
+              <button onClick={copyPix} className="w-full min-h-[52px] flex items-center justify-center gap-2 font-semibold rounded-xl bg-white border-2 border-stone-300 hover:border-[var(--brand)] transition"><Icon name="copy" size={18} /> Copiar chave Pix</button>
+              <p className="text-[13px] text-stone-600 text-center mt-2 break-all">{CONFIG.PIX_KEY}</p>
+            </section>
+            <p className="text-[13px] text-stone-600 flex items-start gap-2"><Icon name="lock" size={16} className="mt-0.5" />Seus dados são enviados apenas pelo WhatsApp. Este site não guarda nome, endereço nem telefone.</p>
+
+            <BottomBar>
+              <div className="flex-1"><p className="text-[13px] text-stone-600">Total</p><p className="text-xl font-serif font-semibold">{money(invoice.total)}</p></div>
+              <button onClick={finishBooking} className={btnPrimary}>Confirmar no WhatsApp</button>
+            </BottomBar>
           </div>
         )}
 
         {step === 4 && (
-          <div className="fade-in flex flex-col items-center justify-center min-h-[70vh] text-center pt-10">
-            <div className="w-24 h-24 bg-[#3E4233] text-white rounded-full flex items-center justify-center mb-8 shadow-xl">
-              <Icon name="check" size={40} />
-            </div>
-            <h1 className="text-4xl font-serif font-bold mb-6 text-stone-900">Tudo pronto!</h1>
-            <p className="text-[16px] font-medium text-stone-600 leading-relaxed mb-12 max-w-sm">
-              Sua solicitação foi gerada. <strong className="text-stone-900">Envie o comprovante do Pix na conversa que acabou de abrir</strong> para validarmos sua reserva.
-            </p>
-            <div className="w-full max-w-sm space-y-4">
-              <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" onClick={() => vibrate(15)} className={`${btnPrimary} py-5 flex items-center justify-center w-full`}>Abrir WhatsApp Manualmente</a>
-              <button onClick={() => { setStep(1); setWhatsappSent(false); }} className="w-full min-h-[60px] text-[15px] font-bold text-stone-500 hover:text-stone-900 transition-colors">Fazer outro agendamento</button>
+          <div className="fade flex flex-col items-center text-center pt-16">
+            <div className="w-20 h-20 bg-[var(--brand)] text-white rounded-full flex items-center justify-center mb-6"><Icon name="check" size={36} /></div>
+            <h1 className="text-[2rem] font-serif font-semibold mb-2">Falta só enviar o comprovante</h1>
+            <p className="text-stone-600 mb-8">Referência do pedido: <strong className="text-stone-900">{ref}</strong></p>
+            <ol className="text-left w-full space-y-3 mb-10 text-[16px]">
+              <li className="bg-white border border-stone-200 rounded-xl p-4">Pague o sinal de <strong>{money(invoice.sinal)}</strong> por Pix.</li>
+              <li className="bg-white border border-stone-200 rounded-xl p-4">Envie o comprovante na conversa do WhatsApp.</li>
+              <li className="bg-white border border-stone-200 rounded-xl p-4">Aguarde a confirmação do horário.</li>
+            </ol>
+            <div className="w-full space-y-3">
+              <button onClick={openWhatsapp} className={`${btnPrimary} w-full`}>Abrir WhatsApp de novo</button>
+              <button onClick={restart} className="w-full min-h-[52px] font-semibold text-stone-600 hover:text-stone-900">Fazer outro agendamento</button>
             </div>
           </div>
         )}
