@@ -1,623 +1,759 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
+import { useState, useEffect, useMemo, useRef, memo, type ReactNode } from 'react';
 
-type ProfileId = 'marina' | 'rafael' | 'camila' | 'lucas' | 'beatriz';
-type Service = { id: string; name: string; description: string; minutes: number; originalPrice: number; price: number; image: string };
-type Addon = { id: string; name: string; price: number };
-type Profile = {
-  id: ProfileId; shortName: string; name: string; role: string; intro: string; location: string; phone: string; pixKey: string; instagram: string;
-  cover: string; theme: { bg: string; surface: string; ink: string; muted: string; line: string; accent: string; accentInk: string };
-  services: Service[]; addons: Addon[];
+/* ==========================================================================
+   1. CONFIGURAÇÃO
+   ========================================================================== */
+const ENV = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
+
+const CONFIG = {
+  PHONE: '5517991360413',
+  PIX_KEY: '62922530000144',
+  INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
+  REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
+  AVATAR: 'FmtU3Ogx_400x400.jpg',
+  SUPABASE_URL: ENV.VITE_SUPABASE_URL || '',
+  SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || '',
+  COUPONS: { SESSAO2: 0.08, THALY20: 20 } as Record<string, number>,
+  SIGNAL_AMOUNT: 40,
+  FIRST_TIME_DISCOUNT: 15,
+  FETISH_FEE: 130,
+  PEAK_FEE: 18,
+  PIX_DISCOUNT: 0.03,
+  OPEN_MIN: 9 * 60,
+  LAST_END_MIN: 23 * 60 + 30,
+  SLOT_STEP: 60,
+  BUFFER_STUDIO: 15,
+  BUFFER_HOME: 60,
+  MIN_LEAD_STUDIO: 30,
+  MIN_LEAD_HOME: 60,
+  DAYS_AHEAD: 14,
+  DAYS_OFF: [] as number[],
+  BLOCKED: {} as Record<string, string[]>,
 };
 
-const PHOTO = {
-  spa: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=85',
-  massage: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=900&q=80',
-  facial: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80',
-  stones: 'https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=900&q=80',
-  trainer: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=85',
-  training: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80',
-  recovery: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=900&q=80',
-  physio: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=85',
-  nutrition: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85',
+const PACKAGES = [
+  { id: 'classica', title: 'Massagem Clássica', originalPrice: 220, price: 180, min: 40, tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
+    desc: 'O essencial para quem está moído da rotina. Uso a força das minhas mãos para desfazer os nós de tensão e soltar sua musculatura. Você entra pesado e sai leve.' },
+  { id: 'sensitiva', title: 'Sensitiva & Prazer', originalPrice: 280, price: 220, min: 60, tags: ['Toques Leves', 'Finalização Íntima'],
+    desc: 'Começamos desmanchando o cansaço do seu corpo com a massagem clássica. Quando você estiver entregue, os toques mudam, causam arrepios e encerramos com a massagem íntima.' },
+  { id: 'fusion', title: 'Sensações com a Barba', originalPrice: 350, price: 290, min: 60, tags: ['Naturista', 'Uso de Barba'],
+    desc: 'Ficamos totalmente à vontade. Primeiro vou relaxar seu corpo com a massagem clássica, depois uso minha barba em algumas partes do seu corpo e encerramos com a massagem íntima.' },
+  { id: 'completa', title: 'Massagem Corpo a Corpo & Interação', originalPrice: 480, price: 390, min: 60, tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
+    desc: 'O pacote sem barreiras. Primeiro vou relaxar seu corpo com a massagem clássica, depois proximidade física com gel escorregadio corpo a corpo e liberdade total para você fazer massagem em mim e encerramos com a massagem íntima.' },
+  { id: 'aparo_solo', title: 'Apenas Depilação (Máquina)', originalPrice: 180, price: 130, min: 40, tags: ['Estética', 'Sem Massagem'],
+    desc: 'Serviço isolado para quem busca apenas estética. Aparo de pelos (até 3 lugares) pente 1 e 3 utilizando máquina sem dores.' },
+];
+
+const ADDONS = [
+  { id: 'time', label: '+30 minutos extras', price: 75 },
+  { id: 'aparo', label: 'Aparar Pelos até 3 lugares (Máquina)', price: 130 },
+];
+
+const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
+
+/* ==========================================================================
+   2. UTILITÁRIOS
+   ========================================================================== */
+const money = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;
+const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+const store = {
+  get: (k: string): string | null => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch (e) {} },
+  del: (k: string) => { try { localStorage.removeItem(k); } catch (e) {} },
 };
+const BACKEND_ON = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
 
-const PROFILES: Record<ProfileId, Profile> = {
-  marina: {
-    id: 'marina', shortName: 'Massagem', name: 'Marina Albuquerque', role: 'Massoterapia & bem-estar',
-    intro: 'Um momento só seu.', location: 'Jardins · São Paulo', phone: '', pixKey: '', instagram: 'https://www.instagram.com/', cover: PHOTO.spa,
-    theme: { bg: '#fffdfd', surface: '#ffffff', ink: '#33262b', muted: '#81747b', line: '#eee3e6', accent: '#b66f83', accentInk: '#ffffff' },
-    services: [
-      { id: 'relaxante', name: 'Massagem relaxante', description: 'Para desacelerar, aliviar tensões e recuperar a sensação de bem-estar.', minutes: 60, originalPrice: 190, price: 160, image: PHOTO.massage },
-      { id: 'drenagem', name: 'Drenagem linfática', description: 'Manobras suaves para uma sensação de leveza e cuidado corporal.', minutes: 60, originalPrice: 220, price: 180, image: PHOTO.stones },
-      { id: 'pedras', name: 'Massagem com pedras quentes', description: 'Calor reconfortante para uma pausa profunda e relaxante.', minutes: 90, originalPrice: 260, price: 220, image: PHOTO.spa },
-    ],
-    addons: [{ id: 'esfoliacao', name: 'Esfoliação corporal', price: 50 }, { id: 'escalda', name: 'Escalda-pés com ervas', price: 40 }],
-  },
-  rafael: {
-    id: 'rafael', shortName: 'Personal', name: 'Rafael Mendes', role: 'Personal trainer',
-    intro: 'Treino com propósito.', location: 'Itaim Bibi · São Paulo', phone: '', pixKey: '', instagram: 'https://www.instagram.com/', cover: PHOTO.trainer,
-    theme: { bg: '#f8fafc', surface: '#ffffff', ink: '#192a43', muted: '#69778b', line: '#e1e7ef', accent: '#29476f', accentInk: '#ffffff' },
-    services: [
-      { id: 'avaliacao', name: 'Avaliação física', description: 'Conversa inicial, objetivos e avaliação do condicionamento.', minutes: 60, originalPrice: 180, price: 150, image: PHOTO.recovery },
-      { id: 'individual', name: 'Treino individual', description: 'Sessão personalizada para seu objetivo e ritmo.', minutes: 60, originalPrice: 220, price: 180, image: PHOTO.training },
-      { id: 'dupla', name: 'Treino em dupla', description: 'Treine com acompanhamento e motivação extra.', minutes: 60, originalPrice: 280, price: 240, image: PHOTO.trainer },
-    ],
-    addons: [{ id: 'mobilidade', name: 'Bloco de mobilidade', price: 30 }, { id: 'plano', name: 'Plano de treino personalizado', price: 60 }],
-  },
-  camila: {
-    id: 'camila', shortName: 'Estética', name: 'Camila Nogueira', role: 'Estética facial',
-    intro: 'Sua pele, seu ritual.', location: 'Moema · São Paulo', phone: '', pixKey: '', instagram: 'https://www.instagram.com/', cover: PHOTO.facial,
-    theme: { bg: '#fcfaf7', surface: '#ffffff', ink: '#3c3029', muted: '#82766c', line: '#ece4dc', accent: '#a66e50', accentInk: '#ffffff' },
-    services: [
-      { id: 'limpeza', name: 'Limpeza de pele', description: 'Cuidado completo para uma pele limpa e equilibrada.', minutes: 60, originalPrice: 230, price: 190, image: PHOTO.facial },
-      { id: 'hidratacao', name: 'Hidratação facial', description: 'Ritual focado em conforto, maciez e hidratação.', minutes: 45, originalPrice: 180, price: 150, image: PHOTO.spa },
-      { id: 'express', name: 'Glow express', description: 'Um cuidado rápido para renovar o viço da pele.', minutes: 30, originalPrice: 140, price: 110, image: PHOTO.stones },
-    ],
-    addons: [{ id: 'mascara', name: 'Máscara facial especial', price: 35 }, { id: 'massagem-facial', name: 'Massagem facial relaxante', price: 25 }],
-  },
-  lucas: {
-    id: 'lucas', shortName: 'Fisioterapia', name: 'Lucas Ferreira', role: 'Fisioterapia & movimento',
-    intro: 'Movimento com confiança.', location: 'Pinheiros · São Paulo', phone: '', pixKey: '', instagram: 'https://www.instagram.com/', cover: PHOTO.physio,
-    theme: { bg: '#f7fbfa', surface: '#ffffff', ink: '#203a37', muted: '#6d827e', line: '#deebe7', accent: '#32796f', accentInk: '#ffffff' },
-    services: [
-      { id: 'avaliacao-fisio', name: 'Avaliação fisioterapêutica', description: 'Entenda suas necessidades e organize os próximos passos.', minutes: 60, originalPrice: 260, price: 220, image: PHOTO.physio },
-      { id: 'terapia-manual', name: 'Terapia manual', description: 'Atendimento individual focado em mobilidade e função.', minutes: 50, originalPrice: 230, price: 190, image: PHOTO.massage },
-      { id: 'recovery-esportivo', name: 'Recovery esportivo', description: 'Sessão de recuperação para quem mantém rotina ativa.', minutes: 45, originalPrice: 210, price: 170, image: PHOTO.recovery },
-    ],
-    addons: [{ id: 'alongamento', name: 'Orientação de alongamentos', price: 40 }, { id: 'mobilidade-fisio', name: 'Rotina de mobilidade para casa', price: 35 }],
-  },
-  beatriz: {
-    id: 'beatriz', shortName: 'Nutrição', name: 'Beatriz Costa', role: 'Nutrição & hábitos saudáveis',
-    intro: 'Pequenos passos, mais saúde.', location: 'Vila Mariana · São Paulo', phone: '', pixKey: '', instagram: 'https://www.instagram.com/', cover: PHOTO.nutrition,
-    theme: { bg: '#fafbf6', surface: '#ffffff', ink: '#303a29', muted: '#78816c', line: '#e5e9dc', accent: '#74864b', accentInk: '#ffffff' },
-    services: [
-      { id: 'consulta-inicial', name: 'Consulta nutricional', description: 'Avaliação de rotina, objetivos e hábitos alimentares.', minutes: 60, originalPrice: 300, price: 260, image: PHOTO.nutrition },
-      { id: 'retorno', name: 'Consulta de acompanhamento', description: 'Revise sua evolução e ajuste as próximas metas.', minutes: 45, originalPrice: 230, price: 190, image: PHOTO.facial },
-      { id: 'online', name: 'Consulta online', description: 'Acompanhamento nutricional por videochamada.', minutes: 45, originalPrice: 250, price: 210, image: PHOTO.spa },
-    ],
-    addons: [{ id: 'checklist', name: 'Guia de organização alimentar', price: 35 }, { id: 'duvidas', name: 'Acompanhamento de dúvidas por 7 dias', price: 50 }],
-  },
-};
-
-const PROFILE_IDS: ProfileId[] = ['marina', 'rafael', 'camila', 'lucas', 'beatriz'];
-const BILLING = { signalAmount: 50, firstSessionDiscount: 20, pixDiscountRate: 0.05 };
-const COUPONS: Record<string, { value: number; label: string }> = {
-  BEMVINDO15: { value: 15, label: 'R$ 15 de desconto' },
-  VIP15: { value: 0.15, label: '15% de desconto' },
-};
-type AppliedCoupon = { code: string; value: number; label: string };
-type PaymentMethod = 'pix' | 'card' | 'cash' | '';
-type BusySlot = { s: number; e: number };
-
-type ImportMetaWithEnv = ImportMeta & { env?: Record<string, string | undefined> };
-const ENV = (import.meta as ImportMetaWithEnv).env ?? {};
-const SUPABASE_URL = (ENV.VITE_SUPABASE_URL ?? '').replace(/\/$/, '');
-const SUPABASE_KEY = ENV.VITE_SUPABASE_PUBLISHABLE_KEY || ENV.VITE_SUPABASE_ANON_KEY || '';
-const SUPABASE_CONFIGURED = Boolean(SUPABASE_URL && SUPABASE_KEY);
-
-async function callSupabaseRpc<T>(functionName: string, args: Record<string, unknown>): Promise<T> {
-  if (!SUPABASE_CONFIGURED) throw new Error('Supabase ainda não está configurado.');
-  const headers: Record<string, string> = {
-    apikey: SUPABASE_KEY,
-    'Content-Type': 'application/json',
-  };
-  if (SUPABASE_KEY.startsWith('eyJ')) headers.Authorization = `Bearer ${SUPABASE_KEY}`;
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${functionName}`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(args),
-  });
-  const raw = await response.text();
-  let payload: unknown = null;
-  try { payload = raw ? JSON.parse(raw) : null; } catch { payload = raw; }
-  if (!response.ok) {
-    const detail = typeof payload === 'object' && payload && 'message' in payload
-      ? String((payload as { message: unknown }).message)
-      : `Erro HTTP ${response.status}`;
-    throw new Error(detail);
-  }
-  return payload as T;
-}
-
-function getBookingClientKey(): string {
-  const storageKey = 'booking_demo_client_key';
+async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<{ ok: boolean; data: T | null }> {
+  if (!BACKEND_ON) return { ok: false, data: null };
   try {
-    let value = window.localStorage.getItem(storageKey);
-    if (!value) {
-      value = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      window.localStorage.setItem(storageKey, value);
-    }
-    return value;
-  } catch {
-    return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  }
+    const r = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}` },
+      body: JSON.stringify(args),
+    });
+    if (!r.ok) return { ok: false, data: null };
+    return { ok: true, data: (await r.json()) as T };
+  } catch { return { ok: false, data: null }; }
 }
-const calculateInvoice = ({
-  servicePrice,
-  addonsTotal,
-  isReturning,
-  appliedCoupon,
-  payment,
-}: {
-  servicePrice: number;
-  addonsTotal: number;
-  isReturning: boolean;
-  appliedCoupon: AppliedCoupon | null;
-  payment: PaymentMethod;
-}) => {
-  const subtotal = servicePrice + addonsTotal;
-  const couponDiscount = appliedCoupon
-    ? Math.min(subtotal, appliedCoupon.value < 1 ? Math.floor(subtotal * appliedCoupon.value) : appliedCoupon.value)
-    : 0;
-  const welcomeDiscount = !isReturning && !appliedCoupon ? Math.min(subtotal, BILLING.firstSessionDiscount) : 0;
-  const discount = appliedCoupon ? couponDiscount : welcomeDiscount;
-  const afterDiscount = Math.max(0, subtotal - discount);
-  const pixDiscount = payment === 'pix' ? Math.min(afterDiscount, Math.ceil(afterDiscount * BILLING.pixDiscountRate)) : 0;
-  const total = Math.max(0, afterDiscount - pixDiscount);
-  const signal = Math.min(BILLING.signalAmount, total);
-  const rest = Math.max(0, total - signal);
-  return { subtotal, couponDiscount, welcomeDiscount, discount, afterDiscount, pixDiscount, total, signal, rest };
-};
-const OPEN_MINUTES = 9 * 60;
-const CLOSE_MINUTES = 19 * 60;
-const SLOT_STEP = 30;
-const getAvailableTimes = (date: string, duration: number, busy: BusySlot[] = [], now = new Date()) => {
-  if (!date || date < dateKey(now)) return [];
-  const day = new Date(`${date}T12:00:00`);
-  if (Number.isNaN(day.getTime()) || day.getDay() === 0) return [];
-  const sameDay = dateKey(now) === date;
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const result: string[] = [];
-  for (let start = OPEN_MINUTES; start + duration <= CLOSE_MINUTES; start += SLOT_STEP) {
-    if (sameDay && start < currentMinutes + SLOT_STEP) continue;
-    const end = start + duration;
-    if (busy.some((slot) => slot.s < end && slot.e > start)) continue;
-    result.push(`${String(Math.floor(start / 60)).padStart(2, '0')}:${String(start % 60).padStart(2, '0')}`);
+
+const clientId = () => {
+  let id = store.get('thaly_cid');
+  if (!id || id.length < 8) {
+    const randomId = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    id = randomId;
+    store.set('thaly_cid', id);
   }
-  return result;
+  return id;
 };
-const money = (n: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n);
+
+const clean = (t: string) => t.replace(/[*_~`\r\n]+/g, ' ').trim();
+
+async function lookupCoupon(code: string): Promise<{ ok: boolean; value: number }> {
+  if (!BACKEND_ON) return { ok: true, value: CONFIG.COUPONS[code] || 0 };
+  const r = await rpc<number | null>('check_coupon', { p_code: code });
+  return { ok: r.ok, value: typeof r.data === 'number' ? r.data : 0 };
+}
+
+const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
 const dateKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-const clean = (s: string) => s.replace(/[\u0000-\u001f\u007f<>]/g, ' ').replace(/[*_~`]+/g, '').replace(/https?:\/\/\S+/gi, '[link removido]').replace(/\s+/g, ' ').trim().slice(0, 160);
+const toMin = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+const fromMin = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+const sameDay = (a: Date | null, b: Date): boolean => !!a && dateKey(a) === dateKey(b);
+const dayLabel = (d: Date, i: number) => (i === 0 ? 'Hoje' : i === 1 ? 'Amanhã' : d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', ''));
+const copyText = async (t: string) => { try { await navigator.clipboard.writeText(t); return true; } catch (e) { return false; } };
 
-const buildWhatsAppMessage = ({
-  profileName,
-  service,
-  dateLabel,
-  time,
-  name,
-  note,
-  selectedAddons,
-  total,
-  signal,
-  rest,
-  bookingCode,
-}: {
-  profileName: string;
-  service: Service;
-  dateLabel: string;
-  time: string;
-  name: string;
-  note: string;
-  selectedAddons: Addon[];
-  total: number;
-  signal: number;
-  rest: number;
-  bookingCode: string;
-}) => {
-  const addonsText = selectedAddons.length
-    ? `\nAdicionais: ${selectedAddons.map((addon) => clean(addon.name)).join(', ')}`
-    : '';
-
-  return `Olá, ${clean(profileName)}! Gostaria de solicitar um agendamento.\nReferência: ${clean(bookingCode)}\n\n*CLIENTE*\nNome: ${clean(name)}${note.trim() ? `\nObservações: ${clean(note)}` : ''}\n\n*AGENDAMENTO*\nAtendimento: ${clean(service.name)} (${service.minutes} min)\nData: ${dateLabel}\nHorário: ${time}${addonsText}\n\n*RESUMO DOS VALORES*\n*Valor total: ${money(total)}*\n*Sinal para reserva via Pix: ${money(signal)}*\n*Saldo restante: ${money(rest)}*\n\nEste pedido ainda depende da confirmação do profissional e da conferência do sinal. O sinal faz parte do valor total.`;
+const ICONS = {
+  instagram: 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
+  shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+  lock: 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z M7 11V7a5 5 0 0 1 10 0v4',
+  check: 'M20 6L9 17l-5-5',
+  close: 'M18 6L6 18 M6 6l12 12',
+  map: 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  star: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+  clock: 'M12 6v6l4 2 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0z',
+  copy: 'M9 9h11v11H9z M5 15H4V4h11v1',
+  cal: 'M3 6h18v15H3z M3 10h18 M8 3v4 M16 3v4',
 };
+
+type IconName = keyof typeof ICONS;
+const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?: number; className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true">
+    <path d={ICONS[name] || ''} />
+  </svg>
+));
+
+const inputCls = 'w-full bg-stone-900 border border-stone-700 rounded-2xl px-5 min-h-[52px] text-base text-stone-100 placeholder:text-stone-500 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-colors';
+const labelCls = 'block text-xs font-semibold text-stone-300 mb-3';
+const chipBase = 'min-h-[52px] border rounded-2xl transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-2';
+const chipOn = 'bg-stone-100 text-stone-950 border-stone-100 font-semibold';
+const chipOff = 'bg-stone-900 border-stone-700 text-stone-300 hover:bg-stone-800';
+const btnPrimary = 'min-h-[52px] px-6 text-sm font-bold rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 disabled:bg-stone-800 disabled:text-stone-500 disabled:cursor-not-allowed';
+const btnGhost = 'min-h-[52px] px-5 text-sm font-semibold rounded-xl border border-stone-600 text-stone-200 hover:bg-stone-800 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400';
+
+/* ==========================================================================
+   3. APP
+   ========================================================================== */
+type SlotStatus = 'ok' | 'past' | 'blocked';
+interface BookingData {
+  name: string; locType: 'studio' | 'home'; cep: string; street: string; number: string; comp: string; bairro: string;
+  date: Date | null; time: string; req: string; payment: string; packageId: string; addons: Record<string, boolean>;
+}
 
 export default function App() {
-  const [profileId, setProfileId] = useState<ProfileId>('marina');
-  const [showProfileControls, setShowProfileControls] = useState(false);
-  const brandTapRef = useRef({ count: 0, startedAt: 0 });
-  const profile = PROFILES[profileId];
-  const [step, setStep] = useState<0 | 1 | 2>(0);
-  const [serviceId, setServiceId] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [addons, setAddons] = useState<string[]>([]);
-  const [name, setName] = useState('');
-  const [note, setNote] = useState('');
-  const [error, setError] = useState('');
-  const [sent, setSent] = useState(false);
-  const [sentToConfiguredContact, setSentToConfiguredContact] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [step, setStep] = useState(0);
   const [isReturning, setIsReturning] = useState(false);
-  const [payment, setPayment] = useState<PaymentMethod>('');
-  const [couponInput, setCouponInput] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
-  const [couponError, setCouponError] = useState('');
-  const [billingNotice, setBillingNotice] = useState('');
-  const [busySlots, setBusySlots] = useState<BusySlot[]>([]);
-  const [availabilityLoading, setAvailabilityLoading] = useState(false);
-  const [availabilityError, setAvailabilityError] = useState('');
-  const [availabilityRefresh, setAvailabilityRefresh] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [toast, setToast] = useState('');
+  const [touched, setTouched] = useState(false);
+  const [coupon, setCoupon] = useState({ input: '', applied: '', value: 0, error: '' });
+  const [now, setNow] = useState(() => new Date());
+  const numberRef = useRef<HTMLInputElement>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [data, setData] = useState<BookingData>({
+    name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '',
+    date: null, time: '', req: '', payment: '', packageId: PACKAGES[0].id, addons: {},
+  });
+  const set = (patch: Partial<BookingData>) => setData((p) => ({ ...p, ...patch }));
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(''), 3000);
+  };
+
+  useEffect(() => { const t = setTimeout(() => setIsLoading(false), 900); return () => clearTimeout(t); }, []);
+  useEffect(() => { const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t); }, []);
 
   useEffect(() => {
-    try {
-      setIsReturning(window.localStorage.getItem(`booking_${profileId}_returning`) === 'yes');
-    } catch {
-      setIsReturning(false);
-    }
-  }, [profileId]);
-
-  useEffect(() => {
-    let active = true;
-    let interval: ReturnType<typeof setInterval> | undefined;
-
-    if (!date) {
-      setBusySlots([]);
-      setAvailabilityLoading(false);
-      setAvailabilityError('');
-      return () => { active = false; };
-    }
-    if (!SUPABASE_CONFIGURED) {
-      setBusySlots([]);
-      setAvailabilityLoading(false);
-      setAvailabilityError('Configure o Supabase no arquivo .env.local para consultar e reservar horários de verdade.');
-      return () => { active = false; };
-    }
-
-    const loadBusySlots = async () => {
-      if (active) setAvailabilityLoading(true);
+    if (isLoading) return;
+    if (store.get('thaly_onboard_final') === 'yes') setStep(1);
+    if (store.get('thaly_returning_final') === 'yes') setIsReturning(true);
+    const draft = store.get('thaly_draft_booking');
+    if (draft) {
       try {
-        const result = await callSupabaseRpc<BusySlot[]>('get_busy', {
-          p_profile_id: profileId,
-          p_date: date,
-        });
-        if (!Array.isArray(result)) throw new Error('Resposta inesperada da agenda.');
-        if (active) {
-          setBusySlots(result
-            .map((item) => ({ s: Number(item?.s), e: Number(item?.e) }))
-            .filter((slot) => Number.isFinite(slot.s) && Number.isFinite(slot.e) && slot.s >= 0 && slot.e > slot.s && slot.e <= 1440));
-          setAvailabilityError('');
-        }
-      } catch (err) {
-        if (active) {
-          setBusySlots([]);
-          console.error('Falha ao consultar agenda:', err);
-          setAvailabilityError('Não foi possível consultar a agenda com segurança. Tente novamente.');
-        }
-      } finally {
-        if (active) setAvailabilityLoading(false);
-      }
-    };
-
-    void loadBusySlots();
-    interval = setInterval(() => { void loadBusySlots(); }, 20000);
-    return () => {
-      active = false;
-      if (interval) clearInterval(interval);
-    };
-  }, [date, profileId, availabilityRefresh]);
+        const d = JSON.parse(draft);
+        setData((p) => ({ ...p, name: d.name || '', locType: d.locType || 'studio', street: d.street || '', number: d.number || '', bairro: d.bairro || '', cep: d.cep || '' }));
+      } catch (e) {}
+    }
+  }, [isLoading]);
 
   useEffect(() => {
-    const handleShortcut = (event: KeyboardEvent) => {
-      if (event.altKey && event.shiftKey && event.key.toLowerCase() === 'p') {
-        event.preventDefault();
-        setShowProfileControls((visible) => !visible);
-      }
-      if (event.key === 'Escape') setShowProfileControls(false);
-    };
-    window.addEventListener('keydown', handleShortcut);
-    return () => window.removeEventListener('keydown', handleShortcut);
+    if (data.name.length > 2) {
+      store.set('thaly_draft_booking', JSON.stringify({ name: data.name, locType: data.locType, street: data.street, number: data.number, bairro: data.bairro, cep: data.cep }));
+    }
+  }, [data.name, data.locType, data.street, data.number, data.bairro, data.cep]);
+
+  useEffect(() => { if (step > 0) window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
+
+  useEffect(() => {
+    if (!profileOpen) return undefined;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setProfileOpen(false); };
+    document.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+  }, [profileOpen]);
+
+  useEffect(() => {
+    if (data.packageId === 'aparo_solo' && data.addons.aparo) set({ addons: { ...data.addons, aparo: false } });
+  }, [data.packageId, data.addons.aparo]);
+
+  const [busy, setBusy] = useState<{ s: number; e: number }[] | null>(null);
+  const [busyLoading, setBusyLoading] = useState(false);
+  const [tick, setTick] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [sentLink, setSentLink] = useState('');
+  const [hp, setHp] = useState('');
+  const [optIn, setOptIn] = useState(false);
+  const lockRef = useRef({ fails: 0, until: 0 });
+
+  useEffect(() => {
+    if (!data.date) return undefined;
+    let off = false;
+    setBusyLoading(true);
+    rpc<{ s: number; e: number }[]>('get_busy', { p_date: dateKey(data.date) })
+      .then((r) => { if (!off) setBusy(r.ok ? r.data : null); })
+      .finally(() => { if (!off) setBusyLoading(false); });
+    return () => { off = true; };
+  }, [data.date, tick]);
+
+  const pkg = useMemo(() => PACKAGES.find((p) => p.id === data.packageId) || PACKAGES[0], [data.packageId]);
+  const isHome = data.locType === 'home';
+
+  const invoice = useMemo(() => {
+    let dur = pkg.min, addonsTotal = 0;
+    const activeAddons: typeof ADDONS = [];
+    ADDONS.forEach((a) => {
+      if (data.addons[a.id]) { addonsTotal += a.price; activeAddons.push(a); if (a.id === 'time') dur += 30; }
+    });
+    const reqFee = data.req.trim().length > 3 ? CONFIG.FETISH_FEE : 0;
+    const base = pkg.price + addonsTotal + reqFee;
+    const peakFee = isHome && PEAK_HOURS.includes(data.time) ? CONFIG.PEAK_FEE : 0;
+
+    let discount = 0;
+    if (coupon.applied) {
+      const v = coupon.value;
+      discount = v < 1 ? Math.floor(base * v) : v;
+    } else if (!isReturning) {
+      discount = CONFIG.FIRST_TIME_DISCOUNT;
+    }
+    discount = Math.min(discount, base);
+
+    const afterDiscount = base - discount;
+    const pixDiscount = data.payment === 'pix' ? Math.ceil(afterDiscount * CONFIG.PIX_DISCOUNT) : 0;
+    const total = afterDiscount - pixDiscount + peakFee;
+    const sinal = Math.min(CONFIG.SIGNAL_AMOUNT, total);
+    return { base: pkg.price, addonsTotal, reqFee, peakFee, discount, pixDiscount, total, sinal, rest: Math.max(0, total - sinal), dur, activeAddons };
+  }, [data, pkg, isHome, isReturning, coupon.applied, coupon.value]);
+
+  const days = useMemo(() => {
+    const out: { d: Date; i: number }[] = [];
+    for (let i = 0; out.length < CONFIG.DAYS_AHEAD && i < 40; i++) {
+      const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + i);
+      if (!CONFIG.DAYS_OFF.includes(d.getDay())) out.push({ d, i });
+    }
+    return out;
   }, []);
 
-  const handleBrandTap = () => {
-    const now = Date.now();
-    if (now - brandTapRef.current.startedAt > 1800) {
-      brandTapRef.current = { count: 1, startedAt: now };
-      return;
+  const slots = useMemo(() => {
+    if (!data.date) return [];
+    const buffer = isHome ? CONFIG.BUFFER_HOME : CONFIG.BUFFER_STUDIO;
+    const lead = isHome ? CONFIG.MIN_LEAD_HOME : CONFIG.MIN_LEAD_STUDIO;
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const today = sameDay(data.date, now);
+    const blocked = (CONFIG.BLOCKED[dateKey(data.date)] || []).map(toMin);
+    const out: { t: string; status: SlotStatus }[] = [];
+    
+    for (let m = CONFIG.OPEN_MIN; m + invoice.dur <= CONFIG.LAST_END_MIN; m += CONFIG.SLOT_STEP) {
+      const end = m + invoice.dur + buffer;
+      let status: SlotStatus = 'ok';
+      if (today && m < nowMin + lead) status = 'past';
+      else if (blocked.some((b) => b < end && b + CONFIG.SLOT_STEP > m)) status = 'blocked';
+      else if ((busy || []).some((x) => x.s < end && (x.e + buffer) > m)) status = 'blocked';
+      out.push({ t: fromMin(m), status });
     }
-    brandTapRef.current.count += 1;
-    if (brandTapRef.current.count >= 5) {
-      setShowProfileControls(true);
-      brandTapRef.current = { count: 0, startedAt: 0 };
-    }
-  };
-
-  const service = profile.services.find((s) => s.id === serviceId);
-  const selectedAddons = profile.addons.filter((a) => addons.includes(a.id));
-  const addonsTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
-  const invoice = calculateInvoice({ servicePrice: service?.price ?? 0, addonsTotal, isReturning, appliedCoupon, payment });
-  const { subtotal, discount, pixDiscount, total, signal, rest } = invoice;
-  const serviceSavings = service ? Math.max(0, service.originalPrice - service.price) : 0;
-  const dates = useMemo(() => Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; }).filter((d) => d.getDay() !== 0), [profileId]);
-  const selectedDate = date ? new Date(`${date}T12:00:00`) : null;
-  const availableTimes = SUPABASE_CONFIGURED && !availabilityLoading && !availabilityError
-    ? getAvailableTimes(date, service?.minutes ?? 60, busySlots)
-    : [];
-  const dateLabel = selectedDate ? selectedDate.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }) : '';
+    return out;
+  }, [data.date, isHome, invoice.dur, now, busy]);
 
   useEffect(() => {
-    if (time && date && !availabilityLoading && !availabilityError && !availableTimes.includes(time)) {
-      setTime('');
+    if (!busyLoading && data.time && !slots.some((s) => s.t === data.time && s.status === 'ok')) {
+      set({ time: '' });
     }
-  }, [time, date, availabilityLoading, availabilityError, busySlots, service?.minutes]);
-  const themeVars = { '--bg': profile.theme.bg, '--surface': profile.theme.surface, '--ink': profile.theme.ink, '--muted': profile.theme.muted, '--line': profile.theme.line, '--accent': profile.theme.accent, '--accent-ink': profile.theme.accentInk } as CSSProperties;
+  }, [slots, busyLoading, data.time]);
 
-  const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-  const changeProfile = (id: ProfileId) => {
-    setShowProfileControls(false);
-    if (id === profileId) return;
-    setProfileId(id); setStep(0); setServiceId(''); setDate(''); setTime(''); setAddons([]); setName(''); setNote(''); setError(''); setSent(false); setSentToConfiguredContact(false); setIsReturning(false); setPayment(''); setCouponInput(''); setAppliedCoupon(null); setCouponError(''); setBillingNotice(''); setBusySlots([]); setAvailabilityError(''); setAvailabilityLoading(false); setSubmitting(false); scrollTop();
-  };
-  const goToSchedule = () => {
-    if (!service) { setError('Escolha um atendimento para continuar.'); return; }
-    setError(''); setStep(1); scrollTop();
-  };
-  const goToDetails = () => {
-    if (!date || !time || !availableTimes.includes(time)) { setError('Escolha um horário disponível na agenda.'); return; }
-    setError(''); setStep(2); scrollTop();
-  };
-  const applyCoupon = () => {
-    const code = couponInput.trim().toUpperCase().replace(/\s+/g, '').slice(0, 30);
-    const found = COUPONS[code];
-    if (!code || !found) {
-      setCouponError('Cupom inválido ou expirado.');
-      setAppliedCoupon(null);
-      return;
-    }
-    setAppliedCoupon({ code, value: found.value, label: found.label });
-    setCouponInput(code);
-    setCouponError('');
-    setBillingNotice('Cupom aplicado ao resumo.');
-  };
+  const availableCount = slots.filter((s) => s.status === 'ok').length;
+  const endTime = data.time ? fromMin(toMin(data.time) + invoice.dur) : '';
 
-  const removeCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponInput('');
-    setCouponError('');
-    setBillingNotice('');
+  const errors = {
+    name: data.name.trim().length < 3 ? 'Informe seu nome (mín. 3 letras).' : '',
+    date: !data.date ? 'Escolha uma data.' : '',
+    time: data.date && !data.time ? 'Escolha um horário.' : '',
+    address: isHome && !(data.street && data.number && data.bairro) ? 'Preencha rua, número e bairro.' : '',
   };
+  const step2Valid = !errors.name && data.date && data.time && !errors.address;
 
-  const copyPixKey = async () => {
-    const key = profile.pixKey.trim();
-    if (!key) {
-      setBillingNotice('A chave Pix deste profissional ainda precisa ser configurada.');
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(key);
-      setBillingNotice('Chave Pix copiada.');
-    } catch {
-      setBillingNotice(`Não foi possível copiar automaticamente. Selecione e copie a chave Pix: ${key}`);
+  const applyCoupon = async () => {
+    const code = coupon.input.trim().toUpperCase().slice(0, 30);
+    if (!code) return;
+    const L = lockRef.current;
+    if (Date.now() < L.until) { setCoupon((c) => ({ ...c, error: 'Muitas tentativas. Aguarde alguns segundos.' })); return; }
+    const r = await lookupCoupon(code);
+    if (r.value > 0) {
+      L.fails = 0; vibrate([20, 40]); setCoupon({ input: '', applied: code, value: r.value, error: '' }); showToast('Cupom ativado');
+    } else {
+      vibrate(50); L.fails += 1;
+      if (L.fails >= 3) { L.until = Date.now() + 30000; L.fails = 0; }
+      setCoupon((c) => ({ ...c, error: r.ok ? 'Cupom inválido ou expirado.' : 'Sem conexão. Tente novamente.' }));
     }
   };
 
-  const sendRequest = async () => {
-    if (!service) { setStep(0); setError('Escolha um atendimento.'); return; }
-    if (!SUPABASE_CONFIGURED) {
-      setError('A agenda ainda não está conectada. Siga o guia de integração e preencha as variáveis do Supabase.');
-      return;
-    }
-    if (availabilityLoading) { setError('Estamos verificando os horários. Tente novamente em instantes.'); return; }
-    if (availabilityError) { setError('Não foi possível consultar a agenda. Corrija a conexão antes de enviar o pedido.'); return; }
-    if (!date || !time || !getAvailableTimes(date, service.minutes, busySlots).includes(time)) {
-      setStep(1); setError('Esse horário não está mais disponível. Escolha outro horário.'); setAvailabilityRefresh((n) => n + 1); return;
-    }
-    if (name.trim().split(/\s+/).filter(Boolean).length < 2) { setError('Informe seu nome e sobrenome.'); return; }
-    if (!payment) { setError('Escolha como pretende pagar o saldo restante.'); return; }
+  const forgetMe = () => {
+    store.del('thaly_draft_booking'); store.del('thaly_cid');
+    set({ name: '', cep: '', street: '', number: '', comp: '', bairro: '' });
+    showToast('Dados apagados deste aparelho');
+  };
 
-    const target = profile.phone.replace(/\D/g, '');
-    if (target && (target.length < 10 || target.length > 15)) {
-      setError('O telefone do profissional está incorreto na configuração do perfil.'); return;
-    }
+  const copyPix = async () => {
+    const ok = await copyText(CONFIG.PIX_KEY);
+    showToast(ok ? 'Chave Pix (CNPJ) copiada' : `Chave Pix: ${CONFIG.PIX_KEY}`);
+  };
 
+  const selectPayment = (m: string) => { vibrate(15); set({ payment: m }); };
+
+  const handleCep = async (val: string) => {
+    const masked = maskCEP(val);
+    set({ cep: masked });
+    if (masked.length === 9) {
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${masked.replace('-', '')}/json/`);
+        const j = await res.json();
+        if (!j.erro) { setData((p) => ({ ...p, street: j.logradouro || p.street, bairro: j.bairro || p.bairro })); setTimeout(() => numberRef.current?.focus(), 150); }
+        else showToast('CEP não encontrado. Preencha manualmente.');
+      } catch (e) { showToast('Sem conexão para buscar o CEP.'); }
+    }
+  };
+
+  const whatsappLink = () => {
+    const dStr = data.date ? data.date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' }) : '';
+    let loc;
+    if (!isHome) loc = '📍 *Local:* Atendimento no meu espaço, região da Bela Vista/Centro Histórico. O endereço exato será enviado após a confirmação.';
+    else {
+      const full = `${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}, São Paulo`;
+      loc = `📍 *Local:* Atendimento no seu endereço.\n*Endereço informado:* ${full}\n*Mapa:* https://maps.google.com/?q=${encodeURIComponent(full)}`;
+    }
+    
+    let t = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n*NOME:* ${clean(data.name)}\n`;
+    t += `*DIA E HORA:* ${dStr} das ${data.time} às ${endTime}\n${loc}\n\n`;
+    
+    t += `*PACOTE (${invoice.dur} min):*\n✅ ${pkg.title}\n`;
+    invoice.activeAddons.forEach((a) => (t += `➕ ${a.label}\n`));
+    if (data.req.trim()) t += `\n*VONTADE ESPECÍFICA:* "${clean(data.req)}"\n`;
+    
+    t += `\n*RESUMO DO PAGAMENTO:*\n*Valor Total:* ${money(invoice.total)} (${data.payment.toUpperCase()})\n`;
+    t += `*Sinal (Pix agora):* ${money(invoice.sinal)}\n*Restante (depois da sessão):* ${money(invoice.rest)}\n\n`;
+    
+    if (optIn) t += '🔔 Aceito receber lembretes e novidades por WhatsApp.\n\n';
+    
+    t += `🎁 *Para a próxima:* Já deixei anotado que tenho direito ao cupom SESSAO2 no meu próximo agendamento.\n\n`;
+    t += 'Aguardo sua resposta para mandar o comprovante do sinal!';
+    
+    return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
+  };
+
+  const downloadICS = () => {
+    if (!data.date || !data.time) return;
+    const f = (d: Date, m: number) => `${dateKey(d).replace(/-/g, '')}T${fromMin(m).replace(':', '')}00`;
+    const s = toMin(data.time);
+    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Thalyson//Agenda//PT', 'BEGIN:VEVENT',
+      `UID:${Date.now()}@thalyson`, `DTSTAMP:${f(new Date(), now.getHours() * 60 + now.getMinutes())}`,
+      `DTSTART:${f(data.date, s)}`, `DTEND:${f(data.date, s + invoice.dur)}`,
+      `SUMMARY:${pkg.title} - Thalyson`, `DESCRIPTION:Sinal de ${money(invoice.sinal)} via Pix para confirmar.`,
+      'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'sessao.ics'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const finishBooking = async () => {
+    if (!data.payment) { vibrate(50); showToast('Escolha a forma de pagamento'); return; }
+    if (submitting || !data.date) return;
     setSubmitting(true);
-    setError('');
-    const whatsappWindow = window.open('about:blank', '_blank');
-    try {
-      const result = await callSupabaseRpc<{
-        ok: boolean; error?: string; booking_id?: string; booking_code?: string; expires_at?: string;
-      }>('book_slot', {
-        p_profile_id: profileId,
-        p_date: date,
-        p_start_minute: Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5)),
-        p_service_id: service.id,
-        p_customer_name: clean(name),
-        p_client_key: getBookingClientKey(),
-        p_total: total,
-        p_signal: signal,
-        p_remaining: rest,
-      });
-
-      if (!result?.ok) {
-        whatsappWindow?.close();
-        const message = result?.error === 'taken'
-          ? 'Outra pessoa acabou de reservar esse horário. Escolha outro.'
-          : result?.error === 'pending_limit'
-            ? 'Você já tem solicitações pendentes. Aguarde a confirmação anterior ou tente mais tarde.'
-            : result?.error === 'invalid_service'
-              ? 'Esse serviço não está configurado na agenda. Confira o SQL e os IDs dos serviços.'
-              : result?.error === 'invalid_date'
-                ? 'Essa data não está dentro do período de agendamento ou não aceita reservas.'
-                : result?.error === 'invalid_name'
-                  ? 'Informe o nome completo antes de continuar.'
-                  : result?.error === 'outside_hours'
-                    ? 'Esse horário fica fora do funcionamento configurado.'
-                : result?.error === 'past'
-                  ? 'Esse horário já passou. Escolha outro.'
-                  : 'A agenda recusou a solicitação. Atualize os horários e tente novamente.';
-        setError(message);
-        setStep(1);
-        setTime('');
-        setAvailabilityRefresh((n) => n + 1);
-        return;
-      }
-
-      const bookingCode = result.booking_code || result.booking_id?.slice(0, 8).toUpperCase() || 'AGENDAMENTO';
-      const message = buildWhatsAppMessage({
-        profileName: profile.name,
-        service,
-        dateLabel,
-        time,
-        name,
-        note,
-        selectedAddons,
-        total,
-        signal,
-        rest,
-        bookingCode,
-      });
-      const url = target ? `https://wa.me/${target}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`;
-      try { window.localStorage.setItem(`booking_${profileId}_returning`, 'yes'); } catch { }
-      if (whatsappWindow) {
-        whatsappWindow.opener = null;
-        whatsappWindow.location.href = url;
-      } else {
-        window.location.assign(url);
-        return;
-      }
-      setIsReturning(true);
-      setSentToConfiguredContact(Boolean(target));
-      setSent(true);
-      setError('');
-    } catch (err) {
-      whatsappWindow?.close();
-      // Não exiba mensagens internas do banco/API ao cliente.
-      console.error('Falha ao criar reserva:', err);
-      setError('Não foi possível concluir a reserva agora. Confira sua conexão e tente novamente.');
-      setAvailabilityRefresh((n) => n + 1);
-    } finally {
+    
+    if (hp) {
       setSubmitting(false);
+      setSentLink('#');
+      setStep(4);
+      return;
     }
+
+    const w = window.open('', '_blank');
+    const link = whatsappLink();
+    let held = true;
+    
+    const r = await rpc<{ ok: boolean; error?: string }>('book_slot', {
+      p_date: dateKey(data.date), p_start: toMin(data.time), p_dur: invoice.dur, p_home: isHome,
+      p_name: data.name.trim(), p_pkg: pkg.id, p_client: clientId(),
+    });
+    
+    if (r.ok && r.data && !r.data.ok) {
+      const err = r.data.error;
+      w?.close(); setSubmitting(false); vibrate(50);
+      showToast(err === 'taken' ? 'Esse horário acabou de ser reservado. Escolha outro.'
+        : err === 'limit' ? 'Você já tem reservas aguardando confirmação.'
+        : err === 'busy_system' ? 'Muitas reservas pendentes agora. Tente em alguns minutos.'
+        : 'Não foi possível reservar. Revise os dados.');
+      setTick((t) => t + 1); set({ time: '' }); setStep(2); return;
+    }
+    
+    if (!r.ok || !r.data) held = false;
+    if (!BACKEND_ON) showToast('Pedido enviado pelo WhatsApp; o horário só fica confirmado após resposta.');
+    else if (!held) showToast('Não foi possível travar o horário automaticamente. Aguarde a confirmação pelo WhatsApp.');
+    
+    store.set('thaly_returning_final', 'yes'); store.del('thaly_draft_booking');
+    setSentLink(link); vibrate([30, 50]);
+    if (w) { w.opener = null; w.location.href = link; }
+    setSubmitting(false); setStep(4);
   };
 
-  return <div className="booking-app" style={themeVars}>
-    <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap');
-      .booking-app{min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Manrope','DM Sans',Arial,sans-serif;transition:background .2s,color .2s;padding-bottom:calc(92px + env(safe-area-inset-bottom))}
-      .booking-app *{box-sizing:border-box}.booking-app button,.booking-app input,.booking-app textarea{font:inherit}.booking-app button{cursor:pointer;touch-action:manipulation}.booking-app button:focus-visible,.booking-app input:focus-visible,.booking-app textarea:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-      .booking-wrap{width:min(100% - 32px,680px);margin:0 auto}.booking-top{display:flex;align-items:center;justify-content:center;padding:18px 0 14px;border-bottom:1px solid var(--line)}.booking-brand{min-width:0;text-align:center}.booking-brand strong{display:block;font:500 20px/1.1 'Playfair Display',Georgia,serif;white-space:nowrap;letter-spacing:-.02em}.booking-brand span{display:block;color:var(--muted);font-size:10px;margin-top:4px}.booking-brand-trigger{display:block;border:0;background:transparent;color:inherit;padding:0;text-align:center;cursor:pointer}.booking-studio-panel{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:2147483647;width:min(720px,calc(100% - 20px));padding:12px;border:1px solid #d8dce4;border-radius:16px;background:rgba(255,255,255,.97);color:#172033;box-shadow:0 14px 48px rgba(10,20,40,.25);backdrop-filter:blur(16px);font-family:Manrope,Arial,sans-serif}.booking-studio-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.booking-studio-head strong{display:block;font-size:12px;letter-spacing:.02em}.booking-studio-head small{display:block;font-size:10px;color:#667085;margin-top:3px}.booking-studio-close{width:34px;height:34px;border:1px solid #e1e5ec;border-radius:10px;background:#fff;color:#344054;font-size:20px;line-height:1}.booking-studio-buttons{display:flex;gap:7px;overflow-x:auto;padding-bottom:1px;scrollbar-width:none}.booking-studio-buttons::-webkit-scrollbar{display:none}.booking-studio-buttons button{flex:1 0 auto;min-height:42px;border:1px solid #e1e5ec;border-radius:10px;padding:8px 12px;background:#f8fafc;color:#344054;font-size:11px;font-weight:700;white-space:nowrap}.booking-studio-buttons button[aria-pressed="true"]{background:#172b4d;border-color:#172b4d;color:#fff}.booking-studio-tip{font-size:10px;line-height:1.4;color:#667085;margin:9px 1px 0}
-      .booking-hero{padding:22px 0 18px}.booking-hero-image{height:174px;border-radius:17px;overflow:hidden;background:var(--line);position:relative;box-shadow:0 10px 28px rgba(35,28,31,.07)}.booking-hero-image img{width:100%;height:100%;object-fit:cover;object-position:center 55%;display:block}.booking-hero-image:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.36),transparent 80%)}.booking-hero-copy{position:absolute;z-index:1;left:22px;right:18px;bottom:20px;color:#fff}.booking-kicker{text-transform:uppercase;letter-spacing:.15em;font-size:9px;font-weight:700;opacity:.96}.booking-hero h1{font:400 clamp(31px,8vw,43px)/1.04 'Playfair Display',Georgia,serif;letter-spacing:-.025em;white-space:pre-line;margin:8px 0 0;max-width:340px}.booking-location{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11px;margin-top:13px}
-      .booking-step-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0}.booking-step-head h2{font:400 27px/1.1 'Playfair Display',Georgia,serif;margin:0}.booking-step-head span{font-size:10px;color:var(--muted);white-space:nowrap}.booking-progress{height:3px;display:flex;gap:5px;margin:18px 0 22px}.booking-progress i{height:3px;flex:1;background:var(--line);border-radius:8px}.booking-progress i.on{background:var(--accent)}.booking-section-label{font-size:11px;font-weight:700;margin:20px 0 10px}.booking-services{display:grid;gap:10px}.booking-service{width:100%;display:flex;align-items:center;gap:12px;text-align:left;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px;min-height:100px;transition:border-color .16s,background .16s,box-shadow .16s}.booking-service[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent),0 4px 14px rgba(25,30,45,.04)}.booking-service img{width:78px;height:78px;object-fit:cover;border-radius:8px;flex-shrink:0}.booking-service-info{flex:1;min-width:0}.booking-service-info strong{display:block;font-size:13px;line-height:1.3}.booking-service-info small{display:block;color:var(--muted);font-size:11px;line-height:1.45;margin-top:4px}.booking-service-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}.booking-service-meta b{font-size:13px}.booking-service-meta span{font-size:10px;color:var(--muted)}.booking-price-old{color:var(--muted);text-decoration:line-through;font-size:10px;font-weight:500}.booking-discount-pill{background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--accent)!important;font-weight:800;font-size:9px!important;border-radius:999px;padding:4px 6px}.booking-promo-note{display:flex;flex-direction:column;gap:4px;padding:13px 14px;margin:-4px 0 14px;border-radius:12px;background:color-mix(in srgb,var(--accent) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 20%,var(--line));font-size:11px;line-height:1.5}.booking-promo-note strong{font-size:12px}.booking-returning{display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.5;margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--surface)}.booking-returning input{width:17px;height:17px;accent-color:var(--accent);margin-top:1px;flex-shrink:0}.booking-coupon-box{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:14px;margin-top:10px}.booking-coupon-label{display:block;font-size:12px;font-weight:700;margin-bottom:9px}.booking-coupon-row{display:flex;gap:8px}.booking-coupon-row input{min-width:0;flex:1;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);padding:11px;font-size:13px}.booking-coupon-applied{display:flex;align-items:center;justify-content:space-between;gap:10px}.booking-coupon-applied span{display:flex;flex-direction:column;gap:3px}.booking-coupon-applied small{color:var(--muted);font-size:11px}.booking-payment-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.booking-payment-choice{border:1px solid var(--line);border-radius:11px;background:var(--surface);padding:12px 7px;min-height:70px;text-align:center;color:var(--ink)}.booking-payment-choice strong,.booking-payment-choice span{display:block}.booking-payment-choice strong{font-size:12px}.booking-payment-choice span{font-size:9px;color:var(--muted);margin-top:5px;line-height:1.35}.booking-payment-choice[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:color-mix(in srgb,var(--accent) 7%,var(--surface))}.booking-saving-row,.booking-saving-row strong{color:#16805d!important}.booking-deposit-block{border-top:1px solid var(--line);margin-top:12px;padding-top:13px;display:grid;gap:10px}.booking-deposit-block>div{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}.booking-deposit-block>div span{color:var(--muted)}.booking-deposit-block>div strong{font-size:15px}.booking-deposit-block>div:first-child strong{color:var(--accent)}.booking-deposit-block small{color:var(--muted);font-size:10px;line-height:1.4}.booking-pix-panel{margin-top:14px;padding:15px;border-radius:13px;border:1px solid var(--line);background:var(--bg);display:grid;gap:10px}.booking-pix-panel>div:first-child{display:flex;flex-direction:column;gap:5px}.booking-pix-panel>div:first-child strong{font-size:13px}.booking-pix-panel>div:first-child span{font-size:11px;color:var(--muted);line-height:1.5}.booking-pix-key{border:1px dashed var(--line);background:var(--surface);border-radius:9px;padding:11px;word-break:break-all;font-size:12px}.booking-billing-notice{font-size:11px;color:var(--accent);line-height:1.45}.booking-radio{width:20px;height:20px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;flex-shrink:0}.booking-service[aria-pressed="true"] .booking-radio{border-color:var(--accent)}.booking-service[aria-pressed="true"] .booking-radio:after{content:'';width:10px;height:10px;border-radius:50%;background:var(--accent)}
-      .booking-card{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:16px;margin-top:12px;box-shadow:0 4px 18px rgba(25,30,45,.025)}.booking-date-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.booking-date{min-width:0;padding:11px 2px;border:1px solid var(--line);border-radius:11px;background:transparent;color:var(--ink);text-align:center}.booking-date small{display:block;color:var(--muted);font-size:9px;text-transform:capitalize;margin-bottom:7px}.booking-date strong{font-size:15px}.booking-date[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}.booking-date[aria-pressed="true"] small{color:inherit;opacity:.8}.booking-time-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.booking-time{padding:13px 2px;border:1px solid var(--line);border-radius:11px;background:transparent;color:var(--ink);font-size:12px}.booking-time[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface));box-shadow:inset 0 0 0 1px var(--accent)}.booking-addon{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);font-size:12px}.booking-addon:last-child{border-bottom:0}.booking-addon input{width:18px;height:18px;accent-color:var(--accent)}.booking-addon span:nth-child(2){flex:1}.booking-addon b{font-size:12px}.booking-field{display:block;margin:14px 0}.booking-field span{display:block;font-size:11px;font-weight:700;margin-bottom:7px}.booking-field input,.booking-field textarea{display:block;width:100%;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);padding:13px 12px;font-size:14px;min-height:46px}.booking-field textarea{min-height:76px;resize:vertical}.booking-field input::placeholder,.booking-field textarea::placeholder{color:var(--muted)}.booking-summary{background:var(--bg);border-radius:10px;padding:14px;margin:14px 0}.booking-summary-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:12px}.booking-summary-row span{color:var(--muted)}.booking-summary-row strong{text-align:right}.booking-summary-total{border-top:1px solid var(--line);margin-top:5px;padding-top:13px;font-size:15px}.booking-error{color:#c04e4e;font-size:12px;margin:12px 0}.booking-note{font-size:11px;color:var(--muted);line-height:1.55;margin:12px 0}.booking-actions{display:flex;gap:10px;margin-top:20px}.booking-btn{min-height:48px;border-radius:12px;padding:0 17px;border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.booking-btn.primary{flex:1;background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.booking-btn:disabled{opacity:.45;cursor:not-allowed}.booking-bottom{position:fixed;z-index:20;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px rgba(25,30,45,.055)}.booking-bottom-inner{width:min(100%,720px);margin:auto;display:flex;align-items:center;gap:12px}.booking-bottom-price{min-width:82px}.booking-bottom-price small{display:block;font-size:10px;color:var(--muted);margin-bottom:3px}.booking-bottom-price strong{font-size:16px}.booking-bottom .booking-btn{flex:1}.booking-success{text-align:center;padding:36px 8px 22px}.booking-success-mark{width:54px;height:54px;margin:0 auto 18px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:24px}.booking-success h2{font:400 30px/1.1 'Playfair Display',Georgia,serif;margin:0 0 10px}.booking-success p{font-size:13px;line-height:1.65;color:var(--muted);max-width:330px;margin:0 auto 20px}.booking-footer{text-align:center;color:var(--muted);font-size:10px;padding:26px 0 10px}
-      @media(min-width:640px){.booking-wrap{width:min(100% - 48px,680px)}.booking-hero{padding-top:30px}.booking-hero-image{height:240px}.booking-service img{width:88px;height:88px}.booking-services{gap:12px}.booking-card{padding:20px}.booking-bottom{padding-left:24px;padding-right:24px}}
-      @media(max-width:360px){.booking-payment-choices{gap:5px}.booking-payment-choice{padding:10px 4px}.booking-payment-choice span{font-size:8px}.booking-coupon-row{flex-direction:column}.booking-wrap{width:calc(100% - 24px)}.booking-brand strong{font-size:16px}.booking-studio-panel{padding:9px}.booking-studio-buttons button{padding:8px 10px;font-size:10px}.booking-hero-image{height:155px}.booking-service{gap:8px;padding:8px}.booking-service img{width:66px;height:72px}.booking-service-info small{font-size:10px}.booking-time-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.booking-bottom-inner{gap:8px}.booking-bottom-price{min-width:68px}}
-      @media(prefers-reduced-motion:reduce){.booking-app *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
-    `}</style>
+  const resetFlow = () => {
+    vibrate(15); setTouched(false);
+    setData((p) => ({ name: p.name, locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', date: null, time: '', req: '', payment: '', packageId: PACKAGES[0].id, addons: {} }));
+    setStep(1);
+  };
 
-    {showProfileControls && <aside className="booking-studio-panel" role="dialog" aria-label="Controles privados de demonstração">
-      <div className="booking-studio-head">
-        <span><strong>CONTROLE DE GRAVAÇÃO</strong><small>Escolha um perfil; os controles se ocultam automaticamente.</small></span>
-        <button type="button" className="booking-studio-close" aria-label="Ocultar controles" onClick={() => setShowProfileControls(false)}>×</button>
+  const greeting = now.getHours() < 12 ? 'Bom dia' : now.getHours() < 18 ? 'Boa tarde' : 'Boa noite';
+
+  const css = (
+    <style dangerouslySetInnerHTML={{ __html: `
+      @keyframes fadeUp { from { opacity:0; transform: translateY(12px) } to { opacity:1; transform:none } }
+      @keyframes slide { 0% { transform: translateX(-100%) } 100% { transform: translateX(300%) } }
+      .fade-up { animation: fadeUp .4s ease both }
+      .load-bar { animation: slide 1.2s infinite ease-in-out }
+      .hide-scrollbar::-webkit-scrollbar { display:none } .hide-scrollbar { scrollbar-width:none }
+      @media (prefers-reduced-motion: reduce) { .fade-up, .load-bar { animation: none } * { transition: none !important } }
+    ` }} />
+  );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center px-6" role="status" aria-live="polite">
+        <h1 className="text-sm text-stone-300 tracking-[0.25em] uppercase mb-8 text-center">Escolha, agende e relaxe</h1>
+        <div className="w-40 h-0.5 bg-stone-800 rounded-full overflow-hidden relative">
+          <div className="absolute inset-y-0 left-0 w-1/3 bg-stone-300 load-bar rounded-full" />
+        </div>
+        {css}
       </div>
-      <nav className="booking-studio-buttons" role="group" aria-label="Trocar perfil da demonstração">
-        {PROFILE_IDS.map((id) => <button key={id} type="button" aria-pressed={profileId === id} onClick={() => changeProfile(id)}>{PROFILES[id].shortName}</button>)}
-      </nav>
-      <p className="booking-studio-tip">Atalho: Alt + Shift + P · toque 5 vezes no nome no topo para abrir no celular. Esc oculta os controles.</p>
-    </aside>}
+    );
+  }
 
-    <header className="booking-wrap booking-top">
-      <button type="button" className="booking-brand booking-brand-trigger" onClick={handleBrandTap} aria-label="Marca do profissional">
-        <strong>{profile.name}</strong><span>{profile.role}</span>
-      </button>
-    </header>
+  const Summary = ({ label, value }: { label: string; value: ReactNode }) => (
+    <div className="flex justify-between gap-4 text-sm"><span className="text-stone-400">{label}</span><span className="text-stone-100 font-medium text-right">{value}</span></div>
+  );
 
-    <main className="booking-wrap">
-      <section className="booking-hero" aria-label={`Apresentação de ${profile.name}`}>
-        <div className="booking-hero-image"><img src={profile.cover} alt={`Atendimento de ${profile.role}`} /><div className="booking-hero-copy"><div className="booking-kicker">{profile.role}</div><h1>{profile.intro}</h1></div></div>
-        <div className="booking-location">⌖ <span>{profile.location}</span><span>·</span><span>Atendimento com hora marcada</span></div>
-      </section>
+  return (
+    <div className="min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30 pb-12 relative">
+      {toast && (
+        <div role="status" aria-live="polite" className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-stone-100 text-stone-900 px-6 py-3 rounded-full font-medium text-sm shadow-xl fade-up max-w-[90vw] text-center">{toast}</div>
+      )}
 
-      {!sent ? <>
-        <div className="booking-progress" aria-label={`Etapa ${step + 1} de 3`}>{[0, 1, 2].map((n) => <i key={n} className={n <= step ? 'on' : ''} />)}</div>
-
-        {step === 0 && <section aria-labelledby="booking-title">
-          <div className="booking-step-head"><h2 id="booking-title">Escolha seu atendimento</h2><span>1 de 3</span></div>
-          <div className="booking-promo-note"><strong>Condição especial de boas-vindas</strong><span>R$ 20 de desconto na primeira sessão e mais 5% pagando o saldo por Pix.</span></div>
-          <div className="booking-services">{profile.services.map((s) => <button key={`${profileId}-${s.id}`} type="button" className="booking-service" aria-pressed={serviceId === s.id} onClick={() => { if (serviceId !== s.id) { setDate(''); setTime(''); } setServiceId(s.id); setError(''); }}>
-            <img src={s.image} alt="" loading="lazy" /><span className="booking-service-info"><strong>{s.name}</strong><small>{s.description}</small><span className="booking-service-meta"><span className="booking-price-old">{money(s.originalPrice)}</span><b>{money(s.price)}</b><span className="booking-discount-pill">-{Math.round((1 - s.price / s.originalPrice) * 100)}%</span><span>{s.minutes} min</span></span></span><span className="booking-radio" aria-hidden="true" />
-          </button>)}</div>
-          {error && <p className="booking-error" role="alert">{error}</p>}
-          <p className="booking-note">Escolha o atendimento ideal e encontre um horário para solicitar sua sessão.</p>
-        </section>}
-
-        {step === 1 && <section aria-labelledby="booking-title">
-          <div className="booking-step-head"><h2 id="booking-title">Quando fica melhor?</h2><span>2 de 3</span></div>
-          {service && <div className="booking-card"><div className="booking-summary-row"><span>Atendimento</span><strong>{service.name}</strong></div><div className="booking-summary-row"><span>Duração</span><strong>{service.minutes} minutos</strong></div></div>}
-          <div className="booking-section-label">Escolha o dia</div>
-          <div className="booking-date-grid">{dates.map((d) => { const key = dateKey(d); return <button key={key} type="button" className="booking-date" aria-pressed={date === key} onClick={() => { setDate(key); setTime(''); setError(''); }}><small>{dateKey(d) === dateKey(new Date()) ? 'Hoje' : dateKey(d) === dateKey(new Date(Date.now() + 86400000)) ? 'Amanhã' : d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}</small><strong>{d.getDate()}</strong></button>; })}</div>
-          <div className="booking-section-label">Horários</div>
-          {!SUPABASE_CONFIGURED ? <p className="booking-note" role="status">Para exibir horários reais, conecte o Supabase seguindo o guia incluído no pacote.</p>
-            : availabilityLoading ? <p className="booking-note" role="status">Consultando a agenda compartilhada…</p>
-            : availabilityError ? <p className="booking-error" role="alert">{availabilityError}</p>
-            : <div className="booking-time-grid">{availableTimes.length ? availableTimes.map((t) => <button key={t} type="button" className="booking-time" aria-pressed={time === t} onClick={() => { setTime(t); setError(''); }}>{t}</button>) : <p className="booking-note">Não há horários disponíveis para esta data. Escolha outro dia.</p>}</div>}
-          <div className="booking-section-label">Serviços adicionais <span style={{ fontWeight: 400, color: 'var(--muted)' }}>· opcional</span></div>
-          <div className="booking-card">{profile.addons.map((a) => <label key={a.id} className="booking-addon"><input type="checkbox" checked={addons.includes(a.id)} onChange={(e) => setAddons((old) => e.target.checked ? [...old, a.id] : old.filter((id) => id !== a.id))} /><span>{a.name}</span><b>+ {money(a.price)}</b></label>)}</div>
-          {error && <p className="booking-error" role="alert">{error}</p>}
-          <p className="booking-note">Atendimentos de segunda a sábado, das 9h às 19h. A disponibilidade é consultada na agenda; o horário só fica confirmado após o retorno do profissional e a validação do sinal.</p>
-          <div className="booking-actions"><button type="button" className="booking-btn" onClick={() => { setStep(0); setError(''); }}>← Voltar</button></div>
-        </section>}
-
-        {step === 2 && <section aria-labelledby="booking-title">
-          <div className="booking-step-head"><h2 id="booking-title">Seus dados</h2><span>3 de 3</span></div>
-          <div className="booking-card">
-            <div className="booking-summary-row"><span>Atendimento</span><strong>{service?.name}</strong></div>
-            <div className="booking-summary-row"><span>Data</span><strong>{dateLabel}</strong></div>
-            <div className="booking-summary-row"><span>Horário</span><strong>{time} · {service?.minutes} min</strong></div>
+      {profileOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-stone-950/85 backdrop-blur-sm" onClick={() => setProfileOpen(false)}>
+          <div role="dialog" aria-modal="true" aria-label="Perfil" className="bg-stone-900 border border-stone-700 rounded-3xl w-full max-w-sm p-8 relative shadow-2xl fade-up" onClick={(e) => e.stopPropagation()}>
+            <button aria-label="Fechar perfil" autoFocus onClick={() => setProfileOpen(false)} className="absolute top-4 right-4 p-3 text-stone-400 hover:text-white rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"><Icon name="close" /></button>
+            <img src={CONFIG.AVATAR} className="w-20 h-20 rounded-full object-cover mb-6" alt="Foto de Thalyson" />
+            <h2 className="text-2xl font-light text-stone-50 mb-1">Thalyson Massagens, SP Bela Vista</h2>
+            <p className="text-amber-400 text-xs font-semibold mb-6">Terapeuta masculino</p>
+            <div className="space-y-4 text-sm text-stone-300 leading-relaxed mb-8">
+              <p>{greeting}. Meu trabalho é direto e focado no corpo masculino: usar o toque para desfazer o peso e a tensão da sua rotina.</p>
+              <p className="flex items-start gap-3 bg-stone-950 p-4 rounded-2xl"><Icon name="map" size={18} className="mt-0.5 text-stone-400" /><span>Atendo em um refúgio seguro e discreto no Centro Histórico de SP, próximo ao Metrô Anhangabaú.</span></p>
+            </div>
+            <button onClick={forgetMe} className="w-full text-xs text-stone-400 hover:text-stone-200 underline underline-offset-4 min-h-[44px] mb-4">Apagar meus dados deste aparelho</button>
+            <div className="pt-6 border-t border-stone-700 flex justify-center gap-6">
+              <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-stone-300 hover:text-white min-h-[44px]"><Icon name="instagram" size={18} /> Instagram</a>
+              <a href={CONFIG.REVIEW_LINK} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-stone-300 hover:text-white min-h-[44px]"><Icon name="star" size={18} /> Avaliações</a>
+            </div>
           </div>
-          <label className="booking-field"><span>Nome completo</span><input value={name} onChange={(e) => { setName(e.target.value); setError(''); }} autoComplete="name" placeholder="Seu nome e sobrenome" maxLength={80} /></label>
-          <label className="booking-field"><span>Observação <span style={{ display: 'inline', fontWeight: 400, color: 'var(--muted)' }}>· opcional</span></span><textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Alguma preferência ou informação importante?" maxLength={160} /></label>
+        </div>
+      )}
 
-          <div className="booking-section-label">Condições e descontos</div>
-          <label className="booking-returning"><input type="checkbox" checked={isReturning} onChange={(e) => { const returning = e.target.checked; setIsReturning(returning); setBillingNotice(''); try { if (returning) window.localStorage.setItem(`booking_${profileId}_returning`, 'yes'); else window.localStorage.removeItem(`booking_${profileId}_returning`); } catch { } }} /><span>Já sou cliente deste profissional (não aplicar desconto de primeira sessão)</span></label>
-          {!isReturning && !appliedCoupon && <p className="booking-note">Desconto de boas-vindas de {money(BILLING.firstSessionDiscount)} aplicado automaticamente.</p>}
-          <div className="booking-coupon-box">
-            {!appliedCoupon ? <>
-              <label className="booking-coupon-label" htmlFor="booking-coupon">Tem um cupom de desconto?</label>
-              <div className="booking-coupon-row"><input id="booking-coupon" value={couponInput} onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(''); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyCoupon(); } }} placeholder="Digite o código" maxLength={30} autoCapitalize="characters" /><button type="button" className="booking-btn" onClick={applyCoupon}>Aplicar</button></div>
-              {couponError && <p className="booking-error" role="alert">{couponError}</p>}
-              <p className="booking-note">Um cupom substitui o desconto de boas-vindas; os descontos do atendimento e do Pix continuam no cálculo.</p>
-            </> : <div className="booking-coupon-applied"><span><strong>Cupom {appliedCoupon.code}</strong><small>{appliedCoupon.label}</small></span><button type="button" className="booking-btn" onClick={removeCoupon}>Remover</button></div>}
+      {step > 0 && (
+        <header className="px-6 py-4 max-w-lg mx-auto flex justify-between items-center mb-6 sticky top-0 bg-stone-950/95 backdrop-blur-md z-40 border-b border-stone-800">
+          <button onClick={() => { vibrate(10); setProfileOpen(true); }} className="flex items-center gap-3 text-left rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400">
+            <img src={CONFIG.AVATAR} alt="" className="w-10 h-10 rounded-full object-cover" />
+            <span><span className="block text-sm font-medium text-stone-100">Thalyson Massagens</span><span className="block text-xs text-stone-400">Ver perfil</span></span>
+          </button>
+          <div className="flex gap-2" role="progressbar" aria-valuemin={1} aria-valuemax={3} aria-valuenow={Math.min(step, 3)} aria-label={`Passo ${Math.min(step, 3)} de 3`}>
+            {[1, 2, 3].map((i) => <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${step >= i ? 'w-6 bg-amber-400' : 'w-2 bg-stone-700'}`} />)}
           </div>
+        </header>
+      )}
 
-          <div className="booking-section-label">Como pretende pagar o saldo?</div>
-          <div className="booking-payment-choices" role="group" aria-label="Forma de pagamento do saldo">
-            <button type="button" className="booking-payment-choice" aria-pressed={payment === 'pix'} onClick={() => { setPayment('pix'); setBillingNotice(''); setError(''); }}><strong>Pix</strong><span>5% de desconto</span></button>
-            <button type="button" className="booking-payment-choice" aria-pressed={payment === 'card'} onClick={() => { setPayment('card'); setBillingNotice(''); setError(''); }}><strong>Cartão</strong><span>Taxas a combinar</span></button>
-            <button type="button" className="booking-payment-choice" aria-pressed={payment === 'cash'} onClick={() => { setPayment('cash'); setBillingNotice(''); setError(''); }}><strong>Dinheiro</strong><span>Pagamento no dia</span></button>
+      <main className="px-6 max-w-lg mx-auto">
+        {step === 0 && (
+          <div className="flex flex-col justify-center min-h-[85vh] fade-up">
+            <h1 className="text-4xl md:text-5xl font-light mb-12 leading-tight text-stone-50">O seu momento<br /><span className="text-stone-300">de pausa.</span></h1>
+            <div className="space-y-4 mb-12">
+              <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="shield" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">{BACKEND_ON ? 'Privacidade e respeito. Os dados necessários podem ser enviados ao sistema de agenda para verificar e solicitar a reserva; ao concluir, os detalhes seguem para o WhatsApp.' : 'Privacidade e respeito. Sem agenda conectada, os dados ficam neste aparelho até você concluir e seguem para o WhatsApp quando você enviar.'}</p></div>
+              <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="lock" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">Atendimento estritamente para maiores de 18 anos, focado no relaxamento do corpo masculino.</p></div>
+            </div>
+            <button onClick={() => { vibrate(30); store.set('thaly_onboard_final', 'yes'); setStep(1); }} className="bg-stone-100 text-stone-950 min-h-[60px] w-full text-sm font-bold rounded-2xl active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-2">Iniciar agendamento</button>
           </div>
+        )}
 
-          <div className="booking-section-label">Resumo dos valores</div>
-          <div className="booking-card booking-invoice">
-            <div className="booking-summary-row"><span>Preço de tabela</span><strong className="booking-price-old">{money(service?.originalPrice ?? 0)}</strong></div>
-            <div className="booking-summary-row"><span>Preço promocional aplicado</span><strong>{money(service?.price ?? 0)}</strong></div>
-            {serviceSavings > 0 && <p className="booking-note">Você já economiza {money(serviceSavings)} no preço promocional do atendimento.</p>}
-            {selectedAddons.map((a) => <div key={a.id} className="booking-summary-row"><span>{a.name}</span><strong>+ {money(a.price)}</strong></div>)}
-            <div className="booking-summary-row"><span>Subtotal</span><strong>{money(subtotal)}</strong></div>
-            {discount > 0 && <div className="booking-summary-row booking-saving-row"><span>{appliedCoupon ? `Cupom ${appliedCoupon.code}` : 'Desconto de primeira sessão'}</span><strong>− {money(discount)}</strong></div>}
-            {pixDiscount > 0 && <div className="booking-summary-row booking-saving-row"><span>Desconto Pix (5%)</span><strong>− {money(pixDiscount)}</strong></div>}
-            <div className="booking-summary-row booking-summary-total"><span>Total com descontos</span><strong>{money(total)}</strong></div>
-            <div className="booking-deposit-block"><div><span>Sinal via Pix para reservar</span><strong>{money(signal)}</strong></div><div><span>Saldo restante</span><strong>{money(rest)}</strong></div><small>O sinal faz parte do valor total, não é uma cobrança adicional.</small></div>
+        {step === 1 && (
+          <div className="fade-up">
+            <p className="text-xs font-semibold text-amber-400 mb-2">Passo 1 de 3</p>
+            <h1 className="text-3xl font-light mb-8 text-stone-50">Escolha o seu pacote</h1>
+            
+            {!isReturning && (
+              <div className="bg-amber-900/20 border border-amber-500/30 p-5 rounded-3xl mb-8 flex items-start gap-4">
+                <Icon name="star" className="text-amber-400 mt-0.5 shrink-0" size={22} />
+                <p className="text-sm text-stone-200 leading-relaxed">Primeira vez por aqui? Um desconto de <strong className="text-amber-400">R$ {CONFIG.FIRST_TIME_DISCOUNT}</strong> será aplicado automaticamente no final.</p>
+              </div>
+            )}
+
+            <div className="space-y-4" role="radiogroup" aria-label="Pacotes">
+              {PACKAGES.map((p) => {
+                const on = data.packageId === p.id;
+                return (
+                  <button key={p.id} role="radio" aria-checked={on} onClick={() => { vibrate(15); set({ packageId: p.id }); }}
+                    className={`w-full text-left p-6 rounded-3xl transition-all border focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 ${on ? 'bg-stone-900 border-amber-400 shadow-lg' : 'bg-stone-950 border-stone-700 hover:bg-stone-900'}`}>
+                    <div className="flex justify-between items-start gap-4 mb-4">
+                      <h3 className={`font-medium text-lg ${on ? 'text-stone-50' : 'text-stone-200'}`}>{p.title}</h3>
+                      <div className="text-right shrink-0">
+                        <span className="text-xs line-through text-stone-500 block">{money(p.originalPrice)}</span>
+                        <span className={`font-semibold text-lg ${on ? 'text-amber-300' : 'text-stone-200'}`}>{money(p.price)}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <span className="text-xs font-semibold px-3 py-1.5 rounded-md bg-stone-800 text-stone-200 inline-flex items-center gap-1"><Icon name="clock" size={12} /> {p.min} min</span>
+                      {p.tags.map((t) => <span key={t} className="text-xs font-medium px-3 py-1.5 rounded-md bg-stone-800 text-stone-300">{t}</span>)}
+                    </div>
+                    <p className="text-sm leading-relaxed text-stone-300">{p.desc}</p>
+                  </button>
+                );
+              })}
+              <div className="pt-6">
+                <h3 className="text-sm font-semibold text-stone-200 mb-4">Adicionais</h3>
+                <div className="flex flex-col gap-3">
+                  {ADDONS.filter((a) => !(data.packageId === 'aparo_solo' && a.id === 'aparo')).map((a) => {
+                    const on = !!data.addons[a.id];
+                    return (
+                      <button key={a.id} role="checkbox" aria-checked={on} onClick={() => { vibrate(15); set({ addons: { ...data.addons, [a.id]: !on } }); }}
+                        className={`w-full p-5 text-sm rounded-2xl border flex justify-between items-center gap-3 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 ${on ? 'bg-stone-800 border-amber-400 text-stone-50' : 'bg-stone-950 border-stone-700 text-stone-300 hover:bg-stone-900'}`}>
+                        <span className="flex items-center gap-3"><span className={`w-5 h-5 rounded-md border flex items-center justify-center ${on ? 'bg-amber-400 border-amber-400 text-stone-950' : 'border-stone-500'}`}>{on && <Icon name="check" size={14} />}</span>{a.label}</span>
+                        <span className="font-medium">+ {money(a.price)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-8 pt-6 border-t border-stone-800 flex gap-6 items-center">
+              <div className="flex-1"><p className="text-xs text-stone-400">Duração: {invoice.dur} min</p><p className="text-2xl font-light text-stone-50">{money(invoice.base + invoice.addonsTotal)}</p></div>
+              <button onClick={() => { vibrate(30); setStep(2); }} className={btnPrimary}>Continuar</button>
+            </div>
           </div>
+        )}
 
-          <div className="booking-pix-panel">
-            <div><strong>Pagamento do sinal</strong><span>O sinal de {money(signal)} é pago via Pix. O restante é acertado no dia conforme a opção selecionada.</span></div>
-            {profile.pixKey.trim() ? <><div className="booking-pix-key">{profile.pixKey}</div><button type="button" className="booking-btn" onClick={copyPixKey}><span>Copiar chave Pix</span></button></> : <p className="booking-note">A chave Pix será compartilhada pelo profissional na conversa do WhatsApp.</p>}
-            {billingNotice && <p className="booking-billing-notice" role="status">{billingNotice}</p>}
+        {step === 2 && (
+          <div className="fade-up">
+            <p className="text-xs font-semibold text-amber-400 mb-2">Passo 2 de 3</p>
+            <h1 className="text-3xl font-light mb-8 text-stone-50">Agendamento</h1>
+            <div className="space-y-9">
+              <div>
+                <label htmlFor="nm" className={labelCls}>Como devo te chamar?</label>
+                <input id="nm" autoComplete="given-name" type="text" value={data.name} onChange={(e) => set({ name: e.target.value })} className={inputCls} placeholder="Seu nome" maxLength={60} aria-invalid={touched && !!errors.name} />
+                {touched && errors.name && <p className="text-sm text-red-300 mt-2" role="alert">{errors.name}</p>}
+                <input type="text" name="website" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
+              </div>
+
+              <div>
+                <span className={labelCls}>Local da sessão</span>
+                <div className="grid grid-cols-2 gap-3" role="radiogroup">
+                  {([['studio', 'No meu espaço'], ['home', 'Vou até você']] as const).map(([v, l]) => (
+                    <button key={v} role="radio" aria-checked={data.locType === v} onClick={() => set({ locType: v })} className={`${chipBase} text-sm px-3 ${data.locType === v ? chipOn : chipOff}`}>{l}</button>
+                  ))}
+                </div>
+                {isHome && <p className="text-xs text-stone-400 mt-3">Horários de pico no seu endereço têm taxa de {money(CONFIG.PEAK_FEE)}. Pedimos mais antecedência para o deslocamento.</p>}
+              </div>
+
+              {!isHome ? (
+                <p className="text-sm text-stone-300 bg-stone-900 p-6 rounded-3xl border border-stone-700 leading-relaxed">
+                  A suíte fica no <strong className="text-stone-50">Centro Histórico, na Bela Vista (próximo ao Metrô Anhangabaú)</strong>. O endereço exato é enviado junto com a confirmação.
+                </p>
+              ) : (
+                <div className="space-y-4 fade-up">
+                  <input type="tel" inputMode="numeric" autoComplete="postal-code" maxLength={9} placeholder="CEP (preenche o endereço)" aria-label="CEP" value={data.cep} onChange={(e) => handleCep(e.target.value)} className={inputCls} />
+                  <input type="text" autoComplete="street-address" placeholder="Rua ou Avenida" aria-label="Rua ou Avenida" maxLength={100} value={data.street} onChange={(e) => set({ street: e.target.value })} className={inputCls} />
+                  <div className="flex gap-3">
+                    <input ref={numberRef} type="text" inputMode="numeric" placeholder="Nº" aria-label="Número" maxLength={10} value={data.number} onChange={(e) => set({ number: e.target.value })} className={`${inputCls} w-1/3`} />
+                    <input type="text" placeholder="Complemento" aria-label="Complemento" maxLength={40} value={data.comp} onChange={(e) => set({ comp: e.target.value })} className={`${inputCls} w-2/3`} />
+                  </div>
+                  <input type="text" placeholder="Bairro" aria-label="Bairro" maxLength={60} value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} className={inputCls} />
+                  {touched && errors.address && <p className="text-sm text-red-300" role="alert">{errors.address}</p>}
+                </div>
+              )}
+
+              <div>
+                <span className={labelCls}>Data</span>
+                <div className="flex gap-3 overflow-x-auto pb-3 snap-x hide-scrollbar -mx-6 px-6" role="radiogroup" aria-label="Datas">
+                  {days.map(({ d, i }) => {
+                    const sel = sameDay(data.date, d);
+                    return (
+                      <button key={dateKey(d)} role="radio" aria-checked={sel} onClick={() => { set({ date: d, time: '' }); setBusy(null); }} className={`${chipBase} shrink-0 snap-start w-[74px] py-3 flex flex-col items-center ${sel ? chipOn : chipOff}`}>
+                        <span className="text-xs font-semibold capitalize">{dayLabel(d, i)}</span>
+                        <span className="text-2xl font-light">{d.getDate()}</span>
+                        <span className={`text-xs ${sel ? 'text-stone-600' : 'text-stone-400'}`}>{d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {touched && errors.date && <p className="text-sm text-red-300 mt-2" role="alert">{errors.date}</p>}
+              </div>
+
+              {data.date && (
+                <div className="fade-up">
+                  <div className="flex justify-between items-baseline mb-3">
+                    <span className="text-xs font-semibold text-stone-300">Horário de início</span>
+                    <span className="text-xs text-stone-400" aria-live="polite">{busyLoading ? 'Verificando agenda…' : `Sessão de ${invoice.dur} min`}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3" role="radiogroup" aria-label="Horários">
+                    {slots.map(({ t, status }) => {
+                      const sel = data.time === t;
+                      const ok = status === 'ok';
+                      const peak = isHome && PEAK_HOURS.includes(t);
+                      return (
+                        <button key={t} role="radio" aria-checked={sel} disabled={!ok || busyLoading || (BACKEND_ON && busy === null)} aria-label={`${t}${ok && !busyLoading && (!BACKEND_ON || busy !== null) ? '' : ', indisponível ou aguardando verificação'}${peak ? ', horário de pico' : ''}`}
+                          onClick={() => { vibrate(15); set({ time: t }); }}
+                          className={`${chipBase} py-3 flex flex-col items-center justify-center ${sel ? chipOn : ok ? chipOff : 'bg-stone-950 border-stone-800 text-stone-600 line-through cursor-not-allowed'}`}>
+                          <span className="text-sm font-medium">{t}</span>
+                          {peak && ok && <span className={`text-[11px] font-semibold ${sel ? 'text-amber-800' : 'text-amber-400'}`}>Pico +{money(CONFIG.PEAK_FEE).replace(',00', '')}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {BACKEND_ON && busy === null && !busyLoading && <div className="text-sm text-amber-200 text-center py-5 space-y-3"><p>Não foi possível verificar a agenda agora. Por segurança, os horários ficam desativados até a verificação funcionar.</p><button type="button" onClick={() => setTick((v) => v + 1)} className="underline underline-offset-4 min-h-[44px]">Tentar novamente</button></div>}
+                  {!busyLoading && !(BACKEND_ON && busy === null) && availableCount === 0 && <p className="text-sm text-stone-300 text-center py-6">Sem horários livres neste dia. Tente outra data.</p>}
+                  {!BACKEND_ON && <p className="text-xs text-stone-500 mt-3">Disponibilidade demonstrativa: a reserva só será confirmada após resposta pelo WhatsApp.</p>}
+                  {data.time && <p className="text-sm text-emerald-300 mt-4 flex items-center gap-2"><Icon name="check" size={16} /> Das {data.time} às {endTime}</p>}
+                  {touched && errors.time && <p className="text-sm text-red-300 mt-2" role="alert">{errors.time}</p>}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-stone-800 flex gap-3">
+              <button onClick={() => setStep(1)} className={`${btnGhost} w-1/3`}>Voltar</button>
+              <button onClick={() => { if (step2Valid) { vibrate(30); setStep(3); } else { vibrate(50); setTouched(true); showToast('Complete os campos destacados'); } }} className={`${btnPrimary} flex-1`}>Revisar</button>
+            </div>
           </div>
-          {error && <p className="booking-error" role="alert">{error}</p>}
-          <p className="booking-note">Ao enviar, o sistema solicita uma reserva temporária de até 20 minutos, conforme a configuração da agenda. A confirmação definitiva depende do retorno do profissional e da conferência do sinal.</p>
-          <div className="booking-actions"><button type="button" className="booking-btn" onClick={() => { setStep(1); setError(''); }}>← Voltar</button></div>
-        </section>}
-      </> : <section className="booking-success" aria-live="polite"><div className="booking-success-mark">✓</div><h2>Pedido preparado</h2><p>{sentToConfiguredContact ? 'Sua solicitação foi registrada na agenda. Envie a mensagem no WhatsApp e aguarde o profissional confirmar a disponibilidade e o sinal.' : 'Sua solicitação foi registrada na agenda. Encaminhe a mensagem ao profissional no WhatsApp e aguarde a confirmação da disponibilidade e do sinal.'}</p><button type="button" className="booking-btn primary" onClick={() => { setSent(false); setStep(0); setServiceId(''); setDate(''); setTime(''); setAddons([]); setName(''); setNote(''); setError(''); setSentToConfiguredContact(false); setIsReturning(false); setPayment(''); setCouponInput(''); setAppliedCoupon(null); setCouponError(''); setBillingNotice(''); scrollTop(); }}>Fazer novo agendamento</button></section>}
-      <footer className="booking-footer">Atendimento personalizado · {profile.name}</footer>
-    </main>
+        )}
 
-    {!sent && <div className="booking-bottom"><div className="booking-bottom-inner">
-      <div className="booking-bottom-price"><small>{step === 0 ? (service ? 'Selecionado' : 'A partir de') : 'Total estimado'}</small><strong>{step === 0 ? money(service?.price ?? Math.min(...profile.services.map((s) => s.price))) : money(total)}</strong></div>
-      {step === 0 ? <button type="button" className="booking-btn primary" disabled={!service} onClick={goToSchedule}>Escolher horário →</button> : step === 1 ? <button type="button" className="booking-btn primary" disabled={!date || !time} onClick={goToDetails}>Continuar →</button> : <button type="button" className="booking-btn primary" onClick={() => { void sendRequest(); }} disabled={submitting || !SUPABASE_CONFIGURED}>{submitting ? 'Reservando horário…' : 'Reservar e abrir WhatsApp ↗'}</button>}
-    </div></div>}
-  </div>;
+        {step === 3 && (
+          <div className="fade-up">
+            <p className="text-xs font-semibold text-amber-400 mb-2">Passo 3 de 3</p>
+            <h1 className="text-3xl font-light mb-8 text-stone-50">Resumo</h1>
+            <div className="space-y-8">
+              <div className="p-6 bg-stone-900 rounded-3xl border border-stone-700 space-y-3">
+                <Summary label="Pacote" value={pkg.title} />
+                <Summary label="Data" value={data.date?.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })} />
+                <Summary label="Horário" value={`${data.time} – ${endTime}`} />
+                <Summary label="Local" value={isHome ? `${data.street}, ${data.number}` : 'No espaço (Bela Vista)'} />
+                <button onClick={() => setStep(2)} className="text-sm text-amber-300 underline underline-offset-4 min-h-[44px]">Alterar data, horário ou local</button>
+              </div>
+
+              <div className="p-6 bg-stone-900 rounded-3xl border border-stone-700">
+                <div className="space-y-4 mb-6">
+                  <Summary label="Pacote escolhido" value={money(invoice.base)} />
+                  {invoice.addonsTotal > 0 && <Summary label="Adicionais" value={`+${money(invoice.addonsTotal)}`} />}
+                  {invoice.reqFee > 0 && <Summary label="Pedido específico" value={`+${money(invoice.reqFee)}`} />}
+                  {invoice.discount > 0 && (
+                    <div className="flex justify-between text-sm py-3 border-y border-stone-700 text-amber-300 font-medium">
+                      <span className="flex items-center gap-2"><Icon name="check" size={16} />{coupon.applied ? `Cupom ${coupon.applied}` : 'Presente de 1ª sessão'}</span>
+                      <span>-{money(invoice.discount)}</span>
+                    </div>
+                  )}
+                  {invoice.peakFee > 0 && <Summary label="Deslocamento / pico" value={`+${money(invoice.peakFee)}`} />}
+                  {invoice.pixDiscount > 0 && <div className="flex justify-between text-sm text-amber-300"><span>Desconto Pix (3%)</span><span className="font-medium">-{money(invoice.pixDiscount)}</span></div>}
+                </div>
+                <div className="flex justify-between items-end pt-5 border-t border-stone-700">
+                  <span className="text-sm text-stone-300">Total</span>
+                  <span className="text-4xl font-light text-stone-50">{money(invoice.total)}</span>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3 text-center text-sm">
+                  <div className="bg-stone-950 rounded-2xl p-3"><p className="text-stone-400 text-xs">Sinal agora</p><p className="font-semibold text-amber-300">{money(invoice.sinal)}</p></div>
+                  <div className="bg-stone-950 rounded-2xl p-3"><p className="text-stone-400 text-xs">Após a sessão</p><p className="font-semibold text-stone-100">{money(invoice.rest)}</p></div>
+                </div>
+              </div>
+
+              {!coupon.applied && (
+                <div>
+                  <label htmlFor="cp" className={labelCls}>Possui cupom adicional?</label>
+                  <div className="flex gap-2">
+                    <input id="cp" type="text" autoCapitalize="characters" placeholder="Código" value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className={`${inputCls} flex-1 uppercase ${coupon.error ? 'border-red-400' : ''}`} />
+                    <button onClick={applyCoupon} className={btnGhost}>Aplicar</button>
+                  </div>
+                  {coupon.error && <p className="text-sm text-red-300 mt-2" role="alert">{coupon.error}</p>}
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="rq" className={labelCls}>Pedido específico ou fetiche? (+ {money(CONFIG.FETISH_FEE)})</label>
+                <input id="rq" type="text" placeholder="Opcional: algum detalhe ou vontade para a sessão" maxLength={140} value={data.req} onChange={(e) => set({ req: e.target.value })} className={inputCls} />
+                <p className="text-xs text-stone-400 mt-3 leading-relaxed">Pedido avaliado no momento do atendimento. Se inviável, o valor não é cobrado.</p>
+              </div>
+
+              <div>
+                <span className={labelCls}>Pagamento do restante</span>
+                <div className="grid grid-cols-3 gap-3" role="radiogroup">
+                  {[['pix', 'Pix (-3%)'], ['card', 'Cartão até 12x (Consultar)'], ['cash', 'Dinheiro']].map(([id, l]) => (
+                    <button key={id} role="radio" aria-checked={data.payment === id} onClick={() => selectPayment(id)} className={`${chipBase} text-xs font-semibold px-2 ${data.payment === id ? chipOn : chipOff}`}>{l}</button>
+                  ))}
+                </div>
+                {data.payment === 'card' && <p className="text-xs text-stone-400 mt-3">Taxas do cartão são combinadas pelo WhatsApp.</p>}
+              </div>
+
+              <label className="flex items-start gap-3 text-sm text-stone-300 leading-relaxed cursor-pointer min-h-[44px]">
+                <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} className="mt-1 w-5 h-5 accent-amber-400 shrink-0" />
+                <span>Quero receber lembretes e novidades pelo WhatsApp. Posso pedir para parar a qualquer momento.</span>
+              </label>
+
+              <div className="bg-amber-950/40 border border-amber-700/50 p-6 rounded-3xl">
+                <p className="text-sm text-amber-100 leading-relaxed text-center">Para confirmar o horário, envie um sinal de <strong className="text-amber-300">{money(invoice.sinal)} via Pix</strong>. O restante é acertado após a sessão.</p>
+                <button onClick={copyPix} className="mt-4 mx-auto flex items-center gap-2 text-sm font-semibold text-amber-200 underline underline-offset-4 min-h-[44px]"><Icon name="copy" size={16} /> Copiar chave Pix (CNPJ)</button>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-stone-800 flex gap-3">
+              <button onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
+              <button onClick={finishBooking} disabled={submitting} aria-disabled={!data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Preparando...' : 'Enviar solicitação pelo WhatsApp'}</button>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="fade-up flex flex-col items-center justify-center min-h-[60vh] text-center mt-10">
+            <div className="w-20 h-20 bg-emerald-900/40 rounded-full flex items-center justify-center mb-6 border border-emerald-600/60"><Icon name="check" size={32} className="text-emerald-400" /></div>
+            <h1 className="text-3xl font-light mb-4 text-stone-50">Tudo pronto!</h1>
+            <p className="text-sm text-stone-300 leading-relaxed mb-8 max-w-sm">
+              Sua solicitação foi preparada. O horário só está confirmado depois da resposta pelo WhatsApp. Se o WhatsApp não abriu, use o botão abaixo.<br /><br />
+              <strong className="text-amber-300 font-medium">Envie o comprovante do sinal ({money(invoice.sinal)}) na conversa para confirmar.</strong>
+            </p>
+            <div className="w-full max-w-xs space-y-3">
+              <a href={sentLink || whatsappLink()} target="_blank" rel="noopener noreferrer" onClick={() => vibrate(15)} className={`${btnPrimary} flex items-center justify-center w-full`}>Reenviar mensagem</a>
+              <button onClick={copyPix} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="copy" size={16} /> Copiar chave Pix</button>
+              <button onClick={downloadICS} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="cal" size={16} /> Adicionar à agenda</button>
+              <button onClick={resetFlow} className="w-full min-h-[48px] text-sm text-stone-400 hover:text-stone-200 underline underline-offset-4">Voltar ao início</button>
+            </div>
+          </div>
+        )}
+      </main>
+      {css}
+    </div>
+  );
 }
