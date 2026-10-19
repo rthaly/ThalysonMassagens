@@ -1,15 +1,22 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 /**
- * DEMO DE AGENDAMENTO — Marina (feminino) + Rafael (masculino)
- * Requisitos: React 18+; arquivo App.tsx ou App.jsx em um projeto Vite.
- * Não exige biblioteca de ícones nem Tailwind.
+ * MODELO DE SITE PARA APRESENTAR A CLIENTES — App.tsx
+ * Demonstração pronta com duas identidades fictícias e fotos ilustrativas.
+ * Requisitos: React 18+ e Vite. Não precisa instalar biblioteca de ícones nem Tailwind.
  *
- * IMPORTANTE PARA PRODUÇÃO:
- * - Troque telefone, chave Pix, Instagram, endereço e imagens em PROFILES.
- * - Os horários são demonstrativos e calculados no navegador. Para impedir dupla reserva,
- *   conecte a agenda a um backend/banco de dados antes de publicar.
- * - O botão final abre o WhatsApp com uma mensagem pronta; não confirma pagamento nem reserva sozinho.
+ * PERSONALIZAÇÃO PARA CADA CLIENTE:
+ * 1) Edite os nomes, bio, serviços, preços e cores em PROFILES.
+ * 2) Troque as imagens em IMG por fotos autorizadas do próprio profissional/estúdio.
+ * 3) Preencha telefone, chave Pix, Instagram e endereço antes de publicar.
+ *
+ * SEGURANÇA DA DEMONSTRAÇÃO:
+ * - Os telefones e chaves Pix ficam vazios de propósito para não enviar pedidos a números
+ *   fictícios nem exibir dados de pagamento inventados. O fluxo visual pode ser demonstrado;
+ *   o botão de WhatsApp avisa quando o telefone ainda não foi configurado.
+ * - Datas, horários e preços são exemplos calculados no navegador, não uma agenda real.
+ *   Para evitar reservas duplicadas, conecte a um backend/banco de dados antes de publicar.
+ * - O pedido via WhatsApp não confirma sozinho a disponibilidade nem o pagamento.
  */
 
 type Service = {
@@ -48,6 +55,7 @@ type Profile = {
 };
 
 const IMG = {
+  // Fotos ilustrativas para a demonstração. Substitua pelas fotos autorizadas do cliente.
   femaleHero:
     "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1800&q=85",
   femaleMassage:
@@ -73,8 +81,8 @@ const PROFILES: Record<Profile["id"], Profile> = {
     role: "Massoterapia & estética",
     headline: "Seu momento de pausa.\\nSeu corpo em equilíbrio.",
     bio: "Terapias manuais com cuidado, presença e técnica. Um espaço para desacelerar, aliviar tensões e voltar para a sua rotina se sentindo melhor.",
-    phone: "5511999999999",
-    pix: "123.456.789-00",
+    phone: "", // Preencha com 55 + DDD + número, somente dígitos.
+    pix: "", // Preencha somente com a chave Pix real, após confirmar com o cliente.
     instagram: "https://www.instagram.com/",
     address: "Studio Marina · endereço informado após a confirmação",
     theme: {
@@ -134,8 +142,8 @@ const PROFILES: Record<Profile["id"], Profile> = {
     role: "Massoterapia & recovery",
     headline: "Recupere o corpo.\\nRetome o seu ritmo.",
     bio: "Atendimento individual para quem precisa aliviar sobrecargas, recuperar a mobilidade e reservar um tempo para cuidar de si.",
-    phone: "5511999999999",
-    pix: "rafael.mendes@pix.com.br",
+    phone: "", // Preencha com 55 + DDD + número, somente dígitos.
+    pix: "", // Preencha somente com a chave Pix real, após confirmar com o cliente.
     instagram: "https://www.instagram.com/",
     address: "Studio Mendes · endereço informado após a confirmação",
     theme: {
