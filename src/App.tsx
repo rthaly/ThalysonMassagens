@@ -38,7 +38,7 @@ const PACKAGES = [
     desc: 'Começamos desmanchando o cansaço do seu corpo com a massagem clássica. Quando você estiver entregue, os toques mudam, causam arrepios e encerramos com a massagem íntima.' },
   { id: 'fusion', title: 'Sensações com a Barba', originalPrice: 350, price: 290, min: 60, tags: ['Naturista', 'Uso de Barba'],
     desc: 'Ficamos totalmente à vontade. Primeiro vou relaxar seu corpo com a massagem clássica, depois uso minha barba em algumas partes do seu corpo e encerramos com a massagem íntima.' },
-  { id: 'completa', title: 'Massagem Corpo a Corpo e Interação', originalPrice: 480, price: 390, min: 60, tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
+  { id: 'completa', title: 'Massagem Corpo a Corpo & Interação', originalPrice: 480, price: 390, min: 60, tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
     desc: 'O pacote sem barreiras. Primeiro vou relaxar seu corpo com a massagem clássica, depois proximidade física com gel escorregadio corpo a corpo e liberdade total para você fazer massagem em mim e encerramos com a massagem íntima.' },
   { id: 'aparo_solo', title: 'Apenas Depilação (Máquina)', originalPrice: 180, price: 130, min: 40, tags: ['Estética', 'Sem Massagem'],
     desc: 'Serviço isolado para quem busca apenas estética. Aparo de pelos (até 3 lugares) pente 1 e 3 utilizando máquina sem dores.' },
@@ -702,7 +702,7 @@ export default function App() {
               <div>
                 <span className={labelCls}>Pagamento do restante</span>
                 <div className="grid grid-cols-3 gap-3" role="radiogroup">
-                  {[['pix', 'Pix (-3%)'], ['card', 'Cartão até 12x'], ['cash', 'Dinheiro']].map(([id, l]) => (
+                  {[['pix', 'Pix (-3%)'], ['card', 'Cartão até 12x (Consultar)'], ['cash', 'Dinheiro']].map(([id, l]) => (
                     <button key={id} role="radio" aria-checked={data.payment === id} onClick={() => selectPayment(id)} className={`${chipBase} text-xs font-semibold px-2 ${data.payment === id ? chipOn : chipOff}`}>{l}</button>
                   ))}
                 </div>
