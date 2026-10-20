@@ -61,7 +61,7 @@ const store = {
   set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch (e) {} },
   del: (k: string) => { try { localStorage.removeItem(k); } catch (e) {} },
 };
-const BACKEND_ON = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
+const BACKEND_ON = false; !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
 
 async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<{ ok: boolean; data: T | null }> {
   if (!BACKEND_ON) return { ok: false, data: null };
