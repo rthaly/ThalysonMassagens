@@ -12,7 +12,7 @@ const LEGAL = {
   EMAIL: 'relaxecomthalyson@gmail.com',
   ENCARREGADO: 'Thalyson Rodrigo dos Santos',
   EMAIL_DPO: 'relaxecomthalyson@gmail.com',
-  ATUALIZADO: '21/10/2026',
+  ATUALIZADO: '01/01/2025',
   CANCEL_FREE_HOURS: 12,
 };
 
