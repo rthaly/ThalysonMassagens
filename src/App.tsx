@@ -9,9 +9,9 @@ const LEGAL = {
   CNPJ: '62.922.530/0001-44',
   // Se quiser, acrescente o número: 'Avenida 9 de Julho, 0000, Bela Vista, São Paulo - SP'
   ENDERECO: 'Avenida 9 de Julho, Bela Vista, São Paulo - SP',
-  EMAIL: 'relaxarcomthalyson@gmail.com',
+  EMAIL: 'relaxecomthalyson@gmail.com',
   ENCARREGADO: 'Thalyson Rodrigo dos Santos',
-  EMAIL_DPO: 'relaxarcomthalyson@gmail.com',
+  EMAIL_DPO: 'relaxecomthalyson@gmail.com',
   ATUALIZADO: '21/10/2026',
   CANCEL_FREE_HOURS: 12,
 };
@@ -182,8 +182,8 @@ const CONFIG = {
   PIX_KEY: '62922530000144',
   INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
-  // Coloque o arquivo em public/avatar.jpg (foto sua ou licenciada para uso comercial)
-  AVATAR: '/avatar.jpg',
+  // Arquivo em public/. A barra inicial garante que carregue em qualquer rota.
+  AVATAR: '/FmtU3Ogx_400x400.jpg',
   SUPABASE_URL: ENV.VITE_SUPABASE_URL || '',
   SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || ENV.VITE_SUPABASE_PUBLISHABLE_KEY || '',
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
