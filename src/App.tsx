@@ -1,7 +1,172 @@
 import { useState, useEffect, useMemo, useRef, memo, type ReactNode } from 'react';
 
 /* ==========================================================================
-   1. CONFIGURAÇÃO E DADOS ESTÁTICOS
+   DADOS E COMPONENTES LEGAIS
+   ========================================================================== */
+const LEGAL = {
+  RAZAO: 'Thalyson Rodrigo dos Santos', 
+  CNPJ: '62.922.530/0001-44', 
+  ENDERECO: '[SUA RUA AQUI], Bela Vista, São Paulo - SP', 
+  EMAIL: 'relaxarcomthalyson@gmail.com',
+  ENCARREGADO: 'Thalyson Rodrigo dos Santos',
+  EMAIL_DPO: 'relaxarcomthalyson@gmail.com',
+  ATUALIZADO: '21/10/2026',
+  CANCEL_FREE_HOURS: 12, 
+};
+
+type DocId = 'privacy' | 'terms' | 'refund' | 'cookies';
+const CONSENT_KEY = 'thaly_consent_v1';
+
+const P = ({ children }: { children: ReactNode }) => <p className="mb-3">{children}</p>;
+const H = ({ children }: { children: ReactNode }) => <h3 className="text-stone-50 font-semibold mt-5 mb-2">{children}</h3>;
+
+const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
+  privacy: {
+    title: 'Política de Privacidade',
+    body: (<>
+      <P>Última atualização: {LEGAL.ATUALIZADO}. Esta política segue a Lei Geral de Proteção de Dados (Lei 13.709/2018, LGPD).</P>
+      <H>1. Controlador</H>
+      <P>{LEGAL.RAZAO}, CNPJ {LEGAL.CNPJ}, {LEGAL.ENDERECO}. Contato: {LEGAL.EMAIL}. Encarregado (DPO): {LEGAL.ENCARREGADO}, {LEGAL.EMAIL_DPO}.</P>
+      <H>2. Dados que coletamos e por quê</H>
+      <P>Nome (como quer ser chamado), data, horário, pacote e forma de pagamento: para preparar e executar o agendamento (art. 7º, V, execução de contrato). Endereço (rua, número, complemento, bairro e CEP): somente se escolher atendimento no seu endereço, para o deslocamento. Não pedimos CPF, e-mail, telefone nem data de nascimento no formulário; seu número aparece apenas na conversa de WhatsApp que você mesmo inicia.</P>
+      <H>3. Dado sensível (vida sexual)</H>
+      <P>O campo opcional de pedido específico pode revelar dado sobre vida sexual, considerado sensível (art. 5º, II). Só tratamos se você marcar o consentimento específico ao lado do campo, apenas para avaliar o pedido, e ele não é salvo neste aparelho nem registrado em banco de dados. Você pode retirar o consentimento a qualquer momento pedindo a exclusão da conversa.</P>
+      <H>4. Com quem os dados são compartilhados</H>
+      <P>WhatsApp (Meta Platforms), para onde sua solicitação é enviada por você. ViaCEP, que recebe o CEP digitado para preencher o endereço. Se o sistema de agenda estiver ativo, o provedor de banco de dados que o hospeda (Supabase). Não vendemos dados.</P>
+      <H>5. Armazenamento no seu aparelho</H>
+      <P>Veja a seção Cookies e armazenamento local. Seus dados só ficam salvos no aparelho se você escolher "Lembrar meus dados".</P>
+      <H>6. Retenção</H>
+      <P>Conversas de WhatsApp e registros de agendamento são mantidos pelo tempo necessário para a sessão, para o acerto financeiro e para cumprir obrigações legais, e depois eliminados. Dados fiscais seguem os prazos da lei.</P>
+      <H>7. Seus direitos (art. 18)</H>
+      <P>Confirmação do tratamento, acesso, correção, anonimização ou eliminação, portabilidade, informação sobre compartilhamento, revogação do consentimento e oposição. Peça pelo e-mail do encarregado; respondemos em prazo razoável. Você também pode reclamar à ANPD (gov.br/anpd).</P>
+      <H>8. Menores</H>
+      <P>O serviço é exclusivo para maiores de 18 anos. Não coletamos dados de menores intencionalmente.</P>
+      <H>9. Segurança</H>
+      <P>Usamos conexão HTTPS e limitamos os dados ao necessário. Nenhum sistema é totalmente invulnerável; em caso de incidente relevante, comunicaremos você e a ANPD conforme a lei.</P>
+    </>),
+  },
+  terms: {
+    title: 'Termos de Serviço',
+    body: (<>
+      <P>Última atualização: {LEGAL.ATUALIZADO}. Ao usar este site você declara que leu e concorda com estes termos.</P>
+      <H>1. Prestador</H>
+      <P>{LEGAL.RAZAO}, CNPJ {LEGAL.CNPJ}, {LEGAL.ENDERECO}, {LEGAL.EMAIL}.</P>
+      <H>2. Serviço</H>
+      <P>Massagem e serviços de estética masculina, exclusivos para maiores de 18 anos, conforme o pacote escolhido. As descrições são informativas; massagem não substitui tratamento médico e não promete resultado de saúde.</P>
+      <H>3. Solicitação e confirmação</H>
+      <P>O site apenas registra uma solicitação. O horário só está garantido após a confirmação pelo WhatsApp e o pagamento do sinal. A disponibilidade mostrada pode ser demonstrativa.</P>
+      <H>4. Preços e pagamento</H>
+      <P>Os valores são exibidos em reais. O sinal confirma a reserva e é abatido do total; o restante é pago após a sessão. Adicionais, taxa de horário de pico (atendimento no endereço do cliente) e pedido específico aparecem no resumo antes do envio. Parcelamento no cartão pode ter taxas, informadas antes do pagamento.</P>
+      <H>5. Conduta</H>
+      <P>Exige-se respeito mútuo. O terapeuta pode encerrar a sessão, sem devolução do valor dos serviços já prestados, em caso de desrespeito, assédio, uso de drogas, embriaguez evidente ou risco à segurança. Informe previamente condições de saúde, alergias e lesões.</P>
+      <H>6. Lei aplicável</H>
+      <P>Lei brasileira, incluindo o Código de Defesa do Consumidor. Foro do domicílio do consumidor.</P>
+    </>),
+  },
+  refund: {
+    title: 'Política de Cancelamento e Reembolso',
+    body: (<>
+      <P>Última atualização: {LEGAL.ATUALIZADO}. Estas regras valem sem prejuízo dos direitos do consumidor previstos em lei.</P>
+      <H>1. Cancelamento pelo cliente</H>
+      <P>Com pelo menos {LEGAL.CANCEL_FREE_HOURS} horas de antecedência: devolução integral do sinal via Pix ou remarcação sem custo. Com menos antecedência ou falta sem aviso: o sinal pode ser retido para cobrir o horário reservado, ou convertido em crédito, a critério do prestador.</P>
+      <H>2. Arrependimento (art. 49 do CDC)</H>
+      <P>Se a contratação for feita à distância, você pode se arrepender em até 7 dias da contratação e receber de volta o sinal, desde que a sessão ainda não tenha sido realizada. Para sessões agendadas dentro desse prazo, o direito vale até o momento da sessão.</P>
+      <H>3. Cancelamento pelo prestador</H>
+      <P>Se não puder atender, o sinal é devolvido integralmente ou a sessão é remarcada, conforme sua escolha.</P>
+      <H>4. Como pedir</H>
+      <P>Responda a conversa do WhatsApp ou escreva para {LEGAL.EMAIL}. O reembolso é feito pelo mesmo meio de pagamento em até 7 dias úteis.</P>
+      <H>5. Pedido específico</H>
+      <P>Se o pedido for considerado inviável, a taxa correspondente não é cobrada.</P>
+    </>),
+  },
+  cookies: {
+    title: 'Cookies e armazenamento local',
+    body: (<>
+      <P>Este site não usa cookies de publicidade nem ferramentas de análise ou rastreamento (como Google Analytics ou Meta Pixel).</P>
+      <H>Estritamente necessário</H>
+      <P>Guardamos no navegador (localStorage) a lembrança de que você já viu a tela inicial e de que já agendou antes (para não repetir o desconto de primeira sessão). Não identificam você.</P>
+      <H>Opcional (com seu consentimento)</H>
+      <P>"Lembrar meus dados" salva nome, tipo de local e endereço neste aparelho para agilizar um próximo agendamento. Você pode apagar tudo no botão "Apagar meus dados" do perfil ou alterar a escolha em "Preferências de privacidade" no rodapé.</P>
+      <P>Se no futuro ativarmos qualquer ferramenta de análise ou marketing, ela só carregará depois do seu consentimento.</P>
+    </>),
+  },
+};
+
+function LegalModal({ doc, onClose }: { doc: DocId; onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const prevFocus = document.activeElement as HTMLElement | null;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const el = ref.current;
+    el?.querySelector<HTMLElement>('button')?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { onClose(); return; }
+      if (e.key !== 'Tab' || !el) return;
+      const f = el.querySelectorAll<HTMLElement>('button, a[href], [tabindex]:not([tabindex="-1"])');
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prevOverflow; prevFocus?.focus(); };
+  }, [onClose]);
+  const d = DOCS[doc];
+  return (
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-stone-950/90" onClick={onClose}>
+      <div ref={ref} role="dialog" aria-modal="true" aria-labelledby="legal-title" onClick={(e) => e.stopPropagation()}
+        className="bg-stone-900 border border-stone-700 rounded-3xl w-full max-w-lg max-h-[85vh] flex flex-col">
+        <div className="flex justify-between items-center gap-4 p-5 border-b border-stone-700">
+          <h2 id="legal-title" className="text-lg text-stone-50">{d.title}</h2>
+          <button onClick={onClose} className="min-h-[44px] px-4 text-sm font-semibold rounded-xl border border-stone-600 text-stone-200 hover:bg-stone-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400">Fechar</button>
+        </div>
+        <div className="p-5 overflow-y-auto text-sm text-stone-300 leading-relaxed" tabIndex={0}>{d.body}</div>
+      </div>
+    </div>
+  );
+}
+
+function LegalFooter({ onOpen, onPrefs }: { onOpen: (d: DocId) => void; onPrefs: () => void }) {
+  const link = 'underline underline-offset-4 min-h-[44px] inline-flex items-center px-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 rounded';
+  return (
+    <footer className="px-6 max-w-lg mx-auto mt-12 pt-6 border-t border-stone-800 text-xs text-stone-400 leading-relaxed text-center">
+      <nav aria-label="Informações legais" className="flex flex-wrap justify-center">
+        <button type="button" className={link} onClick={() => onOpen('privacy')}>Privacidade</button>
+        <button type="button" className={link} onClick={() => onOpen('terms')}>Termos</button>
+        <button type="button" className={link} onClick={() => onOpen('refund')}>Cancelamento e reembolso</button>
+        <button type="button" className={link} onClick={() => onOpen('cookies')}>Cookies</button>
+        <button type="button" className={link} onClick={onPrefs}>Preferências de privacidade</button>
+      </nav>
+      <p className="mt-3">{LEGAL.RAZAO} · CNPJ {LEGAL.CNPJ}<br />{LEGAL.ENDERECO}<br />{LEGAL.EMAIL}</p>
+      <p className="mt-2">Serviço exclusivo para maiores de 18 anos.</p>
+    </footer>
+  );
+}
+
+function ConsentBanner({ onChoose, onOpen }: { onChoose: (c: 'min' | 'remember') => void; onOpen: (d: DocId) => void }) {
+  const [ready, setReady] = useState(false);
+  useEffect(() => { setReady(true); }, []);
+  if (!ready) return null;
+  const b = 'min-h-[48px] px-5 text-sm font-semibold rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400';
+  return (
+    <section role="region" aria-label="Preferências de privacidade" className="fixed bottom-0 inset-x-0 z-[120] bg-stone-900 border-t border-stone-600 p-5">
+      <div className="max-w-lg mx-auto">
+        <p className="text-sm text-stone-200 leading-relaxed mb-4">
+          Não usamos rastreadores nem anúncios. Podemos lembrar seu nome e endereço neste aparelho para agilizar a próxima reserva. Você decide (os dois botões têm o mesmo destaque).{' '}
+          <button type="button" className="underline underline-offset-4 min-h-[44px]" onClick={() => onOpen('cookies')}>Saiba mais</button>
+        </p>
+        <div className="flex gap-3">
+          <button type="button" className={`${b} flex-1 bg-stone-100 text-stone-950`} onClick={() => onChoose('min')}>Só o necessário</button>
+          <button type="button" className={`${b} flex-1 bg-stone-100 text-stone-950`} onClick={() => onChoose('remember')}>Lembrar meus dados</button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ==========================================================================
+   CONFIGURAÇÃO PRINCIPAL DO APP
    ========================================================================== */
 const ENV = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
 
@@ -16,6 +181,7 @@ const CONFIG = {
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
   SIGNAL_AMOUNT: 40,
   FIRST_TIME_DISCOUNT: 15,
+  FETISH_FEE: 140,
   PEAK_FEE: 18,
   PIX_DISCOUNT: 0.03,
   OPEN_MIN: 9 * 60,
@@ -31,16 +197,16 @@ const CONFIG = {
 };
 
 const PACKAGES = [
-  { id: 'classica', title: 'Massagem Clássica', originalPrice: 220, price: 180, min: 40, tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
-    desc: 'O essencial para quem está moído da rotina. Uso a força das minhas mãos para desfazer os nós de tensão e soltar sua musculatura. Você entra pesado e sai leve.' },
-  { id: 'sensitiva', title: 'Sensitiva & Prazer', originalPrice: 280, price: 220, min: 60, tags: ['Toques Leves', 'Finalização Íntima'],
-    desc: 'Começamos desmanchando o cansaço do seu corpo com a massagem clássica. Quando você estiver entregue, os toques mudam, causam arrepios e encerramos com a massagem íntima.' },
-  { id: 'fusion', title: 'Sensações com a Barba', originalPrice: 350, price: 290, min: 60, tags: ['Naturista', 'Uso de Barba'],
-    desc: 'Ficamos totalmente à vontade. Primeiro vou relaxar seu corpo com a massagem clássica, depois uso minha barba em algumas partes do seu corpo e encerramos com a massagem íntima.' },
-  { id: 'completa', title: 'Massagem Corpo a Corpo & Interação', originalPrice: 480, price: 390, min: 60, tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
-    desc: 'O pacote sem barreiras. Primeiro vou relaxar seu corpo com a massagem clássica, depois proximidade física com gel escorregadio corpo a corpo e liberdade total para você fazer massagem em mim e encerramos com a massagem íntima.' },
-  { id: 'aparo_solo', title: 'Apenas Depilação (Máquina)', originalPrice: 180, price: 130, min: 40, tags: ['Estética', 'Sem Massagem'],
-    desc: 'Serviço isolado para quem busca apenas estética. Aparo de pelos (até 3 lugares) pente 1 e 3 utilizando máquina sem dores.' },
+  { id: 'classica', title: 'Massagem Clássica', price: 180, min: 40, tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
+    desc: 'O essencial para quem está com o corpo cansado da rotina. Uso a força das minhas mãos para trabalhar a tensão e soltar sua musculatura, com foco no relaxamento.' },
+  { id: 'sensitiva', title: 'Sensitiva & Prazer', price: 220, min: 60, tags: ['Toques Leves', 'Finalização Íntima'],
+    desc: 'Começamos com a massagem clássica para relaxar o corpo. Quando você estiver à vontade, os toques mudam, ficam mais leves e encerramos com a massagem íntima.' },
+  { id: 'fusion', title: 'Sensações com a Barba', price: 290, min: 60, tags: ['Naturista', 'Uso de Barba'],
+    desc: 'Ficamos totalmente à vontade. Primeiro a massagem clássica, depois uso minha barba em algumas partes do seu corpo e encerramos com a massagem íntima.' },
+  { id: 'completa', title: 'Massagem Corpo a Corpo & Interação', price: 390, min: 60, tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
+    desc: 'O pacote sem barreiras. Primeiro a massagem clássica, depois proximidade física com gel corpo a corpo e liberdade para você fazer massagem em mim, e encerramos com a massagem íntima.' },
+  { id: 'aparo_solo', title: 'Apenas Depilação (Máquina)', price: 130, min: 40, tags: ['Estética', 'Sem Massagem'],
+    desc: 'Serviço isolado para quem busca apenas estética. Aparo de pelos (até 3 lugares), pente 1 e 3, utilizando máquina.' },
 ];
 
 const ADDONS = [
@@ -62,7 +228,7 @@ const PAYMENT_METHODS = [
 const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 
 /* ==========================================================================
-   2. UTILITÁRIOS
+   UTILITÁRIOS GERAIS
    ========================================================================== */
 const money = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;
 const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
@@ -71,7 +237,7 @@ const store = {
   set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch (e) {} },
   del: (k: string) => { try { localStorage.removeItem(k); } catch (e) {} },
 };
-const BACKEND_ON = false; !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
+const BACKEND_ON = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
 
 async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<{ ok: boolean; data: T | null }> {
   if (!BACKEND_ON) return { ok: false, data: null };
@@ -89,10 +255,9 @@ async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<{ ok: 
 const clientId = () => {
   let id = store.get('thaly_cid');
   if (!id || id.length < 8) {
-    const randomId = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    id = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
       ? crypto.randomUUID()
       : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    id = randomId;
     store.set('thaly_cid', id);
   }
   return id;
@@ -134,21 +299,21 @@ const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?:
   </svg>
 ));
 
-const inputCls = 'w-full bg-stone-900 border border-stone-700 rounded-2xl px-5 min-h-[52px] text-base text-stone-100 placeholder:text-stone-500 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-colors';
+const inputCls = 'w-full bg-stone-900 border border-stone-700 rounded-2xl px-5 min-h-[52px] text-base text-stone-100 placeholder:text-stone-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-colors disabled:opacity-50';
 const labelCls = 'block text-xs font-semibold text-stone-300 mb-3';
 const chipBase = 'min-h-[52px] border rounded-2xl transition-colors cursor-pointer flex items-center justify-center relative focus-within:ring-2 focus-within:ring-amber-400 focus-within:ring-offset-2 focus-within:ring-offset-stone-950';
 const chipOn = 'bg-stone-100 text-stone-950 border-stone-100 font-semibold';
 const chipOff = 'bg-stone-900 border-stone-700 text-stone-300 hover:bg-stone-800';
-const btnPrimary = 'min-h-[52px] px-6 text-sm font-bold rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 disabled:bg-stone-800 disabled:text-stone-500 disabled:cursor-not-allowed';
+const btnPrimary = 'min-h-[52px] px-6 text-sm font-bold rounded-xl bg-emerald-700 text-white hover:bg-emerald-600 active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 disabled:bg-stone-800 disabled:text-stone-400 disabled:cursor-not-allowed';
 const btnGhost = 'min-h-[52px] px-5 text-sm font-semibold rounded-xl border border-stone-600 text-stone-200 hover:bg-stone-800 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400';
 
 /* ==========================================================================
-   3. APP
+   APP PRINCIPAL
    ========================================================================== */
 type SlotStatus = 'ok' | 'past' | 'blocked';
 interface BookingData {
   name: string; locType: 'studio' | 'home'; cep: string; street: string; number: string; comp: string; bairro: string;
-  date: Date | null; time: string; payment: string; packageId: string; addons: Record<string, boolean>;
+  date: Date | null; time: string; req: string; payment: string; packageId: string; addons: Record<string, boolean>;
 }
 
 export default function App() {
@@ -162,17 +327,31 @@ export default function App() {
   const [now, setNow] = useState(() => new Date());
   const numberRef = useRef<HTMLInputElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  const [doc, setDoc] = useState<DocId | null>(null);
+  const [consent, setConsent] = useState<string | null>(() => store.get(CONSENT_KEY));
+  const [askPrefs, setAskPrefs] = useState(false);
+  const [ageOk, setAgeOk] = useState(false);
+  const [reqOk, setReqOk] = useState(false);
+  const remember = consent === 'remember';
+  const bannerOpen = consent === null || askPrefs;
 
   const [data, setData] = useState<BookingData>({
     name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '',
-    date: null, time: '', payment: '', packageId: PACKAGES[0].id, addons: {},
+    date: null, time: '', req: '', payment: '', packageId: PACKAGES[0].id, addons: {},
   });
   const set = (patch: Partial<BookingData>) => setData((p) => ({ ...p, ...patch }));
 
   const showToast = (msg: string) => {
     setToast(msg);
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(''), 3000);
+    toastTimer.current = setTimeout(() => setToast(''), 3500);
+  };
+
+  const choose = (c: 'min' | 'remember') => {
+    store.set(CONSENT_KEY, c); setConsent(c); setAskPrefs(false);
+    if (c === 'min') store.del('thaly_draft_booking');
   };
 
   useEffect(() => { const t = setTimeout(() => setIsLoading(false), 900); return () => clearTimeout(t); }, []);
@@ -180,32 +359,41 @@ export default function App() {
 
   useEffect(() => {
     if (isLoading) return;
-    if (store.get('thaly_onboard_final') === 'yes') setStep(1);
+    if (store.get('thaly_onboard_final') === 'yes') { setStep(1); setAgeOk(true); }
     if (store.get('thaly_returning_final') === 'yes') setIsReturning(true);
-    const draft = store.get('thaly_draft_booking');
+    const draft = store.get(CONSENT_KEY) === 'remember' ? store.get('thaly_draft_booking') : null;
     if (draft) {
       try {
         const d = JSON.parse(draft);
-        setData((p) => ({ ...p, name: d.name || '', locType: d.locType || 'studio', street: d.street || '', number: d.number || '', bairro: d.bairro || '', cep: d.cep || '' }));
+        setData((p) => ({ ...p, name: d.name || '', locType: d.locType || 'studio', street: d.street || '', number: d.number || '', bairro: d.bairro || '' }));
       } catch (e) {}
     }
   }, [isLoading]);
 
   useEffect(() => {
-    if (data.name.length > 2) {
-      store.set('thaly_draft_booking', JSON.stringify({ name: data.name, locType: data.locType, street: data.street, number: data.number, bairro: data.bairro, cep: data.cep }));
+    if (remember && data.name.length > 2) {
+      store.set('thaly_draft_booking', JSON.stringify({ name: data.name, locType: data.locType, street: data.street, number: data.number, bairro: data.bairro }));
     }
-  }, [data.name, data.locType, data.street, data.number, data.bairro, data.cep]);
+  }, [remember, data.name, data.locType, data.street, data.number, data.bairro]);
 
   useEffect(() => { if (step > 0) window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
 
   useEffect(() => {
     if (!profileOpen) return undefined;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setProfileOpen(false); };
+    const prevFocus = document.activeElement as HTMLElement | null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setProfileOpen(false); return; }
+      if (e.key !== 'Tab' || !profileRef.current) return;
+      const f = profileRef.current.querySelectorAll<HTMLElement>('button, a[href]');
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; prevFocus?.focus(); };
   }, [profileOpen]);
 
   useEffect(() => {
@@ -219,7 +407,6 @@ export default function App() {
   const [sentLink, setSentLink] = useState('');
   const [hp, setHp] = useState('');
   const [optIn, setOptIn] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const lockRef = useRef({ fails: 0, until: 0 });
 
   useEffect(() => {
@@ -234,6 +421,7 @@ export default function App() {
 
   const pkg = useMemo(() => PACKAGES.find((p) => p.id === data.packageId) || PACKAGES[0], [data.packageId]);
   const isHome = data.locType === 'home';
+  const hasReq = reqOk && data.req.trim().length > 3;
 
   const invoice = useMemo(() => {
     let dur = pkg.min, addonsTotal = 0;
@@ -241,7 +429,8 @@ export default function App() {
     ADDONS.forEach((a) => {
       if (data.addons[a.id]) { addonsTotal += a.price; activeAddons.push(a); if (a.id === 'time') dur += 30; }
     });
-    const base = pkg.price + addonsTotal;
+    const reqFee = hasReq ? CONFIG.FETISH_FEE : 0;
+    const base = pkg.price + addonsTotal + reqFee;
     const peakFee = isHome && PEAK_HOURS.includes(data.time) ? CONFIG.PEAK_FEE : 0;
 
     let discount = 0;
@@ -257,8 +446,8 @@ export default function App() {
     const pixDiscount = data.payment === 'pix' ? Math.ceil(afterDiscount * CONFIG.PIX_DISCOUNT) : 0;
     const total = afterDiscount - pixDiscount + peakFee;
     const sinal = Math.min(CONFIG.SIGNAL_AMOUNT, total);
-    return { base: pkg.price, addonsTotal, peakFee, discount, pixDiscount, total, sinal, rest: Math.max(0, total - sinal), dur, activeAddons };
-  }, [data, pkg, isHome, isReturning, coupon.applied, coupon.value]);
+    return { base: pkg.price, addonsTotal, reqFee, peakFee, discount, pixDiscount, total, sinal, rest: Math.max(0, total - sinal), dur, activeAddons };
+  }, [data, pkg, isHome, isReturning, coupon.applied, coupon.value, hasReq]);
 
   const days = useMemo(() => {
     const out: { d: Date; i: number }[] = [];
@@ -277,7 +466,7 @@ export default function App() {
     const today = sameDay(data.date, now);
     const blocked = (CONFIG.BLOCKED[dateKey(data.date)] || []).map(toMin);
     const out: { t: string; status: SlotStatus }[] = [];
-    
+
     for (let m = CONFIG.OPEN_MIN; m + invoice.dur <= CONFIG.LAST_END_MIN; m += CONFIG.SLOT_STEP) {
       const end = m + invoice.dur + buffer;
       let status: SlotStatus = 'ok';
@@ -322,8 +511,10 @@ export default function App() {
   };
 
   const forgetMe = () => {
-    store.del('thaly_draft_booking'); store.del('thaly_cid');
-    set({ name: '', cep: '', street: '', number: '', comp: '', bairro: '' });
+    store.del('thaly_draft_booking'); store.del('thaly_cid'); store.del(CONSENT_KEY);
+    setConsent(null);
+    set({ name: '', cep: '', street: '', number: '', comp: '', bairro: '', req: '' });
+    setReqOk(false);
     showToast('Dados apagados deste aparelho');
   };
 
@@ -355,24 +546,22 @@ export default function App() {
       const full = `${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}, São Paulo`;
       loc = `📍 *Local:* Atendimento no seu endereço.\n*Endereço informado:* ${full}\n*Mapa:* https://maps.google.com/?q=${encodeURIComponent(full)}`;
     }
-    
+
     let t = `Oi Thalyson! Fechei pelo site e quero confirmar.\n\n*NOME:* ${clean(data.name)}\n`;
     if (bookingCode) t += `*CÓDIGO DA SOLICITAÇÃO:* ${bookingCode}\n`;
     t += `*DIA E HORA:* ${dStr} das ${data.time} às ${endTime}\n${loc}\n\n`;
-    
+
     t += `*PACOTE (${invoice.dur} min):*\n✅ ${pkg.title}\n`;
     invoice.activeAddons.forEach((a) => (t += `➕ ${a.label}\n`));
-    
+    if (hasReq) t += `\n*VONTADE ESPECÍFICA (consentimento dado no site):* "${clean(data.req)}"\n`;
+
     t += `\n*RESUMO DO PAGAMENTO:*\n*Valor Total:* ${money(invoice.total)} (${data.payment.toUpperCase()})\n`;
     t += `*Sinal (Pix agora):* ${money(invoice.sinal)}\n*Restante (depois da sessão):* ${money(invoice.rest)}\n\n`;
-    
-    t += `⚠️ Concorodo com os termos de não-reembolso do sinal em caso de falta/atraso.\n\n`;
-
-    if (optIn) t += '🔔 Aceito receber lembretes e novidades por WhatsApp.\n\n';
-    
-    t += `🎁 *Para a próxima:* Já deixei anotado que tenho direito ao cupom SESSAO2 no meu próximo agendamento.\n\n`;
+    t += '✅ Declaro ter 18 anos ou mais e ter lido a Política de Privacidade, os Termos e a Política de Cancelamento.\n';
+    if (optIn) t += '🔔 Aceito receber lembretes e novidades por WhatsApp.\n';
+    t += '\n🎁 *Para a próxima:* tenho direito ao cupom SESSAO2 no meu próximo agendamento.\n\n';
     t += 'Aguardo sua resposta para mandar o comprovante do sinal!';
-    
+
     return `https://api.whatsapp.com/send?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
   };
 
@@ -391,7 +580,7 @@ export default function App() {
   };
 
   const finishBooking = async () => {
-    if (!data.payment || !acceptedTerms) { vibrate(50); showToast('Aceite os termos e escolha o pagamento'); return; }
+    if (!data.payment) { vibrate(50); showToast('Escolha a forma de pagamento'); return; }
     if (submitting || !data.date || !data.time) return;
     if (BACKEND_ON && (busyLoading || busy === null)) {
       showToast('Ainda não consegui verificar os horários. Tente novamente.');
@@ -456,9 +645,8 @@ export default function App() {
   };
 
   const resetFlow = () => {
-    vibrate(15); setTouched(false);
-    setData((p) => ({ name: p.name, locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', date: null, time: '', payment: '', packageId: PACKAGES[0].id, addons: {} }));
-    setAcceptedTerms(false);
+    vibrate(15); setTouched(false); setReqOk(false);
+    setData((p) => ({ name: p.name, locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', date: null, time: '', req: '', payment: '', packageId: PACKAGES[0].id, addons: {} }));
     setStep(1);
   };
 
@@ -492,20 +680,22 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30 pb-12 relative">
+    <div className={`min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30 relative ${bannerOpen ? 'pb-56' : 'pb-12'}`}>
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[300] focus:bg-stone-100 focus:text-stone-950 focus:px-4 focus:py-3 focus:rounded-xl">Pular para o conteúdo</a>
+
       {toast && (
         <div role="status" aria-live="polite" className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-stone-100 text-stone-900 px-6 py-3 rounded-full font-medium text-sm shadow-xl fade-up max-w-[90vw] text-center">{toast}</div>
       )}
 
       {profileOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-stone-950/85 backdrop-blur-sm" onClick={() => setProfileOpen(false)}>
-          <div role="dialog" aria-modal="true" aria-label="Perfil" className="bg-stone-900 border border-stone-700 rounded-3xl w-full max-w-sm p-8 relative shadow-2xl fade-up" onClick={(e) => e.stopPropagation()}>
-            <button aria-label="Fechar perfil" type="button" autoFocus onClick={() => setProfileOpen(false)} className="absolute top-4 right-4 p-3 text-stone-400 hover:text-white rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"><Icon name="close" /></button>
-            <img src={CONFIG.AVATAR} className="w-20 h-20 rounded-full object-cover mb-6" alt="Foto de Thalyson" />
+          <div ref={profileRef} role="dialog" aria-modal="true" aria-label="Perfil" className="bg-stone-900 border border-stone-700 rounded-3xl w-full max-w-sm p-8 relative shadow-2xl fade-up max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <button type="button" aria-label="Fechar perfil" autoFocus onClick={() => setProfileOpen(false)} className="absolute top-4 right-4 p-3 text-stone-400 hover:text-white rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"><Icon name="close" /></button>
+            <img src={CONFIG.AVATAR} className="w-20 h-20 rounded-full object-cover mb-6" alt="Foto de Thalyson, terapeuta" />
             <h2 className="text-2xl font-light text-stone-50 mb-1">Thalyson Massagens, SP Bela Vista</h2>
             <p className="text-amber-400 text-xs font-semibold mb-6">Terapeuta masculino</p>
             <div className="space-y-4 text-sm text-stone-300 leading-relaxed mb-8">
-              <p>{greeting}. Meu trabalho é direto e focado no corpo masculino: usar o toque para desfazer o peso e a tensão da sua rotina.</p>
+              <p>{greeting}. Meu trabalho é direto e focado no corpo masculino: usar o toque para aliviar o peso e a tensão da sua rotina.</p>
               <p className="flex items-start gap-3 bg-stone-950 p-4 rounded-2xl"><Icon name="map" size={18} className="mt-0.5 text-stone-400" /><span>Atendo em uma suíte no Centro Histórico de SP, próximo ao Metrô Anhangabaú.</span></p>
             </div>
             <button type="button" onClick={forgetMe} className="w-full text-xs text-stone-400 hover:text-stone-200 underline underline-offset-4 min-h-[44px] mb-4">Apagar meus dados deste aparelho</button>
@@ -529,15 +719,22 @@ export default function App() {
         </header>
       )}
 
-      <main className="px-6 max-w-lg mx-auto">
+      <main id="main" tabIndex={-1} className="px-6 max-w-lg mx-auto outline-none">
         {step === 0 && (
           <div className="flex flex-col justify-center min-h-[85vh] fade-up">
             <h1 className="text-4xl md:text-5xl font-light mb-12 leading-tight text-stone-50">O seu momento<br /><span className="text-stone-300">de pausa.</span></h1>
-            <div className="space-y-4 mb-12">
-              <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="shield" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">Privacidade garantida. Os dados que você digitar aqui ficam salvos apenas neste aparelho até o envio para o WhatsApp.</p></div>
+            <div className="space-y-4 mb-8">
+              <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="shield" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">{BACKEND_ON ? 'Privacidade e respeito. Os dados necessários (nome, data, horário e pacote) são enviados ao sistema de agenda para verificar e solicitar a reserva; ao concluir, os detalhes seguem para o WhatsApp.' : 'Privacidade e respeito. Os seus dados só saem deste aparelho quando você enviar a solicitação pelo WhatsApp.'}</p></div>
               <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="lock" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">Atendimento estritamente para maiores de 18 anos, focado no relaxamento do corpo masculino.</p></div>
             </div>
-            <button type="button" onClick={() => { vibrate(30); store.set('thaly_onboard_final', 'yes'); setStep(1); }} className="bg-stone-100 text-stone-950 min-h-[60px] w-full text-sm font-bold rounded-2xl active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-2">Iniciar agendamento</button>
+            <label className="flex items-start gap-3 text-sm text-stone-300 leading-relaxed min-h-[44px] mb-6 cursor-pointer">
+              <input type="checkbox" checked={ageOk} onChange={(e) => setAgeOk(e.target.checked)} className="mt-1 w-5 h-5 accent-amber-400 shrink-0" />
+              <span>Declaro ter 18 anos ou mais e li a{' '}
+                <button type="button" onClick={(e) => { e.preventDefault(); setDoc('privacy'); }} className="underline underline-offset-4 text-amber-300">Política de Privacidade</button>, os{' '}
+                <button type="button" onClick={(e) => { e.preventDefault(); setDoc('terms'); }} className="underline underline-offset-4 text-amber-300">Termos</button> e a{' '}
+                <button type="button" onClick={(e) => { e.preventDefault(); setDoc('refund'); }} className="underline underline-offset-4 text-amber-300">Política de Cancelamento</button>.</span>
+            </label>
+            <button type="button" disabled={!ageOk} onClick={() => { vibrate(30); store.set('thaly_onboard_final', 'yes'); setStep(1); }} className="bg-stone-100 text-stone-950 min-h-[60px] w-full text-sm font-bold rounded-2xl active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-2 disabled:bg-stone-800 disabled:text-stone-400 disabled:cursor-not-allowed">Iniciar agendamento</button>
           </div>
         )}
 
@@ -545,7 +742,7 @@ export default function App() {
           <div className="fade-up">
             <p className="text-xs font-semibold text-amber-400 mb-2">Passo 1 de 3</p>
             <h1 className="text-3xl font-light mb-8 text-stone-50">Escolha o seu pacote</h1>
-            
+
             {!isReturning && (
               <div className="bg-amber-900/20 border border-amber-500/30 p-5 rounded-3xl mb-8 flex items-start gap-4">
                 <Icon name="star" className="text-amber-400 mt-0.5 shrink-0" size={22} />
@@ -562,10 +759,7 @@ export default function App() {
                     <input type="radio" name="package" value={p.id} checked={on} onChange={() => { vibrate(15); set({ packageId: p.id }); }} className="sr-only" />
                     <div className="flex justify-between items-start gap-4 mb-4">
                       <h3 className={`font-medium text-lg ${on ? 'text-stone-50' : 'text-stone-200'}`}>{p.title}</h3>
-                      <div className="text-right shrink-0">
-                        <span className="text-xs line-through text-stone-500 block">{money(p.originalPrice)}</span>
-                        <span className={`font-semibold text-lg ${on ? 'text-amber-300' : 'text-stone-200'}`}>{money(p.price)}</span>
-                      </div>
+                      <span className={`font-semibold text-lg shrink-0 ${on ? 'text-amber-300' : 'text-stone-200'}`}>{money(p.price)}</span>
                     </div>
                     <div className="flex flex-wrap gap-2 mb-4">
                       <span className="text-xs font-semibold px-3 py-1.5 rounded-md bg-stone-800 text-stone-200 inline-flex items-center gap-1"><Icon name="clock" size={12} /> {p.min} min</span>
@@ -578,7 +772,7 @@ export default function App() {
             </fieldset>
 
             <div className="pt-6">
-              <h3 className="text-sm font-semibold text-stone-200 mb-4">Adicionais</h3>
+              <h2 className="text-sm font-semibold text-stone-200 mb-4">Adicionais</h2>
               <fieldset className="flex flex-col gap-3">
                 <legend className="sr-only">Serviços adicionais</legend>
                 {ADDONS.filter((a) => !(data.packageId === 'aparo_solo' && a.id === 'aparo')).map((a) => {
@@ -586,14 +780,14 @@ export default function App() {
                   return (
                     <label key={a.id} className={`w-full p-5 text-sm rounded-2xl border flex justify-between items-center gap-3 transition-colors cursor-pointer focus-within:ring-2 focus-within:ring-amber-400 ${on ? 'bg-stone-800 border-amber-400 text-stone-50' : 'bg-stone-950 border-stone-700 text-stone-300 hover:bg-stone-900'}`}>
                       <input type="checkbox" checked={on} onChange={() => { vibrate(15); set({ addons: { ...data.addons, [a.id]: !on } }); }} className="sr-only" />
-                      <span className="flex items-center gap-3"><span className={`w-5 h-5 rounded-md border flex items-center justify-center ${on ? 'bg-amber-400 border-amber-400 text-stone-950' : 'border-stone-500'}`}>{on && <Icon name="check" size={14} />}</span>{a.label}</span>
+                      <span className="flex items-center gap-3"><span aria-hidden="true" className={`w-5 h-5 rounded-md border flex items-center justify-center ${on ? 'bg-amber-400 border-amber-400 text-stone-950' : 'border-stone-500'}`}>{on && <Icon name="check" size={14} />}</span>{a.label}</span>
                       <span className="font-medium">+ {money(a.price)}</span>
                     </label>
                   );
                 })}
               </fieldset>
             </div>
-            
+
             <div className="mt-8 pt-6 border-t border-stone-800 flex gap-6 items-center">
               <div className="flex-1"><p className="text-xs text-stone-400">Duração: {invoice.dur} min</p><p className="text-2xl font-light text-stone-50">{money(invoice.base + invoice.addonsTotal)}</p></div>
               <button type="button" onClick={() => { vibrate(30); setStep(2); }} className={btnPrimary}>Continuar</button>
@@ -608,8 +802,8 @@ export default function App() {
             <div className="space-y-9">
               <div>
                 <label htmlFor="nm" className={labelCls}>Como devo te chamar?</label>
-                <input id="nm" autoComplete="given-name" type="text" value={data.name} onChange={(e) => set({ name: e.target.value })} className={inputCls} placeholder="Seu nome" maxLength={60} aria-invalid={touched && !!errors.name} />
-                {touched && errors.name && <p className="text-sm text-red-300 mt-2" role="alert">{errors.name}</p>}
+                <input id="nm" autoComplete="given-name" type="text" value={data.name} onChange={(e) => set({ name: e.target.value })} className={inputCls} placeholder="Seu nome" maxLength={60} aria-invalid={touched && !!errors.name} aria-describedby={touched && errors.name ? 'nm-err' : undefined} />
+                {touched && errors.name && <p id="nm-err" className="text-sm text-red-300 mt-2" role="alert">{errors.name}</p>}
                 <input type="text" name="website" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
               </div>
 
@@ -623,7 +817,7 @@ export default function App() {
                     </label>
                   ))}
                 </div>
-                {isHome && <p className="text-xs text-stone-400 mt-3">Horários de pico no seu endereço têm taxa de {money(CONFIG.PEAK_FEE)}. Pedimos mais antecedência para o deslocamento.</p>}
+                {isHome && <p className="text-xs text-stone-400 mt-3">Horários de pico no seu endereço têm taxa de {money(CONFIG.PEAK_FEE)}. Pedimos mais antecedência para o deslocamento. O endereço é usado apenas para esta solicitação e o CEP é consultado no serviço ViaCEP.</p>}
               </fieldset>
 
               {!isHome ? (
@@ -674,7 +868,7 @@ export default function App() {
                       const ok = status === 'ok';
                       const peak = isHome && PEAK_HOURS.includes(t);
                       return (
-                        <label key={t} className={`${chipBase} py-3 flex flex-col items-center justify-center ${sel ? chipOn : ok ? chipOff : 'bg-stone-950 border-stone-800 text-stone-600 line-through cursor-not-allowed'}`}>
+                        <label key={t} className={`${chipBase} py-3 flex flex-col items-center justify-center ${sel ? chipOn : ok ? chipOff : 'bg-stone-950 border-stone-800 text-stone-500 line-through cursor-not-allowed'}`}>
                           <input type="radio" name="time" value={t} checked={sel} disabled={!ok || busyLoading || (BACKEND_ON && busy === null)} onChange={() => { vibrate(15); set({ time: t }); }} className="sr-only" />
                           <span className="text-sm font-medium">{t}</span>
                           {peak && ok && <span className={`text-[11px] font-semibold ${sel ? 'text-amber-800' : 'text-amber-400'}`}>Pico +{money(CONFIG.PEAK_FEE).replace(',00', '')}</span>}
@@ -684,7 +878,7 @@ export default function App() {
                   </div>
                   {BACKEND_ON && busy === null && !busyLoading && <div className="text-sm text-amber-200 text-center py-5 space-y-3"><p>Não foi possível verificar a agenda agora. Por segurança, os horários ficam desativados até a verificação funcionar.</p><button type="button" onClick={() => setTick((v) => v + 1)} className="underline underline-offset-4 min-h-[44px]">Tentar novamente</button></div>}
                   {!busyLoading && !(BACKEND_ON && busy === null) && availableCount === 0 && <p className="text-sm text-stone-300 text-center py-6">Sem horários livres neste dia. Tente outra data.</p>}
-                  {!BACKEND_ON && <p className="text-xs text-stone-500 mt-3">Disponibilidade demonstrativa: a reserva só será confirmada após resposta pelo WhatsApp.</p>}
+                  {!BACKEND_ON && <p className="text-xs text-stone-400 mt-3">Disponibilidade demonstrativa: a reserva só será confirmada após resposta pelo WhatsApp.</p>}
                   {data.time && <p className="text-sm text-emerald-300 mt-4 flex items-center gap-2"><Icon name="check" size={16} /> Das {data.time} às {endTime}</p>}
                   {touched && errors.time && <p className="text-sm text-red-300 mt-2" role="alert">{errors.time}</p>}
                 </fieldset>
@@ -715,6 +909,7 @@ export default function App() {
                 <div className="space-y-4 mb-6">
                   <Summary label="Pacote escolhido" value={money(invoice.base)} />
                   {invoice.addonsTotal > 0 && <Summary label="Adicionais" value={`+${money(invoice.addonsTotal)}`} />}
+                  {invoice.reqFee > 0 && <Summary label="Pedido específico" value={`+${money(invoice.reqFee)}`} />}
                   {invoice.discount > 0 && (
                     <div className="flex justify-between text-sm py-3 border-y border-stone-700 text-amber-300 font-medium">
                       <span className="flex items-center gap-2"><Icon name="check" size={16} />{coupon.applied ? `Cupom ${coupon.applied}` : 'Presente de 1ª sessão'}</span>
@@ -738,12 +933,22 @@ export default function App() {
                 <div>
                   <label htmlFor="cp" className={labelCls}>Possui cupom adicional?</label>
                   <div className="flex gap-2">
-                    <input id="cp" type="text" autoCapitalize="characters" placeholder="Código" value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className={`${inputCls} flex-1 uppercase ${coupon.error ? 'border-red-400' : ''}`} />
+                    <input id="cp" type="text" autoCapitalize="characters" placeholder="Código" value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} aria-describedby={coupon.error ? 'cp-err' : undefined} className={`${inputCls} flex-1 uppercase ${coupon.error ? 'border-red-400' : ''}`} />
                     <button type="button" onClick={applyCoupon} className={btnGhost}>Aplicar</button>
                   </div>
-                  {coupon.error && <p className="text-sm text-red-300 mt-2" role="alert">{coupon.error}</p>}
+                  {coupon.error && <p id="cp-err" className="text-sm text-red-300 mt-2" role="alert">{coupon.error}</p>}
                 </div>
               )}
+
+              <div>
+                <label htmlFor="rq" className={labelCls}>Pedido específico? (+ {money(CONFIG.FETISH_FEE)})</label>
+                <label className="flex items-start gap-3 text-xs text-stone-300 leading-relaxed min-h-[44px] mb-3 cursor-pointer">
+                  <input type="checkbox" checked={reqOk} onChange={(e) => { setReqOk(e.target.checked); if (!e.target.checked) set({ req: '' }); }} className="mt-0.5 w-5 h-5 accent-amber-400 shrink-0" />
+                  <span>Consinto em informar um pedido que pode tratar de vida sexual (dado sensível), apenas para que ele seja avaliado. Ele segue só pelo WhatsApp, não é salvo neste aparelho nem no sistema de agenda, e posso retirar o consentimento quando quiser. <button type="button" onClick={(e) => { e.preventDefault(); setDoc('privacy'); }} className="underline underline-offset-4 text-amber-300">Saiba mais</button></span>
+                </label>
+                <input id="rq" type="text" disabled={!reqOk} placeholder="Opcional: algum detalhe ou vontade para a sessão" maxLength={140} value={data.req} onChange={(e) => set({ req: e.target.value })} className={inputCls} />
+                <p className="text-xs text-stone-400 mt-3 leading-relaxed">Pedido avaliado no momento do atendimento. Se inviável, o valor não é cobrado.</p>
+              </div>
 
               <fieldset>
                 <legend className={labelCls}>Pagamento do restante</legend>
@@ -755,30 +960,24 @@ export default function App() {
                     </label>
                   ))}
                 </div>
-                {data.payment === 'card' && <p className="text-xs text-stone-400 mt-3">Taxas do cartão são combinadas pelo WhatsApp.</p>}
+                {data.payment === 'card' && <p className="text-xs text-stone-400 mt-3">Taxas do cartão são combinadas pelo WhatsApp antes do pagamento.</p>}
               </fieldset>
 
-              <div className="space-y-4">
-                <label className="flex items-start gap-3 text-sm text-stone-300 leading-relaxed cursor-pointer min-h-[44px]">
-                  <input type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} className="mt-1 w-5 h-5 accent-amber-400 shrink-0" />
-                  <span>Estou ciente que o sinal de {money(invoice.sinal)} <strong>não é reembolsável</strong> em caso de falta, cancelamento de última hora ou atraso superior a 15 minutos, e concordo com os limites do serviço escolhido.</span>
-                </label>
-
-                <label className="flex items-start gap-3 text-sm text-stone-300 leading-relaxed cursor-pointer min-h-[44px]">
-                  <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} className="mt-1 w-5 h-5 accent-amber-400 shrink-0" />
-                  <span>Quero receber lembretes e novidades pelo WhatsApp. Posso pedir para parar a qualquer momento.</span>
-                </label>
-              </div>
+              <label className="flex items-start gap-3 text-sm text-stone-300 leading-relaxed cursor-pointer min-h-[44px]">
+                <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} className="mt-1 w-5 h-5 accent-amber-400 shrink-0" />
+                <span>Opcional: quero receber lembretes e novidades pelo WhatsApp. Posso pedir para parar a qualquer momento.</span>
+              </label>
 
               <div className="bg-amber-950/40 border border-amber-700/50 p-6 rounded-3xl">
-                <p className="text-sm text-amber-100 leading-relaxed text-center">Para confirmar o horário, envie um sinal de <strong className="text-amber-300">{money(invoice.sinal)} via Pix</strong>. O restante é acertado após a sessão.</p>
+                <p className="text-sm text-amber-100 leading-relaxed text-center">Para confirmar o horário, envie um sinal de <strong className="text-amber-300">{money(invoice.sinal)} via Pix</strong>. O restante é acertado após a sessão. Cancelamento e reembolso: veja a{' '}
+                  <button type="button" onClick={() => setDoc('refund')} className="underline underline-offset-4 text-amber-300">política</button>.</p>
                 <button type="button" onClick={copyPix} className="mt-4 mx-auto flex items-center gap-2 text-sm font-semibold text-amber-200 underline underline-offset-4 min-h-[44px]"><Icon name="copy" size={16} /> Copiar chave Pix (CNPJ)</button>
               </div>
             </div>
 
             <div className="mt-8 pt-6 border-t border-stone-800 flex gap-3">
               <button type="button" onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
-              <button type="button" onClick={finishBooking} disabled={submitting || !acceptedTerms || !data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${(data.payment && acceptedTerms && !submitting) ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Preparando...' : 'Enviar solicitação pelo WhatsApp'}</button>
+              <button type="button" onClick={finishBooking} disabled={submitting || !data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-700 text-white hover:bg-emerald-600' : 'bg-stone-800 text-stone-400 cursor-not-allowed'}`}>{submitting ? 'Preparando...' : 'Enviar solicitação pelo WhatsApp'}</button>
             </div>
           </div>
         )}
@@ -800,6 +999,10 @@ export default function App() {
           </div>
         )}
       </main>
+
+      <LegalFooter onOpen={setDoc} onPrefs={() => setAskPrefs(true)} />
+      {doc && <LegalModal doc={doc} onClose={() => setDoc(null)} />}
+      {bannerOpen && <ConsentBanner onChoose={choose} onOpen={setDoc} />}
       {css}
     </div>
   );
