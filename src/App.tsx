@@ -4,14 +4,16 @@ import { useState, useEffect, useMemo, useRef, memo, type ReactNode } from 'reac
    DADOS E COMPONENTES LEGAIS
    ========================================================================== */
 const LEGAL = {
-  RAZAO: 'Thalyson Rodrigo dos Santos', 
-  CNPJ: '62.922.530/0001-44', 
-  ENDERECO: '[SUA RUA AQUI], Bela Vista, São Paulo - SP', 
+  // Confirme se a razão social no cartão CNPJ é exatamente esta.
+  RAZAO: 'Thalyson Rodrigo dos Santos',
+  CNPJ: '62.922.530/0001-44',
+  // Se quiser, acrescente o número: 'Avenida 9 de Julho, 0000, Bela Vista, São Paulo - SP'
+  ENDERECO: 'Avenida 9 de Julho, Bela Vista, São Paulo - SP',
   EMAIL: 'relaxarcomthalyson@gmail.com',
   ENCARREGADO: 'Thalyson Rodrigo dos Santos',
   EMAIL_DPO: 'relaxarcomthalyson@gmail.com',
   ATUALIZADO: '21/10/2026',
-  CANCEL_FREE_HOURS: 12, 
+  CANCEL_FREE_HOURS: 12,
 };
 
 type DocId = 'privacy' | 'terms' | 'refund' | 'cookies';
@@ -34,7 +36,7 @@ const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
       <H>4. Com quem os dados são compartilhados</H>
       <P>WhatsApp (Meta Platforms), para onde sua solicitação é enviada por você. ViaCEP, que recebe o CEP digitado para preencher o endereço. Se o sistema de agenda estiver ativo, o provedor de banco de dados que o hospeda (Supabase). Não vendemos dados.</P>
       <H>5. Armazenamento no seu aparelho</H>
-      <P>Veja a seção Cookies e armazenamento local. Seus dados só ficam salvos no aparelho se você escolher "Lembrar meus dados".</P>
+      <P>Veja a seção Cookies e armazenamento local. Seus dados só ficam salvos no aparelho se você escolher “Lembrar meus dados”.</P>
       <H>6. Retenção</H>
       <P>Conversas de WhatsApp e registros de agendamento são mantidos pelo tempo necessário para a sessão, para o acerto financeiro e para cumprir obrigações legais, e depois eliminados. Dados fiscais seguem os prazos da lei.</P>
       <H>7. Seus direitos (art. 18)</H>
@@ -86,7 +88,7 @@ const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
       <H>Estritamente necessário</H>
       <P>Guardamos no navegador (localStorage) a lembrança de que você já viu a tela inicial e de que já agendou antes (para não repetir o desconto de primeira sessão). Não identificam você.</P>
       <H>Opcional (com seu consentimento)</H>
-      <P>"Lembrar meus dados" salva nome, tipo de local e endereço neste aparelho para agilizar um próximo agendamento. Você pode apagar tudo no botão "Apagar meus dados" do perfil ou alterar a escolha em "Preferências de privacidade" no rodapé.</P>
+      <P>“Lembrar meus dados” salva nome, tipo de local e endereço neste aparelho para agilizar um próximo agendamento. Você pode apagar tudo no botão “Apagar meus dados” do perfil ou alterar a escolha em “Preferências de privacidade” no rodapé.</P>
       <P>Se no futuro ativarmos qualquer ferramenta de análise ou marketing, ela só carregará depois do seu consentimento.</P>
     </>),
   },
@@ -94,6 +96,11 @@ const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
 
 function LegalModal({ doc, onClose }: { doc: DocId; onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
+  // CORREÇÃO: onClose chega como função nova a cada render do App; guardá-la em ref evita
+  // que o efeito rode de novo (e roube o foco) a cada atualização de tela.
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+
   useEffect(() => {
     const prevFocus = document.activeElement as HTMLElement | null;
     const prevOverflow = document.body.style.overflow;
@@ -101,7 +108,7 @@ function LegalModal({ doc, onClose }: { doc: DocId; onClose: () => void }) {
     const el = ref.current;
     el?.querySelector<HTMLElement>('button')?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { onClose(); return; }
+      if (e.key === 'Escape') { closeRef.current(); return; }
       if (e.key !== 'Tab' || !el) return;
       const f = el.querySelectorAll<HTMLElement>('button, a[href], [tabindex]:not([tabindex="-1"])');
       if (!f.length) return;
@@ -111,15 +118,16 @@ function LegalModal({ doc, onClose }: { doc: DocId; onClose: () => void }) {
     };
     document.addEventListener('keydown', onKey);
     return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prevOverflow; prevFocus?.focus(); };
-  }, [onClose]);
+  }, []);
+
   const d = DOCS[doc];
   return (
-    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-stone-950/90" onClick={onClose}>
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-stone-950/90" onClick={() => closeRef.current()}>
       <div ref={ref} role="dialog" aria-modal="true" aria-labelledby="legal-title" onClick={(e) => e.stopPropagation()}
         className="bg-stone-900 border border-stone-700 rounded-3xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div className="flex justify-between items-center gap-4 p-5 border-b border-stone-700">
           <h2 id="legal-title" className="text-lg text-stone-50">{d.title}</h2>
-          <button onClick={onClose} className="min-h-[44px] px-4 text-sm font-semibold rounded-xl border border-stone-600 text-stone-200 hover:bg-stone-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400">Fechar</button>
+          <button type="button" onClick={() => closeRef.current()} className="min-h-[44px] px-4 text-sm font-semibold rounded-xl border border-stone-600 text-stone-200 hover:bg-stone-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400">Fechar</button>
         </div>
         <div className="p-5 overflow-y-auto text-sm text-stone-300 leading-relaxed" tabIndex={0}>{d.body}</div>
       </div>
@@ -145,12 +153,9 @@ function LegalFooter({ onOpen, onPrefs }: { onOpen: (d: DocId) => void; onPrefs:
 }
 
 function ConsentBanner({ onChoose, onOpen }: { onChoose: (c: 'min' | 'remember') => void; onOpen: (d: DocId) => void }) {
-  const [ready, setReady] = useState(false);
-  useEffect(() => { setReady(true); }, []);
-  if (!ready) return null;
   const b = 'min-h-[48px] px-5 text-sm font-semibold rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400';
   return (
-    <section role="region" aria-label="Preferências de privacidade" className="fixed bottom-0 inset-x-0 z-[120] bg-stone-900 border-t border-stone-600 p-5">
+    <section aria-label="Preferências de privacidade" className="fixed bottom-0 inset-x-0 z-[120] bg-stone-900 border-t border-stone-600 p-5">
       <div className="max-w-lg mx-auto">
         <p className="text-sm text-stone-200 leading-relaxed mb-4">
           Não usamos rastreadores nem anúncios. Podemos lembrar seu nome e endereço neste aparelho para agilizar a próxima reserva. Você decide (os dois botões têm o mesmo destaque).{' '}
@@ -168,14 +173,17 @@ function ConsentBanner({ onChoose, onOpen }: { onChoose: (c: 'min' | 'remember')
 /* ==========================================================================
    CONFIGURAÇÃO PRINCIPAL DO APP
    ========================================================================== */
-const ENV = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
+// CORREÇÃO: leitura segura. Se o projeto não for Vite, não derruba o app.
+let ENV: Record<string, string | undefined> = {};
+try { ENV = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {}; } catch { ENV = {}; }
 
 const CONFIG = {
   PHONE: '5517991360413',
   PIX_KEY: '62922530000144',
   INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
-  AVATAR: 'FmtU3Ogx_400x400.jpg',
+  // Coloque o arquivo em public/avatar.jpg (foto sua ou licenciada para uso comercial)
+  AVATAR: '/avatar.jpg',
   SUPABASE_URL: ENV.VITE_SUPABASE_URL || '',
   SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || ENV.VITE_SUPABASE_PUBLISHABLE_KEY || '',
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
@@ -216,13 +224,13 @@ const ADDONS = [
 
 const LOC_TYPES = [
   { id: 'studio', label: 'No meu espaço' },
-  { id: 'home', label: 'Vou até você' }
+  { id: 'home', label: 'Vou até você' },
 ] as const;
 
 const PAYMENT_METHODS = [
   { id: 'pix', label: 'Pix (-3%)' },
   { id: 'card', label: 'Cartão até 12x (Consultar)' },
-  { id: 'cash', label: 'Dinheiro' }
+  { id: 'cash', label: 'Dinheiro' },
 ] as const;
 
 const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
@@ -299,11 +307,18 @@ const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?:
   </svg>
 ));
 
+// Foto com plano B: se o arquivo não existir, mostra um círculo com a inicial em vez de imagem quebrada.
+function Avatar({ className, alt }: { className: string; alt: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return <span role={alt ? 'img' : undefined} aria-label={alt || undefined} aria-hidden={alt ? undefined : true} className={`${className} bg-stone-700 text-stone-100 inline-flex items-center justify-center font-semibold`}>T</span>;
+  return <img src={CONFIG.AVATAR} alt={alt} onError={() => setFailed(true)} className={`${className} object-cover`} />;
+}
+
 const inputCls = 'w-full bg-stone-900 border border-stone-700 rounded-2xl px-5 min-h-[52px] text-base text-stone-100 placeholder:text-stone-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-colors disabled:opacity-50';
 const labelCls = 'block text-xs font-semibold text-stone-300 mb-3';
-const chipBase = 'min-h-[52px] border rounded-2xl transition-colors cursor-pointer flex items-center justify-center relative focus-within:ring-2 focus-within:ring-amber-400 focus-within:ring-offset-2 focus-within:ring-offset-stone-950';
-const chipOn = 'bg-stone-100 text-stone-950 border-stone-100 font-semibold';
-const chipOff = 'bg-stone-900 border-stone-700 text-stone-300 hover:bg-stone-800';
+const chipBase = 'min-h-[52px] border rounded-2xl transition-colors flex items-center justify-center relative focus-within:ring-2 focus-within:ring-amber-400 focus-within:ring-offset-2 focus-within:ring-offset-stone-950';
+const chipOn = 'bg-stone-100 text-stone-950 border-stone-100 font-semibold cursor-pointer';
+const chipOff = 'bg-stone-900 border-stone-700 text-stone-300 hover:bg-stone-800 cursor-pointer';
 const btnPrimary = 'min-h-[52px] px-6 text-sm font-bold rounded-xl bg-emerald-700 text-white hover:bg-emerald-600 active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 disabled:bg-stone-800 disabled:text-stone-400 disabled:cursor-not-allowed';
 const btnGhost = 'min-h-[52px] px-5 text-sm font-semibold rounded-xl border border-stone-600 text-stone-200 hover:bg-stone-800 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400';
 
@@ -315,6 +330,11 @@ interface BookingData {
   name: string; locType: 'studio' | 'home'; cep: string; street: string; number: string; comp: string; bairro: string;
   date: Date | null; time: string; req: string; payment: string; packageId: string; addons: Record<string, boolean>;
 }
+
+// CORREÇÃO: definido fora do App. Antes ele era recriado a cada render.
+const Summary = ({ label, value }: { label: string; value: ReactNode }) => (
+  <div className="flex justify-between gap-4 text-sm"><span className="text-stone-400">{label}</span><span className="text-stone-100 font-medium text-right">{value}</span></div>
+);
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -356,6 +376,7 @@ export default function App() {
 
   useEffect(() => { const t = setTimeout(() => setIsLoading(false), 900); return () => clearTimeout(t); }, []);
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t); }, []);
+  useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
 
   useEffect(() => {
     if (isLoading) return;
@@ -493,7 +514,7 @@ export default function App() {
     time: data.date && !data.time ? 'Escolha um horário.' : '',
     address: isHome && !(data.street && data.number && data.bairro) ? 'Preencha rua, número e bairro.' : '',
   };
-  const step2Valid = !errors.name && data.date && data.time && !errors.address;
+  const step2Valid = !errors.name && !!data.date && !!data.time && !errors.address;
 
   const applyCoupon = async () => {
     const code = coupon.input.trim().toUpperCase().slice(0, 30);
@@ -568,14 +589,16 @@ export default function App() {
   const downloadICS = () => {
     if (!data.date || !data.time) return;
     const f = (d: Date, m: number) => `${dateKey(d).replace(/-/g, '')}T${fromMin(m).replace(':', '')}00`;
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); // UTC, formato correto
     const s = toMin(data.time);
     const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Thalyson//Agenda//PT', 'BEGIN:VEVENT',
-      `UID:${Date.now()}@thalyson`, `DTSTAMP:${f(new Date(), now.getHours() * 60 + now.getMinutes())}`,
+      `UID:${Date.now()}@thalyson`, `DTSTAMP:${stamp}`,
       `DTSTART:${f(data.date, s)}`, `DTEND:${f(data.date, s + invoice.dur)}`,
       `SUMMARY:${pkg.title} - Thalyson`, `DESCRIPTION:Sinal de ${money(invoice.sinal)} via Pix para confirmar.`,
       'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
     const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
-    const a = document.createElement('a'); a.href = url; a.download = 'sessao.ics'; a.click();
+    const a = document.createElement('a'); a.href = url; a.download = 'sessao.ics';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); // necessário em alguns navegadores
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
@@ -675,10 +698,6 @@ export default function App() {
     );
   }
 
-  const Summary = ({ label, value }: { label: string; value: ReactNode }) => (
-    <div className="flex justify-between gap-4 text-sm"><span className="text-stone-400">{label}</span><span className="text-stone-100 font-medium text-right">{value}</span></div>
-  );
-
   return (
     <div className={`min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30 relative ${bannerOpen ? 'pb-56' : 'pb-12'}`}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[300] focus:bg-stone-100 focus:text-stone-950 focus:px-4 focus:py-3 focus:rounded-xl">Pular para o conteúdo</a>
@@ -691,7 +710,7 @@ export default function App() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-stone-950/85 backdrop-blur-sm" onClick={() => setProfileOpen(false)}>
           <div ref={profileRef} role="dialog" aria-modal="true" aria-label="Perfil" className="bg-stone-900 border border-stone-700 rounded-3xl w-full max-w-sm p-8 relative shadow-2xl fade-up max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <button type="button" aria-label="Fechar perfil" autoFocus onClick={() => setProfileOpen(false)} className="absolute top-4 right-4 p-3 text-stone-400 hover:text-white rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"><Icon name="close" /></button>
-            <img src={CONFIG.AVATAR} className="w-20 h-20 rounded-full object-cover mb-6" alt="Foto de Thalyson, terapeuta" />
+            <div className="mb-6"><Avatar className="w-20 h-20 rounded-full" alt="Foto de Thalyson, terapeuta" /></div>
             <h2 className="text-2xl font-light text-stone-50 mb-1">Thalyson Massagens, SP Bela Vista</h2>
             <p className="text-amber-400 text-xs font-semibold mb-6">Terapeuta masculino</p>
             <div className="space-y-4 text-sm text-stone-300 leading-relaxed mb-8">
@@ -710,7 +729,7 @@ export default function App() {
       {step > 0 && (
         <header className="px-6 py-4 max-w-lg mx-auto flex justify-between items-center mb-6 sticky top-0 bg-stone-950/95 backdrop-blur-md z-40 border-b border-stone-800">
           <button type="button" onClick={() => { vibrate(10); setProfileOpen(true); }} className="flex items-center gap-3 text-left rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400">
-            <img src={CONFIG.AVATAR} alt="" className="w-10 h-10 rounded-full object-cover" />
+            <Avatar className="w-10 h-10 rounded-full" alt="" />
             <span><span className="block text-sm font-medium text-stone-100">Thalyson Massagens</span><span className="block text-xs text-stone-400">Ver perfil</span></span>
           </button>
           <div className="flex gap-2" role="progressbar" aria-valuemin={1} aria-valuemax={3} aria-valuenow={Math.min(step, 3)} aria-label={`Passo ${Math.min(step, 3)} de 3`}>
@@ -727,13 +746,15 @@ export default function App() {
               <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="shield" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">{BACKEND_ON ? 'Privacidade e respeito. Os dados necessários (nome, data, horário e pacote) são enviados ao sistema de agenda para verificar e solicitar a reserva; ao concluir, os detalhes seguem para o WhatsApp.' : 'Privacidade e respeito. Os seus dados só saem deste aparelho quando você enviar a solicitação pelo WhatsApp.'}</p></div>
               <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="lock" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">Atendimento estritamente para maiores de 18 anos, focado no relaxamento do corpo masculino.</p></div>
             </div>
-            <label className="flex items-start gap-3 text-sm text-stone-300 leading-relaxed min-h-[44px] mb-6 cursor-pointer">
-              <input type="checkbox" checked={ageOk} onChange={(e) => setAgeOk(e.target.checked)} className="mt-1 w-5 h-5 accent-amber-400 shrink-0" />
-              <span>Declaro ter 18 anos ou mais e li a{' '}
-                <button type="button" onClick={(e) => { e.preventDefault(); setDoc('privacy'); }} className="underline underline-offset-4 text-amber-300">Política de Privacidade</button>, os{' '}
-                <button type="button" onClick={(e) => { e.preventDefault(); setDoc('terms'); }} className="underline underline-offset-4 text-amber-300">Termos</button> e a{' '}
-                <button type="button" onClick={(e) => { e.preventDefault(); setDoc('refund'); }} className="underline underline-offset-4 text-amber-300">Política de Cancelamento</button>.</span>
-            </label>
+            <div className="flex items-start gap-3 text-sm text-stone-300 leading-relaxed mb-6">
+              <input id="age-ok" type="checkbox" checked={ageOk} onChange={(e) => setAgeOk(e.target.checked)} className="mt-1 w-5 h-5 accent-amber-400 shrink-0 cursor-pointer" />
+              <p>
+                <label htmlFor="age-ok" className="cursor-pointer">Declaro ter 18 anos ou mais e li a </label>
+                <button type="button" onClick={() => setDoc('privacy')} className="underline underline-offset-4 text-amber-300 min-h-[24px]">Política de Privacidade</button>, os{' '}
+                <button type="button" onClick={() => setDoc('terms')} className="underline underline-offset-4 text-amber-300 min-h-[24px]">Termos</button> e a{' '}
+                <button type="button" onClick={() => setDoc('refund')} className="underline underline-offset-4 text-amber-300 min-h-[24px]">Política de Cancelamento</button>.
+              </p>
+            </div>
             <button type="button" disabled={!ageOk} onClick={() => { vibrate(30); store.set('thaly_onboard_final', 'yes'); setStep(1); }} className="bg-stone-100 text-stone-950 min-h-[60px] w-full text-sm font-bold rounded-2xl active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-2 disabled:bg-stone-800 disabled:text-stone-400 disabled:cursor-not-allowed">Iniciar agendamento</button>
           </div>
         )}
@@ -750,22 +771,22 @@ export default function App() {
               </div>
             )}
 
-            <fieldset className="space-y-4">
+            <fieldset className="space-y-4 min-w-0">
               <legend className="sr-only">Pacotes disponíveis</legend>
               {PACKAGES.map((p) => {
                 const on = data.packageId === p.id;
                 return (
                   <label key={p.id} className={`block w-full text-left p-6 rounded-3xl transition-all border cursor-pointer focus-within:ring-2 focus-within:ring-amber-400 ${on ? 'bg-stone-900 border-amber-400 shadow-lg' : 'bg-stone-950 border-stone-700 hover:bg-stone-900'}`}>
                     <input type="radio" name="package" value={p.id} checked={on} onChange={() => { vibrate(15); set({ packageId: p.id }); }} className="sr-only" />
-                    <div className="flex justify-between items-start gap-4 mb-4">
-                      <h3 className={`font-medium text-lg ${on ? 'text-stone-50' : 'text-stone-200'}`}>{p.title}</h3>
+                    <span className="flex justify-between items-start gap-4 mb-4">
+                      <span className={`font-medium text-lg ${on ? 'text-stone-50' : 'text-stone-200'}`}>{p.title}</span>
                       <span className={`font-semibold text-lg shrink-0 ${on ? 'text-amber-300' : 'text-stone-200'}`}>{money(p.price)}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    </span>
+                    <span className="flex flex-wrap gap-2 mb-4">
                       <span className="text-xs font-semibold px-3 py-1.5 rounded-md bg-stone-800 text-stone-200 inline-flex items-center gap-1"><Icon name="clock" size={12} /> {p.min} min</span>
                       {p.tags.map((t) => <span key={t} className="text-xs font-medium px-3 py-1.5 rounded-md bg-stone-800 text-stone-300">{t}</span>)}
-                    </div>
-                    <p className="text-sm leading-relaxed text-stone-300">{p.desc}</p>
+                    </span>
+                    <span className="block text-sm leading-relaxed text-stone-300">{p.desc}</span>
                   </label>
                 );
               })}
@@ -773,7 +794,7 @@ export default function App() {
 
             <div className="pt-6">
               <h2 className="text-sm font-semibold text-stone-200 mb-4">Adicionais</h2>
-              <fieldset className="flex flex-col gap-3">
+              <fieldset className="flex flex-col gap-3 min-w-0">
                 <legend className="sr-only">Serviços adicionais</legend>
                 {ADDONS.filter((a) => !(data.packageId === 'aparo_solo' && a.id === 'aparo')).map((a) => {
                   const on = !!data.addons[a.id];
@@ -807,12 +828,12 @@ export default function App() {
                 <input type="text" name="website" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
               </div>
 
-              <fieldset>
+              <fieldset className="min-w-0">
                 <legend className={labelCls}>Local da sessão</legend>
                 <div className="grid grid-cols-2 gap-3">
                   {LOC_TYPES.map(({ id, label }) => (
                     <label key={id} className={`${chipBase} text-sm px-3 ${data.locType === id ? chipOn : chipOff}`}>
-                      <input type="radio" name="location" value={id} checked={data.locType === id} onChange={() => set({ locType: id as 'studio' | 'home' })} className="sr-only" />
+                      <input type="radio" name="location" value={id} checked={data.locType === id} onChange={() => set({ locType: id })} className="sr-only" />
                       {label}
                     </label>
                   ))}
@@ -837,17 +858,19 @@ export default function App() {
                 </div>
               )}
 
-              <fieldset>
+              <fieldset className="min-w-0">
                 <legend className={labelCls}>Data</legend>
-                <div className="flex gap-3 overflow-x-auto pb-3 snap-x hide-scrollbar -mx-6 px-6">
+                <div className="flex gap-3 overflow-x-auto py-2 snap-x hide-scrollbar -mx-6 px-6">
                   {days.map(({ d, i }) => {
                     const sel = sameDay(data.date, d);
                     return (
-                      <label key={dateKey(d)} className={`${chipBase} shrink-0 snap-start w-[74px] py-3 flex flex-col items-center ${sel ? chipOn : chipOff}`}>
-                        <input type="radio" name="date" value={dateKey(d)} checked={sel} onChange={() => { set({ date: d, time: '' }); setBusy(null); }} className="sr-only" />
-                        <span className="text-xs font-semibold capitalize">{dayLabel(d, i)}</span>
-                        <span className="text-2xl font-light">{d.getDate()}</span>
-                        <span className={`text-xs ${sel ? 'text-stone-600' : 'text-stone-400'}`}>{d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}</span>
+                      <label key={dateKey(d)} className={`${chipBase} shrink-0 snap-start w-[74px] py-3 flex-col ${sel ? chipOn : chipOff}`}>
+                        <input type="radio" name="date" value={dateKey(d)} checked={sel}
+                          aria-label={d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                          onChange={() => { set({ date: d, time: '' }); setBusy(null); }} className="sr-only" />
+                        <span aria-hidden="true" className="text-xs font-semibold capitalize">{dayLabel(d, i)}</span>
+                        <span aria-hidden="true" className="text-2xl font-light">{d.getDate()}</span>
+                        <span aria-hidden="true" className={`text-xs ${sel ? 'text-stone-600' : 'text-stone-400'}`}>{d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}</span>
                       </label>
                     );
                   })}
@@ -856,10 +879,10 @@ export default function App() {
               </fieldset>
 
               {data.date && (
-                <fieldset className="fade-up">
+                <fieldset className="fade-up min-w-0">
                   <legend className="sr-only">Horário de início</legend>
-                  <div className="flex justify-between items-baseline mb-3" aria-hidden="true">
-                    <span className="text-xs font-semibold text-stone-300">Horário de início</span>
+                  <div className="flex justify-between items-baseline mb-3">
+                    <span aria-hidden="true" className="text-xs font-semibold text-stone-300">Horário de início</span>
                     <span className="text-xs text-stone-400" aria-live="polite">{busyLoading ? 'Verificando agenda…' : `Sessão de ${invoice.dur} min`}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
@@ -867,11 +890,14 @@ export default function App() {
                       const sel = data.time === t;
                       const ok = status === 'ok';
                       const peak = isHome && PEAK_HOURS.includes(t);
+                      const off = !ok || busyLoading || (BACKEND_ON && busy === null);
                       return (
-                        <label key={t} className={`${chipBase} py-3 flex flex-col items-center justify-center ${sel ? chipOn : ok ? chipOff : 'bg-stone-950 border-stone-800 text-stone-500 line-through cursor-not-allowed'}`}>
-                          <input type="radio" name="time" value={t} checked={sel} disabled={!ok || busyLoading || (BACKEND_ON && busy === null)} onChange={() => { vibrate(15); set({ time: t }); }} className="sr-only" />
-                          <span className="text-sm font-medium">{t}</span>
-                          {peak && ok && <span className={`text-[11px] font-semibold ${sel ? 'text-amber-800' : 'text-amber-400'}`}>Pico +{money(CONFIG.PEAK_FEE).replace(',00', '')}</span>}
+                        <label key={t} className={`${chipBase} py-3 flex-col ${sel ? chipOn : !off ? chipOff : 'bg-stone-950 border-stone-800 text-stone-500 line-through cursor-not-allowed'}`}>
+                          <input type="radio" name="time" value={t} checked={sel} disabled={off}
+                            aria-label={`${t}${off ? ', indisponível' : ''}${peak ? ', horário de pico' : ''}`}
+                            onChange={() => { vibrate(15); set({ time: t }); }} className="sr-only" />
+                          <span aria-hidden="true" className="text-sm font-medium">{t}</span>
+                          {peak && ok && <span aria-hidden="true" className={`text-[11px] font-semibold ${sel ? 'text-amber-800' : 'text-amber-400'}`}>Pico +{money(CONFIG.PEAK_FEE).replace(',00', '')}</span>}
                         </label>
                       );
                     })}
@@ -941,16 +967,20 @@ export default function App() {
               )}
 
               <div>
-                <label htmlFor="rq" className={labelCls}>Pedido específico? (+ {money(CONFIG.FETISH_FEE)})</label>
-                <label className="flex items-start gap-3 text-xs text-stone-300 leading-relaxed min-h-[44px] mb-3 cursor-pointer">
-                  <input type="checkbox" checked={reqOk} onChange={(e) => { setReqOk(e.target.checked); if (!e.target.checked) set({ req: '' }); }} className="mt-0.5 w-5 h-5 accent-amber-400 shrink-0" />
-                  <span>Consinto em informar um pedido que pode tratar de vida sexual (dado sensível), apenas para que ele seja avaliado. Ele segue só pelo WhatsApp, não é salvo neste aparelho nem no sistema de agenda, e posso retirar o consentimento quando quiser. <button type="button" onClick={(e) => { e.preventDefault(); setDoc('privacy'); }} className="underline underline-offset-4 text-amber-300">Saiba mais</button></span>
-                </label>
+                <p className={labelCls}>Pedido específico? (+ {money(CONFIG.FETISH_FEE)})</p>
+                <div className="flex items-start gap-3 text-xs text-stone-300 leading-relaxed mb-3">
+                  <input id="req-ok" type="checkbox" checked={reqOk} onChange={(e) => { setReqOk(e.target.checked); if (!e.target.checked) set({ req: '' }); }} className="mt-0.5 w-5 h-5 accent-amber-400 shrink-0 cursor-pointer" />
+                  <p>
+                    <label htmlFor="req-ok" className="cursor-pointer">Consinto em informar um pedido que pode tratar de vida sexual (dado sensível), apenas para que ele seja avaliado. Ele segue só pelo WhatsApp, não é salvo neste aparelho nem no sistema de agenda, e posso retirar o consentimento quando quiser. </label>
+                    <button type="button" onClick={() => setDoc('privacy')} className="underline underline-offset-4 text-amber-300">Saiba mais</button>
+                  </p>
+                </div>
+                <label htmlFor="rq" className="sr-only">Descreva o pedido específico</label>
                 <input id="rq" type="text" disabled={!reqOk} placeholder="Opcional: algum detalhe ou vontade para a sessão" maxLength={140} value={data.req} onChange={(e) => set({ req: e.target.value })} className={inputCls} />
                 <p className="text-xs text-stone-400 mt-3 leading-relaxed">Pedido avaliado no momento do atendimento. Se inviável, o valor não é cobrado.</p>
               </div>
 
-              <fieldset>
+              <fieldset className="min-w-0">
                 <legend className={labelCls}>Pagamento do restante</legend>
                 <div className="grid grid-cols-3 gap-3">
                   {PAYMENT_METHODS.map(({ id, label }) => (
@@ -977,7 +1007,7 @@ export default function App() {
 
             <div className="mt-8 pt-6 border-t border-stone-800 flex gap-3">
               <button type="button" onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
-              <button type="button" onClick={finishBooking} disabled={submitting || !data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-700 text-white hover:bg-emerald-600' : 'bg-stone-800 text-stone-400 cursor-not-allowed'}`}>{submitting ? 'Preparando...' : 'Enviar solicitação pelo WhatsApp'}</button>
+              <button type="button" onClick={finishBooking} disabled={submitting || !data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${data.payment && !submitting ? 'bg-emerald-700 text-white hover:bg-emerald-600' : 'bg-stone-800 text-stone-400 cursor-not-allowed'}`}>{submitting ? 'Preparando...' : data.payment ? 'Enviar solicitação pelo WhatsApp' : 'Escolha a forma de pagamento'}</button>
             </div>
           </div>
         )}
@@ -991,7 +1021,7 @@ export default function App() {
               <strong className="text-amber-300 font-medium">Envie o comprovante do sinal ({money(invoice.sinal)}) na conversa para confirmar.</strong>
             </p>
             <div className="w-full max-w-xs space-y-3">
-              <a href={sentLink || whatsappLink()} target="_blank" rel="noopener noreferrer" onClick={() => vibrate(15)} className={`${btnPrimary} flex items-center justify-center w-full`}>Reenviar mensagem</a>
+              <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer" onClick={() => vibrate(15)} className={`${btnPrimary} flex items-center justify-center w-full`}>Reenviar mensagem</a>
               <button type="button" onClick={copyPix} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="copy" size={16} /> Copiar chave Pix</button>
               <button type="button" onClick={downloadICS} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="cal" size={16} /> Adicionar à agenda</button>
               <button type="button" onClick={resetFlow} className="w-full min-h-[48px] text-sm text-stone-400 hover:text-stone-200 underline underline-offset-4">Voltar ao início</button>
