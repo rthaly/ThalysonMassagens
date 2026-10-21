@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, memo, type ReactNode } from 'react';
 
 /* ==========================================================================
-   1. CONFIGURAÇÃO
+   1. CONFIGURAÇÃO E DADOS ESTÁTICOS
    ========================================================================== */
 const ENV = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
 
@@ -47,6 +47,17 @@ const ADDONS = [
   { id: 'time', label: '+30 minutos extras', price: 75 },
   { id: 'aparo', label: 'Aparar Pelos até 3 lugares (Máquina)', price: 130 },
 ];
+
+const LOC_TYPES = [
+  { id: 'studio', label: 'No meu espaço' },
+  { id: 'home', label: 'Vou até você' }
+] as const;
+
+const PAYMENT_METHODS = [
+  { id: 'pix', label: 'Pix (-3%)' },
+  { id: 'card', label: 'Cartão até 12x (Consultar)' },
+  { id: 'cash', label: 'Dinheiro' }
+] as const;
 
 const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 
@@ -489,7 +500,7 @@ export default function App() {
       {profileOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-stone-950/85 backdrop-blur-sm" onClick={() => setProfileOpen(false)}>
           <div role="dialog" aria-modal="true" aria-label="Perfil" className="bg-stone-900 border border-stone-700 rounded-3xl w-full max-w-sm p-8 relative shadow-2xl fade-up" onClick={(e) => e.stopPropagation()}>
-            <button aria-label="Fechar perfil" autoFocus onClick={() => setProfileOpen(false)} className="absolute top-4 right-4 p-3 text-stone-400 hover:text-white rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"><Icon name="close" /></button>
+            <button aria-label="Fechar perfil" type="button" autoFocus onClick={() => setProfileOpen(false)} className="absolute top-4 right-4 p-3 text-stone-400 hover:text-white rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"><Icon name="close" /></button>
             <img src={CONFIG.AVATAR} className="w-20 h-20 rounded-full object-cover mb-6" alt="Foto de Thalyson" />
             <h2 className="text-2xl font-light text-stone-50 mb-1">Thalyson Massagens, SP Bela Vista</h2>
             <p className="text-amber-400 text-xs font-semibold mb-6">Terapeuta masculino</p>
@@ -497,7 +508,7 @@ export default function App() {
               <p>{greeting}. Meu trabalho é direto e focado no corpo masculino: usar o toque para desfazer o peso e a tensão da sua rotina.</p>
               <p className="flex items-start gap-3 bg-stone-950 p-4 rounded-2xl"><Icon name="map" size={18} className="mt-0.5 text-stone-400" /><span>Atendo em uma suíte no Centro Histórico de SP, próximo ao Metrô Anhangabaú.</span></p>
             </div>
-            <button onClick={forgetMe} className="w-full text-xs text-stone-400 hover:text-stone-200 underline underline-offset-4 min-h-[44px] mb-4">Apagar meus dados deste aparelho</button>
+            <button type="button" onClick={forgetMe} className="w-full text-xs text-stone-400 hover:text-stone-200 underline underline-offset-4 min-h-[44px] mb-4">Apagar meus dados deste aparelho</button>
             <div className="pt-6 border-t border-stone-700 flex justify-center gap-6">
               <a href={CONFIG.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-stone-300 hover:text-white min-h-[44px]"><Icon name="instagram" size={18} /> Instagram</a>
               <a href={CONFIG.REVIEW_LINK} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-stone-300 hover:text-white min-h-[44px]"><Icon name="star" size={18} /> Avaliações</a>
@@ -508,7 +519,7 @@ export default function App() {
 
       {step > 0 && (
         <header className="px-6 py-4 max-w-lg mx-auto flex justify-between items-center mb-6 sticky top-0 bg-stone-950/95 backdrop-blur-md z-40 border-b border-stone-800">
-          <button onClick={() => { vibrate(10); setProfileOpen(true); }} className="flex items-center gap-3 text-left rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400">
+          <button type="button" onClick={() => { vibrate(10); setProfileOpen(true); }} className="flex items-center gap-3 text-left rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400">
             <img src={CONFIG.AVATAR} alt="" className="w-10 h-10 rounded-full object-cover" />
             <span><span className="block text-sm font-medium text-stone-100">Thalyson Massagens</span><span className="block text-xs text-stone-400">Ver perfil</span></span>
           </button>
@@ -526,7 +537,7 @@ export default function App() {
               <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="shield" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">Privacidade garantida. Os dados que você digitar aqui ficam salvos apenas neste aparelho até o envio para o WhatsApp.</p></div>
               <div className="flex gap-4 p-6 bg-stone-900 rounded-3xl border border-stone-800"><Icon name="lock" className="text-amber-400 mt-0.5" size={22} /><p className="text-stone-300 text-sm leading-relaxed">Atendimento estritamente para maiores de 18 anos, focado no relaxamento do corpo masculino.</p></div>
             </div>
-            <button onClick={() => { vibrate(30); store.set('thaly_onboard_final', 'yes'); setStep(1); }} className="bg-stone-100 text-stone-950 min-h-[60px] w-full text-sm font-bold rounded-2xl active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-2">Iniciar agendamento</button>
+            <button type="button" onClick={() => { vibrate(30); store.set('thaly_onboard_final', 'yes'); setStep(1); }} className="bg-stone-100 text-stone-950 min-h-[60px] w-full text-sm font-bold rounded-2xl active:scale-[0.98] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-2">Iniciar agendamento</button>
           </div>
         )}
 
@@ -585,7 +596,7 @@ export default function App() {
             
             <div className="mt-8 pt-6 border-t border-stone-800 flex gap-6 items-center">
               <div className="flex-1"><p className="text-xs text-stone-400">Duração: {invoice.dur} min</p><p className="text-2xl font-light text-stone-50">{money(invoice.base + invoice.addonsTotal)}</p></div>
-              <button onClick={() => { vibrate(30); setStep(2); }} className={btnPrimary}>Continuar</button>
+              <button type="button" onClick={() => { vibrate(30); setStep(2); }} className={btnPrimary}>Continuar</button>
             </div>
           </div>
         )}
@@ -605,10 +616,10 @@ export default function App() {
               <fieldset>
                 <legend className={labelCls}>Local da sessão</legend>
                 <div className="grid grid-cols-2 gap-3">
-                  {([['studio', 'No meu espaço'], ['home', 'Vou até você']] as const).map(([v, l]) => (
-                    <label key={v} className={`${chipBase} text-sm px-3 ${data.locType === v ? chipOn : chipOff}`}>
-                      <input type="radio" name="location" value={v} checked={data.locType === v} onChange={() => set({ locType: v })} className="sr-only" />
-                      {l}
+                  {LOC_TYPES.map(({ id, label }) => (
+                    <label key={id} className={`${chipBase} text-sm px-3 ${data.locType === id ? chipOn : chipOff}`}>
+                      <input type="radio" name="location" value={id} checked={data.locType === id} onChange={() => set({ locType: id as 'studio' | 'home' })} className="sr-only" />
+                      {label}
                     </label>
                   ))}
                 </div>
@@ -652,8 +663,9 @@ export default function App() {
 
               {data.date && (
                 <fieldset className="fade-up">
-                  <div className="flex justify-between items-baseline mb-3">
-                    <legend className="text-xs font-semibold text-stone-300">Horário de início</legend>
+                  <legend className="sr-only">Horário de início</legend>
+                  <div className="flex justify-between items-baseline mb-3" aria-hidden="true">
+                    <span className="text-xs font-semibold text-stone-300">Horário de início</span>
                     <span className="text-xs text-stone-400" aria-live="polite">{busyLoading ? 'Verificando agenda…' : `Sessão de ${invoice.dur} min`}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
@@ -680,8 +692,8 @@ export default function App() {
             </div>
 
             <div className="mt-8 pt-6 border-t border-stone-800 flex gap-3">
-              <button onClick={() => setStep(1)} className={`${btnGhost} w-1/3`}>Voltar</button>
-              <button onClick={() => { if (step2Valid) { vibrate(30); setStep(3); } else { vibrate(50); setTouched(true); showToast('Complete os campos destacados'); } }} className={`${btnPrimary} flex-1`}>Revisar</button>
+              <button type="button" onClick={() => setStep(1)} className={`${btnGhost} w-1/3`}>Voltar</button>
+              <button type="button" onClick={() => { if (step2Valid) { vibrate(30); setStep(3); } else { vibrate(50); setTouched(true); showToast('Complete os campos destacados'); } }} className={`${btnPrimary} flex-1`}>Revisar</button>
             </div>
           </div>
         )}
@@ -696,7 +708,7 @@ export default function App() {
                 <Summary label="Data" value={data.date?.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })} />
                 <Summary label="Horário" value={`${data.time} – ${endTime}`} />
                 <Summary label="Local" value={isHome ? `${data.street}, ${data.number}` : 'No espaço (Bela Vista)'} />
-                <button onClick={() => setStep(2)} className="text-sm text-amber-300 underline underline-offset-4 min-h-[44px]">Alterar data, horário ou local</button>
+                <button type="button" onClick={() => setStep(2)} className="text-sm text-amber-300 underline underline-offset-4 min-h-[44px]">Alterar data, horário ou local</button>
               </div>
 
               <div className="p-6 bg-stone-900 rounded-3xl border border-stone-700">
@@ -727,7 +739,7 @@ export default function App() {
                   <label htmlFor="cp" className={labelCls}>Possui cupom adicional?</label>
                   <div className="flex gap-2">
                     <input id="cp" type="text" autoCapitalize="characters" placeholder="Código" value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className={`${inputCls} flex-1 uppercase ${coupon.error ? 'border-red-400' : ''}`} />
-                    <button onClick={applyCoupon} className={btnGhost}>Aplicar</button>
+                    <button type="button" onClick={applyCoupon} className={btnGhost}>Aplicar</button>
                   </div>
                   {coupon.error && <p className="text-sm text-red-300 mt-2" role="alert">{coupon.error}</p>}
                 </div>
@@ -736,10 +748,10 @@ export default function App() {
               <fieldset>
                 <legend className={labelCls}>Pagamento do restante</legend>
                 <div className="grid grid-cols-3 gap-3">
-                  {[['pix', 'Pix (-3%)'], ['card', 'Cartão até 12x (Consultar)'], ['cash', 'Dinheiro']].map(([id, l]) => (
+                  {PAYMENT_METHODS.map(({ id, label }) => (
                     <label key={id} className={`${chipBase} text-xs font-semibold px-2 text-center ${data.payment === id ? chipOn : chipOff}`}>
                       <input type="radio" name="payment" value={id} checked={data.payment === id} onChange={() => selectPayment(id)} className="sr-only" />
-                      {l}
+                      {label}
                     </label>
                   ))}
                 </div>
@@ -760,13 +772,13 @@ export default function App() {
 
               <div className="bg-amber-950/40 border border-amber-700/50 p-6 rounded-3xl">
                 <p className="text-sm text-amber-100 leading-relaxed text-center">Para confirmar o horário, envie um sinal de <strong className="text-amber-300">{money(invoice.sinal)} via Pix</strong>. O restante é acertado após a sessão.</p>
-                <button onClick={copyPix} className="mt-4 mx-auto flex items-center gap-2 text-sm font-semibold text-amber-200 underline underline-offset-4 min-h-[44px]"><Icon name="copy" size={16} /> Copiar chave Pix (CNPJ)</button>
+                <button type="button" onClick={copyPix} className="mt-4 mx-auto flex items-center gap-2 text-sm font-semibold text-amber-200 underline underline-offset-4 min-h-[44px]"><Icon name="copy" size={16} /> Copiar chave Pix (CNPJ)</button>
               </div>
             </div>
 
             <div className="mt-8 pt-6 border-t border-stone-800 flex gap-3">
-              <button onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
-              <button onClick={finishBooking} disabled={submitting || !acceptedTerms || !data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${(data.payment && acceptedTerms && !submitting) ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Preparando...' : 'Enviar solicitação pelo WhatsApp'}</button>
+              <button type="button" onClick={() => setStep(2)} className={`${btnGhost} w-1/4`}>Voltar</button>
+              <button type="button" onClick={finishBooking} disabled={submitting || !acceptedTerms || !data.payment} className={`flex-1 min-h-[56px] text-sm font-bold rounded-xl flex items-center justify-center text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${(data.payment && acceptedTerms && !submitting) ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}`}>{submitting ? 'Preparando...' : 'Enviar solicitação pelo WhatsApp'}</button>
             </div>
           </div>
         )}
@@ -781,9 +793,9 @@ export default function App() {
             </p>
             <div className="w-full max-w-xs space-y-3">
               <a href={sentLink || whatsappLink()} target="_blank" rel="noopener noreferrer" onClick={() => vibrate(15)} className={`${btnPrimary} flex items-center justify-center w-full`}>Reenviar mensagem</a>
-              <button onClick={copyPix} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="copy" size={16} /> Copiar chave Pix</button>
-              <button onClick={downloadICS} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="cal" size={16} /> Adicionar à agenda</button>
-              <button onClick={resetFlow} className="w-full min-h-[48px] text-sm text-stone-400 hover:text-stone-200 underline underline-offset-4">Voltar ao início</button>
+              <button type="button" onClick={copyPix} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="copy" size={16} /> Copiar chave Pix</button>
+              <button type="button" onClick={downloadICS} className={`${btnGhost} w-full flex items-center justify-center gap-2`}><Icon name="cal" size={16} /> Adicionar à agenda</button>
+              <button type="button" onClick={resetFlow} className="w-full min-h-[48px] text-sm text-stone-400 hover:text-stone-200 underline underline-offset-4">Voltar ao início</button>
             </div>
           </div>
         )}
