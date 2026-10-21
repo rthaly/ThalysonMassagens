@@ -8,7 +8,7 @@ const LEGAL = {
   RAZAO: 'Thalyson Rodrigo dos Santos',
   CNPJ: '62.922.530/0001-44',
   // Se quiser, acrescente o número: 'Avenida 9 de Julho, 0000, Bela Vista, São Paulo - SP'
-  ENDERECO: 'Avenida 9 de Julho, Nº 337, Bela Vista, São Paulo - SP',
+  ENDERECO: 'Avenida 9 de Julho, Bela Vista, São Paulo - SP',
   EMAIL: 'relaxarcomthalyson@gmail.com',
   ENCARREGADO: 'Thalyson Rodrigo dos Santos',
   EMAIL_DPO: 'relaxarcomthalyson@gmail.com',
