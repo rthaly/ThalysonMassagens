@@ -205,13 +205,13 @@ const CONFIG = {
 };
 
 const PACKAGES = [
-  { id: 'classica', title: 'Massagem Clássica', price: 180, min: 40, tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
+  { id: 'classica', title: 'Massagem Clássica', price: 180, min: 40, tags: ['Relaxamento Completo','Pistola Relaxante', 'Sem Toque Íntimo'],
     desc: 'O essencial para quem está com o corpo cansado da rotina. Uso a força das minhas mãos para trabalhar a tensão e soltar sua musculatura, com foco no relaxamento.' },
-  { id: 'sensitiva', title: 'Sensitiva & Prazer', price: 220, min: 60, tags: ['Tântricas', 'Finalização lingam'],
+  { id: 'sensitiva', title: 'Sensitiva & Prazer', price: 220, min: 60, tags: ['Tântrica','Pistola Relaxante', 'Finalização lingam'],
     desc: 'Começamos com a massagem clássica para relaxar o corpo. Quando você estiver à vontade, os toques mudam, ficam mais leves e encerramos com a massagem lingam.' },
-  { id: 'fusion', title: 'Sensações com a Barba', price: 290, min: 60, tags: ['Tântrica','Naturista', 'Uso de Barba'],
+  { id: 'fusion', title: 'Sensações com a Barba', price: 290, min: 60, tags: ['Tântrica','Naturista','Pistola Relaxante','Uso de Barba'],
     desc: 'Ficamos totalmente à vontade. Primeiro a massagem clássica, depois uso minha barba em algumas partes do seu corpo e encerramos com a massagem lingam.' },
-  { id: 'completa', title: 'Massagem Corpo a Corpo & Interação', price: 390, min: 60, tags: ['Tântrica','Naturista','Interação','Você faz massagem'],
+  { id: 'completa', title: 'Massagem Corpo a Corpo & Interação', price: 390, min: 60, tags: ['Tântrica','Pistola Relaxante','Naturista','Interação','Você faz massagem'],
     desc: 'O pacote sem barreiras. Primeiro a massagem clássica, depois proximidade física com gel corpo a corpo e liberdade para você fazer massagem em mim, e encerramos com a massagem lingam.' },
   { id: 'aparo_solo', title: 'Apenas Depilação (Máquina)', price: 130, min: 40, tags: ['Estética', 'Sem Massagem'],
     desc: 'Serviço isolado para quem busca apenas estética. Aparo de pelos (até 3 lugares), pente 1 e 3, utilizando máquina.' },
