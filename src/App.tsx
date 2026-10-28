@@ -9,10 +9,10 @@ const LEGAL = {
   CNPJ: '62.922.530/0001-44',
   // Se quiser, acrescente o número: 'Avenida 9 de Julho, 0000, Bela Vista, São Paulo - SP'
   ENDERECO: 'Avenida 9 de Julho, Bela Vista, São Paulo - SP',
-  EMAIL: 'relaxarcomthalyson@gmail.com',
+  EMAIL: 'relaxecomthalyson@gmail.com',
   ENCARREGADO: 'Thalyson Rodrigo dos Santos',
-  EMAIL_DPO: 'relaxarcomthalyson@gmail.com',
-  ATUALIZADO: '21/10/2026',
+  EMAIL_DPO: 'relaxecomthalyson@gmail.com',
+  ATUALIZADO: '01/01/2025',
   CANCEL_FREE_HOURS: 12,
 };
 
@@ -182,8 +182,8 @@ const CONFIG = {
   PIX_KEY: '62922530000144',
   INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
-  // Coloque o arquivo em public/avatar.jpg (foto sua ou licenciada para uso comercial)
-  AVATAR: '/avatar.jpg',
+  // Arquivo em public/. A barra inicial garante que carregue em qualquer rota.
+  AVATAR: '/thalyson.jpg',
   SUPABASE_URL: ENV.VITE_SUPABASE_URL || '',
   SUPABASE_ANON_KEY: ENV.VITE_SUPABASE_ANON_KEY || ENV.VITE_SUPABASE_PUBLISHABLE_KEY || '',
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
@@ -205,14 +205,14 @@ const CONFIG = {
 };
 
 const PACKAGES = [
-  { id: 'classica', title: 'Massagem Clássica', price: 180, min: 40, tags: ['Apenas Mãos', 'Sem Toque Íntimo'],
+  { id: 'classica', title: 'Massagem Clássica', price: 180, min: 40, tags: ['Relaxamento Completo','Pistola Relaxante', 'Sem Toque Íntimo'],
     desc: 'O essencial para quem está com o corpo cansado da rotina. Uso a força das minhas mãos para trabalhar a tensão e soltar sua musculatura, com foco no relaxamento.' },
-  { id: 'sensitiva', title: 'Sensitiva & Prazer', price: 220, min: 60, tags: ['Toques Leves', 'Finalização Íntima'],
-    desc: 'Começamos com a massagem clássica para relaxar o corpo. Quando você estiver à vontade, os toques mudam, ficam mais leves e encerramos com a massagem íntima.' },
-  { id: 'fusion', title: 'Sensações com a Barba', price: 290, min: 60, tags: ['Naturista', 'Uso de Barba'],
-    desc: 'Ficamos totalmente à vontade. Primeiro a massagem clássica, depois uso minha barba em algumas partes do seu corpo e encerramos com a massagem íntima.' },
-  { id: 'completa', title: 'Massagem Corpo a Corpo & Interação', price: 390, min: 60, tags: ['Gel Nuru', 'A Sua Vez de Tocar'],
-    desc: 'O pacote sem barreiras. Primeiro a massagem clássica, depois proximidade física com gel corpo a corpo e liberdade para você fazer massagem em mim, e encerramos com a massagem íntima.' },
+  { id: 'sensitiva', title: 'Sensitiva & Prazer', price: 220, min: 60, tags: ['Tântrica','Pistola Relaxante', 'Finalização lingam'],
+    desc: 'Começamos com a massagem clássica para relaxar o corpo. Quando você estiver à vontade, os toques mudam, ficam mais leves e encerramos com a massagem lingam.' },
+  { id: 'fusion', title: 'Sensações com a Barba', price: 290, min: 60, tags: ['Tântrica','Naturista','Pistola Relaxante','Uso de Barba'],
+    desc: 'Ficamos totalmente à vontade. Primeiro a massagem clássica, depois uso minha barba em algumas partes do seu corpo e encerramos com a massagem lingam.' },
+  { id: 'completa', title: 'Massagem Corpo a Corpo & Interação', price: 390, min: 60, tags: ['Tântrica','Pistola Relaxante','Naturista','Interação','Você faz massagem'],
+    desc: 'O pacote sem barreiras. Primeiro a massagem clássica, depois proximidade física com gel corpo a corpo e liberdade para você fazer massagem em mim, e encerramos com a massagem lingam.' },
   { id: 'aparo_solo', title: 'Apenas Depilação (Máquina)', price: 130, min: 40, tags: ['Estética', 'Sem Massagem'],
     desc: 'Serviço isolado para quem busca apenas estética. Aparo de pelos (até 3 lugares), pente 1 e 3, utilizando máquina.' },
 ];
