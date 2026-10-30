@@ -350,4 +350,253 @@ function buildSlots(date: Date, dur: number, isHome: boolean, now: Date) {
    ========================================================================== */
 interface Booking {
   name: string; locType: 'studio' | 'home'; cep: string; street: string; number: string; comp: string; bairro: string;
-  date: Date | null; time: string; req: string; payment: string; packageId: string; addTime: boolean
+  date: Date | null; time: string; req: string; payment: string; packageId: string; addTime: boolean;
+}
+
+export default function App() {
+  const [lang, setLang] = useState<Lang>('pt');
+  const [theme, setTheme] = useState<Theme>('light');
+  const [phase, setPhase] = useState<Phase>('welcome');
+  const [offer, setOffer] = useState<Offer>('single');
+  const [done, setDone] = useState(false);
+  const [now, setNow] = useState(() => new Date());
+  const [showBar, setShowBar] = useState(false);
+  const [ageOk, setAgeOk] = useState(false);
+  
+  const [data, setData] = useState<Booking>({
+    name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '',
+    date: null, time: '', req: '', payment: '', packageId: '', addTime: false,
+  });
+  const set = (patch: Partial<Booking>) => setData((p) => ({ ...p, ...patch }));
+  
+  const bookRef = useRef<HTMLDivElement>(null);
+  const step2Ref = useRef<HTMLDivElement>(null);
+  const step3Ref = useRef<HTMLDivElement>(null);
+
+  const t = (k: string) => T[lang][k] ?? T.pt[k] ?? k;
+  const fmt = (d: Date, o: Intl.DateTimeFormatOptions) => d.toLocaleDateString(LOCALE[lang], o);
+
+  useEffect(() => { const i = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(i); }, []);
+  useEffect(() => {
+    const onScroll = () => {
+      const r = bookRef.current?.getBoundingClientRect();
+      setShowBar(window.scrollY > 300 && !!r && r.top > window.innerHeight * 0.7);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollTo = (ref: React.RefObject<HTMLDivElement>) => setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+
+  const pkg = useMemo(() => PACKAGES.find((p) => p.id === data.packageId) || PACKAGES[0], [data.packageId]);
+  const isSolo = pkg.id === 'aparo_solo';
+  const offerEff = isSolo ? 'single' : offer;
+  const isHome = data.locType === 'home';
+  const isPack = offerEff === 'pack';
+  const aparoOn = offerEff === 'combo';
+
+  const invoice = useMemo(() => {
+    let dur = pkg.min + (data.addTime ? 30 : 0);
+    const sessionPrice = isPack ? pkg.price * C.PACK_PAY : pkg.price;
+    const total = sessionPrice + (aparoOn ? pkg.combo : 0) + (data.addTime ? C.TIME_ADD : 0);
+    return { dur, total, sinal: Math.min(C.SIGNAL, total) };
+  }, [data, pkg, isPack, aparoOn]);
+
+  const days = useMemo(() => Array.from({ length: 14 }).map((_, i) => {
+    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + i); return d;
+  }), []);
+  const slots = useMemo(() => (data.date ? buildSlots(data.date, invoice.dur, isHome, now) : []), [data.date, invoice.dur, isHome, now]);
+
+  const step3Valid = data.name.length > 2 && data.date && data.time && (!isHome || (data.street && data.number));
+
+  const handleCep = async (val: string) => {
+    const masked = maskCEP(val); set({ cep: masked });
+    if (masked.length === 9) {
+      try {
+        const j = await (await fetch(`https://viacep.com.br/ws/${masked.replace('-', '')}/json/`)).json();
+        if (!j.erro) set({ street: j.logradouro, bairro: j.bairro });
+      } catch (e) {}
+    }
+  };
+
+  const finish = () => {
+    if (!step3Valid || !data.payment || !ageOk) return;
+    const link = waLink(`Oi Thalyson! Quero confirmar a massagem ${pkg.L.pt.title} dia ${data.date?.toLocaleDateString('pt-BR')} às ${data.time}.`);
+    window.open(link, '_blank');
+    setDone(true);
+  };
+
+  return (
+    <div className="app" data-theme={theme} style={{ paddingBottom: showBar && !done ? 90 : 20 }}>
+      <style dangerouslySetInnerHTML={{ __html: CSS }} />
+      
+      <header className="px-6 py-4 flex justify-between items-center max-w-3xl mx-auto">
+        <span className="serif text-xl font-medium">Thalyson.</span>
+        <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="btn-g rounded-full w-10 h-10 flex items-center justify-center border">
+          <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={18} />
+        </button>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-6 pt-10">
+        
+        {/* HERO */}
+        <section className="relative mb-24">
+          <div className="glow" />
+          <Reveal><p className="text-[13px] font-bold tracking-wide uppercase mb-4 opacity-60 flex items-center gap-2"><Icon name="map" size={14}/> {t('badge')}</p></Reveal>
+          <Title as="h1" className="text-5xl md:text-6xl mb-6">{t('h1')}</Title>
+          <Reveal delay={200}><p className="text-lg opacity-70 mb-8 max-w-md">{t('sub')}</p></Reveal>
+          <Reveal delay={300}><button type="button" onClick={() => scrollTo(bookRef)} className="btn btn-p">{t('cta')}</button></Reveal>
+        </section>
+
+        {/* BOOKING FLOW */}
+        <section ref={bookRef} className="scroll-mt-12">
+          {done ? (
+            <Reveal><div className="card p-8 text-center bg-[var(--surf2)] border-none">
+              <div className="w-16 h-16 mx-auto rounded-full bg-[var(--acc)] text-[var(--onacc)] flex items-center justify-center mb-6"><Icon name="check" size={28} /></div>
+              <h2 className="serif text-3xl mb-3">{t('doneH')}</h2>
+              <p className="opacity-70 mb-6">{t('doneP')}</p>
+              <button type="button" onClick={() => window.location.reload()} className="text-sm opacity-60 underline">Fazer novo agendamento</button>
+            </div></Reveal>
+          ) : (
+            <div className="space-y-16">
+              
+              {/* STEP 1: SESSÃO */}
+              <div>
+                <div className="flex items-center gap-4 mb-6"><span className="step-dot ok"><Icon name="check" size={14}/></span><h2 className="serif text-2xl">Escolha a massagem</h2></div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {PACKAGES.map((p) => {
+                    const on = data.packageId === p.id;
+                    return (
+                      <label key={p.id} className={`opt ${on ? 'on' : ''}`}>
+                        <input type="radio" checked={on} onChange={() => { vibrate(); set({ packageId: p.id }); scrollTo(step2Ref); }} className="sr-only" />
+                        <div className="flex justify-between items-baseline mb-1">
+                          <span className="serif text-xl">{p.L[lang].title}</span>
+                          <span className="font-semibold">{money(p.price)}</span>
+                        </div>
+                        <p className="text-sm opacity-60 mb-3">{p.min} min • {p.L[lang].tags[0]}</p>
+                        {on && <div className="rv in text-[14.5px] opacity-80 pt-3 border-t border-[var(--line)]"><p>{p.L[lang].desc}</p></div>}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* STEP 2: COMBO / PACOTE */}
+              {data.packageId && !isSolo && (
+                <div ref={step2Ref} className="scroll-mt-12 rv in">
+                  <div className="flex items-center gap-4 mb-6"><span className="step-dot ok"><Icon name="check" size={14}/></span><h2 className="serif text-2xl">Formato</h2></div>
+                  <div className="grid gap-3">
+                    {[
+                      ['single', 'Sessão avulsa', pkg.price],
+                      ['combo', 'Com depilação (+R$ 90)', pkg.price + 90],
+                      ['pack', `Pacote 5 sessões (30 dias)`, pkg.price * 4]
+                    ].map(([id, title, price]) => (
+                      <label key={id} className={`opt flex items-center justify-between ${offer === id ? 'on' : ''}`}>
+                        <input type="radio" checked={offer === id} onChange={() => { vibrate(); setOffer(id as Offer); scrollTo(step3Ref); }} className="sr-only" />
+                        <span className="font-medium">{title}</span>
+                        <span className="font-semibold">{money(price as number)}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: DADOS */}
+              {data.packageId && (
+                <div ref={step3Ref} className="scroll-mt-12 rv in">
+                  <div className="flex items-center gap-4 mb-6"><span className="step-dot">3</span><h2 className="serif text-2xl">Agendamento e Local</h2></div>
+                  <div className="card p-5 space-y-6">
+                    <div>
+                      <label className="lbl">Seu nome</label>
+                      <input type="text" value={data.name} onChange={(e) => set({ name: e.target.value })} className="inp" placeholder="Como devo te chamar?" />
+                    </div>
+                    
+                    <div>
+                      <label className="lbl">Local da sessão</label>
+                      <div className="flex gap-2">
+                        <label className={`chip flex-1 ${data.locType === 'studio' ? 'on' : ''}`}><input type="radio" checked={data.locType==='studio'} onChange={()=>set({locType:'studio'})} className="sr-only"/>No meu espaço</label>
+                        <label className={`chip flex-1 ${data.locType === 'home' ? 'on' : ''}`}><input type="radio" checked={data.locType==='home'} onChange={()=>set({locType:'home'})} className="sr-only"/>Vou até você</label>
+                      </div>
+                      {isHome && (
+                        <div className="grid gap-3 mt-4 rv in">
+                          <input type="tel" value={data.cep} onChange={(e)=>handleCep(e.target.value)} placeholder="CEP" className="inp" />
+                          <div className="flex gap-2">
+                            <input type="text" value={data.street} onChange={(e)=>set({street:e.target.value})} placeholder="Rua" className="inp flex-1" />
+                            <input type="text" value={data.number} onChange={(e)=>set({number:e.target.value})} placeholder="Nº" className="inp w-24" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="lbl">Data e Horário</label>
+                      <div className="flex gap-2 overflow-x-auto hide-sb pb-2 snap-x">
+                        {days.map(d => (
+                          <label key={dateKey(d)} className={`chip flex-col shrink-0 w-20 snap-start ${sameDay(data.date, d) ? 'on' : ''}`}>
+                            <input type="radio" checked={sameDay(data.date, d)} onChange={() => set({ date: d, time: '' })} className="sr-only" />
+                            <span className="text-[11px] uppercase opacity-70">{d.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.','')}</span>
+                            <span className="text-xl font-medium">{d.getDate()}</span>
+                          </label>
+                        ))}
+                      </div>
+                      {data.date && (
+                        <div className="grid grid-cols-4 gap-2 mt-2 rv in">
+                          {slots.map(s => (
+                            <label key={s.t} className={`chip py-2 ${data.time === s.t ? 'on' : ''} ${!s.ok ? 'off' : ''}`}>
+                              <input type="radio" disabled={!s.ok} checked={data.time===s.t} onChange={()=>set({time:s.t})} className="sr-only" />
+                              {s.t}
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 4: PAGAMENTO */}
+              {step3Valid && (
+                <div className="rv in">
+                  <div className="flex items-center gap-4 mb-6"><span className="step-dot">4</span><h2 className="serif text-2xl">Revisão</h2></div>
+                  <div className="card p-6 bg-[var(--surf2)] border-none">
+                    <Row label="Sessão" value={pkg.L[lang].title} />
+                    <Row label="Data" value={`${data.date?.toLocaleDateString('pt-BR')} às ${data.time}`} />
+                    <div className="h-px bg-[var(--line)] my-4" />
+                    <Row label="Total" strong value={money(invoice.total)} />
+                    
+                    <div className="mt-6 mb-4">
+                      <label className="lbl">Forma de pagamento (Restante pós-sessão)</label>
+                      <div className="flex gap-2">
+                        {['pix', 'card', 'cash'].map(p => (
+                          <label key={p} className={`chip flex-1 py-3 text-sm ${data.payment === p ? 'on' : 'bg-transparent'}`}>
+                            <input type="radio" checked={data.payment===p} onChange={()=>set({payment:p})} className="sr-only" />
+                            {p.toUpperCase()}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <label className="flex items-start gap-3 text-[13px] opacity-70 mt-6 cursor-pointer">
+                      <input type="checkbox" checked={ageOk} onChange={(e)=>setAgeOk(e.target.checked)} className="mt-0.5 w-5 h-5 accent-[var(--acc)]" />
+                      Confirmo ser maior de 18 anos e estar ciente das regras de cancelamento.
+                    </label>
+
+                    <button type="button" onClick={finish} disabled={!data.payment || !ageOk} className="btn btn-p w-full mt-6 shadow-none">Confirmar no WhatsApp</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+      </main>
+
+      {/* FIXED BAR PARA MOBILE SE NECESSÁRIO */}
+      {showBar && !done && data.packageId && (
+        <div className="bar rv in flex justify-between items-center">
+          <div><p className="text-xs opacity-60">Sinal agora</p><p className="font-semibold">{money(C.SIGNAL)}</p></div>
+          <button type="button" onClick={() => scrollTo(bookRef)} className="btn btn-p" style={{minHeight: 48, padding: '0 20px'}}>Agendar</button>
+        </div>
+      )}
+    </div>
+  );
+}
