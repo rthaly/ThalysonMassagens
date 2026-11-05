@@ -1,8 +1,5 @@
 import { useState, useEffect, useMemo, useRef, memo, type ReactNode } from 'react';
 
-/* ==========================================================================
-   DADOS LEGAIS (confirme a razão social no cartão CNPJ)
-   ========================================================================== */
 const SITE_NAME = 'Relaxar hoje com Thalyson';
 const LEGAL = {
   RAZAO: 'Thalyson Rodrigo dos Santos',
@@ -14,22 +11,19 @@ const LEGAL = {
   CANCEL_FREE_HOURS: 12,
 };
 
-/* ==========================================================================
-   CONFIGURAÇÃO
-   ========================================================================== */
 const C = {
   PHONE: '5517991360413',
   PIX_KEY: '62922530000144',
   INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
-  AVATAR: '/thalyson.jpg', // coloque o arquivo em public/
+  AVATAR: '/thalyson.jpg',
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
   SIGNAL: 40,
   FIRST: 15,
   REQ_FEE: 140,
   PEAK_FEE: 18,
   PIX_DISC: 0.03,
-  TIME_ADD: 75, // +30 min
+  TIME_ADD: 75,
   APARO_FULL: 130,
   PACK_PAY: 4,
   PACK_TOTAL: 5,
@@ -48,11 +42,11 @@ type Theme = 'dark' | 'light';
 type Phase = 'loading' | 'welcome' | 'site';
 type Offer = 'single' | 'combo' | 'pack';
 type DocId = 'privacy' | 'terms' | 'refund' | 'cookies';
+type PkgTheme = 'sage' | 'amber' | 'crimson' | 'midnight' | 'slate';
+type PkgText = { title: string; desc: string; tags: string[]; flow: string[] };
+
 const LOCALE: Record<Lang, string> = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' };
 
-/* ==========================================================================
-   TEXTOS (PT / EN / ES)
-   ========================================================================== */
 const T: Record<Lang, Record<string, string>> = {
   pt: {
     loadMsg: 'Preparando o seu momento de pausa', badge: 'Bela Vista, Centro de São Paulo',
@@ -197,50 +191,46 @@ const T: Record<Lang, Record<string, string>> = {
   },
 };
 
-type PkgText = { title: string; desc: string; tags: string[]; flow: string[] };
-const PACKAGES: { id: string; price: number; min: number; combo: number; L: Record<Lang, PkgText> }[] = [
-  { id: 'classica', price: 180, min: 40, combo: 90, L: {
-    pt: { title: 'Massagem Clássica', tags: ['Relaxamento completo', 'Pistola relaxante', 'Sem toque íntimo'], desc: 'O essencial para quem está com o corpo cansado da rotina. Uso a força das minhas mãos para trabalhar a tensão e soltar sua musculatura, com foco no relaxamento.',
-      flow: ['Conversa rápida para alinhar seus pontos de tensão e limites.', 'Massagem clássica com as mãos, trabalhando a tensão da musculatura.', 'Pistola relaxante nos pontos mais tensos.', 'Encerramento tranquilo, sem toque íntimo.'] },
-    en: { title: 'Classic Massage', tags: ['Full relaxation', 'Massage gun', 'No intimate touch'], desc: 'The essential for a body worn out by routine. I use the strength of my hands to work out tension and loosen your muscles, focused on relaxation.',
-      flow: ['Quick chat to align your tension points and limits.', 'Classic massage with the hands, working out muscle tension.', 'Massage gun on the tightest spots.', 'Calm finish, no intimate touch.'] },
-    es: { title: 'Masaje Clásico', tags: ['Relajación completa', 'Pistola relajante', 'Sin toque íntimo'], desc: 'Lo esencial para un cuerpo cansado de la rutina. Uso la fuerza de mis manos para trabajar la tensión y soltar tu musculatura, con foco en la relajación.',
-      flow: ['Charla rápida para alinear tus puntos de tensión y límites.', 'Masaje clásico con las manos, trabajando la tensión muscular.', 'Pistola relajante en los puntos más tensos.', 'Cierre tranquilo, sin toque íntimo.'] } } },
-  { id: 'sensitiva', price: 220, min: 60, combo: 85, L: {
-    pt: { title: 'Sensitiva & Prazer', tags: ['Tântrica', 'Pistola relaxante', 'Finalização lingam'], desc: 'Começamos com a massagem clássica para relaxar o corpo. Quando você estiver à vontade, os toques mudam, ficam mais leves e encerramos com a massagem lingam.',
-      flow: ['Conversa rápida e combinado de limites.', 'Massagem clássica para relaxar o corpo.', 'Quando você estiver à vontade, os toques ficam mais leves (tântrica).', 'Encerramento com massagem lingam.'] },
-    en: { title: 'Sensitive & Pleasure', tags: ['Tantric', 'Massage gun', 'Lingam finish'], desc: 'We start with the classic massage to relax the body. When you feel at ease, the touch changes and becomes lighter, and we close with lingam massage.',
-      flow: ['Quick chat and agreement on limits.', 'Classic massage to relax the body.', 'When you feel at ease, the touch becomes lighter (tantric).', 'Closing with lingam massage.'] },
-    es: { title: 'Sensitiva & Placer', tags: ['Tántrica', 'Pistola relajante', 'Final lingam'], desc: 'Empezamos con el masaje clásico para relajar el cuerpo. Cuando te sientas cómodo, los toques cambian y se vuelven más suaves, y cerramos con masaje lingam.',
-      flow: ['Charla rápida y acuerdo de límites.', 'Masaje clásico para relajar el cuerpo.', 'Cuando te sientas cómodo, los toques se vuelven más suaves (tántrica).', 'Cierre con masaje lingam.'] } } },
-  { id: 'fusion', price: 290, min: 60, combo: 75, L: {
-    pt: { title: 'Sensações com a Barba', tags: ['Tântrica', 'Naturista', 'Pistola relaxante', 'Uso de barba'], desc: 'Ficamos totalmente à vontade. Primeiro a massagem clássica, depois uso minha barba em algumas partes do seu corpo e encerramos com a massagem lingam.',
-      flow: ['Conversa rápida e combinado de limites; ficamos totalmente à vontade (naturista).', 'Massagem clássica para relaxar.', 'Uso da barba em algumas partes do seu corpo.', 'Encerramento com massagem lingam.'] },
-    en: { title: 'Beard Sensations', tags: ['Tantric', 'Naturist', 'Massage gun', 'Beard play'], desc: 'We get fully comfortable. First the classic massage, then I use my beard on some parts of your body, and we close with lingam massage.',
-      flow: ['Quick chat and agreement on limits; we get fully comfortable (naturist).', 'Classic massage to relax.', 'Beard used on some parts of your body.', 'Closing with lingam massage.'] },
-    es: { title: 'Sensaciones con la Barba', tags: ['Tántrica', 'Naturista', 'Pistola relajante', 'Uso de barba'], desc: 'Nos ponemos totalmente cómodos. Primero el masaje clásico, luego uso mi barba en algunas partes de tu cuerpo y cerramos con masaje lingam.',
-      flow: ['Charla rápida y acuerdo de límites; nos ponemos totalmente cómodos (naturista).', 'Masaje clásico para relajar.', 'Uso de la barba en algunas partes de tu cuerpo.', 'Cierre con masaje lingam.'] } } },
-  { id: 'completa', price: 390, min: 60, combo: 60, L: {
-    pt: { title: 'Corpo a Corpo & Interação', tags: ['Tântrica', 'Pistola relaxante', 'Naturista', 'Interação', 'Você faz massagem'], desc: 'O pacote sem barreiras. Primeiro a massagem clássica, depois proximidade física com gel corpo a corpo e liberdade para você fazer massagem em mim, e encerramos com a massagem lingam.',
-      flow: ['Conversa rápida e combinado de limites.', 'Massagem clássica para relaxar.', 'Proximidade física com gel, corpo a corpo.', 'Você tem liberdade para fazer massagem em mim.', 'Encerramento com massagem lingam.'] },
-    en: { title: 'Body to Body & Interaction', tags: ['Tantric', 'Massage gun', 'Naturist', 'Interaction', 'You massage me'], desc: 'The no-barriers package. First the classic massage, then physical closeness with body-to-body gel and the freedom for you to massage me, and we close with lingam massage.',
-      flow: ['Quick chat and agreement on limits.', 'Classic massage to relax.', 'Physical closeness with body-to-body gel.', 'You are free to massage me.', 'Closing with lingam massage.'] },
-    es: { title: 'Cuerpo a Cuerpo & Interacción', tags: ['Tántrica', 'Pistola relajante', 'Naturista', 'Interacción', 'Tú me masajeas'], desc: 'El paquete sin barreras. Primero el masaje clásico, luego cercanía física con gel cuerpo a cuerpo y libertad para que me hagas masaje, y cerramos con masaje lingam.',
-      flow: ['Charla rápida y acuerdo de límites.', 'Masaje clásico para relajar.', 'Cercanía física con gel, cuerpo a cuerpo.', 'Tienes libertad para hacerme masaje.', 'Cierre con masaje lingam.'] } } },
-  { id: 'aparo_solo', price: 130, min: 40, combo: 0, L: {
-    pt: { title: 'Apenas Depilação (Máquina)', tags: ['Estética', 'Sem massagem'], desc: 'Serviço isolado para quem busca apenas estética. Aparo de pelos (até 3 lugares), pente 1 e 3, utilizando máquina.',
-      flow: ['Conversa rápida sobre o resultado que você quer.', 'Aparo de pelos em até 3 lugares, com máquina (pente 1 e 3).', 'Acabamento e finalização.'] },
-    en: { title: 'Trimming Only (Machine)', tags: ['Grooming', 'No massage'], desc: 'Standalone service for grooming only. Body hair trimming (up to 3 areas), guards 1 and 3, using a machine.',
-      flow: ['Quick chat about the result you want.', 'Hair trimming in up to 3 areas, with a machine (guards 1 and 3).', 'Finishing touches.'] },
-    es: { title: 'Solo Depilación (Máquina)', tags: ['Estética', 'Sin masaje'], desc: 'Servicio aislado para quien busca solo estética. Recorte de vello (hasta 3 zonas), peine 1 y 3, con máquina.',
-      flow: ['Charla rápida sobre el resultado que quieres.', 'Recorte de vello en hasta 3 zonas, con máquina (peine 1 y 3).', 'Acabado final.'] } } },
+const PACKAGES: { id: string; price: number; min: number; combo: number; theme: PkgTheme; L: Record<Lang, PkgText> }[] = [
+  { id: 'classica', price: 180, min: 40, combo: 90, theme: 'sage', L: {
+    pt: { title: 'Massagem Clássica', tags: ['Descompressão', 'Pistola relaxante', 'Foco muscular'], desc: 'O alívio direto. Focado em desatar os nós da sua rotina e soltar a musculatura pesada através de toques profundos e vigorosos.',
+      flow: ['Conversa para identificar onde seu corpo acumula mais peso.', 'Trabalho manual intenso para soltar a tensão muscular.', 'Uso da pistola nos pontos críticos.', 'Finalização focada em relaxamento puro.'] },
+    en: { title: 'Classic Massage', tags: ['Decompression', 'Massage gun', 'Muscle focus'], desc: 'Direct relief. Focused on untying the knots of your routine and loosening heavy muscles through deep, vigorous touch.',
+      flow: ['Chat to identify where your body holds stress.', 'Intense manual work to release muscle tension.', 'Gun used on critical points.', 'Finish focused on pure relaxation.'] },
+    es: { title: 'Masaje Clásico', tags: ['Descompresión', 'Pistola relajante', 'Foco muscular'], desc: 'El alivio directo. Enfocado en desatar los nudos de tu rutina y soltar la musculatura pesada mediante toques profundos.',
+      flow: ['Charla para identificar dónde acumulas estrés.', 'Trabajo manual intenso para soltar la tensión.', 'Uso de pistola en puntos críticos.', 'Final enfocado en pura relajación.'] } } },
+  { id: 'sensitiva', price: 220, min: 60, combo: 85, theme: 'amber', L: {
+    pt: { title: 'Sensitiva & Prazer', tags: ['Despertar', 'Toque sutil', 'Finalização tântrica'], desc: 'A transição. Começa quebrando a tensão acumulada e evolui para toques muito mais sutis que despertam o corpo inteiro, mudando a sua energia.',
+      flow: ['Massagem inicial para quebrar a tensão defensiva do corpo.', 'Transição para toques lentos e sutis (tântrica).', 'Foco no despertar sensorial.', 'Finalização direcionada ao prazer.'] },
+    en: { title: 'Sensitive & Pleasure', tags: ['Awakening', 'Subtle touch', 'Tantric finish'], desc: 'The transition. Starts by breaking accumulated tension and evolves into much subtler touches that wake up the whole body, shifting your energy.',
+      flow: ['Initial massage to break the body\'s defensive tension.', 'Transition to slow, subtle touches (tantric).', 'Focus on sensory awakening.', 'Pleasure-directed finish.'] },
+    es: { title: 'Sensitiva & Placer', tags: ['Despertar', 'Toque sutil', 'Final tántrico'], desc: 'La transición. Empieza rompiendo la tensión acumulada y evoluciona a toques mucho más sutiles que despiertan todo el cuerpo.',
+      flow: ['Masaje inicial para romper la tensión defensiva.', 'Transición a toques lentos y sutiles (tántrica).', 'Foco en el despertar sensorial.', 'Final dirigido al placer.'] } } },
+  { id: 'fusion', price: 290, min: 60, combo: 75, theme: 'crimson', L: {
+    pt: { title: 'Sensações com a Barba', tags: ['Contraste', 'Naturista', 'Intensidade'], desc: 'O contraste térmico e tátil. A base relaxante se mistura ao toque áspero e íntimo da barba deslizando pela pele, criando uma experiência sensorial imprevisível.',
+      flow: ['Sessão naturista (ambos à vontade).', 'Relaxamento preparatório.', 'Estímulos contrastantes usando o contato da barba pelo corpo.', 'Finalização intensa.'] },
+    en: { title: 'Beard Sensations', tags: ['Contrast', 'Naturist', 'Intensity'], desc: 'Thermal and tactile contrast. The relaxing base mixes with the rough, intimate touch of the beard gliding over your skin.',
+      flow: ['Naturist session (both completely comfortable).', 'Preparatory relaxation.', 'Contrasting stimuli using beard contact across the body.', 'Intense finish.'] },
+    es: { title: 'Sensaciones con la Barba', tags: ['Contraste', 'Naturista', 'Intensidad'], desc: 'El contraste térmico y táctil. La base relajante se mezcla con el toque áspero e íntimo de la barba deslizándose por la piel.',
+      flow: ['Sesión naturista (ambos cómodos).', 'Relajación preparatoria.', 'Estímulos contrastantes usando el contacto de la barba.', 'Final intenso.'] } } },
+  { id: 'completa', price: 390, min: 60, combo: 60, theme: 'midnight', L: {
+    pt: { title: 'Corpo a Corpo & Interação', tags: ['Sem barreiras', 'Deslizamento', 'Liberdade total'], desc: 'A entrega absoluta. Nenhuma barreira física. Uso meu corpo sobre o seu com gel deslizante, e você tem espaço e liberdade total para retribuir os toques.',
+      flow: ['Alinhamento de limites.', 'Massagem de soltura.', 'Proximidade máxima com gel corpo a corpo.', 'Liberdade para você conduzir e retribuir os toques.', 'Finalização conjunta.'] },
+    en: { title: 'Body to Body & Interaction', tags: ['No barriers', 'Gliding', 'Total freedom'], desc: 'Absolute surrender. No physical barriers. I use my body over yours with gliding gel, and you have complete freedom to touch back.',
+      flow: ['Alignment of boundaries.', 'Release massage.', 'Maximum closeness with body-to-body gel.', 'Freedom for you to lead and return touches.', 'Shared finish.'] },
+    es: { title: 'Cuerpo a Cuerpo & Interacción', tags: ['Sin barreras', 'Deslizamiento', 'Libertad total'], desc: 'La entrega absoluta. Ninguna barrera física. Uso mi cuerpo sobre el tuyo con gel, y tienes libertad total para devolver los toques.',
+      flow: ['Alineación de límites.', 'Masaje de soltura.', 'Cercanía máxima con gel cuerpo a cuerpo.', 'Libertad para que conduzcas y devuelvas toques.', 'Final conjunto.'] } } },
+  { id: 'aparo_solo', price: 130, min: 40, combo: 0, theme: 'slate', L: {
+    pt: { title: 'Apenas Depilação (Máquina)', tags: ['Estética', 'Praticidade'], desc: 'Serviço isolado e direto para quem busca apenas higiene e estética visual. Aparo rápido e limpo em até 3 áreas do corpo.',
+      flow: ['Alinhamento do resultado esperado.', 'Aparo com máquina e pentes específicos.', 'Acabamento final.'] },
+    en: { title: 'Trimming Only (Machine)', tags: ['Grooming', 'Practicality'], desc: 'Direct standalone service for those just looking for hygiene and visual aesthetics. Quick, clean trim on up to 3 body areas.',
+      flow: ['Alignment of the expected result.', 'Trimming with machine and specific guards.', 'Final finishing touches.'] },
+    es: { title: 'Solo Depilación (Máquina)', tags: ['Estética', 'Practicidad'], desc: 'Servicio aislado y directo para quien busca solo higiene y estética. Recorte rápido y limpio en hasta 3 zonas del cuerpo.',
+      flow: ['Alineación del resultado esperado.', 'Recorte con máquina y peines específicos.', 'Acabado final.'] } } },
 ];
 const MASSAGES = PACKAGES.filter((p) => p.combo > 0);
 const PAY_PT: Record<string, string> = { pix: 'PIX', card: 'CARTÃO', cash: 'DINHEIRO' };
 
-/* ==========================================================================
-   DOCUMENTOS LEGAIS (versão vinculante em português)
-   ========================================================================== */
 const P = ({ children }: { children: ReactNode }) => <p className="mb-3">{children}</p>;
 const H = ({ children }: { children: ReactNode }) => <h3 className="font-semibold mt-5 mb-2" style={{ color: 'var(--ink)' }}>{children}</h3>;
 const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
@@ -276,9 +266,6 @@ const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
     <P>Se no futuro ativarmos qualquer ferramenta de análise ou marketing, ela só carregará depois do seu consentimento.</P></>) },
 };
 
-/* ==========================================================================
-   UTILITÁRIOS
-   ========================================================================== */
 const money = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;
 const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
 const store = {
@@ -333,7 +320,6 @@ function Avatar({ className, alt }: { className: string; alt: string }) {
   return <img src={C.AVATAR} alt={alt} onError={() => setFailed(true)} className={`${className} object-cover`} />;
 }
 
-/* Aparece ao entrar na tela (fluxo vertical descendo) */
 function useSeen<E extends HTMLElement>() {
   const ref = useRef<E>(null);
   const [seen, setSeen] = useState(false);
@@ -351,7 +337,6 @@ function Reveal({ children, delay = 0, className = '' }: { children: ReactNode; 
   const { ref, seen } = useSeen<HTMLDivElement>();
   return <div ref={ref} className={`rv ${seen ? 'in' : ''} ${className}`} style={{ transitionDelay: `${delay}ms` }}>{children}</div>;
 }
-/* Título que sobe palavra por palavra, suavemente */
 function Title({ children, as = 'h2', className = '', style, id }: { children: string; as?: 'h1' | 'h2'; className?: string; style?: React.CSSProperties; id?: string }) {
   const { ref, seen } = useSeen<HTMLHeadingElement>();
   const Tag = as;
@@ -366,9 +351,6 @@ const Row = ({ label, value, tone }: { label: string; value: ReactNode; tone?: '
   <div className="flex justify-between gap-4 text-[15.5px]" style={tone ? { color: 'var(--ok)', fontWeight: 700 } : undefined}><span style={tone ? undefined : { color: 'var(--mute)' }}>{label}</span><span className="font-semibold text-right">{value}</span></div>
 );
 
-/* ==========================================================================
-   ESTILO ORIGINAL PERFEITO (MAS COM CORES PREMIUM E SEM BORDAS PESADAS)
-   ========================================================================== */
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Manrope:wght@400..800&display=swap');
 .app{--bg:#F9F8F6;--surf:#FFFFFF;--surf2:#F2EFEB;--ink:#1C1A17;--mute:#746E65;--line:rgba(28,26,23,.08);--acc:#1C1A17;--onacc:#FFFFFF;--ring:rgba(28,26,23,.15);--ok:#1E533F;--warn:#A86B22}
@@ -429,9 +411,6 @@ details.faq[open] summary::after{transform:rotate(45deg)}
 @media (prefers-reduced-motion:reduce){.glow,.dot,.core,.ring,.rise,.loadbar{animation:none!important}.rv,.ttl .w>span{opacity:1!important;transform:none!important;transition:none!important}*{scroll-behavior:auto!important}}
 `;
 
-/* ==========================================================================
-   MODAL ACESSÍVEL
-   ========================================================================== */
 function Modal({ title, onClose, closeLabel, children }: { title: string; onClose: () => void; closeLabel: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
@@ -474,9 +453,6 @@ const StepHead = ({ n, title, done }: { n: number; title: string; done: boolean 
   </div>
 );
 
-/* ==========================================================================
-   APP
-   ========================================================================== */
 interface Booking {
   name: string; locType: 'studio' | 'home'; cep: string; street: string; number: string; comp: string; bairro: string;
   date: Date | null; time: string; req: string; payment: string; packageId: string; addTime: boolean;
@@ -532,7 +508,6 @@ export default function App() {
   const scrollToRef = (r: React.RefObject<HTMLDivElement>, ms = 140) => setTimeout(() => r.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), ms);
   const goBook = () => scrollToRef(bookRef, 30);
 
-  /* carregamento -> boas-vindas (ou direto ao site para quem já entrou) */
   useEffect(() => {
     let reduce = false;
     try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
@@ -661,7 +636,6 @@ export default function App() {
   };
   const pickOffer = (o: Offer) => { vibrate(20); setOffer(o); goBook(); };
 
-  /* Mensagem do WhatsApp: sempre em português (idioma do terapeuta) */
   const whatsappLink = () => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' }) : '';
     let loc: string;
@@ -726,7 +700,7 @@ export default function App() {
     if (!data.payment) { vibrate(50); showToast(t('needPay')); return; }
     if (!ageOk) { vibrate(50); showToast(t('needAge')); return; }
     if (!data.date || !data.time) return;
-    if (hp) { setDone(true); setSentLink('#'); return; } // honeypot anti-robô
+    if (hp) { setDone(true); setSentLink('#'); return; }
     const link = whatsappLink();
     store.set('thaly_returning_final', 'yes');
     setSentLink(link); vibrate([30, 50]);
@@ -759,7 +733,6 @@ export default function App() {
   const chatLink = waLink(t('chatMsg'));
   const nextLabel = nextFree ? `${nextFree.k === 0 ? t('today') : nextFree.k === 1 ? t('tomorrow') : fmt(nextFree.d, { weekday: 'long' })} ${nextFree.t}` : '';
 
-  /* ---------------------------- CARREGAMENTO ---------------------------- */
   if (phase === 'loading') {
     return (
       <div className="app flex flex-col items-center justify-center px-6 text-center" data-theme={theme} role="status" aria-live="polite" aria-busy="true">
@@ -775,7 +748,6 @@ export default function App() {
     );
   }
 
-  /* ---------------------------- SITE ---------------------------- */
   return (
     <div className="app" data-theme={theme} style={{ paddingBottom: showBar ? 96 : 24 }}>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
@@ -800,7 +772,6 @@ export default function App() {
       </header>
 
       <main id="main" className="max-w-3xl mx-auto px-5">
-        {/* ========== BOAS-VINDAS ========== */}
         {phase === 'welcome' && (
           <section className="max-w-xl mx-auto min-h-[84vh] flex flex-col justify-center py-10" aria-labelledby="wt">
             <div className="relative mb-9 rise" style={{ width: 104, height: 104 }}>
@@ -825,7 +796,6 @@ export default function App() {
         )}
 
         {phase === 'site' && (<>
-          {/* ========== HERO ========== */}
           <section className="relative pt-14 pb-16 flex flex-col justify-center" style={{ minHeight: 'calc(100svh - 76px)' }}>
             <div className="glow" aria-hidden="true" />
             <div className="relative">
@@ -847,7 +817,6 @@ export default function App() {
             </div>
           </section>
 
-          {/* ========== CONFIANÇA ========== */}
           <Reveal className="mb-24">
             <ul className="grid sm:grid-cols-3 gap-5" aria-label="Garantias">
               {[['t1', 'lock'], ['t2', 'shield'], ['t3', 'star']].map(([k, ic]) => (
@@ -856,7 +825,6 @@ export default function App() {
             </ul>
           </Reveal>
 
-          {/* ========== VANTAGENS ========== */}
           <section className="mb-28" aria-labelledby="off">
             <Title id="off" className="text-[34px] md:text-[44px] mb-3">{t('offH')}</Title>
             <Reveal delay={120}><p className="mb-8" style={{ color: 'var(--mute)' }}>{t('offS')}</p></Reveal>
@@ -874,7 +842,6 @@ export default function App() {
             </div>
           </section>
 
-          {/* ========== AGENDAMENTO ========== */}
           <section ref={bookRef} className="scroll-mt-20 mb-28" aria-label={t('cta')}>
             {done ? (
               <Reveal>
@@ -893,30 +860,55 @@ export default function App() {
               </Reveal>
             ) : (
               <div className="space-y-24">
-                {/* PASSO 1 */}
                 <div>
                   <StepHead n={1} title={t('s1')} done={chosen} />
                   <div className="grid gap-3 md:grid-cols-2" role="radiogroup" aria-label={t('s1')}>
                     {PACKAGES.map((p, i) => {
                       const on = data.packageId === p.id;
                       const L = p.L[lang];
+                      
+                      const themeColors: Record<PkgTheme, string> = {
+                        sage: '43, 76, 59',
+                        amber: '178, 106, 47',
+                        crimson: '140, 59, 50',
+                        midnight: '61, 43, 76',
+                        slate: '90, 100, 110'
+                      };
+                      const rgb = themeColors[p.theme];
+
                       return (
                         <Reveal key={p.id} delay={(i % 2) * 80} className={on ? 'md:col-span-2' : ''}>
-                          <div className={`opt ${on ? 'on' : ''}`} style={{ padding: 0 }}>
+                          <div 
+                            className="opt" 
+                            style={{ 
+                              padding: 0,
+                              borderColor: on ? `rgb(${rgb})` : undefined,
+                              boxShadow: on ? `0 0 0 1px rgb(${rgb})` : undefined,
+                              backgroundColor: on ? `rgba(${rgb}, 0.04)` : undefined
+                            }}
+                          >
                             <label className="block cursor-pointer" style={{ padding: '18px 20px' }}>
                               <input type="radio" name="package" value={p.id} checked={on} onChange={() => pickPkg(p.id)} className="sr-only" />
                               <span className="flex justify-between items-baseline gap-4">
                                 <span className="serif text-[22px] leading-tight">{L.title}</span>
-                                <span className="serif text-[22px] shrink-0" style={{ color: 'var(--acc)' }}>{money(p.price)}</span>
+                                <span className="serif text-[22px] shrink-0 font-semibold" style={{ color: on ? `rgb(${rgb})` : 'var(--acc)' }}>{money(p.price)}</span>
                               </span>
-                              <span className="block text-sm mt-1" style={{ color: 'var(--mute)' }}>{p.min} {t('min')}, {L.tags.slice(0, 2).join(', ')}</span>
+                              <span className="block text-sm mt-1" style={{ color: 'var(--mute)' }}>{p.min} {t('min')}, {L.tags.slice(0, 2).join(' • ')}</span>
                             </label>
                             {on && (
                               <div className="rise px-5 pb-5" style={{ borderTop: '1px solid var(--line)' }}>
-                                <p className="text-[15.5px] leading-relaxed pt-4 mb-4" style={{ color: 'var(--mute)' }}>{L.desc}</p>
-                                <div className="flex flex-wrap gap-2 mb-4">{L.tags.map((g) => <span key={g} className="text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: 'var(--surf2)' }}>{g}</span>)}</div>
+                                <p className="text-[15.5px] leading-relaxed pt-4 mb-4" style={{ color: 'var(--ink)' }}>{L.desc}</p>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                  {L.tags.map((g) => (
+                                    <span key={g} className="text-xs font-bold px-3 py-1.5 rounded-full" style={{ backgroundColor: `rgba(${rgb}, 0.1)`, color: `rgb(${rgb})` }}>
+                                      {g}
+                                    </span>
+                                  ))}
+                                </div>
                                 <p className="text-sm font-bold mb-2">{t('flowH')}</p>
-                                <ol className="pl-5 list-decimal text-[15.5px] leading-relaxed space-y-1" style={{ color: 'var(--mute)' }}>{L.flow.map((s) => <li key={s}>{s}</li>)}</ol>
+                                <ol className="pl-5 list-decimal text-[15.5px] leading-relaxed space-y-1" style={{ color: 'var(--mute)' }}>
+                                  {L.flow.map((s) => <li key={s}>{s}</li>)}
+                                </ol>
                               </div>
                             )}
                           </div>
@@ -926,7 +918,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* PASSO 2: como levar */}
                 {chosen && !isSolo && (
                   <div ref={s2Ref} className="scroll-mt-24">
                     <Reveal>
@@ -955,7 +946,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* PASSO 3: quando e onde */}
                 {chosen && (
                   <div ref={s3Ref} className="scroll-mt-24">
                     <Reveal>
@@ -1047,7 +1037,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* PASSO 4: resumo e pagamento */}
                 {chosen && reviewed && (
                   <div ref={s4Ref} className="scroll-mt-24">
                     <Reveal>
@@ -1147,7 +1136,6 @@ export default function App() {
             )}
           </section>
 
-          {/* ========== SOBRE ========== */}
           <section className="mb-24" aria-labelledby="ab">
             <Reveal>
               <div className="flex items-center gap-5 mb-5">
@@ -1166,7 +1154,6 @@ export default function App() {
             </Reveal>
           </section>
 
-          {/* ========== DÚVIDAS ========== */}
           <section className="mb-8" aria-labelledby="fq">
             <Title id="fq" className="text-[32px] md:text-[40px] mb-6">{t('faqH')}</Title>
             <Reveal>
