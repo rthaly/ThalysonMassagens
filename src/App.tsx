@@ -632,7 +632,6 @@ export default function App() {
     vibrate(15);
     set({ packageId: id });
     if (id === 'aparo_solo') setOffer('single');
-    scrollToRef(id === 'aparo_solo' ? s3Ref : s2Ref, 200);
   };
   const pickOffer = (o: Offer) => { vibrate(20); setOffer(o); goBook(); };
 
