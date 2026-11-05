@@ -866,12 +866,14 @@ export default function App() {
                       const on = data.packageId === p.id;
                       const L = p.L[lang];
                       
+                     // Dicionário de psicologia das cores adaptativo (Light / Dark)
+                      const isDark = theme === 'dark';
                       const themeColors: Record<PkgTheme, string> = {
-                        sage: '43, 76, 59',
-                        amber: '178, 106, 47',
-                        crimson: '140, 59, 50',
-                        midnight: '61, 43, 76',
-                        slate: '90, 100, 110'
+                        sage: isDark ? '94, 184, 140' : '43, 76, 59',       // Verde (natureza, alívio)
+                        amber: isDark ? '235, 157, 75' : '178, 106, 47',    // Âmbar (energia, transição)
+                        crimson: isDark ? '224, 102, 92' : '140, 59, 50',   // Vermelho (intensidade, calor)
+                        midnight: isDark ? '171, 142, 204' : '61, 43, 76',  // Roxo (intimidade, luxo)
+                        slate: isDark ? '148, 163, 184' : '90, 100, 110'    // Cinza (clínico, estético)
                       };
                       const rgb = themeColors[p.theme];
 
