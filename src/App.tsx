@@ -883,14 +883,13 @@ export default function App() {
                       const L = p.L[lang];
                       const isRec = p.id === recommendedPkgId && !chosen;
                       
-                     // Dicionário de psicologia das cores adaptativo (Light / Dark)
                       const isDark = theme === 'dark';
                       const themeColors: Record<PkgTheme, string> = {
-                        sage: isDark ? '94, 184, 140' : '43, 76, 59',       // Verde (natureza, alívio)
-                        amber: isDark ? '235, 157, 75' : '178, 106, 47',    // Âmbar (energia, transição)
-                        crimson: isDark ? '224, 102, 92' : '140, 59, 50',   // Vermelho (intensidade, calor)
-                        midnight: isDark ? '171, 142, 204' : '61, 43, 76',  // Roxo (intimidade, luxo)
-                        slate: isDark ? '148, 163, 184' : '90, 100, 110'    // Cinza (clínico, estético)
+                        sage: isDark ? '94, 184, 140' : '43, 76, 59',
+                        amber: isDark ? '235, 157, 75' : '178, 106, 47',
+                        crimson: isDark ? '224, 102, 92' : '140, 59, 50',
+                        midnight: isDark ? '171, 142, 204' : '61, 43, 76',
+                        slate: isDark ? '148, 163, 184' : '90, 100, 110'
                       };
                       const rgb = themeColors[p.theme];
 
@@ -1150,4 +1149,113 @@ export default function App() {
                         </div>
 
                         <button type="button" onClick={finish} disabled={!data.payment || !ageOk} className="btn btn-p w-full" style={{ minHeight: 64, fontSize: 17 }}>
-                          {!data
+                          {!data.payment ? t('needPay') : !ageOk ? t('needAge') : t('send')}
+                        </button>
+                      </div>
+                    </Reveal>
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+
+          <section className="mb-24" aria-labelledby="ab">
+            <Reveal>
+              <div className="flex items-center gap-5 mb-5">
+                <Avatar className="w-20 h-20 rounded-full" alt="Thalyson" />
+                <div>
+                  <Title id="ab" className="text-[26px] md:text-[32px]">{t('aboutH')}</Title>
+                  <p className="text-sm font-bold" style={{ color: 'var(--acc)' }}>{t('aboutR')}</p>
+                </div>
+              </div>
+              <p className="leading-relaxed mb-3 max-w-xl" style={{ color: 'var(--mute)' }}>{t('about1')}</p>
+              <p className="flex items-start gap-3 text-[15.5px] leading-relaxed mb-6 max-w-xl"><Icon name="map" size={18} className="mt-1" />{t('about2')}</p>
+              <div className="flex flex-wrap gap-3">
+                <button type="button" onClick={() => setProfileOpen(true)} className="btn btn-p" style={{ minHeight: 50 }}>{t('seeProfile')}</button>
+                <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="btn btn-g" style={{ minHeight: 50 }}><Icon name="instagram" size={18} /> Instagram</a>
+              </div>
+            </Reveal>
+          </section>
+
+          <section className="mb-8" aria-labelledby="fq">
+            <Title id="fq" className="text-[32px] md:text-[40px] mb-6">{t('faqH')}</Title>
+            <Reveal>
+              <div className="card px-6">
+                {[['q1', 'a1'], ['q2', 'a2'], ['q3', 'a3'], ['q4', 'a4']].map(([q, a], i) => (
+                  <details key={q} className="faq" style={i ? { borderTop: '1px solid var(--line)' } : undefined}>
+                    <summary>{t(q)}</summary>
+                    <p className="pb-4 leading-relaxed" style={{ color: 'var(--mute)' }}>{t(a)}</p>
+                  </details>
+                ))}
+              </div>
+            </Reveal>
+          </section>
+        </>)}
+      </main>
+
+      <footer className="max-w-xl mx-auto px-6 mt-16 pt-6 text-xs leading-relaxed text-center" style={{ borderTop: '1px solid var(--line)', color: 'var(--mute)' }}>
+        <nav aria-label="Legal" className="flex flex-wrap justify-center gap-x-2">
+          {([['privacy', 'footPrivacy'], ['terms', 'footTerms'], ['refund', 'footRefund'], ['cookies', 'footCookies']] as [DocId, string][]).map(([id, k]) => (
+            <button key={id} type="button" onClick={() => setDoc(id)} className="underline underline-offset-4 min-h-[44px] px-2">{t(k)}</button>
+          ))}
+        </nav>
+        <p className="mt-2">{SITE_NAME}<br />{LEGAL.RAZAO}, CNPJ {LEGAL.CNPJ}<br />{LEGAL.ENDERECO}<br />{LEGAL.EMAIL}</p>
+        <p className="mt-2 font-semibold">{t('adults')}</p>
+      </footer>
+
+      {showBar && !done && (
+        <div className="bar">
+          <div className="max-w-3xl mx-auto flex items-center gap-4">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs truncate" style={{ color: 'var(--mute)' }}>{chosen ? pt.title : t('fromM')}</p>
+              <p className="serif text-2xl leading-none">{money(chosen ? pkg.price : Math.min(...MASSAGES.map((p) => p.price)))}</p>
+            </div>
+            <button type="button" onClick={goBook} className="btn btn-p">{t('cta')}</button>
+          </div>
+        </div>
+      )}
+
+      {profileOpen && (
+        <Modal title={t('profile')} onClose={() => setProfileOpen(false)} closeLabel={t('close')}>
+          <div className="p-6">
+            <div className="flex items-center gap-5 mb-5">
+              <Avatar className="w-24 h-24 rounded-full" alt="Thalyson" />
+              <div>
+                <h3 className="serif text-2xl leading-tight">{t('aboutH')}</h3>
+                <p className="text-sm font-bold" style={{ color: 'var(--acc)' }}>{t('aboutR')}</p>
+              </div>
+            </div>
+            <p className="leading-relaxed mb-2">{greeting}. {t('about1')}</p>
+            <ul className="my-4 space-y-2">
+              {['pBul1', 'pBul2', 'pBul3'].map((k) => (<li key={k} className="flex items-start gap-3 text-[15.5px] leading-relaxed"><Icon name="check" size={18} className="mt-1" /><span>{t(k)}</span></li>))}
+            </ul>
+            <dl className="rounded-2xl p-5 space-y-4 mb-6" style={{ background: 'var(--surf2)' }}>
+              {([['pHours', t('pHoursV').replace('{a}', fromMin(C.OPEN)).replace('{b}', fromMin(C.LAST_END))], ['pWhere', t('pWhereV')], ['pPay', t('pPayV')], ['pCancel', t('pCancelV')]] as [string, string][]).map(([k, v]) => (
+                <div key={k}><dt className="text-xs font-bold" style={{ color: 'var(--mute)' }}>{t(k)}</dt><dd className="text-[15.5px] font-semibold">{v}</dd></div>
+              ))}
+              <div><dt className="text-xs font-bold" style={{ color: 'var(--mute)' }}>{t('sLoc')}</dt><dd className="text-[15.5px] font-semibold">{t('about2')}</dd></div>
+            </dl>
+            <div className="grid gap-3 mb-6">
+              {phase === 'site' && <button type="button" className="btn btn-p w-full" onClick={() => { setProfileOpen(false); goBook(); }}>{t('cta')}</button>}
+              <a href={chatLink} target="_blank" rel="noopener noreferrer" className="btn btn-g w-full"><Icon name="chat" size={18} /> {t('chatBtn')}</a>
+              <div className="grid grid-cols-2 gap-3">
+                <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="btn btn-g" style={{ minHeight: 50 }}><Icon name="instagram" size={18} /> Instagram</a>
+                <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer" className="btn btn-g" style={{ minHeight: 50 }}><Icon name="star" size={18} /> {t('reviews')}</a>
+              </div>
+            </div>
+            <button type="button" onClick={forgetMe} className="w-full text-sm underline underline-offset-4 min-h-[48px]" style={{ color: 'var(--mute)' }}>{t('pForget')}</button>
+          </div>
+        </Modal>
+      )}
+
+      {doc && (
+        <Modal title={DOCS[doc].title} onClose={() => setDoc(null)} closeLabel={t('close')}>
+          <div className="p-5 text-sm leading-relaxed" style={{ color: 'var(--mute)' }} tabIndex={0}>
+            {t('legalNote') && <p className="mb-3 font-semibold" style={{ color: 'var(--ink)' }}>{t('legalNote')}</p>}
+            {DOCS[doc].body}
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
