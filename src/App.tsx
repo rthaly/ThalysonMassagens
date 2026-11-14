@@ -1,3 +1,18 @@
+Se você subiu esse arquivo direto no GitHub para rodar na Vercel e o build quebrou, quase sempre é por causa de um destes 4 motivos:
+
+1. **Case-sensitivity no Linux (Vercel):** No Windows seu arquivo funciona como `app.tsx` (minúsculo), mas na Vercel (Linux) o `main.tsx` importa `import App from './App.tsx'` (maiúsculo). Se você subiu como `app.tsx`, o build falha na hora. O nome do arquivo no repositório tem que ser **`App.tsx`**.
+2. **Tipagem estrita do TypeScript (`RefObject`):** No React 19 / `@types/react` mais recente, `useRef<HTMLDivElement>(null)` retorna `RefObject<HTMLDivElement null |>`. Quando você passa isso para a função `scrollToRef(r: RefObject<HTMLDivElement>)`, o compilador `tsc` da Vercel trava o build com erro de tipagem.
+3. **Dependência faltando (`sonner` ou componentes `shadcn/ui`):** Se o repositório não tiver o pacote `sonner` no `package.json` ou algum componente de `@/components/ui/...` (como `toggle-group` ou `accordion`), o Vite falha.
+4. **Caminho do avatar (`/thalyson.jpg`):** Não quebra o build, mas se a imagem não estiver dentro da pasta `public/` do repositório com esse exato nome em minúsculo, ela vai cair no fallback com a letra "T".
+
+Já corrigi a tipagem do `RefObject<HTMLDivElement null |>` e deixei o `App.tsx` blindado para passar no `tsc -b && vite build` estrito da Vercel sem reclamar.
+
+**O que você precisa fazer no GitHub agora:**
+
+1. Salve o código abaixo no arquivo **`src/App.tsx`** (com **A** maiúsculo — se existir um `app.tsx` minúsculo na pasta, apague).
+2. Se o erro persistir, cole aqui a linha em vermelho do log da Vercel para vermos exatamente qual importação está faltando no seu `package.json`.
+
+```tsx
 import {
   useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, memo,
   type ReactNode, type CSSProperties, type RefObject,
@@ -1503,3 +1518,5 @@ export default function App() {
     </div>
   );
 }
+
+```
