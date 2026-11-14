@@ -609,13 +609,14 @@ export default function App() {
   const narrStopRef = useRef(narr.stop);
   narrStopRef.current = narr.stop;
 
-  const bookRef = useRef<HTMLDivElement>(null);
-  const s3Ref = useRef<HTMLDivElement>(null);
-  const s4Ref = useRef<HTMLDivElement>(null);
-  const numberRef = useRef<HTMLInputElement>(null);
+  const bookRef = useRef<HTMLDivElement | null>(null);
+  const s3Ref = useRef<HTMLDivElement | null>(null);
+  const s4Ref = useRef<HTMLDivElement | null>(null);
+  const numberRef = useRef<HTMLInputElement | null>(null);
 
   const showToast = (m: string) => { toast(m); };
-  const scrollToRef = (r: RefObject<HTMLDivElement>, ms = 140) => setTimeout(() => r.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), ms);
+  const scrollToRef = (r: RefObject<HTMLDivElement | null>, ms = 140) =>
+    setTimeout(() => r.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), ms);
   const goBook = () => scrollToRef(bookRef, 30);
 
   useLayoutEffect(() => {
