@@ -16,6 +16,8 @@ const C = {
   PIX_KEY: '62922530000144',
   INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
+  // ADICIONE O LINK DO MERCADO PAGO AQUI (Exemplo abaixo)
+  CARD_PAYMENT_LINK: 'https://mpago.la/SEU_LINK_AQUI',
   AVATAR: '/thalyson.jpg',
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
   SIGNAL: 40,
@@ -80,7 +82,7 @@ const T: Record<Lang, Record<string, string>> = {
     sigA: 'Para confirmar o horário, envie um sinal de', sigB: 'via Pix. O restante é acertado após a sessão.', copyPix: 'Copiar chave Pix (CNPJ)', pixCopied: 'Chave Pix (CNPJ) copiada',
     send: 'Enviar pelo WhatsApp', needPay: 'Escolha a forma de pagamento', needAge: 'Confirme que você tem 18 anos ou mais',
     doneH: 'Tudo pronto!', doneP: 'Sua solicitação foi preparada. O horário só está confirmado depois da resposta pelo WhatsApp. Se o WhatsApp não abriu, use o botão abaixo.',
-    doneSig: 'Envie o comprovante do sinal na conversa para confirmar.', resend: 'Reenviar mensagem', addCal: 'Adicionar à agenda', restart: 'Voltar ao início',
+    doneSig: 'Envie o comprovante do sinal na conversa para confirmar.', resend: 'Reenviar mensagem', addCal: 'Adicionar ao Google Calendar', restart: 'Voltar ao início',
     chatQ: 'Prefere tirar uma dúvida antes?', chatBtn: 'Falar no WhatsApp', chatMsg: 'Oi Thalyson! Vim pelo site Relaxar hoje com Thalyson e tenho uma dúvida.',
     aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Terapeuta masculino', about1: 'Meu trabalho é direto e focado no corpo masculino: usar o toque para aliviar o peso e a tensão da sua rotina.',
     about2: 'Atendo em uma suíte no Centro Histórico de SP, próximo ao Metrô Anhangabaú.', seeProfile: 'Ver perfil completo',
@@ -128,7 +130,7 @@ const T: Record<Lang, Record<string, string>> = {
     sigA: 'To confirm the time, send a deposit of', sigB: 'via Pix. The rest is settled after the session.', copyPix: 'Copy Pix key (CNPJ)', pixCopied: 'Pix key (CNPJ) copied',
     send: 'Send on WhatsApp', needPay: 'Choose a payment method', needAge: 'Confirm you are 18 or older',
     doneH: 'All set!', doneP: 'Your request is ready. The time is only confirmed after the reply on WhatsApp. If WhatsApp did not open, use the button below.',
-    doneSig: 'Send the deposit receipt in the chat to confirm.', resend: 'Resend message', addCal: 'Add to calendar', restart: 'Back to start',
+    doneSig: 'Send the deposit receipt in the chat to confirm.', resend: 'Resend message', addCal: 'Add to Google Calendar', restart: 'Back to start',
     chatQ: 'Prefer to ask something first?', chatBtn: 'Chat on WhatsApp', chatMsg: 'Hi Thalyson! I came from the Relaxar hoje com Thalyson site and have a question.',
     aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Male therapist', about1: 'My work is direct and focused on the male body: using touch to relieve the weight and tension of your routine.',
     about2: 'I work from a suite in downtown São Paulo, close to the Anhangabaú metro station.', seeProfile: 'See full profile',
@@ -176,7 +178,7 @@ const T: Record<Lang, Record<string, string>> = {
     sigA: 'Para confirmar el horario, envía una señal de', sigB: 'por Pix. El resto se paga después de la sesión.', copyPix: 'Copiar clave Pix (CNPJ)', pixCopied: 'Clave Pix (CNPJ) copiada',
     send: 'Enviar por WhatsApp', needPay: 'Elige la forma de pago', needAge: 'Confirma que tienes 18 años o más',
     doneH: '¡Todo listo!', doneP: 'Tu solicitud está preparada. El horario solo se confirma tras la respuesta por WhatsApp. Si no se abrió, usa el botón de abajo.',
-    doneSig: 'Envía el comprobante de la señal en el chat para confirmar.', resend: 'Reenviar mensaje', addCal: 'Añadir al calendario', restart: 'Volver al inicio',
+    doneSig: 'Envía el comprobante de la señal en el chat para confirmar.', resend: 'Reenviar mensaje', addCal: 'Añadir a Google Calendar', restart: 'Volver al inicio',
     chatQ: '¿Prefieres preguntar algo antes?', chatBtn: 'Hablar por WhatsApp', chatMsg: '¡Hola Thalyson! Vengo del sitio Relaxar hoje com Thalyson y tengo una duda.',
     aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Terapeuta masculino', about1: 'Mi trabajo es directo y enfocado en el cuerpo masculino: usar el tacto para aliviar el peso y la tensión de tu rutina.',
     about2: 'Atiendo en una suite en el Centro Histórico de SP, cerca del metro Anhangabaú.', seeProfile: 'Ver perfil completo',
@@ -552,11 +554,11 @@ export default function App() {
 
   // Smart Recommendation Logic
   const recommendedPkgId = useMemo(() => {
-    const day = now.getDay(); // 0=Sun, 1=Mon...
+    const day = now.getDay();
     const hour = now.getHours();
-    if (day === 1 || (hour >= 9 && hour < 14)) return 'classica'; // Monday or Morning: decompression
-    if (day === 5 || day === 6 || hour >= 20) return 'sensitiva'; // Friday/Sat/Night: relax/desire
-    return 'fusion'; // Mid-week: contrast
+    if (day === 1 || (hour >= 9 && hour < 14)) return 'classica';
+    if (day === 5 || day === 6 || hour >= 20) return 'sensitiva';
+    return 'fusion';
   }, [now]);
 
   const invoice = useMemo(() => {
@@ -689,18 +691,17 @@ export default function App() {
     return waLink(m);
   };
 
-  const downloadICS = () => {
-    if (!data.date || !data.time) return;
-    const f = (d: Date, mm: number) => `${dateKey(d).replace(/-/g, '')}T${fromMin(mm).replace(':', '')}00`;
-    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-    const s = toMin(data.time);
-    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Thalyson//Agenda//PT', 'BEGIN:VEVENT', `UID:${Date.now()}@thalyson`, `DTSTAMP:${stamp}`,
-      `DTSTART:${f(data.date, s)}`, `DTEND:${f(data.date, s + invoice.dur)}`, `SUMMARY:${pkg.L.pt.title} - Thalyson`,
-      `DESCRIPTION:Sinal de ${money(invoice.sinal)} via Pix para confirmar.`, 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
-    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
-    const a = document.createElement('a'); a.href = url; a.download = 'sessao.ics';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  // NOVO: Link do Google Calendar
+  const googleCalendarLink = () => {
+    if (!data.date || !data.time) return '';
+    const startDateTime = `${dateKey(data.date).replace(/-/g, '')}T${data.time.replace(':', '')}00`;
+    const endMinutes = toMin(data.time) + invoice.dur;
+    const endDateTime = `${dateKey(data.date).replace(/-/g, '')}T${fromMin(endMinutes).replace(':', '')}00`;
+    const text = encodeURIComponent(`Massagem: ${pkg.L.pt.title} - Thalyson`);
+    const details = encodeURIComponent(`Sinal de ${money(invoice.sinal)} via Pix. Restante: ${money(invoice.rest)}.`);
+    const location = encodeURIComponent(isHome ? `${data.street}, ${data.number} - ${data.bairro}, São Paulo` : 'Bela Vista, São Paulo - SP');
+    
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${startDateTime}/${endDateTime}&details=${details}&location=${location}&ctz=America/Sao_Paulo`;
   };
 
   const goReview = () => {
@@ -718,8 +719,11 @@ export default function App() {
     const link = whatsappLink();
     store.set('thaly_returning_final', 'yes');
     setSentLink(link); vibrate([30, 50]);
-    const w = window.open(link, '_blank', 'noopener,noreferrer');
-    if (!w) window.location.href = link;
+    
+    // CORREÇÃO IOS: window.location.href é mais confiável que window.open
+    // Se usar window.open no iOS, ele pode bloquear e perder a mensagem
+    window.location.href = link;
+    
     setDone(true);
     scrollToRef(bookRef, 60);
   };
@@ -868,7 +872,8 @@ export default function App() {
                   <div className="space-y-3 max-w-xs mx-auto">
                     <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer" className="btn btn-p w-full">{t('resend')}</a>
                     <button type="button" onClick={copyPix} className="btn btn-g w-full"><Icon name="copy" size={16} /> {t('copyPix')}</button>
-                    <button type="button" onClick={downloadICS} className="btn btn-g w-full"><Icon name="cal" size={16} /> {t('addCal')}</button>
+                    {/* BOTÃO DO GOOGLE CALENDAR */}
+                    <a href={googleCalendarLink()} target="_blank" rel="noopener noreferrer" className="btn btn-g w-full"><Icon name="cal" size={16} /> {t('addCal')}</a>
                     <button type="button" onClick={restart} className="w-full min-h-[48px] text-sm underline underline-offset-4" style={{ color: 'var(--mute)' }}>{t('restart')}</button>
                   </div>
                 </div>
@@ -969,38 +974,7 @@ export default function App() {
                     <Reveal>
                       <StepHead n={isSolo ? 2 : 3} title={t('s3')} done={step3Valid} />
                       <div className="space-y-9">
-                        <div>
-                          <label htmlFor="nm" className="lbl">{t('name')}</label>
-                          <input id="nm" autoComplete="given-name" type="text" value={data.name} maxLength={60} placeholder={t('namePh')} onChange={(e) => set({ name: e.target.value })} className="inp" aria-invalid={touched && !!errors.name} />
-                          {touched && errors.name && <p className="err" role="alert">{errors.name}</p>}
-                          <input type="text" name="website" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
-                        </div>
-
-                        <fieldset className="min-w-0">
-                          <legend className="lbl">{t('place')}</legend>
-                          <div className="grid grid-cols-2 gap-3">
-                            {([['studio', t('studio')], ['home', t('home')]] as const).map(([id, label]) => (
-                              <label key={id} className={`chip px-3 ${data.locType === id ? 'on' : ''}`}>
-                                <input type="radio" name="location" value={id} checked={data.locType === id} onChange={() => set({ locType: id })} className="sr-only" />{label}
-                              </label>
-                            ))}
-                          </div>
-                          {isHome ? <p className="text-sm mt-3 leading-relaxed" style={{ color: 'var(--mute)' }}>{t('peakNote')}</p> : <p className="text-sm mt-3 leading-relaxed" style={{ color: 'var(--mute)' }}>{t('studioInfo')}</p>}
-                        </fieldset>
-
-                        {isHome && (
-                          <div className="space-y-3 rise">
-                            <input type="tel" inputMode="numeric" autoComplete="postal-code" maxLength={9} placeholder={t('cep')} aria-label="CEP" value={data.cep} onChange={(e) => handleCep(e.target.value)} className="inp" />
-                            <input type="text" autoComplete="street-address" placeholder={t('street')} aria-label={t('street')} maxLength={100} value={data.street} onChange={(e) => set({ street: e.target.value })} className="inp" />
-                            <div className="flex gap-3">
-                              <input ref={numberRef} type="text" inputMode="numeric" placeholder={t('number')} aria-label={t('number')} maxLength={10} value={data.number} onChange={(e) => set({ number: e.target.value })} className="inp" style={{ width: '34%' }} />
-                              <input type="text" placeholder={t('comp')} aria-label={t('comp')} maxLength={40} value={data.comp} onChange={(e) => set({ comp: e.target.value })} className="inp" style={{ width: '66%' }} />
-                            </div>
-                            <input type="text" placeholder={t('bairro')} aria-label={t('bairro')} maxLength={60} value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} className="inp" />
-                            {touched && errors.address && <p className="err" role="alert">{errors.address}</p>}
-                          </div>
-                        )}
-
+                        {/* NOVO FLUXO: PRIMEIRO DATA E HORA, DEPOIS NOME */}
                         <fieldset className="min-w-0">
                           <legend className="lbl">{t('date')}</legend>
                           <div className="flex gap-3 overflow-x-auto py-1 hide-sb -mx-5 px-5 snap-x">
@@ -1052,6 +1026,38 @@ export default function App() {
                         )}
 
                         <div>
+                          <label htmlFor="nm" className="lbl">{t('name')}</label>
+                          <input id="nm" autoComplete="given-name" type="text" value={data.name} maxLength={60} placeholder={t('namePh')} onChange={(e) => set({ name: e.target.value })} className="inp" aria-invalid={touched && !!errors.name} />
+                          {touched && errors.name && <p className="err" role="alert">{errors.name}</p>}
+                          <input type="text" name="website" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
+                        </div>
+
+                        <fieldset className="min-w-0">
+                          <legend className="lbl">{t('place')}</legend>
+                          <div className="grid grid-cols-2 gap-3">
+                            {([['studio', t('studio')], ['home', t('home')]] as const).map(([id, label]) => (
+                              <label key={id} className={`chip px-3 ${data.locType === id ? 'on' : ''}`}>
+                                <input type="radio" name="location" value={id} checked={data.locType === id} onChange={() => set({ locType: id })} className="sr-only" />{label}
+                              </label>
+                            ))}
+                          </div>
+                          {isHome ? <p className="text-sm mt-3 leading-relaxed" style={{ color: 'var(--mute)' }}>{t('peakNote')}</p> : <p className="text-sm mt-3 leading-relaxed" style={{ color: 'var(--mute)' }}>{t('studioInfo')}</p>}
+                        </fieldset>
+
+                        {isHome && (
+                          <div className="space-y-3 rise">
+                            <input type="tel" inputMode="numeric" autoComplete="postal-code" maxLength={9} placeholder={t('cep')} aria-label="CEP" value={data.cep} onChange={(e) => handleCep(e.target.value)} className="inp" />
+                            <input type="text" autoComplete="street-address" placeholder={t('street')} aria-label={t('street')} maxLength={100} value={data.street} onChange={(e) => set({ street: e.target.value })} className="inp" />
+                            <div className="flex gap-3">
+                              <input ref={numberRef} type="text" inputMode="numeric" placeholder={t('number')} aria-label={t('number')} maxLength={10} value={data.number} onChange={(e) => set({ number: e.target.value })} className="inp" style={{ width: '34%' }} />
+                              <input type="text" placeholder={t('comp')} aria-label={t('comp')} maxLength={40} value={data.comp} onChange={(e) => set({ comp: e.target.value })} className="inp" style={{ width: '66%' }} />
+                            </div>
+                            <input type="text" placeholder={t('bairro')} aria-label={t('bairro')} maxLength={60} value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} className="inp" />
+                            {touched && errors.address && <p className="err" role="alert">{errors.address}</p>}
+                          </div>
+                        )}
+
+                        <div>
                           <button type="button" className="btn btn-p w-full" style={{ minHeight: 60 }} onClick={goReview}>{t('cont')}</button>
                           <p className="text-sm text-center mt-4" style={{ color: 'var(--mute)' }}>{t('chatQ')} <a href={chatLink} target="_blank" rel="noopener noreferrer" className="link">{t('chatBtn')}</a></p>
                         </div>
@@ -1081,7 +1087,13 @@ export default function App() {
                               </label>
                             ))}
                           </div>
-                          {data.payment === 'card' && <p className="text-sm mt-3" style={{ color: 'var(--mute)' }}>{t('cardNote')}</p>}
+                          {/* NOVO: BOTÃO DE LINK DO MERCADO PAGO NO CARTÃO */}
+                          {data.payment === 'card' && (
+                            <div className="mt-4 rise">
+                              <p className="text-sm mb-3" style={{ color: 'var(--mute)' }}>{t('cardNote')}</p>
+                              <a href={C.CARD_PAYMENT_LINK} target="_blank" rel="noopener noreferrer" className="btn btn-g w-full">Pagar com cartão de crédito</a>
+                            </div>
+                          )}
                         </fieldset>
 
                         <details className="faq card px-6">
