@@ -1,92 +1,116 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
-  ChevronLeft, ChevronRight, Check, X, HelpCircle, Clock,
-  Shield, Star, Instagram, MessageCircle,
-  Bell, Lock, Eye, EyeOff,
-  LogOut, Copy, Trash2, CreditCard, Banknote, QrCode, Edit3, Info, Receipt, CheckCircle2,
+  Check, Star, ArrowRight, Bed, Home, MessageCircle,
+  Ticket, Lock, Flame, Wind, Crown, Shield, MapPin, Building,
+  CreditCard, Banknote, QrCode, X,
+  HelpCircle, Instagram, Calendar as CalendarIcon, Clock, AlertTriangle, Copy, Info,
   Play, Pause, Square, Volume2
 } from 'lucide-react';
 
-// --- ESTILOS GLOBAIS (IOS 2026 GOLD MASTER - DARK ELEGANCE) ---
-const globalStyles = `
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { font-size: 16px; background-color: #000000; }
-body { 
-  overscroll-behavior-y: none; 
-  touch-action: manipulation; 
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif; 
-  letter-spacing: -0.015em;
-  color: #fff;
-  background: #000;
-}
-::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-input, select { user-select: text; font-size: 17px; outline: none; appearance: none; }
-button { touch-action: manipulation; user-select: none; -webkit-touch-callout: none; }
+// ==================================================================================
+// 1. CONFIGURAÇÕES & DADOS (FIXOS)
+// ==================================================================================
 
-/* Background Atmosférico - Ajustado para tom mais sóbrio/masculino */
-.aurora-bg {
-  background: 
-    radial-gradient(140% 100% at 50% 0%, rgba(20, 20, 25, 1), transparent 50%),
-    radial-gradient(100% 100% at 50% 100%, rgba(10, 80, 180, 0.08), transparent 60%),
-    #000000;
-  background-attachment: fixed;
-  background-size: cover;
-}
+const CONFIG = {
+  PHONE: "5517991360413",
+  INSTAGRAM: "thalymassagens",
+  PIX_KEY: "62922530000144",
+  FIRST_COUPON_VAL: 15.00,
 
-/* Glassmorphism Refinado */
-.ios-card { 
-  background: rgba(28, 28, 30, 0.75); 
-  backdrop-filter: blur(40px) saturate(180%); 
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08); 
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-}
+  PRICES: {
+    UPGRADE_PCT: 0.5,
+    TOUCH: 73,
+    AROMA: 5,
+  },
 
-.ios-header { 
-  background: rgba(0, 0, 0, 0.90); 
-  backdrop-filter: blur(20px); 
-  border-bottom: 0.5px solid rgba(255,255,255,0.1); 
-}
+  XP_THRESHOLDS: { VIP: 150, ALPHA: 300 },
+  URLS: { WHATSAPP_API: "https://api.whatsapp.com/send" }
+};
 
-/* Botões Interativos */
-.ios-btn { 
-  background: rgba(255, 255, 255, 0.06); 
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); 
-}
-.ios-btn:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.12); }
+// LOCAIS SP (TAXAS IDA+VOLTA JÁ CALCULADAS)
+const LOCATIONS = [
+  { id: 'bela_vista', name: 'Bela Vista', fee: 0, zone: 'Base' },
+  { id: 'augusta', name: 'Augusta / Centro', fee: 15.00, zone: 'Centro' },
+  { id: 'paulista', name: 'Paulista / Jardins', fee: 20.00, zone: 'Nobre' },
+  { id: 'higienopolis', name: 'Higienópolis', fee: 25.00, zone: 'Centro' },
+  { id: 'pinheiros', name: 'Pinheiros / V. Madalena', fee: 30.00, zone: 'Oeste' },
+  { id: 'itaim', name: 'Itaim / V. Olímpia', fee: 35.00, zone: 'Sul' },
+  { id: 'moema', name: 'Moema / Ibirapuera', fee: 35.00, zone: 'Sul' },
+  { id: 'mariana', name: 'Vila Mariana', fee: 30.00, zone: 'Sul' },
+  { id: 'perdizes', name: 'Perdizes / Barra Funda', fee: 30.00, zone: 'Oeste' },
+  { id: 'brooklin', name: 'Brooklin / Campo Belo', fee: 40.00, zone: 'Sul' },
+  { id: 'tatuape', name: 'Tatuapé / Mooca', fee: 50.00, zone: 'Leste' },
+  { id: 'morumbi', name: 'Morumbi', fee: 60.00, zone: 'Sul' },
+  { id: 'outra', name: 'Outro Bairro (Consultar)', fee: 0, zone: '?' },
+];
 
-.ios-btn-primary {
-  background: linear-gradient(180deg, #0A84FF 0%, #0056B3 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-}
-.ios-btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+const SERVICES = [
+  {
+    id: 'completa',
+    name: 'Experiência Completa',
+    short: 'Premium + Finalização',
+    desc: 'Massagista de Cueca. O protocolo premium. Inicia de bruços soltando a musculatura, vira de frente com creme e óleos, toque corpo a corpo e finalização manual intensa.',
+    duration: 60,
+    price: 155,
+    badge: 'MAIS PEDIDA 🔥',
+    xp: 100
+  },
+  {
+    id: 'relax',
+    name: 'Massagem Relaxante',
+    short: 'Tira Dores e Tensão',
+    desc: 'Foco 100% terapêutico e relaxante. Ideal para remover dores lombares, pernas cansadas. Toques suaves para relaxar e tirar o stress, sem toques íntimos.',
+    duration: 60,
+    price: 125,
+    badge: null,
+    xp: 50
+  },
+];
 
-.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+const TIME_SLOTS = [
+  '09:00', '10:00', '11:00', '12:00', '13:00', '14:00',
+  '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
+];
 
-/* Toast Customizado */
-.toast-enter { animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-@keyframes toastIn { from { opacity: 0; transform: translateY(-20px) translateX(-50%); } to { opacity: 1; transform: translateY(0) translateX(-50%); } }
+const REVIEWS_DB = [
+  { t: "O Thalyson tem uma energia surreal. A massagem foi perfeita.", a: "Tiago", s: 5 },
+  { t: "O toque dele vicia. A finalização foi absurda.", a: "Anônimo", s: 5 },
+  { t: "Fui pra relaxar e saí de perna bamba. A massagem tântrica é real.", a: "Pedro H.", s: 5 },
+  { t: "Mão firme, pegada de macho. O creme faz toda a diferença.", a: "Curioso SP", s: 5 },
+  { t: "Paguei o extra pra tocar e valeu cada centavo.", a: "M. (Jardins)", s: 5 },
+  { t: "Sou casado, tinha receio. O sigilo foi absoluto.", a: "Empresário", s: 5 },
+  { t: "O upgrade de 30 minutos vale a pena.", a: "Roberto", s: 5 },
+  { t: "Visual nota 1000. Profissionalismo raro.", a: "Carlos A.", s: 5 },
+  { t: "Ambiente relaxante demais.", a: "Gustavo", s: 5 },
+  { t: "Gostei bastante, me senti bem relaxado depois.", a: "Alan SP", s: 5 },
+  { t: "O corpo a corpo é quente de verdade.", a: "J.P.", s: 5 },
+  { t: "Atendimento no hotel foi super rápido e discreto.", a: "Turista RJ", s: 5 },
+  { t: "Cara bonito, limpo e com pegada. O pacote completo.", a: "Anônimo", s: 5 },
+  { t: "Sensação de liberdade total. O toque extra é obrigatório.", a: "Caio", s: 5 },
+  { t: "Extremamente educado e com papo bom.", a: "Renan", s: 5 },
+];
 
-/* Inputs Customizados */
-.custom-input {
-  background: rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.1);
-  transition: all 0.3s ease;
-}
-.custom-input:focus { border-color: #0A84FF; box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.2); }
+const LIVE_NOTIFICATIONS = [
+  "🔥 João agendou agora", "👀 3 pessoas vendo a agenda", "📅 Sexta-feira quase cheia",
+  "⭐ Pedro avaliou com 5 estrelas", "✅ Matheus confirmou", "💎 Murilo virou VIP",
+  "🏠 Atendimento Hotel iniciado", "🚀 Bruno fechou pacote completo", "😈 Felipe adicionou interação",
+  "🍃 Gustavo pediu Aromaterapia", "💳 Pix recebido", "🏳️‍🌈 Novo cliente cadastrado",
+  "🚗 Thalyson a caminho", "✨ Avaliação 5 estrelas", "📍 Atendimento Bela Vista",
+  "🎁 Cupom resgatado", "🔒 Dados seguros", "🛁 Banho tomado, pronto",
+  "⚡ Ricardo agendou", "🏩 Chegando no Motel"
+];
 
-button:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
-`;
+const LOCATION_TYPES = [
+  { id: 'home', label: 'Casa', icon: Home },
+  { id: 'apto', label: 'Apto', icon: Building },
+  { id: 'hotel', label: 'Hotel', icon: Bed },
+  { id: 'motel', label: 'Motel', icon: Flame },
+];
 
-const IconBack = () => <ChevronLeft className="w-6 h-6 text-[#0A84FF]" />;
+// ==================================================================================
+// 2. MOTOR DE VOZ MASCULINA ENVOLVENTE
+// ==================================================================================
 
-const CARD_RATES = [0, 0.0499, 0.0600, 0.0700, 0.0800, 0.0900, 0.1000, 0.1050, 0.1100, 0.1150, 0.1190, 0.1210, 0.1238];
-
-// --- MOTOR DE VOZ MASCULINA ENVOLVENTE ---
 const MALE_VOICE_RE = /(daniel|felipe|ant[oô]nio|ricardo|thiago|donato|carlos|david|jorge|diego|pablo|raul|enrique|george|\bmark\b|\bfred\b|\balex\b|\bmale\b|masculin|homem)/i;
 const FEMALE_VOICE_RE = /(female|feminin|mulher|francisca|luciana|maria|fernanda|joana|camila|vit[oó]ria|paulina|m[oó]nica|helena|laura|samantha|zira|susan|thalita)/i;
 
@@ -95,14 +119,13 @@ function selectSeductiveMaleVoice(voices: SpeechSynthesisVoice[]) {
   const malePt = ptVoices.find((v) => MALE_VOICE_RE.test(v.name) && !FEMALE_VOICE_RE.test(v.name));
   if (malePt) return { voice: malePt, isNativeMale: true };
 
-  // Evita vozes femininas explícitas caso o aparelho só tenha uma voz padrão
   const nonFemalePt = ptVoices.find((v) => !FEMALE_VOICE_RE.test(v.name));
   if (nonFemalePt) return { voice: nonFemalePt, isNativeMale: false };
 
   return { voice: ptVoices[0] || voices[0] || null, isNativeMale: false };
 }
 
-function useSeductiveVoice(onFeedback?: (msg: string) => void) {
+function useSeductiveVoice() {
   const supported =
     typeof window !== 'undefined' &&
     'speechSynthesis' in window &&
@@ -155,7 +178,6 @@ function useSeductiveVoice(onFeedback?: (msg: string) => void) {
       utterance.lang = 'pt-BR';
     }
 
-    // Ritmo cadenciado e tom mais grave para soar envolvente e íntimo
     utterance.rate = 0.85;
     utterance.pitch = isNativeMale ? 0.86 : 0.72;
     utterance.volume = 1;
@@ -163,7 +185,6 @@ function useSeductiveVoice(onFeedback?: (msg: string) => void) {
     utterance.onend = () => {
       if (token !== tokenRef.current) return;
       indexRef.current = idx + 1;
-      // Pequena pausa dramática entre as frases
       setTimeout(() => run(token), 180);
     };
 
@@ -178,15 +199,14 @@ function useSeductiveVoice(onFeedback?: (msg: string) => void) {
   }, []);
 
   const play = useCallback((id: string, text: string) => {
-    if (!supported) {
-      onFeedback?.('Seu navegador não suporta áudio.');
-      return;
-    }
+    if (!supported) return;
     const token = ++tokenRef.current;
     window.speechSynthesis.cancel();
 
-    // Limpa emojis para a voz ler de forma fluida e natural
-    const cleanText = text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').replace(/\s+/g, ' ').trim();
+    const cleanText = text
+      .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '')
+      .replace(/\s+/g, ' ')
+      .trim();
     const parts = (cleanText.match(/[^.!?]+[.!?]*/g) || [cleanText]).map((s) => s.trim()).filter(Boolean);
 
     chunksRef.current = parts;
@@ -194,7 +214,7 @@ function useSeductiveVoice(onFeedback?: (msg: string) => void) {
     setActiveId(id);
     setStatus('playing');
     setTimeout(() => speakNextChunk(token), 80);
-  }, [supported, speakNextChunk, onFeedback]);
+  }, [supported, speakNextChunk]);
 
   const pause = useCallback(() => {
     if (!supported) return;
@@ -220,1115 +240,833 @@ function useSeductiveVoice(onFeedback?: (msg: string) => void) {
     }
   }, [activeId, status, pause, resume, play]);
 
-  return { activeId, status, toggle, pause, resume, stop };
+  return { activeId, status, toggle, stop };
 }
 
-// --- DADOS ATUALIZADOS PARA PÚBLICO MASCULINO 30+ ---
-const services = [
-  { 
-    id: 'masculina', name: 'Massagem Masculina', type: 'sensual',
-    description: 'Para o homem moderno que precisa desligar. Um momento de conexão, toque envolvente e alívio de tensões acumuladas. Sinta-se vivo novamente.', 
-    labelDuration: '60 min', minutes: 60, basePrice: 110, 
-    highlight: "🔥 PREFERIDA DELES", ratings: 5.0, reviews: 310, 
-    details: ["🔥 Toque firme e envolvente", "🧠 Desligue a mente", "🍑 Atenção glúteos e pernas", "💦 Finalização Manual Inclusa", "🔒 Totalmente Sigiloso"] 
-  },
-  { 
-    id: 'relaxante', name: 'Relaxante Premium', type: 'relax',
-    description: 'A carga está pesada? Essa sessão é para zerar o estresse do trabalho e da rotina. Foco total em dores nas costas e ombros.', 
-    labelDuration: '60 min', minutes: 60, basePrice: 70, 
-    ratings: 4.9, reviews: 142, 
-    details: ["💆‍♂️ Foco Ombros e Lombar", "🛌 Ambiente Climatizado", "🎧 Música Zen", "🙌 Mãos firmes", "🚫 Sem toques íntimos"] 
-  },
-];
+// ==================================================================================
+// 3. ESTILOS GLOBAIS (PREMIUM & LIGHTWEIGHT)
+// ==================================================================================
 
-const locations = [
-  { id: 'santa-fe', label: 'Santa Fé do Sul', sublabel: 'Vou até sua residência', fee: 40, allowsTableChoice: true, estimatedTravelTime: '15-20 min' },
-  { id: 'outras-cidades', label: 'Cidades Vizinhas', sublabel: 'Jales, Três Fronteiras, etc.', fee: null, allowsTableChoice: false, estimatedTravelTime: 'A combinar' },
-  { 
-    id: 'motel', 
-    label: 'Suíte Privada (Motel)', 
-    sublabel: 'Encontro discreto na suíte', 
-    fee: 75,
-    allowsTableChoice: false, 
-    estimatedTravelTime: '10-15 min' 
-  },
-];
+const styles = `
+:root { --primary: #0A84FF; --bg: #09090b; --card: #18181b; --border: #27272a; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
+html, body { background: var(--bg); color: #fff; overflow-x: hidden; min-height: 100%; scroll-behavior: smooth; }
+input, button { outline: none; }
 
-const SYSTEM_COUPONS: Record<string, { code: string; type: 'percent' | 'fixed'; value: number; desc: string }> = {
-  'BEMVINDO': { code: 'BEMVINDO', type: 'percent', value: 10, desc: '10% OFF - Primeira Vez' },
-  'MASCULINA': { code: 'MASCULINA', type: 'percent', value: 10, desc: '10% OFF Especial' },
-  'DISCRETO': { code: 'DISCRETO', type: 'fixed', value: 15, desc: 'R$ 15,00 OFF - Sigilo' },
-  'VIP20': { code: 'VIP20', type: 'fixed', value: 20, desc: 'R$ 20,00 OFF' },
+.hide-scroll::-webkit-scrollbar { display: none; }
+.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+@keyframes pulse-soft { 0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(10, 132, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } }
+
+.animate-fade { animation: fadeIn 0.6s ease-out forwards; }
+.animate-enter { animation: fadeIn 0.35s ease-out forwards; }
+.animate-pop { animation: scaleUp 0.4s cubic-bezier(0.17, 0.67, 0.23, 1.4) forwards; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.btn-pulse { animation: pulse-soft 2s infinite; }
+
+.logo-shimmer {
+  background: linear-gradient(90deg, #0A84FF 0%, #64D2FF 50%, #0A84FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glass-nav { background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 50; }
+.card-base { background: var(--card); border: 1px solid var(--border); border-radius: 20px; transition: all 0.2s; }
+.card-active { border-color: var(--primary); background: rgba(10,132,255,0.08); }
+.input-clean { background: #27272a; border: 1px solid #3f3f46; color: white; border-radius: 12px; width: 100%; padding: 14px; font-size: 16px; transition: all 0.2s; }
+.input-clean:focus { border-color: var(--primary); background: #3f3f46; }
+.btn-primary { background: linear-gradient(to right, #0A84FF, #0066CC); color: white; border-radius: 16px; font-weight: 700; border: none; box-shadow: 0 4px 20px rgba(10, 132, 255, 0.25); transition: transform 0.15s; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.45; pointer-events: none; box-shadow: none; }
+`;
+
+// ==================================================================================
+// 4. UTILITÁRIOS (SEGURANÇA FINANCEIRA)
+// ==================================================================================
+
+const Utils = {
+  fmt: (v: number) => (typeof v === 'number' && !isNaN(v)) ? v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ 0,00',
+  vibrate: () => { if (navigator.vibrate) navigator.vibrate(10); },
+  shuffle: <T,>(arr: T[]): T[] => [...arr].sort(() => Math.random() - 0.5),
+  isBlocked: (d: Date | string | null, t: string) => {
+    if (!d) return true;
+    const now = new Date();
+    const sel = new Date(d);
+    sel.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (sel < today) return true;
+    if (sel > today) return false;
+    const [h] = t.split(':').map(Number);
+    const slot = new Date();
+    slot.setHours(h, 0, 0, 0);
+    return slot < new Date(now.getTime() + 30 * 60000);
+  }
 };
 
-const LEVELS = [
-  { name: 'Bronze', min: 0, rewardCode: null, icon: '🥉' },
-  { name: 'Prata', min: 300, rewardCode: 'NIVELPRATA', icon: '🥈' },
-  { name: 'Ouro', min: 600, rewardCode: 'NIVELOURO', icon: '🥇' },
-  { name: 'Diamante', min: 1200, rewardCode: 'NIVELDIAMANTE', icon: '💎', perks: "Prioridade na Agenda" },
-];
+// ==================================================================================
+// 5. COMPONENTES
+// ==================================================================================
 
-const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
-const musicVibes = ['Zen 🧘', 'Natureza 🌿', 'Silêncio 🤫', 'Jazz Suave 🎷']; 
-
-// --- 30+ REVIEWS REALISTAS E VARIADOS ---
-const REVIEWS_DB = [
-  { t: "Sigilo absoluto. Cara super profissional, me deixou à vontade.", a: "Carlos, 42", r: 5 },
-  { t: "Mãos firmes, tirou o peso das minhas costas. Recomendo.", a: "André, 35", r: 5 },
-  { t: "A massagem masculina é top. Finalização perfeita.", a: "Anônimo", r: 5 },
-  { t: "Atrasou uns 5 minutos, mas o atendimento compensou demais.", a: "Roberto, 50", r: 4 },
-  { t: "Primeira vez fazendo, estava nervoso, mas foi tranquilo.", a: "Júnior, 29", r: 5 },
-  { t: "Ambiente do motel ajudou muito a relaxar. Gostei.", a: "M., Casado", r: 5 },
-  { t: "O cara entende do assunto. Volto semana que vem.", a: "Fernando, 38", r: 5 },
-  { t: "Muito bom, mas achei a música um pouco alta no começo.", a: "Paulo, 45", r: 4 },
-  { t: "Sensação de limpeza e cuidado. Nota 10.", a: "Ricardo, 55", r: 5 },
-  { t: "Melhor investimento da semana. Estava precisando.", a: "Lucas, 31", r: 5 },
-  { t: "Discreto mesmo. Ninguém desconfiou. Valeu!", a: "Anônimo", r: 5 },
-  { t: "Toque muito bom, respeitoso e excitante na medida.", a: "G., 40", r: 5 },
-  { t: "Queria horário mais tarde da noite, mas consegui às 21h.", a: "Sérgio, 48", r: 4 },
-  { t: "Profissional, educado e gato. Serviço completo.", a: "Felipe, 33", r: 5 },
-  { t: "Sofro de ansiedade e me ajudou muito a acalmar.", a: "Bruno, 36", r: 5 },
-  { t: "Massagem nos pés foi o diferencial. Recomendo.", a: "Antônio, 60", r: 5 },
-  { t: "Rápido no agendamento, sem enrolação.", a: "Marcos, 39", r: 5 },
-  { t: "Podia aceitar cartão sem taxa, mas entendo.", a: "L., 34", r: 4 },
-  { t: "Experiência sensorial incrível. O aroma ajuda muito.", a: "Gustavo, 28", r: 5 },
-  { t: "Mãos de fada e pegada forte quando precisa.", a: "Eduardo, 41", r: 5 },
-  { t: "Me senti renovado. O valor é justo pelo que entrega.", a: "Renato, 52", r: 5 },
-  { t: "Fiz a relaxante simples, muito boa para dores lombares.", a: "Cláudio, 47", r: 5 },
-  { t: "Bom papo, gente fina, massagem excelente.", a: "Anônimo", r: 5 },
-  { t: "A maca portátil é confortável mesmo. Valeu a pena.", a: "Vitor, 30", r: 5 },
-  { t: "Sai de lá leve. O estresse sumiu.", a: "Hélio, 58", r: 5 },
-  { t: "Poucas vagas, tive que agendar com antecedência.", a: "R., 37", r: 4 },
-  { t: "O cara é discreto, chegou no horário no hotel.", a: "Viajante, 44", r: 5 },
-  { t: "Adorei a atenção aos detalhes. Muito higiênico.", a: "Danilo, 32", r: 5 },
-  { t: "Relaxamento profundo, quase dormi na maca.", a: "Breno, 49", r: 5 },
-  { t: "Serviço de homem pra homem, sem frescura. Top.", a: "Alex, 40", r: 5 },
-  { t: "Gostei da playlist. Atendimento nota mil.", a: "Caio, 27", r: 5 },
-];
-
-// --- UTILS ---
-const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-const triggerHaptic = () => { if (navigator.vibrate) navigator.vibrate(10); };
-const triggerSuccessHaptic = () => { if (navigator.vibrate) navigator.vibrate([50, 30, 50]); };
-const generateBookingId = () => {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
-    let result = '';
-    for (let i = 0; i < 4; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-};
-
-// --- COMPONENTES UI ---
-const Toast = ({ message, onClose }: { message: string; onClose: () => void }) => {
-  useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, [onClose]);
-  return (
-    <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-[300] bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 toast-enter">
-      <CheckCircle2 className="w-5 h-5 text-green-400" />
-      <span className="text-sm font-semibold tracking-wide">{message}</span>
+const Header = ({ onReload, onHelp }: { onReload: () => void; onHelp: () => void }) => (
+  <header className="fixed top-0 w-full glass-nav py-3 px-5 flex justify-between items-center transition-all">
+    <div className="flex items-center gap-2 cursor-pointer" onClick={onReload}>
+      <div className="w-8 h-8 bg-[#0A84FF] rounded-lg flex items-center justify-center shadow-lg">
+        <span className="font-black text-white text-sm">T.</span>
+      </div>
+      <span className="font-bold text-lg tracking-tight text-white">THALY.</span>
     </div>
-  );
-};
+    <div className="flex gap-3">
+      <a href={`https://instagram.com/${CONFIG.INSTAGRAM}`} target="_blank" rel="noreferrer" className="p-2 bg-[#27272a] rounded-full text-white hover:bg-[#3f3f46] transition-colors">
+        <Instagram size={18} />
+      </a>
+      <button onClick={onHelp} className="p-2 bg-[#27272a] rounded-full text-white hover:bg-[#3f3f46] transition-colors">
+        <HelpCircle size={18} />
+      </button>
+    </div>
+  </header>
+);
 
 const LiveStatus = () => {
-  const [idx, setIdx] = useState(0);
-  const msgs = [
-    "Carlos (42) agendou Massagem Masculina", 
-    "Últimas 2 vagas para hoje à noite", 
-    "Anônimo avaliou com 5 estrelas ⭐", 
-    "Ricardo acabou de entrar no Clube VIP", 
-    "Atendimento em Suíte finalizado com sucesso"
-  ];
-  useEffect(() => { const t = setInterval(() => setIdx(i => (i+1)%msgs.length), 4000); return () => clearInterval(t); }, []);
-  return (
-    <div className="flex justify-center mb-8">
-      <div className="animate-fade-in flex items-center gap-3 bg-[#1C1C1E] border border-white/5 rounded-full px-5 py-2 shadow-xl">
-        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-        <span className="text-[12px] text-gray-300 font-medium tracking-wide">{msgs[idx]}</span>
-      </div>
-    </div>
-  );
-};
-
-const LoyaltyCard = ({ data, privacyMode, onTogglePrivacy }: any) => {
-  const currentLevelIdx = [...LEVELS].reverse().findIndex(l => data.totalSpent >= l.min);
-  const currentLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx];
-  const nextLevel = LEVELS[LEVELS.length - 1 - currentLevelIdx + 1];
-  const spent = data.totalSpent || 0;
-  const min = currentLevel.min || 0;
-  const nextMin = nextLevel ? nextLevel.min : min + 1;
-  const rawProgress = ((spent - min) / (nextMin - min)) * 100;
-  const progress = nextLevel ? Math.min(100, Math.max(0, rawProgress)) : 100;
-
-  return (
-    <div className="ios-card p-6 rounded-[28px] relative overflow-hidden mb-8">
-      <div className="flex justify-between items-start mb-6 relative z-10">
-        <div>
-          <p className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-[0.15em] mb-1">Clube Vip {currentLevel.icon}</p>
-          <h3 className="text-3xl font-semibold text-white tracking-tight">{currentLevel.name}</h3>
-        </div>
-        <div className="text-right">
-          <div className="flex items-center justify-end gap-2 mb-1">
-            <p className="text-[10px] text-gray-400 font-bold uppercase">Investido</p>
-            <button onClick={onTogglePrivacy} className="text-gray-500 hover:text-white transition-colors">
-              {privacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-          <p className={`text-xl font-semibold text-white ${privacyMode ? 'blur-md select-none opacity-50' : ''} transition-all duration-300`}>
-            {formatCurrency(data.totalSpent)}
-          </p>
-        </div>
-      </div>
-      <div className="relative h-2 bg-white/10 rounded-full mb-4 overflow-hidden z-10">
-        <div className="absolute top-0 left-0 h-full bg-[#0A84FF] rounded-full" style={{ width: `${progress}%` }} />
-      </div>
-      <div className="flex justify-between text-xs text-gray-400 relative z-10 font-medium">
-        <span>Economia: <span className="text-green-500">{formatCurrency(data.totalSaved)}</span></span>
-        {nextLevel ? (
-            <span>Próximo: {formatCurrency(nextLevel.min)}</span>
-        ) : (
-            <span className="text-[#FFD60A] animate-pulse">👑 {currentLevel.perks}</span>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const ReviewsCarousel = () => {
-  const [idx, setIdx] = useState(0);
-  const [randomReviews, setRandomReviews] = useState<typeof REVIEWS_DB>([]);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [pool, setPool] = useState<string[]>([]);
 
   useEffect(() => {
-    const shuffled = [...REVIEWS_DB].sort(() => 0.5 - Math.random());
-    setRandomReviews(shuffled.slice(0, 10));
+    setPool(Utils.shuffle([...LIVE_NOTIFICATIONS]));
   }, []);
 
-  useEffect(() => { 
-    if(randomReviews.length === 0) return;
-    const t = setInterval(() => setIdx(i => (i+1)%randomReviews.length), 6000); 
-    return () => clearInterval(t); 
-  }, [randomReviews]);
+  useEffect(() => {
+    if (pool.length === 0) return;
+    const timer = setInterval(() => {
+      setPool(prev => {
+        const currentPool = prev.length === 0 ? Utils.shuffle([...LIVE_NOTIFICATIONS]) : prev;
+        const [next, ...rest] = currentPool;
+        setMsg(next);
+        setTimeout(() => setMsg(null), 4000);
+        return rest;
+      });
+    }, 12000);
+    return () => clearInterval(timer);
+  }, [pool.length]);
 
-  if(randomReviews.length === 0) return null;
-  const currentReview = randomReviews[idx];
-
+  if (!msg) return null;
   return (
-    <div className="ios-card p-0 rounded-[20px] relative overflow-hidden h-36 flex items-center justify-center mb-8">
-      <div key={idx} className="absolute inset-0 p-6 flex flex-col items-center justify-center animate-fade-in">
-        <div className="flex gap-1 mb-3">
-          {[...Array(5)].map((_,k) => <Star key={k} className={`w-4 h-4 ${k < currentReview.r ? 'text-[#FFD60A] fill-[#FFD60A]' : 'text-gray-700'}`}/>)}
-        </div>
-        <p className="text-[14px] text-gray-200 text-center font-medium leading-relaxed italic">"{currentReview.t}"</p>
-        <p className="text-[11px] text-gray-500 font-bold uppercase mt-3 tracking-widest">- {currentReview.a}</p>
+    <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 w-max max-w-[90%] pointer-events-none animate-fade">
+      <div className="bg-[#18181b]/95 border border-[#333] px-4 py-2 rounded-full flex items-center gap-2 shadow-xl">
+        <div className="w-2 h-2 rounded-full bg-[#32D74B] animate-pulse" />
+        <span className="text-xs font-bold text-gray-200">{msg}</span>
       </div>
     </div>
   );
 };
 
-const InlineDateSelector = ({ selectedDate, selectedTime, onSelect }: any) => {
-  const days = Array.from({length: 14}, (_, i) => { const d = new Date(); d.setDate(new Date().getDate() + i); return d; });
-  const now = new Date();
-  
-  const isTimeBlocked = (t: string, d: Date | null) => {
-    if(!d) return true;
-    const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
-    if (!isToday) return false;
-    const [h] = t.split(':').map(Number);
-    return h <= now.getHours();
-  };
+const ReviewsTicker = () => {
+  const [idx, setIdx] = useState(0);
+  const list = useMemo(() => Utils.shuffle([...REVIEWS_DB]), []);
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % list.length), 6000);
+    return () => clearInterval(t);
+  }, [list]);
 
   return (
-    <div>
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-4">
-        {days.map((d, i) => {
-          const isSel = selectedDate?.getDate() === d.getDate();
-          const isToday = d.getDate() === now.getDate();
-          const isTomorrow = d.getDate() === now.getDate() + 1;
-          
+    <div className="bg-[#141416] border border-[#222] rounded-3xl p-6 mb-8 shadow-lg flex flex-col justify-between min-h-[140px] relative overflow-hidden group">
+      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#0A84FF]/10 to-transparent rounded-bl-full transition-opacity group-hover:opacity-50"></div>
+      <div>
+        <div className="flex text-[#FFD60A] mb-3 gap-1">
+          <Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" />
+        </div>
+        <p className="text-[15px] text-gray-300 italic leading-relaxed font-light">"{list[idx].t}"</p>
+      </div>
+      <div className="mt-4 flex items-center gap-2">
+        <Shield size={12} className="text-[#32D74B]" />
+        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wide">{list[idx].a}</p>
+      </div>
+    </div>
+  );
+};
+
+const LocationSelector = ({ selectedId, onSelect }: { selectedId: string | null; onSelect: (loc: typeof LOCATIONS[0]) => void }) => {
+  return (
+    <div className="mb-6 -mx-5 px-5">
+      <div className="flex gap-3 overflow-x-auto pb-4 hide-scroll snap-x px-1">
+        {LOCATIONS.map(loc => {
+          const isSelected = selectedId === loc.id;
           return (
-            <button key={i} onClick={() => { triggerHaptic(); onSelect(d, ''); }} className={`flex flex-col items-center justify-center min-w-[68px] h-[80px] rounded-[18px] transition-all duration-300 relative ${isSel ? 'bg-[#0A84FF] text-white shadow-lg scale-105' : 'ios-btn text-gray-400'}`}>
-               {isToday && <span className="absolute -top-2 bg-green-500 text-[9px] font-bold px-1.5 py-0.5 rounded text-black uppercase">Hoje</span>}
-               {isTomorrow && <span className="absolute -top-2 bg-white/20 text-[9px] font-bold px-1.5 py-0.5 rounded text-white uppercase">Amanhã</span>}
-              
-              <span className="text-[11px] uppercase font-bold tracking-wide opacity-80">{d.toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,3)}</span>
-              <span className="text-2xl font-semibold mt-1">{d.getDate()}</span>
-            </button>
-          )
+            <div
+              key={loc.id}
+              onClick={() => { Utils.vibrate(); onSelect(loc); }}
+              className={`snap-center flex-shrink-0 w-40 p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${isSelected ? 'border-[#0A84FF] bg-[#0A84FF]/10' : 'border-[#222] bg-[#141416]'}`}
+            >
+              <p className="text-[10px] uppercase font-bold text-gray-500 mb-1">{loc.zone}</p>
+              <p className="text-sm font-bold text-white mb-2 leading-tight h-10">{loc.name}</p>
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                <span className="text-[10px] text-gray-400">Ida+Volta</span>
+                <span className={`text-xs font-bold ${isSelected ? 'text-[#0A84FF]' : 'text-white'}`}>
+                  {loc.fee === 0 ? (loc.id === 'outra' ? 'Consultar' : 'Grátis') : Utils.fmt(loc.fee)}
+                </span>
+              </div>
+              {isSelected && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#0A84FF] shadow-[0_0_10px_#0A84FF]"></div>}
+            </div>
+          );
         })}
       </div>
-      {selectedDate && (
-        <div className="grid grid-cols-4 gap-3 animate-fade-in">
-          {timeSlots.map(t => {
-            const blocked = isTimeBlocked(t, selectedDate);
-            const isPrimeTime = parseInt(t.split(':')[0]) >= 18;
-            
-            return (
-              <button key={t} disabled={blocked} onClick={() => { triggerHaptic(); onSelect(selectedDate, t); }} 
-                className={`py-3 rounded-[14px] text-[13px] font-semibold transition-all duration-200 relative overflow-hidden ${selectedTime === t ? 'bg-[#0A84FF] text-white shadow-md' : blocked ? 'bg-white/5 text-gray-600' : 'ios-btn text-gray-300'}`}>
-                {isPrimeTime && !blocked && !selectedTime && <div className="absolute top-0 right-0 w-2 h-2 bg-[#FFD60A] rounded-full m-1 opacity-70" title="Horário Nobre"></div>}
-                {blocked ? <Lock className="w-3.5 h-3.5 mx-auto opacity-30" /> : t}
-              </button>
-            )
-          })}
-        </div>
-      )}
     </div>
   );
 };
 
-const CouponInventory = ({ inventory, appliedCoupon, onApply, onRemove, onAddManual }: any) => {
-  const [manualCode, setManualCode] = useState('');
-  const myCoupons = inventory.map((c: string) => SYSTEM_COUPONS[c]).filter(Boolean);
+const CouponPopup = ({ onClose, onAccept }: { onClose: () => void; onAccept: () => void }) => (
+  <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-fade">
+    <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={onClose} />
+    <div className="relative bg-[#18181b] w-full max-w-sm rounded-3xl border border-[#0A84FF]/50 p-6 shadow-[0_0_50px_rgba(10,132,255,0.2)] animate-pop text-center">
+      <div className="w-16 h-16 bg-[#0A84FF]/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-float">
+        <Ticket size={32} className="text-[#0A84FF]" />
+      </div>
+      <h2 className="text-2xl font-black text-white mb-2">Você ganhou R$ {CONFIG.FIRST_COUPON_VAL}!</h2>
+      <p className="text-gray-400 text-sm mb-6">Como é sua primeira vez aqui, liberei um desconto especial para você conhecer meu trabalho.</p>
+      <button onClick={onAccept} className="w-full py-4 rounded-xl bg-[#0A84FF] text-white font-bold text-lg mb-3 shadow-lg btn-pulse">RESGATAR AGORA</button>
+      <button onClick={onClose} className="text-gray-500 text-xs font-bold uppercase tracking-wider p-2">Dispensar por enquanto</button>
+    </div>
+  </div>
+);
 
-  const handleManualAdd = () => {
-      const codeUpper = manualCode.toUpperCase().trim();
-      if(codeUpper && SYSTEM_COUPONS[codeUpper]) {
-          if (inventory.includes(codeUpper)) {
-              alert('Você já resgatou este cupom!');
-          } else {
-              onAddManual(codeUpper);
-              setManualCode('');
-              triggerHaptic();
-          }
-      } else {
-          alert('Cupom inválido ou expirado.');
+// ==================================================================================
+// 6. APP PRINCIPAL
+// ==================================================================================
+
+const INITIAL_DATA = {
+  name: '',
+  age: '',
+  medical: false,
+  service: null as typeof SERVICES[0] | null,
+  date: null as Date | null,
+  time: null as string | null,
+  extras: { upgrade: false, touch: false, aroma: false },
+  payment: null as string | null,
+  location: {
+    id: null as string | null,
+    type: 'home',
+    street: '',
+    number: '',
+    apt: '',
+    hotel: '',
+    room: '',
+    motel: '',
+    suite: ''
+  }
+};
+
+export default function BookingApp() {
+  const [data, setData] = useState(() => {
+    try {
+      const s = localStorage.getItem('thaly_system_v2026');
+      if (s) {
+        const p = JSON.parse(s);
+        if (p.date) p.date = new Date(p.date);
+        if (!p.location || !p.location.type) throw new Error("Reset");
+        return { ...INITIAL_DATA, ...p, location: { ...INITIAL_DATA.location, ...p.location } };
       }
-  };
-
-  return (
-    <div className="space-y-4 mt-8">
-      <div className="flex justify-between items-center ml-1 mb-2">
-        <h4 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide">Cupons & Descontos</h4>
-      </div>
-      
-      <div className="flex gap-2 mb-3">
-          <input 
-            value={manualCode}
-            onChange={(e) => setManualCode(e.target.value)}
-            placeholder="Digite o código (ex: DISCRETO)..." 
-            className="w-full custom-input text-white text-[15px] rounded-[16px] p-4 placeholder:text-gray-600"
-          />
-          <button onClick={handleManualAdd} className="bg-[#2C2C2E] border border-white/10 text-white px-6 rounded-[16px] font-bold text-[13px] hover:bg-[#3A3A3C] transition-colors">Adicionar</button>
-      </div>
-
-      {myCoupons.length > 0 && (
-        <div className="space-y-3">
-          {myCoupons.map((coupon: any) => {
-            const isApplied = appliedCoupon?.code === coupon.code;
-            return (
-              <button key={coupon.code} onClick={() => { triggerHaptic(); isApplied ? onRemove() : onApply(coupon.code); }} className={`w-full p-4 rounded-[18px] flex justify-between items-center transition-all duration-300 ${isApplied ? 'bg-[#0A84FF]/15 border border-[#0A84FF] shadow-lg' : 'ios-btn'}`}>
-                <div className="text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold text-white bg-[#2C2C2E] px-2 py-1 rounded-md tracking-wider">{coupon.code}</span>
-                    {isApplied && <span className="text-[10px] text-[#0A84FF] font-bold">ATIVO</span>}
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1.5">{coupon.desc}</p>
-                </div>
-                {isApplied ? <X className="w-5 h-5 text-gray-400" /> : <span className="text-[11px] bg-[#0A84FF] text-white px-3 py-1.5 rounded-full font-bold">Usar</span>}
-              </button>
-            )
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const Notifications = ({ notifications, onClear }: any) => {
-  const [open, setOpen] = useState(false);
-  const unread = notifications.filter((n: any) => !n.read).length;
-
-  useEffect(() => {
-    const close = () => setOpen(false);
-    if(open) window.addEventListener('click', close);
-    return () => window.removeEventListener('click', close);
-  }, [open]);
-
-  return (
-    <div className="relative" onClick={e => e.stopPropagation()}>
-      <button onClick={() => { setOpen(!open); if(!open && unread > 0) onClear(); }} className="relative p-2.5 rounded-full bg-[#1C1C1E] active:bg-[#2C2C2E] transition-colors">
-        <Bell className="w-6 h-6 text-white" />
-        {unread > 0 && <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-[#FF3B30] rounded-full border-2 border-[#1C1C1E]" />}
-      </button>
-
-      {open && (
-        <div className="absolute top-14 right-0 w-80 bg-[#121214] border border-white/10 shadow-2xl rounded-[20px] overflow-hidden z-[100] animate-scale">
-           <div className="p-4 border-b border-white/10 bg-[#1C1C1E] flex justify-between items-center">
-             <h4 className="font-semibold text-white text-sm">Notificações</h4>
-             <button onClick={() => setOpen(false)} className="p-1"><X className="w-4 h-4 text-gray-400"/></button>
-           </div>
-           <div className="max-h-64 overflow-y-auto p-2">
-             {notifications.length === 0 ? (
-               <div className="p-6 text-center text-gray-500 text-sm">Nenhuma novidade.</div>
-             ) : (
-               notifications.map((n: any) => (
-                 <div key={n.id} className="p-3 mb-1 rounded-xl bg-white/5">
-                   <div className="flex justify-between">
-                      <p className="text-sm font-semibold text-white mb-0.5">{n.title}</p>
-                      <span className="text-[10px] text-gray-500">{new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                   </div>
-                   <p className="text-xs text-gray-400 leading-snug">{n.message}</p>
-                 </div>
-               ))
-             )}
-           </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// --- APP PRINCIPAL ---
-export default function App() {
-  const [step, setStep] = useState('home');
-  const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<string | null>(null);
-  
-  // Refs
-  const locationRef = useRef<HTMLElement | null>(null);
-  const vibeRef = useRef<HTMLDivElement | null>(null);
-  const extrasRef = useRef<HTMLDivElement | null>(null);
-  const paymentRef = useRef<HTMLDivElement | null>(null);
-  const homeRef = useRef<HTMLDivElement | null>(null);
-  const surfaceRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollTo = (ref: React.RefObject<HTMLElement | null>) => {
-    setTimeout(() => {
-      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 300); 
-  };
-
-  const showToast = useCallback((msg: string) => {
-    setToast(msg);
-  }, []);
-
-  // Hook da Voz Masculina Seduzente com Play / Pause / Stop
-  const voice = useSeductiveVoice(showToast);
-
-  // Para o áudio automaticamente se trocar de tela
-  useEffect(() => {
-    voice.stop();
-  }, [step, voice.stop]);
-  
-  // State
-  const [loyalty, setLoyalty] = useState(() => {
-    const saved = localStorage.getItem('thaly_system_v70'); 
-    return saved ? JSON.parse(saved) : { savedName: '', avatar: '😎', totalSpent: 0, totalSaved: 0, inventory: ['BEMVINDO', 'MASCULINA', 'DISCRETO'], notifications: [], history: [] };
+    } catch {
+      localStorage.removeItem('thaly_system_v2026');
+    }
+    return INITIAL_DATA;
   });
 
-  const [user, setUser] = useState({ name: '', isAdult: false, isMassagemOk: false });
-  const [selection, setSelection] = useState<any>({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
-  const [showFaq, setShowFaq] = useState(false);
-  const [privacyMode, setPrivacyMode] = useState(true);
-  const [greeting, setGreeting] = useState("");
-  const [weatherHint, setWeatherHint] = useState("");
+  const [stage, setStage] = useState(0);
+  const [couponActive, setCouponActive] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [copiedPix, setCopiedPix] = useState(false);
 
-  // Init
-  useEffect(() => { setTimeout(() => setLoading(false), 2000); }, []);
+  const voice = useSeductiveVoice();
+  const isFirstTime = !localStorage.getItem('thaly_history_complete');
 
-  useEffect(() => {
-    localStorage.setItem('thaly_system_v70', JSON.stringify(loyalty));
-    if (loyalty.savedName) {
-        setUser(prev => ({...prev, name: loyalty.savedName, isAdult: true, isMassagemOk: true}));
-    }
-  }, [loyalty]);
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   useEffect(() => {
-    const hr = new Date().getHours();
-    setGreeting(hr < 12 ? "Bom dia, chefe" : hr < 18 ? "Boa tarde, guerreiro" : "Boa noite para relaxar");
-    setWeatherHint(hr < 18 ? "☀️ Clima quente, ideal para tirar o estresse." : "🌙 Noite tranquila, perfeita para desligar."); 
-  }, []);
+    localStorage.setItem('thaly_system_v2026', JSON.stringify(data));
+  }, [data]);
 
   useEffect(() => {
-    if (selection.location?.allowsTableChoice && step === 'configure') {
-      setTimeout(() => surfaceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+    setTimeout(() => setLoading(false), 600);
+    if (isFirstTime && !couponActive && stage === 0) {
+      const t = setTimeout(() => setShowPopup(true), 2000);
+      return () => clearTimeout(t);
     }
-  }, [selection.location, step]);
+  }, [isFirstTime, couponActive, stage]);
 
   useEffect(() => {
-    if (step === 'home') {
-      homeRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [step]);
+    if (success) voice.stop();
+  }, [success, voice.stop]);
 
-  // Actions
-  const handleQuickSchedule = () => {
-    triggerHaptic();
-    if (loyalty.savedName) {
-        setStep('services');
-    } else {
-        setStep('identity'); 
-    }
-  };
+  // CÁLCULO FINANCEIRO BLINDADO (ESTRUTURA CORRIGIDA)
+  const { financials, xp } = useMemo(() => {
+    let xpPoints = 0;
+    const base = data.service?.price || 0;
+    if (data.service) xpPoints += data.service.xp;
 
-  const handlePanic = () => { window.location.href = "https://www.google.com/search?q=noticias+esporte"; };
-  const handleCopyPix = () => { 
-      navigator.clipboard.writeText("62922530000144"); 
-      showToast("CNPJ Pix Copiado!"); 
-      triggerSuccessHaptic();
-  }; 
+    const upg = data.extras?.upgrade ? (base * CONFIG.PRICES.UPGRADE_PCT) : 0;
+    if (data.extras?.upgrade) xpPoints += 25;
 
-  const handleAddManualCoupon = (code: string) => {
-      if (!loyalty.inventory.includes(code)) {
-          setLoyalty((prev: any) => ({...prev, inventory: [...prev.inventory, code]}));
-          triggerHaptic();
-          showToast(`Cupom ${code} adicionado!`);
-      } else {
-          alert('Você já possui este cupom!');
+    const touch = data.extras?.touch ? CONFIG.PRICES.TOUCH : 0;
+    if (data.extras?.touch) xpPoints += 30;
+
+    const aroma = data.extras?.aroma ? CONFIG.PRICES.AROMA : 0;
+    if (data.extras?.aroma) xpPoints += 15;
+
+    const loc = LOCATIONS.find(l => l.id === data.location?.id);
+    const travelFee = loc ? loc.fee : 0;
+
+    const sub = base + upg + touch + aroma + travelFee;
+    const desc = couponActive ? CONFIG.FIRST_COUPON_VAL : 0;
+
+    return {
+      xp: xpPoints,
+      financials: {
+        base,
+        upg,
+        touch,
+        aroma,
+        travelFee,
+        sub,
+        desc,
+        total: Math.max(0, sub - desc),
+        locName: loc ? loc.name : ''
       }
+    };
+  }, [data, couponActive]);
+
+  const finalizeOrder = () => {
+    voice.stop();
+    if (couponActive || isFirstTime) localStorage.setItem('thaly_history_complete', 'true');
+    setSuccess(true);
+    scrollToTop();
   };
 
-  // Calculations
-  const calcBaseTotal = () => {
-    if (!selection.service) return 0;
-    let total = selection.service.basePrice;
-    if (selection.location?.fee) total += selection.location.fee;
-    if (selection.upgrade) total += selection.service.basePrice * 0.5;
-    if (selection.useTable) total += 20;
-    if (selection.aroma) total += 10;
-    
-    if (selection.coupon) {
-      if (selection.coupon.type === 'percent') total -= (total * selection.coupon.value / 100);
-      else total -= selection.coupon.value;
+  const generateMessage = () => {
+    const d = data.date ? new Date(data.date) : null;
+    const dateStr = d ? `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}` : '';
+    let t = `🦁 *PEDIDO DE AGENDAMENTO*\n──────────────────\n`;
+    t += `👤 *${data.name}* (${data.age} anos)\n`;
+    t += `📅 *${dateStr} às ${data.time}*\n`;
+    t += `💆 *${data.service?.name}*: ${Utils.fmt(financials.base)}\n`;
+
+    if (Object.values(data.extras).some(Boolean)) {
+      t += `🔥 *EXTRAS:*\n`;
+      if (data.extras.upgrade) t += `   + Upgrade 30min: ${Utils.fmt(financials.upg)}\n`;
+      if (data.extras.touch) t += `   + Interação: ${Utils.fmt(financials.touch)}\n`;
+      if (data.extras.aroma) t += `   + Aromaterapia: ${Utils.fmt(financials.aroma)}\n`;
     }
-    return Math.max(0, total);
+
+    t += `\n📍 *LOCAL: ${financials.locName}*\n`;
+    if (data.location.type === 'home') t += `🏠 Casa: ${data.location.street}, ${data.location.number}\n`;
+    else if (data.location.type === 'apto') t += `🏢 Apto: ${data.location.street}, ${data.location.number} - Ap ${data.location.apt}\n`;
+    else if (data.location.type === 'hotel') t += `🏨 Hotel: ${data.location.hotel} (Qto ${data.location.room})\n`;
+    else if (data.location.type === 'motel') {
+      t += `🏩 Motel: ${data.location.motel}${data.location.suite ? ` (Suíte ${data.location.suite})` : ''}\n`;
+      t += `⚠️ *Eu pago a suíte*\n`;
+    }
+
+    t += `\n💰 *RESUMO FINANCEIRO:*\n`;
+    if (data.location.id === 'outra') t += `🚗 Deslocamento: A consultar\n`;
+    else if (financials.travelFee > 0) t += `🚗 Deslocamento: ${Utils.fmt(financials.travelFee)}\n`;
+    if (couponActive) t += `🎟️ Desconto 1ª Vez: -${Utils.fmt(financials.desc)}\n`;
+    t += `✅ *TOTAL: ${Utils.fmt(financials.total)}*\n`;
+    t += `💳 Pagamento: ${data.payment?.toUpperCase()}\n`;
+
+    return `${CONFIG.URLS.WHATSAPP_API}?phone=${CONFIG.PHONE}&text=${encodeURIComponent(t)}`;
   };
 
-  const calcOriginalPrice = () => {
-    if (!selection.service) return 0;
-    let total = selection.service.basePrice;
-    if (selection.location?.fee) total += selection.location.fee;
-    if (selection.upgrade) total += selection.service.basePrice * 0.5;
-    if (selection.useTable) total += 20;
-    if (selection.aroma) total += 10;
-    return total;
+  const isFormValid = () => {
+    const l = data.location;
+    if (!l.id) return false;
+    if (l.type === 'home') return Boolean(l.street.trim() && l.number.trim());
+    if (l.type === 'apto') return Boolean(l.street.trim() && l.number.trim() && l.apt.trim());
+    if (l.type === 'hotel') return Boolean(l.hotel.trim() && l.room.trim());
+    if (l.type === 'motel') return Boolean(l.motel.trim());
+    return false;
   };
 
-  const calcFinalPrice = () => {
-    const base = calcBaseTotal();
-    if (selection.paymentMethod === 'credit_card') {
-       const rate = CARD_RATES[selection.installments] || 0;
-       return base / (1 - rate);
-    }
-    return base;
-  };
-
-  const canFinalize = selection.service && selection.location && selection.date && selection.time && selection.music && selection.paymentMethod && (selection.location.allowsTableChoice ? selection.useTable !== null : true) && (selection.location.id === 'outras-cidades' ? !!selection.city : true);
-
-  const handleWhatsApp = () => {
-    triggerHaptic();
-    if (!canFinalize) {
-        showToast("Preencha todos os campos!");
-        return;
-    }
-    
-    if (selection.coupon && !loyalty.inventory.includes(selection.coupon.code)) {
-      alert("Cupom inválido.");
-      setSelection((prev: any) => ({ ...prev, coupon: null }));
-      return;
-    }
-
-    const basePrice = calcBaseTotal();
-    const finalPrice = calcFinalPrice();
-    const oldTotal = loyalty.totalSpent;
-    const newTotal = oldTotal + selection.service.basePrice; 
-    const bookingId = generateBookingId(); 
-    
-    const discountAmount = selection.coupon ? (selection.coupon.type === 'percent' ? (calcBaseTotal() / (1 - selection.coupon.value/100) - calcBaseTotal()) : selection.coupon.value) : 0;
-
-    let newInventory = [...loyalty.inventory];
-    if (selection.coupon) {
-      newInventory = newInventory.filter(c => c !== selection.coupon.code);
-    }
-
-    const notifications = [...loyalty.notifications];
-    LEVELS.forEach(lvl => {
-      if (newTotal >= lvl.min && oldTotal < lvl.min && lvl.rewardCode) {
-        if (!newInventory.includes(lvl.rewardCode)) {
-          newInventory.push(lvl.rewardCode);
-          notifications.unshift({ id: Date.now()+1, title: '🎉 Subiu de Nível!', message: `Ganhou cupom ${lvl.rewardCode}!`, read: false, timestamp: Date.now(), type: 'info' });
-        }
-      }
-    });
-
-    const newHistory = [{
-      id: Date.now(), serviceName: selection.service.name, date: new Date().toLocaleDateString(), value: basePrice
-    }, ...loyalty.history];
-
-    setLoyalty((prev: any) => ({ 
-      ...prev, 
-      savedName: user.name || prev.savedName, 
-      totalSpent: newTotal, 
-      totalSaved: prev.totalSaved + discountAmount, 
-      inventory: newInventory, 
-      notifications,
-      history: newHistory
-    }));
-
-    const isToday = selection.date.getDate() === new Date().getDate();
-    const dateStr = `${selection.date.toLocaleDateString('pt-BR')}${isToday ? ' (HOJE)' : ''}`;
-    
-    let finalDuration = selection.service.labelDuration;
-    if (selection.upgrade) {
-        finalDuration = "60 min + 30 min (90 min total)";
-    }
-    
-    let surfaceText = "";
-    if (selection.location.allowsTableChoice) surfaceText = selection.useTable ? "✅ Levar Maca Portátil (+R$20)" : "🛏 Na Cama do Cliente";
-    else if (selection.location.id === 'motel') surfaceText = "🏨 Suíte de Motel"; 
-    else surfaceText = `🛏 Cama/Sofá em ${selection.city}`;
-
-    let paymentText = "";
-    if (selection.paymentMethod === 'pix') paymentText = "(Pix)";
-    else if (selection.paymentMethod === 'cash') paymentText = "(Dinheiro)";
-    else if (selection.paymentMethod === 'debit_card') paymentText = "(Débito)";
-    else if (selection.paymentMethod === 'credit_card') {
-        const parcelValue = finalPrice / selection.installments;
-        paymentText = `(${selection.installments}x de ${formatCurrency(parcelValue)})`;
-    }
-
-    let grossBase = selection.service.basePrice;
-    if (selection.location?.fee) grossBase += selection.location.fee;
-    if (selection.upgrade) grossBase += selection.service.basePrice * 0.5;
-    if (selection.useTable) grossBase += 20;
-    if (selection.aroma) grossBase += 10;
-
-    let discountVal = 0;
-    if (selection.coupon) {
-      if (selection.coupon.type === 'percent') discountVal = grossBase * (selection.coupon.value / 100);
-      else discountVal = selection.coupon.value;
-    }
-    const netBase = grossBase - discountVal;
-
-    let cardFee = 0;
-    if (selection.paymentMethod === 'credit_card') {
-       const rate = CARD_RATES[selection.installments] || 0;
-       const totalWithRate = netBase / (1 - rate);
-       cardFee = totalWithRate - netBase;
-    }
-
-    let serviceValOnly = 0;
-    let motelLine = "";
-    let uberLine = "";
-    const discountLine = discountVal > 0 ? `🎫 Desconto Cupom: -${formatCurrency(discountVal)}` : "";
-    const cardFeeLine = cardFee > 0 ? `💳 Taxa Máquina: ${formatCurrency(cardFee)}` : "";
-
-    if (selection.location.id === 'motel') {
-        serviceValOnly = netBase - 75; 
-        motelLine = "⚠️ Taxa da Suíte: R$ 75,00 (Pagar na SAÍDA)";
-    } else {
-        const uberVal = selection.location.fee || 0;
-        serviceValOnly = netBase - uberVal;
-        
-        if (selection.location.id === 'outras-cidades') {
-            uberLine = "➡️ Taxa Deslocamento: A Combinar";
-        } else if (uberVal > 0) {
-            uberLine = `➡️ Taxa Deslocamento (Uber): ${formatCurrency(uberVal)}`;
-        }
-    }
-
-    let msg = `🐺 NOVO PEDIDO: #${bookingId}
-👤 Cliente: ${user.name}
-✅ Maior de 18 | ✅ Termos Aceitos
-📅 ${dateStr} às ${selection.time}
-💆 ${selection.service.name}
-⏱ Duração: ${finalDuration}
-📍 Local: ${selection.location.label}
-${surfaceText ? surfaceText : ''}
-${selection.aroma ? '🌸 Com Aromaterapia' : ''}
-🎶 Vibe: ${selection.music}
-
-💰 RESUMO FINANCEIRO:
-➡️ Serviço Massagista: ${formatCurrency(serviceValOnly)}
-${uberLine}
-${motelLine}
-${discountLine}
-${cardFeeLine}
-
-💰 TOTAL PREVISTO: ${selection.location.id === 'outras-cidades' ? 'A definir (+ Deslocamento)' : formatCurrency(finalPrice)} ${paymentText}
-⏱️ Chegada estimada: ${selection.location.estimatedTravelTime || 'A combinar'}
-------------------------------
-Olá, aguardo confirmação para relaxar. (App Beta)`;
-
-    msg = msg.replace(/^\s*[\r\n]/gm, "");
-    window.open(`https://api.whatsapp.com/send?phone=5517991360413&text=${encodeURIComponent(msg)}`, '_blank');
-    setStep('success');
-    triggerSuccessHaptic();
+  const handleCopyPix = () => {
+    navigator.clipboard?.writeText(CONFIG.PIX_KEY);
+    setCopiedPix(true);
+    Utils.vibrate();
+    setTimeout(() => setCopiedPix(false), 2500);
   };
 
   const handleReset = () => {
-    setSelection({ service: null, location: null, date: null, time: '', useTable: null, city: '', coupon: null, upgrade: false, music: null, aroma: false, paymentMethod: null, installments: 1 });
-    setStep('home');
+    setData((prev: typeof INITIAL_DATA) => ({
+      ...INITIAL_DATA,
+      name: prev.name,
+      age: prev.age,
+      medical: prev.medical
+    }));
+    setSuccess(false);
+    setStage(0);
+    setCouponActive(false);
+    scrollToTop();
   };
 
-  return (
-    <div className="min-h-screen flex justify-center p-0 sm:p-6 font-sans text-gray-200 bg-black">
-      <style>{globalStyles}</style>
-      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-[#09090b] z-50 flex items-center justify-center text-white font-bold tracking-widest text-xs uppercase animate-pulse">
+        Carregando...
+      </div>
+    );
+  }
 
-      {loading ? (
-        <div className="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center animate-fade-in">
-          <div className="w-24 h-24 bg-gradient-to-tr from-[#0A84FF] to-[#5E5CE6] rounded-[24px] flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(10,132,255,0.4)] animate-pulse">
-            <div className="text-4xl">🐺</div>
-          </div>
-          <p className="text-gray-500 text-sm tracking-widest uppercase">Carregando...</p>
+  if (success) {
+    return (
+      <div className="min-h-screen bg-[#09090b] pt-20 px-6 pb-12 flex flex-col items-center text-center animate-fade">
+        <style>{styles}</style>
+        <div className="w-24 h-24 bg-[#32D74B]/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(50,215,75,0.2)]">
+          <Check className="w-12 h-12 text-[#32D74B]" strokeWidth={4} />
         </div>
-      ) : (
-      <div className="w-full max-w-[440px] bg-[#000] sm:rounded-[40px] shadow-2xl flex flex-col relative overflow-hidden sm:border border-white/10 h-screen sm:h-[92vh] aurora-bg">
-        
-        {/* HEADER FIXO */}
-        {step !== 'home' && step !== 'success' && (
-          <div className="absolute top-0 w-full z-30 ios-header px-6 pt-12 pb-4 flex justify-between items-center">
-             {step === 'services' && loyalty.savedName ? (
-                <div className="flex items-center gap-1">
-                    <button onClick={() => setStep('home')} className="p-2 -ml-2 rounded-full active:bg-white/10"><IconBack /></button>
-                </div>
-             ) : (
-                <button onClick={() => setStep(step === 'configure' ? 'services' : step === 'services' ? 'identity' : 'home')} className="p-2 -ml-2 rounded-full active:bg-white/10"><IconBack /></button>
-             )}
-             
-             <div className="flex items-center gap-3">
-               <div className="flex gap-1">
-                   {[1,2,3].map(i => (
-                       <div key={i} className={`w-1.5 h-1.5 rounded-full ${((step === 'identity' && i===1) || (step === 'services' && i<=2) || (step === 'configure' && i<=3)) ? 'bg-[#0A84FF]' : 'bg-gray-700'}`}></div>
-                   ))}
-               </div>
-               <Notifications notifications={loyalty.notifications} onClear={() => setLoyalty((p: any) => ({...p, notifications: p.notifications.map((n: any) => ({...n, read: true}))}))} />
-             </div>
+        <h2 className="text-3xl font-black text-white mb-2">Pedido Pronto!</h2>
+        <p className="text-gray-400 mb-8 text-sm max-w-xs">Agora é só enviar a confirmação gerada para o meu WhatsApp.</p>
+
+        <div className="w-full max-w-sm bg-[#18181b] border border-[#333] rounded-3xl p-6 mb-8 text-left shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0A84FF] to-[#32D74B]"></div>
+          <div className="flex justify-between items-end mb-6 border-b border-[#333] pb-6">
+            <div>
+              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Total Final</p>
+              <p className="text-[#32D74B] font-black text-3xl">{Utils.fmt(financials.total)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Deslocamento</p>
+              <p className="text-white font-bold">
+                {data.location.id === 'outra' ? 'A consultar' : Utils.fmt(financials.travelFee)}
+              </p>
+            </div>
           </div>
-        )}
-
-        {/* --- HOME --- */}
-        {step === 'home' && (
-          <div className="flex-1 p-6 overflow-y-auto pb-28 pt-12" ref={homeRef}>
-            <div className="flex justify-between items-center mb-8">
+          <div className="space-y-3 text-sm text-gray-300">
+            <p className="flex items-center gap-3"><MapPin size={16} className="text-[#0A84FF]" /> {financials.locName}</p>
+            <p className="flex items-center gap-3"><CalendarIcon size={16} className="text-[#0A84FF]" /> {data.date ? new Date(data.date).toLocaleDateString('pt-BR') : ''} às {data.time}</p>
+          </div>
+          {data.payment === 'pix' && (
+            <div className="mt-6 p-4 bg-[#27272a] rounded-xl border border-[#333] flex items-center justify-between">
               <div>
-                <p className="text-[11px] text-gray-400 uppercase tracking-[0.2em] font-bold flex items-center gap-2 mb-1">
-                  {greeting} <span className="text-lg">{loyalty.avatar}</span>
-                </p>
-                <h1 className="text-3xl font-bold text-white tracking-tight">{loyalty.savedName || 'Bem-vindo'}</h1>
+                <p className="text-[10px] text-[#0A84FF] font-bold uppercase mb-1">Chave Pix (CNPJ)</p>
+                <p className="text-xs font-mono text-white">{CONFIG.PIX_KEY}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <button onClick={handlePanic} className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-red-900/30 flex items-center justify-center active:scale-95 transition-transform"><LogOut className="w-4 h-4 text-red-500" /></button>
-                <button onClick={() => setShowFaq(true)} className="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center active:scale-95 transition-transform"><HelpCircle className="w-5 h-5 text-gray-300" /></button>
-                <a href="https://www.instagram.com/thalymassagens/" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center active:scale-95 transition-transform"><Instagram className="w-5 h-5 text-[#FF2D55]" /></a>
-              </div>
-            </div>
-
-            <LoyaltyCard data={loyalty} privacyMode={privacyMode} onTogglePrivacy={() => { triggerHaptic(); setPrivacyMode(!privacyMode); }} />
-            <LiveStatus />
-
-            <div className="flex justify-between items-center mb-6 px-1">
-              <span className="text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full backdrop-blur-md">{weatherHint}</span>
-            </div>
-
-            <ReviewsCarousel />
-            
-            <div className="mt-auto">
-              <button onClick={handleQuickSchedule} className="w-full ios-btn-primary font-bold py-4 rounded-[22px] shadow-lg flex justify-center items-center gap-2 text-[17px]">
-                Agendar Sessão <ChevronRight className="w-5 h-5" />
+              <button onClick={handleCopyPix} className="px-3 py-2 rounded-lg bg-[#0A84FF]/20 text-[#0A84FF] text-xs font-bold flex items-center gap-1.5">
+                <Copy size={14} /> {copiedPix ? 'Copiado!' : 'Copiar'}
               </button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* --- IDENTITY --- */}
-        {step === 'identity' && (
-          <div className="flex-1 p-6 pt-32 animate-slide-right flex flex-col h-full">
-            <h2 className="text-3xl font-bold text-white mb-2">Identificação</h2>
-            <p className="text-gray-400 text-[15px] mb-8">Como devo te chamar? Seus dados ficam salvos apenas no seu aparelho.</p>
-            
-            <div className="space-y-6 flex-1">
-              <div className="ios-card p-5 rounded-[22px]">
-                <label className="text-[11px] text-[#0A84FF] font-bold uppercase tracking-wider block mb-2">Seu Nome / Apelido</label>
-                <input value={user.name} onChange={e => setUser({...user, name: e.target.value})} className="w-full bg-transparent text-white text-[19px] font-medium placeholder:text-gray-600 border-b border-white/10 py-2 focus:border-[#0A84FF] transition-colors" placeholder="Digite seu nome..." />
-              </div>
-              
-              <div className="grid grid-cols-4 gap-3">
-                {['😎','🤠','🐺','🦁'].map(emoji => (
-                  <button key={emoji} onClick={() => { triggerHaptic(); setLoyalty((p: any) => ({...p, avatar: emoji})); }} className={`h-16 rounded-[18px] flex items-center justify-center text-3xl transition-all duration-300 ${loyalty.avatar === emoji ? 'bg-[#0A84FF]/20 border border-[#0A84FF]' : 'ios-btn'}`}>{emoji}</button>
-                ))}
-              </div>
+        <a href={generateMessage()} target="_blank" rel="noreferrer" className="w-full max-w-sm btn-primary py-4 text-lg flex items-center justify-center gap-2 mb-4">
+          Enviar no WhatsApp <MessageCircle size={22} />
+        </a>
+        <button onClick={handleReset} className="text-gray-500 font-bold text-xs uppercase py-4">Fazer Novo Pedido</button>
+      </div>
+    );
+  }
 
-              <div className="space-y-3">
-                <button onClick={() => { triggerHaptic(); setUser({...user, isAdult: !user.isAdult}); }} className={`w-full p-5 rounded-[20px] border flex items-center gap-4 transition-all duration-300 ${user.isAdult ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isAdult ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-500'}`}>{user.isAdult && <Check className="w-3.5 h-3.5 text-white" />}</div>
-                  <span className={`text-[17px] font-medium ${user.isAdult ? 'text-white' : 'text-gray-400'}`}>Sou maior de 18 anos</span>
-                </button>
-                
-                <button onClick={() => { triggerHaptic(); setUser({...user, isMassagemOk: !user.isMassagemOk}); }} className={`w-full p-5 rounded-[20px] border flex items-center gap-4 transition-all duration-300 ${user.isMassagemOk ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className={`w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center transition-all ${user.isMassagemOk ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-gray-500'}`}>{user.isMassagemOk && <Check className="w-3.5 h-3.5 text-white" />}</div>
-                  <span className={`text-[17px] font-medium ${user.isMassagemOk ? 'text-white' : 'text-gray-400'}`}>Procuro relaxamento terapêutico</span>
-                </button>
-              </div>
+  return (
+    <div className="min-h-screen pb-44 relative">
+      <style>{styles}</style>
+      <LiveStatus />
+      <Header onReload={() => window.location.reload()} onHelp={() => setHelpOpen(true)} />
 
-              <div className="mt-auto">
-                <button 
-                  disabled={!user.name || !user.isAdult || !user.isMassagemOk} 
-                  onClick={() => { triggerHaptic(); setStep('services'); }} 
-                  className="w-full ios-btn-primary font-bold py-4 rounded-[22px] text-[17px] disabled:opacity-50 shadow-lg"
-                >
-                  Continuar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+      {/* POPUP CUPOM */}
+      {showPopup && (
+        <CouponPopup
+          onClose={() => setShowPopup(false)}
+          onAccept={() => {
+            setCouponActive(true);
+            setShowPopup(false);
+            Utils.vibrate();
+          }}
+        />
+      )}
 
-        {/* --- SERVICES --- */}
-        {step === 'services' && (
-          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-28 animate-slide-right">
+      {/* AJUDA */}
+      {helpOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 animate-fade">
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setHelpOpen(false)}></div>
+          <div className="relative bg-[#18181b] w-full max-w-sm rounded-3xl border border-[#222] p-6 shadow-2xl overflow-y-auto max-h-[80vh]">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-white">Serviços</h2>
+              <h3 className="font-bold text-xl flex items-center gap-2 text-white"><Info size={20} className="text-[#0A84FF]" /> Guia Rápido</h3>
+              <button onClick={() => setHelpOpen(false)} className="bg-[#222] p-1.5 rounded-full text-gray-400 hover:text-white"><X size={16} /></button>
             </div>
-            <div className="space-y-5">
-              {services.map(s => {
-                const isThisVoice = voice.activeId === s.id;
-                const isPlaying = isThisVoice && voice.status === 'playing';
-                const isPaused = isThisVoice && voice.status === 'paused';
-                const script = `${s.name}. ${s.description} Detalhes inclusos: ${s.details.join(', ')}.`;
+            <div className="space-y-6">
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">1</div>
+                <div><h3 className="font-bold text-white text-sm">O Serviço</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Massagem profissional masculina realizada no conforto do seu local (Apt, Casa, Suíte e Hotel).</p></div>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">2</div>
+                <div><h3 className="font-bold text-white text-sm">Preparação</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Recomendo um banho quente antes. Levo creme, óleos, lubrificantes e aromatizador.</p></div>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center shrink-0 font-bold text-sm">3</div>
+                <div><h3 className="font-bold text-white text-sm">Segurança</h3><p className="text-xs text-gray-400 leading-relaxed mt-1">Sigilo total garantido. Atendimento discreto e respeitoso.</p></div>
+              </div>
+              <div className="bg-[#1A1A1E] p-4 rounded-xl border border-[#333]">
+                <h4 className="font-bold text-white text-xs uppercase mb-2 flex items-center gap-2"><Lock size={12} /> Pagamento & Cancelamento</h4>
+                <ul className="text-xs text-gray-400 space-y-2 list-disc pl-4">
+                  <li>Pagamento direto via Pix, Cartão e Dinheiro.</li>
+                  <li>Cancelamentos com min. 2 horas de antecedência.</li>
+                  <li>Taxa de deslocamento pode variar conforme distância.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-                return (
-                  <div
-                    key={s.id}
-                    onClick={() => {
-                      voice.stop();
-                      triggerHaptic();
-                      setSelection({...selection, service: s});
-                      setStep('configure');
-                    }}
-                    className={`ios-card p-5 rounded-[24px] active:scale-[0.99] transition-transform cursor-pointer group ${s.id === 'masculina' ? 'border-[#0A84FF] shadow-[0_0_25px_rgba(10,132,255,0.15)]' : ''}`}
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-bold text-white text-[20px]">{s.name}</h3>
-                      <span className="text-[#0A84FF] font-bold text-[17px] bg-[#0A84FF]/10 px-2 py-1 rounded-md">{formatCurrency(s.basePrice)}</span>
+      <main className="max-w-md mx-auto pt-28 px-5">
+        {/* 1. INTRODUÇÃO & GAMIFICAÇÃO */}
+        <section className="transition-all duration-500">
+          <div className="mb-8">
+            <h1 className="text-4xl font-extrabold mb-3 leading-[1.1] tracking-tight">
+              Massagem &<br /><span className="logo-shimmer">Experiência.</span>
+            </h1>
+            <p className="text-gray-400 text-[15px] leading-relaxed">
+              Massoterapia masculina no conforto do seu local. Técnica apurada e experiência premium.
+            </p>
+          </div>
+
+          {/* LEVEL BAR (XP GAMIFICAÇÃO) */}
+          <div className="mb-8 bg-[#18181b] p-5 rounded-3xl border border-[#222] relative overflow-hidden">
+            <div className="flex justify-between items-end mb-3 relative z-10">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Status VIP</span>
+                <div className="flex items-center gap-2 font-black text-xl mt-0.5">
+                  <Crown size={20} className={xp >= CONFIG.XP_THRESHOLDS.VIP ? "text-[#FFD60A]" : "text-gray-500"} />
+                  <span className={xp >= CONFIG.XP_THRESHOLDS.VIP ? "text-[#FFD60A]" : "text-white"}>
+                    {xp >= CONFIG.XP_THRESHOLDS.ALPHA ? 'ALPHA' : xp >= CONFIG.XP_THRESHOLDS.VIP ? 'VIP' : 'MEMBRO'}
+                  </span>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] text-gray-500">XP Atual</span>
+                <span className="text-sm font-bold block text-white">{xp} <span className="text-gray-600">/ 300</span></span>
+              </div>
+            </div>
+            <div className="h-3 w-full bg-[#131316] rounded-full overflow-hidden relative z-10 box-border border border-[#222]">
+              <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-1000 ease-out" style={{ width: `${Math.min(100, (xp / 300) * 100)}%` }}></div>
+            </div>
+          </div>
+
+          <ReviewsTicker />
+
+          <div className="card-base p-6 space-y-5 shadow-2xl border-[#222]">
+            <div className="space-y-4">
+              <div>
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1 mb-1.5 block">Seus Dados</label>
+                <input value={data.name} onChange={e => setData({ ...data, name: e.target.value })} placeholder="Seu Nome ou Apelido" className="input-clean" />
+              </div>
+              <div>
+                <input type="tel" maxLength={2} value={data.age} onChange={e => setData({ ...data, age: e.target.value.replace(/\D/g, '') })} placeholder="Sua Idade (Ex: 30)" className="input-clean" />
+              </div>
+            </div>
+
+            <div
+              onClick={() => { Utils.vibrate(); setData({ ...data, medical: !data.medical }); }}
+              className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all duration-300 ${data.medical ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'bg-[#18181b] border-[#333]'}`}
+            >
+              <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${data.medical ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#444]'}`}>
+                {data.medical && <Check size={14} className="text-white" />}
+              </div>
+              <p className={`text-sm font-bold ${data.medical ? 'text-white' : 'text-gray-400'}`}>Sou maior de idade e saudável</p>
+            </div>
+
+            {data.name.trim().length > 2 && Number(data.age) >= 18 && data.medical && stage === 0 && (
+              <button
+                onClick={() => { setStage(1); setTimeout(() => window.scrollBy({ top: 360, behavior: 'smooth' }), 100); }}
+                className="btn-primary w-full py-4 flex items-center justify-center gap-2 mt-2 animate-enter"
+              >
+                Começar Agendamento <ArrowRight size={20} />
+              </button>
+            )}
+          </div>
+        </section>
+
+        {/* 2. SERVIÇOS (COM VOZ MASCULINA) */}
+        <section className={`mt-12 transition-opacity duration-500 ${stage >= 1 ? 'opacity-100' : 'hidden'}`}>
+          <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">01.</span> Experiência</h3>
+          <div className="space-y-5">
+            {SERVICES.map(s => {
+              const isThisVoice = voice.activeId === s.id;
+              const isPlaying = isThisVoice && voice.status === 'playing';
+              const isPaused = isThisVoice && voice.status === 'paused';
+              const script = `${s.name}. ${s.desc}`;
+
+              return (
+                <div
+                  key={s.id}
+                  onClick={() => {
+                    voice.stop();
+                    Utils.vibrate();
+                    setData({ ...data, service: s });
+                    if (stage === 1) {
+                      setStage(2);
+                      setTimeout(() => window.scrollBy({ top: 380, behavior: 'smooth' }), 100);
+                    }
+                  }}
+                  className={`card-base p-6 cursor-pointer relative group ${data.service?.id === s.id ? 'card-active' : ''}`}
+                >
+                  {s.badge && (
+                    <div className="absolute top-0 right-0 bg-[#FFD60A] text-black text-[9px] font-black px-3 py-1.5 rounded-bl-2xl shadow-lg z-10">
+                      {s.badge}
                     </div>
-                    {s.highlight && <span className="text-[10px] font-bold text-black bg-[#FFD60A] px-2 py-0.5 rounded mb-2 inline-block">{s.highlight}</span>}
-                    <p className="text-[15px] text-gray-300 leading-relaxed mb-4">{s.description}</p>
+                  )}
+                  <div className="flex justify-between items-start mb-3 relative z-10 pr-24">
+                    <div>
+                      <h3 className={`text-xl font-bold ${data.service?.id === s.id ? 'text-[#0A84FF]' : 'text-white'}`}>{s.name}</h3>
+                      <p className="text-[11px] text-gray-500 font-semibold mt-0.5">{s.short} • {s.duration} min</p>
+                    </div>
+                    <span className="text-white font-bold bg-[#18181b] border border-[#333] px-3 py-1 rounded-lg text-sm shrink-0">
+                      {Utils.fmt(s.price)}
+                    </span>
+                  </div>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-4">{s.desc}</p>
 
-                    {/* CONTROLE DE NARRAÇÃO MASCULINA (OUVIR / PAUSAR / PARAR) */}
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-2 mb-4"
+                  {/* CONTROLE DE ÁUDIO DA DESCRIÇÃO */}
+                  <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-2 pt-3 border-t border-white/5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        Utils.vibrate();
+                        voice.toggle(s.id, script);
+                      }}
+                      className={`flex-1 py-2.5 px-3.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all border ${
+                        isPlaying
+                          ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-[#0A84FF]'
+                          : isPaused
+                            ? 'bg-amber-500/15 border-amber-400/50 text-amber-300'
+                            : 'bg-[#27272a]/70 border-[#3f3f46] text-gray-200 hover:bg-[#27272a]'
+                      }`}
                     >
+                      {isPlaying ? (
+                        <>
+                          <Pause size={14} className="fill-current" /> Pausar voz
+                        </>
+                      ) : isPaused ? (
+                        <>
+                          <Play size={14} className="fill-current" /> Continuar ouvindo
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 size={14} className="text-[#0A84FF]" /> Ouvir descrição
+                        </>
+                      )}
+                    </button>
+
+                    {isThisVoice && (
                       <button
                         type="button"
                         onClick={() => {
-                          triggerHaptic();
-                          voice.toggle(s.id, script);
+                          Utils.vibrate();
+                          voice.stop();
                         }}
-                        className={`flex-1 py-2.5 px-3.5 rounded-[14px] text-[12px] font-bold flex items-center justify-center gap-2 transition-all border ${
-                          isPlaying
-                            ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-[#0A84FF]'
-                            : isPaused
-                              ? 'bg-amber-500/15 border-amber-400/50 text-amber-300'
-                              : 'bg-white/5 border-white/10 text-gray-200 hover:bg-white/10'
-                        }`}
+                        aria-label="Parar áudio"
+                        className="py-2.5 px-3 rounded-xl bg-[#27272a]/70 border border-[#3f3f46] text-gray-400 hover:text-white transition-colors flex items-center justify-center"
                       >
-                        {isPlaying ? (
-                          <>
-                            <Pause className="w-3.5 h-3.5 fill-current" /> Pausar voz
-                          </>
-                        ) : isPaused ? (
-                          <>
-                            <Play className="w-3.5 h-3.5 fill-current" /> Continuar ouvindo
-                          </>
-                        ) : (
-                          <>
-                            <Volume2 className="w-3.5 h-3.5 text-[#0A84FF]" /> Ouvir descrição
-                          </>
-                        )}
+                        <Square size={14} className="fill-current" />
                       </button>
-
-                      {isThisVoice && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            triggerHaptic();
-                            voice.stop();
-                          }}
-                          aria-label="Parar áudio"
-                          className="py-2.5 px-3 rounded-[14px] bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center"
-                        >
-                          <Square className="w-3.5 h-3.5 fill-current" />
-                        </button>
-                      )}
-                    </div>
-
-                    <ul className="space-y-2 mb-4">
-                      {s.details.map((d, idx) => (<li key={idx} className="text-[13px] text-gray-400 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#0A84FF]"></div> {d}</li>))}
-                    </ul>
-                    <div className="flex justify-between items-center pt-4 border-t border-white/5">
-                      <span className="text-[12px] bg-white/5 px-3 py-1.5 rounded-full text-gray-300 flex items-center gap-1.5 font-medium"><Clock className="w-3.5 h-3.5"/> {s.labelDuration}</span>
-                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center"><ChevronRight className="w-5 h-5 text-gray-400" /></div>
-                    </div>
+                    )}
                   </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* 3. DATA E HORA */}
+        <section className={`mt-12 transition-opacity duration-500 ${stage >= 2 ? 'opacity-100' : 'hidden'}`}>
+          <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">02.</span> Data e Hora</h3>
+          <div className="card-base p-6 border-[#222]">
+            <div className="flex gap-3 overflow-x-auto pb-6 hide-scroll snap-x">
+              {[...Array(10)].map((_, i) => {
+                const d = new Date();
+                d.setDate(d.getDate() + i);
+                const isSel = data.date && new Date(data.date).getDate() === d.getDate() && new Date(data.date).getMonth() === d.getMonth();
+                return (
+                  <button
+                    key={i}
+                    onClick={() => { Utils.vibrate(); setData({ ...data, date: d, time: null }); }}
+                    className={`snap-center min-w-[72px] h-[84px] rounded-2xl flex flex-col items-center justify-center border transition-all ${isSel ? 'bg-[#0A84FF] border-[#0A84FF] text-white shadow-lg' : 'bg-[#18181b] border-[#3f3f46] text-gray-400'}`}
+                  >
+                    <span className="text-[10px] font-bold uppercase mb-1 opacity-70">{d.toLocaleDateString('pt-BR', { weekday: 'short' }).slice(0, 3)}</span>
+                    <span className="text-2xl font-bold">{d.getDate()}</span>
+                  </button>
                 );
               })}
             </div>
-          </div>
-        )}
-
-        {/* --- CONFIGURE --- */}
-        {step === 'configure' && selection.service && (
-          <div className="flex-1 p-6 pt-32 overflow-y-auto pb-48 animate-slide-right">
-            <div className="ios-card p-5 rounded-[22px] mb-8 flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-white text-[19px]">{selection.service.name}</h3>
-                <p className="text-[13px] text-gray-400 mt-0.5">{selection.service.labelDuration}</p>
-              </div>
-              <span className="text-[19px] font-bold text-[#0A84FF]">{formatCurrency(selection.service.basePrice)}</span>
-            </div>
-
-            <div className="space-y-8">
-              <section>
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide">Data & Hora</h4>
-                </div>
-                <div className="ios-card p-4 rounded-[22px]">
-                   <InlineDateSelector 
-                      selectedDate={selection.date} 
-                      selectedTime={selection.time} 
-                      onSelect={(d: Date, t: string) => { setSelection({...selection, date: d, time: t}); if(t) scrollTo(locationRef); }} 
-                   />
-                </div>
-              </section>
-
-              <section ref={locationRef}>
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide">Local</h4>
-                  {selection.location && (
-                    <button onClick={() => setSelection({...selection, location: null, useTable: null, city: ''})} className="text-[11px] font-bold text-[#0A84FF] flex items-center gap-1 bg-[#0A84FF]/10 px-2 py-1 rounded-md"><Edit3 className="w-3 h-3"/> EDITAR</button>
-                  )}
-                </div>
-                
-                <div className="space-y-3">
-                  {locations.map(l => {
-                    if (selection.location && selection.location.id !== l.id) return null;
-
-                    return (
-                    <div key={l.id} className="animate-fade-in">
-                        <button onClick={() => { triggerHaptic(); setSelection({...selection, location: l, useTable: null}); scrollTo(vibeRef); }} className={`w-full p-5 rounded-[22px] border text-left transition-all duration-300 ${selection.location?.id === l.id ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="font-semibold text-white text-[17px]">{l.label}</span> 
-                            {l.fee && l.fee > 0 && <span className="text-[11px] font-bold text-gray-300 bg-white/10 px-2 py-1 rounded">+ {formatCurrency(l.fee)}</span>}
-                          </div>
-                          <p className="text-[13px] text-gray-500">{l.sublabel}</p>
-                        </button>
-                        
-                        {selection.location?.id === l.id && l.id === 'santa-fe' && l.allowsTableChoice && (
-                          <div ref={surfaceRef} className="mt-3 grid grid-cols-2 gap-3 animate-fade-in">
-                            <button onClick={() => { setSelection({...selection, useTable: false}); scrollTo(vibeRef); }} className={`p-4 rounded-[18px] border text-[13px] font-bold transition-all ${selection.useTable === false ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'ios-btn border-transparent text-gray-400'}`}>🛏 Na Cama</button>
-                            <button onClick={() => { setSelection({...selection, useTable: true}); scrollTo(vibeRef); }} className={`p-4 rounded-[18px] border text-[13px] font-bold transition-all ${selection.useTable === true ? 'bg-[#0A84FF] border-[#0A84FF] text-white' : 'ios-btn border-transparent text-gray-400'}`}>💆‍♂️ Levar Maca (+20)</button>
-                          </div>
-                        )}
-
-                        {selection.location?.id === l.id && l.id === 'outras-cidades' && (
-                            <input value={selection.city} onChange={e => setSelection({...selection, city: e.target.value})} placeholder="Digite o nome da cidade..." className="mt-3 w-full bg-[#1C1C1E] p-4 rounded-[18px] border border-white/10 text-white placeholder:text-gray-600 focus:border-[#0A84FF] transition-all animate-fade-in" />
-                        )}
-                    </div>
-                  )})}
-                </div>
-              </section>
-
-              <div className="mt-4" ref={vibeRef}>
-                <h4 className="text-[13px] font-semibold text-gray-400 uppercase mb-3 tracking-wide">Vibe Sonora 🎵</h4>
-                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                   {musicVibes.map(vibe => (
-                      <button key={vibe} onClick={() => { setSelection({...selection, music: vibe}); scrollTo(extrasRef); }} className={`px-5 py-3 rounded-[16px] border text-[13px] font-bold whitespace-nowrap flex-shrink-0 transition-all duration-300 ${selection.music === vibe ? 'bg-[#0A84FF] border-[#0A84FF] text-white scale-105' : 'ios-btn border-transparent text-gray-400'}`}>
-                        {vibe}
-                      </button>
-                   ))}
-                </div>
-              </div>
-
-              <div className="space-y-3" ref={extrasRef}>
-                <h4 className="text-[13px] font-semibold text-gray-400 uppercase mb-1 tracking-wide mt-4">UPGRADES</h4>
-                <button onClick={() => { triggerHaptic(); setSelection({...selection, upgrade: !selection.upgrade}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.upgrade ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">+30 Minutos</p><p className="text-[11px] text-gray-500">Para não ter pressa</p></div>
-                  <span className="text-[#0A84FF] font-bold text-[15px]">+{formatCurrency(selection.service.basePrice * 0.5)}</span>
+            <div className={`grid grid-cols-4 gap-3 mt-2 ${data.date ? '' : 'opacity-30 pointer-events-none'}`}>
+              {TIME_SLOTS.map(t => (
+                <button
+                  key={t}
+                  disabled={Utils.isBlocked(data.date, t)}
+                  onClick={() => {
+                    Utils.vibrate();
+                    setData({ ...data, time: t });
+                    if (stage === 2) {
+                      setStage(3);
+                      setTimeout(() => window.scrollBy({ top: 380, behavior: 'smooth' }), 100);
+                    }
+                  }}
+                  className={`py-3 rounded-xl text-xs font-bold border transition-all ${data.time === t ? 'bg-white text-black' : Utils.isBlocked(data.date, t) ? 'opacity-20 line-through border-transparent' : 'bg-[#18181b] border-[#3f3f46] text-gray-300'}`}
+                >
+                  {t}
                 </button>
-
-                <button onClick={() => { triggerHaptic(); setSelection({...selection, aroma: !selection.aroma}); }} className={`w-full p-4 rounded-[20px] border flex justify-between items-center transition-all ${selection.aroma ? 'bg-[#0A84FF]/10 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                  <div className="text-left"><p className="text-white font-bold text-[15px]">Aromaterapia 🌿</p><p className="text-[11px] text-gray-500">Óleos essenciais para acalmar</p></div>
-                  <span className="text-[#0A84FF] font-bold text-[15px]">+R$ 10,00</span>
-                </button>
-              </div>
-
-              <CouponInventory inventory={loyalty.inventory} appliedCoupon={selection.coupon} onApply={(code: string) => { setSelection({...selection, coupon: SYSTEM_COUPONS[code]}); scrollTo(paymentRef); }} onRemove={() => setSelection({...selection, coupon: null})} onAddManual={handleAddManualCoupon}/>
-
-              <div className="mt-6" ref={paymentRef}>
-                <h4 className="text-[13px] font-semibold text-gray-400 uppercase mb-3 tracking-wide">Pagamento</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'pix'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'pix' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <QrCode className="w-6 h-6 text-[#0A84FF]" />
-                    <span className="text-[13px] font-bold text-white">Pix</span>
-                  </button>
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'cash'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'cash' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <Banknote className="w-6 h-6 text-[#30D158]" />
-                    <span className="text-[13px] font-bold text-white">Dinheiro</span>
-                  </button>
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'debit_card'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'debit_card' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <CreditCard className="w-6 h-6 text-[#0A84FF]" />
-                    <span className="text-[13px] font-bold text-white">Débito</span>
-                  </button>
-                  <button onClick={() => setSelection({...selection, paymentMethod: 'credit_card'})} className={`p-4 rounded-[18px] border flex flex-col items-center justify-center gap-2 transition-all ${selection.paymentMethod === 'credit_card' ? 'bg-[#0A84FF]/15 border-[#0A84FF]' : 'ios-btn border-transparent'}`}>
-                    <CreditCard className="w-6 h-6 text-[#FFD60A]" />
-                    <span className="text-[13px] font-bold text-white">Crédito</span>
-                  </button>
-                </div>
-                
-                {selection.paymentMethod === 'credit_card' && (
-                  <div className="mt-3 ios-card p-3 rounded-[16px] animate-fade-in">
-                    <label className="text-[12px] text-gray-400 block mb-1 font-bold ml-1">Parcelas (c/ taxa):</label>
-                    <select 
-                      value={selection.installments} 
-                      onChange={(e) => setSelection({...selection, installments: parseInt(e.target.value)})}
-                      className="w-full bg-[#1C1C1E] border border-white/10 text-white text-[15px] rounded-lg p-3 focus:border-[#0A84FF]"
-                    >
-                      {Array.from({length: 12}, (_, i) => i + 1).map(num => {
-                          const rate = CARD_RATES[num] || 0;
-                          const totalWithRate = calcBaseTotal() / (1 - rate);
-                          const parcelValue = totalWithRate / num;
-                          return (
-                            <option key={num} value={num}>{num}x de {formatCurrency(parcelValue)} (Total: {formatCurrency(totalWithRate)})</option>
-                          );
-                      })}
-                    </select>
-                    <p className="text-[10px] text-gray-500 mt-2 ml-1 flex items-center gap-1"><Info className="w-3 h-3"/> Taxa da máquina aplicada no parcelamento.</p>
-                  </div>
-                )}
-
-                {/* --- RECEIPT (RESUMO DO PEDIDO) --- */}
-                <div className="mt-8 mb-4 ios-card p-5 rounded-[22px] border border-white/5 bg-[#121214]">
-                    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/5">
-                        <Receipt className="w-4 h-4 text-gray-400" />
-                        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Resumo do Pedido</span>
-                    </div>
-
-                    <div className="space-y-3 text-[14px]">
-                        <div className="flex justify-between text-gray-300">
-                            <span>{selection.service.name}</span>
-                            <span>{formatCurrency(selection.service.basePrice)}</span>
-                        </div>
-                        
-                        {selection.location?.fee > 0 && (
-                            <div className="flex justify-between text-gray-400">
-                                <span>+ Taxa Deslocamento</span>
-                                <span>{formatCurrency(selection.location.fee)}</span>
-                            </div>
-                        )}
-                        
-                        {selection.upgrade && (
-                            <div className="flex justify-between text-gray-400">
-                                <span>+ 30 Minutos Extra</span>
-                                <span>{formatCurrency(selection.service.basePrice * 0.5)}</span>
-                            </div>
-                        )}
-                        
-                        {selection.useTable && (
-                            <div className="flex justify-between text-gray-400">
-                                <span>+ Maca Portátil</span>
-                                <span>{formatCurrency(20)}</span>
-                            </div>
-                        )}
-                        
-                        {selection.aroma && (
-                             <div className="flex justify-between text-gray-400">
-                                <span>+ Aromaterapia</span>
-                                <span>{formatCurrency(10)}</span>
-                            </div>
-                        )}
-                        
-                        {selection.coupon && (
-                            <div className="flex justify-between text-[#30D158]">
-                                <span>Desconto ({selection.coupon.code})</span>
-                                <span>
-                                    -{selection.coupon.type === 'percent' 
-                                        ? formatCurrency(calcBaseTotal() / (1 - selection.coupon.value/100) - calcBaseTotal()) 
-                                        : formatCurrency(selection.coupon.value)}
-                                </span>
-                            </div>
-                        )}
-
-                        {selection.location?.id === 'motel' && (
-                             <div className="flex items-center gap-2 text-[#FFD60A] text-[11px] bg-[#FFD60A]/10 p-2 rounded-lg mt-2">
-                                <Info className="w-3 h-3" />
-                                <span>Taxa da Suíte (R$75) paga separadamente no local.</span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-              </div>
+              ))}
             </div>
           </div>
-        )}
+        </section>
 
-        {/* FOOTER FIXO (Configure) */}
-        {step === 'configure' && selection.location && (
-          <div className="absolute bottom-0 w-full p-0 z-30">
-            <div className="h-10 bg-gradient-to-t from-[#000] to-transparent pointer-events-none"></div>
-            
-            <div className="bg-[#1C1C1E]/95 backdrop-blur-xl rounded-t-[32px] p-6 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
-              
-              <div className="flex justify-between items-end mb-4 px-1">
-                <div className='flex flex-col'>
-                  <span className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">TOTAL ESTIMADO</span>
-                  <div className="flex items-end gap-3">
-                    {(selection.coupon || selection.paymentMethod === 'credit_card') && <span className="text-sm text-gray-500 line-through font-medium mb-1">{formatCurrency(calcOriginalPrice())}</span>}
-                    <span className="text-4xl font-bold text-white tracking-tighter leading-none">
-                        {selection.location.id === 'outras-cidades' ? 'A definir' : formatCurrency(calcFinalPrice())}
-                    </span>
-                  </div>
-                  {selection.paymentMethod === 'credit_card' && <span className="text-[10px] text-gray-500 mt-1 ml-0.5">Inclui taxa da máquina</span>}
-                </div>
-              </div>
-
-              <button 
-                disabled={!canFinalize} 
-                onClick={handleWhatsApp} 
-                className="w-full bg-[#0A84FF] hover:bg-[#007AFF] active:scale-[0.98] transition-all text-white font-bold py-4 rounded-[20px] shadow-[0_4px_20px_rgba(10,132,255,0.4)] flex justify-center items-center gap-2 text-[17px] disabled:opacity-50 disabled:shadow-none"
+        {/* 4. EXTRAS */}
+        <section className={`mt-12 transition-opacity duration-500 ${stage >= 3 ? 'opacity-100' : 'hidden'}`}>
+          <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">03.</span> Adicionais</h3>
+          <div className="card-base divide-y divide-[#27272a]">
+            {[
+              { id: 'upgrade' as const, label: '+30 Minutos', desc: 'Mais tempo para curtir cada detalhe.', icon: Clock, price: (data.service?.price || 0) * CONFIG.PRICES.UPGRADE_PCT },
+              { id: 'touch' as const, label: 'Interação / Toque', desc: 'Você no controle. Toques recíprocos.', icon: Flame, price: CONFIG.PRICES.TOUCH },
+              { id: 'aroma' as const, label: 'Aromaterapia', desc: 'Óleos essenciais que acalmam a mente.', icon: Wind, price: CONFIG.PRICES.AROMA }
+            ].map((item) => (
+              <div
+                key={item.id}
+                onClick={() => { Utils.vibrate(); setData({ ...data, extras: { ...data.extras, [item.id]: !data.extras[item.id] } }); }}
+                className="p-5 flex justify-between items-center cursor-pointer hover:bg-[#1f1f23] transition-colors first:rounded-t-[20px] last:rounded-b-[20px]"
               >
-                {canFinalize ? `Confirmar (${selection.upgrade ? '90' : '60'} min) • ${formatCurrency(calcFinalPrice())}` : 'Preencha tudo para continuar'} <MessageCircle className="w-5 h-5"/>
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${data.extras?.[item.id] ? 'bg-[#0A84FF] border-[#0A84FF]' : 'border-[#3f3f46]'}`}>
+                    {data.extras?.[item.id] ? <Check size={16} className="text-white" /> : <item.icon size={16} className="text-gray-500" />}
+                  </div>
+                  <div>
+                    <p className="font-bold text-white text-base">{item.label}</p>
+                    <p className="text-[11px] text-gray-500 mt-0.5">{item.desc}</p>
+                  </div>
+                </div>
+                <span className="text-[#0A84FF] font-bold text-sm">+ {Utils.fmt(item.price)}</span>
+              </div>
+            ))}
+          </div>
+          {stage === 3 && (
+            <button
+              onClick={() => { setStage(4); setTimeout(() => window.scrollBy({ top: 380, behavior: 'smooth' }), 100); }}
+              className="w-full mt-5 py-4 rounded-xl text-sm font-bold bg-[#18181b] text-gray-300 border border-[#3f3f46] hover:border-[#0A84FF] transition-colors"
+            >
+              Continuar
+            </button>
+          )}
+        </section>
+
+        {/* 5. LOCALIZAÇÃO */}
+        <section className={`mt-12 transition-opacity duration-500 ${stage >= 4 ? 'opacity-100' : 'hidden'}`}>
+          <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">04.</span> Localização</h3>
+
+          <p className="text-[10px] uppercase font-bold text-gray-500 mb-3 ml-1">Selecione o Bairro (Taxa Uber Ida+Volta)</p>
+          <LocationSelector
+            selectedId={data.location.id}
+            onSelect={(loc) => setData({ ...data, location: { ...data.location, id: loc.id } })}
+          />
+
+          <div className="grid grid-cols-4 gap-3 mb-5">
+            {LOCATION_TYPES.map(t => (
+              <button
+                key={t.id}
+                onClick={() => { Utils.vibrate(); setData({ ...data, location: { ...data.location, type: t.id } }); }}
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${data.location.type === t.id ? 'bg-[#0A84FF]/20 border-[#0A84FF] text-[#0A84FF]' : 'bg-[#18181b] border-[#3f3f46] text-gray-500'}`}
+              >
+                <t.icon size={20} className="mb-1.5" />
+                <span className="text-[10px] font-bold uppercase">{t.label}</span>
               </button>
-            </div>
+            ))}
           </div>
-        )}
 
-        {/* TELA SUCESSO */}
-        {step === 'success' && (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-            <div className="w-24 h-24 bg-[#30D158] rounded-full flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(48,209,88,0.4)] animate-scale">
-              <Check className="w-12 h-12 text-white drop-shadow-md"/>
-            </div>
-            <h2 className="text-3xl font-bold text-white mb-3">Tudo certo, {user.name}!</h2>
-            <p className="text-gray-400 mb-10 text-[17px] leading-relaxed">Pedido gerado. Aguarde minha confirmação no WhatsApp para garantir o sigilo.</p>
-            <button onClick={handleCopyPix} className="mb-6 flex items-center gap-2 text-[15px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 px-6 py-3 rounded-xl border border-[#0A84FF]/20 hover:bg-[#0A84FF]/20 transition-colors"><Copy className="w-4 h-4"/> Copiar Chave Pix</button>
-            <button onClick={handleReset} className="w-full ios-btn py-4 rounded-[18px] text-white font-bold">Voltar ao Início</button>
+          <div className="card-base p-6 border-[#333] space-y-4">
+            {data.location.type === 'home' && (
+              <div className="flex gap-3">
+                <input placeholder="Rua / Avenida" value={data.location.street} onChange={e => setData({ ...data, location: { ...data.location, street: e.target.value } })} className="input-clean w-2/3" />
+                <input placeholder="Nº" type="tel" value={data.location.number} onChange={e => setData({ ...data, location: { ...data.location, number: e.target.value } })} className="input-clean w-1/3" />
+              </div>
+            )}
+            {data.location.type === 'apto' && (
+              <>
+                <input placeholder="Rua / Avenida" value={data.location.street} onChange={e => setData({ ...data, location: { ...data.location, street: e.target.value } })} className="input-clean" />
+                <div className="flex gap-3">
+                  <input placeholder="Nº Prédio" type="tel" value={data.location.number} onChange={e => setData({ ...data, location: { ...data.location, number: e.target.value } })} className="input-clean w-1/2" />
+                  <input placeholder="Nº Apto" type="tel" value={data.location.apt} onChange={e => setData({ ...data, location: { ...data.location, apt: e.target.value } })} className="input-clean w-1/2" />
+                </div>
+              </>
+            )}
+            {data.location.type === 'hotel' && (
+              <>
+                <input placeholder="Nome do Hotel" value={data.location.hotel} onChange={e => setData({ ...data, location: { ...data.location, hotel: e.target.value } })} className="input-clean" />
+                <input placeholder="Número do Quarto" type="tel" value={data.location.room} onChange={e => setData({ ...data, location: { ...data.location, room: e.target.value } })} className="input-clean" />
+              </>
+            )}
+            {data.location.type === 'motel' && (
+              <>
+                <input placeholder="Nome do Motel" value={data.location.motel} onChange={e => setData({ ...data, location: { ...data.location, motel: e.target.value } })} className="input-clean" />
+                <input placeholder="Suíte (Ex: Hidro)" value={data.location.suite} onChange={e => setData({ ...data, location: { ...data.location, suite: e.target.value } })} className="input-clean" />
+                <p className="text-[10px] text-yellow-500 flex items-center gap-1.5"><AlertTriangle size={12} /> O valor da suíte é pago por você.</p>
+              </>
+            )}
+            {stage === 4 && (
+              <button
+                disabled={!isFormValid()}
+                onClick={() => { setStage(5); setTimeout(() => window.scrollBy({ top: 320, behavior: 'smooth' }), 100); }}
+                className="btn-primary w-full py-4 mt-2"
+              >
+                Confirmar Endereço
+              </button>
+            )}
           </div>
-        )}
+        </section>
 
-        {/* FAQ MODAL ATUALIZADO */}
-        {showFaq && (
-          <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-5">
-            <div className="bg-[#1C1C1E] w-full max-w-sm rounded-[32px] p-8 border border-white/10 shadow-2xl animate-scale">
-              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3"><Shield className="w-7 h-7 text-[#0A84FF]" /> Segurança & Sigilo</h3>
-              <div className="space-y-5 text-[15px] text-gray-300 leading-relaxed">
-                <p>🔒 <strong>Sigilo Total:</strong> O que acontece na sessão, fica na sessão. Respeito sua privacidade.</p>
-                <p>🚫 <strong>Conduta:</strong> Apenas massagem terapêutica e relaxante. Ambiente seguro e livre de julgamentos.</p>
-                <p>💰 <strong>Pagamento:</strong> Pix, Débito, Dinheiro ou Crédito. Sem taxas escondidas (exceto motel/uber).</p>
-                <p>📍 <strong>Atendimento:</strong> Vou até você ou em motéis parceiros da região.</p>
-                <div className="pt-6 border-t border-white/10">
-                   <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="text-xs text-[#FF3B30] flex items-center gap-2"><Trash2 className="w-3.5 h-3.5"/> Limpar meus dados do App</button>
+        {/* 6. PAGAMENTO */}
+        <section className={`mt-10 transition-opacity duration-500 ${stage >= 5 ? 'opacity-100' : 'hidden'}`}>
+          <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><span className="text-[#0A84FF]">05.</span> Forma de Pagamento</h3>
+          <div className="card-base p-4 grid grid-cols-3 gap-3 mb-32">
+            {['pix', 'dinheiro', 'cartao'].map(m => (
+              <button
+                key={m}
+                onClick={() => { Utils.vibrate(); setData({ ...data, payment: m }); }}
+                className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${data.payment === m ? 'bg-[#0A84FF]/20 border-[#0A84FF]' : 'border-[#333] hover:bg-[#18181b]'}`}
+              >
+                {m === 'pix' && <QrCode className="text-[#0A84FF]" />}
+                {m === 'dinheiro' && <Banknote className="text-[#32D74B]" />}
+                {m === 'cartao' && <CreditCard className="text-[#FFD60A]" />}
+                <span className="text-[10px] font-bold uppercase tracking-wider">{m}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      {/* CHECKOUT BAR */}
+      {stage >= 5 && !success && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 animate-fade">
+          <div className="max-w-md mx-auto bg-[#18181b]/95 border-t border-[#333] p-6 rounded-t-[32px] shadow-[0_-10px_60px_rgba(0,0,0,0.9)] backdrop-blur-md">
+            <div className="flex justify-between items-end mb-5">
+              <div>
+                <p className="text-[10px] text-gray-500 uppercase font-bold mb-1 tracking-widest">Total (+ Deslocamento)</p>
+                <div className="flex items-baseline gap-2">
+                  {couponActive && <span className="text-xs text-gray-500 line-through decoration-red-500">{Utils.fmt(financials.sub)}</span>}
+                  <span className="text-4xl font-black text-white tracking-tighter">{Utils.fmt(financials.total)}</span>
                 </div>
               </div>
-              <button onClick={() => setShowFaq(false)} className="mt-8 w-full bg-[#2C2C2E] text-white py-4 rounded-[18px] font-bold">Entendi</button>
+              {couponActive && (
+                <div className="text-[10px] text-[#32D74B] font-bold border border-[#32D74B] px-3 py-1.5 rounded-full bg-[#32D74B]/10 flex items-center gap-1">
+                  <Check size={12} /> DESCONTO ATIVO
+                </div>
+              )}
             </div>
+            <button disabled={!data.payment || !isFormValid()} onClick={finalizeOrder} className="btn-primary w-full h-16 text-lg flex items-center justify-center gap-3">
+              Finalizar Pedido <MessageCircle size={24} fill="currentColor" />
+            </button>
           </div>
-        )}
-
-      </div>
+        </div>
       )}
     </div>
   );
