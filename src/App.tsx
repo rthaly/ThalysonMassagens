@@ -16,8 +16,6 @@ const C = {
   PIX_KEY: '62922530000144',
   INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
-  // ADICIONE O LINK DO MERCADO PAGO AQUI (Exemplo abaixo)
-  CARD_PAYMENT_LINK: 'https://mpago.la/SEU_LINK_AQUI',
   AVATAR: '/thalyson.jpg',
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
   SIGNAL: 40,
@@ -61,7 +59,7 @@ const T: Record<Lang, Record<string, string>> = {
     cbT: 'Massagem + depilação', cbD: 'Economize até R$ 70 no mesmo atendimento.', lyT: 'Leve 5, pague 4', lyD: 'A 5ª sessão é grátis. Você agenda a 1ª agora.', see: 'Ver opção',
     s1: 'Escolha a sessão', s2: 'Quer aproveitar o pacote?', s3: 'Quando e onde', s4: 'Resumo e pagamento', min: 'min', flowH: 'Como será a sessão',
     oSingle: 'Sessão avulsa', oSingleD: 'Uma sessão, sem compromisso.', oCombo: 'Com depilação', oComboD: 'Inclui aparo de pelos em até 3 lugares.', oPack: 'Pacote 5 sessões', oPackD: 'Pague 4 e a 5ª é grátis. Validade de {n} dias.',
-    save: 'Economize', was: 'De',
+    save: 'Economize', was: 'De', listen: 'Ouvir descrição',
     packNote: 'Cupom e desconto de 1ª sessão não acumulam com o pacote, que já é o melhor preço. Você agenda esta 1ª sessão agora e as outras 4 depois, pelo WhatsApp.',
     name: 'Como devo te chamar?', namePh: 'Seu nome', nameErr: 'Informe seu nome (mín. 3 letras).', place: 'Local da sessão', studio: 'No espaço do terapeuta', home: 'O Terapeuta vai até você',
     peakNote: 'Horários de pico no seu endereço têm taxa de R$ 18. Pedimos mais antecedência para o deslocamento. O CEP é consultado no ViaCEP.',
@@ -76,7 +74,7 @@ const T: Record<Lang, Record<string, string>> = {
     reqQ: 'Pedido específico (+ R$ 140)', learn: 'Saiba mais',
     reqConsent: 'Consinto em informar um pedido que pode tratar de vida sexual (dado sensível), apenas para que ele seja avaliado. Ele segue só pelo WhatsApp, não é salvo neste aparelho e posso retirar o consentimento quando quiser.',
     reqPh: 'Algum detalhe ou vontade para a sessão', reqNote: 'Pedido avaliado no momento do atendimento. Se inviável, o valor não é cobrado.',
-    pay: 'Como vai pagar o restante?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'Taxas do cartão são combinadas pelo WhatsApp antes do pagamento.',
+    pay: 'Como vai pagar o restante?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'As taxas e o parcelamento no cartão são combinados diretamente pelo WhatsApp antes do pagamento.',
     optIn: 'Quero receber lembretes e novidades pelo WhatsApp (opcional).',
     ageA: 'Declaro ter 18 anos ou mais e li a', privacy: 'Política de Privacidade', terms: 'Termos', and: 'e a', refund: 'Política de Cancelamento',
     sigA: 'Para confirmar o horário, envie um sinal de', sigB: 'via Pix. O restante é acertado após a sessão.', copyPix: 'Copiar chave Pix (CNPJ)', pixCopied: 'Chave Pix (CNPJ) copiada',
@@ -109,7 +107,7 @@ const T: Record<Lang, Record<string, string>> = {
     cbT: 'Massage + grooming', cbD: 'Save up to R$ 70 in the same visit.', lyT: 'Get 5, pay for 4', lyD: 'The 5th session is free. You book the 1st now.', see: 'See option',
     s1: 'Choose your session', s2: 'How would you like it?', s3: 'When and where', s4: 'Summary and payment', min: 'min', flowH: 'How the session goes',
     oSingle: 'Single session', oSingleD: 'One session, no commitment.', oCombo: 'With grooming', oComboD: 'Includes body trimming in up to 3 areas.', oPack: '5-session pack', oPackD: 'Pay for 4, the 5th is free. Valid for {n} days.',
-    save: 'Save', was: 'Was',
+    save: 'Save', was: 'Was', listen: 'Listen to description',
     packNote: 'Coupons and the 1st-session gift do not stack with the pack, which is already the best price. You book this 1st session now and the other 4 later on WhatsApp.',
     name: 'What should I call you?', namePh: 'Your name', nameErr: 'Enter your name (min. 3 letters).', place: 'Session location', studio: 'At my place', home: 'I come to you',
     peakNote: 'Peak hours at your address carry a R$ 18 fee. We ask for more notice for travel. The ZIP code is looked up via ViaCEP.',
@@ -124,7 +122,7 @@ const T: Record<Lang, Record<string, string>> = {
     reqQ: 'Specific request (+ R$ 140)', learn: 'Learn more',
     reqConsent: 'I consent to describing a request that may relate to sex life (sensitive data), only so it can be evaluated. It goes only via WhatsApp, is not saved on this device, and I can withdraw consent any time.',
     reqPh: 'Any detail or wish for the session', reqNote: 'Request evaluated at the time of the session. If not feasible, it is not charged.',
-    pay: 'How will you pay the remainder?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card fees are agreed on WhatsApp before payment.',
+    pay: 'How will you pay the remainder?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card fees and installments are arranged directly on WhatsApp before payment.',
     optIn: 'I want reminders and news via WhatsApp (optional).',
     ageA: 'I declare I am 18 or older and have read the', privacy: 'Privacy Policy', terms: 'Terms', and: 'and the', refund: 'Cancellation Policy',
     sigA: 'To confirm the time, send a deposit of', sigB: 'via Pix. The rest is settled after the session.', copyPix: 'Copy Pix key (CNPJ)', pixCopied: 'Pix key (CNPJ) copied',
@@ -157,7 +155,7 @@ const T: Record<Lang, Record<string, string>> = {
     cbT: 'Masaje + depilación', cbD: 'Ahorra hasta R$ 70 en la misma visita.', lyT: 'Lleva 5, paga 4', lyD: 'La 5ª sesión es gratis. Reservas la 1ª ahora.', see: 'Ver opción',
     s1: 'Elige la sesión', s2: '¿Cómo la quieres?', s3: 'Cuándo y dónde', s4: 'Resumen y pago', min: 'min', flowH: 'Cómo será la sesión',
     oSingle: 'Sesión individual', oSingleD: 'Una sesión, sin compromiso.', oCombo: 'Con depilación', oComboD: 'Incluye recorte de vello hasta en 3 zonas.', oPack: 'Paquete 5 sesiones', oPackD: 'Paga 4 y la 5ª es gratis. Validez de {n} días.',
-    save: 'Ahorra', was: 'Antes',
+    save: 'Ahorra', was: 'Antes', listen: 'Escuchar descripción',
     packNote: 'Los cupones y el regalo de 1ª sesión no se acumulan con el paquete, que ya es el mejor precio. Reservas esta 1ª sesión ahora y las otras 4 después por WhatsApp.',
     name: '¿Cómo debo llamarte?', namePh: 'Tu nombre', nameErr: 'Ingresa tu nombre (mín. 3 letras).', place: 'Lugar de la sesión', studio: 'En mi espacio', home: 'Voy hasta ti',
     peakNote: 'Los horarios pico en tu dirección tienen una tasa de R$ 18. Pedimos más antelación por el desplazamiento. El CEP se consulta en ViaCEP.',
@@ -172,7 +170,7 @@ const T: Record<Lang, Record<string, string>> = {
     reqQ: 'Pedido específico (+ R$ 140)', learn: 'Más información',
     reqConsent: 'Consiento informar un pedido que puede tratar sobre vida sexual (dato sensible), solo para que sea evaluado. Va solo por WhatsApp, no se guarda en este dispositivo y puedo retirar el consentimiento cuando quiera.',
     reqPh: 'Algún detalle o deseo para la sesión', reqNote: 'Pedido evaluado en el momento de la atención. Si es inviable, no se cobra.',
-    pay: '¿Cómo pagarás el resto?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Las tasas de tarjeta se acuerdan por WhatsApp antes del pago.',
+    pay: '¿Cómo pagarás el resto?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Las tasas y cuotas de tarjeta se acuerdan directamente por WhatsApp antes del pago.',
     optIn: 'Quiero recibir recordatorios y novedades por WhatsApp (opcional).',
     ageA: 'Declaro tener 18 años o más y haber leído la', privacy: 'Política de Privacidad', terms: 'Términos', and: 'y la', refund: 'Política de Cancelación',
     sigA: 'Para confirmar el horario, envía una señal de', sigB: 'por Pix. El resto se paga después de la sesión.', copyPix: 'Copiar clave Pix (CNPJ)', pixCopied: 'Clave Pix (CNPJ) copiada',
@@ -314,6 +312,7 @@ const ICONS = {
   close: 'M18 6L6 18 M6 6l12 12',
   plus: 'M12 5v14 M5 12h14',
   sparkle: 'M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3z',
+  play: 'M5 3l14 9-14 9V3z',
 };
 type IconName = keyof typeof ICONS;
 const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?: number; className?: string }) => (
@@ -364,19 +363,19 @@ const CSS = `
 .app{background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;font-size:17px;line-height:1.55;min-height:100vh;overflow-x:clip;transition:background .3s,color .3s}
 .app .text-sm{font-size:15.5px}.app .text-xs{font-size:13.5px}
 .serif{font-family:'Fraunces',Georgia,serif;font-optical-sizing:auto}
-.card{background:var(--surf);border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.03);border:1px solid var(--line)}
+.card{background:var(--surf);border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.03);border:1px solid var(--line);word-break:break-word}
 .app[data-theme=dark] .card{box-shadow:none}
-.btn{min-height:56px;padding:0 26px;border-radius:999px;font-weight:700;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform .15s,opacity .2s,background .2s}
+.btn{min-height:56px;padding:0 26px;border-radius:999px;font-weight:700;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform .15s,opacity .2s,background .2s;word-break:break-word;text-align:center}
 .btn:active{transform:scale(.98)}
 .btn-p{background:var(--acc);color:var(--onacc);box-shadow:0 4px 12px var(--ring)}
 .btn-p:disabled{background:var(--surf2);color:var(--mute);cursor:not-allowed;box-shadow:none}
 .btn-g{border:1px solid var(--line);color:var(--ink);background:transparent}
 .btn-g:hover{background:var(--surf2)}
-.link{text-decoration:underline;text-underline-offset:4px;color:var(--ink);font-weight:600;min-height:28px}
-.chip{min-height:54px;border:1px solid var(--line);border-radius:18px;background:var(--surf);display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:all .2s;position:relative;font-weight:600}
+.link{text-decoration:underline;text-underline-offset:4px;color:var(--ink);font-weight:600;min-height:28px;word-break:break-word}
+.chip{min-height:54px;border:1px solid var(--line);border-radius:18px;background:var(--surf);display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:all .2s;position:relative;font-weight:600;word-break:break-word;line-height:1.2}
 .chip.on{background:var(--acc);color:var(--onacc);border-color:var(--acc);font-weight:700}
 .chip.off{opacity:.36;text-decoration:line-through;cursor:not-allowed}
-.opt{display:block;border-radius:22px;padding:20px;background:var(--surf);cursor:pointer;transition:all .2s;border:1px solid var(--line)}
+.opt{display:block;border-radius:22px;padding:20px;background:var(--surf);cursor:pointer;transition:all .2s;border:1px solid var(--line);word-break:break-word}
 .opt.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);background:var(--surf2)}
 .opt:has(input:focus-visible),.chip:has(input:focus-visible),.btn:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible,input[type=checkbox]:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 .inp{width:100%;min-height:56px;padding:0 18px;border-radius:16px;background:var(--surf);border:1px solid var(--line);color:var(--ink);font-size:17px;transition:all .2s}
@@ -398,8 +397,8 @@ const CSS = `
 .loadbar{transform-origin:left;animation:bar 2.4s cubic-bezier(.5,0,.2,1) both}
 .rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
 .rv.in{opacity:1;transform:none}
-.ttl{font-weight:300;line-height:1.04;letter-spacing:-0.02em}
-.ttl .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.14em;margin-bottom:-.14em}
+.ttl{font-weight:300;line-height:1.1;letter-spacing:-0.02em; padding-bottom: 0.1em;}
+.ttl .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.15em;margin-bottom:-.15em}
 .ttl .w>span{display:inline-block;transform:translateY(108%);opacity:0;transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity .8s ease}
 .ttl.in .w>span{transform:none;opacity:1}
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
@@ -415,6 +414,12 @@ details.faq[open] summary::after{transform:rotate(45deg)}
 @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(-4%,5%)}}
 @keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 55%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
 .badge-rec{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+@media (max-width: 640px) {
+  .ttl { font-size: clamp(36px, 10vw, 50px) !important; }
+  .grid-cols-3 { grid-template-columns: 1fr !important; }
+  .chip { min-height: 48px; font-size: 15px; }
+  .btn { padding: 0 16px; }
+}
 @media (prefers-reduced-motion:reduce){.glow,.dot,.core,.ring,.rise,.loadbar{animation:none!important}.rv,.ttl .w>span{opacity:1!important;transform:none!important;transition:none!important}*{scroll-behavior:auto!important}}
 `;
 
@@ -631,6 +636,19 @@ export default function App() {
   };
   const copyPix = async () => { const ok = await copyText(C.PIX_KEY); showToast(ok ? t('pixCopied') : `Pix: ${C.PIX_KEY}`); };
 
+  // NOVO: Função para narrar o áudio
+  const speak = (text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel(); // Para áudios anteriores
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 0.9; // Um pouco mais lento, relaxante
+      window.speechSynthesis.speak(utterance);
+    } else {
+      showToast('Navegador não suporta áudio.');
+    }
+  };
+
   const handleCep = async (val: string) => {
     const masked = maskCEP(val);
     set({ cep: masked });
@@ -691,7 +709,6 @@ export default function App() {
     return waLink(m);
   };
 
-  // NOVO: Link do Google Calendar
   const googleCalendarLink = () => {
     if (!data.date || !data.time) return '';
     const startDateTime = `${dateKey(data.date).replace(/-/g, '')}T${data.time.replace(':', '')}00`;
@@ -721,7 +738,6 @@ export default function App() {
     setSentLink(link); vibrate([30, 50]);
     
     // CORREÇÃO IOS: window.location.href é mais confiável que window.open
-    // Se usar window.open no iOS, ele pode bloquear e perder a mensagem
     window.location.href = link;
     
     setDone(true);
@@ -872,7 +888,6 @@ export default function App() {
                   <div className="space-y-3 max-w-xs mx-auto">
                     <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer" className="btn btn-p w-full">{t('resend')}</a>
                     <button type="button" onClick={copyPix} className="btn btn-g w-full"><Icon name="copy" size={16} /> {t('copyPix')}</button>
-                    {/* BOTÃO DO GOOGLE CALENDAR */}
                     <a href={googleCalendarLink()} target="_blank" rel="noopener noreferrer" className="btn btn-g w-full"><Icon name="cal" size={16} /> {t('addCal')}</a>
                     <button type="button" onClick={restart} className="w-full min-h-[48px] text-sm underline underline-offset-4" style={{ color: 'var(--mute)' }}>{t('restart')}</button>
                   </div>
@@ -929,9 +944,17 @@ export default function App() {
                                   ))}
                                 </div>
                                 <p className="text-sm font-bold mb-2">{t('flowH')}</p>
-                                <ol className="pl-5 list-decimal text-[15.5px] leading-relaxed space-y-1" style={{ color: 'var(--mute)' }}>
+                                <ol className="pl-5 list-decimal text-[15.5px] leading-relaxed space-y-1 mb-4" style={{ color: 'var(--mute)' }}>
                                   {L.flow.map((s) => <li key={s}>{s}</li>)}
                                 </ol>
+                                <button 
+                                  type="button" 
+                                  onClick={(e) => { e.preventDefault(); speak(`${L.title}. ${L.desc}. Como funciona: ${L.flow.join('. ')}`); }}
+                                  className="btn btn-g w-full text-sm" 
+                                  style={{ minHeight: 44, borderColor: `rgba(${rgb}, 0.4)`, color: `rgb(${rgb})` }}
+                                >
+                                  <Icon name="play" size={16} /> {t('listen')}
+                                </button>
                               </div>
                             )}
                           </div>
@@ -953,8 +976,8 @@ export default function App() {
                         ] as [Offer, string, string, number, number, number][]).map(([o, a, b, price, was, sv]) => (
                           <label key={o} className={`opt ${offerEff === o ? 'on' : ''}`}>
                             <input type="radio" name="offer" value={o} checked={offerEff === o} onChange={() => { vibrate(15); setOffer(o); }} className="sr-only" />
-                            <span className="flex justify-between items-start gap-4">
-                              <span><span className="block font-bold">{a}</span><span className="block text-sm mt-1" style={{ color: 'var(--mute)' }}>{b}</span></span>
+                            <span className="flex justify-between items-start gap-4 flex-wrap sm:flex-nowrap">
+                              <span className="flex-1"><span className="block font-bold">{a}</span><span className="block text-sm mt-1" style={{ color: 'var(--mute)' }}>{b}</span></span>
                               <span className="text-right shrink-0">
                                 <span className="serif text-[22px] block leading-none" style={{ color: 'var(--acc)' }}>{money(price)}</span>
                                 {sv > 0 && <span className="block text-xs mt-1"><s style={{ color: 'var(--mute)' }}>{money(was)}</s></span>}
@@ -977,7 +1000,7 @@ export default function App() {
                         {/* NOVO FLUXO: PRIMEIRO DATA E HORA, DEPOIS NOME */}
                         <fieldset className="min-w-0">
                           <legend className="lbl">{t('date')}</legend>
-                          <div className="flex gap-3 overflow-x-auto py-1 hide-sb -mx-5 px-5 snap-x">
+                          <div className="flex gap-3 overflow-x-auto py-1 hide-sb -mx-5 px-5 snap-x w-full max-w-full">
                             {days.map(({ d, i }) => {
                               const sel = sameDay(data.date, d);
                               return (
@@ -1087,13 +1110,7 @@ export default function App() {
                               </label>
                             ))}
                           </div>
-                          {/* NOVO: BOTÃO DE LINK DO MERCADO PAGO NO CARTÃO */}
-                          {data.payment === 'card' && (
-                            <div className="mt-4 rise">
-                              <p className="text-sm mb-3" style={{ color: 'var(--mute)' }}>{t('cardNote')}</p>
-                              <a href={C.CARD_PAYMENT_LINK} target="_blank" rel="noopener noreferrer" className="btn btn-g w-full">Pagar com cartão de crédito</a>
-                            </div>
-                          )}
+                          {data.payment === 'card' && <p className="text-sm mt-3" style={{ color: 'var(--mute)' }}>{t('cardNote')}</p>}
                         </fieldset>
 
                         <details className="faq card px-6">
@@ -1173,16 +1190,16 @@ export default function App() {
 
           <section className="mb-24" aria-labelledby="ab">
             <Reveal>
-              <div className="flex items-center gap-5 mb-5">
+              <div className="flex items-center gap-5 mb-5 flex-col sm:flex-row text-center sm:text-left">
                 <Avatar className="w-20 h-20 rounded-full" alt="Thalyson" />
                 <div>
                   <Title id="ab" className="text-[26px] md:text-[32px]">{t('aboutH')}</Title>
                   <p className="text-sm font-bold" style={{ color: 'var(--acc)' }}>{t('aboutR')}</p>
                 </div>
               </div>
-              <p className="leading-relaxed mb-3 max-w-xl" style={{ color: 'var(--mute)' }}>{t('about1')}</p>
-              <p className="flex items-start gap-3 text-[15.5px] leading-relaxed mb-6 max-w-xl"><Icon name="map" size={18} className="mt-1" />{t('about2')}</p>
-              <div className="flex flex-wrap gap-3">
+              <p className="leading-relaxed mb-3 max-w-xl mx-auto sm:mx-0 text-center sm:text-left" style={{ color: 'var(--mute)' }}>{t('about1')}</p>
+              <p className="flex items-start justify-center sm:justify-start gap-3 text-[15.5px] leading-relaxed mb-6 max-w-xl mx-auto sm:mx-0 text-left"><Icon name="map" size={18} className="mt-1 shrink-0" />{t('about2')}</p>
+              <div className="flex flex-wrap justify-center sm:justify-start gap-3">
                 <button type="button" onClick={() => setProfileOpen(true)} className="btn btn-p" style={{ minHeight: 50 }}>{t('seeProfile')}</button>
                 <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="btn btn-g" style={{ minHeight: 50 }}><Icon name="instagram" size={18} /> Instagram</a>
               </div>
@@ -1230,7 +1247,7 @@ export default function App() {
       {profileOpen && (
         <Modal title={t('profile')} onClose={() => setProfileOpen(false)} closeLabel={t('close')}>
           <div className="p-6">
-            <div className="flex items-center gap-5 mb-5">
+            <div className="flex items-center gap-5 mb-5 flex-col sm:flex-row text-center sm:text-left">
               <Avatar className="w-24 h-24 rounded-full" alt="Thalyson" />
               <div>
                 <h3 className="serif text-2xl leading-tight">{t('aboutH')}</h3>
