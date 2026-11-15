@@ -1,5 +1,12 @@
-import { useState, useEffect, useMemo, useRef, memo, type ReactNode } from 'react';
+import {
+  useState, useEffect, useMemo, useRef, useCallback, useContext, createContext, useId, memo, forwardRef, cloneElement, isValidElement,
+  type ReactNode, type ReactElement, type CSSProperties,
+  type ButtonHTMLAttributes, type InputHTMLAttributes, type LabelHTMLAttributes, type HTMLAttributes,
+} from 'react';
 
+/* ================================================================== */
+/*  CONFIGURAÇÃO                                                       */
+/* ================================================================== */
 const SITE_NAME = 'Relaxar hoje com Thalyson';
 const LEGAL = {
   RAZAO: 'Thalyson Rodrigo dos Santos',
@@ -44,9 +51,14 @@ type Offer = 'single' | 'combo' | 'pack';
 type DocId = 'privacy' | 'terms' | 'refund' | 'cookies';
 type PkgTheme = 'sage' | 'amber' | 'crimson' | 'midnight' | 'slate';
 type PkgText = { title: string; desc: string; tags: string[]; flow: string[] };
+type Ref<E> = { current: E | null };
 
 const LOCALE: Record<Lang, string> = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' };
+const LANG_NAME: Record<Lang, string> = { pt: 'Português', en: 'English', es: 'Español' };
 
+/* ================================================================== */
+/*  TEXTOS (PT / EN / ES)                                              */
+/* ================================================================== */
 const T: Record<Lang, Record<string, string>> = {
   pt: {
     loadMsg: 'Preparando o seu momento de pausa', badge: 'Bela Vista, Centro de São Paulo',
@@ -59,7 +71,9 @@ const T: Record<Lang, Record<string, string>> = {
     cbT: 'Massagem + depilação', cbD: 'Economize até R$ 70 no mesmo atendimento.', lyT: 'Leve 5, pague 4', lyD: 'A 5ª sessão é grátis. Você agenda a 1ª agora.', see: 'Ver opção',
     s1: 'Escolha a sessão', s2: 'Quer aproveitar o pacote?', s3: 'Quando e onde', s4: 'Resumo e pagamento', min: 'min', flowH: 'Como será a sessão',
     oSingle: 'Sessão avulsa', oSingleD: 'Uma sessão, sem compromisso.', oCombo: 'Com depilação', oComboD: 'Inclui aparo de pelos em até 3 lugares.', oPack: 'Pacote 5 sessões', oPackD: 'Pague 4 e a 5ª é grátis. Validade de {n} dias.',
-    save: 'Economize', was: 'De',
+    save: 'Economize', was: 'De', listen: 'Ouvir descrição', pause: 'Pausar áudio', resume: 'Continuar áudio', stopA: 'Parar',
+    voiceLow: 'Modo teste de voz', noTts: 'Seu navegador não suporta narração em áudio.',
+    skip: 'Ir para o conteúdo', guar: 'Garantias', legalNav: 'Documentos legais',
     packNote: 'Cupom e desconto de 1ª sessão não acumulam com o pacote, que já é o melhor preço. Você agenda esta 1ª sessão agora e as outras 4 depois, pelo WhatsApp.',
     name: 'Como devo te chamar?', namePh: 'Seu nome', nameErr: 'Informe seu nome (mín. 3 letras).', place: 'Local da sessão', studio: 'No espaço do terapeuta', home: 'O Terapeuta vai até você',
     peakNote: 'Horários de pico no seu endereço têm taxa de R$ 18. Pedimos mais antecedência para o deslocamento. O CEP é consultado no ViaCEP.',
@@ -74,13 +88,13 @@ const T: Record<Lang, Record<string, string>> = {
     reqQ: 'Pedido específico (+ R$ 140)', learn: 'Saiba mais',
     reqConsent: 'Consinto em informar um pedido que pode tratar de vida sexual (dado sensível), apenas para que ele seja avaliado. Ele segue só pelo WhatsApp, não é salvo neste aparelho e posso retirar o consentimento quando quiser.',
     reqPh: 'Algum detalhe ou vontade para a sessão', reqNote: 'Pedido avaliado no momento do atendimento. Se inviável, o valor não é cobrado.',
-    pay: 'Como vai pagar o restante?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'Taxas do cartão são combinadas pelo WhatsApp antes do pagamento.',
+    pay: 'Como vai pagar o restante?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'As taxas e o parcelamento no cartão são combinados diretamente pelo WhatsApp antes do pagamento.',
     optIn: 'Quero receber lembretes e novidades pelo WhatsApp (opcional).',
     ageA: 'Declaro ter 18 anos ou mais e li a', privacy: 'Política de Privacidade', terms: 'Termos', and: 'e a', refund: 'Política de Cancelamento',
     sigA: 'Para confirmar o horário, envie um sinal de', sigB: 'via Pix. O restante é acertado após a sessão.', copyPix: 'Copiar chave Pix (CNPJ)', pixCopied: 'Chave Pix (CNPJ) copiada',
     send: 'Enviar pelo WhatsApp', needPay: 'Escolha a forma de pagamento', needAge: 'Confirme que você tem 18 anos ou mais',
     doneH: 'Tudo pronto!', doneP: 'Sua solicitação foi preparada. O horário só está confirmado depois da resposta pelo WhatsApp. Se o WhatsApp não abriu, use o botão abaixo.',
-    doneSig: 'Envie o comprovante do sinal na conversa para confirmar.', resend: 'Reenviar mensagem', addCal: 'Adicionar à agenda', restart: 'Voltar ao início',
+    doneSig: 'Envie o comprovante do sinal na conversa para confirmar.', resend: 'Reenviar mensagem', addCal: 'Adicionar ao Google Calendar', restart: 'Voltar ao início',
     chatQ: 'Prefere tirar uma dúvida antes?', chatBtn: 'Falar no WhatsApp', chatMsg: 'Oi Thalyson! Vim pelo site Relaxar hoje com Thalyson e tenho uma dúvida.',
     aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Terapeuta masculino', about1: 'Meu trabalho é direto e focado no corpo masculino: usar o toque para aliviar o peso e a tensão da sua rotina.',
     about2: 'Atendo em uma suíte no Centro Histórico de SP, próximo ao Metrô Anhangabaú.', seeProfile: 'Ver perfil completo',
@@ -94,6 +108,7 @@ const T: Record<Lang, Record<string, string>> = {
     pHours: 'Horário de atendimento', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Formas de pagamento', pPayV: 'Pix (3% off), cartão até 12x e dinheiro',
     pWhere: 'Onde atendo', pWhereV: 'No meu espaço (Bela Vista) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis até 12 horas antes',
     pForget: 'Apagar meus dados deste aparelho', forgot: 'Dados apagados deste aparelho',
+    recommended: 'Recomendado para hoje', smartSub: 'Seu corpo pede pausa. Deixe o resto comigo.', lastSlots: 'Atenção: Últimos horários para hoje',
   },
   en: {
     loadMsg: 'Preparing your moment to pause', badge: 'Bela Vista, Downtown São Paulo',
@@ -106,7 +121,9 @@ const T: Record<Lang, Record<string, string>> = {
     cbT: 'Massage + grooming', cbD: 'Save up to R$ 70 in the same visit.', lyT: 'Get 5, pay for 4', lyD: 'The 5th session is free. You book the 1st now.', see: 'See option',
     s1: 'Choose your session', s2: 'How would you like it?', s3: 'When and where', s4: 'Summary and payment', min: 'min', flowH: 'How the session goes',
     oSingle: 'Single session', oSingleD: 'One session, no commitment.', oCombo: 'With grooming', oComboD: 'Includes body trimming in up to 3 areas.', oPack: '5-session pack', oPackD: 'Pay for 4, the 5th is free. Valid for {n} days.',
-    save: 'Save', was: 'Was',
+    save: 'Save', was: 'Was', listen: 'Listen to description', pause: 'Pause audio', resume: 'Resume audio', stopA: 'Stop',
+    voiceLow: 'This device has no male voice for this language. A deeper tone was used.', noTts: 'Your browser does not support audio narration.',
+    skip: 'Skip to content', guar: 'Guarantees', legalNav: 'Legal documents',
     packNote: 'Coupons and the 1st-session gift do not stack with the pack, which is already the best price. You book this 1st session now and the other 4 later on WhatsApp.',
     name: 'What should I call you?', namePh: 'Your name', nameErr: 'Enter your name (min. 3 letters).', place: 'Session location', studio: 'At my place', home: 'I come to you',
     peakNote: 'Peak hours at your address carry a R$ 18 fee. We ask for more notice for travel. The ZIP code is looked up via ViaCEP.',
@@ -121,13 +138,13 @@ const T: Record<Lang, Record<string, string>> = {
     reqQ: 'Specific request (+ R$ 140)', learn: 'Learn more',
     reqConsent: 'I consent to describing a request that may relate to sex life (sensitive data), only so it can be evaluated. It goes only via WhatsApp, is not saved on this device, and I can withdraw consent any time.',
     reqPh: 'Any detail or wish for the session', reqNote: 'Request evaluated at the time of the session. If not feasible, it is not charged.',
-    pay: 'How will you pay the remainder?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card fees are agreed on WhatsApp before payment.',
+    pay: 'How will you pay the remainder?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card fees and installments are arranged directly on WhatsApp before payment.',
     optIn: 'I want reminders and news via WhatsApp (optional).',
     ageA: 'I declare I am 18 or older and have read the', privacy: 'Privacy Policy', terms: 'Terms', and: 'and the', refund: 'Cancellation Policy',
     sigA: 'To confirm the time, send a deposit of', sigB: 'via Pix. The rest is settled after the session.', copyPix: 'Copy Pix key (CNPJ)', pixCopied: 'Pix key (CNPJ) copied',
     send: 'Send on WhatsApp', needPay: 'Choose a payment method', needAge: 'Confirm you are 18 or older',
     doneH: 'All set!', doneP: 'Your request is ready. The time is only confirmed after the reply on WhatsApp. If WhatsApp did not open, use the button below.',
-    doneSig: 'Send the deposit receipt in the chat to confirm.', resend: 'Resend message', addCal: 'Add to calendar', restart: 'Back to start',
+    doneSig: 'Send the deposit receipt in the chat to confirm.', resend: 'Resend message', addCal: 'Add to Google Calendar', restart: 'Back to start',
     chatQ: 'Prefer to ask something first?', chatBtn: 'Chat on WhatsApp', chatMsg: 'Hi Thalyson! I came from the Relaxar hoje com Thalyson site and have a question.',
     aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Male therapist', about1: 'My work is direct and focused on the male body: using touch to relieve the weight and tension of your routine.',
     about2: 'I work from a suite in downtown São Paulo, close to the Anhangabaú metro station.', seeProfile: 'See full profile',
@@ -141,6 +158,7 @@ const T: Record<Lang, Record<string, string>> = {
     pHours: 'Opening hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment methods', pPayV: 'Pix (3% off), card up to 12x and cash',
     pWhere: 'Where I work', pWhereV: 'At my place (Bela Vista) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12 hours before',
     pForget: 'Erase my data from this device', forgot: 'Data erased from this device',
+    recommended: 'Recommended for today', smartSub: 'Your body asks for a pause. Leave the rest to me.', lastSlots: 'Attention: Last slots for today',
   },
   es: {
     loadMsg: 'Preparando tu momento de pausa', badge: 'Bela Vista, Centro de São Paulo',
@@ -153,7 +171,9 @@ const T: Record<Lang, Record<string, string>> = {
     cbT: 'Masaje + depilación', cbD: 'Ahorra hasta R$ 70 en la misma visita.', lyT: 'Lleva 5, paga 4', lyD: 'La 5ª sesión es gratis. Reservas la 1ª ahora.', see: 'Ver opción',
     s1: 'Elige la sesión', s2: '¿Cómo la quieres?', s3: 'Cuándo y dónde', s4: 'Resumen y pago', min: 'min', flowH: 'Cómo será la sesión',
     oSingle: 'Sesión individual', oSingleD: 'Una sesión, sin compromiso.', oCombo: 'Con depilación', oComboD: 'Incluye recorte de vello hasta en 3 zonas.', oPack: 'Paquete 5 sesiones', oPackD: 'Paga 4 y la 5ª es gratis. Validez de {n} días.',
-    save: 'Ahorra', was: 'Antes',
+    save: 'Ahorra', was: 'Antes', listen: 'Escuchar descripción', pause: 'Pausar audio', resume: 'Continuar audio', stopA: 'Detener',
+    voiceLow: 'Este dispositivo no tiene voz masculina en este idioma. Usé un tono más grave.', noTts: 'Tu navegador no admite narración en audio.',
+    skip: 'Ir al contenido', guar: 'Garantías', legalNav: 'Documentos legales',
     packNote: 'Los cupones y el regalo de 1ª sesión no se acumulan con el paquete, que ya es el mejor precio. Reservas esta 1ª sesión ahora y las otras 4 después por WhatsApp.',
     name: '¿Cómo debo llamarte?', namePh: 'Tu nombre', nameErr: 'Ingresa tu nombre (mín. 3 letras).', place: 'Lugar de la sesión', studio: 'En mi espacio', home: 'Voy hasta ti',
     peakNote: 'Los horarios pico en tu dirección tienen una tasa de R$ 18. Pedimos más antelación por el desplazamiento. El CEP se consulta en ViaCEP.',
@@ -168,13 +188,13 @@ const T: Record<Lang, Record<string, string>> = {
     reqQ: 'Pedido específico (+ R$ 140)', learn: 'Más información',
     reqConsent: 'Consiento informar un pedido que puede tratar sobre vida sexual (dato sensible), solo para que sea evaluado. Va solo por WhatsApp, no se guarda en este dispositivo y puedo retirar el consentimiento cuando quiera.',
     reqPh: 'Algún detalle o deseo para la sesión', reqNote: 'Pedido evaluado en el momento de la atención. Si es inviable, no se cobra.',
-    pay: '¿Cómo pagarás el resto?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Las tasas de tarjeta se acuerdan por WhatsApp antes del pago.',
+    pay: '¿Cómo pagarás el resto?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Las tasas y cuotas de tarjeta se acuerdan directamente por WhatsApp antes del pago.',
     optIn: 'Quiero recibir recordatorios y novedades por WhatsApp (opcional).',
     ageA: 'Declaro tener 18 años o más y haber leído la', privacy: 'Política de Privacidad', terms: 'Términos', and: 'y la', refund: 'Política de Cancelación',
     sigA: 'Para confirmar el horario, envía una señal de', sigB: 'por Pix. El resto se paga después de la sesión.', copyPix: 'Copiar clave Pix (CNPJ)', pixCopied: 'Clave Pix (CNPJ) copiada',
     send: 'Enviar por WhatsApp', needPay: 'Elige la forma de pago', needAge: 'Confirma que tienes 18 años o más',
     doneH: '¡Todo listo!', doneP: 'Tu solicitud está preparada. El horario solo se confirma tras la respuesta por WhatsApp. Si no se abrió, usa el botón de abajo.',
-    doneSig: 'Envía el comprobante de la señal en el chat para confirmar.', resend: 'Reenviar mensaje', addCal: 'Añadir al calendario', restart: 'Volver al inicio',
+    doneSig: 'Envía el comprobante de la señal en el chat para confirmar.', resend: 'Reenviar mensaje', addCal: 'Añadir a Google Calendar', restart: 'Volver al inicio',
     chatQ: '¿Prefieres preguntar algo antes?', chatBtn: 'Hablar por WhatsApp', chatMsg: '¡Hola Thalyson! Vengo del sitio Relaxar hoje com Thalyson y tengo una duda.',
     aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Terapeuta masculino', about1: 'Mi trabajo es directo y enfocado en el cuerpo masculino: usar el tacto para aliviar el peso y la tensión de tu rutina.',
     about2: 'Atiendo en una suite en el Centro Histórico de SP, cerca del metro Anhangabaú.', seeProfile: 'Ver perfil completo',
@@ -188,6 +208,7 @@ const T: Record<Lang, Record<string, string>> = {
     pHours: 'Horario de atención', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Formas de pago', pPayV: 'Pix (3% de descuento), tarjeta hasta 12x y efectivo',
     pWhere: 'Dónde atiendo', pWhereV: 'En mi espacio (Bela Vista) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis hasta 12 horas antes',
     pForget: 'Borrar mis datos de este dispositivo', forgot: 'Datos borrados de este dispositivo',
+    recommended: 'Recomendado para hoy', smartSub: 'Tu cuerpo pide pausa. Déjame el resto a mí.', lastSlots: 'Atención: Últimos horarios para hoy',
   },
 };
 
@@ -231,8 +252,11 @@ const PACKAGES: { id: string; price: number; min: number; combo: number; theme: 
 const MASSAGES = PACKAGES.filter((p) => p.combo > 0);
 const PAY_PT: Record<string, string> = { pix: 'PIX', card: 'CARTÃO', cash: 'DINHEIRO' };
 
+/* ================================================================== */
+/*  DOCUMENTOS LEGAIS                                                  */
+/* ================================================================== */
 const P = ({ children }: { children: ReactNode }) => <p className="mb-3">{children}</p>;
-const H = ({ children }: { children: ReactNode }) => <h3 className="font-semibold mt-5 mb-2" style={{ color: 'var(--ink)' }}>{children}</h3>;
+const H = ({ children }: { children: ReactNode }) => <h3 className="font-semibold mt-5 mb-2 c-ink">{children}</h3>;
 const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
   privacy: { title: 'Política de Privacidade', body: (<>
     <P>Última atualização: {LEGAL.ATUALIZADO}. Esta política segue a Lei Geral de Proteção de Dados (Lei 13.709/2018, LGPD).</P>
@@ -266,12 +290,16 @@ const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
     <P>Se no futuro ativarmos qualquer ferramenta de análise ou marketing, ela só carregará depois do seu consentimento.</P></>) },
 };
 
+/* ================================================================== */
+/*  UTILITÁRIOS                                                        */
+/* ================================================================== */
+const cn = (...a: Array<string | false | null | undefined>) => a.filter(Boolean).join(' ');
 const money = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;
-const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate && navigator.vibrate(p); } catch { /* sem suporte */ } };
 const store = {
-  get: (k: string): string | null => { try { return localStorage.getItem(k); } catch (e) { return null; } },
-  set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch (e) {} },
-  del: (k: string) => { try { localStorage.removeItem(k); } catch (e) {} },
+  get: (k: string): string | null => { try { return localStorage.getItem(k); } catch { return null; } },
+  set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* ignorado */ } },
+  del: (k: string) => { try { localStorage.removeItem(k); } catch { /* ignorado */ } },
 };
 const clean = (t: string) => t.replace(/[*_~`\r\n]+/g, ' ').trim();
 const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
@@ -279,8 +307,10 @@ const dateKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padS
 const toMin = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
 const fromMin = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
 const sameDay = (a: Date | null, b: Date) => !!a && dateKey(a) === dateKey(b);
-const copyText = async (t: string) => { try { await navigator.clipboard.writeText(t); return true; } catch (e) { return false; } };
+const copyText = async (t: string) => { try { await navigator.clipboard.writeText(t); return true; } catch { return false; } };
 const waLink = (text: string) => `https://api.whatsapp.com/send?phone=${C.PHONE}&text=${encodeURIComponent(text)}`;
+/** Relógio de São Paulo, independente do fuso do aparelho. */
+const spNow = () => { try { return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' })); } catch { return new Date(); } };
 
 type Slot = { t: string; ok: boolean };
 function buildSlots(date: Date, dur: number, isHome: boolean, now: Date): Slot[] {
@@ -292,6 +322,106 @@ function buildSlots(date: Date, dur: number, isHome: boolean, now: Date): Slot[]
   return out;
 }
 
+/* ================================================================== */
+/*  NARRAÇÃO EM ÁUDIO: voz masculina, pausar e continuar               */
+/* ================================================================== */
+type NarrState = 'idle' | 'playing' | 'paused';
+const MALE_RE = /(felipe|daniel|ant[oô]nio|ricardo|jorge|diego|pablo|raul|enrique|carlos|david|thiago|donato|george|\bmark\b|\bfred\b|\balex\b|\bmale\b|masculin|homem)/i;
+const FEMALE_RE = /(female|feminin|mulher|francisca|luciana|maria|fernanda|joana|camila|vit[oó]ria|paulina|m[oó]nica|helena|laura|samantha|zira|susan|google)/i;
+
+function pickVoice(voices: SpeechSynthesisVoice[], lang: Lang) {
+  const loc = LOCALE[lang].toLowerCase();
+  const norm = (v: SpeechSynthesisVoice) => v.lang.replace('_', '-').toLowerCase();
+  const exact = voices.filter((v) => norm(v) === loc);
+  const same = exact.length ? exact : voices.filter((v) => norm(v).startsWith(lang));
+  const male = same.find((v) => MALE_RE.test(v.name) && !FEMALE_RE.test(v.name));
+  return { voice: male || same[0] || null, male: !!male };
+}
+
+function useNarrator(lang: Lang) {
+  const supported = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [state, setState] = useState<NarrState>('idle');
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const chunks = useRef<string[]>([]);
+  const idx = useRef(0);
+  const token = useRef(0);
+  const choice = useMemo(() => pickVoice(voices, lang), [voices, lang]);
+  const choiceRef = useRef(choice);
+  choiceRef.current = choice;
+  const langRef = useRef(lang);
+  langRef.current = lang;
+
+  useEffect(() => {
+    if (!supported) return undefined;
+    const synth = window.speechSynthesis;
+    const load = () => setVoices(synth.getVoices());
+    load();
+    synth.addEventListener?.('voiceschanged', load);
+    return () => synth.removeEventListener?.('voiceschanged', load);
+  }, [supported]);
+
+  useEffect(() => () => { if (supported) { token.current += 1; window.speechSynthesis.cancel(); } }, [supported]);
+
+  // Fala frase por frase: evita o corte de ~15s do Chrome e deixa o pausar funcionar em qualquer aparelho.
+  const step = useCallback(function run(tk: number) {
+    if (tk !== token.current) return;
+    const i = idx.current;
+    if (i >= chunks.current.length) { setState('idle'); setActiveId(null); return; }
+    const u = new SpeechSynthesisUtterance(chunks.current[i]);
+    const { voice, male } = choiceRef.current;
+    if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = LOCALE[langRef.current];
+    u.rate = 0.92;
+    u.pitch = male ? 1 : 0.7; // sem voz masculina disponível: tom mais grave
+    u.onend = () => { if (tk !== token.current) return; idx.current = i + 1; run(tk); };
+    u.onerror = (e) => {
+      if (tk !== token.current) return;
+      if (e.error === 'interrupted' || e.error === 'canceled') return;
+      setState('idle'); setActiveId(null);
+    };
+    window.speechSynthesis.speak(u);
+  }, []);
+
+  const stop = useCallback(() => {
+    token.current += 1;
+    if (supported) window.speechSynthesis.cancel();
+    setState('idle'); setActiveId(null);
+  }, [supported]);
+
+  const play = useCallback((id: string, text: string) => {
+    if (!supported) return;
+    const tk = ++token.current;
+    window.speechSynthesis.cancel();
+    chunks.current = (text.match(/[^.!?]+[.!?]*/g) || [text]).map((s) => s.trim()).filter(Boolean);
+    idx.current = 0;
+    setActiveId(id); setState('playing');
+    setTimeout(() => step(tk), 80);
+  }, [supported, step]);
+
+  const pause = useCallback(() => {
+    token.current += 1;
+    if (supported) window.speechSynthesis.cancel();
+    setState('paused');
+  }, [supported]);
+
+  const resume = useCallback(() => {
+    const tk = ++token.current;
+    setState('playing');
+    setTimeout(() => step(tk), 80);
+  }, [step]);
+
+  const toggle = useCallback((id: string, text: string) => {
+    if (activeId === id && state === 'playing') pause();
+    else if (activeId === id && state === 'paused') resume();
+    else play(id, text);
+  }, [activeId, state, pause, resume, play]);
+
+  return { supported, state, activeId, male: choice.male, toggle, stop };
+}
+
+/* ================================================================== */
+/*  ÍCONES, AVATAR E ANIMAÇÕES                                         */
+/* ================================================================== */
 const ICONS = {
   instagram: 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
   shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
@@ -308,6 +438,10 @@ const ICONS = {
   gift: 'M20 12v10H4V12 M2 7h20v5H2z M12 22V7 M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z',
   close: 'M18 6L6 18 M6 6l12 12',
   plus: 'M12 5v14 M5 12h14',
+  sparkle: 'M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3z',
+  play: 'M5 3l14 9-14 9V3z',
+  pause: 'M6 4h4v16H6z M14 4h4v16h-4z',
+  stop: 'M6 6h12v12H6z',
 };
 type IconName = keyof typeof ICONS;
 const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?: number; className?: string }) => (
@@ -337,7 +471,7 @@ function Reveal({ children, delay = 0, className = '' }: { children: ReactNode; 
   const { ref, seen } = useSeen<HTMLDivElement>();
   return <div ref={ref} className={`rv ${seen ? 'in' : ''} ${className}`} style={{ transitionDelay: `${delay}ms` }}>{children}</div>;
 }
-function Title({ children, as = 'h2', className = '', style, id }: { children: string; as?: 'h1' | 'h2'; className?: string; style?: React.CSSProperties; id?: string }) {
+function Title({ children, as = 'h2', className = '', style, id }: { children: string; as?: 'h1' | 'h2'; className?: string; style?: CSSProperties; id?: string }) {
   const { ref, seen } = useSeen<HTMLHeadingElement>();
   const Tag = as;
   return (
@@ -347,69 +481,50 @@ function Title({ children, as = 'h2', className = '', style, id }: { children: s
   );
 }
 
-const Row = ({ label, value, tone }: { label: string; value: ReactNode; tone?: 'ok' }) => (
-  <div className="flex justify-between gap-4 text-[15.5px]" style={tone ? { color: 'var(--ok)', fontWeight: 700 } : undefined}><span style={tone ? undefined : { color: 'var(--mute)' }}>{label}</span><span className="font-semibold text-right">{value}</span></div>
-);
+/* ================================================================== */
+/*  COMPONENTES NO ESTILO shadcn/ui (embutidos, sem instalar nada)     */
+/* ================================================================== */
+type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean };
+/** Botão. Com asChild, aplica as classes no filho (ex.: um <a>). */
+function Button({ asChild, className, children, type, ...rest }: BtnProps) {
+  if (asChild && isValidElement(children)) {
+    const child = children as ReactElement<{ className?: string }>;
+    return cloneElement(child, { ...rest, className: cn(className, child.props.className) } as unknown as { className: string });
+  }
+  return <button type={type ?? 'button'} className={className} {...rest}>{children}</button>;
+}
 
-const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Manrope:wght@400..800&display=swap');
-.app{--bg:#F9F8F6;--surf:#FFFFFF;--surf2:#F2EFEB;--ink:#1C1A17;--mute:#746E65;--line:rgba(28,26,23,.08);--acc:#1C1A17;--onacc:#FFFFFF;--ring:rgba(28,26,23,.15);--ok:#1E533F;--warn:#A86B22}
-.app[data-theme=dark]{--bg:#141312;--surf:#1D1B1A;--surf2:#2A2725;--ink:#F2EFEB;--mute:#999187;--line:rgba(242,239,235,.08);--acc:#F2EFEB;--onacc:#141312;--ring:rgba(242,239,235,.2);--ok:#50A684;--warn:#E6A15C}
-.app{background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;font-size:17px;line-height:1.55;min-height:100vh;overflow-x:clip;transition:background .3s,color .3s}
-.app .text-sm{font-size:15.5px}.app .text-xs{font-size:13.5px}
-.serif{font-family:'Fraunces',Georgia,serif;font-optical-sizing:auto}
-.card{background:var(--surf);border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.03);border:1px solid var(--line)}
-.app[data-theme=dark] .card{box-shadow:none}
-.btn{min-height:56px;padding:0 26px;border-radius:999px;font-weight:700;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform .15s,opacity .2s,background .2s}
-.btn:active{transform:scale(.98)}
-.btn-p{background:var(--acc);color:var(--onacc);box-shadow:0 4px 12px var(--ring)}
-.btn-p:disabled{background:var(--surf2);color:var(--mute);cursor:not-allowed;box-shadow:none}
-.btn-g{border:1px solid var(--line);color:var(--ink);background:transparent}
-.btn-g:hover{background:var(--surf2)}
-.link{text-decoration:underline;text-underline-offset:4px;color:var(--ink);font-weight:600;min-height:28px}
-.chip{min-height:54px;border:1px solid var(--line);border-radius:18px;background:var(--surf);display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:all .2s;position:relative;font-weight:600}
-.chip.on{background:var(--acc);color:var(--onacc);border-color:var(--acc);font-weight:700}
-.chip.off{opacity:.36;text-decoration:line-through;cursor:not-allowed}
-.opt{display:block;border-radius:22px;padding:20px;background:var(--surf);cursor:pointer;transition:all .2s;border:1px solid var(--line)}
-.opt.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);background:var(--surf2)}
-.opt:has(input:focus-visible),.chip:has(input:focus-visible),.btn:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible,input[type=checkbox]:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
-.inp{width:100%;min-height:56px;padding:0 18px;border-radius:16px;background:var(--surf);border:1px solid var(--line);color:var(--ink);font-size:17px;transition:all .2s}
-.inp::placeholder{color:var(--mute)}
-.inp:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--ring)}
-.inp:disabled{opacity:.5}
-.lbl{display:block;font-size:14.5px;font-weight:700;color:var(--mute);margin-bottom:10px}
-.err{font-size:14px;color:#D6455D;margin-top:8px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surf)}
-.seg button{min-height:34px;min-width:38px;padding:0 8px;border-radius:999px;font-size:12.5px;font-weight:800;color:var(--mute)}
-.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
-.glow{position:absolute;top:-6%;right:-30%;width:min(95vw,640px);aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 15%,transparent),transparent 66%);animation:drift 14s ease-in-out infinite}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:pulse 2.6s ease-out infinite}
-.stepn{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;border:1.5px solid var(--line);color:var(--mute);transition:all .3s}
-.stepn.ok{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
-.core{position:absolute;inset:0;margin:auto;width:96px;height:96px;border-radius:50%;overflow:hidden;animation:breathe 6s ease-in-out infinite}
-.ring{position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--acc);opacity:0;animation:ring 3.6s ease-out infinite}
-.rise{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
-.loadbar{transform-origin:left;animation:bar 2.4s cubic-bezier(.5,0,.2,1) both}
-.rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
-.rv.in{opacity:1;transform:none}
-.ttl{font-weight:300;line-height:1.04;letter-spacing:-0.02em}
-.ttl .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.14em;margin-bottom:-.14em}
-.ttl .w>span{display:inline-block;transform:translateY(108%);opacity:0;transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity .8s ease}
-.ttl.in .w>span{transform:none;opacity:1}
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
-details.faq summary{min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-weight:700;list-style:none}
-details.faq summary::-webkit-details-marker{display:none}
-details.faq summary::after{content:'+';font-size:24px;color:var(--acc);transition:transform .2s}
-details.faq[open] summary::after{transform:rotate(45deg)}
-.hide-sb::-webkit-scrollbar{display:none}.hide-sb{scrollbar-width:none}
-@keyframes breathe{0%,100%{transform:scale(.96)}50%{transform:scale(1.04)}}
-@keyframes ring{0%{transform:scale(.55);opacity:.6}100%{transform:scale(1.7);opacity:0}}
-@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-@keyframes bar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(-4%,5%)}}
-@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 55%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
-@media (prefers-reduced-motion:reduce){.glow,.dot,.core,.ring,.rise,.loadbar{animation:none!important}.rv,.ttl .w>span{opacity:1!important;transform:none!important;transition:none!important}*{scroll-behavior:auto!important}}
-`;
+const Card = ({ className, ...rest }: HTMLAttributes<HTMLDivElement>) => <div className={cn('card-ui', className)} {...rest} />;
+const Label = ({ className, ...rest }: LabelHTMLAttributes<HTMLLabelElement>) => <label className={className} {...rest} />;
+const Badge = ({ className, ...rest }: HTMLAttributes<HTMLSpanElement>) => <span className={cn('badge-ui', className)} {...rest} />;
+const Separator = () => <div role="separator" className="sep-ui" />;
+const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(({ className, ...rest }, ref) => (
+  <input ref={ref} className={cn('inp-ui', className)} {...rest} />
+));
+Input.displayName = 'Input';
+
+function Checkbox({ id, checked, onCheckedChange, className }: { id?: string; checked: boolean; onCheckedChange: (c: boolean) => void; className?: string }) {
+  return (
+    <button type="button" role="checkbox" id={id} aria-checked={checked} onClick={() => onCheckedChange(!checked)} className={cn('chk-ui', className)}>
+      {checked && <Icon name="check" size={16} />}
+    </button>
+  );
+}
+
+const RadioCtx = createContext<{ name: string; value: string; onChange: (v: string) => void }>({ name: '', value: '', onChange: () => undefined });
+function RadioGroup({ value, onValueChange, className, children, ...aria }: { value: string; onValueChange: (v: string) => void; className?: string; children: ReactNode; 'aria-label'?: string; 'aria-labelledby'?: string }) {
+  const name = useId();
+  return (
+    <RadioCtx.Provider value={{ name, value, onChange: onValueChange }}>
+      <div role="radiogroup" className={className} {...aria}>{children}</div>
+    </RadioCtx.Provider>
+  );
+}
+/** Rádio nativo escondido: teclado, setas e leitor de tela funcionam sem código extra. */
+function RadioGroupItem({ value, disabled, ...aria }: { value: string; disabled?: boolean; 'aria-label'?: string }) {
+  const c = useContext(RadioCtx);
+  return <input type="radio" className="sr-only" name={c.name} value={value} checked={c.value === value} disabled={disabled} onChange={() => c.onChange(value)} {...aria} />;
+}
 
 function Modal({ title, onClose, closeLabel, children }: { title: string; onClose: () => void; closeLabel: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -434,17 +549,28 @@ function Modal({ title, onClose, closeLabel, children }: { title: string; onClos
     return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prevOverflow; prevFocus?.focus(); };
   }, []);
   return (
-    <div className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center sm:p-4" style={{ background: 'rgba(8,6,12,.72)' }} onClick={() => closeRef.current()}>
-      <div ref={ref} role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={(e) => e.stopPropagation()} className="card w-full max-w-lg max-h-[90vh] flex flex-col rise" style={{ borderRadius: '28px 28px 0 0' }}>
-        <div className="flex justify-between items-center gap-4 p-5" style={{ borderBottom: '1px solid var(--line)' }}>
+    <div className="fixed inset-0 flex items-end sm:items-center justify-center sm:p-4" style={{ background: 'rgba(8,6,12,.72)', zIndex: 150 }} onClick={() => closeRef.current()}>
+      <div ref={ref} role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={(e) => e.stopPropagation()} className="card-ui modal-card w-full flex flex-col rise">
+        <div className="flex justify-between items-center gap-4 p-5 bd-line" style={{ borderBottom: '1px solid var(--line)' }}>
           <h2 id="modal-title" className="serif text-xl">{title}</h2>
-          <button type="button" onClick={() => closeRef.current()} aria-label={closeLabel} className="btn btn-g" style={{ minHeight: 46, minWidth: 46, padding: '0 14px', borderRadius: '50%', border: 'none' }}><Icon name="close" size={18} /></button>
+          <Button onClick={() => closeRef.current()} aria-label={closeLabel} className="btn-ui btn-g btn-round"><Icon name="close" size={18} /></Button>
         </div>
         <div className="overflow-y-auto">{children}</div>
       </div>
     </div>
   );
 }
+
+const Row = ({ label, value, tone }: { label: string; value: ReactNode; tone?: 'ok' }) => (
+  <div className={cn('flex justify-between gap-4 text-[15.5px]', tone && 'c-ok font-bold')}>
+    <span className={tone ? undefined : 'c-mute'}>{label}</span>
+    <span className="font-semibold text-right">{value}</span>
+  </div>
+);
+
+const LinkBtn = ({ onClick, children }: { onClick: () => void; children: ReactNode }) => (
+  <Button onClick={onClick} className="lnk-ui">{children}</Button>
+);
 
 const StepHead = ({ n, title, done }: { n: number; title: string; done: boolean }) => (
   <div className="flex items-center gap-4 mb-6">
@@ -453,11 +579,128 @@ const StepHead = ({ n, title, done }: { n: number; title: string; done: boolean 
   </div>
 );
 
+/* ================================================================== */
+/*  CSS (tema, componentes, responsividade, sem quebra de palavras)    */
+/* ================================================================== */
+const CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Manrope:wght@400..800&display=swap');
+.app{--bg:#F9F8F6;--surf:#FFFFFF;--surf2:#F2EFEB;--ink:#1C1A17;--mute:#6B655C;--line:rgba(28,26,23,.12);--acc:#1C1A17;--onacc:#FFFFFF;--rg:rgba(28,26,23,.22);--ok:#1E533F;--warn:#8F5A1A;--err:#C2334D}
+.app[data-theme=dark]{--bg:#141312;--surf:#1D1B1A;--surf2:#2A2725;--ink:#F2EFEB;--mute:#A19A90;--line:rgba(242,239,235,.12);--acc:#F2EFEB;--onacc:#141312;--rg:rgba(242,239,235,.28);--ok:#50A684;--warn:#E6A15C;--err:#FF8A9B}
+.app{background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;font-size:17px;line-height:1.55;min-height:100vh;min-height:100dvh;overflow-x:clip;transition:background .3s,color .3s;overflow-wrap:break-word;word-break:normal;hyphens:manual;text-wrap:pretty;-webkit-text-size-adjust:100%}
+.app h1,.app h2,.app h3{text-wrap:balance;word-break:normal;hyphens:manual}
+.app .text-sm{font-size:15.5px}.app .text-xs{font-size:13.5px}
+.app button,.app input,.app label{font-family:inherit}
+.serif{font-family:'Fraunces',Georgia,serif;font-optical-sizing:auto}
+.c-mute{color:var(--mute)}.c-ink{color:var(--ink)}.c-ok{color:var(--ok)}.c-warn{color:var(--warn)}
+.bg-s2{background:var(--surf2)}.bd-line{border-color:var(--line)}
+.err{font-size:14px;color:var(--err);margin-top:8px}
+.skip{position:absolute;left:-9999px;top:8px;z-index:300;background:var(--acc);color:var(--onacc);padding:12px 20px;border-radius:999px;font-weight:700}
+.skip:focus{position:fixed;left:12px}
+
+.card-ui{background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.03)}
+.app[data-theme=dark] .card-ui{box-shadow:none}
+.card-flat{border:none;background:var(--surf2)}
+.modal-card{max-width:32rem;max-height:90vh;max-height:90dvh;border-radius:28px 28px 0 0}
+@media(min-width:640px){.modal-card{border-radius:28px}}
+
+.btn-ui{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:12px 24px;border-radius:999px;font-weight:700;font-size:16px;line-height:1.2;text-align:center;cursor:pointer;white-space:normal;text-wrap:balance;transition:transform .15s,opacity .2s,background .2s}
+.btn-ui:active{transform:scale(.98)}
+.btn-ui:disabled{cursor:not-allowed}
+.btn-p{background:var(--acc);color:var(--onacc);box-shadow:0 4px 12px var(--rg)}
+.btn-p:hover:not(:disabled){opacity:.92}
+.btn-p:disabled{background:var(--surf2);color:var(--mute);box-shadow:none}
+.btn-g{border:1px solid var(--line);color:var(--ink);background:transparent}
+.btn-g:hover:not(:disabled){background:var(--surf2)}
+.btn-g:disabled{opacity:.5}
+.btn-sm{min-height:48px;font-size:15px}
+.btn-md{min-height:50px}
+.btn-lg{min-height:60px;font-size:17px;padding:12px 36px}
+.btn-xl{min-height:64px;font-size:17px}
+.btn-round{min-height:46px;min-width:46px;width:46px;padding:0;border:none}
+.btn-icon{min-height:44px;min-width:44px;width:44px;padding:0;border:none}
+.btn-ghost{background:transparent;border:none;min-height:auto;padding:4px;justify-content:flex-start;border-radius:14px;font-weight:500}
+
+.lnk-ui{display:inline;background:none;border:0;padding:0;font:inherit;font-weight:600;color:var(--ink);text-decoration:underline;text-underline-offset:4px;cursor:pointer;text-align:left;overflow-wrap:break-word}
+.lnk-block{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:44px;padding:0 8px;text-align:center}
+.lnk-mute{color:var(--mute);font-weight:500;font-size:14px}
+.lnk-left{justify-content:flex-start;padding:0}
+.lnk-full{display:flex;width:100%}
+
+.inp-ui{display:block;width:100%;min-height:56px;padding:0 18px;border-radius:16px;background:var(--surf);border:1px solid var(--line);color:var(--ink);font-size:17px;transition:border-color .2s,box-shadow .2s}
+.inp-ui::placeholder{color:var(--mute)}
+.inp-ui:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--rg)}
+.inp-ui:disabled{opacity:.5}
+.inp-ui[aria-invalid=true]{border-color:var(--err)}
+
+.lbl-ui{display:block;font-size:14.5px;font-weight:700;color:var(--mute);margin-bottom:10px;line-height:1.35}
+.lbl-flat{margin-bottom:0}
+.lbl-chk{cursor:pointer;font-size:14.5px;line-height:1.6}
+.chk-ui{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0;margin-top:2px;padding:0;border:2px solid var(--mute);border-radius:6px;background:var(--surf);color:var(--onacc);cursor:pointer;transition:background .15s,border-color .15s}
+.chk-ui[aria-checked=true]{background:var(--acc);border-color:var(--acc)}
+.chk-mid{margin-top:0}
+.chk-ui:focus-visible,.btn-ui:focus-visible,.lnk-ui:focus-visible,.app a:focus-visible,.app button:focus-visible,.app summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+
+.chip-ui{position:relative;display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px 12px;border:1px solid var(--line);border-radius:18px;background:var(--surf);color:var(--ink);text-align:center;cursor:pointer;transition:background .2s,color .2s,border-color .2s;font-weight:600;font-size:16px;line-height:1.2;text-wrap:balance}
+.chip-ui.col{flex-direction:column}
+.chip-ui.on{background:var(--acc);color:var(--onacc);border-color:var(--acc);font-weight:700}
+.chip-ui.off{opacity:.4;text-decoration:line-through;cursor:not-allowed}
+.chip-ui:has(input:focus-visible),.opt-ui:has(input:focus-visible){outline:2px solid var(--acc);outline-offset:3px}
+.opt-ui{display:block;border-radius:22px;padding:20px;background:var(--surf);cursor:pointer;border:1px solid var(--line);transition:border-color .2s,background .2s}
+.opt-ui.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);background:var(--surf2)}
+.pkg-ui{overflow:hidden;border-radius:22px;border:1px solid var(--line);background:var(--surf);transition:border-color .2s,background .2s}
+.pkg-head{display:block;cursor:pointer;padding:18px 20px}
+.pkg-head:has(input:focus-visible){outline:2px solid var(--acc);outline-offset:-3px}
+
+.badge-ui{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:800;line-height:1.2;text-align:center}
+.badge-rec{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.sep-ui{height:1px;background:var(--line);width:100%}
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surf)}
+.seg button{min-height:40px;min-width:44px;padding:0 8px;border-radius:999px;font-size:12.5px;font-weight:800;color:var(--mute)}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.brand{display:none}
+@media(min-width:430px){.brand{display:inline}}
+.g-2,.g-3{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:420px){.g-2{grid-template-columns:1fr 1fr}.g-3{grid-template-columns:repeat(3,1fr)}}
+
+.glow{position:absolute;top:-6%;right:-30%;width:min(95vw,640px);aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 15%,transparent),transparent 66%);animation:drift 14s ease-in-out infinite}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:pulse 2.6s ease-out infinite}
+.stepn{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;border:1.5px solid var(--line);color:var(--mute);transition:all .3s}
+.stepn.ok{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.core{position:absolute;inset:0;margin:auto;width:96px;height:96px;border-radius:50%;overflow:hidden;animation:breathe 6s ease-in-out infinite}
+.ring{position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--acc);opacity:0;animation:ring 3.6s ease-out infinite}
+.rise{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
+.loadbar{transform-origin:left;animation:bar 2.4s cubic-bezier(.5,0,.2,1) both}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+.ttl{font-weight:300;line-height:1.1;letter-spacing:-0.02em;padding-bottom:.1em}
+.ttl .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.15em;margin-bottom:-.15em}
+.ttl .w>span{display:inline-block;transform:translateY(108%);opacity:0;transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity .8s ease}
+.ttl.in .w>span{transform:none;opacity:1}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+details.faq summary{min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-weight:700;list-style:none}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary::after{content:'+';font-size:24px;color:var(--acc);transition:transform .2s;flex-shrink:0}
+details.faq[open] summary::after{transform:rotate(45deg)}
+.hide-sb::-webkit-scrollbar{display:none}.hide-sb{scrollbar-width:none}
+@keyframes breathe{0%,100%{transform:scale(.96)}50%{transform:scale(1.04)}}
+@keyframes ring{0%{transform:scale(.55);opacity:.6}100%{transform:scale(1.7);opacity:0}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes bar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(-4%,5%)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 55%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
+@media (max-width:640px){.ttl{font-size:clamp(36px,10vw,50px)!important}}
+@media (prefers-reduced-motion:reduce){.glow,.dot,.core,.ring,.rise,.loadbar{animation:none!important}.rv,.ttl .w>span{opacity:1!important;transform:none!important;transition:none!important}*{scroll-behavior:auto!important}}
+`;
+
 interface Booking {
   name: string; locType: 'studio' | 'home'; cep: string; street: string; number: string; comp: string; bairro: string;
   date: Date | null; time: string; req: string; payment: string; packageId: string; addTime: boolean;
 }
 
+/* ================================================================== */
+/*  APP                                                                */
+/* ================================================================== */
 export default function App() {
   const [lang, setLang] = useState<Lang>(() => {
     const s = store.get('thaly_lang');
@@ -466,7 +709,7 @@ export default function App() {
   const [theme, setTheme] = useState<Theme>(() => {
     const s = store.get('thaly_theme');
     if (s === 'dark' || s === 'light') return s;
-    try { return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; } catch (e) { return 'dark'; }
+    try { return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; } catch { return 'dark'; }
   });
   const t = (k: string) => T[lang][k] ?? T.pt[k] ?? k;
 
@@ -480,18 +723,21 @@ export default function App() {
   const [touched, setTouched] = useState(false);
   const [toast, setToast] = useState('');
   const [doc, setDoc] = useState<DocId | null>(null);
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState(() => spNow());
   const [showBar, setShowBar] = useState(false);
   const [coupon, setCoupon] = useState({ input: '', applied: '', value: 0, error: '' });
   const [ageOk, setAgeOk] = useState(false);
   const [reqOk, setReqOk] = useState(false);
   const [optIn, setOptIn] = useState(false);
   const [hp, setHp] = useState('');
+  // O nome não é mais salvo no aparelho: isso deixa o app coerente com a Política de Cookies.
   const [data, setData] = useState<Booking>({
     name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '',
     date: null, time: '', req: '', payment: '', packageId: '', addTime: false,
   });
   const set = (patch: Partial<Booking>) => setData((p) => ({ ...p, ...patch }));
+
+  const narr = useNarrator(lang);
 
   const bookRef = useRef<HTMLDivElement>(null);
   const s2Ref = useRef<HTMLDivElement>(null);
@@ -505,12 +751,12 @@ export default function App() {
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(''), 3500);
   };
-  const scrollToRef = (r: React.RefObject<HTMLDivElement>, ms = 140) => setTimeout(() => r.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), ms);
+  const scrollToRef = (r: Ref<HTMLDivElement>, ms = 140) => setTimeout(() => r.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), ms);
   const goBook = () => scrollToRef(bookRef, 30);
 
   useEffect(() => {
     let reduce = false;
-    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* ignorado */ }
     const id = setTimeout(() => {
       if (store.get('thaly_onboard_final') === 'yes') { setAgeOk(true); setPhase('site'); } else setPhase('welcome');
     }, reduce ? 800 : 2600);
@@ -520,8 +766,10 @@ export default function App() {
   useEffect(() => { store.set('thaly_lang', lang); document.documentElement.lang = LOCALE[lang]; }, [lang]);
   useEffect(() => { document.title = SITE_NAME; }, []);
   useEffect(() => { store.set('thaly_theme', theme); }, [theme]);
-  useEffect(() => { const i = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(i); }, []);
+  useEffect(() => { const i = setInterval(() => setNow(spNow()), 60000); return () => clearInterval(i); }, []);
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
+  // Ao trocar de sessão ou idioma, o áudio para.
+  useEffect(() => { narr.stop(); }, [data.packageId, lang, narr.stop]);
   useEffect(() => {
     if (phase !== 'site') { setShowBar(false); return undefined; }
     const onScroll = () => {
@@ -543,6 +791,14 @@ export default function App() {
   const isPack = offerEff === 'pack';
   const hasReq = reqOk && data.req.trim().length > 3;
   const fmt = (d: Date, o: Intl.DateTimeFormatOptions) => d.toLocaleDateString(LOCALE[lang], o);
+
+  const recommendedPkgId = useMemo(() => {
+    const day = now.getDay();
+    const hour = now.getHours();
+    if (day === 1 || (hour >= 9 && hour < 14)) return 'classica';
+    if (day === 5 || day === 6 || hour >= 20) return 'sensitiva';
+    return 'fusion';
+  }, [now]);
 
   const invoice = useMemo(() => {
     let dur = pkg.min;
@@ -568,17 +824,19 @@ export default function App() {
     return { sessionPrice, aparoAdd, timeAdd, reqFee, peakFee, discount, pixDiscount, total, sinal, rest: Math.max(0, total - sinal), dur, comboSave, packSave, saved: comboSave + packSave + discount + pixDiscount };
   }, [data, pkg, isHome, isPack, aparoOn, isReturning, coupon.applied, coupon.value, hasReq]);
 
+  const todayKey = dateKey(now);
   const days = useMemo(() => {
     const out: { d: Date; i: number }[] = [];
-    const baseDate = new Date();
+    const baseDate = new Date(now);
     baseDate.setHours(0, 0, 0, 0);
-    for (let i = 0; i < C.DAYS; i++) { 
-      const d = new Date(baseDate); 
-      d.setDate(d.getDate() + i); 
-      out.push({ d, i }); 
+    for (let i = 0; i < C.DAYS; i++) {
+      const d = new Date(baseDate);
+      d.setDate(d.getDate() + i);
+      out.push({ d, i });
     }
     return out;
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todayKey]);
 
   const slots = useMemo(() => (data.date ? buildSlots(data.date, invoice.dur, isHome, now) : []), [data.date, invoice.dur, isHome, now]);
   const availableCount = slots.filter((s) => s.ok).length;
@@ -589,7 +847,7 @@ export default function App() {
     const baseDate = new Date(now);
     baseDate.setHours(0, 0, 0, 0);
     for (let k = 0; k < 4; k++) {
-      const d = new Date(baseDate); 
+      const d = new Date(baseDate);
       d.setDate(d.getDate() + k);
       const s = buildSlots(d, pkg.min, false, now).find((x) => x.ok);
       if (s) return { d, t: s.t, k };
@@ -624,7 +882,7 @@ export default function App() {
         const j = await res.json();
         if (!j.erro) { setData((p) => ({ ...p, street: j.logradouro || p.street, bairro: j.bairro || p.bairro })); setTimeout(() => numberRef.current?.focus(), 150); }
         else showToast(t('cepFail'));
-      } catch (e) { showToast(t('cepFail')); }
+      } catch { showToast(t('cepFail')); }
     }
   };
 
@@ -674,18 +932,15 @@ export default function App() {
     return waLink(m);
   };
 
-  const downloadICS = () => {
-    if (!data.date || !data.time) return;
-    const f = (d: Date, mm: number) => `${dateKey(d).replace(/-/g, '')}T${fromMin(mm).replace(':', '')}00`;
-    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-    const s = toMin(data.time);
-    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Thalyson//Agenda//PT', 'BEGIN:VEVENT', `UID:${Date.now()}@thalyson`, `DTSTAMP:${stamp}`,
-      `DTSTART:${f(data.date, s)}`, `DTEND:${f(data.date, s + invoice.dur)}`, `SUMMARY:${pkg.L.pt.title} - Thalyson`,
-      `DESCRIPTION:Sinal de ${money(invoice.sinal)} via Pix para confirmar.`, 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
-    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
-    const a = document.createElement('a'); a.href = url; a.download = 'sessao.ics';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const googleCalendarLink = () => {
+    if (!data.date || !data.time) return '';
+    const day = dateKey(data.date).replace(/-/g, '');
+    const startDateTime = `${day}T${data.time.replace(':', '')}00`;
+    const endDateTime = `${day}T${fromMin(toMin(data.time) + invoice.dur).replace(':', '')}00`;
+    const text = encodeURIComponent(`Massagem: ${pkg.L.pt.title} - Thalyson`);
+    const details = encodeURIComponent(`Sinal de ${money(invoice.sinal)} via Pix. Restante: ${money(invoice.rest)}.`);
+    const location = encodeURIComponent(isHome ? `${data.street}, ${data.number} - ${data.bairro}, São Paulo` : 'Bela Vista, São Paulo - SP');
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${startDateTime}/${endDateTime}&details=${details}&location=${location}&ctz=America/Sao_Paulo`;
   };
 
   const goReview = () => {
@@ -703,8 +958,10 @@ export default function App() {
     const link = whatsappLink();
     store.set('thaly_returning_final', 'yes');
     setSentLink(link); vibrate([30, 50]);
-    const w = window.open(link, '_blank', 'noopener,noreferrer');
+    // Abre em nova aba para não perder o estado da página; se o navegador bloquear, navega na mesma aba.
+    const w = window.open(link, '_blank');
     if (!w) window.location.href = link;
+    else { try { w.opener = null; } catch { /* ignorado */ } }
     setDone(true);
     scrollToRef(bookRef, 60);
   };
@@ -713,10 +970,15 @@ export default function App() {
     setTouched(false); setReqOk(false); setDone(false); setReviewed(false); setOffer('single');
     setData((p) => ({ ...p, locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', date: null, time: '', req: '', payment: '', packageId: '', addTime: false }));
   };
-  const restart = () => { vibrate(15); resetBooking(); goBook(); };
+  const restart = () => {
+    vibrate(15);
+    if (store.get('thaly_returning_final') === 'yes') setIsReturning(true);
+    resetBooking(); goBook();
+  };
 
   const forgetMe = () => {
-    ['thaly_returning_final', 'thaly_onboard_final', 'thaly_cid'].forEach((k) => store.del(k));
+    ['thaly_returning_final', 'thaly_onboard_final', 'thaly_cid', 'thaly_name'].forEach((k) => store.del(k));
+    narr.stop();
     setIsReturning(false); setAgeOk(false); setCoupon({ input: '', applied: '', value: 0, error: '' });
     resetBooking(); setData((p) => ({ ...p, name: '' }));
     setProfileOpen(false); setPhase('welcome'); showToast(t('forgot'));
@@ -732,6 +994,17 @@ export default function App() {
   const chatLink = waLink(t('chatMsg'));
   const nextLabel = nextFree ? `${nextFree.k === 0 ? t('today') : nextFree.k === 1 ? t('tomorrow') : fmt(nextFree.d, { weekday: 'long' })} ${nextFree.t}` : '';
 
+  const renderAge = (id: string) => (
+    <div className="flex items-start gap-3 text-sm leading-relaxed">
+      <Checkbox id={id} checked={ageOk} onCheckedChange={setAgeOk} />
+      <p>
+        <Label htmlFor={id} className="lbl-chk">{t('ageA')} </Label>
+        <LinkBtn onClick={() => setDoc('privacy')}>{t('privacy')}</LinkBtn>, <LinkBtn onClick={() => setDoc('terms')}>{t('terms')}</LinkBtn> {t('and')} <LinkBtn onClick={() => setDoc('refund')}>{t('refund')}</LinkBtn>.
+      </p>
+    </div>
+  );
+
+  /* ---------------------------- Carregando ---------------------------- */
   if (phase === 'loading') {
     return (
       <div className="app flex flex-col items-center justify-center px-6 text-center" data-theme={theme} role="status" aria-live="polite" aria-busy="true">
@@ -741,358 +1014,402 @@ export default function App() {
           <div className="core"><Avatar className="w-full h-full rounded-full text-4xl" alt="" /></div>
         </div>
         <h1 className="serif font-light mt-10 rise" style={{ fontSize: 'clamp(30px,7vw,44px)', letterSpacing: '-0.01em', animationDelay: '.3s' }}>{SITE_NAME}</h1>
-        <p className="mt-3 rise text-sm" style={{ color: 'var(--mute)', animationDelay: '.7s' }}>{t('loadMsg')}</p>
+        <p className="mt-3 rise text-sm c-mute" style={{ animationDelay: '.7s' }}>{t('loadMsg')}</p>
         <div className="mt-8 w-48 rounded-full overflow-hidden" style={{ height: 3, background: 'var(--line)' }}><div className="loadbar h-full" style={{ background: 'var(--acc)' }} /></div>
       </div>
     );
   }
 
+  /* ------------------------------ Página ------------------------------ */
   return (
     <div className="app" data-theme={theme} style={{ paddingBottom: showBar ? 96 : 24 }}>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
-      {toast && <div role="status" aria-live="polite" className="fixed top-20 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-full text-sm font-semibold max-w-[90vw] text-center shadow-xl" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>{toast}</div>}
+      {toast && <div role="status" aria-live="polite" className="fixed left-1/2 -translate-x-1/2 px-6 py-3 rounded-full text-sm font-semibold text-center shadow-xl" style={{ top: 80, zIndex: 200, maxWidth: '90vw', background: 'var(--ink)', color: 'var(--bg)' }}>{toast}</div>}
 
-      <header className="sticky top-0 z-50" style={{ background: 'color-mix(in srgb,var(--bg) 88%,transparent)', backdropFilter: 'blur(14px)', borderBottom: '1px solid var(--line)' }}>
+      <a href="#main" className="skip">{t('skip')}</a>
+
+      <header className="sticky top-0" style={{ zIndex: 50, background: 'color-mix(in srgb,var(--bg) 88%,transparent)', backdropFilter: 'blur(14px)', borderBottom: '1px solid var(--line)', paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between gap-2">
-          <button type="button" onClick={() => { vibrate(10); setProfileOpen(true); }} aria-label={t('openProfile')} aria-haspopup="dialog" className="flex items-center gap-3 min-w-0 rounded-xl py-1">
+          <Button onClick={() => { vibrate(10); setProfileOpen(true); }} aria-label={t('openProfile')} aria-haspopup="dialog" className="btn-ui btn-ghost min-w-0 gap-3">
             <Avatar className="w-11 h-11 rounded-full" alt="" />
-            <span className="serif hidden min-[430px]:inline whitespace-nowrap" style={{ fontSize: 17 }}>Relaxar hoje</span>
-          </button>
+            <span className="serif brand whitespace-nowrap" style={{ fontSize: 17 }}>Relaxar hoje</span>
+          </Button>
           <div className="flex items-center gap-2 shrink-0">
             <div className="seg" role="group" aria-label={t('lang')}>
-              {(['pt', 'en', 'es'] as Lang[]).map((l) => (<button key={l} type="button" aria-pressed={lang === l} onClick={() => { vibrate(10); setLang(l); }}>{l.toUpperCase()}</button>))}
+              {(['pt', 'en', 'es'] as Lang[]).map((l) => (
+                <button key={l} type="button" aria-pressed={lang === l} aria-label={LANG_NAME[l]} onClick={() => { vibrate(10); setLang(l); }}>{l.toUpperCase()}</button>
+              ))}
             </div>
-            <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? t('srLight') : t('srDark')} title={t('theme')} className="btn btn-g" style={{ minHeight: 44, width: 44, padding: 0, borderRadius: '50%', border: 'none' }}>
+            <Button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? t('srLight') : t('srDark')} title={t('theme')} className="btn-ui btn-g btn-icon">
               <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={19} />
-            </button>
+            </Button>
           </div>
         </div>
       </header>
 
       <main id="main" className="max-w-3xl mx-auto px-5">
         {phase === 'welcome' && (
-          <section className="max-w-xl mx-auto min-h-[84vh] flex flex-col justify-center py-10" aria-labelledby="wt">
+          <section className="max-w-xl mx-auto flex flex-col justify-center py-10" style={{ minHeight: '84vh' }} aria-labelledby="wt">
             <div className="relative mb-9 rise" style={{ width: 104, height: 104 }}>
               <span className="ring" /><span className="ring" style={{ animationDelay: '1.8s' }} />
               <div className="core" style={{ width: 104, height: 104 }}><Avatar className="w-full h-full rounded-full text-4xl" alt="Thalyson" /></div>
             </div>
-            <p className="rise inline-flex items-center gap-2 text-sm font-semibold mb-4 self-start" style={{ color: 'var(--mute)', animationDelay: '.1s' }}><Icon name="map" size={16} /> {t('badge')}</p>
+            <p className="rise inline-flex items-center gap-2 text-sm font-semibold mb-4 self-start c-mute" style={{ animationDelay: '.1s' }}><Icon name="map" size={16} /> {t('badge')}</p>
             <h1 id="wt" className="serif font-light leading-[1.02] mb-5 rise" style={{ fontSize: 'clamp(46px,12vw,78px)', letterSpacing: '-0.02em', animationDelay: '.2s' }}>Relaxar hoje<br />com Thalyson</h1>
-            <p className="text-lg leading-relaxed mb-8 rise" style={{ color: 'var(--mute)', animationDelay: '.35s' }}>{t('wSub')}</p>
+            <p className="text-lg leading-relaxed mb-8 rise c-mute" style={{ animationDelay: '.35s' }}>{t('wSub')}</p>
             <ul className="grid gap-3 mb-9 rise" style={{ animationDelay: '.5s' }}>
               {[['w1', 'clock'], ['w2', 'lock'], ['w3', 'shield']].map(([k, ic]) => (<li key={k} className="flex items-center gap-3 font-semibold"><Icon name={ic as IconName} size={20} />{t(k)}</li>))}
             </ul>
-            <div className="rise mb-6" style={{ animationDelay: '.6s' }}>
-              <div className="flex items-start gap-3 text-sm leading-relaxed">
-                <input id="age-w" type="checkbox" checked={ageOk} onChange={(e) => setAgeOk(e.target.checked)} className="mt-1 w-6 h-6 shrink-0 cursor-pointer" style={{ accentColor: 'var(--acc)' }} />
-                <p><label htmlFor="age-w" className="cursor-pointer">{t('ageA')} </label>
-                  <button type="button" className="link" onClick={() => setDoc('privacy')}>{t('privacy')}</button>, <button type="button" className="link" onClick={() => setDoc('terms')}>{t('terms')}</button> {t('and')} <button type="button" className="link" onClick={() => setDoc('refund')}>{t('refund')}</button>.</p>
-              </div>
-            </div>
-            <button type="button" onClick={enter} disabled={!ageOk} className="btn btn-p w-full rise" style={{ minHeight: 62, fontSize: 17, animationDelay: '.7s' }}>{ageOk ? t('enter') : t('needAgeEnter')}</button>
+            <div className="rise mb-6" style={{ animationDelay: '.6s' }}>{renderAge('age-w')}</div>
+            <Button onClick={enter} disabled={!ageOk} className="btn-ui btn-p btn-xl w-full rise" style={{ animationDelay: '.7s' }}>{ageOk ? t('enter') : t('needAgeEnter')}</Button>
           </section>
         )}
 
         {phase === 'site' && (<>
+          {/* Hero */}
           <section className="relative pt-14 pb-16 flex flex-col justify-center" style={{ minHeight: 'calc(100svh - 76px)' }}>
             <div className="glow" aria-hidden="true" />
             <div className="relative">
-              <Reveal><p className="inline-flex items-center gap-2 text-sm font-semibold mb-6" style={{ color: 'var(--mute)' }}><Icon name="map" size={16} /> {t('badge')}</p></Reveal>
-              <Title as="h1" className="mb-6" style={{ fontSize: 'clamp(50px,13vw,92px)' }}>{t('h1')}</Title>
-              <Reveal delay={250}><p className="text-lg leading-relaxed mb-9 max-w-md" style={{ color: 'var(--mute)' }}>{t('sub')}</p></Reveal>
+              <Reveal><p className="inline-flex items-center gap-2 text-sm font-semibold mb-6 c-mute"><Icon name="map" size={16} /> {t('badge')}</p></Reveal>
+              <Title as="h1" className="mb-4" style={{ fontSize: 'clamp(50px,13vw,92px)' }}>{t('h1')}</Title>
+              <Reveal delay={250}><p className="text-lg leading-relaxed mb-8 max-w-md c-mute">{isReturning ? t('smartSub') : t('sub')}</p></Reveal>
               <Reveal delay={380}>
                 <div className="flex flex-wrap gap-3 mb-8">
-                  <button type="button" onClick={goBook} className="btn btn-p" style={{ minHeight: 60, padding: '0 36px', fontSize: 17 }}>{t('cta')}</button>
-                  <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer" className="btn btn-g" style={{ minHeight: 60 }}><Icon name="star" size={18} /> {t('reviews')}</a>
+                  <Button onClick={goBook} className="btn-ui btn-p btn-lg">{t('cta')}</Button>
+                  <Button asChild className="btn-ui btn-g btn-lg">
+                    <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {t('reviews')}</a>
+                  </Button>
                 </div>
               </Reveal>
               <Reveal delay={500}>
-                <p className="flex items-center gap-3 text-sm" style={{ color: 'var(--mute)' }}>
-                  {nextFree && (<><span className="dot" aria-hidden="true" /><span>{t('nextFree')}: <strong style={{ color: 'var(--ink)' }}>{nextLabel}</strong></span></>)}
-                </p>
-                <p className="text-sm mt-1" style={{ color: 'var(--mute)' }}>{t('fromM')} {money(Math.min(...MASSAGES.map((p) => p.price)))}</p>
+                {nextFree && (
+                  <p className="flex items-center gap-3 text-sm c-mute"><span className="dot" aria-hidden="true" /><span>{t('nextFree')}: <strong className="c-ink">{nextLabel}</strong></span></p>
+                )}
+                <p className="text-sm mt-1 c-mute">{t('fromM')} {money(Math.min(...MASSAGES.map((p) => p.price)))}</p>
               </Reveal>
             </div>
           </section>
 
+          {/* Garantias */}
           <Reveal className="mb-24">
-            <ul className="grid sm:grid-cols-3 gap-5" aria-label="Garantias">
+            <ul className="grid sm:grid-cols-3 gap-5" aria-label={t('guar')}>
               {[['t1', 'lock'], ['t2', 'shield'], ['t3', 'star']].map(([k, ic]) => (
                 <li key={k} className="flex items-start gap-3 text-[15.5px] leading-snug"><Icon name={ic as IconName} size={22} className="mt-0.5" />{t(k)}</li>
               ))}
             </ul>
           </Reveal>
 
+          {/* Ofertas */}
           <section className="mb-28" aria-labelledby="off">
             <Title id="off" className="text-[34px] md:text-[44px] mb-3">{t('offH')}</Title>
-            <Reveal delay={120}><p className="mb-8" style={{ color: 'var(--mute)' }}>{t('offS')}</p></Reveal>
+            <Reveal delay={120}><p className="mb-8 c-mute">{t('offS')}</p></Reveal>
             <div className="grid sm:grid-cols-2 gap-4">
               {([['combo', 'cbT', 'cbD', 'plus'], ['pack', 'lyT', 'lyD', 'gift']] as [Offer, string, string, IconName][]).map(([o, a, b, ic], i) => (
-                <Reveal key={o} delay={i * 120}>
-                  <button type="button" onClick={() => pickOffer(o)} className="card p-6 text-left w-full h-full flex flex-col gap-3">
-                    <Icon name={ic} size={28} />
-                    <span className="serif text-[28px] leading-tight mt-2">{t(a)}</span>
-                    <span className="text-[15.5px]" style={{ color: 'var(--mute)' }}>{t(b)}</span>
-                    <span className="link mt-auto pt-2">{t('see')}</span>
-                  </button>
+                <Reveal key={o} delay={i * 120} className="h-full">
+                  <Card className="h-full">
+                    <button type="button" onClick={() => pickOffer(o)} className="flex flex-col gap-3 p-6 text-left w-full h-full" style={{ borderRadius: 24 }}>
+                      <Icon name={ic} size={28} />
+                      <span className="serif text-[28px] leading-tight mt-2">{t(a)}</span>
+                      <span className="text-[15.5px] c-mute">{t(b)}</span>
+                      <span className="lnk-ui mt-auto pt-2">{t('see')}</span>
+                    </button>
+                  </Card>
                 </Reveal>
               ))}
             </div>
           </section>
 
+          {/* Agendamento */}
           <section ref={bookRef} className="scroll-mt-20 mb-28" aria-label={t('cta')}>
             {done ? (
               <Reveal>
-                <div className="card p-8 text-center bg-[var(--surf2)] border-none">
-                  <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6" style={{ background: 'color-mix(in srgb,var(--ok) 18%,transparent)', color: 'var(--ok)' }}><Icon name="check" size={32} /></div>
+                <Card className="card-flat p-8 text-center">
+                  <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 18%,transparent)' }}><Icon name="check" size={32} /></div>
                   <h2 className="serif text-4xl font-light mb-4">{t('doneH')}</h2>
-                  <p className="leading-relaxed mb-4" style={{ color: 'var(--mute)' }}>{t('doneP')}</p>
-                  <p className="font-bold mb-8" style={{ color: 'var(--acc)' }}>{t('doneSig')} ({money(invoice.sinal)})</p>
+                  <p className="leading-relaxed mb-4 c-mute">{t('doneP')}</p>
+                  <p className="font-bold mb-8">{t('doneSig')} ({money(invoice.sinal)})</p>
                   <div className="space-y-3 max-w-xs mx-auto">
-                    <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer" className="btn btn-p w-full">{t('resend')}</a>
-                    <button type="button" onClick={copyPix} className="btn btn-g w-full"><Icon name="copy" size={16} /> {t('copyPix')}</button>
-                    <button type="button" onClick={downloadICS} className="btn btn-g w-full"><Icon name="cal" size={16} /> {t('addCal')}</button>
-                    <button type="button" onClick={restart} className="w-full min-h-[48px] text-sm underline underline-offset-4" style={{ color: 'var(--mute)' }}>{t('restart')}</button>
+                    <Button asChild className="btn-ui btn-p w-full">
+                      <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer">{t('resend')}</a>
+                    </Button>
+                    <Button onClick={copyPix} className="btn-ui btn-g w-full"><Icon name="copy" size={16} /> {t('copyPix')}</Button>
+                    {googleCalendarLink() && (
+                      <Button asChild className="btn-ui btn-g w-full">
+                        <a href={googleCalendarLink()} target="_blank" rel="noopener noreferrer"><Icon name="cal" size={16} /> {t('addCal')}</a>
+                      </Button>
+                    )}
+                    <Button onClick={restart} className="lnk-ui lnk-block lnk-mute lnk-full">{t('restart')}</Button>
                   </div>
-                </div>
+                </Card>
               </Reveal>
             ) : (
               <div className="space-y-24">
+                {/* 1. Sessão */}
                 <div>
                   <StepHead n={1} title={t('s1')} done={chosen} />
-                  <div className="grid gap-3 md:grid-cols-2" role="radiogroup" aria-label={t('s1')}>
+                  <RadioGroup value={data.packageId} onValueChange={pickPkg} aria-label={t('s1')} className="grid gap-3 md:grid-cols-2">
                     {PACKAGES.map((p, i) => {
                       const on = data.packageId === p.id;
                       const L = p.L[lang];
-                      
-                     // Dicionário de psicologia das cores adaptativo (Light / Dark)
+                      const isRec = p.id === recommendedPkgId && !chosen;
                       const isDark = theme === 'dark';
                       const themeColors: Record<PkgTheme, string> = {
-                        sage: isDark ? '94, 184, 140' : '43, 76, 59',       // Verde (natureza, alívio)
-                        amber: isDark ? '235, 157, 75' : '178, 106, 47',    // Âmbar (energia, transição)
-                        crimson: isDark ? '224, 102, 92' : '140, 59, 50',   // Vermelho (intensidade, calor)
-                        midnight: isDark ? '171, 142, 204' : '61, 43, 76',  // Roxo (intimidade, luxo)
-                        slate: isDark ? '148, 163, 184' : '90, 100, 110'    // Cinza (clínico, estético)
+                        sage: isDark ? '94, 184, 140' : '43, 76, 59',
+                        amber: isDark ? '235, 157, 75' : '143, 90, 26',
+                        crimson: isDark ? '224, 102, 92' : '140, 59, 50',
+                        midnight: isDark ? '171, 142, 204' : '61, 43, 76',
+                        slate: isDark ? '148, 163, 184' : '90, 100, 110',
                       };
                       const rgb = themeColors[p.theme];
-
+                      const mine = narr.activeId === p.id;
+                      const playing = mine && narr.state === 'playing';
+                      const paused = mine && narr.state === 'paused';
+                      const narrText = `${L.title}. ${L.desc} ${t('flowH')}: ${L.flow.join(' ')}`;
                       return (
                         <Reveal key={p.id} delay={(i % 2) * 80} className={on ? 'md:col-span-2' : ''}>
-                          <div 
-                            className="opt" 
-                            style={{ 
-                              padding: 0,
-                              borderColor: on ? `rgb(${rgb})` : undefined,
-                              boxShadow: on ? `0 0 0 1px rgb(${rgb})` : undefined,
-                              backgroundColor: on ? `rgba(${rgb}, 0.04)` : undefined
+                          <div
+                            className="pkg-ui"
+                            style={{
+                              borderColor: on ? `rgb(${rgb})` : isRec ? `rgba(${rgb}, 0.5)` : undefined,
+                              boxShadow: on ? `0 0 0 1px rgb(${rgb})` : isRec ? `0 0 0 1px rgba(${rgb}, 0.3)` : undefined,
+                              backgroundColor: on ? `rgba(${rgb}, 0.05)` : isRec ? `rgba(${rgb}, 0.03)` : undefined,
                             }}
                           >
-                            <label className="block cursor-pointer" style={{ padding: '18px 20px' }}>
-                              <input type="radio" name="package" value={p.id} checked={on} onChange={() => pickPkg(p.id)} className="sr-only" />
+                            <Label className="pkg-head">
+                              <RadioGroupItem value={p.id} />
+                              {isRec && <span className="badge-rec"><Icon name="sparkle" size={12} /> {t('recommended')}</span>}
                               <span className="flex justify-between items-baseline gap-4">
                                 <span className="serif text-[22px] leading-tight">{L.title}</span>
-                                <span className="serif text-[22px] shrink-0 font-semibold" style={{ color: on ? `rgb(${rgb})` : 'var(--acc)' }}>{money(p.price)}</span>
+                                <span className="serif text-[22px] shrink-0 font-semibold" style={{ color: on || isRec ? `rgb(${rgb})` : 'var(--acc)' }}>{money(p.price)}</span>
                               </span>
-                              <span className="block text-sm mt-1" style={{ color: 'var(--mute)' }}>{p.min} {t('min')}, {L.tags.slice(0, 2).join(' • ')}</span>
-                            </label>
+                              <span className="block text-sm mt-1 c-mute">{p.min} {t('min')}, {L.tags.slice(0, 2).join(' • ')}</span>
+                            </Label>
                             {on && (
                               <div className="rise px-5 pb-5" style={{ borderTop: '1px solid var(--line)' }}>
-                                <p className="text-[15.5px] leading-relaxed pt-4 mb-4" style={{ color: 'var(--ink)' }}>{L.desc}</p>
+                                <p className="text-[15.5px] leading-relaxed pt-4 mb-4">{L.desc}</p>
                                 <div className="flex flex-wrap gap-2 mb-4">
                                   {L.tags.map((g) => (
-                                    <span key={g} className="text-xs font-bold px-3 py-1.5 rounded-full" style={{ backgroundColor: `rgba(${rgb}, 0.1)`, color: `rgb(${rgb})` }}>
-                                      {g}
-                                    </span>
+                                    <Badge key={g} style={{ backgroundColor: `rgba(${rgb}, 0.12)`, color: `rgb(${rgb})`, padding: '6px 12px' }}>{g}</Badge>
                                   ))}
                                 </div>
                                 <p className="text-sm font-bold mb-2">{t('flowH')}</p>
-                                <ol className="pl-5 list-decimal text-[15.5px] leading-relaxed space-y-1" style={{ color: 'var(--mute)' }}>
+                                <ol className="pl-5 list-decimal text-[15.5px] leading-relaxed space-y-1 mb-4 c-mute">
                                   {L.flow.map((s) => <li key={s}>{s}</li>)}
                                 </ol>
+                                <div className="flex flex-wrap gap-2">
+                                  <Button
+                                    disabled={!narr.supported}
+                                    onClick={() => { vibrate(10); narr.toggle(p.id, narrText); }}
+                                    className="btn-ui btn-g btn-sm flex-1"
+                                    style={{ flexBasis: 176, borderColor: `rgba(${rgb}, 0.45)`, color: `rgb(${rgb})` }}
+                                  >
+                                    <Icon name={playing ? 'pause' : 'play'} size={16} />
+                                    {playing ? t('pause') : paused ? t('resume') : t('listen')}
+                                  </Button>
+                                  {mine && (
+                                    <Button onClick={() => { vibrate(10); narr.stop(); }} className="btn-ui btn-g btn-sm">
+                                      <Icon name="stop" size={14} /> {t('stopA')}
+                                    </Button>
+                                  )}
+                                </div>
+                                {!narr.supported && <p className="text-xs mt-2 c-mute" role="status">{t('noTts')}</p>}
+                                {mine && narr.supported && !narr.male && <p className="text-xs mt-2 c-mute" role="status">{t('voiceLow')}</p>}
                               </div>
                             )}
                           </div>
                         </Reveal>
                       );
                     })}
-                  </div>
+                  </RadioGroup>
                 </div>
 
+                {/* 2. Oferta */}
                 {chosen && !isSolo && (
                   <div ref={s2Ref} className="scroll-mt-24">
                     <Reveal>
                       <StepHead n={2} title={t('s2')} done={true} />
-                      <div className="grid gap-3" role="radiogroup" aria-label={t('s2')}>
+                      <RadioGroup value={offerEff} onValueChange={(v) => { vibrate(15); setOffer(v as Offer); }} aria-label={t('s2')} className="grid gap-3">
                         {([
                           ['single', t('oSingle'), t('oSingleD'), pkg.price, 0, 0],
                           ['combo', t('oCombo'), t('oComboD'), pkg.price + pkg.combo, pkg.price + C.APARO_FULL, C.APARO_FULL - pkg.combo],
                           ['pack', t('oPack'), t('oPackD').replace('{n}', String(C.PACK_DAYS)), pkg.price * C.PACK_PAY, pkg.price * C.PACK_TOTAL, pkg.price],
                         ] as [Offer, string, string, number, number, number][]).map(([o, a, b, price, was, sv]) => (
-                          <label key={o} className={`opt ${offerEff === o ? 'on' : ''}`}>
-                            <input type="radio" name="offer" value={o} checked={offerEff === o} onChange={() => { vibrate(15); setOffer(o); }} className="sr-only" />
-                            <span className="flex justify-between items-start gap-4">
-                              <span><span className="block font-bold">{a}</span><span className="block text-sm mt-1" style={{ color: 'var(--mute)' }}>{b}</span></span>
+                          <Label key={o} className={cn('opt-ui', offerEff === o && 'on')}>
+                            <RadioGroupItem value={o} />
+                            <span className="flex justify-between items-start gap-x-4 gap-y-2 flex-wrap sm:flex-nowrap">
+                              <span className="flex-1" style={{ minWidth: 0 }}><span className="block font-bold">{a}</span><span className="block text-sm mt-1 c-mute">{b}</span></span>
                               <span className="text-right shrink-0">
                                 <span className="serif text-[22px] block leading-none" style={{ color: 'var(--acc)' }}>{money(price)}</span>
-                                {sv > 0 && <span className="block text-xs mt-1"><s style={{ color: 'var(--mute)' }}>{money(was)}</s></span>}
+                                {sv > 0 && <span className="block text-xs mt-1"><s className="c-mute">{money(was)}</s></span>}
                               </span>
                             </span>
-                            {sv > 0 && <span className="inline-block mt-3 text-xs font-extrabold px-3 py-1.5 rounded-full" style={{ background: 'color-mix(in srgb,var(--ok) 16%,transparent)', color: 'var(--ok)' }}>{t('save')} {money(sv)}</span>}
-                          </label>
+                            {sv > 0 && <Badge className="mt-3 c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 16%,transparent)' }}>{t('save')} {money(sv)}</Badge>}
+                          </Label>
                         ))}
-                      </div>
-                      {isPack && <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--mute)' }}>{t('packNote')}</p>}
+                      </RadioGroup>
+                      {isPack && <p className="text-sm leading-relaxed mt-4 c-mute">{t('packNote')}</p>}
                     </Reveal>
                   </div>
                 )}
 
+                {/* 3. Quando e onde */}
                 {chosen && (
                   <div ref={s3Ref} className="scroll-mt-24">
                     <Reveal>
                       <StepHead n={isSolo ? 2 : 3} title={t('s3')} done={step3Valid} />
                       <div className="space-y-9">
-                        <div>
-                          <label htmlFor="nm" className="lbl">{t('name')}</label>
-                          <input id="nm" autoComplete="given-name" type="text" value={data.name} maxLength={60} placeholder={t('namePh')} onChange={(e) => set({ name: e.target.value })} className="inp" aria-invalid={touched && !!errors.name} />
-                          {touched && errors.name && <p className="err" role="alert">{errors.name}</p>}
-                          <input type="text" name="website" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
-                        </div>
-
-                        <fieldset className="min-w-0">
-                          <legend className="lbl">{t('place')}</legend>
-                          <div className="grid grid-cols-2 gap-3">
-                            {([['studio', t('studio')], ['home', t('home')]] as const).map(([id, label]) => (
-                              <label key={id} className={`chip px-3 ${data.locType === id ? 'on' : ''}`}>
-                                <input type="radio" name="location" value={id} checked={data.locType === id} onChange={() => set({ locType: id })} className="sr-only" />{label}
-                              </label>
-                            ))}
-                          </div>
-                          {isHome ? <p className="text-sm mt-3 leading-relaxed" style={{ color: 'var(--mute)' }}>{t('peakNote')}</p> : <p className="text-sm mt-3 leading-relaxed" style={{ color: 'var(--mute)' }}>{t('studioInfo')}</p>}
-                        </fieldset>
-
-                        {isHome && (
-                          <div className="space-y-3 rise">
-                            <input type="tel" inputMode="numeric" autoComplete="postal-code" maxLength={9} placeholder={t('cep')} aria-label="CEP" value={data.cep} onChange={(e) => handleCep(e.target.value)} className="inp" />
-                            <input type="text" autoComplete="street-address" placeholder={t('street')} aria-label={t('street')} maxLength={100} value={data.street} onChange={(e) => set({ street: e.target.value })} className="inp" />
-                            <div className="flex gap-3">
-                              <input ref={numberRef} type="text" inputMode="numeric" placeholder={t('number')} aria-label={t('number')} maxLength={10} value={data.number} onChange={(e) => set({ number: e.target.value })} className="inp" style={{ width: '34%' }} />
-                              <input type="text" placeholder={t('comp')} aria-label={t('comp')} maxLength={40} value={data.comp} onChange={(e) => set({ comp: e.target.value })} className="inp" style={{ width: '66%' }} />
-                            </div>
-                            <input type="text" placeholder={t('bairro')} aria-label={t('bairro')} maxLength={60} value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} className="inp" />
-                            {touched && errors.address && <p className="err" role="alert">{errors.address}</p>}
-                          </div>
-                        )}
-
-                        <fieldset className="min-w-0">
-                          <legend className="lbl">{t('date')}</legend>
-                          <div className="flex gap-3 overflow-x-auto py-1 hide-sb -mx-5 px-5 snap-x">
+                        <div style={{ minWidth: 0 }}>
+                          <p className="lbl-ui" id="date-lbl">{t('date')}</p>
+                          <RadioGroup
+                            aria-labelledby="date-lbl"
+                            value={data.date ? dateKey(data.date) : ''}
+                            onValueChange={(v) => { const f = days.find((x) => dateKey(x.d) === v); if (f) { vibrate(10); set({ date: f.d, time: '' }); } }}
+                            className="flex gap-3 overflow-x-auto py-1 hide-sb -mx-5 px-5 snap-x"
+                          >
                             {days.map(({ d, i }) => {
                               const sel = sameDay(data.date, d);
                               return (
-                                <label key={dateKey(d)} className={`chip shrink-0 snap-start flex-col py-3 ${sel ? 'on' : ''}`} style={{ width: 80 }}>
-                                  <input type="radio" name="date" value={dateKey(d)} checked={sel} aria-label={fmt(d, { weekday: 'long', day: 'numeric', month: 'long' })} onChange={() => set({ date: d, time: '' })} className="sr-only" />
+                                <Label key={dateKey(d)} className={cn('chip-ui col shrink-0 snap-start', sel && 'on')} style={{ width: 80, minWidth: 80, padding: '12px 4px' }}>
+                                  <RadioGroupItem value={dateKey(d)} aria-label={fmt(d, { weekday: 'long', day: 'numeric', month: 'long' })} />
                                   <span aria-hidden="true" className="text-xs font-bold capitalize">{dayName(d, i)}</span>
                                   <span aria-hidden="true" className="serif text-[28px] leading-tight">{d.getDate()}</span>
                                   <span aria-hidden="true" className="text-xs opacity-70">{fmt(d, { month: 'short' }).replace('.', '')}</span>
-                                </label>
+                                </Label>
                               );
                             })}
-                          </div>
+                          </RadioGroup>
                           {touched && errors.date && <p className="err" role="alert">{errors.date}</p>}
-                        </fieldset>
+                        </div>
 
                         {data.date && (
-                          <fieldset className="min-w-0 rise">
-                            <legend className="sr-only">{t('time')}</legend>
-                            <div className="flex justify-between items-baseline mb-3">
-                              <span aria-hidden="true" className="lbl" style={{ marginBottom: 0 }}>{t('time')}</span>
-                              <span className="text-xs" style={{ color: 'var(--mute)' }}>{t('session')} {invoice.dur} {t('min')}</span>
+                          <div className="rise" style={{ minWidth: 0 }}>
+                            <div className="flex justify-between items-baseline flex-wrap gap-x-4 mb-3">
+                              <p className="lbl-ui lbl-flat" id="time-lbl">{t('time')}</p>
+                              <span className="text-xs c-mute">{t('session')} {invoice.dur} {t('min')}</span>
                             </div>
-                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                            {availableCount > 0 && availableCount <= 2 && <p className="text-xs font-bold mb-3 c-warn">{t('lastSlots')}</p>}
+                            <RadioGroup aria-labelledby="time-lbl" value={data.time} onValueChange={(v) => { vibrate(15); set({ time: v }); }} className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                               {slots.map(({ t: tm, ok }) => {
                                 const sel = data.time === tm;
                                 const peak = isHome && PEAK_HOURS.includes(tm);
                                 return (
-                                  <label key={tm} className={`chip flex-col py-3 ${sel ? 'on' : ''} ${!ok ? 'off' : ''}`}>
-                                    <input type="radio" name="time" value={tm} checked={sel} disabled={!ok} aria-label={`${tm}${!ok ? ', ' + t('unavailable') : ''}${peak ? ', ' + t('peak') : ''}`} onChange={() => { vibrate(15); set({ time: tm }); }} className="sr-only" />
-                                    <span aria-hidden="true" className="font-semibold">{tm}</span>
+                                  <Label key={tm} className={cn('chip-ui col', sel && 'on', !ok && 'off')} style={{ padding: '12px 4px' }}>
+                                    <RadioGroupItem value={tm} disabled={!ok} aria-label={`${tm}${!ok ? ', ' + t('unavailable') : ''}${peak ? ', ' + t('peak') : ''}`} />
+                                    <span aria-hidden="true">{tm}</span>
                                     {peak && ok && <span aria-hidden="true" className="text-[11px] font-bold" style={{ color: sel ? 'inherit' : 'var(--warn)' }}>{t('peak')} +{C.PEAK_FEE}</span>}
-                                  </label>
+                                  </Label>
                                 );
                               })}
-                            </div>
-                            {availableCount === 0 && <p className="text-sm text-center py-5" style={{ color: 'var(--mute)' }}>{t('noSlots')}</p>}
-                            {data.time && <p className="text-[15.5px] font-semibold mt-4 flex items-center gap-2" style={{ color: 'var(--ok)' }}><Icon name="check" size={16} /> {t('from')} {data.time} {t('to')} {endTime}</p>}
-                            <p className="text-xs mt-3" style={{ color: 'var(--mute)' }}>{t('demo')}</p>
+                            </RadioGroup>
+                            {availableCount === 0 && <p className="text-sm text-center py-5 c-mute">{t('noSlots')}</p>}
+                            {data.time && <p className="text-[15.5px] font-semibold mt-4 flex items-center gap-2 c-ok"><Icon name="check" size={16} /> {t('from')} {data.time} {t('to')} {endTime}</p>}
+                            <p className="text-xs mt-3 c-mute">{t('demo')}</p>
                             {touched && errors.time && <p className="err" role="alert">{errors.time}</p>}
-                          </fieldset>
+                          </div>
                         )}
 
                         <div>
-                          <button type="button" className="btn btn-p w-full" style={{ minHeight: 60 }} onClick={goReview}>{t('cont')}</button>
-                          <p className="text-sm text-center mt-4" style={{ color: 'var(--mute)' }}>{t('chatQ')} <a href={chatLink} target="_blank" rel="noopener noreferrer" className="link">{t('chatBtn')}</a></p>
+                          <Label htmlFor="nm" className="lbl-ui">{t('name')}</Label>
+                          <Input id="nm" autoComplete="given-name" type="text" value={data.name} maxLength={60} placeholder={t('namePh')} onChange={(e) => set({ name: e.target.value })} aria-invalid={touched && !!errors.name} aria-describedby={touched && errors.name ? 'nm-err' : undefined} />
+                          {touched && errors.name && <p id="nm-err" className="err" role="alert">{errors.name}</p>}
+                          <input type="text" name="website" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
+                        </div>
+
+                        <div style={{ minWidth: 0 }}>
+                          <p className="lbl-ui" id="loc-lbl">{t('place')}</p>
+                          <RadioGroup aria-labelledby="loc-lbl" value={data.locType} onValueChange={(v) => set({ locType: v as 'studio' | 'home' })} className="g-2">
+                            {([['studio', t('studio')], ['home', t('home')]] as const).map(([id, label]) => (
+                              <Label key={id} className={cn('chip-ui', data.locType === id && 'on')}>
+                                <RadioGroupItem value={id} />{label}
+                              </Label>
+                            ))}
+                          </RadioGroup>
+                          <p className="text-sm mt-3 leading-relaxed c-mute">{isHome ? t('peakNote') : t('studioInfo')}</p>
+                        </div>
+
+                        {isHome && (
+                          <div className="space-y-3 rise">
+                            <Input type="tel" inputMode="numeric" autoComplete="postal-code" maxLength={9} placeholder={t('cep')} aria-label="CEP" value={data.cep} onChange={(e) => handleCep(e.target.value)} />
+                            <Input type="text" autoComplete="street-address" placeholder={t('street')} aria-label={t('street')} maxLength={100} value={data.street} onChange={(e) => set({ street: e.target.value })} />
+                            <div className="flex gap-3">
+                              <Input ref={numberRef} type="text" inputMode="numeric" placeholder={t('number')} aria-label={t('number')} maxLength={10} value={data.number} onChange={(e) => set({ number: e.target.value })} style={{ flex: '0 0 34%', minWidth: 0 }} />
+                              <Input type="text" placeholder={t('comp')} aria-label={t('comp')} maxLength={40} value={data.comp} onChange={(e) => set({ comp: e.target.value })} style={{ flex: '1 1 0', minWidth: 0 }} />
+                            </div>
+                            <Input type="text" placeholder={t('bairro')} aria-label={t('bairro')} maxLength={60} value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} />
+                            {touched && errors.address && <p className="err" role="alert">{errors.address}</p>}
+                          </div>
+                        )}
+
+                        <div>
+                          <Button className="btn-ui btn-p btn-lg w-full" onClick={goReview}>{t('cont')}</Button>
+                          <p className="text-sm text-center mt-4 c-mute">{t('chatQ')} <a href={chatLink} target="_blank" rel="noopener noreferrer" className="lnk-ui">{t('chatBtn')}</a></p>
                         </div>
                       </div>
                     </Reveal>
                   </div>
                 )}
 
+                {/* 4. Resumo */}
                 {chosen && reviewed && (
                   <div ref={s4Ref} className="scroll-mt-24">
                     <Reveal>
                       <StepHead n={isSolo ? 3 : 4} title={t('s4')} done={false} />
                       <div className="space-y-8">
-                        <div className="card p-6 space-y-3">
+                        <Card className="p-6 space-y-3">
                           <Row label={t('sPack')} value={pt.title} />
                           <Row label={t('sWhen')} value={data.date ? `${fmt(data.date, { weekday: 'short', day: '2-digit', month: 'short' })}, ${data.time} – ${endTime}` : ''} />
                           <Row label={t('sLoc')} value={isHome ? `${data.street}, ${data.number}` : t('sLocStudio')} />
-                          <button type="button" onClick={() => scrollToRef(s3Ref, 30)} className="link text-sm">{t('change')}</button>
+                          <Button onClick={() => scrollToRef(s3Ref, 30)} className="lnk-ui lnk-block lnk-left text-sm">{t('change')}</Button>
+                        </Card>
+
+                        <div style={{ minWidth: 0 }}>
+                          <p className="lbl-ui" id="pay-lbl">{t('pay')}</p>
+                          <RadioGroup aria-labelledby="pay-lbl" value={data.payment} onValueChange={(v) => { vibrate(15); set({ payment: v }); }} className="g-3">
+                            {(['pix', 'card', 'cash'] as const).map((p) => (
+                              <Label key={p} className={cn('chip-ui', data.payment === p && 'on')} style={{ fontSize: 15, padding: '8px' }}>
+                                <RadioGroupItem value={p} />{t(p)}
+                              </Label>
+                            ))}
+                          </RadioGroup>
+                          {data.payment === 'card' && <p className="text-sm mt-3 c-mute">{t('cardNote')}</p>}
                         </div>
 
-                        <fieldset className="min-w-0">
-                          <legend className="lbl">{t('pay')}</legend>
-                          <div className="grid grid-cols-3 gap-3">
-                            {(['pix', 'card', 'cash'] as const).map(p => (
-                              <label key={p} className={`chip text-[15px] px-2 ${data.payment === p ? 'on' : ''}`}>
-                                <input type="radio" name="payment" value={p} checked={data.payment === p} onChange={() => { vibrate(15); set({ payment: p }); }} className="sr-only" />{t(p)}
-                              </label>
-                            ))}
-                          </div>
-                          {data.payment === 'card' && <p className="text-sm mt-3" style={{ color: 'var(--mute)' }}>{t('cardNote')}</p>}
-                        </fieldset>
-
-                        <details className="faq card px-6">
-                          <summary>{t('extras')}</summary>
-                          <div className="pb-6 space-y-6">
-                            <label className="flex items-center gap-3 cursor-pointer min-h-[44px]">
-                              <input type="checkbox" checked={data.addTime} onChange={(e) => { vibrate(15); set({ addTime: e.target.checked }); }} className="w-6 h-6 shrink-0" style={{ accentColor: 'var(--acc)' }} />
-                              <span className="flex-1">{t('lTime')}</span><span className="font-bold">+ {money(C.TIME_ADD)}</span>
-                            </label>
-                            {!isPack && !coupon.applied && (
-                              <div>
-                                <label htmlFor="cp" className="lbl">{t('couponQ')}</label>
-                                <div className="flex gap-2">
-                                  <input id="cp" type="text" autoCapitalize="characters" placeholder={t('couponPh')} value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className="inp uppercase flex-1" aria-describedby={coupon.error ? 'cp-err' : undefined} />
-                                  <button type="button" onClick={applyCoupon} className="btn btn-g">{t('apply')}</button>
+                        <Card className="px-6">
+                          <details className="faq">
+                            <summary>{t('extras')}</summary>
+                            <div className="pb-6 space-y-6 px-1">
+                              <div className="flex items-center gap-3">
+                                <Checkbox id="add-time" checked={data.addTime} onCheckedChange={(c) => { vibrate(15); set({ addTime: c }); }} className="chk-mid" />
+                                <Label htmlFor="add-time" className="lbl-chk flex flex-1 justify-between gap-3 items-center" style={{ minHeight: 44, fontSize: 16 }}>
+                                  <span>{t('lTime')}</span><span className="font-bold">+ {money(C.TIME_ADD)}</span>
+                                </Label>
+                              </div>
+                              {!isPack && !coupon.applied && (
+                                <div>
+                                  <Label htmlFor="cp" className="lbl-ui">{t('couponQ')}</Label>
+                                  <div className="flex gap-2">
+                                    <Input id="cp" type="text" autoCapitalize="characters" placeholder={t('couponPh')} value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className="uppercase flex-1" style={{ minWidth: 0 }} aria-describedby={coupon.error ? 'cp-err' : undefined} />
+                                    <Button onClick={applyCoupon} className="btn-ui btn-g">{t('apply')}</Button>
+                                  </div>
+                                  {coupon.error && <p id="cp-err" className="err" role="alert">{coupon.error}</p>}
                                 </div>
-                                {coupon.error && <p id="cp-err" className="err" role="alert">{coupon.error}</p>}
+                              )}
+                              <div>
+                                <p className="lbl-ui">{t('reqQ')}</p>
+                                <div className="flex items-start gap-3 text-sm leading-relaxed mb-3">
+                                  <Checkbox id="req-ok" checked={reqOk} onCheckedChange={(c) => { setReqOk(c); if (!c) set({ req: '' }); }} />
+                                  <p className="c-mute"><Label htmlFor="req-ok" className="lbl-chk">{t('reqConsent')} </Label><LinkBtn onClick={() => setDoc('privacy')}>{t('learn')}</LinkBtn></p>
+                                </div>
+                                <Label htmlFor="rq" className="sr-only">{t('reqPh')}</Label>
+                                <Input id="rq" type="text" disabled={!reqOk} placeholder={t('reqPh')} maxLength={140} value={data.req} onChange={(e) => set({ req: e.target.value })} />
+                                <p className="text-xs mt-3 c-mute">{t('reqNote')}</p>
                               </div>
-                            )}
-                            <div>
-                              <p className="lbl">{t('reqQ')}</p>
-                              <div className="flex items-start gap-3 text-sm leading-relaxed mb-3">
-                                <input id="req-ok" type="checkbox" checked={reqOk} onChange={(e) => { setReqOk(e.target.checked); if (!e.target.checked) set({ req: '' }); }} className="mt-1 w-6 h-6 shrink-0 cursor-pointer" style={{ accentColor: 'var(--acc)' }} />
-                                <p style={{ color: 'var(--mute)' }}><label htmlFor="req-ok" className="cursor-pointer">{t('reqConsent')} </label><button type="button" className="link" onClick={() => setDoc('privacy')}>{t('learn')}</button></p>
-                              </div>
-                              <label htmlFor="rq" className="sr-only">{t('reqPh')}</label>
-                              <input id="rq" type="text" disabled={!reqOk} placeholder={t('reqPh')} maxLength={140} value={data.req} onChange={(e) => set({ req: e.target.value })} className="inp" />
-                              <p className="text-xs mt-3" style={{ color: 'var(--mute)' }}>{t('reqNote')}</p>
                             </div>
-                          </div>
-                        </details>
+                          </details>
+                        </Card>
 
-                        <div className="card p-6">
+                        <Card className="p-6">
                           <div className="space-y-3 mb-5">
                             <Row label={isPack ? t('lPack5') : t('lPack')} value={money(invoice.sessionPrice)} />
                             {invoice.aparoAdd > 0 && <Row label={t('lCombo')} value={`+${money(invoice.aparoAdd)}`} />}
@@ -1102,33 +1419,33 @@ export default function App() {
                             {invoice.pixDiscount > 0 && <Row tone="ok" label={t('lPix')} value={`-${money(invoice.pixDiscount)}`} />}
                             {invoice.peakFee > 0 && <Row label={t('lPeak')} value={`+${money(invoice.peakFee)}`} />}
                           </div>
-                          <div className="flex justify-between items-end pt-5" style={{ borderTop: '1px solid var(--line)' }}>
-                            <span style={{ color: 'var(--mute)' }}>{t('total')}</span>
+                          <Separator />
+                          <div className="flex justify-between items-end gap-4 pt-5">
+                            <span className="c-mute">{t('total')}</span>
                             <span className="serif text-[46px] leading-none font-light">{money(invoice.total)}</span>
                           </div>
-                          {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold text-center py-2.5 rounded-2xl" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)', color: 'var(--ok)' }}>{t('saved')} {money(invoice.saved)}</p>}
+                          {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold text-center py-2.5 rounded-2xl c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>{t('saved')} {money(invoice.saved)}</p>}
                           <div className="grid grid-cols-2 gap-3 mt-4 text-center">
-                            <div className="rounded-2xl p-3" style={{ background: 'var(--surf2)' }}><p className="text-xs" style={{ color: 'var(--mute)' }}>{t('signal')}</p><p className="font-extrabold" style={{ color: 'var(--acc)' }}>{money(invoice.sinal)}</p></div>
-                            <div className="rounded-2xl p-3" style={{ background: 'var(--surf2)' }}><p className="text-xs" style={{ color: 'var(--mute)' }}>{t('rest')}</p><p className="font-extrabold">{money(invoice.rest)}</p></div>
+                            <div className="rounded-2xl p-3 bg-s2"><p className="text-xs c-mute">{t('signal')}</p><p className="font-extrabold">{money(invoice.sinal)}</p></div>
+                            <div className="rounded-2xl p-3 bg-s2"><p className="text-xs c-mute">{t('rest')}</p><p className="font-extrabold">{money(invoice.rest)}</p></div>
                           </div>
+                        </Card>
+
+                        <p className="text-[15.5px] leading-relaxed">
+                          {t('sigA')} <strong>{money(invoice.sinal)}</strong> {t('sigB')}{' '}
+                          <Button onClick={copyPix} className="lnk-ui lnk-block lnk-left"><Icon name="copy" size={15} /> {t('copyPix')}</Button>
+                        </p>
+
+                        <div className="flex items-start gap-3 text-sm leading-relaxed c-mute">
+                          <Checkbox id="opt-in" checked={optIn} onCheckedChange={setOptIn} />
+                          <Label htmlFor="opt-in" className="lbl-chk">{t('optIn')}</Label>
                         </div>
 
-                        <p className="text-[15.5px] leading-relaxed">{t('sigA')} <strong>{money(invoice.sinal)}</strong> {t('sigB')}{' '}
-                          <button type="button" onClick={copyPix} className="link inline-flex items-center gap-1"><Icon name="copy" size={15} /> {t('copyPix')}</button></p>
+                        {renderAge('age-ok')}
 
-                        <label className="flex items-start gap-3 text-sm leading-relaxed cursor-pointer" style={{ color: 'var(--mute)' }}>
-                          <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} className="mt-1 w-6 h-6 shrink-0" style={{ accentColor: 'var(--acc)' }} /><span>{t('optIn')}</span>
-                        </label>
-                        
-                        <div className="flex items-start gap-3 text-sm leading-relaxed">
-                          <input id="age-ok" type="checkbox" checked={ageOk} onChange={(e) => setAgeOk(e.target.checked)} className="mt-1 w-6 h-6 shrink-0 cursor-pointer" style={{ accentColor: 'var(--acc)' }} />
-                          <p><label htmlFor="age-ok" className="cursor-pointer">{t('ageA')} </label>
-                            <button type="button" className="link" onClick={() => setDoc('privacy')}>{t('privacy')}</button>, <button type="button" className="link" onClick={() => setDoc('terms')}>{t('terms')}</button> {t('and')} <button type="button" className="link" onClick={() => setDoc('refund')}>{t('refund')}</button>.</p>
-                        </div>
-
-                        <button type="button" onClick={finish} disabled={!data.payment || !ageOk} className="btn btn-p w-full" style={{ minHeight: 64, fontSize: 17 }}>
+                        <Button onClick={finish} disabled={!data.payment || !ageOk} className="btn-ui btn-p btn-xl w-full">
                           {!data.payment ? t('needPay') : !ageOk ? t('needAge') : t('send')}
-                        </button>
+                        </Button>
                       </div>
                     </Reveal>
                   </div>
@@ -1137,99 +1454,111 @@ export default function App() {
             )}
           </section>
 
+          {/* Sobre */}
           <section className="mb-24" aria-labelledby="ab">
             <Reveal>
-              <div className="flex items-center gap-5 mb-5">
+              <div className="flex items-center gap-5 mb-5 flex-col sm:flex-row text-center sm:text-left">
                 <Avatar className="w-20 h-20 rounded-full" alt="Thalyson" />
                 <div>
                   <Title id="ab" className="text-[26px] md:text-[32px]">{t('aboutH')}</Title>
-                  <p className="text-sm font-bold" style={{ color: 'var(--acc)' }}>{t('aboutR')}</p>
+                  <p className="text-sm font-bold">{t('aboutR')}</p>
                 </div>
               </div>
-              <p className="leading-relaxed mb-3 max-w-xl" style={{ color: 'var(--mute)' }}>{t('about1')}</p>
-              <p className="flex items-start gap-3 text-[15.5px] leading-relaxed mb-6 max-w-xl"><Icon name="map" size={18} className="mt-1" />{t('about2')}</p>
-              <div className="flex flex-wrap gap-3">
-                <button type="button" onClick={() => setProfileOpen(true)} className="btn btn-p" style={{ minHeight: 50 }}>{t('seeProfile')}</button>
-                <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="btn btn-g" style={{ minHeight: 50 }}><Icon name="instagram" size={18} /> Instagram</a>
+              <p className="leading-relaxed mb-3 max-w-xl mx-auto sm:mx-0 text-center sm:text-left c-mute">{t('about1')}</p>
+              <p className="flex items-start justify-center sm:justify-start gap-3 text-[15.5px] leading-relaxed mb-6 max-w-xl mx-auto sm:mx-0 text-left"><Icon name="map" size={18} className="mt-1" />{t('about2')}</p>
+              <div className="flex flex-wrap justify-center sm:justify-start gap-3">
+                <Button onClick={() => setProfileOpen(true)} className="btn-ui btn-p btn-md">{t('seeProfile')}</Button>
+                <Button asChild className="btn-ui btn-g btn-md">
+                  <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} /> Instagram</a>
+                </Button>
               </div>
             </Reveal>
           </section>
 
+          {/* FAQ */}
           <section className="mb-8" aria-labelledby="fq">
             <Title id="fq" className="text-[32px] md:text-[40px] mb-6">{t('faqH')}</Title>
             <Reveal>
-              <div className="card px-6">
+              <Card className="px-6">
                 {[['q1', 'a1'], ['q2', 'a2'], ['q3', 'a3'], ['q4', 'a4']].map(([q, a], i) => (
-                  <details key={q} className="faq" style={i ? { borderTop: '1px solid var(--line)' } : undefined}>
+                  <details key={q} name="faq" className="faq" style={i ? { borderTop: '1px solid var(--line)' } : undefined}>
                     <summary>{t(q)}</summary>
-                    <p className="pb-4 leading-relaxed" style={{ color: 'var(--mute)' }}>{t(a)}</p>
+                    <p className="pb-4 leading-relaxed c-mute">{t(a)}</p>
                   </details>
                 ))}
-              </div>
+              </Card>
             </Reveal>
           </section>
         </>)}
       </main>
 
-      <footer className="max-w-xl mx-auto px-6 mt-16 pt-6 text-xs leading-relaxed text-center" style={{ borderTop: '1px solid var(--line)', color: 'var(--mute)' }}>
-        <nav aria-label="Legal" className="flex flex-wrap justify-center gap-x-2">
+      <footer className="max-w-xl mx-auto px-6 mt-16 pt-6 text-xs leading-relaxed text-center c-mute" style={{ borderTop: '1px solid var(--line)' }}>
+        <nav aria-label={t('legalNav')} className="flex flex-wrap justify-center gap-x-2">
           {([['privacy', 'footPrivacy'], ['terms', 'footTerms'], ['refund', 'footRefund'], ['cookies', 'footCookies']] as [DocId, string][]).map(([id, k]) => (
-            <button key={id} type="button" onClick={() => setDoc(id)} className="underline underline-offset-4 min-h-[44px] px-2">{t(k)}</button>
+            <Button key={id} onClick={() => setDoc(id)} className="lnk-ui lnk-block lnk-mute">{t(k)}</Button>
           ))}
         </nav>
-        <p className="mt-2">{SITE_NAME}<br />{LEGAL.RAZAO}, CNPJ {LEGAL.CNPJ}<br />{LEGAL.ENDERECO}<br />{LEGAL.EMAIL}</p>
+        <p className="mt-2">{SITE_NAME}<br />{LEGAL.RAZAO}, CNPJ {LEGAL.CNPJ}<br />{LEGAL.ENDERECO}<br /><span style={{ overflowWrap: 'anywhere' }}>{LEGAL.EMAIL}</span></p>
         <p className="mt-2 font-semibold">{t('adults')}</p>
       </footer>
 
       {showBar && !done && (
         <div className="bar">
           <div className="max-w-3xl mx-auto flex items-center gap-4">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs truncate" style={{ color: 'var(--mute)' }}>{chosen ? pt.title : t('fromM')}</p>
+            <div className="flex-1" style={{ minWidth: 0 }}>
+              <p className="text-xs leading-tight c-mute">{chosen ? pt.title : t('fromM')}</p>
               <p className="serif text-2xl leading-none">{money(chosen ? pkg.price : Math.min(...MASSAGES.map((p) => p.price)))}</p>
             </div>
-            <button type="button" onClick={goBook} className="btn btn-p">{t('cta')}</button>
+            <Button onClick={goBook} className="btn-ui btn-p shrink-0">{t('cta')}</Button>
           </div>
         </div>
       )}
 
+      {/* Perfil */}
       {profileOpen && (
         <Modal title={t('profile')} onClose={() => setProfileOpen(false)} closeLabel={t('close')}>
           <div className="p-6">
-            <div className="flex items-center gap-5 mb-5">
+            <div className="flex items-center gap-5 mb-5 flex-col sm:flex-row text-center sm:text-left">
               <Avatar className="w-24 h-24 rounded-full" alt="Thalyson" />
               <div>
                 <h3 className="serif text-2xl leading-tight">{t('aboutH')}</h3>
-                <p className="text-sm font-bold" style={{ color: 'var(--acc)' }}>{t('aboutR')}</p>
+                <p className="text-sm font-bold">{t('aboutR')}</p>
               </div>
             </div>
             <p className="leading-relaxed mb-2">{greeting}. {t('about1')}</p>
             <ul className="my-4 space-y-2">
               {['pBul1', 'pBul2', 'pBul3'].map((k) => (<li key={k} className="flex items-start gap-3 text-[15.5px] leading-relaxed"><Icon name="check" size={18} className="mt-1" /><span>{t(k)}</span></li>))}
             </ul>
-            <dl className="rounded-2xl p-5 space-y-4 mb-6" style={{ background: 'var(--surf2)' }}>
+            <dl className="rounded-2xl p-5 space-y-4 mb-6 bg-s2">
               {([['pHours', t('pHoursV').replace('{a}', fromMin(C.OPEN)).replace('{b}', fromMin(C.LAST_END))], ['pWhere', t('pWhereV')], ['pPay', t('pPayV')], ['pCancel', t('pCancelV')]] as [string, string][]).map(([k, v]) => (
-                <div key={k}><dt className="text-xs font-bold" style={{ color: 'var(--mute)' }}>{t(k)}</dt><dd className="text-[15.5px] font-semibold">{v}</dd></div>
+                <div key={k}><dt className="text-xs font-bold c-mute">{t(k)}</dt><dd className="text-[15.5px] font-semibold">{v}</dd></div>
               ))}
-              <div><dt className="text-xs font-bold" style={{ color: 'var(--mute)' }}>{t('sLoc')}</dt><dd className="text-[15.5px] font-semibold">{t('about2')}</dd></div>
+              <div><dt className="text-xs font-bold c-mute">{t('sLoc')}</dt><dd className="text-[15.5px] font-semibold">{t('about2')}</dd></div>
             </dl>
             <div className="grid gap-3 mb-6">
-              {phase === 'site' && <button type="button" className="btn btn-p w-full" onClick={() => { setProfileOpen(false); goBook(); }}>{t('cta')}</button>}
-              <a href={chatLink} target="_blank" rel="noopener noreferrer" className="btn btn-g w-full"><Icon name="chat" size={18} /> {t('chatBtn')}</a>
-              <div className="grid grid-cols-2 gap-3">
-                <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer" className="btn btn-g" style={{ minHeight: 50 }}><Icon name="instagram" size={18} /> Instagram</a>
-                <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer" className="btn btn-g" style={{ minHeight: 50 }}><Icon name="star" size={18} /> {t('reviews')}</a>
+              {phase === 'site' && <Button className="btn-ui btn-p w-full" onClick={() => { setProfileOpen(false); goBook(); }}>{t('cta')}</Button>}
+              <Button asChild className="btn-ui btn-g w-full">
+                <a href={chatLink} target="_blank" rel="noopener noreferrer"><Icon name="chat" size={18} /> {t('chatBtn')}</a>
+              </Button>
+              <div className="g-2">
+                <Button asChild className="btn-ui btn-g btn-md">
+                  <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} /> Instagram</a>
+                </Button>
+                <Button asChild className="btn-ui btn-g btn-md">
+                  <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {t('reviews')}</a>
+                </Button>
               </div>
             </div>
-            <button type="button" onClick={forgetMe} className="w-full text-sm underline underline-offset-4 min-h-[48px]" style={{ color: 'var(--mute)' }}>{t('pForget')}</button>
+            <Button onClick={forgetMe} className="lnk-ui lnk-block lnk-mute lnk-full">{t('pForget')}</Button>
           </div>
         </Modal>
       )}
 
+      {/* Documentos legais */}
       {doc && (
         <Modal title={DOCS[doc].title} onClose={() => setDoc(null)} closeLabel={t('close')}>
-          <div className="p-5 text-sm leading-relaxed" style={{ color: 'var(--mute)' }} tabIndex={0}>
-            {t('legalNote') && <p className="mb-3 font-semibold" style={{ color: 'var(--ink)' }}>{t('legalNote')}</p>}
+          <div className="p-5 text-sm leading-relaxed c-mute" tabIndex={0}>
+            {t('legalNote') && <p className="mb-3 font-semibold c-ink">{t('legalNote')}</p>}
             {DOCS[doc].body}
           </div>
         </Modal>
