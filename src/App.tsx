@@ -21,7 +21,7 @@ const LEGAL = {
 const C = {
   PHONE: '5517991360413',
   PIX_KEY: '62922530000144',
-  INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
+  INSTAGRAM: 'https://www.instagram.com/relaxecomthalyson',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
   AVATAR: '/thalyson.jpg',
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
