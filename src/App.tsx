@@ -20,6 +20,7 @@ const C = {
   PIX_KEY: 'relaxecomthalyson@gmail.com',
   PIX_LABEL: 'E-mail',
   INSTAGRAM: 'https://www.instagram.com/relaxecomthalyson',
+  PORTFOLIO: 'https://thalysondesigner.vercel.app/',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
   AVATAR: '/thalyson.jpg',
   COUPONS: { RELAXAR13: 0.13, SESSAO2: 0.08 } as Record<string, number>,
@@ -1820,14 +1821,28 @@ export default function App() {
         </>)}
       </main>
 
-      <footer className="max-w-xl mx-auto px-6 mt-16 pt-6 text-xs leading-relaxed text-center c-mute" style={{ borderTop: '1px solid var(--line)' }}>
+     <footer className="max-w-xl mx-auto px-6 mt-16 pt-6 text-xs leading-relaxed text-center c-mute" style={{ borderTop: '1px solid var(--line)' }}>
         <nav aria-label={t('legalNav')} className="flex flex-wrap justify-center gap-x-2">
           {([['privacy', 'footPrivacy'], ['terms', 'footTerms'], ['refund', 'footRefund'], ['cookies', 'footCookies']] as [DocId, string][]).map(([id, k]) => (
             <Button key={id} onClick={() => setDoc(id)} className="lnk-ui lnk-block lnk-mute">{t(k)}</Button>
           ))}
         </nav>
-        <p className="mt-2">{SITE_NAME}<br />{LEGAL.RAZAO}, CNPJ {LEGAL.CNPJ}<br />{LEGAL.ENDERECO}<br /><span style={{ overflowWrap: 'anywhere' }}>{LEGAL.EMAIL}</span></p>
+        <p className="mt-2">
+          {SITE_NAME} • Bela Vista, São Paulo - SP<br />
+          <span style={{ overflowWrap: 'anywhere' }}>{LEGAL.EMAIL}</span>
+        </p>
         <p className="mt-2 font-semibold">{t('adults')}</p>
+        <p className="mt-5 pt-4" style={{ borderTop: '1px solid var(--line)' }}>
+          {lang === 'pt' ? 'Site desenvolvido por ' : lang === 'es' ? 'Sitio desarrollado por ' : 'Website built by '}
+          <a
+            href={C.PORTFOLIO}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="lnk-ui c-ink"
+          >
+            Thalyson Design
+          </a>
+        </p>
       </footer>
 
       {showBar && !done && (
