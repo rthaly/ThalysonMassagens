@@ -21,7 +21,7 @@ const LEGAL = {
 const C = {
   PHONE: '5517991360413',
   PIX_KEY: '62922530000144',
-  INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
+  INSTAGRAM: 'https://www.instagram.com/relaxecomthalyson',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
   AVATAR: '/thalyson.jpg',
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
@@ -61,193 +61,193 @@ const LANG_NAME: Record<Lang, string> = { pt: 'Português', en: 'English', es: '
 /* ================================================================== */
 const T: Record<Lang, Record<string, string>> = {
   pt: {
-    loadMsg: 'Preparando o seu momento de pausa', badge: 'Bela Vista, Centro de São Paulo',
-    wSub: 'Massagem masculina em São Paulo. Escolha, marque e confirme pelo WhatsApp. Simples e reservado.', w1: 'Reserva em 1 minuto', w2: 'Sinal de só R$ 40', w3: 'Cancelamento grátis',
-    enter: 'Entrar e agendar', needAgeEnter: 'Confirme que tem 18 anos ou mais',
-    h1: 'O seu momento de pausa.', sub: 'Massagem masculina em São Paulo. Escolha, agende e relaxe: a confirmação chega direto no seu WhatsApp.',
-    cta: 'Agendar agora', reviews: 'Avaliações', nextFree: 'Próximo horário livre', today: 'hoje', tomorrow: 'amanhã', fromM: 'Massagens a partir de',
-    t1: 'Sinal de só R$ 40, o resto depois da sessão', t2: 'Cancelamento grátis até 12h antes', t3: '1ª sessão com R$ 15 off, automático',
-    offH: 'Mais vantagem para você', offS: 'Combo com depilação e pacote fidelidade, com a economia sempre à vista.',
-    cbT: 'Massagem + depilação', cbD: 'Economize até R$ 70 no mesmo atendimento.', lyT: 'Leve 5, pague 4', lyD: 'A 5ª sessão é grátis. Você agenda a 1ª agora.', see: 'Ver opção',
-    s1: 'Escolha a sessão', s2: 'Quer aproveitar o pacote?', s3: 'Quando e onde', s4: 'Resumo e pagamento', min: 'min', flowH: 'Como será a sessão',
-    oSingle: 'Sessão avulsa', oSingleD: 'Uma sessão, sem compromisso.', oCombo: 'Com depilação', oComboD: 'Inclui aparo de pelos em até 3 lugares.', oPack: 'Pacote 5 sessões', oPackD: 'Pague 4 e a 5ª é grátis. Validade de {n} dias.',
-    save: 'Economize', was: 'De', listen: 'Ouvir descrição', pause: 'Pausar áudio', resume: 'Continuar áudio', stopA: 'Parar',
-    voiceLow: 'Este aparelho não tem voz masculina em português. Usei um tom mais grave.', noTts: 'Seu navegador não suporta narração em áudio.',
+    loadMsg: 'Preparando um ambiente reservado para você', badge: 'Bela Vista, Centro de São Paulo',
+    wSub: 'Atendimento masculino individual em São Paulo. Você escolhe a sessão, reserva em 1 minuto e confirma direto comigo no WhatsApp.', w1: 'Sem sala de espera ou filas', w2: 'Reserva com sinal de R$ 40', w3: 'Sigilo e higiene total',
+    enter: 'Ver sessões e horários', needAgeEnter: 'Confirme que tem 18 anos ou mais',
+    h1: 'Desligue a cabeça. Solte o corpo.', sub: 'Uma hora inteira dedicada a tirar o peso da sua rotina, sem pressa e com total privacidade perto do metrô Anhangabaú.',
+    cta: 'Escolher minha sessão', reviews: 'O que dizem sobre mim', nextFree: 'Próximo horário livre', today: 'hoje', tomorrow: 'amanhã', fromM: 'Sessões a partir de',
+    t1: 'Sinal de R$ 40 para travar a agenda; o resto só depois da sessão', t2: 'Remarcação ou reembolso grátis avisando até 12h antes', t3: 'R$ 15 de desconto automático na sua primeira sessão',
+    offH: 'Mais vantagem na sua visita', offS: 'Resolva o cansaço e o visual no mesmo horário ou garanta sessões com desconto.',
+    cbT: 'Massagem + aparo de pelos', cbD: 'Saia relaxado e alinhado na mesma visita, economizando até R$ 70.', lyT: 'Pacote 5 sessões (pague 4)', lyD: 'A 5ª sessão sai de graça para você manter o corpo leve o mês inteiro.', see: 'Aproveitar',
+    s1: 'Qual sensação você busca hoje?', s2: 'Quer adicionar alguma vantagem?', s3: 'Dia, horário e local', s4: 'Confira e envie no WhatsApp', min: 'min', flowH: 'Como acontece na prática',
+    oSingle: 'Apenas esta sessão', oSingleD: 'Sem compromisso, com R$ 15 off na primeira vez.', oCombo: 'Com aparo de pelos', oComboD: 'Inclui aparo na máquina em até 3 regiões no mesmo horário.', oPack: 'Pacote 5 sessões (1 grátis)', oPackD: 'Pague 4 e ganhe a 5ª. Você tem {n} dias para usar.',
+    save: 'Economia de', was: 'De', listen: 'Ouvir como funciona', pause: 'Pausar áudio', resume: 'Continuar áudio', stopA: 'Parar',
+    voiceLow: 'Modo de voz adaptado para este aparelho', noTts: 'Seu navegador não tem suporte para áudio.',
     skip: 'Ir para o conteúdo', guar: 'Garantias', legalNav: 'Documentos legais',
-    packNote: 'Cupom e desconto de 1ª sessão não acumulam com o pacote, que já é o melhor preço. Você agenda esta 1ª sessão agora e as outras 4 depois, pelo WhatsApp.',
-    name: 'Como devo te chamar?', namePh: 'Seu nome', nameErr: 'Informe seu nome (mín. 3 letras).', place: 'Local da sessão', studio: 'No espaço do terapeuta', home: 'O Terapeuta vai até você',
-    peakNote: 'Horários de pico no seu endereço têm taxa de R$ 18. Pedimos mais antecedência para o deslocamento. O CEP é consultado no ViaCEP.',
-    studioInfo: 'A suíte fica no Centro Histórico, na Bela Vista (próximo ao Metrô Anhangabaú). O endereço exato é enviado junto com a confirmação.',
-    cep: 'CEP (preenche o endereço)', street: 'Rua ou Avenida', number: 'Nº', comp: 'Qual Apto? Bloco?', bairro: 'Bairro', addrErr: 'Preencha rua, número e bairro.', cepFail: 'CEP não encontrado. Preencha manualmente.',
-    date: 'Data', time: 'Horário de início', session: 'Sessão de', peak: 'Pico', noSlots: 'Sem horários livres neste dia. Tente outra data.',
-    demo: 'Disponibilidade demonstrativa: a reserva só vale após a resposta no WhatsApp.', dateErr: 'Escolha uma data.', timeErr: 'Escolha um horário.', from: 'Das', to: 'às', unavailable: 'indisponível',
-    cont: 'Continuar para o resumo', fill: 'Complete os campos destacados', change: 'Alterar', sPack: 'Sessão', sWhen: 'Quando', sLoc: 'Local', sLocStudio: 'No espaço (Bela Vista)',
-    lPack: 'Sessão', lPack5: 'Pacote 5 sessões (4 pagas)', lCombo: 'Depilação (preço de combo)', lTime: '+30 minutos extras', lReq: 'Pedido específico', lFirst: 'Presente de 1ª sessão', lCoupon: 'Cupom', lPeak: 'Deslocamento / pico', lPix: 'Desconto Pix (3%)',
-    saved: 'Você economiza', total: 'Total', signal: 'Sinal agora', rest: 'Após a sessão',
-    extras: 'Extras e cupom (opcional)', couponQ: 'Possui cupom?', couponPh: 'Código', apply: 'Aplicar', couponOk: 'Cupom ativado', couponBad: 'Cupom inválido ou expirado.',
-    reqQ: 'Pedido específico (+ R$ 140)', learn: 'Saiba mais',
-    reqConsent: 'Consinto em informar um pedido que pode tratar de vida sexual (dado sensível), apenas para que ele seja avaliado. Ele segue só pelo WhatsApp, não é salvo neste aparelho e posso retirar o consentimento quando quiser.',
-    reqPh: 'Algum detalhe ou vontade para a sessão', reqNote: 'Pedido avaliado no momento do atendimento. Se inviável, o valor não é cobrado.',
-    pay: 'Como vai pagar o restante?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'As taxas e o parcelamento no cartão são combinados diretamente pelo WhatsApp antes do pagamento.',
-    optIn: 'Quero receber lembretes e novidades pelo WhatsApp (opcional).',
-    ageA: 'Declaro ter 18 anos ou mais e li a', privacy: 'Política de Privacidade', terms: 'Termos', and: 'e a', refund: 'Política de Cancelamento',
-    sigA: 'Para confirmar o horário, envie um sinal de', sigB: 'via Pix. O restante é acertado após a sessão.', copyPix: 'Copiar chave Pix (CNPJ)', pixCopied: 'Chave Pix (CNPJ) copiada',
-    send: 'Enviar pelo WhatsApp', needPay: 'Escolha a forma de pagamento', needAge: 'Confirme que você tem 18 anos ou mais',
-    doneH: 'Tudo pronto!', doneP: 'Sua solicitação foi preparada. O horário só está confirmado depois da resposta pelo WhatsApp. Se o WhatsApp não abriu, use o botão abaixo.',
-    doneSig: 'Envie o comprovante do sinal na conversa para confirmar.', resend: 'Reenviar mensagem', addCal: 'Adicionar ao Google Calendar', restart: 'Voltar ao início',
-    chatQ: 'Prefere tirar uma dúvida antes?', chatBtn: 'Falar no WhatsApp', chatMsg: 'Oi Thalyson! Vim pelo site Relaxar hoje com Thalyson e tenho uma dúvida.',
-    aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Terapeuta masculino', about1: 'Meu trabalho é direto e focado no corpo masculino: usar o toque para aliviar o peso e a tensão da sua rotina.',
-    about2: 'Atendo em uma suíte no Centro Histórico de SP, próximo ao Metrô Anhangabaú.', seeProfile: 'Ver perfil completo',
-    faqH: 'Dúvidas rápidas', q1: 'Como funciona o sinal?', a1: 'Você paga R$ 40 por Pix para garantir o horário. O restante é pago depois da sessão, na forma que escolher.',
-    q2: 'E se eu precisar cancelar?', a2: 'Até 12 horas antes você recebe o sinal de volta ou remarca sem custo.', q3: 'Que dados preciso informar?', a3: 'Só nome, dia, horário e pacote. Não pedimos CPF, e-mail nem telefone no site.',
-    q4: 'Posso pagar no cartão?', a4: 'Sim: Pix (com 3% de desconto), cartão em até 12x (taxas combinadas antes) ou dinheiro.',
-    footPrivacy: 'Privacidade', footTerms: 'Termos', footRefund: 'Cancelamento e reembolso', footCookies: 'Cookies', adults: 'Serviço exclusivo para maiores de 18 anos.',
-    close: 'Fechar', theme: 'Alternar tema', lang: 'Idioma', srLight: 'Mudar para tema claro', srDark: 'Mudar para tema escuro', legalNote: '',
-    profile: 'Perfil', openProfile: 'Abrir perfil de Thalyson', gm: 'Bom dia', ga: 'Boa tarde', gn: 'Boa noite',
-    pBul1: 'Conversa inicial para combinar limites e preferências', pBul2: 'Atendimento sem pressa, com horário reservado só para você', pBul3: 'Ambiente reservado, em suíte no Centro Histórico',
-    pHours: 'Horário de atendimento', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Formas de pagamento', pPayV: 'Pix (3% off), cartão até 12x e dinheiro',
-    pWhere: 'Onde atendo', pWhereV: 'No meu espaço (Bela Vista) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis até 12 horas antes',
-    pForget: 'Apagar meus dados deste aparelho', forgot: 'Dados apagados deste aparelho',
-    recommended: 'Recomendado para hoje', smartSub: 'Seu corpo pede pausa. Deixe o resto comigo.', lastSlots: 'Atenção: Últimos horários para hoje',
+    packNote: 'O pacote já tem o maior desconto possível, por isso não soma com cupons. Você agenda a 1ª sessão agora e combina as outras 4 direto comigo pelo WhatsApp.',
+    name: 'Como prefere ser chamado?', namePh: 'Seu primeiro nome ou apelido', nameErr: 'Digite pelo menos 3 letras.', place: 'Onde vai ser a sessão?', studio: 'Na minha suíte (Bela Vista)', home: 'No seu endereço (SP)',
+    peakNote: 'Para atender no seu endereço nos horários de trânsito intenso, há taxa de R$ 18. Digite o CEP para preencher a rua.',
+    studioInfo: 'Atendo sozinho em uma suíte reservada e climatizada na Bela Vista, a poucos passos do Metrô Anhangabaú. Assim que confirmar, te mando a localização exata.',
+    cep: 'CEP', street: 'Rua ou Avenida', number: 'Nº', comp: 'Apto / Bloco', bairro: 'Bairro', addrErr: 'Preencha rua, número e bairro.', cepFail: 'CEP não encontrado. Preencha os campos abaixo.',
+    date: 'Escolha o dia', time: 'Horário de início', session: 'Duração:', peak: 'Pico', noSlots: 'Agenda cheia neste dia. Escolha outra data acima.',
+    demo: 'Horários sujeitos a confirmação rápida no WhatsApp.', dateErr: 'Escolha um dia.', timeErr: 'Escolha um horário.', from: 'Das', to: 'às', unavailable: 'ocupado',
+    cont: 'Revisar agendamento', fill: 'Preencha os campos marcados acima', change: 'Alterar', sPack: 'Sessão', sWhen: 'Data e hora', sLoc: 'Local', sLocStudio: 'Suíte Bela Vista (Centro)',
+    lPack: 'Sessão escolhida', lPack5: 'Pacote 5 sessões (4 pagas)', lCombo: 'Aparo de pelos (combo)', lTime: '+30 minutos extras', lReq: 'Pedido específico', lFirst: 'Desconto 1ª sessão', lCoupon: 'Cupom aplicado', lPeak: 'Deslocamento / trânsito', lPix: 'Desconto Pix (3%)',
+    saved: 'Você está economizando', total: 'Valor final', signal: 'Sinal agora (Pix)', rest: 'Depois da sessão',
+    extras: 'Adicionar mais tempo ou cupom', couponQ: 'Tem um cupom?', couponPh: 'Digite o código', apply: 'Aplicar', couponOk: 'Desconto aplicado', couponBad: 'Cupom inválido ou expirado.',
+    reqQ: 'Algum pedido específico? (+ R$ 140)', learn: 'Saiba mais',
+    reqConsent: 'Autorizo enviar este pedido específico apenas para avaliação no WhatsApp. Ele não fica salvo no site.',
+    reqPh: 'Escreva o que você gostaria de incluir', reqNote: 'Avalio na hora; se não for possível realizar, não cobro nada a mais.',
+    pay: 'Como vai pagar o restante depois?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'Passamos a maquininha na hora; as taxas de parcelamento te informo antes no WhatsApp.',
+    optIn: 'Quero receber avisos de horários livres e promoções no WhatsApp.',
+    ageA: 'Confirmo ter 18 anos ou mais e concordo com a', privacy: 'Política de Privacidade', terms: 'Termos', and: 'e', refund: 'Regras de Cancelamento',
+    sigA: 'Para travar esse horário só para você, envie o sinal de', sigB: 'via Pix. O restante você paga só depois de sair da maca.', copyPix: 'Copiar chave Pix (CNPJ)', pixCopied: 'Chave Pix copiada!',
+    send: 'Confirmar no WhatsApp', needPay: 'Escolha como vai pagar o restante', needAge: 'Confirme que tem 18 anos ou mais',
+    doneH: 'Pedido pronto!', doneP: 'Agora é só mandar a mensagem que abriu no seu WhatsApp e enviar o comprovante dos R$ 40 para eu travar sua hora.',
+    doneSig: 'Chave Pix (CNPJ): 62.922.530/0001-44 • Valor do sinal:', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na minha agenda', restart: 'Fazer outro agendamento',
+    chatQ: 'Ficou com alguma dúvida antes de marcar?', chatBtn: 'Me chama direto no WhatsApp', chatMsg: 'Oi Thalyson! Vi seu site e queria tirar uma dúvida sobre a massagem.',
+    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atendimento direto, sem intermediários', about1: 'Meu foco é simples: fazer você entrar carregado de tensão e sair leve, renovado e com a mente limpa. Sem frescura, sem roteiro engessado e respeitando o ritmo do seu corpo.',
+    about2: 'Atendo sozinho em suíte privada na Bela Vista (pertinho do metrô Anhangabaú), com ducha quente, toalhas limpas e climatização.', seeProfile: 'Conhecer meu trabalho',
+    faqH: 'Perguntas frequentes', q1: 'Por que preciso pagar R$ 40 de sinal?', a1: 'Como atendo sozinho com hora marcada e bloqueio a agenda inteira para você, o sinal garante que o horário não fique vago. Esse valor é descontado do total e você paga o resto só no final.',
+    q2: 'E se acontecer um imprevisto?', a2: 'Avisando até 12 horas antes, eu devolvo seus R$ 40 na hora ou remarco para o dia que ficar melhor para você.', q3: 'Meus dados ficam expostos?', a3: 'De jeito nenhum. Não peço CPF, e-mail nem cadastro no site. Tudo é combinado direto comigo no WhatsApp com total discrição.',
+    q4: 'Posso tomar banho no local?', a4: 'Sim, a suíte conta com ducha quente e toalhas higienizadas para você usar antes e depois da sessão.',
+    footPrivacy: 'Privacidade', footTerms: 'Termos', footRefund: 'Cancelamento', footCookies: 'Cookies', adults: 'Atendimento exclusivo para maiores de 18 anos.',
+    close: 'Fechar', theme: 'Mudar cor da tela', lang: 'Idioma', srLight: 'Mudar para tema claro', srDark: 'Mudar para tema escuro', legalNote: '',
+    profile: 'Sobre o atendimento', openProfile: 'Ver perfil de Thalyson', gm: 'Bom dia', ga: 'Boa tarde', gn: 'Boa noite',
+    pBul1: 'Conversa rápida antes de começar para saber onde seu corpo pede mais atenção', pBul2: 'Horário exclusivo: você não cruza com ninguém na entrada ou saída', pBul3: 'Suíte reservada com ducha quente, maca confortável e climatização',
+    pHours: 'Horários', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Pagamento', pPayV: 'Pix (3% de desconto), cartão até 12x ou dinheiro',
+    pWhere: 'Local', pWhereV: 'Bela Vista (próximo ao metrô Anhangabaú) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis avisando até 12h antes',
+    pForget: 'Limpar meus dados deste aparelho', forgot: 'Pronto, dados apagados.',
+    recommended: 'Mais pedida hoje', smartSub: 'Que bom te ver de volta. Escolha seu horário para relaxar.', lastSlots: 'Últimos horários livres para hoje',
   },
   en: {
-    loadMsg: 'Preparing your moment to pause', badge: 'Bela Vista, Downtown São Paulo',
-    wSub: 'Men’s massage in São Paulo. Choose, book and confirm on WhatsApp. Simple and private.', w1: 'Book in 1 minute', w2: 'Deposit of only R$ 40', w3: 'Free cancellation',
-    enter: 'Enter and book', needAgeEnter: 'Confirm you are 18 or older',
-    h1: 'Your moment to pause.', sub: 'Men’s massage in São Paulo. Choose, book and relax: the confirmation lands straight in your WhatsApp.',
-    cta: 'Book now', reviews: 'Reviews', nextFree: 'Next free slot', today: 'today', tomorrow: 'tomorrow', fromM: 'Massages from',
-    t1: 'Deposit of only R$ 40, the rest after the session', t2: 'Free cancellation up to 12h before', t3: 'R$ 15 off your 1st session, automatic',
-    offH: 'More value for you', offS: 'Grooming combo and loyalty pack, with the savings always in sight.',
-    cbT: 'Massage + grooming', cbD: 'Save up to R$ 70 in the same visit.', lyT: 'Get 5, pay for 4', lyD: 'The 5th session is free. You book the 1st now.', see: 'See option',
-    s1: 'Choose your session', s2: 'How would you like it?', s3: 'When and where', s4: 'Summary and payment', min: 'min', flowH: 'How the session goes',
-    oSingle: 'Single session', oSingleD: 'One session, no commitment.', oCombo: 'With grooming', oComboD: 'Includes body trimming in up to 3 areas.', oPack: '5-session pack', oPackD: 'Pay for 4, the 5th is free. Valid for {n} days.',
-    save: 'Save', was: 'Was', listen: 'Listen to description', pause: 'Pause audio', resume: 'Resume audio', stopA: 'Stop',
-    voiceLow: 'This device has no male voice for this language. A deeper tone was used.', noTts: 'Your browser does not support audio narration.',
+    loadMsg: 'Preparing a private space for you', badge: 'Bela Vista, Downtown São Paulo',
+    wSub: 'Private men’s massage in São Paulo. Pick your session, book in 1 minute and confirm directly with me on WhatsApp.', w1: 'No waiting rooms or crowds', w2: 'Only R$ 40 deposit to lock time', w3: 'Total privacy and hygiene',
+    enter: 'See sessions and times', needAgeEnter: 'Confirm you are 18 or older',
+    h1: 'Turn off your mind. Release your body.', sub: 'A full hour dedicated to taking the weight off your routine, unhurried and completely private near Anhangabaú metro.',
+    cta: 'Choose my session', reviews: 'Client reviews', nextFree: 'Next open slot', today: 'today', tomorrow: 'tomorrow', fromM: 'Sessions starting at',
+    t1: 'R$ 40 deposit to lock your slot; pay the rest after the session', t2: 'Free rescheduling or refund up to 12h in advance', t3: 'Automatic R$ 15 discount on your first session',
+    offH: 'More value on your visit', offS: 'Take care of muscle tension and grooming in one visit, or save with a pack.',
+    cbT: 'Massage + body trimming', cbD: 'Leave relaxed and groomed in the same visit, saving up to R$ 70.', lyT: '5-session pack (pay for 4)', lyD: 'Your 5th session is free so you can stay loose all month.', see: 'See option',
+    s1: 'What are you looking for today?', s2: 'Want to add extra value?', s3: 'Day, time and location', s4: 'Review and send on WhatsApp', min: 'min', flowH: 'How the session works',
+    oSingle: 'Single session only', oSingleD: 'No commitment, with R$ 15 off your first visit.', oCombo: 'With body trimming', oComboD: 'Includes machine trimming on up to 3 areas during the visit.', oPack: '5-session pack (1 free)', oPackD: 'Pay for 4 and get the 5th free. Valid for {n} days.',
+    save: 'You save', was: 'Was', listen: 'Listen to how it works', pause: 'Pause audio', resume: 'Resume audio', stopA: 'Stop',
+    voiceLow: 'Adapted voice mode for this device', noTts: 'Your browser does not support audio narration.',
     skip: 'Skip to content', guar: 'Guarantees', legalNav: 'Legal documents',
-    packNote: 'Coupons and the 1st-session gift do not stack with the pack, which is already the best price. You book this 1st session now and the other 4 later on WhatsApp.',
-    name: 'What should I call you?', namePh: 'Your name', nameErr: 'Enter your name (min. 3 letters).', place: 'Session location', studio: 'At my place', home: 'I come to you',
-    peakNote: 'Peak hours at your address carry a R$ 18 fee. We ask for more notice for travel. The ZIP code is looked up via ViaCEP.',
-    studioInfo: 'The suite is in the Historic Center, Bela Vista (near Anhangabaú metro). The exact address is sent with the confirmation.',
-    cep: 'ZIP code (fills the address)', street: 'Street or Avenue', number: 'No.', comp: 'Apartment / complement', bairro: 'Neighborhood', addrErr: 'Fill in street, number and neighborhood.', cepFail: 'ZIP code not found. Fill in manually.',
-    date: 'Date', time: 'Start time', session: 'Session of', peak: 'Peak', noSlots: 'No free slots on this day. Try another date.',
-    demo: 'Sample availability: the booking only counts after the reply on WhatsApp.', dateErr: 'Choose a date.', timeErr: 'Choose a time.', from: 'From', to: 'to', unavailable: 'unavailable',
-    cont: 'Continue to summary', fill: 'Complete the highlighted fields', change: 'Change', sPack: 'Session', sWhen: 'When', sLoc: 'Location', sLocStudio: 'At the suite (Bela Vista)',
-    lPack: 'Session', lPack5: '5-session pack (4 paid)', lCombo: 'Grooming (combo price)', lTime: '+30 extra minutes', lReq: 'Specific request', lFirst: '1st session gift', lCoupon: 'Coupon', lPeak: 'Travel / peak', lPix: 'Pix discount (3%)',
-    saved: 'You save', total: 'Total', signal: 'Deposit now', rest: 'After the session',
-    extras: 'Extras and coupon (optional)', couponQ: 'Have a coupon?', couponPh: 'Code', apply: 'Apply', couponOk: 'Coupon applied', couponBad: 'Invalid or expired coupon.',
-    reqQ: 'Specific request (+ R$ 140)', learn: 'Learn more',
-    reqConsent: 'I consent to describing a request that may relate to sex life (sensitive data), only so it can be evaluated. It goes only via WhatsApp, is not saved on this device, and I can withdraw consent any time.',
-    reqPh: 'Any detail or wish for the session', reqNote: 'Request evaluated at the time of the session. If not feasible, it is not charged.',
-    pay: 'How will you pay the remainder?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card fees and installments are arranged directly on WhatsApp before payment.',
-    optIn: 'I want reminders and news via WhatsApp (optional).',
-    ageA: 'I declare I am 18 or older and have read the', privacy: 'Privacy Policy', terms: 'Terms', and: 'and the', refund: 'Cancellation Policy',
-    sigA: 'To confirm the time, send a deposit of', sigB: 'via Pix. The rest is settled after the session.', copyPix: 'Copy Pix key (CNPJ)', pixCopied: 'Pix key (CNPJ) copied',
-    send: 'Send on WhatsApp', needPay: 'Choose a payment method', needAge: 'Confirm you are 18 or older',
-    doneH: 'All set!', doneP: 'Your request is ready. The time is only confirmed after the reply on WhatsApp. If WhatsApp did not open, use the button below.',
-    doneSig: 'Send the deposit receipt in the chat to confirm.', resend: 'Resend message', addCal: 'Add to Google Calendar', restart: 'Back to start',
-    chatQ: 'Prefer to ask something first?', chatBtn: 'Chat on WhatsApp', chatMsg: 'Hi Thalyson! I came from the Relaxar hoje com Thalyson site and have a question.',
-    aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Male therapist', about1: 'My work is direct and focused on the male body: using touch to relieve the weight and tension of your routine.',
-    about2: 'I work from a suite in downtown São Paulo, close to the Anhangabaú metro station.', seeProfile: 'See full profile',
-    faqH: 'Quick questions', q1: 'How does the deposit work?', a1: 'You pay R$ 40 by Pix to hold the time. The rest is paid after the session, in the way you choose.',
-    q2: 'What if I need to cancel?', a2: 'Up to 12 hours before, you get the deposit back or reschedule at no cost.', q3: 'What data do I need to give?', a3: 'Only name, day, time and package. We don’t ask for ID, email or phone on the site.',
-    q4: 'Can I pay by card?', a4: 'Yes: Pix (3% off), card up to 12x (fees agreed beforehand) or cash.',
-    footPrivacy: 'Privacy', footTerms: 'Terms', footRefund: 'Cancellation and refunds', footCookies: 'Cookies', adults: 'Service exclusively for adults 18+.',
-    close: 'Close', theme: 'Toggle theme', lang: 'Language', srLight: 'Switch to light theme', srDark: 'Switch to dark theme', legalNote: 'Legal documents are provided in Portuguese, which is the binding version.',
-    profile: 'Profile', openProfile: 'Open Thalyson’s profile', gm: 'Good morning', ga: 'Good afternoon', gn: 'Good evening',
-    pBul1: 'Initial chat to agree on limits and preferences', pBul2: 'No rush, with a time slot reserved just for you', pBul3: 'Private setting, in a suite in the Historic Center',
-    pHours: 'Opening hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment methods', pPayV: 'Pix (3% off), card up to 12x and cash',
-    pWhere: 'Where I work', pWhereV: 'At my place (Bela Vista) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12 hours before',
-    pForget: 'Erase my data from this device', forgot: 'Data erased from this device',
-    recommended: 'Recommended for today', smartSub: 'Your body asks for a pause. Leave the rest to me.', lastSlots: 'Attention: Last slots for today',
+    packNote: 'The pack already gives the deepest discount, so coupons do not stack. Book your 1st session now and schedule the other 4 directly on WhatsApp.',
+    name: 'What should I call you?', namePh: 'Your first name', nameErr: 'Enter at least 3 letters.', place: 'Where will the session take place?', studio: 'At my private suite (Bela Vista)', home: 'At your address (SP)',
+    peakNote: 'Outcalls during heavy traffic hours carry an R$ 18 fee. Enter your ZIP code to fill the street.',
+    studioInfo: 'I work solo in a private, air-conditioned suite in Bela Vista, steps from Anhangabaú metro. Once confirmed, I send the exact address.',
+    cep: 'ZIP code', street: 'Street or Avenue', number: 'No.', comp: 'Apt / Unit', bairro: 'Neighborhood', addrErr: 'Fill in street, number and neighborhood.', cepFail: 'ZIP code not found. Fill in manually.',
+    date: 'Choose a day', time: 'Start time', session: 'Duration:', peak: 'Peak', noSlots: 'Fully booked on this day. Pick another date above.',
+    demo: 'Times subject to quick confirmation on WhatsApp.', dateErr: 'Choose a day.', timeErr: 'Choose a time.', from: 'From', to: 'to', unavailable: 'booked',
+    cont: 'Review booking', fill: 'Fill in the highlighted fields above', change: 'Change', sPack: 'Session', sWhen: 'Date & time', sLoc: 'Location', sLocStudio: 'Bela Vista Suite (Downtown)',
+    lPack: 'Chosen session', lPack5: '5-session pack (4 paid)', lCombo: 'Body trimming (combo)', lTime: '+30 extra minutes', lReq: 'Specific request', lFirst: '1st session discount', lCoupon: 'Coupon applied', lPeak: 'Travel / traffic', lPix: 'Pix discount (3%)',
+    saved: 'You are saving', total: 'Final total', signal: 'Deposit now (Pix)', rest: 'After the session',
+    extras: 'Add extra time or coupon', couponQ: 'Have a coupon?', couponPh: 'Enter code', apply: 'Apply', couponOk: 'Discount applied', couponBad: 'Invalid or expired coupon.',
+    reqQ: 'Any specific request? (+ R$ 140)', learn: 'Learn more',
+    reqConsent: 'I consent to sending this specific request for evaluation on WhatsApp only. It is not saved on the site.',
+    reqPh: 'Write what you would like to include', reqNote: 'Evaluated on the spot; if not feasible, nothing extra is charged.',
+    pay: 'How will you pay the rest after?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card machine available on site; installment fees shared beforehand on WhatsApp.',
+    optIn: 'I want updates on open slots and offers on WhatsApp.',
+    ageA: 'I confirm I am 18 or older and agree to the', privacy: 'Privacy Policy', terms: 'Terms', and: 'and', refund: 'Cancellation Rules',
+    sigA: 'To lock this time exclusively for you, send the', sigB: 'deposit via Pix. Pay the rest only after the session.', copyPix: 'Copy Pix key (CNPJ)', pixCopied: 'Pix key copied!',
+    send: 'Confirm on WhatsApp', needPay: 'Choose how you will pay the rest', needAge: 'Confirm you are 18 or older',
+    doneH: 'Request ready!', doneP: 'Just send the message that opened in WhatsApp along with your R$ 40 deposit receipt so I can lock your time.',
+    doneSig: 'Pix Key (CNPJ): 62.922.530/0001-44 • Deposit amount:', resend: 'Open WhatsApp again', addCal: 'Save to my calendar', restart: 'Make another booking',
+    chatQ: 'Have a question before booking?', chatBtn: 'Message me on WhatsApp', chatMsg: 'Hi Thalyson! I saw your site and have a quick question about the massage.',
+    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Direct service, no middlemen', about1: 'My goal is straightforward: have you walk in carrying tension and walk out light, renewed and clear-headed. No rigid scripts, always respecting your body’s pace.',
+    about2: 'I work solo in a private suite in Bela Vista (near Anhangabaú metro), with a hot shower, fresh towels and climate control.', seeProfile: 'About my work',
+    faqH: 'Common questions', q1: 'Why do I need a R$ 40 deposit?', a1: 'Since I work solo by appointment and block the entire slot for you, the deposit ensures the time isn’t left empty. It is deducted from your total and you pay the rest at the end.',
+    q2: 'What if something comes up?', a2: 'Let me know at least 12 hours ahead and I refund your R$ 40 immediately or reschedule at no cost.', q3: 'Is my data kept private?', a3: 'Completely. No ID, email or signup required on the site. Everything is arranged directly with me on WhatsApp.',
+    q4: 'Can I shower there?', a4: 'Yes, the suite has a hot shower and sanitized towels ready before and after your session.',
+    footPrivacy: 'Privacy', footTerms: 'Terms', footRefund: 'Cancellation', footCookies: 'Cookies', adults: 'Service strictly for adults 18 and older.',
+    close: 'Close', theme: 'Switch screen theme', lang: 'Language', srLight: 'Switch to light theme', srDark: 'Switch to dark theme', legalNote: 'Legal documents are provided in Portuguese, which is the binding version.',
+    profile: 'About the session', openProfile: 'Open Thalyson’s profile', gm: 'Good morning', ga: 'Good afternoon', gn: 'Good evening',
+    pBul1: 'Quick chat before starting to see where your body needs the most attention', pBul2: 'Exclusive time slot: you never cross paths with anyone else', pBul3: 'Private suite with hot shower, comfortable table and climate control',
+    pHours: 'Hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment', pPayV: 'Pix (3% off), card up to 12x or cash',
+    pWhere: 'Location', pWhereV: 'Bela Vista (near Anhangabaú metro) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12h in advance',
+    pForget: 'Clear my data from this device', forgot: 'Done, data cleared.',
+    recommended: 'Most booked today', smartSub: 'Good to see you back. Pick your time to unwind.', lastSlots: 'Last open slots for today',
   },
   es: {
-    loadMsg: 'Preparando tu momento de pausa', badge: 'Bela Vista, Centro de São Paulo',
-    wSub: 'Masaje masculino en São Paulo. Elige, reserva y confirma por WhatsApp. Simple y reservado.', w1: 'Reserva en 1 minuto', w2: 'Señal de solo R$ 40', w3: 'Cancelación gratis',
-    enter: 'Entrar y reservar', needAgeEnter: 'Confirma que tienes 18 años o más',
-    h1: 'Tu momento de pausa.', sub: 'Masaje masculino en São Paulo. Elige, reserva y relájate: la confirmación llega directo a tu WhatsApp.',
-    cta: 'Reservar ahora', reviews: 'Reseñas', nextFree: 'Próximo horario libre', today: 'hoy', tomorrow: 'mañana', fromM: 'Masajes desde',
-    t1: 'Señal de solo R$ 40, el resto después de la sesión', t2: 'Cancelación gratis hasta 12h antes', t3: '1ª sesión con R$ 15 de descuento, automático',
-    offH: 'Más ventaja para ti', offS: 'Combo con depilación y paquete de fidelidad, con el ahorro siempre a la vista.',
-    cbT: 'Masaje + depilación', cbD: 'Ahorra hasta R$ 70 en la misma visita.', lyT: 'Lleva 5, paga 4', lyD: 'La 5ª sesión es gratis. Reservas la 1ª ahora.', see: 'Ver opción',
-    s1: 'Elige la sesión', s2: '¿Cómo la quieres?', s3: 'Cuándo y dónde', s4: 'Resumen y pago', min: 'min', flowH: 'Cómo será la sesión',
-    oSingle: 'Sesión individual', oSingleD: 'Una sesión, sin compromiso.', oCombo: 'Con depilación', oComboD: 'Incluye recorte de vello hasta en 3 zonas.', oPack: 'Paquete 5 sesiones', oPackD: 'Paga 4 y la 5ª es gratis. Validez de {n} días.',
-    save: 'Ahorra', was: 'Antes', listen: 'Escuchar descripción', pause: 'Pausar audio', resume: 'Continuar audio', stopA: 'Detener',
-    voiceLow: 'Este dispositivo no tiene voz masculina en este idioma. Usé un tono más grave.', noTts: 'Tu navegador no admite narración en audio.',
+    loadMsg: 'Preparando un espacio reservado para ti', badge: 'Bela Vista, Centro de São Paulo',
+    wSub: 'Atención masculina individual en São Paulo. Eliges la sesión, reservas en 1 minuto y confirmas directo conmigo por WhatsApp.', w1: 'Sin sala de espera ni filas', w2: 'Reserva con señal de R$ 40', w3: 'Sigilo e higiene total',
+    enter: 'Ver sesiones y horarios', needAgeEnter: 'Confirma que tienes 18 años o más',
+    h1: 'Apaga la mente. Suelta el cuerpo.', sub: 'Una hora entera dedicada a quitar el peso de tu rutina, sin prisa y con total privacidad cerca del metro Anhangabaú.',
+    cta: 'Elegir mi sesión', reviews: 'Opiniones reales', nextFree: 'Próximo horario libre', today: 'hoy', tomorrow: 'mañana', fromM: 'Sesiones desde',
+    t1: 'Señal de R$ 40 para bloquear la agenda; el resto solo después de la sesión', t2: 'Reprogramación o reembolso gratis avisando hasta 12h antes', t3: 'R$ 15 de descuento automático en tu primera sesión',
+    offH: 'Más ventaja en tu visita', offS: 'Resuelve el cansancio y el cuidado personal en el mismo horario o ahorra con paquete.',
+    cbT: 'Masaje + recorte de vello', cbD: 'Sal relajado y prolijo en la misma visita, ahorrando hasta R$ 70.', lyT: 'Paquete 5 sesiones (paga 4)', lyD: 'La 5ª sesión es gratis para mantener el cuerpo liviano todo el mes.', see: 'Aprovechar',
+    s1: '¿Qué sensación buscas hoy?', s2: '¿Quieres sumar alguna ventaja?', s3: 'Día, horario y lugar', s4: 'Revisa y envía por WhatsApp', min: 'min', flowH: 'Cómo funciona en la práctica',
+    oSingle: 'Solo esta sesión', oSingleD: 'Sin compromiso, con R$ 15 off la primera vez.', oCombo: 'Con recorte de vello', oComboD: 'Incluye recorte a máquina hasta en 3 zonas en el mismo horario.', oPack: 'Paquete 5 sesiones (1 gratis)', oPackD: 'Paga 4 y gana la 5ª. Tienes {n} días para usar.',
+    save: 'Ahorro de', was: 'Antes', listen: 'Escuchar cómo funciona', pause: 'Pausar audio', resume: 'Continuar audio', stopA: 'Detener',
+    voiceLow: 'Modo de voz adaptado para este dispositivo', noTts: 'Tu navegador no soporta narración en audio.',
     skip: 'Ir al contenido', guar: 'Garantías', legalNav: 'Documentos legales',
-    packNote: 'Los cupones y el regalo de 1ª sesión no se acumulan con el paquete, que ya es el mejor precio. Reservas esta 1ª sesión ahora y las otras 4 después por WhatsApp.',
-    name: '¿Cómo debo llamarte?', namePh: 'Tu nombre', nameErr: 'Ingresa tu nombre (mín. 3 letras).', place: 'Lugar de la sesión', studio: 'En mi espacio', home: 'Voy hasta ti',
-    peakNote: 'Los horarios pico en tu dirección tienen una tasa de R$ 18. Pedimos más antelación por el desplazamiento. El CEP se consulta en ViaCEP.',
-    studioInfo: 'La suite está en el Centro Histórico, en Bela Vista (cerca del metro Anhangabaú). La dirección exacta se envía con la confirmación.',
-    cep: 'CEP (completa la dirección)', street: 'Calle o Avenida', number: 'Nº', comp: 'Complemento', bairro: 'Barrio', addrErr: 'Completa calle, número y barrio.', cepFail: 'CEP no encontrado. Complétalo manualmente.',
-    date: 'Fecha', time: 'Hora de inicio', session: 'Sesión de', peak: 'Pico', noSlots: 'Sin horarios libres este día. Prueba otra fecha.',
-    demo: 'Disponibilidad demostrativa: la reserva solo vale tras la respuesta en WhatsApp.', dateErr: 'Elige una fecha.', timeErr: 'Elige un horario.', from: 'De', to: 'a', unavailable: 'no disponible',
-    cont: 'Continuar al resumen', fill: 'Completa los campos resaltados', change: 'Cambiar', sPack: 'Sesión', sWhen: 'Cuándo', sLoc: 'Lugar', sLocStudio: 'En la suite (Bela Vista)',
-    lPack: 'Sesión', lPack5: 'Paquete 5 sesiones (4 pagadas)', lCombo: 'Depilación (precio de combo)', lTime: '+30 minutos extra', lReq: 'Pedido específico', lFirst: 'Regalo de 1ª sesión', lCoupon: 'Cupón', lPeak: 'Desplazamiento / pico', lPix: 'Descuento Pix (3%)',
-    saved: 'Ahorras', total: 'Total', signal: 'Señal ahora', rest: 'Después de la sesión',
-    extras: 'Extras y cupón (opcional)', couponQ: '¿Tienes un cupón?', couponPh: 'Código', apply: 'Aplicar', couponOk: 'Cupón activado', couponBad: 'Cupón inválido o vencido.',
-    reqQ: 'Pedido específico (+ R$ 140)', learn: 'Más información',
-    reqConsent: 'Consiento informar un pedido que puede tratar sobre vida sexual (dato sensible), solo para que sea evaluado. Va solo por WhatsApp, no se guarda en este dispositivo y puedo retirar el consentimiento cuando quiera.',
-    reqPh: 'Algún detalle o deseo para la sesión', reqNote: 'Pedido evaluado en el momento de la atención. Si es inviable, no se cobra.',
-    pay: '¿Cómo pagarás el resto?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Las tasas y cuotas de tarjeta se acuerdan directamente por WhatsApp antes del pago.',
-    optIn: 'Quiero recibir recordatorios y novedades por WhatsApp (opcional).',
-    ageA: 'Declaro tener 18 años o más y haber leído la', privacy: 'Política de Privacidad', terms: 'Términos', and: 'y la', refund: 'Política de Cancelación',
-    sigA: 'Para confirmar el horario, envía una señal de', sigB: 'por Pix. El resto se paga después de la sesión.', copyPix: 'Copiar clave Pix (CNPJ)', pixCopied: 'Clave Pix (CNPJ) copiada',
-    send: 'Enviar por WhatsApp', needPay: 'Elige la forma de pago', needAge: 'Confirma que tienes 18 años o más',
-    doneH: '¡Todo listo!', doneP: 'Tu solicitud está preparada. El horario solo se confirma tras la respuesta por WhatsApp. Si no se abrió, usa el botón de abajo.',
-    doneSig: 'Envía el comprobante de la señal en el chat para confirmar.', resend: 'Reenviar mensaje', addCal: 'Añadir a Google Calendar', restart: 'Volver al inicio',
-    chatQ: '¿Prefieres preguntar algo antes?', chatBtn: 'Hablar por WhatsApp', chatMsg: '¡Hola Thalyson! Vengo del sitio Relaxar hoje com Thalyson y tengo una duda.',
-    aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Terapeuta masculino', about1: 'Mi trabajo es directo y enfocado en el cuerpo masculino: usar el tacto para aliviar el peso y la tensión de tu rutina.',
-    about2: 'Atiendo en una suite en el Centro Histórico de SP, cerca del metro Anhangabaú.', seeProfile: 'Ver perfil completo',
-    faqH: 'Dudas rápidas', q1: '¿Cómo funciona la señal?', a1: 'Pagas R$ 40 por Pix para asegurar el horario. El resto se paga después de la sesión, como prefieras.',
-    q2: '¿Y si necesito cancelar?', a2: 'Hasta 12 horas antes recibes la señal de vuelta o reprogramas sin costo.', q3: '¿Qué datos debo dar?', a3: 'Solo nombre, día, horario y paquete. No pedimos documento, correo ni teléfono en el sitio.',
-    q4: '¿Puedo pagar con tarjeta?', a4: 'Sí: Pix (3% de descuento), tarjeta hasta 12x (tasas acordadas antes) o efectivo.',
-    footPrivacy: 'Privacidad', footTerms: 'Términos', footRefund: 'Cancelación y reembolso', footCookies: 'Cookies', adults: 'Servicio exclusivo para mayores de 18 años.',
-    close: 'Cerrar', theme: 'Cambiar tema', lang: 'Idioma', srLight: 'Cambiar a tema claro', srDark: 'Cambiar a tema oscuro', legalNote: 'Los documentos legales están en portugués, que es la versión vinculante.',
-    profile: 'Perfil', openProfile: 'Abrir perfil de Thalyson', gm: 'Buenos días', ga: 'Buenas tardes', gn: 'Buenas noches',
-    pBul1: 'Conversación inicial para acordar límites y preferencias', pBul2: 'Sin prisa, con un horario reservado solo para ti', pBul3: 'Ambiente reservado, en una suite del Centro Histórico',
-    pHours: 'Horario de atención', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Formas de pago', pPayV: 'Pix (3% de descuento), tarjeta hasta 12x y efectivo',
-    pWhere: 'Dónde atiendo', pWhereV: 'En mi espacio (Bela Vista) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis hasta 12 horas antes',
-    pForget: 'Borrar mis datos de este dispositivo', forgot: 'Datos borrados de este dispositivo',
-    recommended: 'Recomendado para hoy', smartSub: 'Tu cuerpo pide pausa. Déjame el resto a mí.', lastSlots: 'Atención: Últimos horarios para hoy',
+    packNote: 'El paquete ya tiene el mayor descuento posible, por eso no se suma con cupones. Agendas la 1ª sesión ahora y combinas las otras 4 directo conmigo por WhatsApp.',
+    name: '¿Cómo prefieres que te llame?', namePh: 'Tu primer nombre o apodo', nameErr: 'Escribe al menos 3 letras.', place: '¿Dónde será la sesión?', studio: 'En mi suite (Bela Vista)', home: 'En tu dirección (SP)',
+    peakNote: 'Para atender en tu dirección en horarios de tráfico intenso hay tasa de R$ 18. Ingresa el CEP para completar la calle.',
+    studioInfo: 'Atiendo solo en una suite reservada y climatizada en Bela Vista, a pasos del Metro Anhangabaú. Al confirmar te envío la ubicación exacta.',
+    cep: 'CEP', street: 'Calle o Avenida', number: 'Nº', comp: 'Depto / Bloque', bairro: 'Barrio', addrErr: 'Completa calle, número y barrio.', cepFail: 'CEP no encontrado. Completa los campos abajo.',
+    date: 'Elige el día', time: 'Hora de inicio', session: 'Duración:', peak: 'Pico', noSlots: 'Agenda llena este día. Elige otra fecha arriba.',
+    demo: 'Horarios sujetos a confirmación rápida en WhatsApp.', dateErr: 'Elige un día.', timeErr: 'Elige un horario.', from: 'De', to: 'a', unavailable: 'ocupado',
+    cont: 'Revisar reserva', fill: 'Completa los campos marcados arriba', change: 'Cambiar', sPack: 'Sesión', sWhen: 'Fecha y hora', sLoc: 'Lugar', sLocStudio: 'Suite Bela Vista (Centro)',
+    lPack: 'Sesión elegida', lPack5: 'Paquete 5 sesiones (4 pagadas)', lCombo: 'Recorte de vello (combo)', lTime: '+30 minutos extra', lReq: 'Pedido específico', lFirst: 'Descuento 1ª sesión', lCoupon: 'Cupón aplicado', lPeak: 'Traslado / tráfico', lPix: 'Descuento Pix (3%)',
+    saved: 'Estás ahorrando', total: 'Valor final', signal: 'Señal ahora (Pix)', rest: 'Después de la sesión',
+    extras: 'Sumar más tiempo o cupón', couponQ: '¿Tienes un cupón?', couponPh: 'Escribe el código', apply: 'Aplicar', couponOk: 'Descuento aplicado', couponBad: 'Cupón inválido o vencido.',
+    reqQ: '¿Algún pedido específico? (+ R$ 140)', learn: 'Más info',
+    reqConsent: 'Autorizo enviar este pedido específico solo para evaluación en WhatsApp. No queda guardado en el sitio.',
+    reqPh: 'Escribe lo que te gustaría incluir', reqNote: 'Evalúo en el momento; si no es posible realizarlo, no cobro nada extra.',
+    pay: '¿Cómo pagarás el resto después?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Cobramos en el lugar; las tasas de cuotas te las informo antes por WhatsApp.',
+    optIn: 'Quiero recibir avisos de horarios libres y promociones por WhatsApp.',
+    ageA: 'Confirmo tener 18 años o más y acepto la', privacy: 'Política de Privacidad', terms: 'Términos', and: 'y', refund: 'Reglas de Cancelación',
+    sigA: 'Para bloquear este horario solo para ti, envía la señal de', sigB: 'vía Pix. El resto lo pagas solo después de salir de la camilla.', copyPix: 'Copiar clave Pix (CNPJ)', pixCopied: '¡Clave Pix copiada!',
+    send: 'Confirmar en WhatsApp', needPay: 'Elige cómo pagarás el resto', needAge: 'Confirma que tienes 18 años o más',
+    doneH: '¡Pedido listo!', doneP: 'Ahora solo envía el mensaje que se abrió en tu WhatsApp junto con el comprobante de los R$ 40 para bloquear tu hora.',
+    doneSig: 'Clave Pix (CNPJ): 62.922.530/0001-44 • Valor de la señal:', resend: 'Abrir WhatsApp nuevamente', addCal: 'Guardar en mi agenda', restart: 'Hacer otra reserva',
+    chatQ: '¿Te quedó alguna duda antes de reservar?', chatBtn: 'Escríbeme directo al WhatsApp', chatMsg: '¡Hola Thalyson! Vi tu sitio y quería hacerte una consulta sobre el masaje.',
+    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atención directa, sin intermediarios', about1: 'Mi objetivo es simple: que entres cargado de tensión y salgas liviano, renovado y con la mente despejada. Sin guiones rígidos y respetando el ritmo de tu cuerpo.',
+    about2: 'Atiendo solo en suite privada en Bela Vista (cerca del metro Anhangabaú), con ducha caliente, toallas limpias y climatización.', seeProfile: 'Conocer mi trabajo',
+    faqH: 'Preguntas frecuentes', q1: '¿Por qué debo pagar R$ 40 de señal?', a1: 'Como atiendo solo con hora marcada y bloqueo toda la agenda para ti, la señal asegura que el horario no quede vacío. Se descuenta del total y pagas el resto al final.',
+    q2: '¿Y si surge un imprevisto?', a2: 'Avisando hasta 12 horas antes, te devuelvo tus R$ 40 al instante o reprogramamos para el día que prefieras.', q3: '¿Mis datos quedan expuestos?', a3: 'Para nada. No pido documento, correo ni registro en el sitio. Todo se coordina directo conmigo en WhatsApp con total discreción.',
+    q4: '¿Puedo ducharme en el lugar?', a4: 'Sí, la suite cuenta con ducha caliente y toallas higienizadas para usar antes y después de la sesión.',
+    footPrivacy: 'Privacidad', footTerms: 'Términos', footRefund: 'Cancelación', footCookies: 'Cookies', adults: 'Servicio exclusivo para mayores de 18 años.',
+    close: 'Cerrar', theme: 'Cambiar color de pantalla', lang: 'Idioma', srLight: 'Cambiar a tema claro', srDark: 'Cambiar a tema oscuro', legalNote: 'Los documentos legales están en portugués, que es la versión vinculante.',
+    profile: 'Sobre la atención', openProfile: 'Ver perfil de Thalyson', gm: 'Buenos días', ga: 'Buenas tardes', gn: 'Buenas noches',
+    pBul1: 'Charla rápida antes de empezar para saber dónde tu cuerpo pide más atención', pBul2: 'Horario exclusivo: no te cruzas con nadie al entrar ni al salir', pBul3: 'Suite reservada con ducha caliente, camilla cómoda y climatización',
+    pHours: 'Horarios', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Pago', pPayV: 'Pix (3% de descuento), tarjeta hasta 12x o efectivo',
+    pWhere: 'Lugar', pWhereV: 'Bela Vista (cerca del metro Anhangabaú) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis avisando hasta 12h antes',
+    pForget: 'Borrar mis datos de este dispositivo', forgot: 'Listo, datos borrados.',
+    recommended: 'Más pedida hoy', smartSub: 'Qué bueno verte de nuevo. Elige tu horario para relajarte.', lastSlots: 'Últimos horarios libres para hoy',
   },
 };
 
 const PACKAGES: { id: string; price: number; min: number; combo: number; theme: PkgTheme; L: Record<Lang, PkgText> }[] = [
   { id: 'classica', price: 180, min: 40, combo: 90, theme: 'sage', L: {
-    pt: { title: 'Massagem Clássica', tags: ['Descompressão', 'Pistola relaxante', 'Foco muscular'], desc: 'O alívio direto. Focado em desatar os nós da sua rotina e soltar a musculatura pesada através de toques profundos e vigorosos.',
-      flow: ['Conversa para identificar onde seu corpo acumula mais peso.', 'Trabalho manual intenso para soltar a tensão muscular.', 'Uso da pistola nos pontos críticos.', 'Finalização focada em relaxamento puro.'] },
-    en: { title: 'Classic Massage', tags: ['Decompression', 'Massage gun', 'Muscle focus'], desc: 'Direct relief. Focused on untying the knots of your routine and loosening heavy muscles through deep, vigorous touch.',
-      flow: ['Chat to identify where your body holds stress.', 'Intense manual work to release muscle tension.', 'Gun used on critical points.', 'Finish focused on pure relaxation.'] },
-    es: { title: 'Masaje Clásico', tags: ['Descompresión', 'Pistola relajante', 'Foco muscular'], desc: 'El alivio directo. Enfocado en desatar los nudos de tu rutina y soltar la musculatura pesada mediante toques profundos.',
-      flow: ['Charla para identificar dónde acumulas estrés.', 'Trabajo manual intenso para soltar la tensión.', 'Uso de pistola en puntos críticos.', 'Final enfocado en pura relajación.'] } } },
+    pt: { title: 'Massagem Clássica', tags: ['Alívio nas costas', 'Pistola massageadora', 'Sem finalização'], desc: 'Para quem está com o pescoço travado, ombros pesados e precisa sair leve. Uso pressão firme nas mãos e a pistola massageadora nos pontos mais duros para tirar a dor e o cansaço acumulado do dia.',
+      flow: ['Você me mostra onde está doendo ou travado.', 'Solto a musculatura das costas, pescoço e pernas com manobras firmes.', 'Uso a pistola massageadora nos nós mais profundos.', 'Você sai com o corpo leve e a postura solta.'] },
+    en: { title: 'Classic Massage', tags: ['Back relief', 'Massage gun', 'No intimate finish'], desc: 'For a stiff neck, heavy shoulders and built-up fatigue. I use firm hand pressure and a massage gun on tight spots to melt away physical tension.',
+      flow: ['You show me where you feel stiff or sore.', 'I release back, neck and leg muscles with firm strokes.', 'Massage gun applied to deep knots.', 'You leave feeling light and loose.'] },
+    es: { title: 'Masaje Clásico', tags: ['Alivio de espalda', 'Pistola masajeadora', 'Sin finalización'], desc: 'Para cuello trabado, hombros pesados y cansancio acumulado. Uso presión firme manual y pistola masajeadora en los puntos duros para quitar el dolor.',
+      flow: ['Me muestras dónde sientes dolor o rigidez.', 'Suelto la musculatura de espalda, cuello y piernas con maniobras firmes.', 'Uso la pistola masajeadora en los nudos profundos.', 'Sales con el cuerpo liviano y suelto.'] } } },
   { id: 'sensitiva', price: 220, min: 60, combo: 85, theme: 'amber', L: {
-    pt: { title: 'Sensitiva & Prazer', tags: ['Despertar', 'Toque sutil', 'Finalização tântrica'], desc: 'A transição. Começa quebrando a tensão acumulada e evolui para toques muito mais sutis que despertam o corpo inteiro, mudando a sua energia.',
-      flow: ['Massagem inicial para quebrar a tensão defensiva do corpo.', 'Transição para toques lentos e sutis (tântrica).', 'Foco no despertar sensorial.', 'Finalização direcionada ao prazer.'] },
-    en: { title: 'Sensitive & Pleasure', tags: ['Awakening', 'Subtle touch', 'Tantric finish'], desc: 'The transition. Starts by breaking accumulated tension and evolves into much subtler touches that wake up the whole body, shifting your energy.',
-      flow: ['Initial massage to break the body\'s defensive tension.', 'Transition to slow, subtle touches (tantric).', 'Focus on sensory awakening.', 'Pleasure-directed finish.'] },
-    es: { title: 'Sensitiva & Placer', tags: ['Despertar', 'Toque sutil', 'Final tántrico'], desc: 'La transición. Empieza rompiendo la tensión acumulada y evoluciona a toques mucho más sutiles que despiertan todo el cuerpo.',
-      flow: ['Masaje inicial para romper la tensión defensiva.', 'Transición a toques lentos y sutiles (tántrica).', 'Foco en el despertar sensorial.', 'Final dirigido al placer.'] } } },
+    pt: { title: 'Sensitiva + Lingam', tags: ['Corpo todo', 'Toques lentos', 'Inclui Lingam'], desc: 'Começo tirando o peso das suas costas para você desligar a cabeça. Depois, o toque muda para manobras lentas e deslizantes que percorrem o corpo todo e terminam com a massagem lingam, trazendo alívio e prazer sem pressa.',
+      flow: ['Massagem relaxante inicial para tirar a tensão do dia.', 'Transição para toques lentos e contínuos da cabeça aos pés.', 'Estímulo sensorial para você sair da mente e sentir a pele.', 'Finalização completa com massagem lingam.'] },
+    en: { title: 'Sensitive + Lingam', tags: ['Full body', 'Slow touch', 'Includes Lingam'], desc: 'Starts by taking the weight off your back so your mind shuts off. Then the touch shifts to slow, gliding strokes across your entire body, ending with a full lingam massage.',
+      flow: ['Initial relaxing massage to melt daily stress.', 'Transition to slow, continuous touch from head to toe.', 'Sensory awakening so you feel present in your skin.', 'Full finish with lingam massage.'] },
+    es: { title: 'Sensitiva + Lingam', tags: ['Cuerpo completo', 'Toques lentos', 'Incluye Lingam'], desc: 'Empiezo quitando el peso de tu espalda para que apagues la mente. Luego el toque cambia a maniobras lentas por todo el cuerpo y termina con masaje lingam.',
+      flow: ['Masaje relajante inicial para quitar la tensión del día.', 'Transición a toques lentos y continuos de pies a cabeza.', 'Estímulo sensorial para sentir la piel.', 'Finalización completa con masaje lingam.'] } } },
   { id: 'fusion', price: 290, min: 60, combo: 75, theme: 'crimson', L: {
-    pt: { title: 'Sensações com a Barba', tags: ['Contraste', 'Naturista', 'Intensidade'], desc: 'O contraste térmico e tátil. A base relaxante se mistura ao toque áspero e íntimo da barba deslizando pela pele, criando uma experiência sensorial imprevisível.',
-      flow: ['Sessão naturista (ambos à vontade).', 'Relaxamento preparatório.', 'Estímulos contrastantes usando o contato da barba pelo corpo.', 'Finalização intensa.'] },
-    en: { title: 'Beard Sensations', tags: ['Contrast', 'Naturist', 'Intensity'], desc: 'Thermal and tactile contrast. The relaxing base mixes with the rough, intimate touch of the beard gliding over your skin.',
-      flow: ['Naturist session (both completely comfortable).', 'Preparatory relaxation.', 'Contrasting stimuli using beard contact across the body.', 'Intense finish.'] },
-    es: { title: 'Sensaciones con la Barba', tags: ['Contraste', 'Naturista', 'Intensidad'], desc: 'El contraste térmico y táctil. La base relajante se mezcla con el toque áspero e íntimo de la barba deslizándose por la piel.',
-      flow: ['Sesión naturista (ambos cómodos).', 'Relajación preparatoria.', 'Estímulos contrastantes usando el contacto de la barba.', 'Final intenso.'] } } },
+    pt: { title: 'Sensações com a Barba + Lingam', tags: ['Naturista', 'Toque da barba', 'Inclui Lingam'], desc: 'Sessão naturista onde ambos ficamos sem roupa para o contato ser direto. Misturo o deslizamento das mãos com o toque quente e áspero da minha barba percorrendo a sua pele, encerrando com a massagem lingam.',
+      flow: ['Atendimento naturista (ambos sem roupa, com total respeito).', 'Relaxamento muscular para preparar o corpo.', 'Deslizamento da barba pelo pescoço, costas e corpo inteiro.', 'Finalização intensa com massagem lingam.'] },
+    en: { title: 'Beard Sensations + Lingam', tags: ['Naturist', 'Beard contact', 'Includes Lingam'], desc: 'Naturist session where both of us are unclothed for direct skin contact. I combine gliding hands with the warm, textured feel of my beard across your body, finishing with lingam massage.',
+      flow: ['Naturist session (both unclothed, in total respect).', 'Muscle relaxation to prepare your body.', 'Beard gliding along your neck, back and full body.', 'Intense finish with lingam massage.'] },
+    es: { title: 'Sensaciones con Barba + Lingam', tags: ['Naturista', 'Toque de barba', 'Incluye Lingam'], desc: 'Sesión naturista donde ambos estamos sin ropa para contacto directo. Combino el deslizamiento de las manos con el roce de mi barba por tu piel, cerrando con masaje lingam.',
+      flow: ['Atención naturista (ambos sin ropa, con total respeto).', 'Relajación muscular preparatoria.', 'Deslizamiento de la barba por cuello, espalda y cuerpo.', 'Finalización intensa con masaje lingam.'] } } },
   { id: 'completa', price: 390, min: 60, combo: 60, theme: 'midnight', L: {
-    pt: { title: 'Corpo a Corpo & Interação', tags: ['Sem barreiras', 'Deslizamento', 'Liberdade total'], desc: 'A entrega absoluta. Nenhuma barreira física. Uso meu corpo sobre o seu com gel deslizante, e você tem espaço e liberdade total para retribuir os toques.',
-      flow: ['Alinhamento de limites.', 'Massagem de soltura.', 'Proximidade máxima com gel corpo a corpo.', 'Liberdade para você conduzir e retribuir os toques.', 'Finalização conjunta.'] },
-    en: { title: 'Body to Body & Interaction', tags: ['No barriers', 'Gliding', 'Total freedom'], desc: 'Absolute surrender. No physical barriers. I use my body over yours with gliding gel, and you have complete freedom to touch back.',
-      flow: ['Alignment of boundaries.', 'Release massage.', 'Maximum closeness with body-to-body gel.', 'Freedom for you to lead and return touches.', 'Shared finish.'] },
-    es: { title: 'Cuerpo a Cuerpo & Interacción', tags: ['Sin barreras', 'Deslizamiento', 'Libertad total'], desc: 'La entrega absoluta. Ninguna barrera física. Uso mi cuerpo sobre el tuyo con gel, y tienes libertad total para devolver los toques.',
-      flow: ['Alineación de límites.', 'Masaje de soltura.', 'Cercanía máxima con gel cuerpo a cuerpo.', 'Libertad para que conduzcas y devuelvas toques.', 'Final conjunto.'] } } },
+    pt: { title: 'Corpo a Corpo + Lingam', tags: ['Sem barreiras', 'Interação livre', 'Inclui Lingam'], desc: 'Minha sessão mais completa e envolvente. Uso gel deslizante para trabalhar o meu corpo sobre o seu, com troca de calor e liberdade para você tocar e conduzir o ritmo junto comigo até a finalização lingam.',
+      flow: ['Conversa rápida para alinhar o que você mais gosta.', 'Massagem preparatória com gel deslizante.', 'Contato corpo a corpo sem barreiras, com troca de calor.', 'Liberdade total para você retribuir os toques e finalizar com lingam.'] },
+    en: { title: 'Body to Body + Lingam', tags: ['No barriers', 'Mutual touch', 'Includes Lingam'], desc: 'My most complete, immersive session. Using gliding gel, I use my body over yours with real warmth and freedom for you to touch back and guide the pace through the lingam finish.',
+      flow: ['Quick chat to align what you enjoy most.', 'Preparatory massage with gliding gel.', 'Body-to-body contact without barriers.', 'Full freedom for you to return touches through the lingam finish.'] },
+    es: { title: 'Cuerpo a Cuerpo + Lingam', tags: ['Sin barreras', 'Interacción libre', 'Incluye Lingam'], desc: 'Mi sesión más completa. Uso gel deslizante para trabajar mi cuerpo sobre el tuyo, con intercambio de calor y libertad para que toques y marques el ritmo hasta el final lingam.',
+      flow: ['Charla rápida para alinear tus preferencias.', 'Masaje preparatorio con gel deslizante.', 'Contacto cuerpo a cuerpo sin barreras.', 'Libertad total para devolver toques y cerrar con lingam.'] } } },
   { id: 'aparo_solo', price: 130, min: 40, combo: 0, theme: 'slate', L: {
-    pt: { title: 'Apenas Depilação (Máquina)', tags: ['Estética', 'Praticidade'], desc: 'Serviço isolado e direto para quem busca apenas higiene e estética visual. Aparo rápido e limpo em até 3 áreas do corpo.',
-      flow: ['Alinhamento do resultado esperado.', 'Aparo com máquina e pentes específicos.', 'Acabamento final.'] },
-    en: { title: 'Trimming Only (Machine)', tags: ['Grooming', 'Practicality'], desc: 'Direct standalone service for those just looking for hygiene and visual aesthetics. Quick, clean trim on up to 3 body areas.',
-      flow: ['Alignment of the expected result.', 'Trimming with machine and specific guards.', 'Final finishing touches.'] },
-    es: { title: 'Solo Depilación (Máquina)', tags: ['Estética', 'Practicidad'], desc: 'Servicio aislado y directo para quien busca solo higiene y estética. Recorte rápido y limpio en hasta 3 zonas del cuerpo.',
-      flow: ['Alineación del resultado esperado.', 'Recorte con máquina y peines específicos.', 'Acabado final.'] } } },
+    pt: { title: 'Apenas Aparo de Pelos', tags: ['Higiene e visual', 'Máquina e pentes'], desc: 'Atendimento rápido e discreto para deixar o visual limpo e alinhado. Faço o aparo na máquina com pentes higienizados em até 3 regiões do corpo à sua escolha.',
+      flow: ['Você escolhe a altura do corte em cada região.', 'Aparo cuidadoso na máquina sem irritar a pele.', 'Acabamento limpo para você sair pronto.'] },
+    en: { title: 'Body Trimming Only', tags: ['Clean look', 'Machine & guards'], desc: 'Quick, discreet grooming session to keep things neat. Machine trimming with sanitized guards on up to 3 body areas of your choice.',
+      flow: ['You pick the trim length for each area.', 'Careful machine trimming without skin irritation.', 'Clean finish so you leave ready.'] },
+    es: { title: 'Solo Recorte de Vello', tags: ['Higiene y estética', 'Máquina y peines'], desc: 'Atención rápida y discreta para dejar el cuerpo prolijo. Recorte a máquina con peines higienizados hasta en 3 zonas a elección.',
+      flow: ['Eliges el largo deseado en cada zona.', 'Recorte cuidadoso a máquina sin irritar la piel.', 'Acabado limpio para salir listo.'] } } },
 ];
 const MASSAGES = PACKAGES.filter((p) => p.combo > 0);
 const PAY_PT: Record<string, string> = { pix: 'PIX', card: 'CARTÃO', cash: 'DINHEIRO' };
@@ -286,7 +286,7 @@ const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
     <H>5. Pedido específico</H><P>Se o pedido for considerado inviável, a taxa correspondente não é cobrada.</P></>) },
   cookies: { title: 'Cookies e armazenamento local', body: (<>
     <P>Este site não usa cookies de publicidade nem ferramentas de análise ou rastreamento (como Google Analytics ou Meta Pixel).</P>
-    <H>Estritamente necessário</H><P>Guardamos no navegador (localStorage) apenas suas preferências de tema e idioma, a confirmação de maioridade e a lembrança de que você já agendou antes (para não repetir o desconto de primeira sessão). Não identificam você. Nome e endereço não são guardados. Você pode apagar tudo em “Apagar meus dados deste aparelho”, no perfil.</P>
+    <H>Estritamente necessário</H><P>Guardamos no navegador (localStorage) apenas suas preferências de tema e idioma, a confirmação de maioridade e a lembrança de que você já agendou antes (para não repetir o desconto de primeira sessão). Não identificam você. Nome e endereço não são guardados. Você pode apagar tudo em “Limpar meus dados deste aparelho”, no perfil.</P>
     <P>Se no futuro ativarmos qualquer ferramenta de análise ou marketing, ela só carregará depois do seu consentimento.</P></>) },
 };
 
@@ -309,7 +309,6 @@ const fromMin = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:$
 const sameDay = (a: Date | null, b: Date) => !!a && dateKey(a) === dateKey(b);
 const copyText = async (t: string) => { try { await navigator.clipboard.writeText(t); return true; } catch { return false; } };
 const waLink = (text: string) => `https://api.whatsapp.com/send?phone=${C.PHONE}&text=${encodeURIComponent(text)}`;
-/** Relógio de São Paulo, independente do fuso do aparelho. */
 const spNow = () => { try { return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' })); } catch { return new Date(); } };
 
 type Slot = { t: string; ok: boolean };
@@ -363,7 +362,6 @@ function useNarrator(lang: Lang) {
 
   useEffect(() => () => { if (supported) { token.current += 1; window.speechSynthesis.cancel(); } }, [supported]);
 
-  // Fala frase por frase: evita o corte de ~15s do Chrome e deixa o pausar funcionar em qualquer aparelho.
   const step = useCallback(function run(tk: number) {
     if (tk !== token.current) return;
     const i = idx.current;
@@ -372,7 +370,7 @@ function useNarrator(lang: Lang) {
     const { voice, male } = choiceRef.current;
     if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = LOCALE[langRef.current];
     u.rate = 0.92;
-    u.pitch = male ? 1 : 0.7; // sem voz masculina disponível: tom mais grave
+    u.pitch = male ? 1 : 0.7;
     u.onend = () => { if (tk !== token.current) return; idx.current = i + 1; run(tk); };
     u.onerror = (e) => {
       if (tk !== token.current) return;
@@ -471,7 +469,7 @@ function Reveal({ children, delay = 0, className = '' }: { children: ReactNode; 
   const { ref, seen } = useSeen<HTMLDivElement>();
   return <div ref={ref} className={`rv ${seen ? 'in' : ''} ${className}`} style={{ transitionDelay: `${delay}ms` }}>{children}</div>;
 }
-function Title({ children, as = 'h2', className = '', style, id }: { children: string; as?: 'h1' | 'h2'; className?: string; style?: CSSProperties; id?: string }) {
+function Title({ children, as = 'h2', className = '', style, id }: { children: string; as?: 'h1' | 'h2'; className = '', style?: CSSProperties; id?: string }) {
   const { ref, seen } = useSeen<HTMLHeadingElement>();
   const Tag = as;
   return (
@@ -482,10 +480,9 @@ function Title({ children, as = 'h2', className = '', style, id }: { children: s
 }
 
 /* ================================================================== */
-/*  COMPONENTES NO ESTILO shadcn/ui (embutidos, sem instalar nada)     */
+/*  COMPONENTES UI                                                     */
 /* ================================================================== */
 type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean };
-/** Botão. Com asChild, aplica as classes no filho (ex.: um <a>). */
 function Button({ asChild, className, children, type, ...rest }: BtnProps) {
   if (asChild && isValidElement(children)) {
     const child = children as ReactElement<{ className?: string }>;
@@ -520,7 +517,6 @@ function RadioGroup({ value, onValueChange, className, children, ...aria }: { va
     </RadioCtx.Provider>
   );
 }
-/** Rádio nativo escondido: teclado, setas e leitor de tela funcionam sem código extra. */
 function RadioGroupItem({ value, disabled, ...aria }: { value: string; disabled?: boolean; 'aria-label'?: string }) {
   const c = useContext(RadioCtx);
   return <input type="radio" className="sr-only" name={c.name} value={value} checked={c.value === value} disabled={disabled} onChange={() => c.onChange(value)} {...aria} />;
@@ -580,7 +576,7 @@ const StepHead = ({ n, title, done }: { n: number; title: string; done: boolean 
 );
 
 /* ================================================================== */
-/*  CSS (tema, componentes, responsividade, sem quebra de palavras)    */
+/*  CSS                                                                */
 /* ================================================================== */
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Manrope:wght@400..800&display=swap');
@@ -730,7 +726,6 @@ export default function App() {
   const [reqOk, setReqOk] = useState(false);
   const [optIn, setOptIn] = useState(false);
   const [hp, setHp] = useState('');
-  // O nome não é mais salvo no aparelho: isso deixa o app coerente com a Política de Cookies.
   const [data, setData] = useState<Booking>({
     name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '',
     date: null, time: '', req: '', payment: '', packageId: '', addTime: false,
@@ -768,7 +763,6 @@ export default function App() {
   useEffect(() => { store.set('thaly_theme', theme); }, [theme]);
   useEffect(() => { const i = setInterval(() => setNow(spNow()), 60000); return () => clearInterval(i); }, []);
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
-  // Ao trocar de sessão ou idioma, o áudio para.
   useEffect(() => { narr.stop(); }, [data.packageId, lang, narr.stop]);
   useEffect(() => {
     if (phase !== 'site') { setShowBar(false); return undefined; }
@@ -795,9 +789,8 @@ export default function App() {
   const recommendedPkgId = useMemo(() => {
     const day = now.getDay();
     const hour = now.getHours();
-    if (day === 1 || (hour >= 9 && hour < 14)) return 'classica';
-    if (day === 5 || day === 6 || hour >= 20) return 'sensitiva';
-    return 'fusion';
+    if (day === 1 || (hour >= 9 && hour < 13)) return 'classica';
+    return 'sensitiva';
   }, [now]);
 
   const invoice = useMemo(() => {
@@ -893,42 +886,26 @@ export default function App() {
   };
   const pickOffer = (o: Offer) => { vibrate(20); setOffer(o); goBook(); };
 
+  /* Mensagem do WhatsApp curta, humana e direta para aumentar a conversão do sinal */
   const whatsappLink = () => {
-    const dStr = data.date ? data.date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' }) : '';
-    let loc: string;
-    if (!isHome) loc = '📍 *Local:* Atendimento no espaço, região da Bela Vista/Centro Histórico. O endereço exato será enviado após a confirmação.';
-    else {
-      const full = `${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}, São Paulo`;
-      loc = `📍 *Local:* Atendimento no seu endereço.\n*Endereço informado:* ${full}\n*Mapa:* https://maps.google.com/?q=${encodeURIComponent(full)}`;
-    }
+    const dStr = data.date ? data.date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }) : '';
     const pk = pkg.L.pt;
-    let m = `Oi Thalyson! Vim pelo site *${SITE_NAME}* e quero confirmar.\n\n*NOME:* ${clean(data.name)}\n`;
-    m += `*DIA E HORA:* ${dStr} das ${data.time} às ${endTime}\n${loc}\n\n`;
-    m += `*SESSÃO ESCOLHIDA (${invoice.dur} min):*\n✅ ${pk.title}\n\n*O que vai acontecer na sessão:*\n`;
-    m += pk.flow.map((s, i) => `${i + 1}. ${s}`).join('\n') + '\n';
-    if (aparoOn || data.addTime) {
-      m += '\n*Adicionais:*\n';
-      if (aparoOn) m += `➕ Aparo de pelos até 3 lugares (preço de combo, economia de ${money(invoice.comboSave)})\n`;
-      if (data.addTime) m += '➕ +30 minutos extras\n';
-    }
-    if (hasReq) m += `\n*VONTADE ESPECÍFICA (consentimento dado no site):* "${clean(data.req)}"\n`;
-    if (isPack) m += `\n🎁 *PACOTE 5 SESSÕES (pague 4, a 5ª é grátis):* esta é a 1ª sessão. As outras 4 serão agendadas depois por aqui, com validade de ${C.PACK_DAYS} dias. Economia do pacote: ${money(invoice.packSave)}.\n`;
-    m += '\n*RESUMO DO PAGAMENTO:*\n';
-    m += `${isPack ? `Pacote 5 sessões (4 pagas): ${money(invoice.sessionPrice)}` : `Sessão: ${money(invoice.sessionPrice)}`}\n`;
-    if (invoice.aparoAdd > 0) m += `Depilação (combo): +${money(invoice.aparoAdd)}\n`;
-    if (invoice.timeAdd > 0) m += `+30 minutos: +${money(invoice.timeAdd)}\n`;
-    if (invoice.reqFee > 0) m += `Pedido específico: +${money(invoice.reqFee)}\n`;
-    if (invoice.discount > 0) m += `🏷️ ${coupon.applied ? `Cupom ${coupon.applied}` : 'Presente de 1ª sessão'}: -${money(invoice.discount)}\n`;
-    if (invoice.pixDiscount > 0) m += `🏷️ Desconto Pix (3%): -${money(invoice.pixDiscount)}\n`;
-    if (invoice.peakFee > 0) m += `Taxa de deslocamento/pico: +${money(invoice.peakFee)}\n`;
-    m += `*Valor Total:* ${money(invoice.total)} (${PAY_PT[data.payment] || data.payment})\n`;
-    m += `*Sinal (Pix agora):* ${money(invoice.sinal)}\n*Restante (depois da sessão):* ${money(invoice.rest)}\n`;
-    if (invoice.saved > 0) m += `💚 *Economia total neste pedido:* ${money(invoice.saved)}\n`;
-    m += '\n✅ Declaro ter 18 anos ou mais e ter lido a Política de Privacidade, os Termos e a Política de Cancelamento.\n';
-    if (optIn) m += '🔔 Aceito receber lembretes e novidades por WhatsApp.\n';
-    if (lang !== 'pt') m += `🌐 Idioma do cliente: ${lang === 'en' ? 'English' : 'Español'}\n`;
-    if (!isPack) m += '\n🎁 *Para a próxima:* tenho direito ao cupom SESSAO2 no meu próximo agendamento.\n';
-    m += '\nAguardo sua resposta para mandar o comprovante do sinal!';
+    const extras: string[] = [];
+    if (aparoOn) extras.push('com aparo de pelos');
+    if (data.addTime) extras.push('+30 min');
+    if (isPack) extras.push('pacote 5 sessões');
+    const extraTxt = extras.length ? ` (${extras.join(', ')})` : '';
+    const locTxt = isHome
+      ? `No meu endereço: ${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}`
+      : 'Na sua suíte (Bela Vista)';
+
+    let m = `Oi Thalyson! Sou o *${clean(data.name)}* e quero agendar:\n\n`;
+    m += `• *Sessão:* ${pk.title}${extraTxt}\n`;
+    m += `• *Quando:* ${dStr}, das ${data.time} às ${endTime}\n`;
+    m += `• *Onde:* ${locTxt}\n`;
+    m += `• *Total:* ${money(invoice.total)} (${PAY_PT[data.payment] || data.payment})\n`;
+    if (hasReq) m += `• *Pedido:* ${clean(data.req)}\n`;
+    m += `\nJá vou fazer o Pix do sinal de *${money(invoice.sinal)}* e te mando o comprovante aqui para confirmar.`;
     return waLink(m);
   };
 
@@ -958,7 +935,6 @@ export default function App() {
     const link = whatsappLink();
     store.set('thaly_returning_final', 'yes');
     setSentLink(link); vibrate([30, 50]);
-    // Abre em nova aba para não perder o estado da página; se o navegador bloquear, navega na mesma aba.
     const w = window.open(link, '_blank');
     if (!w) window.location.href = link;
     else { try { w.opener = null; } catch { /* ignorado */ } }
@@ -1072,7 +1048,7 @@ export default function App() {
             <div className="glow" aria-hidden="true" />
             <div className="relative">
               <Reveal><p className="inline-flex items-center gap-2 text-sm font-semibold mb-6 c-mute"><Icon name="map" size={16} /> {t('badge')}</p></Reveal>
-              <Title as="h1" className="mb-4" style={{ fontSize: 'clamp(50px,13vw,92px)' }}>{t('h1')}</Title>
+              <Title as="h1" className="mb-4" style={{ fontSize: 'clamp(48px,12vw,86px)' }}>{t('h1')}</Title>
               <Reveal delay={250}><p className="text-lg leading-relaxed mb-8 max-w-md c-mute">{isReturning ? t('smartSub') : t('sub')}</p></Reveal>
               <Reveal delay={380}>
                 <div className="flex flex-wrap gap-3 mb-8">
@@ -1128,7 +1104,7 @@ export default function App() {
                   <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 18%,transparent)' }}><Icon name="check" size={32} /></div>
                   <h2 className="serif text-4xl font-light mb-4">{t('doneH')}</h2>
                   <p className="leading-relaxed mb-4 c-mute">{t('doneP')}</p>
-                  <p className="font-bold mb-8">{t('doneSig')} ({money(invoice.sinal)})</p>
+                  <p className="font-bold mb-8">{t('doneSig')} {money(invoice.sinal)}</p>
                   <div className="space-y-3 max-w-xs mx-auto">
                     <Button asChild className="btn-ui btn-p w-full">
                       <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer">{t('resend')}</a>
@@ -1183,7 +1159,7 @@ export default function App() {
                                 <span className="serif text-[22px] leading-tight">{L.title}</span>
                                 <span className="serif text-[22px] shrink-0 font-semibold" style={{ color: on || isRec ? `rgb(${rgb})` : 'var(--acc)' }}>{money(p.price)}</span>
                               </span>
-                              <span className="block text-sm mt-1 c-mute">{p.min} {t('min')}, {L.tags.slice(0, 2).join(' • ')}</span>
+                              <span className="block text-sm mt-1 c-mute">{p.min} {t('min')} • {L.tags.join(' • ')}</span>
                             </Label>
                             {on && (
                               <div className="rise px-5 pb-5" style={{ borderTop: '1px solid var(--line)' }}>
