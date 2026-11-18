@@ -4,9 +4,6 @@ import {
   type ButtonHTMLAttributes, type InputHTMLAttributes, type LabelHTMLAttributes, type HTMLAttributes,
 } from 'react';
 
-/* ================================================================== */
-/*  CONFIGURAÇÃO                                                       */
-/* ================================================================== */
 const SITE_NAME = 'Relaxar hoje com Thalyson';
 const LEGAL = {
   RAZAO: 'Thalyson Rodrigo dos Santos',
@@ -14,17 +11,23 @@ const LEGAL = {
   ENDERECO: 'Avenida 9 de Julho, Bela Vista, São Paulo - SP',
   EMAIL: 'relaxecomthalyson@gmail.com',
   ENCARREGADO: 'Thalyson Rodrigo dos Santos',
-  ATUALIZADO: '05/11/2026',
+  ATUALIZADO: '18/11/2026',
   CANCEL_FREE_HOURS: 12,
 };
 
 const C = {
   PHONE: '5517991360413',
-  PIX_KEY: '62922530000144',
+  PIX_KEY: 'relaxecomthalyson@gmail.com',
+  PIX_LABEL: 'E-mail',
   INSTAGRAM: 'https://www.instagram.com/relaxecomthalyson',
+  PORTFOLIO: 'https://thalysondesigner.vercel.app/',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
   AVATAR: '/thalyson.jpg',
-  COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
+  COUPONS: { RELAXAR13: 0.13, SESSAO2: 0.08 } as Record<string, number>,
+  PUBLIC_COUPONS: [
+    { code: 'RELAXAR13', pct: 13 },
+    { code: 'SESSAO2', pct: 8 },
+  ],
   SIGNAL: 40,
   FIRST: 15,
   REQ_FEE: 140,
@@ -32,6 +35,8 @@ const C = {
   PIX_DISC: 0.03,
   TIME_ADD: 75,
   APARO_FULL: 130,
+  BIWEEKLY_DISC: 0.10,
+  BIWEEKLY_DAYS: 30,
   PACK_PAY: 4,
   PACK_TOTAL: 5,
   PACK_DAYS: 60,
@@ -47,214 +52,607 @@ const PEAK_HOURS = ['12:00', '13:00', '17:00', '18:00', '19:00'];
 type Lang = 'pt' | 'en' | 'es';
 type Theme = 'dark' | 'light';
 type Phase = 'loading' | 'welcome' | 'site';
-type Offer = 'single' | 'combo' | 'pack';
+type Offer = 'single' | 'combo' | 'biweekly' | 'pack';
 type DocId = 'privacy' | 'terms' | 'refund' | 'cookies';
 type PkgTheme = 'sage' | 'amber' | 'crimson' | 'midnight' | 'slate';
-type PkgText = { title: string; desc: string; tags: string[]; flow: string[] };
+type PkgText = { title: string; subtitle: string; desc: string; flow: string[] };
 type Ref<E> = { current: E | null };
 
 const LOCALE: Record<Lang, string> = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' };
 const LANG_NAME: Record<Lang, string> = { pt: 'Português', en: 'English', es: 'Español' };
 
-/* ================================================================== */
-/*  TEXTOS (PT / EN / ES)                                              */
-/* ================================================================== */
 const T: Record<Lang, Record<string, string>> = {
   pt: {
-    loadMsg: 'Preparando o seu momento de pausa', badge: 'Bela Vista, Centro de São Paulo',
-    wSub: 'Massagem masculina em São Paulo. Escolha, marque e confirme pelo WhatsApp. Simples e reservado.', w1: 'Reserva em 1 minuto', w2: 'Sinal de só R$ 40', w3: 'Cancelamento grátis',
-    enter: 'Entrar e agendar', needAgeEnter: 'Confirme que tem 18 anos ou mais',
-    h1: 'O seu momento de pausa.', sub: 'Massagem masculina em São Paulo. Escolha, agende e relaxe: a confirmação chega direto no seu WhatsApp.',
-    cta: 'Agendar agora', reviews: 'Avaliações', nextFree: 'Próximo horário livre', today: 'hoje', tomorrow: 'amanhã', fromM: 'Massagens a partir de',
-    t1: 'Sinal de só R$ 40, o resto depois da sessão', t2: 'Cancelamento grátis até 12h antes', t3: '1ª sessão com R$ 15 off, automático',
-    offH: 'Mais vantagem para você', offS: 'Combo com depilação e pacote fidelidade, com a economia sempre à vista.',
-    cbT: 'Massagem + depilação', cbD: 'Economize até R$ 70 no mesmo atendimento.', lyT: 'Leve 5, pague 4', lyD: 'A 5ª sessão é grátis. Você agenda a 1ª agora.', see: 'Ver opção',
-    s1: 'Escolha a sessão', s2: 'Quer aproveitar o pacote?', s3: 'Quando e onde', s4: 'Resumo e pagamento', min: 'min', flowH: 'Como será a sessão',
-    oSingle: 'Sessão avulsa', oSingleD: 'Uma sessão, sem compromisso.', oCombo: 'Com depilação', oComboD: 'Inclui aparo de pelos em até 3 lugares.', oPack: 'Pacote 5 sessões', oPackD: 'Pague 4 e a 5ª é grátis. Validade de {n} dias.',
-    save: 'Economize', was: 'De', listen: 'Ouvir descrição', pause: 'Pausar áudio', resume: 'Continuar áudio', stopA: 'Parar',
-    voiceLow: 'Modo teste de voz', noTts: 'Seu navegador não suporta narração em áudio.',
-    skip: 'Ir para o conteúdo', guar: 'Garantias', legalNav: 'Documentos legais',
-    packNote: 'Cupom e desconto de 1ª sessão não acumulam com o pacote, que já é o melhor preço. Você agenda esta 1ª sessão agora e as outras 4 depois, pelo WhatsApp.',
-    name: 'Como devo te chamar?', namePh: 'Seu nome', nameErr: 'Informe seu nome (mín. 3 letras).', place: 'Local da sessão', studio: 'No espaço do terapeuta', home: 'O Terapeuta vai até você',
-    peakNote: 'Horários de pico no seu endereço têm taxa de R$ 18. Pedimos mais antecedência para o deslocamento. O CEP é consultado no ViaCEP.',
-    studioInfo: 'A suíte fica no Centro Histórico, na Bela Vista (próximo ao Metrô Anhangabaú). O endereço exato é enviado junto com a confirmação.',
-    cep: 'CEP (preenche o endereço)', street: 'Rua ou Avenida', number: 'Nº', comp: 'Qual Apto? Bloco?', bairro: 'Bairro', addrErr: 'Preencha rua, número e bairro.', cepFail: 'CEP não encontrado. Preencha manualmente.',
-    date: 'Data', time: 'Horário de início', session: 'Sessão de', peak: 'Pico', noSlots: 'Sem horários livres neste dia. Tente outra data.',
-    demo: 'Disponibilidade demonstrativa: a reserva só vale após a resposta no WhatsApp.', dateErr: 'Escolha uma data.', timeErr: 'Escolha um horário.', from: 'Das', to: 'às', unavailable: 'indisponível',
-    cont: 'Continuar para o resumo', fill: 'Complete os campos destacados', change: 'Alterar', sPack: 'Sessão', sWhen: 'Quando', sLoc: 'Local', sLocStudio: 'No espaço (Bela Vista)',
-    lPack: 'Sessão', lPack5: 'Pacote 5 sessões (4 pagas)', lCombo: 'Depilação (preço de combo)', lTime: '+30 minutos extras', lReq: 'Pedido específico', lFirst: 'Presente de 1ª sessão', lCoupon: 'Cupom', lPeak: 'Deslocamento / pico', lPix: 'Desconto Pix (3%)',
-    saved: 'Você economiza', total: 'Total', signal: 'Sinal agora', rest: 'Após a sessão',
-    extras: 'Extras e cupom (opcional)', couponQ: 'Possui cupom?', couponPh: 'Código', apply: 'Aplicar', couponOk: 'Cupom ativado', couponBad: 'Cupom inválido ou expirado.',
-    reqQ: 'Pedido específico (+ R$ 140)', learn: 'Saiba mais',
-    reqConsent: 'Consinto em informar um pedido que pode tratar de vida sexual (dado sensível), apenas para que ele seja avaliado. Ele segue só pelo WhatsApp, não é salvo neste aparelho e posso retirar o consentimento quando quiser.',
-    reqPh: 'Algum detalhe ou vontade para a sessão', reqNote: 'Pedido avaliado no momento do atendimento. Se inviável, o valor não é cobrado.',
-    pay: 'Como vai pagar o restante?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'As taxas e o parcelamento no cartão são combinados diretamente pelo WhatsApp antes do pagamento.',
-    optIn: 'Quero receber lembretes e novidades pelo WhatsApp (opcional).',
-    ageA: 'Declaro ter 18 anos ou mais e li a', privacy: 'Política de Privacidade', terms: 'Termos', and: 'e a', refund: 'Política de Cancelamento',
-    sigA: 'Para confirmar o horário, envie um sinal de', sigB: 'via Pix. O restante é acertado após a sessão.', copyPix: 'Copiar chave Pix (CNPJ)', pixCopied: 'Chave Pix (CNPJ) copiada',
-    send: 'Enviar pelo WhatsApp', needPay: 'Escolha a forma de pagamento', needAge: 'Confirme que você tem 18 anos ou mais',
-    doneH: 'Tudo pronto!', doneP: 'Sua solicitação foi preparada. O horário só está confirmado depois da resposta pelo WhatsApp. Se o WhatsApp não abriu, use o botão abaixo.',
-    doneSig: 'Envie o comprovante do sinal na conversa para confirmar.', resend: 'Reenviar mensagem', addCal: 'Adicionar ao Google Calendar', restart: 'Voltar ao início',
-    chatQ: 'Prefere tirar uma dúvida antes?', chatBtn: 'Falar no WhatsApp', chatMsg: 'Oi Thalyson! Vim pelo site Relaxar hoje com Thalyson e tenho uma dúvida.',
-    aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Terapeuta masculino', about1: 'Meu trabalho é direto e focado no corpo masculino: usar o toque para aliviar o peso e a tensão da sua rotina.',
-    about2: 'Atendo em uma suíte no Centro Histórico de SP, próximo ao Metrô Anhangabaú.', seeProfile: 'Ver perfil completo',
-    faqH: 'Dúvidas rápidas', q1: 'Como funciona o sinal?', a1: 'Você paga R$ 40 por Pix para garantir o horário. O restante é pago depois da sessão, na forma que escolher.',
-    q2: 'E se eu precisar cancelar?', a2: 'Até 12 horas antes você recebe o sinal de volta ou remarca sem custo.', q3: 'Que dados preciso informar?', a3: 'Só nome, dia, horário e pacote. Não pedimos CPF, e-mail nem telefone no site.',
-    q4: 'Posso pagar no cartão?', a4: 'Sim: Pix (com 3% de desconto), cartão em até 12x (taxas combinadas antes) ou dinheiro.',
-    footPrivacy: 'Privacidade', footTerms: 'Termos', footRefund: 'Cancelamento e reembolso', footCookies: 'Cookies', adults: 'Serviço exclusivo para maiores de 18 anos.',
-    close: 'Fechar', theme: 'Alternar tema', lang: 'Idioma', srLight: 'Mudar para tema claro', srDark: 'Mudar para tema escuro', legalNote: '',
-    profile: 'Perfil', openProfile: 'Abrir perfil de Thalyson', gm: 'Bom dia', ga: 'Boa tarde', gn: 'Boa noite',
-    pBul1: 'Conversa inicial para combinar limites e preferências', pBul2: 'Atendimento sem pressa, com horário reservado só para você', pBul3: 'Ambiente reservado, em suíte no Centro Histórico',
-    pHours: 'Horário de atendimento', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Formas de pagamento', pPayV: 'Pix (3% off), cartão até 12x e dinheiro',
-    pWhere: 'Onde atendo', pWhereV: 'No meu espaço (Bela Vista) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis até 12 horas antes',
-    pForget: 'Apagar meus dados deste aparelho', forgot: 'Dados apagados deste aparelho',
-    recommended: 'Recomendado para hoje', smartSub: 'Seu corpo pede pausa. Deixe o resto comigo.', lastSlots: 'Atenção: Últimos horários para hoje',
+    loadMsg: 'Preparando seu horário reservado', badge: 'Bela Vista • Perto do Metrô Anhangabaú',
+    wSub: 'Atendimento individual em São Paulo. Você escolhe a sessão, marca o horário em 1 minuto e confirma direto comigo no WhatsApp.',
+    w1: 'Atendimento individual, sem sala de espera', w2: 'Sinal de R$ 40 no Pix para travar a agenda', w3: 'Espaço simples, reservado e sem frescura',
+    enter: 'Ver sessões e horários', needAgeEnter: 'Confirme que tem 18 anos ou mais',
+    h1: 'Tire o peso do corpo. Desligue a cabeça.',
+    sub: 'Sessões individuais na Bela Vista ou no seu endereço em SP. Sem enrolação, sem pressa e com valores claros antes de você sair de casa.',
+    cta: 'Escolher sessão e horário', reviews: 'Ver avaliações no Google', nextFree: 'Próximo horário livre', today: 'hoje', tomorrow: 'amanhã', fromM: 'Sessões a partir de',
+    t1: 'Sinal de R$ 40 para segurar o horário; o restante você paga só depois',
+    t2: 'Remarcação ou devolução do sinal grátis avisando até 12h antes',
+    t3: 'R$ 15 de desconto automático na sua primeira sessão',
+    offH: 'Combos e planos', offS: 'Opções para resolver tudo na mesma visita ou manter uma rotina gastando menos.',
+    cbT: 'Massagem + aparo de pelos', cbD: 'Inclui aparo na máquina em até 3 regiões no mesmo horário. Economia de até R$ 70.',
+    bwT: 'Plano 2x no mês (10% off)', bwD: 'Para quem quer vir a cada 15 dias sem pesar no bolso. 10% de desconto nas duas sessões.',
+    lyT: 'Pacote 5 sessões (pague 4)', lyD: 'Você paga 4 sessões e ganha a 5ª para usar em até 60 dias.', see: 'Selecionar opção',
+    s1: '1. Escolha a sessão', s2: '2. Formato ou plano', s3: '3. Dia, horário e local', s4: '4. Conferir e mandar no WhatsApp',
+    min: 'min', flowH: 'Como funciona na prática', firstBadge: '1ª vez: R$ 15 off', pixHint: 'no Pix',
+    oSingle: 'Sessão avulsa', oSingleD: 'Sem compromisso. Já entra com R$ 15 de desconto na primeira vez.',
+    oCombo: 'Sessão + aparo de pelos', oComboD: 'Faço o aparo na máquina em até 3 regiões no mesmo atendimento.',
+    oBiweekly: '2x no mês (Quinzenal • 10% off)', oBiweeklyD: '2 sessões para usar em até {n} dias. Você marca a 1ª agora e combina a 2ª direto comigo.',
+    oPack: 'Pacote 5 sessões (1 grátis)', oPackD: 'Pague 4 e ganhe a 5ª. Validade de {n} dias para agendar pelo WhatsApp.',
+    save: 'Economia de', was: 'De', listen: 'Ouvir descrição', pause: 'Pausar', resume: 'Continuar', stopA: 'Parar',
+    voiceLow: 'Áudio adaptado para este aparelho', noTts: 'Seu navegador não tem suporte para áudio.',
+    skip: 'Ir para o conteúdo', guar: 'Como funciona a reserva', legalNav: 'Documentos legais',
+    packNote: 'Planos e pacotes já têm desconto real aplicado, por isso não acumulam com cupons. Você marca a 1ª data aqui e combina as próximas direto comigo.',
+    recSlotH: 'Horário recomendado livre agora', recSlotBtn: 'Usar este horário',
+    name: 'Como você quer ser chamado?', namePh: 'Seu nome ou apelido', nameErr: 'Digite pelo menos 3 letras.',
+    place: 'Onde vai ser?', studio: 'Na minha suíte (Bela Vista)', home: 'No seu endereço (SP)',
+    homeInfo: 'Vou até o seu endereço levando maca dobrável e materiais. Tenha um espaço livre para montar a maca e já esteja de banho tomado na hora combinada. Nos horários de trânsito pesado há taxa de deslocamento de R$ 18.',
+    studioInfo: 'Atendo sozinho em uma suíte residencial simples e reservada na Bela Vista (pertinho do Metrô Anhangabaú). Como fica na região central, o entorno não é de silêncio absoluto, mas o clima reservado e a sessão fazem você desligar fácil. Venha já de banho tomado para aproveitar o tempo inteiro na maca. Mando a localização exata assim que confirmar.',
+    cep: 'CEP', street: 'Rua ou Avenida', number: 'Nº', comp: 'Apto / Bloco', bairro: 'Bairro', addrErr: 'Preencha rua, número e bairro.', cepFail: 'CEP não encontrado. Preencha manualmente.',
+    date: 'Dia', time: 'Horário de início', session: 'Duração:', peak: 'Trânsito', noSlots: 'Agenda cheia neste dia. Escolha outra data acima.',
+    demo: 'Horários sujeitos a confirmação rápida no WhatsApp.', dateErr: 'Escolha um dia.', timeErr: 'Escolha um horário.', from: 'Das', to: 'às', unavailable: 'ocupado',
+    cont: 'Revisar valores e confirmar', fill: 'Preencha os campos destacados acima', change: 'Alterar dados', sPack: 'Sessão', sWhen: 'Data e horário', sLoc: 'Local', sLocStudio: 'Suíte Bela Vista (próximo ao Metrô Anhangabaú)',
+    lPack: 'Sessão escolhida', lPack2: 'Plano 2x no mês (2 sessões)', lPack5: 'Pacote 5 sessões (4 pagas)', lCombo: 'Aparo de pelos (combo)', lTime: '+30 minutos extras', lReq: 'Pedido específico', lSubtotal: 'Subtotal sem descontos', lPlanDisc: 'Desconto do plano/pacote', lFirst: 'Desconto 1ª sessão', lCoupon: 'Cupom aplicado', lPeak: 'Deslocamento / trânsito', lPix: 'Desconto Pix (3%)',
+    saved: 'Total economizado', total: 'Valor total final', signal: 'Sinal da reserva (Pix agora)', rest: 'Restante após a sessão',
+    prefsH: 'Preferências do clima na sessão',
+    prefIncense: 'Gosto de incenso aceso',
+    prefMusic: 'Quero música ambiente tocando',
+    extras: 'Adicionar +30 min, cupom ou pedido', couponQ: 'Cupons disponíveis (clique para aplicar)', couponPh: 'Ou digite outro código', apply: 'Aplicar', couponOk: 'Cupom aplicado!', couponBad: 'Cupom inválido.', couponRemove: 'Remover',
+    reqQ: 'Tem algum pedido específico? (+ R$ 140)', learn: 'Saiba mais',
+    reqConsent: 'Autorizo enviar este pedido apenas para avaliação no WhatsApp. Não fica salvo no site.',
+    reqPh: 'Escreva o que gostaria de incluir', reqNote: 'Avalio antes de confirmar; se não der para fazer, não cobro nada a mais.',
+    pay: 'Como vai pagar o restante depois?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'Levo a maquininha; as taxas de parcelamento te passo antes no WhatsApp.',
+    healthStudio: 'Declaro que estou com a saúde em dia (sem febre, sintomas gripais ou irritações na pele) e que irei já de banho tomado.',
+    healthHome: 'Declaro que estou com a saúde em dia (sem febre, sintomas gripais ou irritações na pele) e que já estarei de banho tomado quando você chegar.',
+    optIn: 'Pode me avisar no WhatsApp quando abrir horário livre ou promoção.',
+    ageA: 'Confirmo ter 18 anos ou mais e concordo com a', privacy: 'Política de Privacidade', terms: 'Termos', and: 'e', refund: 'Regras de Cancelamento',
+    sigA: 'Para travar esse horário só para você, faça o Pix do sinal de', sigB: 'Esse valor já é abatido e você paga o restante de', sigC: 'só depois da sessão.', copyPix: 'Copiar chave Pix (e-mail)', pixCopied: 'Chave Pix copiada!',
+    send: 'Mandar pedido no WhatsApp', needPay: 'Escolha como vai pagar o restante', needHealth: 'Confirme saúde em dia e banho tomado', needAge: 'Confirme que tem 18 anos ou mais',
+    doneH: 'Pedido pronto!', doneP: 'Agora é só enviar a mensagem que abriu no seu WhatsApp junto com o comprovante do sinal de R$ 40 para eu travar seu horário.',
+    doneSig: 'Chave Pix (e-mail):', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na agenda', restart: 'Fazer outro agendamento',
+    chatQ: 'Ficou com alguma dúvida antes de marcar?', chatBtn: 'Me chama direto no WhatsApp', chatMsg: 'Oi Thalyson! Vi seu site e queria tirar uma dúvida sobre a massagem.',
+    revH: 'Quem já passou por aqui', revS: 'Relatos reais e sem filtro de quem já veio na Bela Vista.', revMore: 'Ver mais avaliações ({n})', revLess: 'Mostrar menos', revBtn: 'Avaliar no Google',
+    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atendimento direto comigo, sem intermediários',
+    about1: 'Tenho 30 anos, sou do interior de SP e cheguei em São Paulo há menos de 1 ano. Ainda estou me instalando e conhecendo a cidade, então meu atendimento é bem direto e sem luxo de clínica: uma suíte residencial simples e reservada na Bela Vista para você desligar da correria.',
+    about2: 'Perto do Metrô Anhangabaú, com maca de madeira confortável e horário exclusivo para você. Por ser centro, tem o movimento normal da cidade lá fora, mas aqui dentro o ritmo desacelera e o pessoal costuma relaxar muito. Lembre-se apenas de vir já de banho tomado.', seeProfile: 'Ver detalhes do espaço',
+    faqH: 'Dúvidas diretas',
+    q1: 'Por que tem sinal de R$ 40?', a1: 'Como atendo sozinho com hora marcada e fecho a agenda inteira para você, o sinal garante que o horário não fique vago. Ele é descontado do valor total e você paga o resto só no final.',
+    q2: 'E se eu precisar remarcar?', a2: 'Avisando até 12 horas antes, devolvo seus R$ 40 no Pix na hora ou troco o dia sem custo.',
+    q3: 'Meus dados ficam salvos?', a3: 'Não. Não peço CPF, e-mail nem cadastro no site. Tudo é combinado direto comigo no WhatsApp e o endereço exato vai só após confirmar.',
+    q4: 'Preciso estar de banho tomado?', a4: 'Sim. Seja vindo aqui na suíte ou eu indo até a sua casa, esteja já de banho tomado no horário combinado para irmos direto para a maca sem perder tempo.',
+    q5: 'Nunca fui em massagem assim, fico meio travado. Tudo bem?', a5: 'Super normal na primeira vez. A gente conversa 2 minutos antes de começar, você me diz o que prefere e o que não quer, e tudo acontece no seu ritmo.',
+    footPrivacy: 'Privacidade', footTerms: 'Termos', footRefund: 'Cancelamento', footCookies: 'Cookies', adults: 'Atendimento exclusivo para maiores de 18 anos.',
+    builtBy: 'Site desenvolvido por',
+    close: 'Fechar', theme: 'Mudar cor da tela', lang: 'Idioma', srLight: 'Mudar para tema claro', srDark: 'Mudar para tema escuro', legalNote: '',
+    profile: 'Sobre o atendimento', openProfile: 'Ver perfil de Thalyson', gm: 'Bom dia', ga: 'Boa tarde', gn: 'Boa noite',
+    pBul1: 'Conversa rápida antes de começar para alinhar pressão, música e incenso',
+    pBul2: 'Horário exclusivo: você não cruza com ninguém na entrada ou saída',
+    pBul3: 'Suíte residencial reservada na Bela Vista ou no seu endereço em SP (esteja já de banho tomado)',
+    pHours: 'Horários', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Pagamento', pPayV: 'Pix (3% de desconto), cartão até 12x ou dinheiro',
+    pWhere: 'Local', pWhereV: 'Bela Vista (perto do Metrô Anhangabaú) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis avisando até 12h antes',
+    pForget: 'Apagar meus dados deste aparelho', forgot: 'Pronto, dados apagados.',
+    recommended: 'Mais escolhida', smartSub: 'Que bom te ver de volta. Escolha o dia e o horário.', lastSlots: 'Últimos horários livres hoje',
   },
   en: {
-    loadMsg: 'Preparing your moment to pause', badge: 'Bela Vista, Downtown São Paulo',
-    wSub: 'Men’s massage in São Paulo. Choose, book and confirm on WhatsApp. Simple and private.', w1: 'Book in 1 minute', w2: 'Deposit of only R$ 40', w3: 'Free cancellation',
-    enter: 'Enter and book', needAgeEnter: 'Confirm you are 18 or older',
-    h1: 'Your moment to pause.', sub: 'Men’s massage in São Paulo. Choose, book and relax: the confirmation lands straight in your WhatsApp.',
-    cta: 'Book now', reviews: 'Reviews', nextFree: 'Next free slot', today: 'today', tomorrow: 'tomorrow', fromM: 'Massages from',
-    t1: 'Deposit of only R$ 40, the rest after the session', t2: 'Free cancellation up to 12h before', t3: 'R$ 15 off your 1st session, automatic',
-    offH: 'More value for you', offS: 'Grooming combo and loyalty pack, with the savings always in sight.',
-    cbT: 'Massage + grooming', cbD: 'Save up to R$ 70 in the same visit.', lyT: 'Get 5, pay for 4', lyD: 'The 5th session is free. You book the 1st now.', see: 'See option',
-    s1: 'Choose your session', s2: 'How would you like it?', s3: 'When and where', s4: 'Summary and payment', min: 'min', flowH: 'How the session goes',
-    oSingle: 'Single session', oSingleD: 'One session, no commitment.', oCombo: 'With grooming', oComboD: 'Includes body trimming in up to 3 areas.', oPack: '5-session pack', oPackD: 'Pay for 4, the 5th is free. Valid for {n} days.',
-    save: 'Save', was: 'Was', listen: 'Listen to description', pause: 'Pause audio', resume: 'Resume audio', stopA: 'Stop',
-    voiceLow: 'This device has no male voice for this language. A deeper tone was used.', noTts: 'Your browser does not support audio narration.',
-    skip: 'Skip to content', guar: 'Guarantees', legalNav: 'Legal documents',
-    packNote: 'Coupons and the 1st-session gift do not stack with the pack, which is already the best price. You book this 1st session now and the other 4 later on WhatsApp.',
-    name: 'What should I call you?', namePh: 'Your name', nameErr: 'Enter your name (min. 3 letters).', place: 'Session location', studio: 'At my place', home: 'I come to you',
-    peakNote: 'Peak hours at your address carry a R$ 18 fee. We ask for more notice for travel. The ZIP code is looked up via ViaCEP.',
-    studioInfo: 'The suite is in the Historic Center, Bela Vista (near Anhangabaú metro). The exact address is sent with the confirmation.',
-    cep: 'ZIP code (fills the address)', street: 'Street or Avenue', number: 'No.', comp: 'Apartment / complement', bairro: 'Neighborhood', addrErr: 'Fill in street, number and neighborhood.', cepFail: 'ZIP code not found. Fill in manually.',
-    date: 'Date', time: 'Start time', session: 'Session of', peak: 'Peak', noSlots: 'No free slots on this day. Try another date.',
-    demo: 'Sample availability: the booking only counts after the reply on WhatsApp.', dateErr: 'Choose a date.', timeErr: 'Choose a time.', from: 'From', to: 'to', unavailable: 'unavailable',
-    cont: 'Continue to summary', fill: 'Complete the highlighted fields', change: 'Change', sPack: 'Session', sWhen: 'When', sLoc: 'Location', sLocStudio: 'At the suite (Bela Vista)',
-    lPack: 'Session', lPack5: '5-session pack (4 paid)', lCombo: 'Grooming (combo price)', lTime: '+30 extra minutes', lReq: 'Specific request', lFirst: '1st session gift', lCoupon: 'Coupon', lPeak: 'Travel / peak', lPix: 'Pix discount (3%)',
-    saved: 'You save', total: 'Total', signal: 'Deposit now', rest: 'After the session',
-    extras: 'Extras and coupon (optional)', couponQ: 'Have a coupon?', couponPh: 'Code', apply: 'Apply', couponOk: 'Coupon applied', couponBad: 'Invalid or expired coupon.',
-    reqQ: 'Specific request (+ R$ 140)', learn: 'Learn more',
-    reqConsent: 'I consent to describing a request that may relate to sex life (sensitive data), only so it can be evaluated. It goes only via WhatsApp, is not saved on this device, and I can withdraw consent any time.',
-    reqPh: 'Any detail or wish for the session', reqNote: 'Request evaluated at the time of the session. If not feasible, it is not charged.',
-    pay: 'How will you pay the remainder?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card fees and installments are arranged directly on WhatsApp before payment.',
-    optIn: 'I want reminders and news via WhatsApp (optional).',
-    ageA: 'I declare I am 18 or older and have read the', privacy: 'Privacy Policy', terms: 'Terms', and: 'and the', refund: 'Cancellation Policy',
-    sigA: 'To confirm the time, send a deposit of', sigB: 'via Pix. The rest is settled after the session.', copyPix: 'Copy Pix key (CNPJ)', pixCopied: 'Pix key (CNPJ) copied',
-    send: 'Send on WhatsApp', needPay: 'Choose a payment method', needAge: 'Confirm you are 18 or older',
-    doneH: 'All set!', doneP: 'Your request is ready. The time is only confirmed after the reply on WhatsApp. If WhatsApp did not open, use the button below.',
-    doneSig: 'Send the deposit receipt in the chat to confirm.', resend: 'Resend message', addCal: 'Add to Google Calendar', restart: 'Back to start',
-    chatQ: 'Prefer to ask something first?', chatBtn: 'Chat on WhatsApp', chatMsg: 'Hi Thalyson! I came from the Relaxar hoje com Thalyson site and have a question.',
-    aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Male therapist', about1: 'My work is direct and focused on the male body: using touch to relieve the weight and tension of your routine.',
-    about2: 'I work from a suite in downtown São Paulo, close to the Anhangabaú metro station.', seeProfile: 'See full profile',
-    faqH: 'Quick questions', q1: 'How does the deposit work?', a1: 'You pay R$ 40 by Pix to hold the time. The rest is paid after the session, in the way you choose.',
-    q2: 'What if I need to cancel?', a2: 'Up to 12 hours before, you get the deposit back or reschedule at no cost.', q3: 'What data do I need to give?', a3: 'Only name, day, time and package. We don’t ask for ID, email or phone on the site.',
-    q4: 'Can I pay by card?', a4: 'Yes: Pix (3% off), card up to 12x (fees agreed beforehand) or cash.',
-    footPrivacy: 'Privacy', footTerms: 'Terms', footRefund: 'Cancellation and refunds', footCookies: 'Cookies', adults: 'Service exclusively for adults 18+.',
-    close: 'Close', theme: 'Toggle theme', lang: 'Language', srLight: 'Switch to light theme', srDark: 'Switch to dark theme', legalNote: 'Legal documents are provided in Portuguese, which is the binding version.',
-    profile: 'Profile', openProfile: 'Open Thalyson’s profile', gm: 'Good morning', ga: 'Good afternoon', gn: 'Good evening',
-    pBul1: 'Initial chat to agree on limits and preferences', pBul2: 'No rush, with a time slot reserved just for you', pBul3: 'Private setting, in a suite in the Historic Center',
-    pHours: 'Opening hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment methods', pPayV: 'Pix (3% off), card up to 12x and cash',
-    pWhere: 'Where I work', pWhereV: 'At my place (Bela Vista) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12 hours before',
-    pForget: 'Erase my data from this device', forgot: 'Data erased from this device',
-    recommended: 'Recommended for today', smartSub: 'Your body asks for a pause. Leave the rest to me.', lastSlots: 'Attention: Last slots for today',
+    loadMsg: 'Preparing your private slot', badge: 'Bela Vista • Near Anhangabaú Metro',
+    wSub: 'One-on-one men’s massage in São Paulo. Pick your session, book in 1 minute and confirm directly with me on WhatsApp.',
+    w1: 'Individual session, no waiting room', w2: 'R$ 40 Pix deposit to lock your slot', w3: 'Simple, private space without pretension',
+    enter: 'See sessions and times', needAgeEnter: 'Confirm you are 18 or older',
+    h1: 'Drop the tension. Clear your head.',
+    sub: 'Private sessions in Bela Vista or at your address in SP. Straightforward, unhurried and clear pricing before you leave home.',
+    cta: 'Choose session and time', reviews: 'Google Reviews', nextFree: 'Next open slot', today: 'today', tomorrow: 'tomorrow', fromM: 'Sessions from',
+    t1: 'R$ 40 deposit to lock your slot; pay the rest only after',
+    t2: 'Free rescheduling or deposit refund up to 12h ahead',
+    t3: 'Automatic R$ 15 discount on your first session',
+    offH: 'Combos & plans', offS: 'Options to combine grooming or keep a biweekly routine for less.',
+    cbT: 'Massage + body trimming', cbD: 'Includes clipper trimming on up to 3 areas in the same visit. Save up to R$ 70.',
+    bwT: '2x a month plan (10% off)', bwD: 'For a session every two weeks without breaking the bank. 10% off both sessions.',
+    lyT: '5-session pack (pay for 4)', lyD: 'Pay for 4 sessions and get the 5th free within 60 days.', see: 'Select option',
+    s1: '1. Choose your session', s2: '2. Format or plan', s3: '3. Day, time and location', s4: '4. Review and send on WhatsApp',
+    min: 'min', flowH: 'How it works in practice', firstBadge: '1st visit: R$ 15 off', pixHint: 'on Pix',
+    oSingle: 'Single session', oSingleD: 'No commitment. Includes R$ 15 off your first visit.',
+    oCombo: 'Session + body trimming', oComboD: 'Clipper trimming on up to 3 areas in the same appointment.',
+    oBiweekly: '2x a month (Biweekly • 10% off)', oBiweeklyD: '2 sessions to use within {n} days. Book your 1st now and schedule the 2nd directly with me.',
+    oPack: '5-session pack (1 free)', oPackD: 'Pay for 4 and get the 5th free. Valid for {n} days via WhatsApp.',
+    save: 'You save', was: 'Was', listen: 'Listen to description', pause: 'Pause', resume: 'Resume', stopA: 'Stop',
+    voiceLow: 'Adapted voice mode for this device', noTts: 'Your browser does not support audio narration.',
+    skip: 'Skip to content', guar: 'How booking works', legalNav: 'Legal documents',
+    packNote: 'Plans and packs already include a real discount, so they do not stack with coupons. Book your 1st date here and arrange the next ones directly with me.',
+    recSlotH: 'Next open recommended slot', recSlotBtn: 'Use this time',
+    name: 'What should I call you?', namePh: 'Your first name or nickname', nameErr: 'Enter at least 3 letters.',
+    place: 'Where will it be?', studio: 'At my suite (Bela Vista)', home: 'At your address (SP)',
+    homeInfo: 'I come to your address bringing a folding table and supplies. Have space ready for the table and be freshly showered by the scheduled time. Heavy traffic hours carry an R$ 18 travel fee.',
+    studioInfo: 'I work solo in a simple, private residential suite in Bela Vista (near Anhangabaú Metro). Being downtown, it is not dead silent outside, but the private setup makes it easy to switch off and deeply relax. Please arrive freshly showered. Exact location sent upon confirmation.',
+    cep: 'ZIP code', street: 'Street or Avenue', number: 'No.', comp: 'Apt / Unit', bairro: 'Neighborhood', addrErr: 'Fill in street, number and neighborhood.', cepFail: 'ZIP code not found. Fill in manually.',
+    date: 'Day', time: 'Start time', session: 'Duration:', peak: 'Traffic', noSlots: 'Fully booked on this day. Pick another date above.',
+    demo: 'Times subject to quick confirmation on WhatsApp.', dateErr: 'Choose a day.', timeErr: 'Choose a time.', from: 'From', to: 'to', unavailable: 'booked',
+    cont: 'Review prices and confirm', fill: 'Fill in the highlighted fields above', change: 'Edit details', sPack: 'Session', sWhen: 'Date & time', sLoc: 'Location', sLocStudio: 'Bela Vista Suite (near Anhangabaú Metro)',
+    lPack: 'Chosen session', lPack2: '2x a month plan (2 sessions)', lPack5: '5-session pack (4 paid)', lCombo: 'Body trimming (combo)', lTime: '+30 extra minutes', lReq: 'Specific request', lSubtotal: 'Subtotal before discounts', lPlanDisc: 'Plan/pack discount', lFirst: '1st session discount', lCoupon: 'Coupon applied', lPeak: 'Travel / traffic', lPix: 'Pix discount (3%)',
+    saved: 'Total saved', total: 'Final total', signal: 'Booking deposit (Pix now)', rest: 'Balance after session',
+    prefsH: 'Session atmosphere preferences',
+    prefIncense: 'I like incense burning',
+    prefMusic: 'I want background music playing',
+    extras: 'Add +30 min, coupon or request', couponQ: 'Available coupons (tap to apply)', couponPh: 'Or type another code', apply: 'Apply', couponOk: 'Coupon applied!', couponBad: 'Invalid coupon.', couponRemove: 'Remove',
+    reqQ: 'Any specific request? (+ R$ 140)', learn: 'Learn more',
+    reqConsent: 'I consent to sending this request for evaluation on WhatsApp only. Not saved on the site.',
+    reqPh: 'Write what you would like to include', reqNote: 'Evaluated before confirming; if not feasible, nothing extra is charged.',
+    pay: 'How will you pay the rest after?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card reader available; installment rates shared beforehand on WhatsApp.',
+    healthStudio: 'I declare I am in good health (no fever, flu symptoms or skin irritations) and will arrive freshly showered.',
+    healthHome: 'I declare I am in good health (no fever, flu symptoms or skin irritations) and will already be freshly showered when you arrive.',
+    optIn: 'Notify me on WhatsApp when open slots or promos come up.',
+    ageA: 'I confirm I am 18 or older and agree to the', privacy: 'Privacy Policy', terms: 'Terms', and: 'and', refund: 'Cancellation Rules',
+    sigA: 'To lock this time exclusively for you, send the Pix deposit of', sigB: 'This amount is deducted and you pay the remaining', sigC: 'only after the session.', copyPix: 'Copy Pix key (email)', pixCopied: 'Pix key copied!',
+    send: 'Send request on WhatsApp', needPay: 'Choose how you will pay the rest', needHealth: 'Confirm good health & freshly showered', needAge: 'Confirm you are 18 or older',
+    doneH: 'Request ready!', doneP: 'Just send the message that opened in WhatsApp along with your R$ 40 deposit receipt so I can lock your slot.',
+    doneSig: 'Pix Key (email):', resend: 'Open WhatsApp again', addCal: 'Save to calendar', restart: 'Make another booking',
+    chatQ: 'Have a question before booking?', chatBtn: 'Message me on WhatsApp', chatMsg: 'Hi Thalyson! I saw your site and have a quick question about the massage.',
+    revH: 'Client feedback', revS: 'Unfiltered notes from guys who visited Bela Vista.', revMore: 'See more reviews ({n})', revLess: 'Show less', revBtn: 'Review on Google',
+    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Direct service with me, no middlemen',
+    about1: 'I’m 30, from upstate SP, and moved to São Paulo less than a year ago. I’m still settling in and getting to know the city, so my service is straightforward without fake clinic luxury—a simple, private suite in Bela Vista for you to unplug.',
+    about2: 'Near Anhangabaú Metro, with a comfortable wooden table and an exclusive slot. Being downtown, there is normal city background outside, yet people tend to deeply relax inside. Just make sure to arrive freshly showered.', seeProfile: 'See space details',
+    faqH: 'Straight answers',
+    q1: 'Why is there a R$ 40 deposit?', a1: 'Since I work solo by appointment and block the whole slot for you, the deposit keeps the schedule reliable. It is deducted from your total and you pay the rest at the end.',
+    q2: 'What if I need to reschedule?', a2: 'Let me know at least 12 hours ahead and I refund your R$ 40 via Pix right away or move your date at no cost.',
+    q3: 'Is my data saved?', a3: 'No. No ID, email or signup on the site. Everything is arranged directly on WhatsApp and the exact address goes out only after confirmation.',
+    q4: 'Do I need to be freshly showered?', a4: 'Yes. Whether visiting my suite or having me come to your place, please shower beforehand so we go straight onto the table.',
+    q5: 'First time doing a massage like this and feeling shy. Is that okay?', a5: 'Totally normal on your first visit. We chat for 2 minutes before starting, you set your boundaries, and everything goes at your pace.',
+    footPrivacy: 'Privacy', footTerms: 'Terms', footRefund: 'Cancellation', footCookies: 'Cookies', adults: 'Service strictly for adults 18 and older.',
+    builtBy: 'Website built by',
+    close: 'Close', theme: 'Switch screen theme', lang: 'Language', srLight: 'Switch to light theme', srDark: 'Switch to dark theme', legalNote: 'Legal documents are provided in Portuguese, which is the binding version.',
+    profile: 'About the session', openProfile: 'Open Thalyson’s profile', gm: 'Good morning', ga: 'Good afternoon', gn: 'Good evening',
+    pBul1: 'Quick chat before starting to align pressure, music and incense',
+    pBul2: 'Exclusive slot: you never cross paths with anyone entering or leaving',
+    pBul3: 'Private residential suite in Bela Vista or at your SP address (please be freshly showered)',
+    pHours: 'Hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment', pPayV: 'Pix (3% off), card up to 12x or cash',
+    pWhere: 'Location', pWhereV: 'Bela Vista (near Anhangabaú Metro) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12h in advance',
+    pForget: 'Clear my data from this device', forgot: 'Done, data cleared.',
+    recommended: 'Most booked', smartSub: 'Good to see you back. Pick your day and time.', lastSlots: 'Last open slots today',
   },
   es: {
-    loadMsg: 'Preparando tu momento de pausa', badge: 'Bela Vista, Centro de São Paulo',
-    wSub: 'Masaje masculino en São Paulo. Elige, reserva y confirma por WhatsApp. Simple y reservado.', w1: 'Reserva en 1 minuto', w2: 'Señal de solo R$ 40', w3: 'Cancelación gratis',
-    enter: 'Entrar y reservar', needAgeEnter: 'Confirma que tienes 18 años o más',
-    h1: 'Tu momento de pausa.', sub: 'Masaje masculino en São Paulo. Elige, reserva y relájate: la confirmación llega directo a tu WhatsApp.',
-    cta: 'Reservar ahora', reviews: 'Reseñas', nextFree: 'Próximo horario libre', today: 'hoy', tomorrow: 'mañana', fromM: 'Masajes desde',
-    t1: 'Señal de solo R$ 40, el resto después de la sesión', t2: 'Cancelación gratis hasta 12h antes', t3: '1ª sesión con R$ 15 de descuento, automático',
-    offH: 'Más ventaja para ti', offS: 'Combo con depilación y paquete de fidelidad, con el ahorro siempre a la vista.',
-    cbT: 'Masaje + depilación', cbD: 'Ahorra hasta R$ 70 en la misma visita.', lyT: 'Lleva 5, paga 4', lyD: 'La 5ª sesión es gratis. Reservas la 1ª ahora.', see: 'Ver opción',
-    s1: 'Elige la sesión', s2: '¿Cómo la quieres?', s3: 'Cuándo y dónde', s4: 'Resumen y pago', min: 'min', flowH: 'Cómo será la sesión',
-    oSingle: 'Sesión individual', oSingleD: 'Una sesión, sin compromiso.', oCombo: 'Con depilación', oComboD: 'Incluye recorte de vello hasta en 3 zonas.', oPack: 'Paquete 5 sesiones', oPackD: 'Paga 4 y la 5ª es gratis. Validez de {n} días.',
-    save: 'Ahorra', was: 'Antes', listen: 'Escuchar descripción', pause: 'Pausar audio', resume: 'Continuar audio', stopA: 'Detener',
-    voiceLow: 'Este dispositivo no tiene voz masculina en este idioma. Usé un tono más grave.', noTts: 'Tu navegador no admite narración en audio.',
-    skip: 'Ir al contenido', guar: 'Garantías', legalNav: 'Documentos legales',
-    packNote: 'Los cupones y el regalo de 1ª sesión no se acumulan con el paquete, que ya es el mejor precio. Reservas esta 1ª sesión ahora y las otras 4 después por WhatsApp.',
-    name: '¿Cómo debo llamarte?', namePh: 'Tu nombre', nameErr: 'Ingresa tu nombre (mín. 3 letras).', place: 'Lugar de la sesión', studio: 'En mi espacio', home: 'Voy hasta ti',
-    peakNote: 'Los horarios pico en tu dirección tienen una tasa de R$ 18. Pedimos más antelación por el desplazamiento. El CEP se consulta en ViaCEP.',
-    studioInfo: 'La suite está en el Centro Histórico, en Bela Vista (cerca del metro Anhangabaú). La dirección exacta se envía con la confirmación.',
-    cep: 'CEP (completa la dirección)', street: 'Calle o Avenida', number: 'Nº', comp: 'Complemento', bairro: 'Barrio', addrErr: 'Completa calle, número y barrio.', cepFail: 'CEP no encontrado. Complétalo manualmente.',
-    date: 'Fecha', time: 'Hora de inicio', session: 'Sesión de', peak: 'Pico', noSlots: 'Sin horarios libres este día. Prueba otra fecha.',
-    demo: 'Disponibilidad demostrativa: la reserva solo vale tras la respuesta en WhatsApp.', dateErr: 'Elige una fecha.', timeErr: 'Elige un horario.', from: 'De', to: 'a', unavailable: 'no disponible',
-    cont: 'Continuar al resumen', fill: 'Completa los campos resaltados', change: 'Cambiar', sPack: 'Sesión', sWhen: 'Cuándo', sLoc: 'Lugar', sLocStudio: 'En la suite (Bela Vista)',
-    lPack: 'Sesión', lPack5: 'Paquete 5 sesiones (4 pagadas)', lCombo: 'Depilación (precio de combo)', lTime: '+30 minutos extra', lReq: 'Pedido específico', lFirst: 'Regalo de 1ª sesión', lCoupon: 'Cupón', lPeak: 'Desplazamiento / pico', lPix: 'Descuento Pix (3%)',
-    saved: 'Ahorras', total: 'Total', signal: 'Señal ahora', rest: 'Después de la sesión',
-    extras: 'Extras y cupón (opcional)', couponQ: '¿Tienes un cupón?', couponPh: 'Código', apply: 'Aplicar', couponOk: 'Cupón activado', couponBad: 'Cupón inválido o vencido.',
-    reqQ: 'Pedido específico (+ R$ 140)', learn: 'Más información',
-    reqConsent: 'Consiento informar un pedido que puede tratar sobre vida sexual (dato sensible), solo para que sea evaluado. Va solo por WhatsApp, no se guarda en este dispositivo y puedo retirar el consentimiento cuando quiera.',
-    reqPh: 'Algún detalle o deseo para la sesión', reqNote: 'Pedido evaluado en el momento de la atención. Si es inviable, no se cobra.',
-    pay: '¿Cómo pagarás el resto?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Las tasas y cuotas de tarjeta se acuerdan directamente por WhatsApp antes del pago.',
-    optIn: 'Quiero recibir recordatorios y novedades por WhatsApp (opcional).',
-    ageA: 'Declaro tener 18 años o más y haber leído la', privacy: 'Política de Privacidad', terms: 'Términos', and: 'y la', refund: 'Política de Cancelación',
-    sigA: 'Para confirmar el horario, envía una señal de', sigB: 'por Pix. El resto se paga después de la sesión.', copyPix: 'Copiar clave Pix (CNPJ)', pixCopied: 'Clave Pix (CNPJ) copiada',
-    send: 'Enviar por WhatsApp', needPay: 'Elige la forma de pago', needAge: 'Confirma que tienes 18 años o más',
-    doneH: '¡Todo listo!', doneP: 'Tu solicitud está preparada. El horario solo se confirma tras la respuesta por WhatsApp. Si no se abrió, usa el botón de abajo.',
-    doneSig: 'Envía el comprobante de la señal en el chat para confirmar.', resend: 'Reenviar mensaje', addCal: 'Añadir a Google Calendar', restart: 'Volver al inicio',
-    chatQ: '¿Prefieres preguntar algo antes?', chatBtn: 'Hablar por WhatsApp', chatMsg: '¡Hola Thalyson! Vengo del sitio Relaxar hoje com Thalyson y tengo una duda.',
-    aboutH: 'Thalyson Massagens, SP Bela Vista', aboutR: 'Terapeuta masculino', about1: 'Mi trabajo es directo y enfocado en el cuerpo masculino: usar el tacto para aliviar el peso y la tensión de tu rutina.',
-    about2: 'Atiendo en una suite en el Centro Histórico de SP, cerca del metro Anhangabaú.', seeProfile: 'Ver perfil completo',
-    faqH: 'Dudas rápidas', q1: '¿Cómo funciona la señal?', a1: 'Pagas R$ 40 por Pix para asegurar el horario. El resto se paga después de la sesión, como prefieras.',
-    q2: '¿Y si necesito cancelar?', a2: 'Hasta 12 horas antes recibes la señal de vuelta o reprogramas sin costo.', q3: '¿Qué datos debo dar?', a3: 'Solo nombre, día, horario y paquete. No pedimos documento, correo ni teléfono en el sitio.',
-    q4: '¿Puedo pagar con tarjeta?', a4: 'Sí: Pix (3% de descuento), tarjeta hasta 12x (tasas acordadas antes) o efectivo.',
-    footPrivacy: 'Privacidad', footTerms: 'Términos', footRefund: 'Cancelación y reembolso', footCookies: 'Cookies', adults: 'Servicio exclusivo para mayores de 18 años.',
-    close: 'Cerrar', theme: 'Cambiar tema', lang: 'Idioma', srLight: 'Cambiar a tema claro', srDark: 'Cambiar a tema oscuro', legalNote: 'Los documentos legales están en portugués, que es la versión vinculante.',
-    profile: 'Perfil', openProfile: 'Abrir perfil de Thalyson', gm: 'Buenos días', ga: 'Buenas tardes', gn: 'Buenas noches',
-    pBul1: 'Conversación inicial para acordar límites y preferencias', pBul2: 'Sin prisa, con un horario reservado solo para ti', pBul3: 'Ambiente reservado, en una suite del Centro Histórico',
-    pHours: 'Horario de atención', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Formas de pago', pPayV: 'Pix (3% de descuento), tarjeta hasta 12x y efectivo',
-    pWhere: 'Dónde atiendo', pWhereV: 'En mi espacio (Bela Vista) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis hasta 12 horas antes',
-    pForget: 'Borrar mis datos de este dispositivo', forgot: 'Datos borrados de este dispositivo',
-    recommended: 'Recomendado para hoy', smartSub: 'Tu cuerpo pide pausa. Déjame el resto a mí.', lastSlots: 'Atención: Últimos horarios para hoy',
+    loadMsg: 'Preparando tu horario reservado', badge: 'Bela Vista • Cerca del Metro Anhangabaú',
+    wSub: 'Atención individual en São Paulo. Eliges la sesión, agendas en 1 minuto y confirmas directo conmigo por WhatsApp.',
+    w1: 'Atención individual, sin sala de espera', w2: 'Señal de R$ 40 por Pix para bloquear agenda', w3: 'Espacio simple, reservado y sin vueltas',
+    enter: 'Ver sesiones y horarios', needAgeEnter: 'Confirma que tienes 18 años o más',
+    h1: 'Suelta el peso del cuerpo. Apaga la cabeza.',
+    sub: 'Sesiones individuales en Bela Vista o en tu dirección en SP. Sin vueltas, sin prisa y con valores claros antes de salir de casa.',
+    cta: 'Elegir sesión y horario', reviews: 'Ver reseñas en Google', nextFree: 'Próximo horario libre', today: 'hoy', tomorrow: 'mañana', fromM: 'Sesiones desde',
+    t1: 'Señal de R$ 40 para asegurar el horario; el resto lo pagas después',
+    t2: 'Reprogramación o devolución gratis avisando hasta 12h antes',
+    t3: 'R$ 15 de descuento automático en tu primera sesión',
+    offH: 'Combos y planes', offS: 'Opciones para resolver todo en la misma visita o mantener rutina gastando menos.',
+    cbT: 'Masaje + recorte de vello', cbD: 'Incluye recorte a máquina en hasta 3 zonas en el mismo horario. Ahorro de hasta R$ 70.',
+    bwT: 'Plan 2x al mes (10% off)', bwD: 'Para venir cada 15 días sin que pese en el bolsillo. 10% de descuento en las dos sesiones.',
+    lyT: 'Paquete 5 sesiones (paga 4)', lyD: 'Pagas 4 sesiones y ganas la 5ª para usar en hasta 60 días.', see: 'Seleccionar opción',
+    s1: '1. Elige la sesión', s2: '2. Formato o plan', s3: '3. Día, horario y lugar', s4: '4. Revisar y mandar por WhatsApp',
+    min: 'min', flowH: 'Cómo funciona en la práctica', firstBadge: '1ª vez: R$ 15 off', pixHint: 'en Pix',
+    oSingle: 'Sesión individual', oSingleD: 'Sin compromiso. Ya entra con R$ 15 de descuento la primera vez.',
+    oCombo: 'Sesión + recorte de vello', oComboD: 'Recorte a máquina en hasta 3 zonas en la misma atención.',
+    oBiweekly: '2x al mes (Quincenal • 10% off)', oBiweeklyD: '2 sesiones para usar en hasta {n} días. Agendas la 1ª ahora y combinas la 2ª directo conmigo.',
+    oPack: 'Paquete 5 sesiones (1 gratis)', oPackD: 'Paga 4 y gana la 5ª. Validez de {n} días para agendar por WhatsApp.',
+    save: 'Ahorro de', was: 'Antes', listen: 'Oír descripción', pause: 'Pausar', resume: 'Continuar', stopA: 'Detener',
+    voiceLow: 'Audio adaptado para este dispositivo', noTts: 'Tu navegador no soporta narración en audio.',
+    skip: 'Ir al contenido', guar: 'Cómo funciona la reserva', legalNav: 'Documentos legales',
+    packNote: 'Planes y paquetes ya tienen descuento real aplicado, por eso no suman con cupones. Agendas la 1ª fecha aquí y combinas las siguientes directo conmigo.',
+    recSlotH: 'Horario recomendado libre ahora', recSlotBtn: 'Usar este horario',
+    name: '¿Cómo quieres que te llame?', namePh: 'Tu nombre o apodo', nameErr: 'Escribe al menos 3 letras.',
+    place: '¿Dónde será?', studio: 'En mi suite (Bela Vista)', home: 'En tu dirección (SP)',
+    homeInfo: 'Voy hasta tu dirección llevando camilla plegable e insumos. Ten un espacio libre para armar la camilla y ya estate recién duchado a la hora acordada. En horarios de tráfico intenso hay tasa de traslado de R$ 18.',
+    studioInfo: 'Atiendo solo en una suite residencial simple y reservada en Bela Vista (cerca del Metro Anhangabaú). Al ser zona céntrica no hay silencio absoluto afuera, pero el clima reservado hace que la gente se relaje mucho. Ven ya recién duchado para aprovechar todo el tiempo. Envío la ubicación exacta al confirmar.',
+    cep: 'CEP', street: 'Calle o Avenida', number: 'Nº', comp: 'Depto / Bloque', bairro: 'Barrio', addrErr: 'Completa calle, número y barrio.', cepFail: 'CEP no encontrado. Completa manualmente.',
+    date: 'Día', time: 'Hora de inicio', session: 'Duración:', peak: 'Tráfico', noSlots: 'Agenda llena este día. Elige otra fecha arriba.',
+    demo: 'Horarios sujetos a confirmación rápida en WhatsApp.', dateErr: 'Elige un día.', timeErr: 'Elige un horario.', from: 'De', to: 'a', unavailable: 'ocupado',
+    cont: 'Revisar valores y confirmar', fill: 'Completa los campos marcados arriba', change: 'Cambiar datos', sPack: 'Sesión', sWhen: 'Fecha y horario', sLoc: 'Lugar', sLocStudio: 'Suite Bela Vista (cerca del Metro Anhangabaú)',
+    lPack: 'Sesión elegida', lPack2: 'Plan 2x al mes (2 sesiones)', lPack5: 'Paquete 5 sesiones (4 pagas)', lCombo: 'Recorte de vello (combo)', lTime: '+30 minutos extra', lReq: 'Pedido específico', lSubtotal: 'Subtotal sin descuentos', lPlanDisc: 'Descuento plan/paquete', lFirst: 'Descuento 1ª sesión', lCoupon: 'Cupón aplicado', lPeak: 'Traslado / tráfico', lPix: 'Descuento Pix (3%)',
+    saved: 'Total ahorrado', total: 'Valor total final', signal: 'Señal de reserva (Pix ahora)', rest: 'Restante después de la sesión',
+    prefsH: 'Preferencias del ambiente en la sesión',
+    prefIncense: 'Me gusta con incienso encendido',
+    prefMusic: 'Quiero música ambiental sonando',
+    extras: 'Sumar +30 min, cupón o pedido', couponQ: 'Cupones disponibles (clic para aplicar)', couponPh: 'O escribe otro código', apply: 'Aplicar', couponOk: '¡Cupón aplicado!', couponBad: 'Cupón inválido.', couponRemove: 'Quitar',
+    reqQ: '¿Algún pedido específico? (+ R$ 140)', learn: 'Más info',
+    reqConsent: 'Autorizo enviar este pedido solo para evaluación en WhatsApp. No queda guardado en el sitio.',
+    reqPh: 'Escribe qué te gustaría incluir', reqNote: 'Evalúo antes de confirmar; si no es posible hacerlo, no cobro nada extra.',
+    pay: '¿Cómo pagarás el resto después?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Llevo terminal de cobro; las tasas de cuotas te las paso antes por WhatsApp.',
+    healthStudio: 'Declaro que estoy bien de salud (sin fiebre, síntomas gripales ni irritaciones en la piel) y que iré ya duchado.',
+    healthHome: 'Declaro que estoy bien de salud (sin fiebre, síntomas gripales ni irritaciones en la piel) y que ya estaré duchado cuando llegues.',
+    optIn: 'Avísame por WhatsApp cuando se libere un horario o promoción.',
+    ageA: 'Confirmo tener 18 años o más y acepto la', privacy: 'Política de Privacidad', terms: 'Términos', and: 'y', refund: 'Reglas de Cancelación',
+    sigA: 'Para bloquear este horario solo para ti, haz el Pix de señal de', sigB: 'Ese valor ya se descuenta y pagas el resto de', sigC: 'solo después de la sesión.', copyPix: 'Copiar clave Pix (e-mail)', pixCopied: '¡Clave Pix copiada!',
+    send: 'Mandar pedido por WhatsApp', needPay: 'Elige cómo pagarás el resto', needHealth: 'Confirma salud al día y estar duchado', needAge: 'Confirma que tienes 18 años o más',
+    doneH: '¡Pedido listo!', doneP: 'Ahora solo envía el mensaje que se abrió en tu WhatsApp junto con el comprobante de los R$ 40 para bloquear tu horario.',
+    doneSig: 'Clave Pix (e-mail):', resend: 'Abrir WhatsApp nuevamente', addCal: 'Guardar en agenda', restart: 'Hacer otra reserva',
+    chatQ: '¿Te quedó alguna duda antes de reservar?', chatBtn: 'Escríbeme directo al WhatsApp', chatMsg: '¡Hola Thalyson! Vi tu sitio y quería hacerte una consulta sobre el masaje.',
+    revH: 'Quienes ya pasaron por aquí', revS: 'Relatos reales y sin filtro de quienes ya vinieron a Bela Vista.', revMore: 'Ver más reseñas ({n})', revLess: 'Mostrar menos', revBtn: 'Reseñar en Google',
+    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atención directa conmigo, sin intermediarios',
+    about1: 'Tengo 30 años, soy del interior de SP y llegué a São Paulo hace menos de 1 año. Todavía me estoy instalando y conociendo la ciudad, así que mi atención es directa y sin lujo falso de clínica: una suite residencial simple y reservada en Bela Vista para desconectar.',
+    about2: 'Cerca del Metro Anhangabaú, con camilla de madera cómoda y horario exclusivo. Al ser centro hay ruido normal de ciudad afuera, pero adentro el ritmo baja y la gente suele relajarse mucho. Recuerda venir ya duchado.', seeProfile: 'Ver detalles del espacio',
+    faqH: 'Dudas directas',
+    q1: '¿Por qué hay señal de R$ 40?', a1: 'Como atiendo solo con hora marcada y cierro la agenda entera para ti, la señal asegura que el horario no quede vacío. Se descuenta del total y pagas el resto al final.',
+    q2: '¿Y si necesito reprogramar?', a2: 'Avisando hasta 12 horas antes, devuelvo tus R$ 40 por Pix al instante o cambio el día sin costo.',
+    q3: '¿Mis datos quedan guardados?', a3: 'No. No pido documento, correo ni registro en el sitio. Todo se coordina directo conmigo por WhatsApp y la dirección exacta va solo tras confirmar.',
+    q4: '¿Debo estar recién duchado?', a4: 'Sí. Tanto viniendo a la suite como yendo yo a tu domicilio, estate ya duchado a la hora acordada para ir directo a la camilla.',
+    q5: 'Nunca fui a un masaje así y me da algo de vergüenza. ¿Está bien?', a5: 'Súper normal la primera vez. Charlamos 2 minutos antes de empezar, me dices qué prefieres y qué no, y todo va a tu ritmo.',
+    footPrivacy: 'Privacidad', footTerms: 'Términos', footRefund: 'Cancelación', footCookies: 'Cookies', adults: 'Servicio exclusivo para mayores de 18 años.',
+    builtBy: 'Sitio desarrollado por',
+    close: 'Cerrar', theme: 'Cambiar color de pantalla', lang: 'Idioma', srLight: 'Cambiar a tema claro', srDark: 'Cambiar a tema oscuro', legalNote: 'Los documentos legales están en portugués, que es la versión vinculante.',
+    profile: 'Sobre la atención', openProfile: 'Ver perfil de Thalyson', gm: 'Buenos días', ga: 'Buenas tardes', gn: 'Buenas noches',
+    pBul1: 'Charla rápida antes de empezar para alinear presión, música e incienso',
+    pBul2: 'Horario exclusivo: no te cruzas con nadie al entrar ni al salir',
+    pBul3: 'Suite residencial reservada en Bela Vista o en tu dirección en SP (estate ya duchado)',
+    pHours: 'Horarios', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Pago', pPayV: 'Pix (3% de descuento), tarjeta hasta 12x o efectivo',
+    pWhere: 'Lugar', pWhereV: 'Bela Vista (cerca del Metro Anhangabaú) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis avisando hasta 12h antes',
+    pForget: 'Borrar meus datos de este dispositivo', forgot: 'Listo, datos borrados.',
+    recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy',
   },
 };
 
 const PACKAGES: { id: string; price: number; min: number; combo: number; theme: PkgTheme; L: Record<Lang, PkgText> }[] = [
   { id: 'classica', price: 180, min: 40, combo: 90, theme: 'sage', L: {
-    pt: { title: 'Massagem Clássica', tags: ['Descompressão', 'Pistola relaxante', 'Foco muscular'], desc: 'O alívio direto. Focado em desatar os nós da sua rotina e soltar a musculatura pesada através de toques profundos e vigorosos.',
-      flow: ['Conversa para identificar onde seu corpo acumula mais peso.', 'Trabalho manual intenso para soltar a tensão muscular.', 'Uso da pistola nos pontos críticos.', 'Finalização focada em relaxamento puro.'] },
-    en: { title: 'Classic Massage', tags: ['Decompression', 'Massage gun', 'Muscle focus'], desc: 'Direct relief. Focused on untying the knots of your routine and loosening heavy muscles through deep, vigorous touch.',
-      flow: ['Chat to identify where your body holds stress.', 'Intense manual work to release muscle tension.', 'Gun used on critical points.', 'Finish focused on pure relaxation.'] },
-    es: { title: 'Masaje Clásico', tags: ['Descompresión', 'Pistola relajante', 'Foco muscular'], desc: 'El alivio directo. Enfocado en desatar los nudos de tu rutina y soltar la musculatura pesada mediante toques profundos.',
-      flow: ['Charla para identificar dónde acumulas estrés.', 'Trabajo manual intenso para soltar la tensión.', 'Uso de pistola en puntos críticos.', 'Final enfocado en pura relajación.'] } } },
+    pt: {
+      title: 'Massagem Clássica',
+      subtitle: 'Alívio físico firme para costas travadas e cansaço (sem finalização)',
+      desc: 'Para quem chega com o corpo pesado de trabalho ou treino. Uso creme hidratante com pressão firme nas mãos e finalizo com a pistola massageadora nos pontos mais duros para soltar a musculatura.',
+      flow: [
+        'Você me mostra onde está doendo ou mais travado.',
+        'Solto costas, ombros, pescoço e pernas com creme hidratante e manobras firmes.',
+        'Passo a pistola massageadora nos nós musculares mais profundos.',
+      ],
+    },
+    en: {
+      title: 'Classic Massage',
+      subtitle: 'Firm physical relief for stiff back and fatigue (no finish)',
+      desc: 'For a body weighed down by work or workouts. I use moisturizing cream with firm hand pressure and finish with a massage gun on tight knots.',
+      flow: [
+        'You show me where it hurts or feels tightest.',
+        'Firm strokes on back, shoulders, neck and legs with moisturizing cream.',
+        'Massage gun applied to deep muscle knots.',
+      ],
+    },
+    es: {
+      title: 'Masaje Clásico',
+      subtitle: 'Alivio físico firme para espalda trabada y cansancio (sin finalización)',
+      desc: 'Para quien llega con el cuerpo pesado del trabajo o entrenamiento. Uso crema hidratante con presión firme manual y termino con pistola masajeadora.',
+      flow: [
+        'Me muestras dónde duele o está más trabado.',
+        'Suelto espalda, hombros, cuello y piernas con crema hidratante y maniobras firmes.',
+        'Paso la pistola masajeadora en los nudos profundos.',
+      ],
+    },
+  } },
   { id: 'sensitiva', price: 220, min: 60, combo: 85, theme: 'amber', L: {
-    pt: { title: 'Sensitiva & Prazer', tags: ['Despertar', 'Toque sutil', 'Finalização tântrica'], desc: 'A transição. Começa quebrando a tensão acumulada e evolui para toques muito mais sutis que despertam o corpo inteiro, mudando a sua energia.',
-      flow: ['Massagem inicial para quebrar a tensão defensiva do corpo.', 'Transição para toques lentos e sutis (tântrica).', 'Foco no despertar sensorial.', 'Finalização direcionada ao prazer.'] },
-    en: { title: 'Sensitive & Pleasure', tags: ['Awakening', 'Subtle touch', 'Tantric finish'], desc: 'The transition. Starts by breaking accumulated tension and evolves into much subtler touches that wake up the whole body, shifting your energy.',
-      flow: ['Initial massage to break the body\'s defensive tension.', 'Transition to slow, subtle touches (tantric).', 'Focus on sensory awakening.', 'Pleasure-directed finish.'] },
-    es: { title: 'Sensitiva & Placer', tags: ['Despertar', 'Toque sutil', 'Final tántrico'], desc: 'La transición. Empieza rompiendo la tensión acumulada y evoluciona a toques mucho más sutiles que despiertan todo el cuerpo.',
-      flow: ['Masaje inicial para romper la tensión defensiva.', 'Transición a toques lentos y sutiles (tántrica).', 'Foco en el despertar sensorial.', 'Final dirigido al placer.'] } } },
+    pt: {
+      title: 'Sensitiva + Lingam',
+      subtitle: 'Toques lentos pelo corpo todo com creme hidratante, gel e lingam',
+      desc: 'A mais pedida. Começo tirando a tensão das costas com creme hidratante para você desligar da rotina. Depois mudo para toques lentos e contínuos pelo corpo todo com gel deslizante, terminando com a massagem lingam.',
+      flow: [
+        'Alinhamento rápido de pressão, música e incenso.',
+        'Relaxamento inicial nas costas com creme hidratante.',
+        'Toques longos da cabeça aos pés com gel + finalização lingam sem pressa.',
+      ],
+    },
+    en: {
+      title: 'Sensitive + Lingam',
+      subtitle: 'Slow full-body strokes with moisturizing cream, gel and lingam',
+      desc: 'Most booked session. Starts by releasing back tension with moisturizing cream, then moves to slow full-body strokes with gliding gel, ending with lingam massage.',
+      flow: [
+        'Quick alignment on pressure, music and incense.',
+        'Initial back work with moisturizing cream.',
+        'Long head-to-toe strokes with gel + unhurried lingam finish.',
+      ],
+    },
+    es: {
+      title: 'Sensitiva + Lingam',
+      subtitle: 'Toques lentos por todo el cuerpo con crema hidratante, gel y lingam',
+      desc: 'La más pedida. Empiezo quitando tensión de la espalda con crema hidratante, luego paso a toques lentos con gel deslizante, cerrando con masaje lingam.',
+      flow: [
+        'Alineación rápida de presión, música e incienso.',
+        'Relajación inicial en espalda con crema hidratante.',
+        'Toques largos de pies a cabeza con gel + finalización lingam sin prisa.',
+      ],
+    },
+  } },
   { id: 'fusion', price: 290, min: 60, combo: 75, theme: 'crimson', L: {
-    pt: { title: 'Sensações com a Barba', tags: ['Contraste', 'Naturista', 'Intensidade'], desc: 'O contraste térmico e tátil. A base relaxante se mistura ao toque áspero e íntimo da barba deslizando pela pele, criando uma experiência sensorial imprevisível.',
-      flow: ['Sessão naturista (ambos à vontade).', 'Relaxamento preparatório.', 'Estímulos contrastantes usando o contato da barba pelo corpo.', 'Finalização intensa.'] },
-    en: { title: 'Beard Sensations', tags: ['Contrast', 'Naturist', 'Intensity'], desc: 'Thermal and tactile contrast. The relaxing base mixes with the rough, intimate touch of the beard gliding over your skin.',
-      flow: ['Naturist session (both completely comfortable).', 'Preparatory relaxation.', 'Contrasting stimuli using beard contact across the body.', 'Intense finish.'] },
-    es: { title: 'Sensaciones con la Barba', tags: ['Contraste', 'Naturista', 'Intensidad'], desc: 'El contraste térmico y táctil. La base relajante se mezcla con el toque áspero e íntimo de la barba deslizándose por la piel.',
-      flow: ['Sesión naturista (ambos cómodos).', 'Relajación preparatoria.', 'Estímulos contrastantes usando el contacto de la barba.', 'Final intenso.'] } } },
+    pt: {
+      title: 'Sensações com a Barba + Lingam',
+      subtitle: 'Sessão naturista (ambos nus) com o toque da barba e lingam',
+      desc: 'Sessão naturista onde nós dois ficamos sem roupa para o contato ser direto. Alterno o deslizamento das mãos com o toque da minha barba percorrendo pescoço, costas e corpo todo, encerrando com lingam.',
+      flow: [
+        'Sessão naturista: ambos sem roupa, clima leve e respeitoso.',
+        'Deslizamento da barba alternando com as mãos, creme hidratante e gel.',
+        'Finalização completa com massagem lingam.',
+      ],
+    },
+    en: {
+      title: 'Beard Sensations + Lingam',
+      subtitle: 'Naturist session (both unclothed) with beard contact and lingam',
+      desc: 'Naturist session where both of us are unclothed for direct skin contact. I alternate gliding hands with my beard brushing along your neck, back and body, ending with lingam.',
+      flow: [
+        'Naturist session: both unclothed, relaxed and respectful.',
+        'Beard gliding alternating with hands, moisturizing cream and gel.',
+        'Complete lingam massage finish.',
+      ],
+    },
+    es: {
+      title: 'Sensaciones con Barba + Lingam',
+      subtitle: 'Sesión naturista (ambos sin ropa) con roce de barba y lingam',
+      desc: 'Sesión naturista donde ambos estamos sin ropa para contacto directo. Alterno el deslizamiento de las manos con el roce de mi barba por cuello, espalda y cuerpo, cerrando con lingam.',
+      flow: [
+        'Sesión naturista: ambos sin ropa, clima relajado y respetuoso.',
+        'Deslizamiento de la barba alternando con manos, crema hidratante y gel.',
+        'Finalización completa con masaje lingam.',
+      ],
+    },
+  } },
   { id: 'completa', price: 390, min: 60, combo: 60, theme: 'midnight', L: {
-    pt: { title: 'Corpo a Corpo & Interação', tags: ['Sem barreiras', 'Deslizamento', 'Liberdade total'], desc: 'A entrega absoluta. Nenhuma barreira física. Uso meu corpo sobre o seu com gel deslizante, e você tem espaço e liberdade total para retribuir os toques.',
-      flow: ['Alinhamento de limites.', 'Massagem de soltura.', 'Proximidade máxima com gel corpo a corpo.', 'Liberdade para você conduzir e retribuir os toques.', 'Finalização conjunta.'] },
-    en: { title: 'Body to Body & Interaction', tags: ['No barriers', 'Gliding', 'Total freedom'], desc: 'Absolute surrender. No physical barriers. I use my body over yours with gliding gel, and you have complete freedom to touch back.',
-      flow: ['Alignment of boundaries.', 'Release massage.', 'Maximum closeness with body-to-body gel.', 'Freedom for you to lead and return touches.', 'Shared finish.'] },
-    es: { title: 'Cuerpo a Cuerpo & Interacción', tags: ['Sin barreras', 'Deslizamiento', 'Libertad total'], desc: 'La entrega absoluta. Ninguna barrera física. Uso mi cuerpo sobre el tuyo con gel, y tienes libertad total para devolver los toques.',
-      flow: ['Alineación de límites.', 'Masaje de soltura.', 'Cercanía máxima con gel cuerpo a cuerpo.', 'Libertad para que conduzcas y devuelvas toques.', 'Final conjunto.'] } } },
+    pt: {
+      title: 'Corpo a Corpo + Lingam',
+      subtitle: 'Contato pele com pele sem barreiras, você toca de volta + lingam',
+      desc: 'A sessão mais completa. Uso gel deslizante e creme hidratante para trabalhar meu corpo sobre o seu, sem barreiras, e você tem liberdade para tocar de volta e conduzir o ritmo junto comigo até o lingam.',
+      flow: [
+        'Alinhamento rápido para você ficar 100% à vontade.',
+        'Contato corpo a corpo sem barreiras com creme hidratante e gel.',
+        'Liberdade para você tocar de volta até a finalização lingam.',
+      ],
+    },
+    en: {
+      title: 'Body to Body + Lingam',
+      subtitle: 'Skin-to-skin contact without barriers, mutual touch + lingam',
+      desc: 'The most complete session. Using gliding gel and moisturizing cream, I work my body over yours without barriers, and you are free to touch back through the lingam finish.',
+      flow: [
+        'Quick alignment so you feel completely at ease.',
+        'Body-to-body contact without barriers with moisturizing cream and gel.',
+        'Freedom to touch back through the lingam finish.',
+      ],
+    },
+    es: {
+      title: 'Cuerpo a Cuerpo + Lingam',
+      subtitle: 'Contacto piel con piel sin barreras, tocas de vuelta + lingam',
+      desc: 'La sesión más completa. Uso gel deslizante y crema hidratante para trabajar mi cuerpo sobre el tuyo, sin barreras, con libertad para tocar de vuelta hasta el lingam.',
+      flow: [
+        'Alineación rápida para que estés cómodo.',
+        'Contacto cuerpo a cuerpo sin barreras con crema hidratante y gel.',
+        'Libertad para tocar de vuelta hasta la finalización lingam.',
+      ],
+    },
+  } },
   { id: 'aparo_solo', price: 130, min: 40, combo: 0, theme: 'slate', L: {
-    pt: { title: 'Apenas Depilação (Máquina)', tags: ['Estética', 'Praticidade'], desc: 'Serviço isolado e direto para quem busca apenas higiene e estética visual. Aparo rápido e limpo em até 3 áreas do corpo.',
-      flow: ['Alinhamento do resultado esperado.', 'Aparo com máquina e pentes específicos.', 'Acabamento final.'] },
-    en: { title: 'Trimming Only (Machine)', tags: ['Grooming', 'Practicality'], desc: 'Direct standalone service for those just looking for hygiene and visual aesthetics. Quick, clean trim on up to 3 body areas.',
-      flow: ['Alignment of the expected result.', 'Trimming with machine and specific guards.', 'Final finishing touches.'] },
-    es: { title: 'Solo Depilación (Máquina)', tags: ['Estética', 'Practicidad'], desc: 'Servicio aislado y directo para quien busca solo higiene y estética. Recorte rápido y limpio en hasta 3 zonas del cuerpo.',
-      flow: ['Alineación del resultado esperado.', 'Recorte con máquina y peines específicos.', 'Acabado final.'] } } },
+    pt: {
+      title: 'Apenas Aparo de Pelos',
+      subtitle: 'Higiene e visual alinhado na máquina em até 3 regiões',
+      desc: 'Atendimento rápido e discreto para deixar o corpo alinhado. Faço o aparo na máquina com pentes higienizados em até 3 regiões à sua escolha, sem lâmina para não irritar.',
+      flow: [
+        'Você escolhe as áreas e a altura do pente.',
+        'Aparo cuidadoso na máquina higienizada.',
+        'Acabamento limpo e rápido.',
+      ],
+    },
+    en: {
+      title: 'Body Trimming Only',
+      subtitle: 'Clean, neat grooming with clipper and guards on up to 3 areas',
+      desc: 'Quick, discreet grooming to keep things neat. Machine trimming with sanitized guards on up to 3 body areas of your choice, no razor irritation.',
+      flow: [
+        'You choose the areas and guard length.',
+        'Careful trimming with sanitized clipper.',
+        'Clean, quick finish.',
+      ],
+    },
+    es: {
+      title: 'Solo Recorte de Vello',
+      subtitle: 'Higiene y prolijidad a máquina en hasta 3 zonas',
+      desc: 'Atención rápida y discreta para dejar el cuerpo prolijo. Recorte a máquina con peines higienizados en hasta 3 zonas a elección, sin cuchilla para no irritar.',
+      flow: [
+        'Eliges las zonas y el largo del peine.',
+        'Recorte cuidadoso con máquina higienizada.',
+        'Acabado limpio y rápido.',
+      ],
+    },
+  } },
 ];
-const MASSAGES = PACKAGES.filter((p) => p.combo > 0);
-const PAY_PT: Record<string, string> = { pix: 'PIX', card: 'CARTÃO', cash: 'DINHEIRO' };
 
-/* ================================================================== */
-/*  DOCUMENTOS LEGAIS                                                  */
-/* ================================================================== */
+type ReviewItem = { initials: string; name: string; tag: string; when: string; stars: number; text: string };
+
+const REVIEWS: Record<Lang, ReviewItem[]> = {
+  pt: [
+    {
+      initials: 'RM', name: 'Rafael M.', tag: 'Sensitiva + Lingam', when: 'há 3 dias', stars: 5,
+      text: 'Cara, fazia tempo que eu não desligava assim. Começou tirando a tensão das costas e quando foi pra parte sensitiva fiquei muito excitado, gozei bastante e saí leve demais.',
+    },
+    {
+      initials: 'LT', name: 'Lucas T.', tag: 'Massagem Clássica', when: 'há 1 semana', stars: 5,
+      text: 'Peguei só a clássica porque tava com a lombar travada de treino. Relaxouuuu muito! A pistola no final pegou bem forte no nó do ombro, deu até uma ardida na hora mas depois soltou tudo.',
+    },
+    {
+      initials: 'BS', name: 'Bruno S.', tag: 'Corpo a Corpo + Lingam', when: 'há 2 semanas', stars: 5,
+      text: 'O corpo peludo dele deslizando com gel dá um tesão absurdo, ainda mais podendo tocar de volta. Não consegui segurar muito não, gozei muito mesmo. Volto mês que vem.',
+    },
+    {
+      initials: 'DG', name: 'Diego G.', tag: 'Sensações com a Barba', when: 'há 2 semanas', stars: 4,
+      text: 'Achei o incenso um pouco forte logo que entrei, pedi pra apagar e ele tirou na hora sem problema. Depois a barba passando no pescoço e nas costas me arrepiou inteiro, muito bom.',
+    },
+    {
+      initials: 'FA', name: 'Felipe A.', tag: 'Sensitiva + Lingam', when: 'há 3 semanas', stars: 5,
+      text: 'Fui meio travado por ser a primeira vez, mas o Thalyson deixa tudo muito natural. Fui já de banho tomado como combinado, clima reservado e sem pressa nenhuma.',
+    },
+    {
+      initials: 'MC', name: 'Matheus C.', tag: 'Massagem Clássica', when: 'há 1 mês', stars: 5,
+      text: 'Trabalho o dia inteiro sentado e estava com o pescoço duro. A mão dele é firme na medida certa e com o creme hidratante não fica aquela meleca depois.',
+    },
+    {
+      initials: 'GV', name: 'Gabriel V.', tag: 'Corpo a Corpo + Lingam', when: 'há 1 mês', stars: 5,
+      text: 'Sou fã de cara peludo e o Thalyson tem presença demais. Pele quente, contato direto sem frescura e mão muito boa no lingam. Saí com as pernas bambas.',
+    },
+    {
+      initials: 'HN', name: 'Henrique N.', tag: 'Sensitiva + Lingam', when: 'há 1 mês', stars: 4,
+      text: 'Por ser perto do Anhangabaú dá pra ouvir um pouco de barulho de rua lá fora, mas a música ambiente abafa bem e a massagem faz você esquecer do mundo. Gozei demais.',
+    },
+    {
+      initials: 'PR', name: 'Pedro R.', tag: 'Clássica + Aparo', when: 'há 1 mês', stars: 5,
+      text: 'Fiz o combo de aparo e massagem clássica. Aparo bem feito na máquina sem irritar e a massagem relaxou muito as costas. Preço justo pelo tempo.',
+    },
+    {
+      initials: 'AL', name: 'André L.', tag: 'Sensações com a Barba', when: 'há 2 meses', stars: 5,
+      text: 'Nunca tinha feito sessão naturista. O jeito tranquilo dele quebra o gelo rápido e o contraste da barba com a mão deixou tudo bem intenso.',
+    },
+    {
+      initials: 'CS', name: 'Caio S.', tag: 'Massagem Clássica', when: 'há 2 meses', stars: 4,
+      text: 'A pistola massageadora é meio agressiva pra quem tem cócegas ou sensibilidade, pedi pra pegar mais leve na panturrilha e ele ajustou na hora. Relaxou bastante.',
+    },
+    {
+      initials: 'RO', name: 'Rodrigo O.', tag: 'Sensitiva + Lingam', when: 'há 2 meses', stars: 5,
+      text: 'Já fechei o plano de 2x no mês porque virou meu escape da rotina de SP. Atendimento direto, sem papo furado e sempre saio renovado.',
+    },
+    {
+      initials: 'VK', name: 'Vinícius K.', tag: 'Corpo a Corpo + Lingam', when: 'há 2 meses', stars: 5,
+      text: 'Espaço simples, limpo e bem reservado, você não cruza com ninguém. O contato corpo a corpo é surreal de bom, me excitou do começo ao fim.',
+    },
+    {
+      initials: 'JM', name: 'João M.', tag: 'Massagem Clássica', when: 'há 3 meses', stars: 5,
+      text: 'Cheguei moído de viagem, peguei 40 min de clássica e parecia que tinha dormido 8 horas. Recomendo demais pra quem precisa soltar o corpo.',
+    },
+    {
+      initials: 'TS', name: 'Tiago S.', tag: 'Sensitiva + Lingam', when: 'há 3 meses', stars: 5,
+      text: 'Sem luxo de clínica cara, mas com uma entrega que dá de 10 a 0 em muito lugar por aí. Mão firme nas costas e toque muito bom na finalização.',
+    },
+  ],
+  en: [
+    {
+      initials: 'RM', name: 'Rafael M.', tag: 'Sensitive + Lingam', when: '3 days ago', stars: 5,
+      text: 'Honestly hadn’t switched off like that in ages. Started by releasing back tension and once the sensitive part kicked in I got super turned on, came hard and walked out light.',
+    },
+    {
+      initials: 'LT', name: 'Lucas T.', tag: 'Classic Massage', when: '1 week ago', stars: 5,
+      text: 'Booked just the classic because my lower back was locked from lifting. Relaxed me so much! The massage gun at the end hit a deep shoulder knot pretty hard at first, then released everything.',
+    },
+    {
+      initials: 'BS', name: 'Bruno S.', tag: 'Body to Body + Lingam', when: '2 weeks ago', stars: 5,
+      text: 'His hairy body gliding with gel is crazy hot, especially being able to touch back. Couldn’t hold back for long, came a lot. Coming back next month.',
+    },
+    {
+      initials: 'DG', name: 'Diego G.', tag: 'Beard Sensations', when: '2 weeks ago', stars: 4,
+      text: 'Thought the incense was a bit strong when I walked in, asked to put it out and he did right away. His beard brushing down my neck and back gave me chills, really good.',
+    },
+    {
+      initials: 'FA', name: 'Felipe A.', tag: 'Sensitive + Lingam', when: '3 weeks ago', stars: 5,
+      text: 'Went in a bit stiff for my first time, but Thalyson keeps everything natural. Arrived freshly showered as arranged, private vibe and zero rush.',
+    },
+    {
+      initials: 'MC', name: 'Matheus C.', tag: 'Classic Massage', when: '1 month ago', stars: 5,
+      text: 'I sit at a desk all day and my neck was tight. Firm pressure in the right spots and the moisturizing cream doesn’t leave you sticky afterward.',
+    },
+    {
+      initials: 'GV', name: 'Gabriel V.', tag: 'Body to Body + Lingam', when: '1 month ago', stars: 5,
+      text: 'Big fan of hairy guys and Thalyson has great presence. Warm skin, direct contact without pretension and great hands on the lingam. Left weak in the knees.',
+    },
+    {
+      initials: 'HN', name: 'Henrique N.', tag: 'Sensitive + Lingam', when: '1 month ago', stars: 4,
+      text: 'Being near Anhangabaú you hear a bit of street noise outside, but the background music covers it well and the massage makes you forget everything. Finished big.',
+    },
+    {
+      initials: 'PR', name: 'Pedro R.', tag: 'Classic + Trimming', when: '1 month ago', stars: 5,
+      text: 'Got the trimming + classic combo. Clean clipper trim without irritation and the massage loosened up my back. Fair price for the time.',
+    },
+    {
+      initials: 'AL', name: 'André L.', tag: 'Beard Sensations', when: '2 months ago', stars: 5,
+      text: 'Never tried a naturist session before. His calm vibe breaks the ice fast and the contrast of beard and hands felt intense.',
+    },
+    {
+      initials: 'CS', name: 'Caio S.', tag: 'Classic Massage', when: '2 months ago', stars: 4,
+      text: 'The massage gun feels a bit intense if you’re sensitive, asked him to go lighter on my calves and he adjusted right away. Very relaxing.',
+    },
+    {
+      initials: 'RO', name: 'Rodrigo O.', tag: 'Sensitive + Lingam', when: '2 months ago', stars: 5,
+      text: 'Already grabbed the 2x a month plan because it became my escape from SP rush. Straightforward service and always leave recharged.',
+    },
+    {
+      initials: 'VK', name: 'Vinícius K.', tag: 'Body to Body + Lingam', when: '2 months ago', stars: 5,
+      text: 'Simple, clean and discreet space, never bump into anyone. Body-to-body contact is unreal, had me turned on from start to finish.',
+    },
+    {
+      initials: 'JM', name: 'João M.', tag: 'Classic Massage', when: '3 months ago', stars: 5,
+      text: 'Arrived wrecked from a trip, booked 40 min classic and felt like I slept 8 hours. Highly recommend to unwind your body.',
+    },
+    {
+      initials: 'TS', name: 'Tiago S.', tag: 'Sensitive + Lingam', when: '3 months ago', stars: 5,
+      text: 'No fake luxury clinic vibe, just genuine skill that beats plenty of pricey places. Firm on the back and great touch at the end.',
+    },
+  ],
+  es: [
+    {
+      initials: 'RM', name: 'Rafael M.', tag: 'Sensitiva + Lingam', when: 'hace 3 días', stars: 5,
+      text: 'Hacía tiempo que no desconectaba así. Empezó soltando la espalda y cuando pasó a la sensitiva me excité muchísimo, acabé bastante y salí liviano.',
+    },
+    {
+      initials: 'LT', name: 'Lucas T.', tag: 'Masaje Clásico', when: 'hace 1 semana', stars: 5,
+      text: 'Pedí solo el clásico porque tenía la lumbar trabada de entrenar. ¡Relajó muchísimo! La pistola al final pegó fuerte en el nudo del hombro pero soltó todo.',
+    },
+    {
+      initials: 'BS', name: 'Bruno S.', tag: 'Cuerpo a Cuerpo + Lingam', when: 'hace 2 semanas', stars: 5,
+      text: 'Su cuerpo peludo deslizando con gel calienta muchísimo, más aún pudiendo tocar de vuelta. No aguanté mucho y acabé un montón. Vuelvo el mes que viene.',
+    },
+    {
+      initials: 'DG', name: 'Diego G.', tag: 'Sensaciones con Barba', when: 'hace 2 semanas', stars: 4,
+      text: 'Sentí el incienso un poco fuerte al entrar, pedí apagarlo y lo sacó al toque. Después la barba pasando por cuello y espalda me erizó entero, muy bueno.',
+    },
+    {
+      initials: 'FA', name: 'Felipe A.', tag: 'Sensitiva + Lingam', when: 'hace 3 semanas', stars: 5,
+      text: 'Fui algo nervioso por ser la primera vez, pero Thalyson hace todo muy natural. Fui recién duchado como acordamos, clima reservado y sin prisa.',
+    },
+    {
+      initials: 'MC', name: 'Matheus C.', tag: 'Masaje Clásico', when: 'hace 1 mes', stars: 5,
+      text: 'Trabajo todo el día sentado y tenía el cuello duro. Presión firme justa y con la crema hidratante no quedas pegajoso después.',
+    },
+    {
+      initials: 'GV', name: 'Gabriel V.', tag: 'Cuerpo a Cuerpo + Lingam', when: 'hace 1 mes', stars: 5,
+      text: 'Me encantan los tipos peludos y Thalyson tiene mucha presencia. Piel caliente, contacto directo sin vueltas y muy buena mano en el lingam.',
+    },
+    {
+      initials: 'HN', name: 'Henrique N.', tag: 'Sensitiva + Lingam', when: 'hace 1 mes', stars: 4,
+      text: 'Al estar cerca de Anhangabaú se escucha algo de ruido de calle afuera, pero la música tapa bien y el masaje te hace olvidar todo. Acabé muchísimo.',
+    },
+    {
+      initials: 'PR', name: 'Pedro R.', tag: 'Clásico + Recorte', when: 'hace 1 mes', stars: 5,
+      text: 'Hice el combo de recorte y masaje clásico. Prolijo a máquina sin irritar y el masaje soltó la espalda. Buen precio por el tiempo.',
+    },
+    {
+      initials: 'AL', name: 'André L.', tag: 'Sensaciones con Barba', when: 'hace 2 meses', stars: 5,
+      text: 'Nunca había probado sesión naturista. Su onda tranquila rompe el hielo rápido y el contraste de la barba con la mano estuvo muy intenso.',
+    },
+    {
+      initials: 'CS', name: 'Caio S.', tag: 'Masaje Clásico', when: 'hace 2 meses', stars: 4,
+      text: 'La pistola masajeadora es un poco intensa si tienes sensibilidad, le pedí más suave en los gemelos y ajustó al instante. Relajó bastante.',
+    },
+    {
+      initials: 'RO', name: 'Rodrigo O.', tag: 'Sensitiva + Lingam', when: 'hace 2 meses', stars: 5,
+      text: 'Ya tomé el plan 2x al mes porque se volvió mi cable a tierra en SP. Atención directa, sin vueltas y salgo renovado.',
+    },
+    {
+      initials: 'VK', name: 'Vinícius K.', tag: 'Cuerpo a Cuerpo + Lingam', when: 'hace 2 meses', stars: 5,
+      text: 'Espacio simple, limpio y discreto, no te cruzas con nadie. El contacto cuerpo a cuerpo es increíble, me excitó de principio a fin.',
+    },
+    {
+      initials: 'JM', name: 'João M.', tag: 'Masaje Clásico', when: 'hace 3 meses', stars: 5,
+      text: 'Llegué molido de viaje, tomé 40 min de clásico y parecía que había dormido 8 horas. Muy recomendable.',
+    },
+    {
+      initials: 'TS', name: 'Tiago S.', tag: 'Sensitiva + Lingam', when: 'hace 3 meses', stars: 5,
+      text: 'Sin lujo de clínica cara, pero con una entrega que supera a muchos lugares. Firme en la espalda y muy buen toque al final.',
+    },
+  ],
+};
+
+const MASSAGES = PACKAGES.filter((p) => p.combo > 0);
+const PAY_PT: Record<string, string> = { pix: 'PIX (-3%)', card: 'CARTÃO', cash: 'DINHEIRO' };
+const THEME_RGB: Record<PkgTheme, { dark: string; light: string }> = {
+  sage: { dark: '94, 184, 140', light: '30, 83, 63' },
+  amber: { dark: '235, 157, 75', light: '143, 90, 26' },
+  crimson: { dark: '224, 102, 92', light: '140, 59, 50' },
+  midnight: { dark: '171, 142, 204', light: '61, 43, 76' },
+  slate: { dark: '148, 163, 184', light: '75, 85, 99' },
+};
+
 const P = ({ children }: { children: ReactNode }) => <p className="mb-3">{children}</p>;
 const H = ({ children }: { children: ReactNode }) => <h3 className="font-semibold mt-5 mb-2 c-ink">{children}</h3>;
 const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
@@ -274,8 +672,8 @@ const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
     <H>1. Prestador</H><P>{LEGAL.RAZAO}, CNPJ {LEGAL.CNPJ}, {LEGAL.ENDERECO}, {LEGAL.EMAIL}.</P>
     <H>2. Serviço</H><P>Massagem e serviços de estética masculina, exclusivos para maiores de 18 anos, conforme o pacote escolhido. As descrições são informativas; massagem não substitui tratamento médico e não promete resultado de saúde.</P>
     <H>3. Solicitação e confirmação</H><P>O site apenas registra uma solicitação. O horário só está garantido após a confirmação pelo WhatsApp e o pagamento do sinal. A disponibilidade mostrada pode ser demonstrativa.</P>
-    <H>4. Preços, combos e pacotes</H><P>Os valores são exibidos em reais. O sinal confirma a reserva e é abatido do total; o restante é pago após a sessão. O combo massagem + depilação tem preço promocional sobre o aparo avulso. O pacote de 5 sessões (pague 4, a 5ª é grátis) é válido por {C.PACK_DAYS} dias a partir da 1ª sessão, não acumula com cupom nem com o desconto de 1ª sessão, e as sessões seguintes são agendadas pelo WhatsApp conforme disponibilidade. Extras, taxa de horário de pico (atendimento no endereço do cliente) e pedido específico aparecem no resumo antes do envio. Parcelamento no cartão pode ter taxas, informadas antes do pagamento.</P>
-    <H>5. Conduta</H><P>Exige-se respeito mútuo. O terapeuta pode encerrar a sessão, sem devolução do valor dos serviços já prestados, em caso de desrespeito, assédio, uso de drogas, embriaguez evidente ou risco à segurança. Informe previamente condições de saúde, alergias e lesões.</P>
+    <H>4. Preços, combos e planos</H><P>Os valores são exibidos em reais. O sinal confirma a reserva e é abatido do total; o restante é pago após a sessão. O combo massagem + depilação tem preço promocional sobre o aparo avulso. O plano 2x no mês (10% de desconto, validade de {C.BIWEEKLY_DAYS} dias) e o pacote de 5 sessões (pague 4, a 5ª é grátis, validade de {C.PACK_DAYS} dias) não acumulam com cupom nem com o desconto de 1ª sessão, e as sessões seguintes são agendadas pelo WhatsApp conforme disponibilidade. Extras, taxa de horário de pico (atendimento no endereço do cliente) e pedido específico aparecem no resumo antes do envio. Parcelamento no cartão pode ter taxas, informadas antes do pagamento.</P>
+    <H>5. Conduta e higiene</H><P>Exige-se respeito mútuo e higiene pessoal (estar já de banho tomado no horário combinado, tanto na suíte quanto em domicílio). O terapeuta pode encerrar a sessão, sem devolução do valor dos serviços já prestados, em caso de desrespeito, assédio, sintomas infecciosos/gripais evidentes, uso de drogas, embriaguez ou risco à segurança. Informe previamente condições de saúde e alergias.</P>
     <H>6. Lei aplicável</H><P>Lei brasileira, incluindo o Código de Defesa do Consumidor. Foro do domicílio do consumidor.</P></>) },
   refund: { title: 'Política de Cancelamento e Reembolso', body: (<>
     <P>Última atualização: {LEGAL.ATUALIZADO}. Estas regras valem sem prejuízo dos direitos do consumidor previstos em lei.</P>
@@ -290,16 +688,13 @@ const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
     <P>Se no futuro ativarmos qualquer ferramenta de análise ou marketing, ela só carregará depois do seu consentimento.</P></>) },
 };
 
-/* ================================================================== */
-/*  UTILITÁRIOS                                                        */
-/* ================================================================== */
 const cn = (...a: Array<string | false | null | undefined>) => a.filter(Boolean).join(' ');
 const money = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;
-const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate && navigator.vibrate(p); } catch { /* sem suporte */ } };
+const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate?.(p); } catch { /* */ } };
 const store = {
   get: (k: string): string | null => { try { return localStorage.getItem(k); } catch { return null; } },
-  set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* ignorado */ } },
-  del: (k: string) => { try { localStorage.removeItem(k); } catch { /* ignorado */ } },
+  set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* */ } },
+  del: (k: string) => { try { localStorage.removeItem(k); } catch { /* */ } },
 };
 const clean = (t: string) => t.replace(/[*_~`\r\n]+/g, ' ').trim();
 const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
@@ -309,7 +704,6 @@ const fromMin = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:$
 const sameDay = (a: Date | null, b: Date) => !!a && dateKey(a) === dateKey(b);
 const copyText = async (t: string) => { try { await navigator.clipboard.writeText(t); return true; } catch { return false; } };
 const waLink = (text: string) => `https://api.whatsapp.com/send?phone=${C.PHONE}&text=${encodeURIComponent(text)}`;
-/** Relógio de São Paulo, independente do fuso do aparelho. */
 const spNow = () => { try { return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' })); } catch { return new Date(); } };
 
 type Slot = { t: string; ok: boolean };
@@ -322,12 +716,9 @@ function buildSlots(date: Date, dur: number, isHome: boolean, now: Date): Slot[]
   return out;
 }
 
-/* ================================================================== */
-/*  NARRAÇÃO EM ÁUDIO: voz masculina, pausar e continuar               */
-/* ================================================================== */
 type NarrState = 'idle' | 'playing' | 'paused';
-const MALE_RE = /(felipe|daniel|ant[oô]nio|ricardo|jorge|diego|pablo|raul|enrique|carlos|david|thiago|donato|george|\bmark\b|\bfred\b|\balex\b|\bmale\b|masculin|homem)/i;
-const FEMALE_RE = /(female|feminin|mulher|francisca|luciana|maria|fernanda|joana|camila|vit[oó]ria|paulina|m[oó]nica|helena|laura|samantha|zira|susan|google)/i;
+const MALE_RE = /(felipe|daniel|ant[oô]nio|ricardo|jorge|diego|pablo|raul|enrique|carlos|david|thiago|donato|george|alvaro|mateo|tomas|sebastian|james|brian|christopher|andrew|ryan|eric|guy|steven|paul|william|thomas|matthew|\bmark\b|\bfred\b|\balex\b|\bmale\b|masculin|homem|hombre|man\b)/i;
+const FEMALE_RE = /(female|feminin|mulher|mujer|woman|francisca|luciana|maria|fernanda|joana|camila|vit[oó]ria|paulina|m[oó]nica|helena|laura|samantha|zira|susan|elvira|paloma|dalia|jenny|aria|sonia|natasha|hazel|libby|emma|victoria)/i;
 
 function pickVoice(voices: SpeechSynthesisVoice[], lang: Lang) {
   const loc = LOCALE[lang].toLowerCase();
@@ -335,7 +726,10 @@ function pickVoice(voices: SpeechSynthesisVoice[], lang: Lang) {
   const exact = voices.filter((v) => norm(v) === loc);
   const same = exact.length ? exact : voices.filter((v) => norm(v).startsWith(lang));
   const male = same.find((v) => MALE_RE.test(v.name) && !FEMALE_RE.test(v.name));
-  return { voice: male || same[0] || null, male: !!male };
+  if (male) return { voice: male, male: true };
+  const nonFemale = same.find((v) => !FEMALE_RE.test(v.name));
+  if (nonFemale) return { voice: nonFemale, male: true };
+  return { voice: same[0] || null, male: false };
 }
 
 function useNarrator(lang: Lang) {
@@ -363,7 +757,6 @@ function useNarrator(lang: Lang) {
 
   useEffect(() => () => { if (supported) { token.current += 1; window.speechSynthesis.cancel(); } }, [supported]);
 
-  // Fala frase por frase: evita o corte de ~15s do Chrome e deixa o pausar funcionar em qualquer aparelho.
   const step = useCallback(function run(tk: number) {
     if (tk !== token.current) return;
     const i = idx.current;
@@ -371,8 +764,8 @@ function useNarrator(lang: Lang) {
     const u = new SpeechSynthesisUtterance(chunks.current[i]);
     const { voice, male } = choiceRef.current;
     if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = LOCALE[langRef.current];
-    u.rate = 0.92;
-    u.pitch = male ? 1 : 0.7; // sem voz masculina disponível: tom mais grave
+    u.rate = 0.94;
+    u.pitch = male ? 0.88 : 0.68;
     u.onend = () => { if (tk !== token.current) return; idx.current = i + 1; run(tk); };
     u.onerror = (e) => {
       if (tk !== token.current) return;
@@ -419,9 +812,6 @@ function useNarrator(lang: Lang) {
   return { supported, state, activeId, male: choice.male, toggle, stop };
 }
 
-/* ================================================================== */
-/*  ÍCONES, AVATAR E ANIMAÇÕES                                         */
-/* ================================================================== */
 const ICONS = {
   instagram: 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
   shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
@@ -442,6 +832,7 @@ const ICONS = {
   play: 'M5 3l14 9-14 9V3z',
   pause: 'M6 4h4v16H6z M14 4h4v16h-4z',
   stop: 'M6 6h12v12H6z',
+  tag: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z M7 7h.01',
 };
 type IconName = keyof typeof ICONS;
 const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?: number; className?: string }) => (
@@ -481,15 +872,14 @@ function Title({ children, as = 'h2', className = '', style, id }: { children: s
   );
 }
 
-/* ================================================================== */
-/*  COMPONENTES NO ESTILO shadcn/ui (embutidos, sem instalar nada)     */
-/* ================================================================== */
 type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean };
-/** Botão. Com asChild, aplica as classes no filho (ex.: um <a>). */
 function Button({ asChild, className, children, type, ...rest }: BtnProps) {
   if (asChild && isValidElement(children)) {
-    const child = children as ReactElement<{ className?: string }>;
-    return cloneElement(child, { ...rest, className: cn(className, child.props.className) } as unknown as { className: string });
+    const child = children as ReactElement<Record<string, unknown>>;
+    return cloneElement(child, {
+      ...(rest as Record<string, unknown>),
+      className: cn(className, typeof child.props.className === 'string' ? child.props.className : undefined),
+    });
   }
   return <button type={type ?? 'button'} className={className} {...rest}>{children}</button>;
 }
@@ -520,7 +910,6 @@ function RadioGroup({ value, onValueChange, className, children, ...aria }: { va
     </RadioCtx.Provider>
   );
 }
-/** Rádio nativo escondido: teclado, setas e leitor de tela funcionam sem código extra. */
 function RadioGroupItem({ value, disabled, ...aria }: { value: string; disabled?: boolean; 'aria-label'?: string }) {
   const c = useContext(RadioCtx);
   return <input type="radio" className="sr-only" name={c.name} value={value} checked={c.value === value} disabled={disabled} onChange={() => c.onChange(value)} {...aria} />;
@@ -549,7 +938,7 @@ function Modal({ title, onClose, closeLabel, children }: { title: string; onClos
     return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prevOverflow; prevFocus?.focus(); };
   }, []);
   return (
-    <div className="fixed inset-0 flex items-end sm:items-center justify-center sm:p-4" style={{ background: 'rgba(8,6,12,.72)', zIndex: 150 }} onClick={() => closeRef.current()}>
+    <div className="fixed inset-0 flex items-end sm:items-center justify-center sm:p-4" style={{ background: 'rgba(8,6,12,.74)', zIndex: 150 }} onClick={() => closeRef.current()}>
       <div ref={ref} role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={(e) => e.stopPropagation()} className="card-ui modal-card w-full flex flex-col rise">
         <div className="flex justify-between items-center gap-4 p-5 bd-line" style={{ borderBottom: '1px solid var(--line)' }}>
           <h2 id="modal-title" className="serif text-xl">{title}</h2>
@@ -579,13 +968,21 @@ const StepHead = ({ n, title, done }: { n: number; title: string; done: boolean 
   </div>
 );
 
-/* ================================================================== */
-/*  CSS (tema, componentes, responsividade, sem quebra de palavras)    */
-/* ================================================================== */
+const SocialButtons = ({ reviewsLabel, grid = false }: { reviewsLabel: string; grid?: boolean }) => (
+  <div className={grid ? 'g-2' : 'flex flex-wrap gap-3'}>
+    <Button asChild className="btn-ui btn-g btn-md">
+      <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} /> Instagram</a>
+    </Button>
+    <Button asChild className="btn-ui btn-g btn-md">
+      <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {reviewsLabel}</a>
+    </Button>
+  </div>
+);
+
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Manrope:wght@400..800&display=swap');
-.app{--bg:#F9F8F6;--surf:#FFFFFF;--surf2:#F2EFEB;--ink:#1C1A17;--mute:#6B655C;--line:rgba(28,26,23,.12);--acc:#1C1A17;--onacc:#FFFFFF;--rg:rgba(28,26,23,.22);--ok:#1E533F;--warn:#8F5A1A;--err:#C2334D}
-.app[data-theme=dark]{--bg:#141312;--surf:#1D1B1A;--surf2:#2A2725;--ink:#F2EFEB;--mute:#A19A90;--line:rgba(242,239,235,.12);--acc:#F2EFEB;--onacc:#141312;--rg:rgba(242,239,235,.28);--ok:#50A684;--warn:#E6A15C;--err:#FF8A9B}
+.app{--bg:#F9F8F6;--surf:#FFFFFF;--surf2:#EFECE6;--ink:#161412;--mute:#57524A;--line:rgba(22,20,18,.15);--acc:#161412;--onacc:#FFFFFF;--rg:rgba(22,20,18,.24);--ok:#145A3E;--warn:#8A4B08;--err:#B81D3A}
+.app[data-theme=dark]{--bg:#121110;--surf:#1C1A19;--surf2:#282523;--ink:#F5F2EE;--mute:#B0A99E;--line:rgba(245,242,238,.15);--acc:#F5F2EE;--onacc:#121110;--rg:rgba(245,242,238,.3);--ok:#5EC49B;--warn:#F0AA5E;--err:#FF8A9B}
 .app{background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;font-size:17px;line-height:1.55;min-height:100vh;min-height:100dvh;overflow-x:clip;transition:background .3s,color .3s;overflow-wrap:break-word;word-break:normal;hyphens:manual;text-wrap:pretty;-webkit-text-size-adjust:100%}
 .app h1,.app h2,.app h3{text-wrap:balance;word-break:normal;hyphens:manual}
 .app .text-sm{font-size:15.5px}.app .text-xs{font-size:13.5px}
@@ -593,15 +990,23 @@ const CSS = `
 .serif{font-family:'Fraunces',Georgia,serif;font-optical-sizing:auto}
 .c-mute{color:var(--mute)}.c-ink{color:var(--ink)}.c-ok{color:var(--ok)}.c-warn{color:var(--warn)}
 .bg-s2{background:var(--surf2)}.bd-line{border-color:var(--line)}
-.err{font-size:14px;color:var(--err);margin-top:8px}
+.err{font-size:14px;color:var(--err);margin-top:8px;font-weight:600}
 .skip{position:absolute;left:-9999px;top:8px;z-index:300;background:var(--acc);color:var(--onacc);padding:12px 20px;border-radius:999px;font-weight:700}
 .skip:focus{position:fixed;left:12px}
 
-.card-ui{background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.03)}
+.card-ui{background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.04)}
 .app[data-theme=dark] .card-ui{box-shadow:none}
-.card-flat{border:none;background:var(--surf2)}
+.card-flat{border:1px solid var(--line);background:var(--surf2)}
 .modal-card{max-width:32rem;max-height:90vh;max-height:90dvh;border-radius:28px 28px 0 0}
 @media(min-width:640px){.modal-card{border-radius:28px}}
+
+.glass-stage{position:relative;border-radius:32px;padding:24px;background:radial-gradient(120% 100% at 10% 0%,rgba(22,20,18,.06),transparent 60%),radial-gradient(100% 100% at 90% 100%,rgba(20,90,62,.07),transparent 60%),var(--surf2);border:1px solid var(--line)}
+.app[data-theme=dark] .glass-stage{background:radial-gradient(120% 100% at 10% 0%,rgba(245,242,238,.07),transparent 60%),radial-gradient(100% 100% at 90% 100%,rgba(94,196,155,.08),transparent 60%),#171615}
+.glass-rev{position:relative;border-radius:26px;padding:22px;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.46));backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.85);box-shadow:0 16px 36px -12px rgba(22,20,18,.12),inset 0 1px 0 rgba(255,255,255,.95);transition:transform .25s ease,box-shadow .25s ease}
+.app[data-theme=dark] .glass-rev{background:linear-gradient(145deg,rgba(44,41,39,.72),rgba(26,24,23,.52));border:1px solid rgba(245,242,238,.14);box-shadow:0 18px 40px -12px rgba(0,0,0,.55),inset 0 1px 0 rgba(245,242,238,.16)}
+@media(hover:hover){.glass-rev:hover{transform:translateY(-3px)}}
+.glass-avatar{width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;letter-spacing:.03em;background:rgba(22,20,18,.08);color:var(--ink);border:1px solid var(--line);flex-shrink:0}
+.app[data-theme=dark] .glass-avatar{background:rgba(245,242,238,.1)}
 
 .btn-ui{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:12px 24px;border-radius:999px;font-weight:700;font-size:16px;line-height:1.2;text-align:center;cursor:pointer;white-space:normal;text-wrap:balance;transition:transform .15s,opacity .2s,background .2s}
 .btn-ui:active{transform:scale(.98)}
@@ -620,13 +1025,17 @@ const CSS = `
 .btn-icon{min-height:44px;min-width:44px;width:44px;padding:0;border:none}
 .btn-ghost{background:transparent;border:none;min-height:auto;padding:4px;justify-content:flex-start;border-radius:14px;font-weight:500}
 
-.lnk-ui{display:inline;background:none;border:0;padding:0;font:inherit;font-weight:600;color:var(--ink);text-decoration:underline;text-underline-offset:4px;cursor:pointer;text-align:left;overflow-wrap:break-word}
+.coupon-pill{display:inline-flex;align-items:center;gap:6px;min-height:42px;padding:6px 14px;border-radius:999px;border:1.5px dashed var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok);font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s,background .2s}
+.coupon-pill:hover{background:color-mix(in srgb,var(--ok) 20%,transparent)}
+.coupon-pill:active{transform:scale(.97)}
+
+.lnk-ui{display:inline;background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:4px;cursor:pointer;text-align:left;overflow-wrap:break-word}
 .lnk-block{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:44px;padding:0 8px;text-align:center}
-.lnk-mute{color:var(--mute);font-weight:500;font-size:14px}
+.lnk-mute{color:var(--mute);font-weight:600;font-size:14px}
 .lnk-left{justify-content:flex-start;padding:0}
 .lnk-full{display:flex;width:100%}
 
-.inp-ui{display:block;width:100%;min-height:56px;padding:0 18px;border-radius:16px;background:var(--surf);border:1px solid var(--line);color:var(--ink);font-size:17px;transition:border-color .2s,box-shadow .2s}
+.inp-ui{display:block;width:100%;min-height:56px;padding:0 18px;border-radius:16px;background:var(--surf);border:1.5px solid var(--line);color:var(--ink);font-size:17px;transition:border-color .2s,box-shadow .2s}
 .inp-ui::placeholder{color:var(--mute)}
 .inp-ui:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--rg)}
 .inp-ui:disabled{opacity:.5}
@@ -638,24 +1047,24 @@ const CSS = `
 .chk-ui{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0;margin-top:2px;padding:0;border:2px solid var(--mute);border-radius:6px;background:var(--surf);color:var(--onacc);cursor:pointer;transition:background .15s,border-color .15s}
 .chk-ui[aria-checked=true]{background:var(--acc);border-color:var(--acc)}
 .chk-mid{margin-top:0}
-.chk-ui:focus-visible,.btn-ui:focus-visible,.lnk-ui:focus-visible,.app a:focus-visible,.app button:focus-visible,.app summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.chk-ui:focus-visible,.btn-ui:focus-visible,.coupon-pill:focus-visible,.lnk-ui:focus-visible,.app a:focus-visible,.app button:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 
-.chip-ui{position:relative;display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px 12px;border:1px solid var(--line);border-radius:18px;background:var(--surf);color:var(--ink);text-align:center;cursor:pointer;transition:background .2s,color .2s,border-color .2s;font-weight:600;font-size:16px;line-height:1.2;text-wrap:balance}
+.chip-ui{position:relative;display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px 12px;border:1.5px solid var(--line);border-radius:18px;background:var(--surf);color:var(--ink);text-align:center;cursor:pointer;transition:background .2s,color .2s,border-color .2s;font-weight:700;font-size:16px;line-height:1.2;text-wrap:balance}
 .chip-ui.col{flex-direction:column}
-.chip-ui.on{background:var(--acc);color:var(--onacc);border-color:var(--acc);font-weight:700}
-.chip-ui.off{opacity:.4;text-decoration:line-through;cursor:not-allowed}
+.chip-ui.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.chip-ui.off{opacity:.42;text-decoration:line-through;cursor:not-allowed}
 .chip-ui:has(input:focus-visible),.opt-ui:has(input:focus-visible){outline:2px solid var(--acc);outline-offset:3px}
-.opt-ui{display:block;border-radius:22px;padding:20px;background:var(--surf);cursor:pointer;border:1px solid var(--line);transition:border-color .2s,background .2s}
+.opt-ui{display:block;border-radius:22px;padding:20px;background:var(--surf);cursor:pointer;border:1.5px solid var(--line);transition:border-color .2s,background .2s}
 .opt-ui.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);background:var(--surf2)}
-.pkg-ui{overflow:hidden;border-radius:22px;border:1px solid var(--line);background:var(--surf);transition:border-color .2s,background .2s}
-.pkg-head{display:block;cursor:pointer;padding:18px 20px}
+.pkg-ui{overflow:hidden;border-radius:22px;border:1.5px solid var(--line);background:var(--surf);transition:border-color .2s,background .2s}
+.pkg-head{display:block;cursor:pointer;padding:20px}
 .pkg-head:has(input:focus-visible){outline:2px solid var(--acc);outline-offset:-3px}
 
-.badge-ui{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:800;line-height:1.2;text-align:center}
-.badge-rec{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.badge-ui{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:800;line-height:1.2;text-align:center}
+.badge-rec{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em}
 .sep-ui{height:1px;background:var(--line);width:100%}
 
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surf)}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;padding:3px;background:var(--surf)}
 .seg button{min-height:40px;min-width:44px;padding:0 8px;border-radius:999px;font-size:12.5px;font-weight:800;color:var(--mute)}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
 .brand{display:none}
@@ -663,7 +1072,7 @@ const CSS = `
 .g-2,.g-3{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:420px){.g-2{grid-template-columns:1fr 1fr}.g-3{grid-template-columns:repeat(3,1fr)}}
 
-.glow{position:absolute;top:-6%;right:-30%;width:min(95vw,640px);aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 15%,transparent),transparent 66%);animation:drift 14s ease-in-out infinite}
+.glow{position:absolute;top:-6%;right:-30%;width:min(95vw,640px);aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 14%,transparent),transparent 66%);animation:drift 14s ease-in-out infinite}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:pulse 2.6s ease-out infinite}
 .stepn{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;border:1.5px solid var(--line);color:var(--mute);transition:all .3s}
 .stepn.ok{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
@@ -677,11 +1086,10 @@ const CSS = `
 .ttl .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.15em;margin-bottom:-.15em}
 .ttl .w>span{display:inline-block;transform:translateY(108%);opacity:0;transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity .8s ease}
 .ttl.in .w>span{transform:none;opacity:1}
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
-details.faq summary{min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-weight:700;list-style:none}
-details.faq summary::-webkit-details-marker{display:none}
-details.faq summary::after{content:'+';font-size:24px;color:var(--acc);transition:transform .2s;flex-shrink:0}
-details.faq[open] summary::after{transform:rotate(45deg)}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.faq-btn{width:100%;min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-weight:700;text-align:left;background:transparent;border:0;color:var(--ink);font-size:inherit}
+.faq-icon{font-size:24px;color:var(--acc);transition:transform .2s;flex-shrink:0;line-height:1}
+.faq-icon.open{transform:rotate(45deg)}
 .hide-sb::-webkit-scrollbar{display:none}.hide-sb{scrollbar-width:none}
 @keyframes breathe{0%,100%{transform:scale(.96)}50%{transform:scale(1.04)}}
 @keyframes ring{0%{transform:scale(.55);opacity:.6}100%{transform:scale(1.7);opacity:0}}
@@ -696,11 +1104,9 @@ details.faq[open] summary::after{transform:rotate(45deg)}
 interface Booking {
   name: string; locType: 'studio' | 'home'; cep: string; street: string; number: string; comp: string; bairro: string;
   date: Date | null; time: string; req: string; payment: string; packageId: string; addTime: boolean;
+  incense: boolean; music: boolean;
 }
 
-/* ================================================================== */
-/*  APP                                                                */
-/* ================================================================== */
 export default function App() {
   const [lang, setLang] = useState<Lang>(() => {
     const s = store.get('thaly_lang');
@@ -715,6 +1121,9 @@ export default function App() {
 
   const [phase, setPhase] = useState<Phase>('loading');
   const [profileOpen, setProfileOpen] = useState(false);
+  const [extrasOpen, setExtrasOpen] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [offer, setOffer] = useState<Offer>('single');
   const [reviewed, setReviewed] = useState(false);
   const [done, setDone] = useState(false);
@@ -727,20 +1136,20 @@ export default function App() {
   const [showBar, setShowBar] = useState(false);
   const [coupon, setCoupon] = useState({ input: '', applied: '', value: 0, error: '' });
   const [ageOk, setAgeOk] = useState(false);
+  const [healthOk, setHealthOk] = useState(false);
   const [reqOk, setReqOk] = useState(false);
   const [optIn, setOptIn] = useState(false);
   const [hp, setHp] = useState('');
-  // O nome não é mais salvo no aparelho: isso deixa o app coerente com a Política de Cookies.
   const [data, setData] = useState<Booking>({
     name: '', locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '',
     date: null, time: '', req: '', payment: '', packageId: '', addTime: false,
+    incense: true, music: true,
   });
   const set = (patch: Partial<Booking>) => setData((p) => ({ ...p, ...patch }));
 
   const narr = useNarrator(lang);
 
   const bookRef = useRef<HTMLDivElement>(null);
-  const s2Ref = useRef<HTMLDivElement>(null);
   const s3Ref = useRef<HTMLDivElement>(null);
   const s4Ref = useRef<HTMLDivElement>(null);
   const numberRef = useRef<HTMLInputElement>(null);
@@ -756,7 +1165,7 @@ export default function App() {
 
   useEffect(() => {
     let reduce = false;
-    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* ignorado */ }
+    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* */ }
     const id = setTimeout(() => {
       if (store.get('thaly_onboard_final') === 'yes') { setAgeOk(true); setPhase('site'); } else setPhase('welcome');
     }, reduce ? 800 : 2600);
@@ -768,7 +1177,6 @@ export default function App() {
   useEffect(() => { store.set('thaly_theme', theme); }, [theme]);
   useEffect(() => { const i = setInterval(() => setNow(spNow()), 60000); return () => clearInterval(i); }, []);
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
-  // Ao trocar de sessão ou idioma, o áudio para.
   useEffect(() => { narr.stop(); }, [data.packageId, lang, narr.stop]);
   useEffect(() => {
     if (phase !== 'site') { setShowBar(false); return undefined; }
@@ -788,17 +1196,26 @@ export default function App() {
   const isSolo = pkg.id === 'aparo_solo';
   const offerEff: Offer = isSolo ? 'single' : offer;
   const aparoOn = offerEff === 'combo';
+  const isBiweekly = offerEff === 'biweekly';
   const isPack = offerEff === 'pack';
+  const hasPlan = isBiweekly || isPack;
   const hasReq = reqOk && data.req.trim().length > 3;
   const fmt = (d: Date, o: Intl.DateTimeFormatOptions) => d.toLocaleDateString(LOCALE[lang], o);
 
   const recommendedPkgId = useMemo(() => {
     const day = now.getDay();
     const hour = now.getHours();
-    if (day === 1 || (hour >= 9 && hour < 14)) return 'classica';
-    if (day === 5 || day === 6 || hour >= 20) return 'sensitiva';
-    return 'fusion';
+    return day === 1 || (hour >= 9 && hour < 13) ? 'classica' : 'sensitiva';
   }, [now]);
+
+  const getVisualPrice = useCallback((basePrice: number) => {
+    let disc = 0;
+    if (coupon.applied) disc = coupon.value < 1 ? Math.floor(basePrice * coupon.value) : coupon.value;
+    else if (!isReturning) disc = C.FIRST;
+    const finalPrice = Math.max(0, basePrice - disc);
+    const pixPrice = finalPrice - Math.ceil(finalPrice * C.PIX_DISC);
+    return { finalPrice, disc, pixPrice };
+  }, [coupon.applied, coupon.value, isReturning]);
 
   const invoice = useMemo(() => {
     let dur = pkg.min;
@@ -806,13 +1223,22 @@ export default function App() {
     if (data.addTime) dur += 30;
     const aparoAdd = aparoOn ? pkg.combo : 0;
     const comboSave = aparoOn ? C.APARO_FULL - pkg.combo : 0;
-    const sessionPrice = isPack ? pkg.price * C.PACK_PAY : pkg.price;
+
+    const fullUnitsPrice = isPack ? pkg.price * C.PACK_TOTAL : isBiweekly ? pkg.price * 2 : pkg.price;
+    const biweeklyPrice = Math.round(pkg.price * 2 * (1 - C.BIWEEKLY_DISC));
+    const biweeklySave = isBiweekly ? (pkg.price * 2) - biweeklyPrice : 0;
     const packSave = isPack ? pkg.price * (C.PACK_TOTAL - C.PACK_PAY) : 0;
+    const planDiscount = biweeklySave + packSave;
+
+    const sessionPrice = isPack ? pkg.price * C.PACK_PAY : isBiweekly ? biweeklyPrice : pkg.price;
     const reqFee = hasReq ? C.REQ_FEE : 0;
-    const base = sessionPrice + aparoAdd + timeAdd + reqFee;
     const peakFee = isHome && PEAK_HOURS.includes(data.time) ? C.PEAK_FEE : 0;
+
+    const grossSubtotal = fullUnitsPrice + (aparoOn ? C.APARO_FULL : 0) + timeAdd + reqFee + peakFee;
+    const base = sessionPrice + aparoAdd + timeAdd + reqFee;
+
     let discount = 0;
-    if (!isPack) {
+    if (!hasPlan) {
       if (coupon.applied) discount = coupon.value < 1 ? Math.floor(base * coupon.value) : coupon.value;
       else if (!isReturning) discount = C.FIRST;
     }
@@ -821,20 +1247,40 @@ export default function App() {
     const pixDiscount = data.payment === 'pix' ? Math.ceil(after * C.PIX_DISC) : 0;
     const total = after - pixDiscount + peakFee;
     const sinal = Math.min(C.SIGNAL, total);
-    return { sessionPrice, aparoAdd, timeAdd, reqFee, peakFee, discount, pixDiscount, total, sinal, rest: Math.max(0, total - sinal), dur, comboSave, packSave, saved: comboSave + packSave + discount + pixDiscount };
-  }, [data, pkg, isHome, isPack, aparoOn, isReturning, coupon.applied, coupon.value, hasReq]);
+    const rest = Math.max(0, total - sinal);
+    const saved = comboSave + planDiscount + discount + pixDiscount;
+
+    return {
+      fullUnitsPrice,
+      sessionPrice,
+      aparoAdd,
+      timeAdd,
+      reqFee,
+      peakFee,
+      grossSubtotal,
+      planDiscount,
+      discount,
+      pixDiscount,
+      total,
+      sinal,
+      rest,
+      dur,
+      comboSave,
+      packSave,
+      biweeklySave,
+      saved,
+    };
+  }, [data, pkg, isHome, isPack, isBiweekly, hasPlan, aparoOn, isReturning, coupon.applied, coupon.value, hasReq]);
 
   const todayKey = dateKey(now);
   const days = useMemo(() => {
-    const out: { d: Date; i: number }[] = [];
     const baseDate = new Date(now);
     baseDate.setHours(0, 0, 0, 0);
-    for (let i = 0; i < C.DAYS; i++) {
+    return Array.from({ length: C.DAYS }, (_, i) => {
       const d = new Date(baseDate);
       d.setDate(d.getDate() + i);
-      out.push({ d, i });
-    }
-    return out;
+      return { d, i };
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todayKey]);
 
@@ -849,11 +1295,11 @@ export default function App() {
     for (let k = 0; k < 4; k++) {
       const d = new Date(baseDate);
       d.setDate(d.getDate() + k);
-      const s = buildSlots(d, pkg.min, false, now).find((x) => x.ok);
+      const s = buildSlots(d, pkg.min, isHome, now).find((x) => x.ok);
       if (s) return { d, t: s.t, k };
     }
     return null;
-  }, [now, pkg.min]);
+  }, [now, pkg.min, isHome]);
 
   const errors = {
     name: data.name.trim().length < 3 ? t('nameErr') : '',
@@ -863,13 +1309,25 @@ export default function App() {
   };
   const step3Valid = !errors.name && !!data.date && !!data.time && !errors.address;
 
-  const applyCoupon = () => {
-    const code = coupon.input.trim().toUpperCase().slice(0, 30);
+  const selectCouponCode = (rawCode: string) => {
+    const code = rawCode.trim().toUpperCase().slice(0, 30);
     if (!code) return;
     const v = C.COUPONS[code] || 0;
-    if (v > 0) { vibrate([20, 40]); setCoupon({ input: '', applied: code, value: v, error: '' }); showToast(t('couponOk')); }
-    else { vibrate(50); setCoupon((c) => ({ ...c, error: t('couponBad') })); }
+    if (v > 0) {
+      vibrate([20, 40]);
+      setCoupon({ input: '', applied: code, value: v, error: '' });
+      showToast(`${t('couponOk')} (${code})`);
+    } else {
+      vibrate(50);
+      setCoupon((c) => ({ ...c, error: t('couponBad') }));
+    }
   };
+
+  const clearCoupon = () => {
+    vibrate(10);
+    setCoupon({ input: '', applied: '', value: 0, error: '' });
+  };
+
   const copyPix = async () => { const ok = await copyText(C.PIX_KEY); showToast(ok ? t('pixCopied') : `Pix: ${C.PIX_KEY}`); };
 
   const handleCep = async (val: string) => {
@@ -888,47 +1346,81 @@ export default function App() {
 
   const pickPkg = (id: string) => {
     vibrate(15);
+    const chosenPkg = PACKAGES.find((p) => p.id === id) || PACKAGES[1];
+    if (!data.date) {
+      const baseDate = new Date(now);
+      baseDate.setHours(0, 0, 0, 0);
+      for (let k = 0; k < 4; k++) {
+        const d = new Date(baseDate);
+        d.setDate(d.getDate() + k);
+        const s = buildSlots(d, chosenPkg.min, isHome, now).find((x) => x.ok);
+        if (s) {
+          set({ packageId: id, date: d, time: s.t });
+          if (id === 'aparo_solo') setOffer('single');
+          return;
+        }
+      }
+    }
     set({ packageId: id });
     if (id === 'aparo_solo') setOffer('single');
   };
   const pickOffer = (o: Offer) => { vibrate(20); setOffer(o); goBook(); };
 
+  const mapsLink = () => {
+    if (!isHome) return '';
+    const query = [clean(data.street), clean(data.number), clean(data.bairro), data.cep, 'São Paulo - SP'].filter(Boolean).join(', ');
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  };
+
   const whatsappLink = () => {
-    const dStr = data.date ? data.date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' }) : '';
-    let loc: string;
-    if (!isHome) loc = '📍 *Local:* Atendimento no espaço, região da Bela Vista/Centro Histórico. O endereço exato será enviado após a confirmação.';
-    else {
-      const full = `${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}, São Paulo`;
-      loc = `📍 *Local:* Atendimento no seu endereço.\n*Endereço informado:* ${full}\n*Mapa:* https://maps.google.com/?q=${encodeURIComponent(full)}`;
-    }
+    const dStr = data.date ? data.date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }) : '';
     const pk = pkg.L.pt;
-    let m = `Oi Thalyson! Vim pelo site *${SITE_NAME}* e quero confirmar.\n\n*NOME:* ${clean(data.name)}\n`;
-    m += `*DIA E HORA:* ${dStr} das ${data.time} às ${endTime}\n${loc}\n\n`;
-    m += `*SESSÃO ESCOLHIDA (${invoice.dur} min):*\n✅ ${pk.title}\n\n*O que vai acontecer na sessão:*\n`;
-    m += pk.flow.map((s, i) => `${i + 1}. ${s}`).join('\n') + '\n';
-    if (aparoOn || data.addTime) {
-      m += '\n*Adicionais:*\n';
-      if (aparoOn) m += `➕ Aparo de pelos até 3 lugares (preço de combo, economia de ${money(invoice.comboSave)})\n`;
-      if (data.addTime) m += '➕ +30 minutos extras\n';
+    const extras: string[] = [];
+    if (aparoOn) extras.push('com aparo de pelos');
+    if (data.addTime) extras.push('+30 min');
+    if (isBiweekly) extras.push('plano 2x no mês (10% off)');
+    if (isPack) extras.push('pacote 5 sessões (1 grátis)');
+    const extraTxt = extras.length ? ` (${extras.join(', ')})` : '';
+
+    const fullAddr = `${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}${data.cep ? ` (CEP ${data.cep})` : ''}`;
+    const locTxt = isHome ? `No meu endereço: ${fullAddr}` : 'Na sua suíte (Bela Vista)';
+    const vibeTxt = `Incenso: ${data.incense ? 'Sim' : 'Não'} • Música: ${data.music ? 'Sim' : 'Não'}`;
+    const hygieneTxt = isHome
+      ? 'Saúde em dia e já estarei de banho tomado quando você chegar.'
+      : 'Saúde em dia e irei já de banho tomado.';
+
+    const discLines: string[] = [];
+    if (invoice.comboSave > 0) discLines.push(`  - Desconto combo aparo: -${money(invoice.comboSave)}`);
+    if (invoice.biweeklySave > 0) discLines.push(`  - Desconto plano 2x no mês (10%): -${money(invoice.biweeklySave)}`);
+    if (invoice.packSave > 0) discLines.push(`  - Desconto pacote 5 sessões (1 grátis): -${money(invoice.packSave)}`);
+    if (invoice.discount > 0) {
+      discLines.push(
+        coupon.applied
+          ? `  - Cupom ${coupon.applied}: -${money(invoice.discount)}`
+          : `  - Desconto 1ª sessão: -${money(invoice.discount)}`,
+      );
     }
-    if (hasReq) m += `\n*VONTADE ESPECÍFICA (consentimento dado no site):* "${clean(data.req)}"\n`;
-    if (isPack) m += `\n🎁 *PACOTE 5 SESSÕES (pague 4, a 5ª é grátis):* esta é a 1ª sessão. As outras 4 serão agendadas depois por aqui, com validade de ${C.PACK_DAYS} dias. Economia do pacote: ${money(invoice.packSave)}.\n`;
-    m += '\n*RESUMO DO PAGAMENTO:*\n';
-    m += `${isPack ? `Pacote 5 sessões (4 pagas): ${money(invoice.sessionPrice)}` : `Sessão: ${money(invoice.sessionPrice)}`}\n`;
-    if (invoice.aparoAdd > 0) m += `Depilação (combo): +${money(invoice.aparoAdd)}\n`;
-    if (invoice.timeAdd > 0) m += `+30 minutos: +${money(invoice.timeAdd)}\n`;
-    if (invoice.reqFee > 0) m += `Pedido específico: +${money(invoice.reqFee)}\n`;
-    if (invoice.discount > 0) m += `🏷️ ${coupon.applied ? `Cupom ${coupon.applied}` : 'Presente de 1ª sessão'}: -${money(invoice.discount)}\n`;
-    if (invoice.pixDiscount > 0) m += `🏷️ Desconto Pix (3%): -${money(invoice.pixDiscount)}\n`;
-    if (invoice.peakFee > 0) m += `Taxa de deslocamento/pico: +${money(invoice.peakFee)}\n`;
-    m += `*Valor Total:* ${money(invoice.total)} (${PAY_PT[data.payment] || data.payment})\n`;
-    m += `*Sinal (Pix agora):* ${money(invoice.sinal)}\n*Restante (depois da sessão):* ${money(invoice.rest)}\n`;
-    if (invoice.saved > 0) m += `💚 *Economia total neste pedido:* ${money(invoice.saved)}\n`;
-    m += '\n✅ Declaro ter 18 anos ou mais e ter lido a Política de Privacidade, os Termos e a Política de Cancelamento.\n';
-    if (optIn) m += '🔔 Aceito receber lembretes e novidades por WhatsApp.\n';
-    if (lang !== 'pt') m += `🌐 Idioma do cliente: ${lang === 'en' ? 'English' : 'Español'}\n`;
-    if (!isPack) m += '\n🎁 *Para a próxima:* tenho direito ao cupom SESSAO2 no meu próximo agendamento.\n';
-    m += '\nAguardo sua resposta para mandar o comprovante do sinal!';
+    if (invoice.pixDiscount > 0) discLines.push(`  - Desconto Pix (3%): -${money(invoice.pixDiscount)}`);
+
+    let m = `Oi Thalyson! Sou o *${clean(data.name)}* e quero agendar:\n\n`;
+    m += `• *Sessão:* ${pk.title}${extraTxt}\n`;
+    m += `• *Quando:* ${dStr}, das ${data.time} às ${endTime} (${invoice.dur} min)\n`;
+    m += `• *Onde:* ${locTxt}\n`;
+    if (isHome) m += `• *Mapa:* ${mapsLink()}\n`;
+    m += `• *Clima:* ${vibeTxt}\n`;
+    if (hasReq) m += `• *Pedido específico:* ${clean(data.req)}\n`;
+    m += `• *Higiene:* ${hygieneTxt}\n\n`;
+
+    m += `*RESUMO DOS VALORES*\n`;
+    m += `• Subtotal: ${money(invoice.grossSubtotal)}\n`;
+    if (discLines.length > 0) {
+      m += `• Descontos aplicados:\n${discLines.join('\n')}\n`;
+      m += `• Economia total: *-${money(invoice.saved)}*\n`;
+    }
+    m += `• *Valor Total:* *${money(invoice.total)}*\n`;
+    m += `• Sinal da reserva (Pix agora): *-${money(invoice.sinal)}*\n`;
+    m += `• *Restante após a sessão:* *${money(invoice.rest)}* (${PAY_PT[data.payment] || data.payment})\n\n`;
+    m += `Já vou fazer o Pix do sinal de *${money(invoice.sinal)}* na chave *${C.PIX_KEY}* e te mando o comprovante aqui.`;
     return waLink(m);
   };
 
@@ -938,7 +1430,8 @@ export default function App() {
     const startDateTime = `${day}T${data.time.replace(':', '')}00`;
     const endDateTime = `${day}T${fromMin(toMin(data.time) + invoice.dur).replace(':', '')}00`;
     const text = encodeURIComponent(`Massagem: ${pkg.L.pt.title} - Thalyson`);
-    const details = encodeURIComponent(`Sinal de ${money(invoice.sinal)} via Pix. Restante: ${money(invoice.rest)}.`);
+    const hygieneNote = isHome ? 'Estar já de banho tomado quando o massagista chegar.' : 'Ir já de banho tomado.';
+    const details = encodeURIComponent(`Total: ${money(invoice.total)}. Sinal: ${money(invoice.sinal)} via Pix (${C.PIX_KEY}). Restante após a sessão: ${money(invoice.rest)}. ${hygieneNote}`);
     const location = encodeURIComponent(isHome ? `${data.street}, ${data.number} - ${data.bairro}, São Paulo` : 'Bela Vista, São Paulo - SP');
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${startDateTime}/${endDateTime}&details=${details}&location=${location}&ctz=America/Sao_Paulo`;
   };
@@ -952,23 +1445,23 @@ export default function App() {
   const finish = () => {
     if (!step3Valid) { setTouched(true); showToast(t('fill')); scrollToRef(s3Ref, 30); return; }
     if (!data.payment) { vibrate(50); showToast(t('needPay')); return; }
+    if (!healthOk) { vibrate(50); showToast(t('needHealth')); return; }
     if (!ageOk) { vibrate(50); showToast(t('needAge')); return; }
     if (!data.date || !data.time) return;
     if (hp) { setDone(true); setSentLink('#'); return; }
     const link = whatsappLink();
     store.set('thaly_returning_final', 'yes');
     setSentLink(link); vibrate([30, 50]);
-    // Abre em nova aba para não perder o estado da página; se o navegador bloquear, navega na mesma aba.
     const w = window.open(link, '_blank');
     if (!w) window.location.href = link;
-    else { try { w.opener = null; } catch { /* ignorado */ } }
+    else { try { w.opener = null; } catch { /* */ } }
     setDone(true);
     scrollToRef(bookRef, 60);
   };
 
   const resetBooking = () => {
-    setTouched(false); setReqOk(false); setDone(false); setReviewed(false); setOffer('single');
-    setData((p) => ({ ...p, locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', date: null, time: '', req: '', payment: '', packageId: '', addTime: false }));
+    setTouched(false); setReqOk(false); setHealthOk(false); setDone(false); setReviewed(false); setExtrasOpen(false); setOffer('single');
+    setData((p) => ({ ...p, locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', date: null, time: '', req: '', payment: '', packageId: '', addTime: false, incense: true, music: true }));
   };
   const restart = () => {
     vibrate(15);
@@ -979,7 +1472,7 @@ export default function App() {
   const forgetMe = () => {
     ['thaly_returning_final', 'thaly_onboard_final', 'thaly_cid', 'thaly_name'].forEach((k) => store.del(k));
     narr.stop();
-    setIsReturning(false); setAgeOk(false); setCoupon({ input: '', applied: '', value: 0, error: '' });
+    setIsReturning(false); setAgeOk(false); setHealthOk(false); setCoupon({ input: '', applied: '', value: 0, error: '' });
     resetBooking(); setData((p) => ({ ...p, name: '' }));
     setProfileOpen(false); setPhase('welcome'); showToast(t('forgot'));
   };
@@ -993,6 +1486,10 @@ export default function App() {
   const greeting = now.getHours() < 12 ? t('gm') : now.getHours() < 18 ? t('ga') : t('gn');
   const chatLink = waLink(t('chatMsg'));
   const nextLabel = nextFree ? `${nextFree.k === 0 ? t('today') : nextFree.k === 1 ? t('tomorrow') : fmt(nextFree.d, { weekday: 'long' })} ${nextFree.t}` : '';
+  const minMassagePrice = useMemo(() => Math.min(...MASSAGES.map((p) => p.price)), []);
+  const minVisual = getVisualPrice(minMassagePrice);
+  const allReviews = REVIEWS[lang];
+  const visibleReviews = showAllReviews ? allReviews : allReviews.slice(0, 3);
 
   const renderAge = (id: string) => (
     <div className="flex items-start gap-3 text-sm leading-relaxed">
@@ -1004,7 +1501,6 @@ export default function App() {
     </div>
   );
 
-  /* ---------------------------- Carregando ---------------------------- */
   if (phase === 'loading') {
     return (
       <div className="app flex flex-col items-center justify-center px-6 text-center" data-theme={theme} role="status" aria-live="polite" aria-busy="true">
@@ -1020,7 +1516,6 @@ export default function App() {
     );
   }
 
-  /* ------------------------------ Página ------------------------------ */
   return (
     <div className="app" data-theme={theme} style={{ paddingBottom: showBar ? 96 : 24 }}>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
@@ -1029,7 +1524,7 @@ export default function App() {
 
       <a href="#main" className="skip">{t('skip')}</a>
 
-      <header className="sticky top-0" style={{ zIndex: 50, background: 'color-mix(in srgb,var(--bg) 88%,transparent)', backdropFilter: 'blur(14px)', borderBottom: '1px solid var(--line)', paddingTop: 'env(safe-area-inset-top)' }}>
+      <header className="sticky top-0" style={{ zIndex: 50, background: 'color-mix(in srgb,var(--bg) 90%,transparent)', backdropFilter: 'blur(14px)', borderBottom: '1px solid var(--line)', paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between gap-2">
           <Button onClick={() => { vibrate(10); setProfileOpen(true); }} aria-label={t('openProfile')} aria-haspopup="dialog" className="btn-ui btn-ghost min-w-0 gap-3">
             <Avatar className="w-11 h-11 rounded-full" alt="" />
@@ -1059,7 +1554,7 @@ export default function App() {
             <h1 id="wt" className="serif font-light leading-[1.02] mb-5 rise" style={{ fontSize: 'clamp(46px,12vw,78px)', letterSpacing: '-0.02em', animationDelay: '.2s' }}>Relaxar hoje<br />com Thalyson</h1>
             <p className="text-lg leading-relaxed mb-8 rise c-mute" style={{ animationDelay: '.35s' }}>{t('wSub')}</p>
             <ul className="grid gap-3 mb-9 rise" style={{ animationDelay: '.5s' }}>
-              {[['w1', 'clock'], ['w2', 'lock'], ['w3', 'shield']].map(([k, ic]) => (<li key={k} className="flex items-center gap-3 font-semibold"><Icon name={ic as IconName} size={20} />{t(k)}</li>))}
+              {([['w1', 'clock'], ['w2', 'lock'], ['w3', 'shield']] as [string, IconName][]).map(([k, ic]) => (<li key={k} className="flex items-center gap-3 font-semibold"><Icon name={ic} size={20} />{t(k)}</li>))}
             </ul>
             <div className="rise mb-6" style={{ animationDelay: '.6s' }}>{renderAge('age-w')}</div>
             <Button onClick={enter} disabled={!ageOk} className="btn-ui btn-p btn-xl w-full rise" style={{ animationDelay: '.7s' }}>{ageOk ? t('enter') : t('needAgeEnter')}</Button>
@@ -1067,12 +1562,11 @@ export default function App() {
         )}
 
         {phase === 'site' && (<>
-          {/* Hero */}
           <section className="relative pt-14 pb-16 flex flex-col justify-center" style={{ minHeight: 'calc(100svh - 76px)' }}>
             <div className="glow" aria-hidden="true" />
             <div className="relative">
               <Reveal><p className="inline-flex items-center gap-2 text-sm font-semibold mb-6 c-mute"><Icon name="map" size={16} /> {t('badge')}</p></Reveal>
-              <Title as="h1" className="mb-4" style={{ fontSize: 'clamp(50px,13vw,92px)' }}>{t('h1')}</Title>
+              <Title as="h1" className="mb-4" style={{ fontSize: 'clamp(48px,12vw,86px)' }}>{t('h1')}</Title>
               <Reveal delay={250}><p className="text-lg leading-relaxed mb-8 max-w-md c-mute">{isReturning ? t('smartSub') : t('sub')}</p></Reveal>
               <Reveal delay={380}>
                 <div className="flex flex-wrap gap-3 mb-8">
@@ -1086,33 +1580,42 @@ export default function App() {
                 {nextFree && (
                   <p className="flex items-center gap-3 text-sm c-mute"><span className="dot" aria-hidden="true" /><span>{t('nextFree')}: <strong className="c-ink">{nextLabel}</strong></span></p>
                 )}
-                <p className="text-sm mt-1 c-mute">{t('fromM')} {money(Math.min(...MASSAGES.map((p) => p.price)))}</p>
+                <p className="text-sm mt-1 c-mute">
+                  {t('fromM')}{' '}
+                  {minVisual.disc > 0 ? (
+                    <><s className="opacity-70">{money(minMassagePrice)}</s> <strong className="c-ok">{money(minVisual.finalPrice)}</strong></>
+                  ) : (
+                    <strong className="c-ink">{money(minMassagePrice)}</strong>
+                  )}
+                </p>
               </Reveal>
             </div>
           </section>
 
-          {/* Garantias */}
-          <Reveal className="mb-24">
+          <Reveal className="mb-20">
             <ul className="grid sm:grid-cols-3 gap-5" aria-label={t('guar')}>
-              {[['t1', 'lock'], ['t2', 'shield'], ['t3', 'star']].map(([k, ic]) => (
-                <li key={k} className="flex items-start gap-3 text-[15.5px] leading-snug"><Icon name={ic as IconName} size={22} className="mt-0.5" />{t(k)}</li>
+              {([['t1', 'lock'], ['t2', 'shield'], ['t3', 'star']] as [string, IconName][]).map(([k, ic]) => (
+                <li key={k} className="flex items-start gap-3 text-[15.5px] leading-snug"><Icon name={ic} size={22} className="mt-0.5" />{t(k)}</li>
               ))}
             </ul>
           </Reveal>
 
-          {/* Ofertas */}
-          <section className="mb-28" aria-labelledby="off">
+          <section className="mb-24" aria-labelledby="off">
             <Title id="off" className="text-[34px] md:text-[44px] mb-3">{t('offH')}</Title>
-            <Reveal delay={120}><p className="mb-8 c-mute">{t('offS')}</p></Reveal>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {([['combo', 'cbT', 'cbD', 'plus'], ['pack', 'lyT', 'lyD', 'gift']] as [Offer, string, string, IconName][]).map(([o, a, b, ic], i) => (
-                <Reveal key={o} delay={i * 120} className="h-full">
+            <Reveal delay={100}><p className="mb-7 c-mute">{t('offS')}</p></Reveal>
+            <div className="grid sm:grid-cols-3 gap-4">
+              {([
+                ['combo', 'cbT', 'cbD', 'plus'],
+                ['biweekly', 'bwT', 'bwD', 'clock'],
+                ['pack', 'lyT', 'lyD', 'gift'],
+              ] as [Offer, string, string, IconName][]).map(([o, a, b, ic], i) => (
+                <Reveal key={o} delay={i * 90} className="h-full">
                   <Card className="h-full">
-                    <button type="button" onClick={() => pickOffer(o)} className="flex flex-col gap-3 p-6 text-left w-full h-full" style={{ borderRadius: 24 }}>
-                      <Icon name={ic} size={28} />
-                      <span className="serif text-[28px] leading-tight mt-2">{t(a)}</span>
-                      <span className="text-[15.5px] c-mute">{t(b)}</span>
-                      <span className="lnk-ui mt-auto pt-2">{t('see')}</span>
+                    <button type="button" onClick={() => pickOffer(o)} className="flex flex-col gap-2.5 p-5 text-left w-full h-full" style={{ borderRadius: 24 }}>
+                      <Icon name={ic} size={24} />
+                      <span className="serif text-[23px] leading-tight mt-1">{t(a)}</span>
+                      <span className="text-sm c-mute">{t(b)}</span>
+                      <span className="lnk-ui text-sm mt-auto pt-2">{t('see')}</span>
                     </button>
                   </Card>
                 </Reveal>
@@ -1120,15 +1623,14 @@ export default function App() {
             </div>
           </section>
 
-          {/* Agendamento */}
-          <section ref={bookRef} className="scroll-mt-20 mb-28" aria-label={t('cta')}>
+          <section ref={bookRef} className="scroll-mt-20 mb-24" aria-label={t('cta')}>
             {done ? (
               <Reveal>
                 <Card className="card-flat p-8 text-center">
                   <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 18%,transparent)' }}><Icon name="check" size={32} /></div>
                   <h2 className="serif text-4xl font-light mb-4">{t('doneH')}</h2>
                   <p className="leading-relaxed mb-4 c-mute">{t('doneP')}</p>
-                  <p className="font-bold mb-8">{t('doneSig')} ({money(invoice.sinal)})</p>
+                  <p className="font-bold mb-8">{t('doneSig')} {C.PIX_KEY} • {money(invoice.sinal)}</p>
                   <div className="space-y-3 max-w-xs mx-auto">
                     <Button asChild className="btn-ui btn-p w-full">
                       <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer">{t('resend')}</a>
@@ -1144,65 +1646,62 @@ export default function App() {
                 </Card>
               </Reveal>
             ) : (
-              <div className="space-y-24">
-                {/* 1. Sessão */}
+              <div className="space-y-20">
                 <div>
                   <StepHead n={1} title={t('s1')} done={chosen} />
-                  <RadioGroup value={data.packageId} onValueChange={pickPkg} aria-label={t('s1')} className="grid gap-3 md:grid-cols-2">
+                  <RadioGroup value={data.packageId} onValueChange={pickPkg} aria-label={t('s1')} className="grid gap-3">
                     {PACKAGES.map((p, i) => {
                       const on = data.packageId === p.id;
                       const L = p.L[lang];
-                      const isRec = p.id === recommendedPkgId && !chosen;
-                      const isDark = theme === 'dark';
-                      const themeColors: Record<PkgTheme, string> = {
-                        sage: isDark ? '94, 184, 140' : '43, 76, 59',
-                        amber: isDark ? '235, 157, 75' : '143, 90, 26',
-                        crimson: isDark ? '224, 102, 92' : '140, 59, 50',
-                        midnight: isDark ? '171, 142, 204' : '61, 43, 76',
-                        slate: isDark ? '148, 163, 184' : '90, 100, 110',
-                      };
-                      const rgb = themeColors[p.theme];
+                      const isRec = p.id === recommendedPkgId;
+                      const rgb = THEME_RGB[p.theme][theme];
                       const mine = narr.activeId === p.id;
                       const playing = mine && narr.state === 'playing';
                       const paused = mine && narr.state === 'paused';
-                      const narrText = `${L.title}. ${L.desc} ${t('flowH')}: ${L.flow.join(' ')}`;
+                      const vp = getVisualPrice(p.price);
+                      const narrText = `${L.title}. ${L.subtitle}. ${L.desc} ${t('flowH')}: ${L.flow.join(' ')}`;
                       return (
-                        <Reveal key={p.id} delay={(i % 2) * 80} className={on ? 'md:col-span-2' : ''}>
+                        <Reveal key={p.id} delay={i * 50}>
                           <div
                             className="pkg-ui"
                             style={{
-                              borderColor: on ? `rgb(${rgb})` : isRec ? `rgba(${rgb}, 0.5)` : undefined,
-                              boxShadow: on ? `0 0 0 1px rgb(${rgb})` : isRec ? `0 0 0 1px rgba(${rgb}, 0.3)` : undefined,
-                              backgroundColor: on ? `rgba(${rgb}, 0.05)` : isRec ? `rgba(${rgb}, 0.03)` : undefined,
+                              borderColor: on ? `rgb(${rgb})` : isRec ? `rgba(${rgb}, 0.55)` : undefined,
+                              boxShadow: on ? `0 0 0 1px rgb(${rgb})` : isRec ? `0 0 0 1px rgba(${rgb}, 0.25)` : undefined,
+                              backgroundColor: on ? `rgba(${rgb}, 0.06)` : isRec ? `rgba(${rgb}, 0.03)` : undefined,
                             }}
                           >
                             <Label className="pkg-head">
                               <RadioGroupItem value={p.id} />
-                              {isRec && <span className="badge-rec"><Icon name="sparkle" size={12} /> {t('recommended')}</span>}
-                              <span className="flex justify-between items-baseline gap-4">
-                                <span className="serif text-[22px] leading-tight">{L.title}</span>
-                                <span className="serif text-[22px] shrink-0 font-semibold" style={{ color: on || isRec ? `rgb(${rgb})` : 'var(--acc)' }}>{money(p.price)}</span>
-                              </span>
-                              <span className="block text-sm mt-1 c-mute">{p.min} {t('min')}, {L.tags.slice(0, 2).join(' • ')}</span>
+                              <div className="flex justify-between items-start gap-4">
+                                <div className="min-w-0">
+                                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                                    <span className="serif text-[23px] leading-tight">{L.title}</span>
+                                    <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-s2">{p.min} {t('min')}</span>
+                                    {isRec && <span className="badge-rec"><Icon name="sparkle" size={11} /> {t('recommended')}</span>}
+                                  </div>
+                                  <span className="block text-sm c-mute">{L.subtitle}</span>
+                                </div>
+                                <div className="text-right shrink-0">
+                                  {vp.disc > 0 && <span className="block text-xs line-through c-mute">{money(p.price)}</span>}
+                                  <span className="serif text-[25px] leading-none block font-semibold" style={{ color: on || isRec ? `rgb(${rgb})` : 'var(--acc)' }}>
+                                    {money(vp.finalPrice)}
+                                  </span>
+                                  <span className="block text-[11px] font-bold mt-1 c-ok">{money(vp.pixPrice)} {t('pixHint')}</span>
+                                </div>
+                              </div>
                             </Label>
                             {on && (
                               <div className="rise px-5 pb-5" style={{ borderTop: '1px solid var(--line)' }}>
-                                <p className="text-[15.5px] leading-relaxed pt-4 mb-4">{L.desc}</p>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                  {L.tags.map((g) => (
-                                    <Badge key={g} style={{ backgroundColor: `rgba(${rgb}, 0.12)`, color: `rgb(${rgb})`, padding: '6px 12px' }}>{g}</Badge>
-                                  ))}
-                                </div>
-                                <p className="text-sm font-bold mb-2">{t('flowH')}</p>
-                                <ol className="pl-5 list-decimal text-[15.5px] leading-relaxed space-y-1 mb-4 c-mute">
+                                <p className="text-[15.5px] leading-relaxed pt-4 mb-3">{L.desc}</p>
+                                <ol className="pl-5 list-decimal text-sm leading-relaxed space-y-1 mb-4 c-mute">
                                   {L.flow.map((s) => <li key={s}>{s}</li>)}
                                 </ol>
                                 <div className="flex flex-wrap gap-2">
                                   <Button
                                     disabled={!narr.supported}
                                     onClick={() => { vibrate(10); narr.toggle(p.id, narrText); }}
-                                    className="btn-ui btn-g btn-sm flex-1"
-                                    style={{ flexBasis: 176, borderColor: `rgba(${rgb}, 0.45)`, color: `rgb(${rgb})` }}
+                                    className="btn-ui btn-g btn-sm"
+                                    style={{ borderColor: `rgba(${rgb}, 0.5)`, color: `rgb(${rgb})` }}
                                   >
                                     <Icon name={playing ? 'pause' : 'play'} size={16} />
                                     {playing ? t('pause') : paused ? t('resume') : t('listen')}
@@ -1224,41 +1723,62 @@ export default function App() {
                   </RadioGroup>
                 </div>
 
-                {/* 2. Oferta */}
                 {chosen && !isSolo && (
-                  <div ref={s2Ref} className="scroll-mt-24">
+                  <div className="scroll-mt-24">
                     <Reveal>
                       <StepHead n={2} title={t('s2')} done={true} />
-                      <RadioGroup value={offerEff} onValueChange={(v) => { vibrate(15); setOffer(v as Offer); }} aria-label={t('s2')} className="grid gap-3">
+                      <RadioGroup value={offerEff} onValueChange={(v) => { vibrate(15); setOffer(v as Offer); }} aria-label={t('s2')} className="grid sm:grid-cols-2 gap-3">
                         {([
-                          ['single', t('oSingle'), t('oSingleD'), pkg.price, 0, 0],
-                          ['combo', t('oCombo'), t('oComboD'), pkg.price + pkg.combo, pkg.price + C.APARO_FULL, C.APARO_FULL - pkg.combo],
+                          ['single', t('oSingle'), t('oSingleD'), getVisualPrice(pkg.price).finalPrice, getVisualPrice(pkg.price).disc > 0 ? pkg.price : 0, getVisualPrice(pkg.price).disc],
+                          ['combo', t('oCombo'), t('oComboD'), getVisualPrice(pkg.price + pkg.combo).finalPrice, pkg.price + C.APARO_FULL, (C.APARO_FULL - pkg.combo) + getVisualPrice(pkg.price + pkg.combo).disc],
+                          ['biweekly', t('oBiweekly'), t('oBiweeklyD').replace('{n}', String(C.BIWEEKLY_DAYS)), Math.round(pkg.price * 2 * (1 - C.BIWEEKLY_DISC)), pkg.price * 2, (pkg.price * 2) - Math.round(pkg.price * 2 * (1 - C.BIWEEKLY_DISC))],
                           ['pack', t('oPack'), t('oPackD').replace('{n}', String(C.PACK_DAYS)), pkg.price * C.PACK_PAY, pkg.price * C.PACK_TOTAL, pkg.price],
                         ] as [Offer, string, string, number, number, number][]).map(([o, a, b, price, was, sv]) => (
-                          <Label key={o} className={cn('opt-ui', offerEff === o && 'on')}>
+                          <Label key={o} className={cn('opt-ui flex flex-col justify-between', offerEff === o && 'on')}>
                             <RadioGroupItem value={o} />
-                            <span className="flex justify-between items-start gap-x-4 gap-y-2 flex-wrap sm:flex-nowrap">
-                              <span className="flex-1" style={{ minWidth: 0 }}><span className="block font-bold">{a}</span><span className="block text-sm mt-1 c-mute">{b}</span></span>
-                              <span className="text-right shrink-0">
-                                <span className="serif text-[22px] block leading-none" style={{ color: 'var(--acc)' }}>{money(price)}</span>
-                                {sv > 0 && <span className="block text-xs mt-1"><s className="c-mute">{money(was)}</s></span>}
-                              </span>
-                            </span>
-                            {sv > 0 && <Badge className="mt-3 c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 16%,transparent)' }}>{t('save')} {money(sv)}</Badge>}
+                            <div>
+                              <div className="flex justify-between items-start gap-3">
+                                <span className="font-bold leading-snug">{a}</span>
+                                <span className="text-right shrink-0">
+                                  <span className="serif text-[22px] block leading-none font-semibold" style={{ color: 'var(--acc)' }}>{money(price)}</span>
+                                  {was > price && <span className="block text-xs mt-1"><s className="c-mute">{money(was)}</s></span>}
+                                </span>
+                              </div>
+                              <span className="block text-sm mt-2 c-mute">{b}</span>
+                            </div>
+                            {sv > 0 && <Badge className="mt-3 self-start c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 16%,transparent)' }}>{t('save')} {money(sv)}</Badge>}
                           </Label>
                         ))}
                       </RadioGroup>
-                      {isPack && <p className="text-sm leading-relaxed mt-4 c-mute">{t('packNote')}</p>}
+                      {hasPlan && <p className="text-sm leading-relaxed mt-3 c-mute">{t('packNote')}</p>}
                     </Reveal>
                   </div>
                 )}
 
-                {/* 3. Quando e onde */}
                 {chosen && (
                   <div ref={s3Ref} className="scroll-mt-24">
                     <Reveal>
                       <StepHead n={isSolo ? 2 : 3} title={t('s3')} done={step3Valid} />
-                      <div className="space-y-9">
+                      <div className="space-y-8">
+                        {nextFree && (
+                          <div className="rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3" style={{ background: 'color-mix(in srgb,var(--ok) 12%,transparent)', border: '1px solid color-mix(in srgb,var(--ok) 35%,transparent)' }}>
+                            <div className="flex items-center gap-3">
+                              <span className="dot" aria-hidden="true" />
+                              <div>
+                                <p className="text-xs font-bold uppercase tracking-wider c-ok">{t('recSlotH')}</p>
+                                <p className="font-extrabold capitalize">{nextLabel}</p>
+                              </div>
+                            </div>
+                            <Button
+                              onClick={() => { vibrate(15); set({ date: nextFree.d, time: nextFree.t }); }}
+                              className="btn-ui btn-sm"
+                              style={{ background: 'var(--ok)', color: 'var(--onacc)', minHeight: 42, padding: '8px 16px', fontSize: 14 }}
+                            >
+                              {t('recSlotBtn')}
+                            </Button>
+                          </div>
+                        )}
+
                         <div style={{ minWidth: 0 }}>
                           <p className="lbl-ui" id="date-lbl">{t('date')}</p>
                           <RadioGroup
@@ -1274,7 +1794,7 @@ export default function App() {
                                   <RadioGroupItem value={dateKey(d)} aria-label={fmt(d, { weekday: 'long', day: 'numeric', month: 'long' })} />
                                   <span aria-hidden="true" className="text-xs font-bold capitalize">{dayName(d, i)}</span>
                                   <span aria-hidden="true" className="serif text-[28px] leading-tight">{d.getDate()}</span>
-                                  <span aria-hidden="true" className="text-xs opacity-70">{fmt(d, { month: 'short' }).replace('.', '')}</span>
+                                  <span aria-hidden="true" className="text-xs opacity-75">{fmt(d, { month: 'short' }).replace('.', '')}</span>
                                 </Label>
                               );
                             })}
@@ -1325,7 +1845,7 @@ export default function App() {
                               </Label>
                             ))}
                           </RadioGroup>
-                          <p className="text-sm mt-3 leading-relaxed c-mute">{isHome ? t('peakNote') : t('studioInfo')}</p>
+                          <p className="text-sm mt-3 leading-relaxed c-mute">{isHome ? t('homeInfo') : t('studioInfo')}</p>
                         </div>
 
                         {isHome && (
@@ -1341,6 +1861,18 @@ export default function App() {
                           </div>
                         )}
 
+                        <Card className="p-5 space-y-3">
+                          <p className="lbl-ui lbl-flat">{t('prefsH')}</p>
+                          <div className="flex items-center gap-3">
+                            <Checkbox id="pref-incense" checked={data.incense} onCheckedChange={(c) => { vibrate(10); set({ incense: c }); }} className="chk-mid" />
+                            <Label htmlFor="pref-incense" className="lbl-chk flex-1" style={{ fontSize: 15.5 }}>{t('prefIncense')}</Label>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Checkbox id="pref-music" checked={data.music} onCheckedChange={(c) => { vibrate(10); set({ music: c }); }} className="chk-mid" />
+                            <Label htmlFor="pref-music" className="lbl-chk flex-1" style={{ fontSize: 15.5 }}>{t('prefMusic')}</Label>
+                          </div>
+                        </Card>
+
                         <div>
                           <Button className="btn-ui btn-p btn-lg w-full" onClick={goReview}>{t('cont')}</Button>
                           <p className="text-sm text-center mt-4 c-mute">{t('chatQ')} <a href={chatLink} target="_blank" rel="noopener noreferrer" className="lnk-ui">{t('chatBtn')}</a></p>
@@ -1350,7 +1882,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 4. Resumo */}
                 {chosen && reviewed && (
                   <div ref={s4Ref} className="scroll-mt-24">
                     <Reveal>
@@ -1359,7 +1890,7 @@ export default function App() {
                         <Card className="p-6 space-y-3">
                           <Row label={t('sPack')} value={pt.title} />
                           <Row label={t('sWhen')} value={data.date ? `${fmt(data.date, { weekday: 'short', day: '2-digit', month: 'short' })}, ${data.time} – ${endTime}` : ''} />
-                          <Row label={t('sLoc')} value={isHome ? `${data.street}, ${data.number}` : t('sLocStudio')} />
+                          <Row label={t('sLoc')} value={isHome ? `${data.street}, ${data.number} - ${data.bairro}` : t('sLocStudio')} />
                           <Button onClick={() => scrollToRef(s3Ref, 30)} className="lnk-ui lnk-block lnk-left text-sm">{t('change')}</Button>
                         </Card>
 
@@ -1376,23 +1907,52 @@ export default function App() {
                         </div>
 
                         <Card className="px-6">
-                          <details className="faq">
-                            <summary>{t('extras')}</summary>
-                            <div className="pb-6 space-y-6 px-1">
+                          <button type="button" aria-expanded={extrasOpen} onClick={() => setExtrasOpen((v) => !v)} className="faq-btn">
+                            <span>{t('extras')}</span>
+                            <span className={cn('faq-icon', extrasOpen && 'open')} aria-hidden="true">+</span>
+                          </button>
+                          {extrasOpen && (
+                            <div className="pb-6 space-y-6 px-1 rise">
                               <div className="flex items-center gap-3">
                                 <Checkbox id="add-time" checked={data.addTime} onCheckedChange={(c) => { vibrate(15); set({ addTime: c }); }} className="chk-mid" />
                                 <Label htmlFor="add-time" className="lbl-chk flex flex-1 justify-between gap-3 items-center" style={{ minHeight: 44, fontSize: 16 }}>
                                   <span>{t('lTime')}</span><span className="font-bold">+ {money(C.TIME_ADD)}</span>
                                 </Label>
                               </div>
-                              {!isPack && !coupon.applied && (
+                              {!hasPlan && (
                                 <div>
                                   <Label htmlFor="cp" className="lbl-ui">{t('couponQ')}</Label>
-                                  <div className="flex gap-2">
-                                    <Input id="cp" type="text" autoCapitalize="characters" placeholder={t('couponPh')} value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className="uppercase flex-1" style={{ minWidth: 0 }} aria-describedby={coupon.error ? 'cp-err' : undefined} />
-                                    <Button onClick={applyCoupon} className="btn-ui btn-g">{t('apply')}</Button>
+                                  <div className="flex flex-wrap gap-2 mb-3">
+                                    {C.PUBLIC_COUPONS.map(({ code, pct }) => {
+                                      const active = coupon.applied === code;
+                                      return (
+                                        <button
+                                          key={code}
+                                          type="button"
+                                          onClick={() => (active ? clearCoupon() : selectCouponCode(code))}
+                                          className="coupon-pill"
+                                          style={active ? { background: 'var(--ok)', color: 'var(--onacc)', borderStyle: 'solid' } : undefined}
+                                        >
+                                          <Icon name={active ? 'check' : 'tag'} size={14} />
+                                          {code} (-{pct}%)
+                                        </button>
+                                      );
+                                    })}
                                   </div>
-                                  {coupon.error && <p id="cp-err" className="err" role="alert">{coupon.error}</p>}
+                                  {coupon.applied ? (
+                                    <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-s2 text-sm">
+                                      <span className="font-bold c-ok">{t('lCoupon')}: {coupon.applied}</span>
+                                      <Button onClick={clearCoupon} className="lnk-ui text-xs">{t('couponRemove')}</Button>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <div className="flex gap-2">
+                                        <Input id="cp" type="text" autoCapitalize="characters" placeholder={t('couponPh')} value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && selectCouponCode(coupon.input)} className="uppercase flex-1" style={{ minWidth: 0 }} aria-describedby={coupon.error ? 'cp-err' : undefined} />
+                                        <Button onClick={() => selectCouponCode(coupon.input)} className="btn-ui btn-g">{t('apply')}</Button>
+                                      </div>
+                                      {coupon.error && <p id="cp-err" className="err" role="alert">{coupon.error}</p>}
+                                    </>
+                                  )}
                                 </div>
                               )}
                               <div>
@@ -1406,45 +1966,55 @@ export default function App() {
                                 <p className="text-xs mt-3 c-mute">{t('reqNote')}</p>
                               </div>
                             </div>
-                          </details>
+                          )}
                         </Card>
 
                         <Card className="p-6">
                           <div className="space-y-3 mb-5">
-                            <Row label={isPack ? t('lPack5') : t('lPack')} value={money(invoice.sessionPrice)} />
-                            {invoice.aparoAdd > 0 && <Row label={t('lCombo')} value={`+${money(invoice.aparoAdd)}`} />}
+                            <Row label={isPack ? t('lPack5') : isBiweekly ? t('lPack2') : t('lPack')} value={money(invoice.fullUnitsPrice)} />
+                            {aparoOn && <Row label={t('lCombo')} value={`+${money(C.APARO_FULL)}`} />}
                             {invoice.timeAdd > 0 && <Row label={t('lTime')} value={`+${money(invoice.timeAdd)}`} />}
                             {invoice.reqFee > 0 && <Row label={t('lReq')} value={`+${money(invoice.reqFee)}`} />}
+                            {invoice.peakFee > 0 && <Row label={t('lPeak')} value={`+${money(invoice.peakFee)}`} />}
+                            {invoice.saved > 0 && <Row label={t('lSubtotal')} value={money(invoice.grossSubtotal)} />}
+                            {invoice.comboSave > 0 && <Row tone="ok" label={t('lCombo')} value={`-${money(invoice.comboSave)}`} />}
+                            {invoice.planDiscount > 0 && <Row tone="ok" label={t('lPlanDisc')} value={`-${money(invoice.planDiscount)}`} />}
                             {invoice.discount > 0 && <Row tone="ok" label={coupon.applied ? `${t('lCoupon')} ${coupon.applied}` : t('lFirst')} value={`-${money(invoice.discount)}`} />}
                             {invoice.pixDiscount > 0 && <Row tone="ok" label={t('lPix')} value={`-${money(invoice.pixDiscount)}`} />}
-                            {invoice.peakFee > 0 && <Row label={t('lPeak')} value={`+${money(invoice.peakFee)}`} />}
                           </div>
                           <Separator />
                           <div className="flex justify-between items-end gap-4 pt-5">
                             <span className="c-mute">{t('total')}</span>
                             <span className="serif text-[46px] leading-none font-light">{money(invoice.total)}</span>
                           </div>
-                          {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold text-center py-2.5 rounded-2xl c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>{t('saved')} {money(invoice.saved)}</p>}
+                          {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold text-center py-2.5 rounded-2xl c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>{t('saved')}: -{money(invoice.saved)}</p>}
                           <div className="grid grid-cols-2 gap-3 mt-4 text-center">
-                            <div className="rounded-2xl p-3 bg-s2"><p className="text-xs c-mute">{t('signal')}</p><p className="font-extrabold">{money(invoice.sinal)}</p></div>
+                            <div className="rounded-2xl p-3 bg-s2"><p className="text-xs c-mute">{t('signal')}</p><p className="font-extrabold">-{money(invoice.sinal)}</p></div>
                             <div className="rounded-2xl p-3 bg-s2"><p className="text-xs c-mute">{t('rest')}</p><p className="font-extrabold">{money(invoice.rest)}</p></div>
                           </div>
                         </Card>
 
                         <p className="text-[15.5px] leading-relaxed">
-                          {t('sigA')} <strong>{money(invoice.sinal)}</strong> {t('sigB')}{' '}
+                          {t('sigA')} <strong>{money(invoice.sinal)}</strong>. {t('sigB')} <strong>{money(invoice.rest)}</strong> {t('sigC')}{' '}
                           <Button onClick={copyPix} className="lnk-ui lnk-block lnk-left"><Icon name="copy" size={15} /> {t('copyPix')}</Button>
                         </p>
 
-                        <div className="flex items-start gap-3 text-sm leading-relaxed c-mute">
-                          <Checkbox id="opt-in" checked={optIn} onCheckedChange={setOptIn} />
-                          <Label htmlFor="opt-in" className="lbl-chk">{t('optIn')}</Label>
+                        <div className="space-y-4">
+                          <div className="flex items-start gap-3 text-sm leading-relaxed">
+                            <Checkbox id="health-ok" checked={healthOk} onCheckedChange={setHealthOk} />
+                            <Label htmlFor="health-ok" className="lbl-chk font-semibold">{isHome ? t('healthHome') : t('healthStudio')}</Label>
+                          </div>
+
+                          <div className="flex items-start gap-3 text-sm leading-relaxed c-mute">
+                            <Checkbox id="opt-in" checked={optIn} onCheckedChange={setOptIn} />
+                            <Label htmlFor="opt-in" className="lbl-chk">{t('optIn')}</Label>
+                          </div>
+
+                          {renderAge('age-ok')}
                         </div>
 
-                        {renderAge('age-ok')}
-
-                        <Button onClick={finish} disabled={!data.payment || !ageOk} className="btn-ui btn-p btn-xl w-full">
-                          {!data.payment ? t('needPay') : !ageOk ? t('needAge') : t('send')}
+                        <Button onClick={finish} disabled={!data.payment || !healthOk || !ageOk} className="btn-ui btn-p btn-xl w-full">
+                          {!data.payment ? t('needPay') : !healthOk ? t('needHealth') : !ageOk ? t('needAge') : t('send')}
                         </Button>
                       </div>
                     </Reveal>
@@ -1454,7 +2024,58 @@ export default function App() {
             )}
           </section>
 
-          {/* Sobre */}
+          <section className="mb-24" aria-labelledby="rv-sec">
+            <div className="glass-stage">
+              <div className="flex flex-wrap justify-between items-end gap-4 mb-6">
+                <div>
+                  <Title id="rv-sec" className="text-[30px] md:text-[38px] mb-1">{t('revH')}</Title>
+                  <p className="text-sm c-mute">{t('revS')}</p>
+                </div>
+                <Button asChild className="btn-ui btn-g btn-sm">
+                  <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={16} /> {t('revBtn')}</a>
+                </Button>
+              </div>
+              <div className="grid md:grid-cols-3 gap-4">
+                {visibleReviews.map((r, i) => (
+                  <Reveal key={`${r.name}-${i}`} delay={(i % 3) * 80} className="h-full">
+                    <article className="glass-rev flex flex-col justify-between h-full">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-4">
+                          <div className="flex items-center gap-1" style={{ color: 'var(--warn)' }} aria-label={`${r.stars} de 5 estrelas`}>
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <span key={s} style={{ opacity: s <= r.stars ? 1 : 0.25 }}>
+                                <Icon name="star" size={14} />
+                              </span>
+                            ))}
+                          </div>
+                          <span className="text-[11px] font-bold c-mute">{r.when}</span>
+                        </div>
+                        <p className="text-[15px] leading-relaxed mb-5 c-ink">“{r.text}”</p>
+                      </div>
+                      <div className="pt-3.5 flex items-center gap-3" style={{ borderTop: '1px solid var(--line)' }}>
+                        <span className="glass-avatar" aria-hidden="true">{r.initials}</span>
+                        <div className="min-w-0">
+                          <strong className="block text-sm leading-tight c-ink">{r.name}</strong>
+                          <span className="block text-xs c-mute truncate">{r.tag}</span>
+                        </div>
+                      </div>
+                    </article>
+                  </Reveal>
+                ))}
+              </div>
+              {allReviews.length > 3 && (
+                <div className="mt-6 text-center">
+                  <Button
+                    onClick={() => { vibrate(10); setShowAllReviews((v) => !v); }}
+                    className="btn-ui btn-g btn-sm"
+                  >
+                    {showAllReviews ? t('revLess') : t('revMore').replace('{n}', String(allReviews.length))}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </section>
+
           <section className="mb-24" aria-labelledby="ab">
             <Reveal>
               <div className="flex items-center gap-5 mb-5 flex-col sm:flex-row text-center sm:text-left">
@@ -1468,24 +2089,27 @@ export default function App() {
               <p className="flex items-start justify-center sm:justify-start gap-3 text-[15.5px] leading-relaxed mb-6 max-w-xl mx-auto sm:mx-0 text-left"><Icon name="map" size={18} className="mt-1" />{t('about2')}</p>
               <div className="flex flex-wrap justify-center sm:justify-start gap-3">
                 <Button onClick={() => setProfileOpen(true)} className="btn-ui btn-p btn-md">{t('seeProfile')}</Button>
-                <Button asChild className="btn-ui btn-g btn-md">
-                  <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} /> Instagram</a>
-                </Button>
+                <SocialButtons reviewsLabel={t('reviews')} />
               </div>
             </Reveal>
           </section>
 
-          {/* FAQ */}
           <section className="mb-8" aria-labelledby="fq">
             <Title id="fq" className="text-[32px] md:text-[40px] mb-6">{t('faqH')}</Title>
             <Reveal>
               <Card className="px-6">
-                {[['q1', 'a1'], ['q2', 'a2'], ['q3', 'a3'], ['q4', 'a4']].map(([q, a], i) => (
-                  <details key={q} name="faq" className="faq" style={i ? { borderTop: '1px solid var(--line)' } : undefined}>
-                    <summary>{t(q)}</summary>
-                    <p className="pb-4 leading-relaxed c-mute">{t(a)}</p>
-                  </details>
-                ))}
+                {[['q1', 'a1'], ['q2', 'a2'], ['q3', 'a3'], ['q4', 'a4'], ['q5', 'a5']].map(([q, a], i) => {
+                  const isOpen = openFaq === q;
+                  return (
+                    <div key={q} style={i ? { borderTop: '1px solid var(--line)' } : undefined}>
+                      <button type="button" aria-expanded={isOpen} onClick={() => setOpenFaq(isOpen ? null : q)} className="faq-btn">
+                        <span>{t(q)}</span>
+                        <span className={cn('faq-icon', isOpen && 'open')} aria-hidden="true">+</span>
+                      </button>
+                      {isOpen && <p className="pb-4 leading-relaxed c-mute rise">{t(a)}</p>}
+                    </div>
+                  );
+                })}
               </Card>
             </Reveal>
           </section>
@@ -1498,8 +2122,17 @@ export default function App() {
             <Button key={id} onClick={() => setDoc(id)} className="lnk-ui lnk-block lnk-mute">{t(k)}</Button>
           ))}
         </nav>
-        <p className="mt-2">{SITE_NAME}<br />{LEGAL.RAZAO}, CNPJ {LEGAL.CNPJ}<br />{LEGAL.ENDERECO}<br /><span style={{ overflowWrap: 'anywhere' }}>{LEGAL.EMAIL}</span></p>
+        <p className="mt-2">
+          {SITE_NAME} • Bela Vista, São Paulo - SP<br />
+          <span style={{ overflowWrap: 'anywhere' }}>{LEGAL.EMAIL}</span>
+        </p>
         <p className="mt-2 font-semibold">{t('adults')}</p>
+        <p className="mt-5 pt-4" style={{ borderTop: '1px solid var(--line)' }}>
+          {t('builtBy')}{' '}
+          <a href={C.PORTFOLIO} target="_blank" rel="noopener noreferrer" className="lnk-ui c-ink">
+            Thalyson Design
+          </a>
+        </p>
       </footer>
 
       {showBar && !done && (
@@ -1507,14 +2140,15 @@ export default function App() {
           <div className="max-w-3xl mx-auto flex items-center gap-4">
             <div className="flex-1" style={{ minWidth: 0 }}>
               <p className="text-xs leading-tight c-mute">{chosen ? pt.title : t('fromM')}</p>
-              <p className="serif text-2xl leading-none">{money(chosen ? pkg.price : Math.min(...MASSAGES.map((p) => p.price)))}</p>
+              <p className="serif text-2xl leading-none">
+                {money(chosen ? getVisualPrice(pkg.price).finalPrice : minVisual.finalPrice)}
+              </p>
             </div>
             <Button onClick={goBook} className="btn-ui btn-p shrink-0">{t('cta')}</Button>
           </div>
         </div>
       )}
 
-      {/* Perfil */}
       {profileOpen && (
         <Modal title={t('profile')} onClose={() => setProfileOpen(false)} closeLabel={t('close')}>
           <div className="p-6">
@@ -1540,21 +2174,13 @@ export default function App() {
               <Button asChild className="btn-ui btn-g w-full">
                 <a href={chatLink} target="_blank" rel="noopener noreferrer"><Icon name="chat" size={18} /> {t('chatBtn')}</a>
               </Button>
-              <div className="g-2">
-                <Button asChild className="btn-ui btn-g btn-md">
-                  <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} /> Instagram</a>
-                </Button>
-                <Button asChild className="btn-ui btn-g btn-md">
-                  <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {t('reviews')}</a>
-                </Button>
-              </div>
+              <SocialButtons reviewsLabel={t('reviews')} grid />
             </div>
             <Button onClick={forgetMe} className="lnk-ui lnk-block lnk-mute lnk-full">{t('pForget')}</Button>
           </div>
         </Modal>
       )}
 
-      {/* Documentos legais */}
       {doc && (
         <Modal title={DOCS[doc].title} onClose={() => setDoc(null)} closeLabel={t('close')}>
           <div className="p-5 text-sm leading-relaxed c-mute" tabIndex={0}>
