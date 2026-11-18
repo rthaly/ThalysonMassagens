@@ -5,7 +5,7 @@ import {
 } from 'react';
 
 /* ================================================================== */
-/*  CONFIGURAÇÃO                                                       */
+/*  CONFIGURAÇÃO CENTRAL                                               */
 /* ================================================================== */
 const SITE_NAME = 'Relaxar hoje com Thalyson';
 const LEGAL = {
@@ -14,14 +14,14 @@ const LEGAL = {
   ENDERECO: 'Avenida 9 de Julho, Bela Vista, São Paulo - SP',
   EMAIL: 'relaxecomthalyson@gmail.com',
   ENCARREGADO: 'Thalyson Rodrigo dos Santos',
-  ATUALIZADO: '05/11/2026',
+  ATUALIZADO: '18/11/2026',
   CANCEL_FREE_HOURS: 12,
 };
 
 const C = {
   PHONE: '5517991360413',
   PIX_KEY: '62922530000144',
-  INSTAGRAM: 'https://www.instagram.com/relaxecomthalyson',
+  INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
   AVATAR: '/thalyson.jpg',
   COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
@@ -65,7 +65,7 @@ const T: Record<Lang, Record<string, string>> = {
     wSub: 'Atendimento masculino individual em São Paulo. Você escolhe a sessão, reserva em 1 minuto e confirma direto comigo no WhatsApp.', w1: 'Sem sala de espera ou filas', w2: 'Reserva com sinal de R$ 40', w3: 'Sigilo e higiene total',
     enter: 'Ver sessões e horários', needAgeEnter: 'Confirme que tem 18 anos ou mais',
     h1: 'Desligue a cabeça. Solte o corpo.', sub: 'Uma hora inteira dedicada a tirar o peso da sua rotina, sem pressa e com total privacidade perto do metrô Anhangabaú.',
-    cta: 'Escolher minha sessão', reviews: 'O que dizem sobre mim', nextFree: 'Próximo horário livre', today: 'hoje', tomorrow: 'amanhã', fromM: 'Sessões a partir de',
+    cta: 'Escolher minha sessão', reviews: 'Avaliações', nextFree: 'Próximo horário livre', today: 'hoje', tomorrow: 'amanhã', fromM: 'Sessões a partir de',
     t1: 'Sinal de R$ 40 para travar a agenda; o resto só depois da sessão', t2: 'Remarcação ou reembolso grátis avisando até 12h antes', t3: 'R$ 15 de desconto automático na sua primeira sessão',
     offH: 'Mais vantagem na sua visita', offS: 'Resolva o cansaço e o visual no mesmo horário ou garanta sessões com desconto.',
     cbT: 'Massagem + aparo de pelos', cbD: 'Saia relaxado e alinhado na mesma visita, economizando até R$ 70.', lyT: 'Pacote 5 sessões (pague 4)', lyD: 'A 5ª sessão sai de graça para você manter o corpo leve o mês inteiro.', see: 'Aproveitar',
@@ -94,7 +94,7 @@ const T: Record<Lang, Record<string, string>> = {
     sigA: 'Para travar esse horário só para você, envie o sinal de', sigB: 'via Pix. O restante você paga só depois de sair da maca.', copyPix: 'Copiar chave Pix (CNPJ)', pixCopied: 'Chave Pix copiada!',
     send: 'Confirmar no WhatsApp', needPay: 'Escolha como vai pagar o restante', needAge: 'Confirme que tem 18 anos ou mais',
     doneH: 'Pedido pronto!', doneP: 'Agora é só mandar a mensagem que abriu no seu WhatsApp e enviar o comprovante dos R$ 40 para eu travar sua hora.',
-    doneSig: 'Chave Pix (CNPJ): 62.922.530/0001-44 • Valor do sinal:', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na minha agenda', restart: 'Fazer outro agendamento',
+    doneSig: 'Chave Pix (CNPJ):', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na minha agenda', restart: 'Fazer outro agendamento',
     chatQ: 'Ficou com alguma dúvida antes de marcar?', chatBtn: 'Me chama direto no WhatsApp', chatMsg: 'Oi Thalyson! Vi seu site e queria tirar uma dúvida sobre a massagem.',
     aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atendimento direto, sem intermediários', about1: 'Meu foco é simples: fazer você entrar carregado de tensão e sair leve, renovado e com a mente limpa. Sem frescura, sem roteiro engessado e respeitando o ritmo do seu corpo.',
     about2: 'Atendo sozinho em suíte privada na Bela Vista (pertinho do metrô Anhangabaú), com ducha quente, toalhas limpas e climatização.', seeProfile: 'Conhecer meu trabalho',
@@ -115,7 +115,7 @@ const T: Record<Lang, Record<string, string>> = {
     wSub: 'Private men’s massage in São Paulo. Pick your session, book in 1 minute and confirm directly with me on WhatsApp.', w1: 'No waiting rooms or crowds', w2: 'Only R$ 40 deposit to lock time', w3: 'Total privacy and hygiene',
     enter: 'See sessions and times', needAgeEnter: 'Confirm you are 18 or older',
     h1: 'Turn off your mind. Release your body.', sub: 'A full hour dedicated to taking the weight off your routine, unhurried and completely private near Anhangabaú metro.',
-    cta: 'Choose my session', reviews: 'Client reviews', nextFree: 'Next open slot', today: 'today', tomorrow: 'tomorrow', fromM: 'Sessions starting at',
+    cta: 'Choose my session', reviews: 'Reviews', nextFree: 'Next open slot', today: 'today', tomorrow: 'tomorrow', fromM: 'Sessions starting at',
     t1: 'R$ 40 deposit to lock your slot; pay the rest after the session', t2: 'Free rescheduling or refund up to 12h in advance', t3: 'Automatic R$ 15 discount on your first session',
     offH: 'More value on your visit', offS: 'Take care of muscle tension and grooming in one visit, or save with a pack.',
     cbT: 'Massage + body trimming', cbD: 'Leave relaxed and groomed in the same visit, saving up to R$ 70.', lyT: '5-session pack (pay for 4)', lyD: 'Your 5th session is free so you can stay loose all month.', see: 'See option',
@@ -144,7 +144,7 @@ const T: Record<Lang, Record<string, string>> = {
     sigA: 'To lock this time exclusively for you, send the', sigB: 'deposit via Pix. Pay the rest only after the session.', copyPix: 'Copy Pix key (CNPJ)', pixCopied: 'Pix key copied!',
     send: 'Confirm on WhatsApp', needPay: 'Choose how you will pay the rest', needAge: 'Confirm you are 18 or older',
     doneH: 'Request ready!', doneP: 'Just send the message that opened in WhatsApp along with your R$ 40 deposit receipt so I can lock your time.',
-    doneSig: 'Pix Key (CNPJ): 62.922.530/0001-44 • Deposit amount:', resend: 'Open WhatsApp again', addCal: 'Save to my calendar', restart: 'Make another booking',
+    doneSig: 'Pix Key (CNPJ):', resend: 'Open WhatsApp again', addCal: 'Save to my calendar', restart: 'Make another booking',
     chatQ: 'Have a question before booking?', chatBtn: 'Message me on WhatsApp', chatMsg: 'Hi Thalyson! I saw your site and have a quick question about the massage.',
     aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Direct service, no middlemen', about1: 'My goal is straightforward: have you walk in carrying tension and walk out light, renewed and clear-headed. No rigid scripts, always respecting your body’s pace.',
     about2: 'I work solo in a private suite in Bela Vista (near Anhangabaú metro), with a hot shower, fresh towels and climate control.', seeProfile: 'About my work',
@@ -165,7 +165,7 @@ const T: Record<Lang, Record<string, string>> = {
     wSub: 'Atención masculina individual en São Paulo. Eliges la sesión, reservas en 1 minuto y confirmas directo conmigo por WhatsApp.', w1: 'Sin sala de espera ni filas', w2: 'Reserva con señal de R$ 40', w3: 'Sigilo e higiene total',
     enter: 'Ver sesiones y horarios', needAgeEnter: 'Confirma que tienes 18 años o más',
     h1: 'Apaga la mente. Suelta el cuerpo.', sub: 'Una hora entera dedicada a quitar el peso de tu rutina, sin prisa y con total privacidad cerca del metro Anhangabaú.',
-    cta: 'Elegir mi sesión', reviews: 'Opiniones reales', nextFree: 'Próximo horario libre', today: 'hoy', tomorrow: 'mañana', fromM: 'Sesiones desde',
+    cta: 'Elegir mi sesión', reviews: 'Reseñas', nextFree: 'Próximo horario libre', today: 'hoy', tomorrow: 'mañana', fromM: 'Sesiones desde',
     t1: 'Señal de R$ 40 para bloquear la agenda; el resto solo después de la sesión', t2: 'Reprogramación o reembolso gratis avisando hasta 12h antes', t3: 'R$ 15 de descuento automático en tu primera sesión',
     offH: 'Más ventaja en tu visita', offS: 'Resuelve el cansancio y el cuidado personal en el mismo horario o ahorra con paquete.',
     cbT: 'Masaje + recorte de vello', cbD: 'Sal relajado y prolijo en la misma visita, ahorrando hasta R$ 70.', lyT: 'Paquete 5 sesiones (paga 4)', lyD: 'La 5ª sesión es gratis para mantener el cuerpo liviano todo el mes.', see: 'Aprovechar',
@@ -194,7 +194,7 @@ const T: Record<Lang, Record<string, string>> = {
     sigA: 'Para bloquear este horario solo para ti, envía la señal de', sigB: 'vía Pix. El resto lo pagas solo después de salir de la camilla.', copyPix: 'Copiar clave Pix (CNPJ)', pixCopied: '¡Clave Pix copiada!',
     send: 'Confirmar en WhatsApp', needPay: 'Elige cómo pagarás el resto', needAge: 'Confirma que tienes 18 años o más',
     doneH: '¡Pedido listo!', doneP: 'Ahora solo envía el mensaje que se abrió en tu WhatsApp junto con el comprobante de los R$ 40 para bloquear tu hora.',
-    doneSig: 'Clave Pix (CNPJ): 62.922.530/0001-44 • Valor de la señal:', resend: 'Abrir WhatsApp nuevamente', addCal: 'Guardar en mi agenda', restart: 'Hacer otra reserva',
+    doneSig: 'Clave Pix (CNPJ):', resend: 'Abrir WhatsApp nuevamente', addCal: 'Guardar en mi agenda', restart: 'Hacer otra reserva',
     chatQ: '¿Te quedó alguna duda antes de reservar?', chatBtn: 'Escríbeme directo al WhatsApp', chatMsg: '¡Hola Thalyson! Vi tu sitio y quería hacerte una consulta sobre el masaje.',
     aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atención directa, sin intermediarios', about1: 'Mi objetivo es simple: que entres cargado de tensión y salgas liviano, renovado y con la mente despejada. Sin guiones rígidos y respetando el ritmo de tu cuerpo.',
     about2: 'Atiendo solo en suite privada en Bela Vista (cerca del metro Anhangabaú), con ducha caliente, toallas limpias y climatización.', seeProfile: 'Conocer mi trabajo',
@@ -251,6 +251,13 @@ const PACKAGES: { id: string; price: number; min: number; combo: number; theme: 
 ];
 const MASSAGES = PACKAGES.filter((p) => p.combo > 0);
 const PAY_PT: Record<string, string> = { pix: 'PIX', card: 'CARTÃO', cash: 'DINHEIRO' };
+const THEME_RGB: Record<PkgTheme, { dark: string; light: string }> = {
+  sage: { dark: '94, 184, 140', light: '43, 76, 59' },
+  amber: { dark: '235, 157, 75', light: '143, 90, 26' },
+  crimson: { dark: '224, 102, 92', light: '140, 59, 50' },
+  midnight: { dark: '171, 142, 204', light: '61, 43, 76' },
+  slate: { dark: '148, 163, 184', light: '90, 100, 110' },
+};
 
 /* ================================================================== */
 /*  DOCUMENTOS LEGAIS                                                  */
@@ -295,7 +302,7 @@ const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
 /* ================================================================== */
 const cn = (...a: Array<string | false | null | undefined>) => a.filter(Boolean).join(' ');
 const money = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;
-const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate && navigator.vibrate(p); } catch { /* sem suporte */ } };
+const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate?.(p); } catch { /* sem suporte */ } };
 const store = {
   get: (k: string): string | null => { try { return localStorage.getItem(k); } catch { return null; } },
   set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* ignorado */ } },
@@ -322,7 +329,7 @@ function buildSlots(date: Date, dur: number, isHome: boolean, now: Date): Slot[]
 }
 
 /* ================================================================== */
-/*  NARRAÇÃO EM ÁUDIO: voz masculina, pausar e continuar               */
+/*  NARRAÇÃO EM ÁUDIO                                                  */
 /* ================================================================== */
 type NarrState = 'idle' | 'playing' | 'paused';
 const MALE_RE = /(felipe|daniel|ant[oô]nio|ricardo|jorge|diego|pablo|raul|enrique|carlos|david|thiago|donato|george|\bmark\b|\bfred\b|\balex\b|\bmale\b|masculin|homem)/i;
@@ -469,7 +476,7 @@ function Reveal({ children, delay = 0, className = '' }: { children: ReactNode; 
   const { ref, seen } = useSeen<HTMLDivElement>();
   return <div ref={ref} className={`rv ${seen ? 'in' : ''} ${className}`} style={{ transitionDelay: `${delay}ms` }}>{children}</div>;
 }
-function Title({ children, as = 'h2', className = '', style, id }: { children: string; as?: 'h1' | 'h2'; className = '', style?: CSSProperties; id?: string }) {
+function Title({ children, as = 'h2', className = '', style, id }: { children: string; as?: 'h1' | 'h2'; className?: string; style?: CSSProperties; id?: string }) {
   const { ref, seen } = useSeen<HTMLHeadingElement>();
   const Tag = as;
   return (
@@ -485,8 +492,11 @@ function Title({ children, as = 'h2', className = '', style, id }: { children: s
 type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean };
 function Button({ asChild, className, children, type, ...rest }: BtnProps) {
   if (asChild && isValidElement(children)) {
-    const child = children as ReactElement<{ className?: string }>;
-    return cloneElement(child, { ...rest, className: cn(className, child.props.className) } as unknown as { className: string });
+    const child = children as ReactElement<Record<string, unknown>>;
+    return cloneElement(child, {
+      ...(rest as Record<string, unknown>),
+      className: cn(className, typeof child.props.className === 'string' ? child.props.className : undefined),
+    });
   }
   return <button type={type ?? 'button'} className={className} {...rest}>{children}</button>;
 }
@@ -572,6 +582,17 @@ const StepHead = ({ n, title, done }: { n: number; title: string; done: boolean 
   <div className="flex items-center gap-4 mb-6">
     <span className={`stepn ${done ? 'ok' : ''}`}>{done ? <Icon name="check" size={16} /> : n}</span>
     <Title as="h2" className="text-[28px] md:text-[34px]">{title}</Title>
+  </div>
+);
+
+const SocialButtons = ({ reviewsLabel, grid = false }: { reviewsLabel: string; grid?: boolean }) => (
+  <div className={grid ? 'g-2' : 'flex flex-wrap gap-3'}>
+    <Button asChild className="btn-ui btn-g btn-md">
+      <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} /> Instagram</a>
+    </Button>
+    <Button asChild className="btn-ui btn-g btn-md">
+      <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {reviewsLabel}</a>
+    </Button>
   </div>
 );
 
@@ -674,10 +695,9 @@ const CSS = `
 .ttl .w>span{display:inline-block;transform:translateY(108%);opacity:0;transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity .8s ease}
 .ttl.in .w>span{transform:none;opacity:1}
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
-details.faq summary{min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-weight:700;list-style:none}
-details.faq summary::-webkit-details-marker{display:none}
-details.faq summary::after{content:'+';font-size:24px;color:var(--acc);transition:transform .2s;flex-shrink:0}
-details.faq[open] summary::after{transform:rotate(45deg)}
+.faq-btn{width:100%;min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-weight:700;text-align:left;background:transparent;border:0;color:var(--ink);font-size:inherit}
+.faq-icon{font-size:24px;color:var(--acc);transition:transform .2s;flex-shrink:0;line-height:1}
+.faq-icon.open{transform:rotate(45deg)}
 .hide-sb::-webkit-scrollbar{display:none}.hide-sb{scrollbar-width:none}
 @keyframes breathe{0%,100%{transform:scale(.96)}50%{transform:scale(1.04)}}
 @keyframes ring{0%{transform:scale(.55);opacity:.6}100%{transform:scale(1.7);opacity:0}}
@@ -711,6 +731,8 @@ export default function App() {
 
   const [phase, setPhase] = useState<Phase>('loading');
   const [profileOpen, setProfileOpen] = useState(false);
+  const [extrasOpen, setExtrasOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [offer, setOffer] = useState<Offer>('single');
   const [reviewed, setReviewed] = useState(false);
   const [done, setDone] = useState(false);
@@ -789,8 +811,7 @@ export default function App() {
   const recommendedPkgId = useMemo(() => {
     const day = now.getDay();
     const hour = now.getHours();
-    if (day === 1 || (hour >= 9 && hour < 13)) return 'classica';
-    return 'sensitiva';
+    return day === 1 || (hour >= 9 && hour < 13) ? 'classica' : 'sensitiva';
   }, [now]);
 
   const invoice = useMemo(() => {
@@ -819,15 +840,13 @@ export default function App() {
 
   const todayKey = dateKey(now);
   const days = useMemo(() => {
-    const out: { d: Date; i: number }[] = [];
     const baseDate = new Date(now);
     baseDate.setHours(0, 0, 0, 0);
-    for (let i = 0; i < C.DAYS; i++) {
+    return Array.from({ length: C.DAYS }, (_, i) => {
       const d = new Date(baseDate);
       d.setDate(d.getDate() + i);
-      out.push({ d, i });
-    }
-    return out;
+      return { d, i };
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todayKey]);
 
@@ -886,7 +905,6 @@ export default function App() {
   };
   const pickOffer = (o: Offer) => { vibrate(20); setOffer(o); goBook(); };
 
-  /* Mensagem do WhatsApp curta, humana e direta para aumentar a conversão do sinal */
   const whatsappLink = () => {
     const dStr = data.date ? data.date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }) : '';
     const pk = pkg.L.pt;
@@ -943,7 +961,7 @@ export default function App() {
   };
 
   const resetBooking = () => {
-    setTouched(false); setReqOk(false); setDone(false); setReviewed(false); setOffer('single');
+    setTouched(false); setReqOk(false); setDone(false); setReviewed(false); setExtrasOpen(false); setOffer('single');
     setData((p) => ({ ...p, locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', date: null, time: '', req: '', payment: '', packageId: '', addTime: false }));
   };
   const restart = () => {
@@ -969,6 +987,7 @@ export default function App() {
   const greeting = now.getHours() < 12 ? t('gm') : now.getHours() < 18 ? t('ga') : t('gn');
   const chatLink = waLink(t('chatMsg'));
   const nextLabel = nextFree ? `${nextFree.k === 0 ? t('today') : nextFree.k === 1 ? t('tomorrow') : fmt(nextFree.d, { weekday: 'long' })} ${nextFree.t}` : '';
+  const minMassagePrice = useMemo(() => Math.min(...MASSAGES.map((p) => p.price)), []);
 
   const renderAge = (id: string) => (
     <div className="flex items-start gap-3 text-sm leading-relaxed">
@@ -1035,7 +1054,7 @@ export default function App() {
             <h1 id="wt" className="serif font-light leading-[1.02] mb-5 rise" style={{ fontSize: 'clamp(46px,12vw,78px)', letterSpacing: '-0.02em', animationDelay: '.2s' }}>Relaxar hoje<br />com Thalyson</h1>
             <p className="text-lg leading-relaxed mb-8 rise c-mute" style={{ animationDelay: '.35s' }}>{t('wSub')}</p>
             <ul className="grid gap-3 mb-9 rise" style={{ animationDelay: '.5s' }}>
-              {[['w1', 'clock'], ['w2', 'lock'], ['w3', 'shield']].map(([k, ic]) => (<li key={k} className="flex items-center gap-3 font-semibold"><Icon name={ic as IconName} size={20} />{t(k)}</li>))}
+              {([['w1', 'clock'], ['w2', 'lock'], ['w3', 'shield']] as [string, IconName][]).map(([k, ic]) => (<li key={k} className="flex items-center gap-3 font-semibold"><Icon name={ic} size={20} />{t(k)}</li>))}
             </ul>
             <div className="rise mb-6" style={{ animationDelay: '.6s' }}>{renderAge('age-w')}</div>
             <Button onClick={enter} disabled={!ageOk} className="btn-ui btn-p btn-xl w-full rise" style={{ animationDelay: '.7s' }}>{ageOk ? t('enter') : t('needAgeEnter')}</Button>
@@ -1062,7 +1081,7 @@ export default function App() {
                 {nextFree && (
                   <p className="flex items-center gap-3 text-sm c-mute"><span className="dot" aria-hidden="true" /><span>{t('nextFree')}: <strong className="c-ink">{nextLabel}</strong></span></p>
                 )}
-                <p className="text-sm mt-1 c-mute">{t('fromM')} {money(Math.min(...MASSAGES.map((p) => p.price)))}</p>
+                <p className="text-sm mt-1 c-mute">{t('fromM')} {money(minMassagePrice)}</p>
               </Reveal>
             </div>
           </section>
@@ -1070,8 +1089,8 @@ export default function App() {
           {/* Garantias */}
           <Reveal className="mb-24">
             <ul className="grid sm:grid-cols-3 gap-5" aria-label={t('guar')}>
-              {[['t1', 'lock'], ['t2', 'shield'], ['t3', 'star']].map(([k, ic]) => (
-                <li key={k} className="flex items-start gap-3 text-[15.5px] leading-snug"><Icon name={ic as IconName} size={22} className="mt-0.5" />{t(k)}</li>
+              {([['t1', 'lock'], ['t2', 'shield'], ['t3', 'star']] as [string, IconName][]).map(([k, ic]) => (
+                <li key={k} className="flex items-start gap-3 text-[15.5px] leading-snug"><Icon name={ic} size={22} className="mt-0.5" />{t(k)}</li>
               ))}
             </ul>
           </Reveal>
@@ -1104,7 +1123,7 @@ export default function App() {
                   <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 18%,transparent)' }}><Icon name="check" size={32} /></div>
                   <h2 className="serif text-4xl font-light mb-4">{t('doneH')}</h2>
                   <p className="leading-relaxed mb-4 c-mute">{t('doneP')}</p>
-                  <p className="font-bold mb-8">{t('doneSig')} {money(invoice.sinal)}</p>
+                  <p className="font-bold mb-8">{t('doneSig')} {C.PIX_KEY} • {money(invoice.sinal)}</p>
                   <div className="space-y-3 max-w-xs mx-auto">
                     <Button asChild className="btn-ui btn-p w-full">
                       <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer">{t('resend')}</a>
@@ -1129,15 +1148,7 @@ export default function App() {
                       const on = data.packageId === p.id;
                       const L = p.L[lang];
                       const isRec = p.id === recommendedPkgId && !chosen;
-                      const isDark = theme === 'dark';
-                      const themeColors: Record<PkgTheme, string> = {
-                        sage: isDark ? '94, 184, 140' : '43, 76, 59',
-                        amber: isDark ? '235, 157, 75' : '143, 90, 26',
-                        crimson: isDark ? '224, 102, 92' : '140, 59, 50',
-                        midnight: isDark ? '171, 142, 204' : '61, 43, 76',
-                        slate: isDark ? '148, 163, 184' : '90, 100, 110',
-                      };
-                      const rgb = themeColors[p.theme];
+                      const rgb = THEME_RGB[p.theme][theme];
                       const mine = narr.activeId === p.id;
                       const playing = mine && narr.state === 'playing';
                       const paused = mine && narr.state === 'paused';
@@ -1352,9 +1363,12 @@ export default function App() {
                         </div>
 
                         <Card className="px-6">
-                          <details className="faq">
-                            <summary>{t('extras')}</summary>
-                            <div className="pb-6 space-y-6 px-1">
+                          <button type="button" aria-expanded={extrasOpen} onClick={() => setExtrasOpen((v) => !v)} className="faq-btn">
+                            <span>{t('extras')}</span>
+                            <span className={cn('faq-icon', extrasOpen && 'open')} aria-hidden="true">+</span>
+                          </button>
+                          {extrasOpen && (
+                            <div className="pb-6 space-y-6 px-1 rise">
                               <div className="flex items-center gap-3">
                                 <Checkbox id="add-time" checked={data.addTime} onCheckedChange={(c) => { vibrate(15); set({ addTime: c }); }} className="chk-mid" />
                                 <Label htmlFor="add-time" className="lbl-chk flex flex-1 justify-between gap-3 items-center" style={{ minHeight: 44, fontSize: 16 }}>
@@ -1382,7 +1396,7 @@ export default function App() {
                                 <p className="text-xs mt-3 c-mute">{t('reqNote')}</p>
                               </div>
                             </div>
-                          </details>
+                          )}
                         </Card>
 
                         <Card className="p-6">
@@ -1444,9 +1458,7 @@ export default function App() {
               <p className="flex items-start justify-center sm:justify-start gap-3 text-[15.5px] leading-relaxed mb-6 max-w-xl mx-auto sm:mx-0 text-left"><Icon name="map" size={18} className="mt-1" />{t('about2')}</p>
               <div className="flex flex-wrap justify-center sm:justify-start gap-3">
                 <Button onClick={() => setProfileOpen(true)} className="btn-ui btn-p btn-md">{t('seeProfile')}</Button>
-                <Button asChild className="btn-ui btn-g btn-md">
-                  <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} /> Instagram</a>
-                </Button>
+                <SocialButtons reviewsLabel={t('reviews')} />
               </div>
             </Reveal>
           </section>
@@ -1456,12 +1468,18 @@ export default function App() {
             <Title id="fq" className="text-[32px] md:text-[40px] mb-6">{t('faqH')}</Title>
             <Reveal>
               <Card className="px-6">
-                {[['q1', 'a1'], ['q2', 'a2'], ['q3', 'a3'], ['q4', 'a4']].map(([q, a], i) => (
-                  <details key={q} name="faq" className="faq" style={i ? { borderTop: '1px solid var(--line)' } : undefined}>
-                    <summary>{t(q)}</summary>
-                    <p className="pb-4 leading-relaxed c-mute">{t(a)}</p>
-                  </details>
-                ))}
+                {[['q1', 'a1'], ['q2', 'a2'], ['q3', 'a3'], ['q4', 'a4']].map(([q, a], i) => {
+                  const isOpen = openFaq === q;
+                  return (
+                    <div key={q} style={i ? { borderTop: '1px solid var(--line)' } : undefined}>
+                      <button type="button" aria-expanded={isOpen} onClick={() => setOpenFaq(isOpen ? null : q)} className="faq-btn">
+                        <span>{t(q)}</span>
+                        <span className={cn('faq-icon', isOpen && 'open')} aria-hidden="true">+</span>
+                      </button>
+                      {isOpen && <p className="pb-4 leading-relaxed c-mute rise">{t(a)}</p>}
+                    </div>
+                  );
+                })}
               </Card>
             </Reveal>
           </section>
@@ -1483,7 +1501,7 @@ export default function App() {
           <div className="max-w-3xl mx-auto flex items-center gap-4">
             <div className="flex-1" style={{ minWidth: 0 }}>
               <p className="text-xs leading-tight c-mute">{chosen ? pt.title : t('fromM')}</p>
-              <p className="serif text-2xl leading-none">{money(chosen ? pkg.price : Math.min(...MASSAGES.map((p) => p.price)))}</p>
+              <p className="serif text-2xl leading-none">{money(chosen ? pkg.price : minMassagePrice)}</p>
             </div>
             <Button onClick={goBook} className="btn-ui btn-p shrink-0">{t('cta')}</Button>
           </div>
@@ -1516,14 +1534,7 @@ export default function App() {
               <Button asChild className="btn-ui btn-g w-full">
                 <a href={chatLink} target="_blank" rel="noopener noreferrer"><Icon name="chat" size={18} /> {t('chatBtn')}</a>
               </Button>
-              <div className="g-2">
-                <Button asChild className="btn-ui btn-g btn-md">
-                  <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} /> Instagram</a>
-                </Button>
-                <Button asChild className="btn-ui btn-g btn-md">
-                  <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {t('reviews')}</a>
-                </Button>
-              </div>
+              <SocialButtons reviewsLabel={t('reviews')} grid />
             </div>
             <Button onClick={forgetMe} className="lnk-ui lnk-block lnk-mute lnk-full">{t('pForget')}</Button>
           </div>
