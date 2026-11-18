@@ -4,9 +4,6 @@ import {
   type ButtonHTMLAttributes, type InputHTMLAttributes, type LabelHTMLAttributes, type HTMLAttributes,
 } from 'react';
 
-/* ================================================================== */
-/*  CONFIGURAÇÃO CENTRAL                                               */
-/* ================================================================== */
 const SITE_NAME = 'Relaxar hoje com Thalyson';
 const LEGAL = {
   RAZAO: 'Thalyson Rodrigo dos Santos',
@@ -20,11 +17,16 @@ const LEGAL = {
 
 const C = {
   PHONE: '5517991360413',
-  PIX_KEY: '62922530000144',
-  INSTAGRAM: 'https://www.instagram.com/relaxarhojesp',
+  PIX_KEY: 'relaxecomthalyson@gmail.com',
+  PIX_LABEL: 'E-mail',
+  INSTAGRAM: 'https://www.instagram.com/relaxecomthalyson',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
   AVATAR: '/thalyson.jpg',
-  COUPONS: { SESSAO2: 0.08, RELAXAR13: 0.13 } as Record<string, number>,
+  COUPONS: { RELAXAR13: 0.13, SESSAO2: 0.08 } as Record<string, number>,
+  PUBLIC_COUPONS: [
+    { code: 'RELAXAR13', pct: 13 },
+    { code: 'SESSAO2', pct: 8 },
+  ],
   SIGNAL: 40,
   FIRST: 15,
   REQ_FEE: 140,
@@ -50,174 +52,210 @@ type Phase = 'loading' | 'welcome' | 'site';
 type Offer = 'single' | 'combo' | 'pack';
 type DocId = 'privacy' | 'terms' | 'refund' | 'cookies';
 type PkgTheme = 'sage' | 'amber' | 'crimson' | 'midnight' | 'slate';
-type PkgText = { title: string; desc: string; tags: string[]; flow: string[] };
+type PkgText = { title: string; subtitle: string; desc: string; tags: string[]; flow: string[] };
 type Ref<E> = { current: E | null };
 
 const LOCALE: Record<Lang, string> = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' };
 const LANG_NAME: Record<Lang, string> = { pt: 'Português', en: 'English', es: 'Español' };
 
-/* ================================================================== */
-/*  TEXTOS (PT / EN / ES)                                              */
-/* ================================================================== */
 const T: Record<Lang, Record<string, string>> = {
   pt: {
-    loadMsg: 'Preparando um ambiente reservado pra você', badge: 'Bela Vista, Centro de São Paulo',
-    wSub: 'Massagem masculina em São Paulo. Escolha o tipo, marque o horário e confirme no WhatsApp. Reservado e sem pressa.', w1: 'Sem sala de espera ou filas', w2: 'Reserva com sinal de R$ 40', w3: 'Sigilo e higiene total',
+    loadMsg: 'Preparando seu horário reservado', badge: 'Bela Vista • Perto do Metrô Anhangabaú',
+    wSub: 'Atendimento individual em São Paulo. Você escolhe a sessão, marca o horário em 1 minuto e confirma direto comigo no WhatsApp.',
+    w1: 'Atendimento individual, sem sala de espera', w2: 'Sinal de R$ 40 no Pix para travar a agenda', w3: 'Espaço simples, limpo e reservado',
     enter: 'Ver sessões e horários', needAgeEnter: 'Confirme que tem 18 anos ou mais',
-    h1: 'Desligue o mundo por uma hora.', sub: 'Massagem masculina em São Paulo, no Centro. Você escolhe, marca em 1 minuto e a confirmação chega no seu WhatsApp. Tudo reservado.',
-    cta: 'Escolher minha sessão', reviews: 'Avaliações', nextFree: 'Próximo horário livre', today: 'hoje', tomorrow: 'amanhã', fromM: 'Sessões a partir de',
-    t1: 'Sinal de R$ 40 pra segurar o horário; o resto só depois da sessão', t2: 'Remarcação ou reembolso grátis avisando até 12h antes', t3: 'R$ 15 de desconto automático na sua primeira sessão',
-    offH: 'Mais vantagem na sua visita', offS: 'Dois jeitos de pagar menos sem perder qualidade.',
-    cbT: 'Massagem + aparo de pelos', cbD: 'Aparo de pelos no mesmo horário. Você economiza até R$ 70.', lyT: 'Pacote 5 sessões (pague 4)', lyD: 'Vai voltar? Faça 5 sessões e pague só 4.', see: 'Aproveitar',
-    s1: 'Qual sessão combina com você hoje?', s2: 'Quer adicionar alguma vantagem?', s3: 'Dia, horário e local', s4: 'Confira e envie no WhatsApp', min: 'min', flowH: 'O que acontece na sessão',
-    oSingle: 'Apenas esta sessão', oSingleD: 'Sem compromisso, com R$ 15 off na primeira vez.', oCombo: 'Com aparo de pelos', oComboD: 'Inclui aparo na máquina em até 3 regiões no mesmo horário.', oPack: 'Pacote 5 sessões (1 grátis)', oPackD: 'Pague 4 e ganhe a 5ª. Você tem {n} dias para usar.',
-    save: 'Economia de', was: 'De', listen: 'Ouvir como funciona', pause: 'Pausar áudio', resume: 'Continuar áudio', stopA: 'Parar',
-    voiceLow: 'Modo de voz adaptado para este aparelho', noTts: 'Seu navegador não tem suporte para áudio.',
-    skip: 'Ir para o conteúdo', guar: 'Garantias', legalNav: 'Documentos legais',
-    packNote: 'O pacote já tem o maior desconto possível, por isso não soma com cupons. Você agenda a 1ª sessão agora e combina as outras 4 direto comigo pelo WhatsApp.',
-    name: 'Como prefere ser chamado?', namePh: 'Seu primeiro nome ou apelido', nameErr: 'Digite pelo menos 3 letras.', place: 'Onde vai ser a sessão?', studio: 'Na minha suíte (Bela Vista)', home: 'No seu endereço (SP)',
-    peakNote: 'Para atender no seu endereço nos horários de trânsito intenso, há taxa de R$ 18. Digite o CEP para preencher a rua.',
-    studioInfo: 'Atendo sozinho em uma suíte reservada e climatizada na Bela Vista, a poucos passos do Metrô Anhangabaú. Assim que confirmar, te mando a localização exata.',
-    cep: 'CEP', street: 'Rua ou Avenida', number: 'Nº', comp: 'Apto / Bloco', bairro: 'Bairro', addrErr: 'Preencha rua, número e bairro.', cepFail: 'CEP não encontrado. Preencha os campos abaixo.',
-    date: 'Escolha o dia', time: 'Horário de início', session: 'Duração:', peak: 'Pico', noSlots: 'Agenda cheia neste dia. Escolha outra data acima.',
+    h1: 'Tire o peso do corpo. Desligue a cabeça.',
+    sub: 'Sessões individuais na Bela Vista ou no seu endereço em SP. Sem enrolação, sem pressa e com valores claros antes de você sair de casa.',
+    cta: 'Escolher sessão e horário', reviews: 'Ver avaliações no Google', nextFree: 'Próximo horário livre', today: 'hoje', tomorrow: 'amanhã', fromM: 'Sessões a partir de',
+    t1: 'Sinal de R$ 40 para segurar o horário; o restante você paga só depois',
+    t2: 'Remarcação ou devolução do sinal grátis avisando até 12h antes',
+    t3: 'R$ 15 de desconto automático na sua primeira sessão',
+    offH: 'Combos e pacotes', offS: 'Opções para resolver tudo na mesma visita ou economizar voltando mais vezes.',
+    cbT: 'Massagem + aparo de pelos', cbD: 'Inclui aparo na máquina em até 3 regiões no mesmo horário. Economia de até R$ 70.',
+    lyT: 'Pacote 5 sessões (pague 4)', lyD: 'Você paga 4 sessões e ganha a 5ª para usar em até 60 dias.', see: 'Selecionar opção',
+    s1: '1. Escolha a sessão', s2: '2. Formato do atendimento', s3: '3. Dia, horário e local', s4: '4. Conferir e mandar no WhatsApp',
+    min: 'min', flowH: 'Como funciona na prática', firstBadge: '1ª vez: R$ 15 off já aplicado', pixHint: 'no Pix (-3%)',
+    oSingle: 'Sessão avulsa', oSingleD: 'Sem compromisso. Já entra com R$ 15 de desconto na primeira vez.',
+    oCombo: 'Sessão + aparo de pelos', oComboD: 'Faço o aparo na máquina em até 3 regiões no mesmo atendimento.',
+    oPack: 'Pacote 5 sessões (1 grátis)', oPackD: 'Pague 4 e ganhe a 5ª. Validade de {n} dias para agendar pelo WhatsApp.',
+    save: 'Economia de', was: 'De', listen: 'Ouvir descrição', pause: 'Pausar', resume: 'Continuar', stopA: 'Parar',
+    voiceLow: 'Áudio adaptado para este aparelho', noTts: 'Seu navegador não tem suporte para áudio.',
+    skip: 'Ir para o conteúdo', guar: 'Como funciona a reserva', legalNav: 'Documentos legais',
+    packNote: 'O pacote já tem 20% de desconto real (1 sessão grátis), por isso não soma com outros cupons. Você marca a 1ª data aqui e combina as outras 4 direto comigo.',
+    name: 'Como você quer ser chamado?', namePh: 'Seu nome ou apelido', nameErr: 'Digite pelo menos 3 letras.',
+    place: 'Onde vai ser?', studio: 'Na minha suíte (Bela Vista)', home: 'No seu endereço (SP)',
+    peakNote: 'Para ir até o seu endereço nos horários de trânsito pesado há taxa de R$ 18. Digite o CEP para preencher a rua.',
+    studioInfo: 'Atendo sozinho em uma suíte residencial simples, limpa e reservada na Bela Vista (pertinho do Metrô Anhangabaú), com maca de madeira, ducha quente e toalhas limpas. Mando a localização exata assim que confirmar.',
+    cep: 'CEP', street: 'Rua ou Avenida', number: 'Nº', comp: 'Apto / Bloco', bairro: 'Bairro', addrErr: 'Preencha rua, número e bairro.', cepFail: 'CEP não encontrado. Preencha manualmente.',
+    date: 'Dia', time: 'Horário de início', session: 'Duração total:', peak: 'Trânsito', noSlots: 'Agenda cheia neste dia. Escolha outra data acima.',
     demo: 'Horários sujeitos a confirmação rápida no WhatsApp.', dateErr: 'Escolha um dia.', timeErr: 'Escolha um horário.', from: 'Das', to: 'às', unavailable: 'ocupado',
-    cont: 'Revisar agendamento', fill: 'Preencha os campos marcados acima', change: 'Alterar', sPack: 'Sessão', sWhen: 'Data e hora', sLoc: 'Local', sLocStudio: 'Suíte Bela Vista (Centro)',
+    cont: 'Revisar valores e confirmar', fill: 'Preencha os campos destacados acima', change: 'Alterar dados', sPack: 'Sessão', sWhen: 'Data e horário', sLoc: 'Local', sLocStudio: 'Suíte Bela Vista (próximo ao Metrô Anhangabaú)',
     lPack: 'Sessão escolhida', lPack5: 'Pacote 5 sessões (4 pagas)', lCombo: 'Aparo de pelos (combo)', lTime: '+30 minutos extras', lReq: 'Pedido específico', lFirst: 'Desconto 1ª sessão', lCoupon: 'Cupom aplicado', lPeak: 'Deslocamento / trânsito', lPix: 'Desconto Pix (3%)',
-    saved: 'Você está economizando', total: 'Valor final', signal: 'Sinal agora (Pix)', rest: 'Depois da sessão',
-    extras: 'Adicionar mais tempo ou cupom', couponQ: 'Tem um cupom?', couponPh: 'Digite o código', apply: 'Aplicar', couponOk: 'Desconto aplicado', couponBad: 'Cupom inválido ou expirado.',
-    reqQ: 'Algum pedido específico? (+ R$ 140)', learn: 'Saiba mais',
-    reqConsent: 'Autorizo enviar este pedido específico apenas para avaliação no WhatsApp. Ele não fica salvo no site.',
-    reqPh: 'Escreva o que você gostaria de incluir', reqNote: 'Avalio na hora; se não for possível realizar, não cobro nada a mais.',
-    pay: 'Como vai pagar o restante depois?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'Passamos a maquininha na hora; as taxas de parcelamento te informo antes no WhatsApp.',
-    optIn: 'Quero receber avisos de horários livres e promoções no WhatsApp.',
+    saved: 'Você está economizando', total: 'Valor total', signal: 'Sinal agora (Pix)', rest: 'Paga depois da sessão',
+    extras: 'Adicionar +30 min, cupom ou pedido', couponQ: 'Cupons disponíveis (clique para aplicar)', couponPh: 'Ou digite outro código', apply: 'Aplicar', couponOk: 'Cupom aplicado!', couponBad: 'Cupom inválido.', couponRemove: 'Remover',
+    reqQ: 'Tem algum pedido específico? (+ R$ 140)', learn: 'Saiba mais',
+    reqConsent: 'Autorizo enviar este pedido apenas para avaliação no WhatsApp. Não fica salvo no site.',
+    reqPh: 'Escreva o que gostaria de incluir', reqNote: 'Avalio antes de confirmar; se não der para fazer, não cobro nada a mais.',
+    pay: 'Como vai pagar o restante depois?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'Levo a maquininha; as taxas de parcelamento te passo antes no WhatsApp.',
+    optIn: 'Pode me avisar no WhatsApp quando abrir horário livre ou promoção.',
     ageA: 'Confirmo ter 18 anos ou mais e concordo com a', privacy: 'Política de Privacidade', terms: 'Termos', and: 'e', refund: 'Regras de Cancelamento',
-    sigA: 'Para travar esse horário só para você, envie o sinal de', sigB: 'via Pix. O restante você paga só depois de sair da maca.', copyPix: 'Copiar chave Pix (CNPJ)', pixCopied: 'Chave Pix copiada!',
-    send: 'Confirmar no WhatsApp', needPay: 'Escolha como vai pagar o restante', needAge: 'Confirme que tem 18 anos ou mais',
-    doneH: 'Pedido pronto!', doneP: 'Agora é só mandar a mensagem que abriu no seu WhatsApp e enviar o comprovante dos R$ 40 pra eu travar sua hora.',
-    doneSig: 'Chave Pix (CNPJ):', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na minha agenda', restart: 'Fazer outro agendamento',
+    sigA: 'Para travar esse horário só para você, faça o Pix do sinal de', sigB: 'O restante você acerta só depois da sessão.', copyPix: 'Copiar chave Pix (e-mail)', pixCopied: 'Chave Pix copiada!',
+    send: 'Mandar pedido no WhatsApp', needPay: 'Escolha como vai pagar o restante', needAge: 'Confirme que tem 18 anos ou mais',
+    doneH: 'Pedido pronto!', doneP: 'Agora é só enviar a mensagem que abriu no seu WhatsApp junto com o comprovante dos R$ 40 para eu travar seu horário.',
+    doneSig: 'Chave Pix (e-mail):', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na agenda', restart: 'Fazer outro agendamento',
     chatQ: 'Ficou com alguma dúvida antes de marcar?', chatBtn: 'Me chama direto no WhatsApp', chatMsg: 'Oi Thalyson! Vi seu site e queria tirar uma dúvida sobre a massagem.',
-    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atendimento direto, sem intermediários', about1: 'Meu foco é simples: fazer você entrar carregado de tensão e sair leve, renovado e com a mente limpa. Sem frescura, sem roteiro engessado e respeitando o ritmo do seu corpo.',
-    about2: 'Atendo sozinho em suíte privada na Bela Vista (pertinho do metrô Anhangabaú), com ducha quente, toalhas limpas e climatização.', seeProfile: 'Conhecer meu trabalho',
-    faqH: 'Perguntas frequentes',
-    q1: 'Preciso pagar antes?', a1: 'Só R$ 40 de sinal pra segurar seu horário. O resto você paga depois da sessão.',
-    q2: 'E se acontecer um imprevisto?', a2: 'Avisando até 12 horas antes, eu devolvo seus R$ 40 na hora ou remarco para o dia que ficar melhor pra você.',
-    q3: 'É discreto?', a3: 'Sim. Não pedimos CPF, e-mail nem telefone no site. O endereço exato vai só depois da confirmação.',
-    q4: 'Posso tomar banho no local?', a4: 'Sim, a suíte conta com ducha quente e toalhas higienizadas para você usar antes e depois da sessão.',
-    q5: 'E se eu ficar com vergonha?', a5: 'Normal, quase todo mundo fica na 1ª vez. Antes de começar conversamos e você diz o que quer e o que não quer. Pode parar quando quiser.',
+    revH: 'Quem já passou por aqui', revS: 'Relatos reais de quem veio descansar na Bela Vista.', revBtn: 'Ver todas no Google',
+    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atendimento direto comigo, sem intermediários',
+    about1: 'Tenho 30 anos, sou do interior de SP e atendo na Bela Vista. Meu espaço não tem frescura nem luxo de clínica: é um ambiente reservado, limpo e silencioso para você desligar da correria de São Paulo.',
+    about2: 'Suíte individual perto do Metrô Anhangabaú, com ducha quente, maca de madeira confortável e toalhas higienizadas.', seeProfile: 'Ver detalhes do espaço',
+    faqH: 'Dúvidas diretas',
+    q1: 'Por que tem sinal de R$ 40?', a1: 'Como atendo sozinho com hora marcada e fecho a agenda inteira para você, o sinal garante que o horário não fique vago. Ele é descontado do valor total e você paga o resto só no final.',
+    q2: 'E se eu precisar remarcar?', a2: 'Avisando até 12 horas antes, devolvo seus R$ 40 no Pix na hora ou troco o dia sem custo.',
+    q3: 'Meus dados ficam salvos?', a3: 'Não. Não peço CPF, e-mail nem cadastro no site. Tudo é combinado direto comigo no WhatsApp e o endereço exato vai só após confirmar.',
+    q4: 'Dá para tomar banho antes ou depois?', a4: 'Sim, tem ducha quente e toalhas limpas disponíveis antes e depois do atendimento.',
+    q5: 'Nunca fui em massagem assim, fico meio travado. Tudo bem?', a5: 'Super normal na primeira vez. A gente conversa 2 minutos antes de começar, você me diz o que prefere e o que não quer, e tudo acontece no seu ritmo.',
     footPrivacy: 'Privacidade', footTerms: 'Termos', footRefund: 'Cancelamento', footCookies: 'Cookies', adults: 'Atendimento exclusivo para maiores de 18 anos.',
     close: 'Fechar', theme: 'Mudar cor da tela', lang: 'Idioma', srLight: 'Mudar para tema claro', srDark: 'Mudar para tema escuro', legalNote: '',
     profile: 'Sobre o atendimento', openProfile: 'Ver perfil de Thalyson', gm: 'Bom dia', ga: 'Boa tarde', gn: 'Boa noite',
-    pBul1: 'Conversa rápida antes de começar para saber onde seu corpo pede mais atenção', pBul2: 'Horário exclusivo: você não cruza com ninguém na entrada ou saída', pBul3: 'Suíte reservada com ducha quente, maca confortável e climatização',
+    pBul1: 'Conversa rápida antes de começar para alinhar pressão e preferências',
+    pBul2: 'Horário exclusivo: você não cruza com ninguém na entrada ou saída',
+    pBul3: 'Suíte residencial reservada com ducha quente e maca confortável',
     pHours: 'Horários', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Pagamento', pPayV: 'Pix (3% de desconto), cartão até 12x ou dinheiro',
-    pWhere: 'Local', pWhereV: 'Bela Vista (próximo ao metrô Anhangabaú) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis avisando até 12h antes',
-    pForget: 'Limpar meus dados deste aparelho', forgot: 'Pronto, dados apagados.',
-    recommended: 'Mais pedida hoje', smartSub: 'Que bom te ver de volta. Escolha seu horário para relaxar.', lastSlots: 'Últimos horários livres para hoje',
+    pWhere: 'Local', pWhereV: 'Bela Vista (perto do Metrô Anhangabaú) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis avisando até 12h antes',
+    pForget: 'Apagar meus dados deste aparelho', forgot: 'Pronto, dados apagados.',
+    recommended: 'Mais escolhida', smartSub: 'Que bom te ver de volta. Escolha o dia e o horário.', lastSlots: 'Últimos horários livres hoje',
   },
   en: {
-    loadMsg: 'Preparing a private space for you', badge: 'Bela Vista, Downtown São Paulo',
-    wSub: 'Men’s massage in São Paulo. Pick your session, choose a time and confirm on WhatsApp. Private and unhurried.', w1: 'No waiting rooms or crowds', w2: 'Only R$ 40 deposit to lock time', w3: 'Total privacy and hygiene',
+    loadMsg: 'Preparing your private slot', badge: 'Bela Vista • Near Anhangabaú Metro',
+    wSub: 'One-on-one men’s massage in São Paulo. Pick your session, book in 1 minute and confirm directly with me on WhatsApp.',
+    w1: 'Individual session, no waiting room', w2: 'R$ 40 Pix deposit to lock your slot', w3: 'Clean, simple and private space',
     enter: 'See sessions and times', needAgeEnter: 'Confirm you are 18 or older',
-    h1: 'Turn off the world for an hour.', sub: 'Men’s massage in Downtown São Paulo. Pick your session, book in 1 minute and get confirmation on WhatsApp. Completely private.',
-    cta: 'Choose my session', reviews: 'Reviews', nextFree: 'Next open slot', today: 'today', tomorrow: 'tomorrow', fromM: 'Sessions starting at',
-    t1: 'R$ 40 deposit to lock your slot; pay the rest after the session', t2: 'Free rescheduling or refund up to 12h in advance', t3: 'Automatic R$ 15 discount on your first session',
-    offH: 'More value on your visit', offS: 'Two ways to pay less without losing quality.',
-    cbT: 'Massage + body trimming', cbD: 'Body trimming at the same appointment. Save up to R$ 70.', lyT: '5-session pack (pay for 4)', lyD: 'Coming back? Do 5 sessions and pay for only 4.', see: 'See option',
-    s1: 'Which session fits you today?', s2: 'Want to add extra value?', s3: 'Day, time and location', s4: 'Review and send on WhatsApp', min: 'min', flowH: 'What happens in the session',
-    oSingle: 'Single session only', oSingleD: 'No commitment, with R$ 15 off your first visit.', oCombo: 'With body trimming', oComboD: 'Includes machine trimming on up to 3 areas during the visit.', oPack: '5-session pack (1 free)', oPackD: 'Pay for 4 and get the 5th free. Valid for {n} days.',
-    save: 'You save', was: 'Was', listen: 'Listen to how it works', pause: 'Pause audio', resume: 'Resume audio', stopA: 'Stop',
+    h1: 'Drop the tension. Clear your head.',
+    sub: 'Private sessions in Bela Vista or at your address in SP. Straightforward, unhurried and clear pricing before you leave home.',
+    cta: 'Choose session and time', reviews: 'Google Reviews', nextFree: 'Next open slot', today: 'today', tomorrow: 'tomorrow', fromM: 'Sessions from',
+    t1: 'R$ 40 deposit to lock your slot; pay the rest only after',
+    t2: 'Free rescheduling or deposit refund up to 12h ahead',
+    t3: 'Automatic R$ 15 discount on your first session',
+    offH: 'Combos & packs', offS: 'Options to combine grooming or save on multiple visits.',
+    cbT: 'Massage + body trimming', cbD: 'Includes clipper trimming on up to 3 areas in the same visit. Save up to R$ 70.',
+    lyT: '5-session pack (pay for 4)', lyD: 'Pay for 4 sessions and get the 5th free within 60 days.', see: 'Select option',
+    s1: '1. Choose your session', s2: '2. Session format', s3: '3. Day, time and location', s4: '4. Review and send on WhatsApp',
+    min: 'min', flowH: 'How it works in practice', firstBadge: '1st visit: R$ 15 off applied', pixHint: 'on Pix (-3%)',
+    oSingle: 'Single session', oSingleD: 'No commitment. Includes R$ 15 off your first visit.',
+    oCombo: 'Session + body trimming', oComboD: 'Clipper trimming on up to 3 areas in the same appointment.',
+    oPack: '5-session pack (1 free)', oPackD: 'Pay for 4 and get the 5th free. Valid for {n} days via WhatsApp.',
+    save: 'You save', was: 'Was', listen: 'Listen to description', pause: 'Pause', resume: 'Resume', stopA: 'Stop',
     voiceLow: 'Adapted voice mode for this device', noTts: 'Your browser does not support audio narration.',
-    skip: 'Skip to content', guar: 'Guarantees', legalNav: 'Legal documents',
-    packNote: 'The pack already gives the deepest discount, so coupons do not stack. Book your 1st session now and schedule the other 4 directly on WhatsApp.',
-    name: 'What should I call you?', namePh: 'Your first name', nameErr: 'Enter at least 3 letters.', place: 'Where will the session take place?', studio: 'At my private suite (Bela Vista)', home: 'At your address (SP)',
+    skip: 'Skip to content', guar: 'How booking works', legalNav: 'Legal documents',
+    packNote: 'The pack already includes 20% off (1 free session), so it does not stack with coupons. Book your 1st date here and schedule the other 4 directly with me.',
+    name: 'What should I call you?', namePh: 'Your first name or nickname', nameErr: 'Enter at least 3 letters.',
+    place: 'Where will it be?', studio: 'At my suite (Bela Vista)', home: 'At your address (SP)',
     peakNote: 'Outcalls during heavy traffic hours carry an R$ 18 fee. Enter your ZIP code to fill the street.',
-    studioInfo: 'I work solo in a private, air-conditioned suite in Bela Vista, steps from Anhangabaú metro. Once confirmed, I send the exact address.',
+    studioInfo: 'I work solo in a clean, simple, private residential suite in Bela Vista (near Anhangabaú Metro), with a wooden table, hot shower and fresh towels. Exact location sent upon confirmation.',
     cep: 'ZIP code', street: 'Street or Avenue', number: 'No.', comp: 'Apt / Unit', bairro: 'Neighborhood', addrErr: 'Fill in street, number and neighborhood.', cepFail: 'ZIP code not found. Fill in manually.',
-    date: 'Choose a day', time: 'Start time', session: 'Duration:', peak: 'Peak', noSlots: 'Fully booked on this day. Pick another date above.',
+    date: 'Day', time: 'Start time', session: 'Total duration:', peak: 'Traffic', noSlots: 'Fully booked on this day. Pick another date above.',
     demo: 'Times subject to quick confirmation on WhatsApp.', dateErr: 'Choose a day.', timeErr: 'Choose a time.', from: 'From', to: 'to', unavailable: 'booked',
-    cont: 'Review booking', fill: 'Fill in the highlighted fields above', change: 'Change', sPack: 'Session', sWhen: 'Date & time', sLoc: 'Location', sLocStudio: 'Bela Vista Suite (Downtown)',
+    cont: 'Review prices and confirm', fill: 'Fill in the highlighted fields above', change: 'Edit details', sPack: 'Session', sWhen: 'Date & time', sLoc: 'Location', sLocStudio: 'Bela Vista Suite (near Anhangabaú Metro)',
     lPack: 'Chosen session', lPack5: '5-session pack (4 paid)', lCombo: 'Body trimming (combo)', lTime: '+30 extra minutes', lReq: 'Specific request', lFirst: '1st session discount', lCoupon: 'Coupon applied', lPeak: 'Travel / traffic', lPix: 'Pix discount (3%)',
-    saved: 'You are saving', total: 'Final total', signal: 'Deposit now (Pix)', rest: 'After the session',
-    extras: 'Add extra time or coupon', couponQ: 'Have a coupon?', couponPh: 'Enter code', apply: 'Apply', couponOk: 'Discount applied', couponBad: 'Invalid or expired coupon.',
+    saved: 'You are saving', total: 'Total amount', signal: 'Deposit now (Pix)', rest: 'Paid after session',
+    extras: 'Add +30 min, coupon or request', couponQ: 'Available coupons (tap to apply)', couponPh: 'Or type another code', apply: 'Apply', couponOk: 'Coupon applied!', couponBad: 'Invalid coupon.', couponRemove: 'Remove',
     reqQ: 'Any specific request? (+ R$ 140)', learn: 'Learn more',
-    reqConsent: 'I consent to sending this specific request for evaluation on WhatsApp only. It is not saved on the site.',
-    reqPh: 'Write what you would like to include', reqNote: 'Evaluated on the spot; if not feasible, nothing extra is charged.',
-    pay: 'How will you pay the rest after?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card machine available on site; installment fees shared beforehand on WhatsApp.',
-    optIn: 'I want updates on open slots and offers on WhatsApp.',
+    reqConsent: 'I consent to sending this request for evaluation on WhatsApp only. Not saved on the site.',
+    reqPh: 'Write what you would like to include', reqNote: 'Evaluated before confirming; if not feasible, nothing extra is charged.',
+    pay: 'How will you pay the rest after?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card reader available; installment rates shared beforehand on WhatsApp.',
+    optIn: 'Notify me on WhatsApp when open slots or promos come up.',
     ageA: 'I confirm I am 18 or older and agree to the', privacy: 'Privacy Policy', terms: 'Terms', and: 'and', refund: 'Cancellation Rules',
-    sigA: 'To lock this time exclusively for you, send the', sigB: 'deposit via Pix. Pay the rest only after the session.', copyPix: 'Copy Pix key (CNPJ)', pixCopied: 'Pix key copied!',
-    send: 'Confirm on WhatsApp', needPay: 'Choose how you will pay the rest', needAge: 'Confirm you are 18 or older',
-    doneH: 'Request ready!', doneP: 'Just send the message that opened in WhatsApp along with your R$ 40 deposit receipt so I can lock your time.',
-    doneSig: 'Pix Key (CNPJ):', resend: 'Open WhatsApp again', addCal: 'Save to my calendar', restart: 'Make another booking',
+    sigA: 'To lock this time exclusively for you, send the Pix deposit of', sigB: 'Pay the rest only after the session.', copyPix: 'Copy Pix key (email)', pixCopied: 'Pix key copied!',
+    send: 'Send request on WhatsApp', needPay: 'Choose how you will pay the rest', needAge: 'Confirm you are 18 or older',
+    doneH: 'Request ready!', doneP: 'Just send the message that opened in WhatsApp along with your R$ 40 deposit receipt so I can lock your slot.',
+    doneSig: 'Pix Key (email):', resend: 'Open WhatsApp again', addCal: 'Save to calendar', restart: 'Make another booking',
     chatQ: 'Have a question before booking?', chatBtn: 'Message me on WhatsApp', chatMsg: 'Hi Thalyson! I saw your site and have a quick question about the massage.',
-    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Direct service, no middlemen', about1: 'My goal is straightforward: have you walk in carrying tension and walk out light, renewed and clear-headed. No rigid scripts, always respecting your body’s pace.',
-    about2: 'I work solo in a private suite in Bela Vista (near Anhangabaú metro), with a hot shower, fresh towels and climate control.', seeProfile: 'About my work',
-    faqH: 'Common questions',
-    q1: 'Do I need to pay upfront?', a1: 'Only a R$ 40 deposit to hold your slot. You pay the rest after the session.',
-    q2: 'What if something comes up?', a2: 'Let me know at least 12 hours ahead and I refund your R$ 40 immediately or reschedule at no cost.',
-    q3: 'Is it discreet?', a3: 'Yes. No ID, email or phone number is requested on the site. Exact address is shared only after confirmation.',
-    q4: 'Can I shower there?', a4: 'Yes, the suite has a hot shower and sanitized towels ready before and after your session.',
-    q5: 'What if I feel shy?', a5: 'Totally normal, almost everyone feels that way on their first visit. Before starting we chat and you say what you want and don’t want. You can stop anytime.',
+    revH: 'Client feedback', revS: 'Real notes from guys who visited Bela Vista.', revBtn: 'See all on Google',
+    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Direct service with me, no middlemen',
+    about1: 'I’m 30, originally from upstate SP, working solo in Bela Vista. No fake clinic luxury—just a clean, quiet, private space for you to unwind from São Paulo’s rush.',
+    about2: 'Private suite near Anhangabaú Metro, with hot shower, comfortable wooden table and fresh towels.', seeProfile: 'See space details',
+    faqH: 'Straight answers',
+    q1: 'Why is there a R$ 40 deposit?', a1: 'Since I work solo by appointment and block the whole slot for you, the deposit keeps the schedule reliable. It is deducted from your total and you pay the rest at the end.',
+    q2: 'What if I need to reschedule?', a2: 'Let me know at least 12 hours ahead and I refund your R$ 40 via Pix right away or move your date at no cost.',
+    q3: 'Is my data saved?', a3: 'No. No ID, email or signup on the site. Everything is arranged directly on WhatsApp and the exact address goes out only after confirmation.',
+    q4: 'Can I shower before or after?', a4: 'Yes, a hot shower and clean towels are ready before and after your session.',
+    q5: 'First time doing a massage like this and feeling shy. Is that okay?', a5: 'Totally normal on your first visit. We chat for 2 minutes before starting, you set your boundaries, and everything goes at your pace.',
     footPrivacy: 'Privacy', footTerms: 'Terms', footRefund: 'Cancellation', footCookies: 'Cookies', adults: 'Service strictly for adults 18 and older.',
     close: 'Close', theme: 'Switch screen theme', lang: 'Language', srLight: 'Switch to light theme', srDark: 'Switch to dark theme', legalNote: 'Legal documents are provided in Portuguese, which is the binding version.',
     profile: 'About the session', openProfile: 'Open Thalyson’s profile', gm: 'Good morning', ga: 'Good afternoon', gn: 'Good evening',
-    pBul1: 'Quick chat before starting to see where your body needs the most attention', pBul2: 'Exclusive time slot: you never cross paths with anyone else', pBul3: 'Private suite with hot shower, comfortable table and climate control',
+    pBul1: 'Quick chat before starting to align pressure and preferences',
+    pBul2: 'Exclusive slot: you never cross paths with anyone entering or leaving',
+    pBul3: 'Private residential suite with hot shower and comfortable table',
     pHours: 'Hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment', pPayV: 'Pix (3% off), card up to 12x or cash',
-    pWhere: 'Location', pWhereV: 'Bela Vista (near Anhangabaú metro) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12h in advance',
+    pWhere: 'Location', pWhereV: 'Bela Vista (near Anhangabaú Metro) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12h in advance',
     pForget: 'Clear my data from this device', forgot: 'Done, data cleared.',
-    recommended: 'Most booked today', smartSub: 'Good to see you back. Pick your time to unwind.', lastSlots: 'Last open slots for today',
+    recommended: 'Most booked', smartSub: 'Good to see you back. Pick your day and time.', lastSlots: 'Last open slots today',
   },
   es: {
-    loadMsg: 'Preparando un espacio reservado para ti', badge: 'Bela Vista, Centro de São Paulo',
-    wSub: 'Masaje masculino en São Paulo. Elige el tipo, agenda el horario y confirma por WhatsApp. Reservado y sin prisa.', w1: 'Sin sala de espera ni filas', w2: 'Reserva con señal de R$ 40', w3: 'Sigilo e higiene total',
+    loadMsg: 'Preparando tu horario reservado', badge: 'Bela Vista • Cerca del Metro Anhangabaú',
+    wSub: 'Atención individual en São Paulo. Eliges la sesión, agendas en 1 minuto y confirmas directo conmigo por WhatsApp.',
+    w1: 'Atención individual, sin sala de espera', w2: 'Señal de R$ 40 por Pix para bloquear agenda', w3: 'Espacio simple, limpio y reservado',
     enter: 'Ver sesiones y horarios', needAgeEnter: 'Confirma que tienes 18 años o más',
-    h1: 'Apaga el mundo por una hora.', sub: 'Masaje masculino en São Paulo, en el Centro. Eliges, agendas en 1 minuto y la confirmación llega a tu WhatsApp. Todo reservado.',
-    cta: 'Elegir mi sesión', reviews: 'Reseñas', nextFree: 'Próximo horario libre', today: 'hoy', tomorrow: 'mañana', fromM: 'Sesiones desde',
-    t1: 'Señal de R$ 40 para bloquear la agenda; el resto solo después de la sesión', t2: 'Reprogramación o reembolso gratis avisando hasta 12h antes', t3: 'R$ 15 de descuento automático en tu primera sesión',
-    offH: 'Más ventaja en tu visita', offS: 'Dos formas de pagar menos sin perder calidad.',
-    cbT: 'Masaje + recorte de vello', cbD: 'Recorte de vello en el mismo horario. Ahorras hasta R$ 70.', lyT: 'Paquete 5 sesiones (paga 4)', lyD: '¿Vas a volver? Haz 5 sesiones y paga solo 4.', see: 'Aprovechar',
-    s1: '¿Qué sesión combina contigo hoy?', s2: '¿Quieres sumar alguna ventaja?', s3: 'Día, horario y lugar', s4: 'Revisa y envía por WhatsApp', min: 'min', flowH: 'Qué pasa en la sesión',
-    oSingle: 'Solo esta sesión', oSingleD: 'Sin compromiso, con R$ 15 off la primera vez.', oCombo: 'Con recorte de vello', oComboD: 'Incluye recorte a máquina hasta en 3 zonas en el mismo horario.', oPack: 'Paquete 5 sesiones (1 gratis)', oPackD: 'Paga 4 y gana la 5ª. Tienes {n} días para usar.',
-    save: 'Ahorro de', was: 'Antes', listen: 'Escuchar cómo funciona', pause: 'Pausar audio', resume: 'Continuar audio', stopA: 'Detener',
-    voiceLow: 'Modo de voz adaptado para este dispositivo', noTts: 'Tu navegador no soporta narración en audio.',
-    skip: 'Ir al contenido', guar: 'Garantías', legalNav: 'Documentos legales',
-    packNote: 'El paquete ya tiene el mayor descuento posible, por eso no se suma con cupones. Agendas la 1ª sesión ahora y combinas las otras 4 directo conmigo por WhatsApp.',
-    name: '¿Cómo prefieres que te llame?', namePh: 'Tu primer nombre o apodo', nameErr: 'Escribe al menos 3 letras.', place: '¿Dónde será la sesión?', studio: 'En mi suite (Bela Vista)', home: 'En tu dirección (SP)',
-    peakNote: 'Para atender en tu dirección en horarios de tráfico intenso hay tasa de R$ 18. Ingresa el CEP para completar la calle.',
-    studioInfo: 'Atiendo solo en una suite reservada y climatizada en Bela Vista, a pasos del Metro Anhangabaú. Al confirmar te envío la ubicación exacta.',
-    cep: 'CEP', street: 'Calle o Avenida', number: 'Nº', comp: 'Depto / Bloque', bairro: 'Barrio', addrErr: 'Completa calle, número y barrio.', cepFail: 'CEP no encontrado. Completa los campos abajo.',
-    date: 'Elige el día', time: 'Hora de inicio', session: 'Duración:', peak: 'Pico', noSlots: 'Agenda llena este día. Elige otra fecha arriba.',
+    h1: 'Suelta el peso del cuerpo. Apaga la cabeza.',
+    sub: 'Sesiones individuales en Bela Vista o en tu dirección en SP. Sin vueltas, sin prisa y con valores claros antes de salir de casa.',
+    cta: 'Elegir sesión y horario', reviews: 'Ver reseñas en Google', nextFree: 'Próximo horario libre', today: 'hoy', tomorrow: 'mañana', fromM: 'Sesiones desde',
+    t1: 'Señal de R$ 40 para asegurar el horario; el resto lo pagas después',
+    t2: 'Reprogramación o devolución gratis avisando hasta 12h antes',
+    t3: 'R$ 15 de descuento automático en tu primera sesión',
+    offH: 'Combos y paquetes', offS: 'Opciones para resolver todo en la misma visita o ahorrar volviendo más veces.',
+    cbT: 'Masaje + recorte de vello', cbD: 'Incluye recorte a máquina en hasta 3 zonas en el mismo horario. Ahorro de hasta R$ 70.',
+    lyT: 'Paquete 5 sesiones (paga 4)', lyD: 'Pagas 4 sesiones y ganas la 5ª para usar en hasta 60 días.', see: 'Seleccionar opción',
+    s1: '1. Elige la sesión', s2: '2. Formato de atención', s3: '3. Día, horario y lugar', s4: '4. Revisar y mandar por WhatsApp',
+    min: 'min', flowH: 'Cómo funciona en la práctica', firstBadge: '1ª vez: R$ 15 off aplicado', pixHint: 'en Pix (-3%)',
+    oSingle: 'Sesión individual', oSingleD: 'Sin compromiso. Ya entra con R$ 15 de descuento la primera vez.',
+    oCombo: 'Sesión + recorte de vello', oComboD: 'Recorte a máquina en hasta 3 zonas en la misma atención.',
+    oPack: 'Paquete 5 sesiones (1 gratis)', oPackD: 'Paga 4 y gana la 5ª. Validez de {n} días para agendar por WhatsApp.',
+    save: 'Ahorro de', was: 'Antes', listen: 'Oír descripción', pause: 'Pausar', resume: 'Continuar', stopA: 'Detener',
+    voiceLow: 'Audio adaptado para este dispositivo', noTts: 'Tu navegador no soporta narración en audio.',
+    skip: 'Ir al contenido', guar: 'Cómo funciona la reserva', legalNav: 'Documentos legales',
+    packNote: 'El paquete ya tiene 20% de descuento real (1 sesión gratis), por eso no suma con otros cupones. Agendas la 1ª fecha aquí y combinas las otras 4 directo conmigo.',
+    name: '¿Cómo quieres que te llame?', namePh: 'Tu nombre o apodo', nameErr: 'Escribe al menos 3 letras.',
+    place: '¿Dónde será?', studio: 'En mi suite (Bela Vista)', home: 'En tu dirección (SP)',
+    peakNote: 'Para ir a tu dirección en horarios de tráfico intenso hay tasa de R$ 18. Ingresa el CEP para completar la calle.',
+    studioInfo: 'Atiendo solo en una suite residencial simple, limpia y reservada en Bela Vista (cerca del Metro Anhangabaú), con camilla de madera, ducha caliente y toallas limpias. Envío la ubicación exacta al confirmar.',
+    cep: 'CEP', street: 'Calle o Avenida', number: 'Nº', comp: 'Depto / Bloque', bairro: 'Barrio', addrErr: 'Completa calle, número y barrio.', cepFail: 'CEP no encontrado. Completa manualmente.',
+    date: 'Día', time: 'Hora de inicio', session: 'Duración total:', peak: 'Tráfico', noSlots: 'Agenda llena este día. Elige otra fecha arriba.',
     demo: 'Horarios sujetos a confirmación rápida en WhatsApp.', dateErr: 'Elige un día.', timeErr: 'Elige un horario.', from: 'De', to: 'a', unavailable: 'ocupado',
-    cont: 'Revisar reserva', fill: 'Completa los campos marcados arriba', change: 'Cambiar', sPack: 'Sesión', sWhen: 'Fecha y hora', sLoc: 'Lugar', sLocStudio: 'Suite Bela Vista (Centro)',
-    lPack: 'Sesión elegida', lPack5: 'Paquete 5 sesiones (4 pagadas)', lCombo: 'Recorte de vello (combo)', lTime: '+30 minutos extra', lReq: 'Pedido específico', lFirst: 'Descuento 1ª sesión', lCoupon: 'Cupón aplicado', lPeak: 'Traslado / tráfico', lPix: 'Descuento Pix (3%)',
-    saved: 'Estás ahorrando', total: 'Valor final', signal: 'Señal ahora (Pix)', rest: 'Después de la sesión',
-    extras: 'Sumar más tiempo o cupón', couponQ: '¿Tienes un cupón?', couponPh: 'Escribe el código', apply: 'Aplicar', couponOk: 'Descuento aplicado', couponBad: 'Cupón inválido o vencido.',
+    cont: 'Revisar valores y confirmar', fill: 'Completa los campos marcados arriba', change: 'Cambiar datos', sPack: 'Sesión', sWhen: 'Fecha y horario', sLoc: 'Lugar', sLocStudio: 'Suite Bela Vista (cerca del Metro Anhangabaú)',
+    lPack: 'Sesión elegida', lPack5: 'Paquete 5 sesiones (4 pagas)', lCombo: 'Recorte de vello (combo)', lTime: '+30 minutos extra', lReq: 'Pedido específico', lFirst: 'Descuento 1ª sesión', lCoupon: 'Cupón aplicado', lPeak: 'Traslado / tráfico', lPix: 'Descuento Pix (3%)',
+    saved: 'Estás ahorrando', total: 'Valor total', signal: 'Señal ahora (Pix)', rest: 'Pagas después de la sesión',
+    extras: 'Sumar +30 min, cupón o pedido', couponQ: 'Cupones disponibles (clic para aplicar)', couponPh: 'O escribe otro código', apply: 'Aplicar', couponOk: '¡Cupón aplicado!', couponBad: 'Cupón inválido.', couponRemove: 'Quitar',
     reqQ: '¿Algún pedido específico? (+ R$ 140)', learn: 'Más info',
-    reqConsent: 'Autorizo enviar este pedido específico solo para evaluación en WhatsApp. No queda guardado en el sitio.',
-    reqPh: 'Escribe lo que te gustaría incluir', reqNote: 'Evalúo en el momento; si no es posible realizarlo, no cobro nada extra.',
-    pay: '¿Cómo pagarás el resto después?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Cobramos en el lugar; las tasas de cuotas te las informo antes por WhatsApp.',
-    optIn: 'Quiero recibir avisos de horarios libres y promociones por WhatsApp.',
+    reqConsent: 'Autorizo enviar este pedido solo para evaluación en WhatsApp. No queda guardado en el sitio.',
+    reqPh: 'Escribe qué te gustaría incluir', reqNote: 'Evalúo antes de confirmar; si no es posible hacerlo, no cobro nada extra.',
+    pay: '¿Cómo pagarás el resto después?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Llevo terminal de cobro; las tasas de cuotas te las paso antes por WhatsApp.',
+    optIn: 'Avísame por WhatsApp cuando se libere un horario o promoción.',
     ageA: 'Confirmo tener 18 años o más y acepto la', privacy: 'Política de Privacidad', terms: 'Términos', and: 'y', refund: 'Reglas de Cancelación',
-    sigA: 'Para bloquear este horario solo para ti, envía la señal de', sigB: 'vía Pix. El resto lo pagas solo después de salir de la camilla.', copyPix: 'Copiar clave Pix (CNPJ)', pixCopied: '¡Clave Pix copiada!',
-    send: 'Confirmar en WhatsApp', needPay: 'Elige cómo pagarás el resto', needAge: 'Confirma que tienes 18 años o más',
-    doneH: '¡Pedido listo!', doneP: 'Ahora solo envía el mensaje que se abrió en tu WhatsApp junto con el comprobante de los R$ 40 para bloquear tu hora.',
-    doneSig: 'Clave Pix (CNPJ):', resend: 'Abrir WhatsApp nuevamente', addCal: 'Guardar en mi agenda', restart: 'Hacer otra reserva',
+    sigA: 'Para bloquear este horario solo para ti, haz el Pix de señal de', sigB: 'El resto lo pagas solo después de la sesión.', copyPix: 'Copiar clave Pix (e-mail)', pixCopied: '¡Clave Pix copiada!',
+    send: 'Mandar pedido por WhatsApp', needPay: 'Elige cómo pagarás el resto', needAge: 'Confirma que tienes 18 años o más',
+    doneH: '¡Pedido listo!', doneP: 'Ahora solo envía el mensaje que se abrió en tu WhatsApp junto con el comprobante de los R$ 40 para bloquear tu horario.',
+    doneSig: 'Clave Pix (e-mail):', resend: 'Abrir WhatsApp nuevamente', addCal: 'Guardar en agenda', restart: 'Hacer otra reserva',
     chatQ: '¿Te quedó alguna duda antes de reservar?', chatBtn: 'Escríbeme directo al WhatsApp', chatMsg: '¡Hola Thalyson! Vi tu sitio y quería hacerte una consulta sobre el masaje.',
-    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atención directa, sin intermediarios', about1: 'Mi objetivo es simple: que entres cargado de tensión y salgas liviano, renovado y con la mente despejada. Sin guiones rígidos y respetando el ritmo de tu cuerpo.',
-    about2: 'Atiendo solo en suite privada en Bela Vista (cerca del metro Anhangabaú), con ducha caliente, toallas limpias y climatización.', seeProfile: 'Conocer mi trabajo',
-    faqH: 'Preguntas frecuentes',
-    q1: '¿Tengo que pagar antes?', a1: 'Solo R$ 40 de señal para asegurar tu horario. El resto lo pagas después de la sesión.',
-    q2: '¿Y si surge un imprevisto?', a2: 'Avisando hasta 12 horas antes, te devuelvo tus R$ 40 al instante o reprogramamos para el día que prefieras.',
-    q3: '¿Es discreto?', a3: 'Sí. No pedimos documento, correo ni teléfono en el sitio. La dirección exacta se envía solo tras confirmar.',
-    q4: '¿Puedo ducharme en el lugar?', a4: 'Sí, la suite cuenta con ducha caliente y toallas higienizadas para usar antes y después de la sesión.',
-    q5: '¿Y si me da vergüenza?', a5: 'Normal, casi todos sienten eso la 1ª vez. Antes de empezar charlamos y dices qué quieres y qué no. Puedes parar cuando quieras.',
+    revH: 'Quienes ya pasaron por aquí', revS: 'Comentarios reales de quienes vinieron a descansar a Bela Vista.', revBtn: 'Ver todas en Google',
+    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atención directa conmigo, sin intermediarios',
+    about1: 'Tengo 30 años, soy del interior de SP y atiendo en Bela Vista. Mi espacio no tiene lujo falso de clínica: es un ambiente reservado, limpio y silencioso para que desconectes del ritmo de São Paulo.',
+    about2: 'Suite individual cerca del Metro Anhangabaú, con ducha caliente, camilla de madera cómoda y toallas higienizadas.', seeProfile: 'Ver detalles del espacio',
+    faqH: 'Dudas directas',
+    q1: '¿Por qué hay señal de R$ 40?', a1: 'Como atiendo solo con hora marcada y cierro la agenda entera para ti, la señal asegura que el horario no quede vacío. Se descuenta del total y pagas el resto al final.',
+    q2: '¿Y si necesito reprogramar?', a2: 'Avisando hasta 12 horas antes, devuelvo tus R$ 40 por Pix al instante o cambio el día sin costo.',
+    q3: '¿Mis datos quedan guardados?', a3: 'No. No pido documento, correo ni registro en el sitio. Todo se coordina directo conmigo por WhatsApp y la dirección exacta va solo tras confirmar.',
+    q4: '¿Se puede duchar antes o después?', a4: 'Sí, hay ducha caliente y toallas limpias disponibles antes y después de la sesión.',
+    q5: 'Nunca fui a un masaje así y me da algo de vergüenza. ¿Está bien?', a5: 'Súper normal la primera vez. Charlamos 2 minutos antes de empezar, me dices qué prefieres y qué no, y todo va a tu ritmo.',
     footPrivacy: 'Privacidad', footTerms: 'Términos', footRefund: 'Cancelación', footCookies: 'Cookies', adults: 'Servicio exclusivo para mayores de 18 años.',
     close: 'Cerrar', theme: 'Cambiar color de pantalla', lang: 'Idioma', srLight: 'Cambiar a tema claro', srDark: 'Cambiar a tema oscuro', legalNote: 'Los documentos legales están en portugués, que es la versión vinculante.',
     profile: 'Sobre la atención', openProfile: 'Ver perfil de Thalyson', gm: 'Buenos días', ga: 'Buenas tardes', gn: 'Buenas noches',
-    pBul1: 'Charla rápida antes de empezar para saber dónde tu cuerpo pide más atención', pBul2: 'Horario exclusivo: no te cruzas con nadie al entrar ni al salir', pBul3: 'Suite reservada con ducha caliente, camilla cómoda y climatización',
+    pBul1: 'Charla rápida antes de empezar para alinear presión y preferencias',
+    pBul2: 'Horario exclusivo: no te cruzas con nadie al entrar ni al salir',
+    pBul3: 'Suite residencial reservada con ducha caliente y camilla cómoda',
     pHours: 'Horarios', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Pago', pPayV: 'Pix (3% de descuento), tarjeta hasta 12x o efectivo',
-    pWhere: 'Lugar', pWhereV: 'Bela Vista (cerca del metro Anhangabaú) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis avisando hasta 12h antes',
+    pWhere: 'Lugar', pWhereV: 'Bela Vista (cerca del Metro Anhangabaú) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis avisando hasta 12h antes',
     pForget: 'Borrar mis datos de este dispositivo', forgot: 'Listo, datos borrados.',
-    recommended: 'Más pedida hoy', smartSub: 'Qué bueno verte de nuevo. Elige tu horario para relajarte.', lastSlots: 'Últimos horarios libres para hoy',
+    recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy',
   },
 };
 
@@ -225,117 +263,256 @@ const PACKAGES: { id: string; price: number; min: number; combo: number; theme: 
   { id: 'classica', price: 180, min: 40, combo: 90, theme: 'sage', L: {
     pt: {
       title: 'Massagem Clássica',
-      tags: ['Alívio de dor', 'Sono melhor', 'Sem conversa forçada'],
-      desc: 'Pra quem chega com o corpo pesado: ombros duros, costas travadas, cabeça cheia. Em 40 minutos você sai mais leve, com o corpo solto e a mente mais quieta. É massagem de verdade, sem conotação sexual.',
-      flow: ['Você me conta onde dói ou pesa mais.', 'Mãos firmes nas costas, ombros, pescoço e pernas.', 'Pistola de massagem nos pontos mais travados.', 'Fecho em silêncio e calma, pra você sair devagar.'],
+      subtitle: 'Alívio físico direto para costas travadas, ombros e cansaço',
+      tags: ['Sem finalização', 'Creme neutro', 'Pistola massageadora'],
+      desc: 'Para quem chega com o corpo pesado de trabalho ou treino. Uso creme neutro com pressão firme nas mãos e finalizo com a pistola massageadora nos pontos mais duros para soltar a musculatura de verdade.',
+      flow: [
+        'Você me mostra onde está doendo ou mais travado.',
+        'Solto costas, ombros, pescoço e pernas com manobras firmes.',
+        'Passo a pistola massageadora nos nós musculares mais profundos.',
+        'Você sai com o corpo leve e sem tensão.',
+      ],
     },
     en: {
       title: 'Classic Massage',
-      tags: ['Pain relief', 'Better sleep', 'No forced small talk'],
-      desc: 'For a heavy body: stiff shoulders, locked back, crowded mind. In 40 minutes you walk out lighter, loose and quieter inside. Real therapeutic massage, no sexual connotation.',
-      flow: ['You tell me where it hurts or feels heavy.', 'Firm hands on back, shoulders, neck and legs.', 'Massage gun on the tightest knots.', 'Quiet, calm finish so you ease back slowly.'],
+      subtitle: 'Direct physical relief for stiff back, shoulders and fatigue',
+      tags: ['No intimate finish', 'Neutral cream', 'Massage gun'],
+      desc: 'For a body weighed down by work or workouts. I use neutral massage cream with firm hand pressure and finish with a massage gun on tight knots to release real tension.',
+      flow: [
+        'You show me where it hurts or feels tightest.',
+        'Firm strokes on back, shoulders, neck and legs.',
+        'Massage gun applied to deep muscle knots.',
+        'You leave feeling light and tension-free.',
+      ],
     },
     es: {
       title: 'Masaje Clásico',
-      tags: ['Alivio de dolor', 'Mejor sueño', 'Sin charla forzada'],
-      desc: 'Para quien llega con el cuerpo pesado: hombros duros, espalda trabada, mente llena. En 40 minutos sales más liviano, suelto y tranquilo. Masaje real, sin connotación sexual.',
-      flow: ['Me cuentas dónde duele o pesa más.', 'Manos firmes en espalda, hombros, cuello y piernas.', 'Pistola de masaje en los puntos más trabados.', 'Cierre en silencio y calma para salir despacio.'],
+      subtitle: 'Alivio físico directo para espalda trabada, hombros y cansancio',
+      tags: ['Sin finalización', 'Crema neutra', 'Pistola masajeadora'],
+      desc: 'Para quien llega con el cuerpo pesado del trabajo o entrenamiento. Uso crema neutra con presión firme manual y termino con pistola masajeadora en los puntos duros.',
+      flow: [
+        'Me muestras dónde duele o está más trabado.',
+        'Suelto espalda, hombros, cuello y piernas con maniobras firmes.',
+        'Paso la pistola masajeadora en los nudos profundos.',
+        'Sales con el cuerpo liviano y sin tensión.',
+      ],
     },
   } },
   { id: 'sensitiva', price: 220, min: 60, combo: 85, theme: 'amber', L: {
     pt: {
-      title: 'Sensitiva & Prazer',
-      tags: ['Relaxamento profundo', 'Toque lento', 'Termina com prazer'],
-      desc: 'Mais indicada pra quem quer desligar de vez. Começa soltando a tensão do corpo e vai ficando lenta, quente e delicada. Termina com massagem íntima (lingam), com todo o tempo do mundo. Você sai leve, calmo e dormindo bem.',
-      flow: ['Conversa rápida: seus limites e o que você gosta.', 'Massagem relaxante pra o corpo baixar a guarda.', 'Toques longos e suaves na pele toda, sem pressa.', 'Final com massagem íntima (lingam), no seu ritmo.'],
+      title: 'Sensitiva + Lingam',
+      subtitle: 'Desacelerar a mente e soltar o corpo inteiro sem pressa',
+      tags: ['Corpo todo', 'Toque lento', 'Inclui Lingam'],
+      desc: 'A mais pedida. Começo tirando a tensão das costas com creme neutro para você desligar da rotina. Depois mudo para toques lentos e contínuos pelo corpo todo com gel deslizante, terminando com a massagem lingam.',
+      flow: [
+        'Conversa rápida de 2 minutos para alinhar seu ritmo.',
+        'Relaxamento inicial nas costas e ombros para baixar a guarda.',
+        'Toques longos e suaves da cabeça aos pés com gel deslizante.',
+        'Finalização completa com massagem lingam, sem pressa.',
+      ],
     },
     en: {
-      title: 'Sensitive & Pleasure',
-      tags: ['Deep relaxation', 'Slow touch', 'Pleasure finish'],
-      desc: 'Best if you want to switch off completely. Starts by releasing tension and becomes slow, warm and delicate. Finishes with intimate massage (lingam), with all the time in the world.',
-      flow: ['Quick chat: your boundaries and what you enjoy.', 'Relaxing massage so your body lowers its guard.', 'Long, soft strokes across your skin, unhurried.', 'Finish with intimate massage (lingam), at your pace.'],
+      title: 'Sensitive + Lingam',
+      subtitle: 'Slow down your mind and unwind your whole body unhurried',
+      tags: ['Full body', 'Slow touch', 'Includes Lingam'],
+      desc: 'Most booked session. Starts by releasing back tension with neutral cream so you switch off. Then moves to slow, continuous strokes across your body with gliding gel, ending with lingam massage.',
+      flow: [
+        'Quick 2-minute chat to align your pace.',
+        'Initial back and shoulder work so your body relaxes.',
+        'Long, smooth strokes head-to-toe with gliding gel.',
+        'Complete lingam massage finish, unhurried.',
+      ],
     },
     es: {
-      title: 'Sensitiva & Placer',
-      tags: ['Relajación profunda', 'Toque lento', 'Termina con placer'],
-      desc: 'Ideal para desconectar por completo. Empieza soltando la tensión y se vuelve lenta, cálida y delicada. Termina con masaje íntimo (lingam), sin prisa.',
-      flow: ['Charla rápida: tus límites y lo que te gusta.', 'Masaje relajante para que el cuerpo baje la guardia.', 'Toques largos y suaves por toda la piel.', 'Final con masaje íntimo (lingam), a tu ritmo.'],
+      title: 'Sensitiva + Lingam',
+      subtitle: 'Desacelerar la mente y soltar todo el cuerpo sin prisa',
+      tags: ['Cuerpo completo', 'Toque lento', 'Incluye Lingam'],
+      desc: 'La más pedida. Empiezo quitando tensión de la espalda con crema neutra para desconectar. Luego paso a toques lentos y continuos con gel deslizante, cerrando con masaje lingam.',
+      flow: [
+        'Charla rápida de 2 minutos para alinear tu ritmo.',
+        'Relajación inicial en espalda y hombros.',
+        'Toques largos y suaves de pies a cabeza con gel deslizante.',
+        'Finalización completa con masaje lingam, sin prisa.',
+      ],
     },
   } },
   { id: 'fusion', price: 290, min: 60, combo: 75, theme: 'crimson', L: {
     pt: {
-      title: 'Sensações com a Barba',
-      tags: ['Sensação diferente', 'Naturista', 'Intensa'],
-      desc: 'Pra quem quer sentir algo que não conhece. A barba passando pela pele dá arrepio e contraste com as mãos. Ambos sem roupa, num clima solto. Termina com massagem íntima (lingam).',
-      flow: ['Sessão naturista: ambos à vontade, sem constrangimento.', 'Relaxamento com óleo morno pra o corpo soltar.', 'Barba e mãos alternando: arrepio, calor, contraste.', 'Final com massagem íntima (lingam).'],
+      title: 'Sensações com a Barba + Lingam',
+      subtitle: 'Sessão naturista com o contraste do toque da barba na pele',
+      tags: ['Naturista (ambos nus)', 'Toque da barba', 'Inclui Lingam'],
+      desc: 'Sessão naturista onde nós dois ficamos sem roupa para o contato ser direto. Alterno o deslizamento das mãos com o toque da minha barba percorrendo pescoço, costas e corpo todo, encerrando com a massagem lingam.',
+      flow: [
+        'Sessão naturista: ambos sem roupa, clima leve e respeitoso.',
+        'Massagem preparatória com gel deslizante para soltar o corpo.',
+        'Deslizamento da barba alternando com as mãos na pele.',
+        'Finalização com massagem lingam.',
+      ],
     },
     en: {
-      title: 'Beard Sensations',
-      tags: ['Different sensation', 'Naturist', 'Intense'],
-      desc: 'For a sensation you haven’t tried yet. Beard brushing the skin brings chills and contrast with the hands. Both unclothed, relaxed vibe. Finishes with intimate massage (lingam).',
-      flow: ['Naturist session: both at ease, no awkwardness.', 'Warm oil relaxation so your body lets go.', 'Beard and hands alternating: chills, warmth, contrast.', 'Finish with intimate massage (lingam).'],
+      title: 'Beard Sensations + Lingam',
+      subtitle: 'Naturist session with the contrast of beard contact on skin',
+      tags: ['Naturist (both unclothed)', 'Beard touch', 'Includes Lingam'],
+      desc: 'Naturist session where both of us are unclothed for direct skin contact. I alternate gliding hands with my beard brushing along your neck, back and body, ending with lingam massage.',
+      flow: [
+        'Naturist session: both unclothed, relaxed and respectful.',
+        'Preparatory massage with gliding gel.',
+        'Beard gliding alternating with hands across the skin.',
+        'Finish with lingam massage.',
+      ],
     },
     es: {
-      title: 'Sensaciones con Barba',
-      tags: ['Sensación distinta', 'Naturista', 'Intensa'],
-      desc: 'Para sentir algo nuevo. La barba rozando la piel da escalofríos y contraste con las manos. Ambos sin ropa, ambiente relajado. Termina con masaje íntimo (lingam).',
-      flow: ['Sesión naturista: ambos cómodos, sin incomodidad.', 'Relajación con aceite tibio para soltar el cuerpo.', 'Barba y manos alternando: calor y contraste.', 'Final con masaje íntimo (lingam).'],
+      title: 'Sensaciones con Barba + Lingam',
+      subtitle: 'Sesión naturista con el contraste del roce de la barba en la piel',
+      tags: ['Naturista (ambos sin ropa)', 'Toque de barba', 'Incluye Lingam'],
+      desc: 'Sesión naturista donde ambos estamos sin ropa para contacto directo. Alterno el deslizamiento de las manos con el roce de mi barba por cuello, espalda y cuerpo, cerrando con masaje lingam.',
+      flow: [
+        'Sesión naturista: ambos sin ropa, clima relajado y respetuoso.',
+        'Masaje preparatorio con gel deslizante.',
+        'Deslizamiento de la barba alternando con las manos en la piel.',
+        'Finalización con masaje lingam.',
+      ],
     },
   } },
   { id: 'completa', price: 390, min: 60, combo: 60, theme: 'midnight', L: {
     pt: {
-      title: 'Corpo a Corpo & Interação',
-      tags: ['Contato total', 'Você participa', 'Entrega completa'],
-      desc: 'A sessão mais completa. Sem barreiras: meu corpo desliza no seu com gel, e você pode tocar de volta. Pra quem quer proximidade de verdade, não só ser massageado. Termina com massagem íntima (lingam).',
-      flow: ['Conversa de limites: o que pode e o que não.', 'Massagem pra soltar o corpo todo.', 'Corpo a corpo com gel, pele com pele.', 'Você toca de volta, se quiser.', 'Final junto, com massagem íntima (lingam).'],
+      title: 'Corpo a Corpo + Lingam',
+      subtitle: 'Contato direto pele com pele e liberdade para você interagir',
+      tags: ['Sem barreiras', 'Você toca de volta', 'Inclui Lingam'],
+      desc: 'A sessão mais completa. Uso gel deslizante neutro para trabalhar meu corpo sobre o seu, sem barreiras, e você tem liberdade para tocar de volta e conduzir o ritmo junto comigo até a finalização lingam.',
+      flow: [
+        'Alinhamento rápido de limites para você ficar 100% à vontade.',
+        'Massagem corporal com gel deslizante neutro.',
+        'Contato corpo a corpo sem barreiras.',
+        'Liberdade para você tocar e participar até o final com lingam.',
+      ],
     },
     en: {
-      title: 'Body to Body & Interaction',
-      tags: ['Full contact', 'You participate', 'Complete surrender'],
-      desc: 'The most complete session. No barriers: my body glides over yours with gel, and you can touch back. For real closeness, not just being massaged. Finishes with intimate massage (lingam).',
-      flow: ['Boundaries chat: what’s okay and what isn’t.', 'Full-body massage to loosen up.', 'Body-to-body with gel, skin to skin.', 'You touch back, if you want.', 'Finish together with intimate massage (lingam).'],
+      title: 'Body to Body + Lingam',
+      subtitle: 'Direct skin-to-skin contact with freedom to interact',
+      tags: ['No barriers', 'Mutual touch', 'Includes Lingam'],
+      desc: 'The most complete session. Using neutral gliding gel, I work my body over yours without barriers, and you are free to touch back and guide the pace together through the lingam finish.',
+      flow: [
+        'Quick alignment on boundaries so you feel completely at ease.',
+        'Full-body massage with neutral gliding gel.',
+        'Body-to-body contact without barriers.',
+        'Freedom to touch back through the lingam finish.',
+      ],
     },
     es: {
-      title: 'Cuerpo a Cuerpo & Interacción',
-      tags: ['Contacto total', 'Tú participas', 'Entrega completa'],
-      desc: 'La sesión más completa. Sin barreras: mi cuerpo se desliza sobre el tuyo con gel y puedes tocar de vuelta. Para cercanía real. Termina con masaje íntimo (lingam).',
-      flow: ['Charla de límites: qué sí y qué no.', 'Masaje para soltar todo el cuerpo.', 'Cuerpo a cuerpo con gel, piel con piel.', 'Tocas de vuelta si quieres.', 'Final juntos con masaje íntimo (lingam).'],
+      title: 'Cuerpo a Cuerpo + Lingam',
+      subtitle: 'Contacto directo piel con piel y libertad para interactuar',
+      tags: ['Sin barreras', 'Tocas de vuelta', 'Incluye Lingam'],
+      desc: 'La sesión más completa. Uso gel deslizante neutro para trabajar mi cuerpo sobre el tuyo, sin barreras, con libertad para que toques de vuelta hasta el final lingam.',
+      flow: [
+        'Alineación rápida de límites para que estés cómodo.',
+        'Masaje corporal con gel deslizante neutro.',
+        'Contacto cuerpo a cuerpo sin barreras.',
+        'Libertad para tocar y participar hasta el final con lingam.',
+      ],
     },
   } },
   { id: 'aparo_solo', price: 130, min: 40, combo: 0, theme: 'slate', L: {
     pt: {
-      title: 'Apenas Depilação (Máquina)',
-      tags: ['Rápido', 'Limpo', 'Discreto'],
-      desc: 'Aparo com máquina em até 3 áreas do corpo. Rápido, higiênico e discreto. Você sai com a pele alinhada e sem irritação.',
-      flow: ['Você diz o que quer aparar e o quanto.', 'Aparo com máquina e pente.', 'Acabamento limpo.'],
+      title: 'Apenas Aparo de Pelos',
+      subtitle: 'Higiene e visual alinhado na máquina sem irritar a pele',
+      tags: ['Até 3 regiões', 'Máquina e pentes', 'Rápido e discreto'],
+      desc: 'Atendimento rápido e discreto para deixar o corpo alinhado. Faço o aparo na máquina com pentes higienizados em até 3 regiões à sua escolha, sem lâmina para não irritar.',
+      flow: [
+        'Você escolhe as áreas e a altura do pente.',
+        'Aparo cuidadoso na máquina higienizada.',
+        'Acabamento limpo e rápido.',
+      ],
     },
     en: {
-      title: 'Trimming Only (Clipper)',
-      tags: ['Quick', 'Clean', 'Discreet'],
-      desc: 'Machine trimming on up to 3 body areas. Fast, hygienic and discreet. Clean finish without skin irritation.',
-      flow: ['You say what you want trimmed and how short.', 'Trimming with clipper and guard.', 'Clean finish.'],
+      title: 'Body Trimming Only',
+      subtitle: 'Clean, neat grooming with clipper and guards without razor burn',
+      tags: ['Up to 3 areas', 'Clipper & guards', 'Fast & discreet'],
+      desc: 'Quick, discreet grooming to keep things neat. Machine trimming with sanitized guards on up to 3 body areas of your choice, no razor irritation.',
+      flow: [
+        'You choose the areas and guard length.',
+        'Careful trimming with sanitized clipper.',
+        'Clean, quick finish.',
+      ],
     },
     es: {
-      title: 'Solo Depilación (Máquina)',
-      tags: ['Rápido', 'Limpio', 'Discreto'],
-      desc: 'Recorte a máquina en hasta 3 zonas del cuerpo. Rápido, higiénico y discreto. Piel prolija y sin irritación.',
-      flow: ['Dices qué quieres recortar y cuánto.', 'Recorte con máquina y peine.', 'Acabado limpio.'],
+      title: 'Solo Recorte de Vello',
+      subtitle: 'Higiene y prolijidad a máquina sin irritar la piel',
+      tags: ['Hasta 3 zonas', 'Máquina y peines', 'Rápido y discreto'],
+      desc: 'Atención rápida y discreta para dejar el cuerpo prolijo. Recorte a máquina con peines higienizados en hasta 3 zonas a elección, sin cuchilla para no irritar.',
+      flow: [
+        'Eliges las zonas y el largo del peine.',
+        'Recorte cuidadoso con máquina higienizada.',
+        'Acabado limpio y rápido.',
+      ],
     },
   } },
 ];
+
+const REVIEWS: Record<Lang, { name: string; tag: string; text: string }[]> = {
+  pt: [
+    {
+      name: 'Rafael M.',
+      tag: 'Sensitiva + Lingam',
+      text: 'Fui meio travado por ser a primeira vez, mas o Thalyson deixa tudo muito natural. Ambiente limpo, sem pressa nenhuma e saí de lá renovado.',
+    },
+    {
+      name: 'Lucas T.',
+      tag: 'Massagem Clássica',
+      text: 'Trabalho o dia inteiro sentado e estava com o pescoço travado. A mão dele é firme na medida certa e a pistola massageadora salvou minhas costas.',
+    },
+    {
+      name: 'Bruno S.',
+      tag: 'Sensações com a Barba',
+      text: 'Local super discreto pertinho do metrô Anhangabaú, fácil de chegar e ducha quente ótima. Atendimento direto e sem enrolação.',
+    },
+  ],
+  en: [
+    {
+      name: 'Rafael M.',
+      tag: 'Sensitive + Lingam',
+      text: 'Went in a bit nervous for my first time, but Thalyson makes everything feel natural. Clean space, zero rush and walked out completely recharged.',
+    },
+    {
+      name: 'Lucas T.',
+      tag: 'Classic Massage',
+      text: 'I sit at a desk all day and my neck was locked up. Firm pressure in the right spots and the massage gun saved my back.',
+    },
+    {
+      name: 'Bruno S.',
+      tag: 'Beard Sensations',
+      text: 'Very discreet spot right by Anhangabaú metro, easy to reach with a great hot shower. Direct, honest service.',
+    },
+  ],
+  es: [
+    {
+      name: 'Rafael M.',
+      tag: 'Sensitiva + Lingam',
+      text: 'Fui algo nervioso por ser la primera vez, pero Thalyson hace todo muy natural. Lugar limpio, sin prisa y salí renovado.',
+    },
+    {
+      name: 'Lucas T.',
+      tag: 'Masaje Clásico',
+      text: 'Trabajo todo el día sentado y tenía el cuello trabado. Presión firme justa y la pistola masajeadora me salvó la espalda.',
+    },
+    {
+      name: 'Bruno S.',
+      tag: 'Sensaciones con Barba',
+      text: 'Lugar súper discreto cerca del metro Anhangabaú, fácil de llegar y muy buena ducha caliente. Atención directa y sin vueltas.',
+    },
+  ],
+};
+
 const MASSAGES = PACKAGES.filter((p) => p.combo > 0);
-const PAY_PT: Record<string, string> = { pix: 'PIX', card: 'CARTÃO', cash: 'DINHEIRO' };
+const PAY_PT: Record<string, string> = { pix: 'PIX (-3%)', card: 'CARTÃO', cash: 'DINHEIRO' };
 const THEME_RGB: Record<PkgTheme, { dark: string; light: string }> = {
-  sage: { dark: '94, 184, 140', light: '43, 76, 59' },
+  sage: { dark: '94, 184, 140', light: '30, 83, 63' },
   amber: { dark: '235, 157, 75', light: '143, 90, 26' },
   crimson: { dark: '224, 102, 92', light: '140, 59, 50' },
   midnight: { dark: '171, 142, 204', light: '61, 43, 76' },
-  slate: { dark: '148, 163, 184', light: '90, 100, 110' },
+  slate: { dark: '148, 163, 184', light: '75, 85, 99' },
 };
 
-/* ================================================================== */
-/*  DOCUMENTOS LEGAIS                                                  */
-/* ================================================================== */
 const P = ({ children }: { children: ReactNode }) => <p className="mb-3">{children}</p>;
 const H = ({ children }: { children: ReactNode }) => <h3 className="font-semibold mt-5 mb-2 c-ink">{children}</h3>;
 const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
@@ -367,20 +544,17 @@ const DOCS: Record<DocId, { title: string; body: ReactNode }> = {
     <H>5. Pedido específico</H><P>Se o pedido for considerado inviável, a taxa correspondente não é cobrada.</P></>) },
   cookies: { title: 'Cookies e armazenamento local', body: (<>
     <P>Este site não usa cookies de publicidade nem ferramentas de análise ou rastreamento (como Google Analytics ou Meta Pixel).</P>
-    <H>Estritamente necessário</H><P>Guardamos no navegador (localStorage) apenas suas preferências de tema e idioma, a confirmação de maioridade e a lembrança de que você já agendou antes (para não repetir o desconto de primeira sessão). Não identificam você. Nome e endereço não são guardados. Você pode apagar tudo em “Limpar meus dados deste aparelho”, no perfil.</P>
+    <H>Estritamente necessário</H><P>Guardamos no navegador (localStorage) apenas suas preferências de tema e idioma, a confirmação de maioridade e a lembrança de que você já agendou antes (para não repetir o desconto de primeira sessão). Não identificam você. Nome e endereço não são guardados. Você pode apagar tudo em “Apagar meus dados deste aparelho”, no perfil.</P>
     <P>Se no futuro ativarmos qualquer ferramenta de análise ou marketing, ela só carregará depois do seu consentimento.</P></>) },
 };
 
-/* ================================================================== */
-/*  UTILITÁRIOS                                                        */
-/* ================================================================== */
 const cn = (...a: Array<string | false | null | undefined>) => a.filter(Boolean).join(' ');
 const money = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;
-const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate?.(p); } catch { /* sem suporte */ } };
+const vibrate = (p: number | number[] = 20) => { try { navigator.vibrate?.(p); } catch { /* */ } };
 const store = {
   get: (k: string): string | null => { try { return localStorage.getItem(k); } catch { return null; } },
-  set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* ignorado */ } },
-  del: (k: string) => { try { localStorage.removeItem(k); } catch { /* ignorado */ } },
+  set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* */ } },
+  del: (k: string) => { try { localStorage.removeItem(k); } catch { /* */ } },
 };
 const clean = (t: string) => t.replace(/[*_~`\r\n]+/g, ' ').trim();
 const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
@@ -402,9 +576,6 @@ function buildSlots(date: Date, dur: number, isHome: boolean, now: Date): Slot[]
   return out;
 }
 
-/* ================================================================== */
-/*  NARRAÇÃO EM ÁUDIO                                                  */
-/* ================================================================== */
 type NarrState = 'idle' | 'playing' | 'paused';
 const MALE_RE = /(felipe|daniel|ant[oô]nio|ricardo|jorge|diego|pablo|raul|enrique|carlos|david|thiago|donato|george|\bmark\b|\bfred\b|\balex\b|\bmale\b|masculin|homem)/i;
 const FEMALE_RE = /(female|feminin|mulher|francisca|luciana|maria|fernanda|joana|camila|vit[oó]ria|paulina|m[oó]nica|helena|laura|samantha|zira|susan|google)/i;
@@ -498,9 +669,6 @@ function useNarrator(lang: Lang) {
   return { supported, state, activeId, male: choice.male, toggle, stop };
 }
 
-/* ================================================================== */
-/*  ÍCONES, AVATAR E ANIMAÇÕES                                         */
-/* ================================================================== */
 const ICONS = {
   instagram: 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z M17.5 6.5h.01 M2 8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8z',
   shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
@@ -521,6 +689,7 @@ const ICONS = {
   play: 'M5 3l14 9-14 9V3z',
   pause: 'M6 4h4v16H6z M14 4h4v16h-4z',
   stop: 'M6 6h12v12H6z',
+  tag: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z M7 7h.01',
 };
 type IconName = keyof typeof ICONS;
 const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?: number; className?: string }) => (
@@ -560,9 +729,6 @@ function Title({ children, as = 'h2', className = '', style, id }: { children: s
   );
 }
 
-/* ================================================================== */
-/*  COMPONENTES UI                                                     */
-/* ================================================================== */
 type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean };
 function Button({ asChild, className, children, type, ...rest }: BtnProps) {
   if (asChild && isValidElement(children)) {
@@ -629,7 +795,7 @@ function Modal({ title, onClose, closeLabel, children }: { title: string; onClos
     return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prevOverflow; prevFocus?.focus(); };
   }, []);
   return (
-    <div className="fixed inset-0 flex items-end sm:items-center justify-center sm:p-4" style={{ background: 'rgba(8,6,12,.72)', zIndex: 150 }} onClick={() => closeRef.current()}>
+    <div className="fixed inset-0 flex items-end sm:items-center justify-center sm:p-4" style={{ background: 'rgba(8,6,12,.74)', zIndex: 150 }} onClick={() => closeRef.current()}>
       <div ref={ref} role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={(e) => e.stopPropagation()} className="card-ui modal-card w-full flex flex-col rise">
         <div className="flex justify-between items-center gap-4 p-5 bd-line" style={{ borderBottom: '1px solid var(--line)' }}>
           <h2 id="modal-title" className="serif text-xl">{title}</h2>
@@ -670,13 +836,10 @@ const SocialButtons = ({ reviewsLabel, grid = false }: { reviewsLabel: string; g
   </div>
 );
 
-/* ================================================================== */
-/*  CSS                                                                */
-/* ================================================================== */
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Manrope:wght@400..800&display=swap');
-.app{--bg:#F9F8F6;--surf:#FFFFFF;--surf2:#F2EFEB;--ink:#1C1A17;--mute:#6B655C;--line:rgba(28,26,23,.12);--acc:#1C1A17;--onacc:#FFFFFF;--rg:rgba(28,26,23,.22);--ok:#1E533F;--warn:#8F5A1A;--err:#C2334D}
-.app[data-theme=dark]{--bg:#141312;--surf:#1D1B1A;--surf2:#2A2725;--ink:#F2EFEB;--mute:#A19A90;--line:rgba(242,239,235,.12);--acc:#F2EFEB;--onacc:#141312;--rg:rgba(242,239,235,.28);--ok:#50A684;--warn:#E6A15C;--err:#FF8A9B}
+.app{--bg:#F9F8F6;--surf:#FFFFFF;--surf2:#EFECE6;--ink:#161412;--mute:#57524A;--line:rgba(22,20,18,.15);--acc:#161412;--onacc:#FFFFFF;--rg:rgba(22,20,18,.24);--ok:#145A3E;--warn:#8A4B08;--err:#B81D3A}
+.app[data-theme=dark]{--bg:#121110;--surf:#1C1A19;--surf2:#282523;--ink:#F5F2EE;--mute:#B0A99E;--line:rgba(245,242,238,.15);--acc:#F5F2EE;--onacc:#121110;--rg:rgba(245,242,238,.3);--ok:#5EC49B;--warn:#F0AA5E;--err:#FF8A9B}
 .app{background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;font-size:17px;line-height:1.55;min-height:100vh;min-height:100dvh;overflow-x:clip;transition:background .3s,color .3s;overflow-wrap:break-word;word-break:normal;hyphens:manual;text-wrap:pretty;-webkit-text-size-adjust:100%}
 .app h1,.app h2,.app h3{text-wrap:balance;word-break:normal;hyphens:manual}
 .app .text-sm{font-size:15.5px}.app .text-xs{font-size:13.5px}
@@ -684,13 +847,13 @@ const CSS = `
 .serif{font-family:'Fraunces',Georgia,serif;font-optical-sizing:auto}
 .c-mute{color:var(--mute)}.c-ink{color:var(--ink)}.c-ok{color:var(--ok)}.c-warn{color:var(--warn)}
 .bg-s2{background:var(--surf2)}.bd-line{border-color:var(--line)}
-.err{font-size:14px;color:var(--err);margin-top:8px}
+.err{font-size:14px;color:var(--err);margin-top:8px;font-weight:600}
 .skip{position:absolute;left:-9999px;top:8px;z-index:300;background:var(--acc);color:var(--onacc);padding:12px 20px;border-radius:999px;font-weight:700}
 .skip:focus{position:fixed;left:12px}
 
-.card-ui{background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.03)}
+.card-ui{background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.04)}
 .app[data-theme=dark] .card-ui{box-shadow:none}
-.card-flat{border:none;background:var(--surf2)}
+.card-flat{border:1px solid var(--line);background:var(--surf2)}
 .modal-card{max-width:32rem;max-height:90vh;max-height:90dvh;border-radius:28px 28px 0 0}
 @media(min-width:640px){.modal-card{border-radius:28px}}
 
@@ -711,13 +874,17 @@ const CSS = `
 .btn-icon{min-height:44px;min-width:44px;width:44px;padding:0;border:none}
 .btn-ghost{background:transparent;border:none;min-height:auto;padding:4px;justify-content:flex-start;border-radius:14px;font-weight:500}
 
-.lnk-ui{display:inline;background:none;border:0;padding:0;font:inherit;font-weight:600;color:var(--ink);text-decoration:underline;text-underline-offset:4px;cursor:pointer;text-align:left;overflow-wrap:break-word}
+.coupon-pill{display:inline-flex;align-items:center;gap:6px;min-height:42px;padding:6px 14px;border-radius:999px;border:1.5px dashed var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok);font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s,background .2s}
+.coupon-pill:hover{background:color-mix(in srgb,var(--ok) 20%,transparent)}
+.coupon-pill:active{transform:scale(.97)}
+
+.lnk-ui{display:inline;background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:4px;cursor:pointer;text-align:left;overflow-wrap:break-word}
 .lnk-block{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:44px;padding:0 8px;text-align:center}
-.lnk-mute{color:var(--mute);font-weight:500;font-size:14px}
+.lnk-mute{color:var(--mute);font-weight:600;font-size:14px}
 .lnk-left{justify-content:flex-start;padding:0}
 .lnk-full{display:flex;width:100%}
 
-.inp-ui{display:block;width:100%;min-height:56px;padding:0 18px;border-radius:16px;background:var(--surf);border:1px solid var(--line);color:var(--ink);font-size:17px;transition:border-color .2s,box-shadow .2s}
+.inp-ui{display:block;width:100%;min-height:56px;padding:0 18px;border-radius:16px;background:var(--surf);border:1.5px solid var(--line);color:var(--ink);font-size:17px;transition:border-color .2s,box-shadow .2s}
 .inp-ui::placeholder{color:var(--mute)}
 .inp-ui:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--rg)}
 .inp-ui:disabled{opacity:.5}
@@ -729,24 +896,24 @@ const CSS = `
 .chk-ui{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0;margin-top:2px;padding:0;border:2px solid var(--mute);border-radius:6px;background:var(--surf);color:var(--onacc);cursor:pointer;transition:background .15s,border-color .15s}
 .chk-ui[aria-checked=true]{background:var(--acc);border-color:var(--acc)}
 .chk-mid{margin-top:0}
-.chk-ui:focus-visible,.btn-ui:focus-visible,.lnk-ui:focus-visible,.app a:focus-visible,.app button:focus-visible,.app summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.chk-ui:focus-visible,.btn-ui:focus-visible,.coupon-pill:focus-visible,.lnk-ui:focus-visible,.app a:focus-visible,.app button:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 
-.chip-ui{position:relative;display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px 12px;border:1px solid var(--line);border-radius:18px;background:var(--surf);color:var(--ink);text-align:center;cursor:pointer;transition:background .2s,color .2s,border-color .2s;font-weight:600;font-size:16px;line-height:1.2;text-wrap:balance}
+.chip-ui{position:relative;display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px 12px;border:1.5px solid var(--line);border-radius:18px;background:var(--surf);color:var(--ink);text-align:center;cursor:pointer;transition:background .2s,color .2s,border-color .2s;font-weight:700;font-size:16px;line-height:1.2;text-wrap:balance}
 .chip-ui.col{flex-direction:column}
-.chip-ui.on{background:var(--acc);color:var(--onacc);border-color:var(--acc);font-weight:700}
-.chip-ui.off{opacity:.4;text-decoration:line-through;cursor:not-allowed}
+.chip-ui.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.chip-ui.off{opacity:.42;text-decoration:line-through;cursor:not-allowed}
 .chip-ui:has(input:focus-visible),.opt-ui:has(input:focus-visible){outline:2px solid var(--acc);outline-offset:3px}
-.opt-ui{display:block;border-radius:22px;padding:20px;background:var(--surf);cursor:pointer;border:1px solid var(--line);transition:border-color .2s,background .2s}
+.opt-ui{display:block;border-radius:22px;padding:20px;background:var(--surf);cursor:pointer;border:1.5px solid var(--line);transition:border-color .2s,background .2s}
 .opt-ui.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);background:var(--surf2)}
-.pkg-ui{overflow:hidden;border-radius:22px;border:1px solid var(--line);background:var(--surf);transition:border-color .2s,background .2s}
-.pkg-head{display:block;cursor:pointer;padding:18px 20px}
+.pkg-ui{overflow:hidden;border-radius:22px;border:1.5px solid var(--line);background:var(--surf);transition:border-color .2s,background .2s}
+.pkg-head{display:block;cursor:pointer;padding:20px}
 .pkg-head:has(input:focus-visible){outline:2px solid var(--acc);outline-offset:-3px}
 
-.badge-ui{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:800;line-height:1.2;text-align:center}
-.badge-rec{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.badge-ui{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:800;line-height:1.2;text-align:center}
+.badge-rec{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em}
 .sep-ui{height:1px;background:var(--line);width:100%}
 
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surf)}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;padding:3px;background:var(--surf)}
 .seg button{min-height:40px;min-width:44px;padding:0 8px;border-radius:999px;font-size:12.5px;font-weight:800;color:var(--mute)}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
 .brand{display:none}
@@ -754,7 +921,7 @@ const CSS = `
 .g-2,.g-3{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:420px){.g-2{grid-template-columns:1fr 1fr}.g-3{grid-template-columns:repeat(3,1fr)}}
 
-.glow{position:absolute;top:-6%;right:-30%;width:min(95vw,640px);aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 15%,transparent),transparent 66%);animation:drift 14s ease-in-out infinite}
+.glow{position:absolute;top:-6%;right:-30%;width:min(95vw,640px);aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 14%,transparent),transparent 66%);animation:drift 14s ease-in-out infinite}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:pulse 2.6s ease-out infinite}
 .stepn{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;border:1.5px solid var(--line);color:var(--mute);transition:all .3s}
 .stepn.ok{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
@@ -768,7 +935,7 @@ const CSS = `
 .ttl .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.15em;margin-bottom:-.15em}
 .ttl .w>span{display:inline-block;transform:translateY(108%);opacity:0;transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity .8s ease}
 .ttl.in .w>span{transform:none;opacity:1}
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
 .faq-btn{width:100%;min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-weight:700;text-align:left;background:transparent;border:0;color:var(--ink);font-size:inherit}
 .faq-icon{font-size:24px;color:var(--acc);transition:transform .2s;flex-shrink:0;line-height:1}
 .faq-icon.open{transform:rotate(45deg)}
@@ -788,9 +955,6 @@ interface Booking {
   date: Date | null; time: string; req: string; payment: string; packageId: string; addTime: boolean;
 }
 
-/* ================================================================== */
-/*  APP                                                                */
-/* ================================================================== */
 export default function App() {
   const [lang, setLang] = useState<Lang>(() => {
     const s = store.get('thaly_lang');
@@ -847,7 +1011,7 @@ export default function App() {
 
   useEffect(() => {
     let reduce = false;
-    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* ignorado */ }
+    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* */ }
     const id = setTimeout(() => {
       if (store.get('thaly_onboard_final') === 'yes') { setAgeOk(true); setPhase('site'); } else setPhase('welcome');
     }, reduce ? 800 : 2600);
@@ -887,6 +1051,15 @@ export default function App() {
     const hour = now.getHours();
     return day === 1 || (hour >= 9 && hour < 13) ? 'classica' : 'sensitiva';
   }, [now]);
+
+  const getVisualPrice = useCallback((basePrice: number) => {
+    let disc = 0;
+    if (coupon.applied) disc = coupon.value < 1 ? Math.floor(basePrice * coupon.value) : coupon.value;
+    else if (!isReturning) disc = C.FIRST;
+    const finalPrice = Math.max(0, basePrice - disc);
+    const pixPrice = finalPrice - Math.ceil(finalPrice * C.PIX_DISC);
+    return { finalPrice, disc, pixPrice };
+  }, [coupon.applied, coupon.value, isReturning]);
 
   const invoice = useMemo(() => {
     let dur = pkg.min;
@@ -949,13 +1122,25 @@ export default function App() {
   };
   const step3Valid = !errors.name && !!data.date && !!data.time && !errors.address;
 
-  const applyCoupon = () => {
-    const code = coupon.input.trim().toUpperCase().slice(0, 30);
+  const selectCouponCode = (rawCode: string) => {
+    const code = rawCode.trim().toUpperCase().slice(0, 30);
     if (!code) return;
     const v = C.COUPONS[code] || 0;
-    if (v > 0) { vibrate([20, 40]); setCoupon({ input: '', applied: code, value: v, error: '' }); showToast(t('couponOk')); }
-    else { vibrate(50); setCoupon((c) => ({ ...c, error: t('couponBad') })); }
+    if (v > 0) {
+      vibrate([20, 40]);
+      setCoupon({ input: '', applied: code, value: v, error: '' });
+      showToast(`${t('couponOk')} (${code})`);
+    } else {
+      vibrate(50);
+      setCoupon((c) => ({ ...c, error: t('couponBad') }));
+    }
   };
+
+  const clearCoupon = () => {
+    vibrate(10);
+    setCoupon({ input: '', applied: '', value: 0, error: '' });
+  };
+
   const copyPix = async () => { const ok = await copyText(C.PIX_KEY); showToast(ok ? t('pixCopied') : `Pix: ${C.PIX_KEY}`); };
 
   const handleCep = async (val: string) => {
@@ -986,6 +1171,7 @@ export default function App() {
     if (aparoOn) extras.push('com aparo de pelos');
     if (data.addTime) extras.push('+30 min');
     if (isPack) extras.push('pacote 5 sessões');
+    if (coupon.applied && !isPack) extras.push(`cupom ${coupon.applied}`);
     const extraTxt = extras.length ? ` (${extras.join(', ')})` : '';
     const locTxt = isHome
       ? `No meu endereço: ${clean(data.street)}, ${clean(data.number)}${data.comp ? ' - ' + clean(data.comp) : ''} - ${clean(data.bairro)}`
@@ -997,7 +1183,7 @@ export default function App() {
     m += `• *Onde:* ${locTxt}\n`;
     m += `• *Total:* ${money(invoice.total)} (${PAY_PT[data.payment] || data.payment})\n`;
     if (hasReq) m += `• *Pedido:* ${clean(data.req)}\n`;
-    m += `\nJá vou fazer o Pix do sinal de *${money(invoice.sinal)}* e te mando o comprovante aqui para confirmar.`;
+    m += `\nJá vou fazer o Pix do sinal de *${money(invoice.sinal)}* na chave *${C.PIX_KEY}* e te mando o comprovante aqui.`;
     return waLink(m);
   };
 
@@ -1007,7 +1193,7 @@ export default function App() {
     const startDateTime = `${day}T${data.time.replace(':', '')}00`;
     const endDateTime = `${day}T${fromMin(toMin(data.time) + invoice.dur).replace(':', '')}00`;
     const text = encodeURIComponent(`Massagem: ${pkg.L.pt.title} - Thalyson`);
-    const details = encodeURIComponent(`Sinal de ${money(invoice.sinal)} via Pix. Restante: ${money(invoice.rest)}.`);
+    const details = encodeURIComponent(`Sinal de ${money(invoice.sinal)} via Pix (${C.PIX_KEY}). Restante: ${money(invoice.rest)}.`);
     const location = encodeURIComponent(isHome ? `${data.street}, ${data.number} - ${data.bairro}, São Paulo` : 'Bela Vista, São Paulo - SP');
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${startDateTime}/${endDateTime}&details=${details}&location=${location}&ctz=America/Sao_Paulo`;
   };
@@ -1029,7 +1215,7 @@ export default function App() {
     setSentLink(link); vibrate([30, 50]);
     const w = window.open(link, '_blank');
     if (!w) window.location.href = link;
-    else { try { w.opener = null; } catch { /* ignorado */ } }
+    else { try { w.opener = null; } catch { /* */ } }
     setDone(true);
     scrollToRef(bookRef, 60);
   };
@@ -1062,6 +1248,7 @@ export default function App() {
   const chatLink = waLink(t('chatMsg'));
   const nextLabel = nextFree ? `${nextFree.k === 0 ? t('today') : nextFree.k === 1 ? t('tomorrow') : fmt(nextFree.d, { weekday: 'long' })} ${nextFree.t}` : '';
   const minMassagePrice = useMemo(() => Math.min(...MASSAGES.map((p) => p.price)), []);
+  const minVisual = getVisualPrice(minMassagePrice);
 
   const renderAge = (id: string) => (
     <div className="flex items-start gap-3 text-sm leading-relaxed">
@@ -1073,7 +1260,6 @@ export default function App() {
     </div>
   );
 
-  /* ---------------------------- Carregando ---------------------------- */
   if (phase === 'loading') {
     return (
       <div className="app flex flex-col items-center justify-center px-6 text-center" data-theme={theme} role="status" aria-live="polite" aria-busy="true">
@@ -1089,7 +1275,6 @@ export default function App() {
     );
   }
 
-  /* ------------------------------ Página ------------------------------ */
   return (
     <div className="app" data-theme={theme} style={{ paddingBottom: showBar ? 96 : 24 }}>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
@@ -1098,7 +1283,7 @@ export default function App() {
 
       <a href="#main" className="skip">{t('skip')}</a>
 
-      <header className="sticky top-0" style={{ zIndex: 50, background: 'color-mix(in srgb,var(--bg) 88%,transparent)', backdropFilter: 'blur(14px)', borderBottom: '1px solid var(--line)', paddingTop: 'env(safe-area-inset-top)' }}>
+      <header className="sticky top-0" style={{ zIndex: 50, background: 'color-mix(in srgb,var(--bg) 90%,transparent)', backdropFilter: 'blur(14px)', borderBottom: '1px solid var(--line)', paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between gap-2">
           <Button onClick={() => { vibrate(10); setProfileOpen(true); }} aria-label={t('openProfile')} aria-haspopup="dialog" className="btn-ui btn-ghost min-w-0 gap-3">
             <Avatar className="w-11 h-11 rounded-full" alt="" />
@@ -1136,7 +1321,6 @@ export default function App() {
         )}
 
         {phase === 'site' && (<>
-          {/* Hero */}
           <section className="relative pt-14 pb-16 flex flex-col justify-center" style={{ minHeight: 'calc(100svh - 76px)' }}>
             <div className="glow" aria-hidden="true" />
             <div className="relative">
@@ -1155,12 +1339,18 @@ export default function App() {
                 {nextFree && (
                   <p className="flex items-center gap-3 text-sm c-mute"><span className="dot" aria-hidden="true" /><span>{t('nextFree')}: <strong className="c-ink">{nextLabel}</strong></span></p>
                 )}
-                <p className="text-sm mt-1 c-mute">{t('fromM')} {money(minMassagePrice)}</p>
+                <p className="text-sm mt-1 c-mute">
+                  {t('fromM')}{' '}
+                  {minVisual.disc > 0 ? (
+                    <><s className="opacity-70">{money(minMassagePrice)}</s> <strong className="c-ok">{money(minVisual.finalPrice)}</strong></>
+                  ) : (
+                    <strong className="c-ink">{money(minMassagePrice)}</strong>
+                  )}
+                </p>
               </Reveal>
             </div>
           </section>
 
-          {/* Garantias */}
           <Reveal className="mb-24">
             <ul className="grid sm:grid-cols-3 gap-5" aria-label={t('guar')}>
               {([['t1', 'lock'], ['t2', 'shield'], ['t3', 'star']] as [string, IconName][]).map(([k, ic]) => (
@@ -1169,7 +1359,6 @@ export default function App() {
             </ul>
           </Reveal>
 
-          {/* Ofertas */}
           <section className="mb-28" aria-labelledby="off">
             <Title id="off" className="text-[34px] md:text-[44px] mb-3">{t('offH')}</Title>
             <Reveal delay={120}><p className="mb-8 c-mute">{t('offS')}</p></Reveal>
@@ -1189,7 +1378,6 @@ export default function App() {
             </div>
           </section>
 
-          {/* Agendamento */}
           <section ref={bookRef} className="scroll-mt-20 mb-28" aria-label={t('cta')}>
             {done ? (
               <Reveal>
@@ -1214,48 +1402,69 @@ export default function App() {
               </Reveal>
             ) : (
               <div className="space-y-24">
-                {/* 1. Sessão */}
                 <div>
                   <StepHead n={1} title={t('s1')} done={chosen} />
-                  <RadioGroup value={data.packageId} onValueChange={pickPkg} aria-label={t('s1')} className="grid gap-3 md:grid-cols-2">
+                  <RadioGroup value={data.packageId} onValueChange={pickPkg} aria-label={t('s1')} className="grid gap-4 md:grid-cols-2">
                     {PACKAGES.map((p, i) => {
                       const on = data.packageId === p.id;
                       const L = p.L[lang];
-                      const isRec = p.id === recommendedPkgId && !chosen;
+                      const isRec = p.id === recommendedPkgId;
                       const rgb = THEME_RGB[p.theme][theme];
                       const mine = narr.activeId === p.id;
                       const playing = mine && narr.state === 'playing';
                       const paused = mine && narr.state === 'paused';
-                      const narrText = `${L.title}. ${L.desc} ${t('flowH')}: ${L.flow.join(' ')}`;
+                      const vp = getVisualPrice(p.price);
+                      const narrText = `${L.title}. ${L.subtitle}. ${L.desc} ${t('flowH')}: ${L.flow.join(' ')}`;
                       return (
                         <Reveal key={p.id} delay={(i % 2) * 80} className={on ? 'md:col-span-2' : ''}>
                           <div
                             className="pkg-ui"
                             style={{
-                              borderColor: on ? `rgb(${rgb})` : isRec ? `rgba(${rgb}, 0.5)` : undefined,
-                              boxShadow: on ? `0 0 0 1px rgb(${rgb})` : isRec ? `0 0 0 1px rgba(${rgb}, 0.3)` : undefined,
-                              backgroundColor: on ? `rgba(${rgb}, 0.05)` : isRec ? `rgba(${rgb}, 0.03)` : undefined,
+                              borderColor: on ? `rgb(${rgb})` : isRec ? `rgba(${rgb}, 0.55)` : undefined,
+                              boxShadow: on ? `0 0 0 1px rgb(${rgb})` : isRec ? `0 0 0 1px rgba(${rgb}, 0.25)` : undefined,
+                              backgroundColor: on ? `rgba(${rgb}, 0.06)` : isRec ? `rgba(${rgb}, 0.03)` : undefined,
                             }}
                           >
                             <Label className="pkg-head">
                               <RadioGroupItem value={p.id} />
-                              {isRec && <span className="badge-rec"><Icon name="sparkle" size={12} /> {t('recommended')}</span>}
-                              <span className="flex justify-between items-baseline gap-4">
-                                <span className="serif text-[22px] leading-tight">{L.title}</span>
-                                <span className="serif text-[22px] shrink-0 font-semibold" style={{ color: on || isRec ? `rgb(${rgb})` : 'var(--acc)' }}>{money(p.price)}</span>
-                              </span>
-                              <span className="block text-sm mt-1 c-mute">{p.min} {t('min')} • {L.tags.join(' • ')}</span>
+                              <div className="flex flex-wrap items-center gap-2 mb-2">
+                                {isRec && <span className="badge-rec"><Icon name="sparkle" size={12} /> {t('recommended')}</span>}
+                                {vp.disc > 0 && (
+                                  <span className="badge-ui c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>
+                                    {coupon.applied ? `${coupon.applied}: -${money(vp.disc)}` : t('firstBadge')}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex justify-between items-start gap-4">
+                                <div className="min-w-0">
+                                  <span className="serif text-[23px] leading-tight block">{L.title}</span>
+                                  <span className="block text-sm font-medium mt-1 c-ink">{L.subtitle}</span>
+                                </div>
+                                <div className="text-right shrink-0">
+                                  {vp.disc > 0 && <span className="block text-xs line-through c-mute">{money(p.price)}</span>}
+                                  <span className="serif text-[25px] leading-none block font-semibold" style={{ color: on || isRec ? `rgb(${rgb})` : 'var(--acc)' }}>
+                                    {money(vp.finalPrice)}
+                                  </span>
+                                  <span className="block text-[11.5px] font-bold mt-1 c-ok">{money(vp.pixPrice)} {t('pixHint')}</span>
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-2 mt-3 pt-3" style={{ borderTop: '1px solid var(--line)' }}>
+                                <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-s2">{p.min} {t('min')}</span>
+                                {L.tags.map((g) => (
+                                  <span key={g} className="text-xs font-semibold c-mute">• {g}</span>
+                                ))}
+                              </div>
                             </Label>
                             {on && (
                               <div className="rise px-5 pb-5" style={{ borderTop: '1px solid var(--line)' }}>
                                 <p className="text-[15.5px] leading-relaxed pt-4 mb-4">{L.desc}</p>
                                 <div className="flex flex-wrap gap-2 mb-4">
                                   {L.tags.map((g) => (
-                                    <Badge key={g} style={{ backgroundColor: `rgba(${rgb}, 0.12)`, color: `rgb(${rgb})`, padding: '6px 12px' }}>{g}</Badge>
+                                    <Badge key={g} style={{ backgroundColor: `rgba(${rgb}, 0.14)`, color: `rgb(${rgb})`, padding: '6px 12px' }}>{g}</Badge>
                                   ))}
                                 </div>
                                 <p className="text-sm font-bold mb-2">{t('flowH')}</p>
-                                <ol className="pl-5 list-decimal text-[15.5px] leading-relaxed space-y-1 mb-4 c-mute">
+                                <ol className="pl-5 list-decimal text-[15.5px] leading-relaxed space-y-1.5 mb-4 c-mute">
                                   {L.flow.map((s) => <li key={s}>{s}</li>)}
                                 </ol>
                                 <div className="flex flex-wrap gap-2">
@@ -1263,7 +1472,7 @@ export default function App() {
                                     disabled={!narr.supported}
                                     onClick={() => { vibrate(10); narr.toggle(p.id, narrText); }}
                                     className="btn-ui btn-g btn-sm flex-1"
-                                    style={{ flexBasis: 176, borderColor: `rgba(${rgb}, 0.45)`, color: `rgb(${rgb})` }}
+                                    style={{ flexBasis: 176, borderColor: `rgba(${rgb}, 0.5)`, color: `rgb(${rgb})` }}
                                   >
                                     <Icon name={playing ? 'pause' : 'play'} size={16} />
                                     {playing ? t('pause') : paused ? t('resume') : t('listen')}
@@ -1285,15 +1494,14 @@ export default function App() {
                   </RadioGroup>
                 </div>
 
-                {/* 2. Oferta */}
                 {chosen && !isSolo && (
                   <div ref={s2Ref} className="scroll-mt-24">
                     <Reveal>
                       <StepHead n={2} title={t('s2')} done={true} />
                       <RadioGroup value={offerEff} onValueChange={(v) => { vibrate(15); setOffer(v as Offer); }} aria-label={t('s2')} className="grid gap-3">
                         {([
-                          ['single', t('oSingle'), t('oSingleD'), pkg.price, 0, 0],
-                          ['combo', t('oCombo'), t('oComboD'), pkg.price + pkg.combo, pkg.price + C.APARO_FULL, C.APARO_FULL - pkg.combo],
+                          ['single', t('oSingle'), t('oSingleD'), getVisualPrice(pkg.price).finalPrice, getVisualPrice(pkg.price).disc > 0 ? pkg.price : 0, getVisualPrice(pkg.price).disc],
+                          ['combo', t('oCombo'), t('oComboD'), getVisualPrice(pkg.price + pkg.combo).finalPrice, pkg.price + C.APARO_FULL, (C.APARO_FULL - pkg.combo) + getVisualPrice(pkg.price + pkg.combo).disc],
                           ['pack', t('oPack'), t('oPackD').replace('{n}', String(C.PACK_DAYS)), pkg.price * C.PACK_PAY, pkg.price * C.PACK_TOTAL, pkg.price],
                         ] as [Offer, string, string, number, number, number][]).map(([o, a, b, price, was, sv]) => (
                           <Label key={o} className={cn('opt-ui', offerEff === o && 'on')}>
@@ -1301,8 +1509,8 @@ export default function App() {
                             <span className="flex justify-between items-start gap-x-4 gap-y-2 flex-wrap sm:flex-nowrap">
                               <span className="flex-1" style={{ minWidth: 0 }}><span className="block font-bold">{a}</span><span className="block text-sm mt-1 c-mute">{b}</span></span>
                               <span className="text-right shrink-0">
-                                <span className="serif text-[22px] block leading-none" style={{ color: 'var(--acc)' }}>{money(price)}</span>
-                                {sv > 0 && <span className="block text-xs mt-1"><s className="c-mute">{money(was)}</s></span>}
+                                <span className="serif text-[23px] block leading-none font-semibold" style={{ color: 'var(--acc)' }}>{money(price)}</span>
+                                {was > price && <span className="block text-xs mt-1"><s className="c-mute">{money(was)}</s></span>}
                               </span>
                             </span>
                             {sv > 0 && <Badge className="mt-3 c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 16%,transparent)' }}>{t('save')} {money(sv)}</Badge>}
@@ -1314,7 +1522,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 3. Quando e onde */}
                 {chosen && (
                   <div ref={s3Ref} className="scroll-mt-24">
                     <Reveal>
@@ -1335,7 +1542,7 @@ export default function App() {
                                   <RadioGroupItem value={dateKey(d)} aria-label={fmt(d, { weekday: 'long', day: 'numeric', month: 'long' })} />
                                   <span aria-hidden="true" className="text-xs font-bold capitalize">{dayName(d, i)}</span>
                                   <span aria-hidden="true" className="serif text-[28px] leading-tight">{d.getDate()}</span>
-                                  <span aria-hidden="true" className="text-xs opacity-70">{fmt(d, { month: 'short' }).replace('.', '')}</span>
+                                  <span aria-hidden="true" className="text-xs opacity-75">{fmt(d, { month: 'short' }).replace('.', '')}</span>
                                 </Label>
                               );
                             })}
@@ -1411,7 +1618,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 4. Resumo */}
                 {chosen && reviewed && (
                   <div ref={s4Ref} className="scroll-mt-24">
                     <Reveal>
@@ -1449,14 +1655,40 @@ export default function App() {
                                   <span>{t('lTime')}</span><span className="font-bold">+ {money(C.TIME_ADD)}</span>
                                 </Label>
                               </div>
-                              {!isPack && !coupon.applied && (
+                              {!isPack && (
                                 <div>
                                   <Label htmlFor="cp" className="lbl-ui">{t('couponQ')}</Label>
-                                  <div className="flex gap-2">
-                                    <Input id="cp" type="text" autoCapitalize="characters" placeholder={t('couponPh')} value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && applyCoupon()} className="uppercase flex-1" style={{ minWidth: 0 }} aria-describedby={coupon.error ? 'cp-err' : undefined} />
-                                    <Button onClick={applyCoupon} className="btn-ui btn-g">{t('apply')}</Button>
+                                  <div className="flex flex-wrap gap-2 mb-3">
+                                    {C.PUBLIC_COUPONS.map(({ code, pct }) => {
+                                      const active = coupon.applied === code;
+                                      return (
+                                        <button
+                                          key={code}
+                                          type="button"
+                                          onClick={() => (active ? clearCoupon() : selectCouponCode(code))}
+                                          className="coupon-pill"
+                                          style={active ? { background: 'var(--ok)', color: 'var(--onacc)', borderStyle: 'solid' } : undefined}
+                                        >
+                                          <Icon name={active ? 'check' : 'tag'} size={14} />
+                                          {code} (-{pct}%)
+                                        </button>
+                                      );
+                                    })}
                                   </div>
-                                  {coupon.error && <p id="cp-err" className="err" role="alert">{coupon.error}</p>}
+                                  {coupon.applied ? (
+                                    <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-s2 text-sm">
+                                      <span className="font-bold c-ok">{t('lCoupon')}: {coupon.applied}</span>
+                                      <Button onClick={clearCoupon} className="lnk-ui text-xs">{t('couponRemove')}</Button>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <div className="flex gap-2">
+                                        <Input id="cp" type="text" autoCapitalize="characters" placeholder={t('couponPh')} value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && selectCouponCode(coupon.input)} className="uppercase flex-1" style={{ minWidth: 0 }} aria-describedby={coupon.error ? 'cp-err' : undefined} />
+                                        <Button onClick={() => selectCouponCode(coupon.input)} className="btn-ui btn-g">{t('apply')}</Button>
+                                      </div>
+                                      {coupon.error && <p id="cp-err" className="err" role="alert">{coupon.error}</p>}
+                                    </>
+                                  )}
                                 </div>
                               )}
                               <div>
@@ -1518,7 +1750,36 @@ export default function App() {
             )}
           </section>
 
-          {/* Sobre */}
+          <section className="mb-24" aria-labelledby="rv-sec">
+            <div className="flex flex-wrap justify-between items-end gap-4 mb-6">
+              <div>
+                <Title id="rv-sec" className="text-[30px] md:text-[38px] mb-1">{t('revH')}</Title>
+                <p className="text-sm c-mute">{t('revS')}</p>
+              </div>
+              <Button asChild className="btn-ui btn-g btn-sm">
+                <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={16} /> {t('revBtn')}</a>
+              </Button>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4">
+              {REVIEWS[lang].map((r, i) => (
+                <Reveal key={r.name} delay={i * 100} className="h-full">
+                  <Card className="p-5 flex flex-col justify-between h-full">
+                    <div>
+                      <div className="flex items-center gap-1 mb-3" style={{ color: 'var(--warn)' }} aria-label="5 de 5 estrelas">
+                        {[0, 1, 2, 3, 4].map((s) => <Icon key={s} name="star" size={15} />)}
+                      </div>
+                      <p className="text-[15px] leading-relaxed mb-4">“{r.text}”</p>
+                    </div>
+                    <div className="pt-3 flex items-center justify-between gap-2 text-xs" style={{ borderTop: '1px solid var(--line)' }}>
+                      <strong className="c-ink">{r.name}</strong>
+                      <span className="c-mute">{r.tag}</span>
+                    </div>
+                  </Card>
+                </Reveal>
+              ))}
+            </div>
+          </section>
+
           <section className="mb-24" aria-labelledby="ab">
             <Reveal>
               <div className="flex items-center gap-5 mb-5 flex-col sm:flex-row text-center sm:text-left">
@@ -1537,7 +1798,6 @@ export default function App() {
             </Reveal>
           </section>
 
-          {/* FAQ */}
           <section className="mb-8" aria-labelledby="fq">
             <Title id="fq" className="text-[32px] md:text-[40px] mb-6">{t('faqH')}</Title>
             <Reveal>
@@ -1575,14 +1835,15 @@ export default function App() {
           <div className="max-w-3xl mx-auto flex items-center gap-4">
             <div className="flex-1" style={{ minWidth: 0 }}>
               <p className="text-xs leading-tight c-mute">{chosen ? pt.title : t('fromM')}</p>
-              <p className="serif text-2xl leading-none">{money(chosen ? pkg.price : minMassagePrice)}</p>
+              <p className="serif text-2xl leading-none">
+                {money(chosen ? getVisualPrice(pkg.price).finalPrice : minVisual.finalPrice)}
+              </p>
             </div>
             <Button onClick={goBook} className="btn-ui btn-p shrink-0">{t('cta')}</Button>
           </div>
         </div>
       )}
 
-      {/* Perfil */}
       {profileOpen && (
         <Modal title={t('profile')} onClose={() => setProfileOpen(false)} closeLabel={t('close')}>
           <div className="p-6">
@@ -1615,7 +1876,6 @@ export default function App() {
         </Modal>
       )}
 
-      {/* Documentos legais */}
       {doc && (
         <Modal title={DOCS[doc].title} onClose={() => setDoc(null)} closeLabel={t('close')}>
           <div className="p-5 text-sm leading-relaxed c-mute" tabIndex={0}>
