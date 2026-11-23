@@ -115,7 +115,7 @@ const T: Record<Lang, Record<string, string>> = {
     doneH: 'Pedido pronto!', doneP: 'Agora é só enviar a mensagem que abriu no seu WhatsApp junto com o comprovante do sinal de R$ 40 para eu travar seu horário.',
     doneSig: 'Chave Pix (e-mail):', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na agenda', restart: 'Fazer outro agendamento',
     chatQ: 'Ficou com alguma dúvida antes de marcar?', chatBtn: 'Me chama direto no WhatsApp', chatMsg: 'Oi Thalyson! Vi seu site e queria tirar uma dúvida sobre a massagem.',
-    revH: 'Quem já passou por aqui', revS: 'Relatos reais e sem filtro de quem já veio na Bela Vista.', revMore: 'Ver mais avaliações ({n})', revLess: 'Mostrar menos', revBtn: 'Avaliar no Google',
+    revH: 'Quem já passou por aqui', revS: 'Comentários enviados via WhatsApp de quem já relaxou comigo.', revMore: 'Ver mais avaliações ({n})', revLess: 'Mostrar menos', revBtn: 'Avaliar no Google',
     aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atendimento direto comigo, sem intermediários',
     about1: 'Tenho 30 anos, sou do interior de SP e cheguei em São Paulo há menos de 1 ano. Ainda estou me instalando e conhecendo a cidade, então meu atendimento é bem direto e sem luxo de clínica: uma suíte residencial simples e reservada na Bela Vista para você desligar da correria.',
     about2: 'Perto do Metrô Anhangabaú, com maca de madeira confortável e horário exclusivo para você. Por ser centro, tem o movimento normal da cidade lá fora, mas aqui dentro o ritmo desacelera e o pessoal costuma relaxar muito. Lembre-se apenas de vir já de banho tomado.', seeProfile: 'Ver detalhes do espaço',
@@ -284,7 +284,7 @@ const T: Record<Lang, Record<string, string>> = {
     pBul3: 'Suite residencial reservada en Bela Vista o en tu dirección en SP (estate ya duchado)',
     pHours: 'Horarios', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Pago', pPayV: 'Pix (3% de descuento), tarjeta hasta 12x o efectivo',
     pWhere: 'Lugar', pWhereV: 'Bela Vista (cerca del Metro Anhangabaú) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis avisando hasta 12h antes',
-    pForget: 'Borrar meus datos de este dispositivo', forgot: 'Listo, datos borrados.',
+    pForget: 'Borrar mis datos de este dispositivo', forgot: 'Listo, datos borrados.',
     recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy',
   },
 };
@@ -951,9 +951,9 @@ function Modal({ title, onClose, closeLabel, children }: { title: string; onClos
 }
 
 const Row = ({ label, value, tone }: { label: string; value: ReactNode; tone?: 'ok' }) => (
-  <div className={cn('flex justify-between gap-4 text-[15.5px]', tone && 'c-ok font-bold')}>
-    <span className={tone ? undefined : 'c-mute'}>{label}</span>
-    <span className="font-semibold text-right">{value}</span>
+  <div className={cn('flex justify-between items-baseline gap-3 text-[15.5px]', tone && 'c-ok font-bold')}>
+    <span className={cn('min-w-0 flex-1', !tone && 'c-mute')}>{label}</span>
+    <span className="font-semibold text-right num">{value}</span>
   </div>
 );
 
@@ -988,6 +988,7 @@ const CSS = `
 .app .text-sm{font-size:15.5px}.app .text-xs{font-size:13.5px}
 .app button,.app input,.app label{font-family:inherit}
 .serif{font-family:'Fraunces',Georgia,serif;font-optical-sizing:auto}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0}
 .c-mute{color:var(--mute)}.c-ink{color:var(--ink)}.c-ok{color:var(--ok)}.c-warn{color:var(--warn)}
 .bg-s2{background:var(--surf2)}.bd-line{border-color:var(--line)}
 .err{font-size:14px;color:var(--err);margin-top:8px;font-weight:600}
@@ -1578,14 +1579,14 @@ export default function App() {
               </Reveal>
               <Reveal delay={500}>
                 {nextFree && (
-                  <p className="flex items-center gap-3 text-sm c-mute"><span className="dot" aria-hidden="true" /><span>{t('nextFree')}: <strong className="c-ink">{nextLabel}</strong></span></p>
+                  <p className="flex items-center gap-3 text-sm c-mute"><span className="dot" aria-hidden="true" /><span>{t('nextFree')}: <strong className="c-ink num">{nextLabel}</strong></span></p>
                 )}
                 <p className="text-sm mt-1 c-mute">
                   {t('fromM')}{' '}
                   {minVisual.disc > 0 ? (
-                    <><s className="opacity-70">{money(minMassagePrice)}</s> <strong className="c-ok">{money(minVisual.finalPrice)}</strong></>
+                    <><s className="opacity-70 num">{money(minMassagePrice)}</s> <strong className="c-ok num">{money(minVisual.finalPrice)}</strong></>
                   ) : (
-                    <strong className="c-ink">{money(minMassagePrice)}</strong>
+                    <strong className="c-ink num">{money(minMassagePrice)}</strong>
                   )}
                 </p>
               </Reveal>
@@ -1630,7 +1631,7 @@ export default function App() {
                   <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 18%,transparent)' }}><Icon name="check" size={32} /></div>
                   <h2 className="serif text-4xl font-light mb-4">{t('doneH')}</h2>
                   <p className="leading-relaxed mb-4 c-mute">{t('doneP')}</p>
-                  <p className="font-bold mb-8">{t('doneSig')} {C.PIX_KEY} • {money(invoice.sinal)}</p>
+                  <p className="font-bold mb-8">{t('doneSig')} {C.PIX_KEY} • <span className="num">{money(invoice.sinal)}</span></p>
                   <div className="space-y-3 max-w-xs mx-auto">
                     <Button asChild className="btn-ui btn-p w-full">
                       <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer">{t('resend')}</a>
@@ -1672,18 +1673,18 @@ export default function App() {
                           >
                             <Label className="pkg-head">
                               <RadioGroupItem value={p.id} />
-                              <div className="flex justify-between items-start gap-4">
-                                <div className="min-w-0">
+                              <div className="flex justify-between items-start gap-3">
+                                <div className="min-w-0 flex-1">
                                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                                    <span className="serif text-[23px] leading-tight">{L.title}</span>
-                                    <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-s2">{p.min} {t('min')}</span>
+                                    <span className="serif text-[21px] sm:text-[23px] leading-tight">{L.title}</span>
+                                    <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-s2 num">{p.min} {t('min')}</span>
                                     {isRec && <span className="badge-rec"><Icon name="sparkle" size={11} /> {t('recommended')}</span>}
                                   </div>
                                   <span className="block text-sm c-mute">{L.subtitle}</span>
                                 </div>
-                                <div className="text-right shrink-0">
+                                <div className="text-right num">
                                   {vp.disc > 0 && <span className="block text-xs line-through c-mute">{money(p.price)}</span>}
-                                  <span className="serif text-[25px] leading-none block font-semibold" style={{ color: on || isRec ? `rgb(${rgb})` : 'var(--acc)' }}>
+                                  <span className="serif text-[22px] sm:text-[25px] leading-none block font-semibold" style={{ color: on || isRec ? `rgb(${rgb})` : 'var(--acc)' }}>
                                     {money(vp.finalPrice)}
                                   </span>
                                   <span className="block text-[11px] font-bold mt-1 c-ok">{money(vp.pixPrice)} {t('pixHint')}</span>
@@ -1738,15 +1739,15 @@ export default function App() {
                             <RadioGroupItem value={o} />
                             <div>
                               <div className="flex justify-between items-start gap-3">
-                                <span className="font-bold leading-snug">{a}</span>
-                                <span className="text-right shrink-0">
-                                  <span className="serif text-[22px] block leading-none font-semibold" style={{ color: 'var(--acc)' }}>{money(price)}</span>
+                                <span className="font-bold leading-snug min-w-0 flex-1">{a}</span>
+                                <span className="text-right num">
+                                  <span className="serif text-[21px] sm:text-[22px] block leading-none font-semibold" style={{ color: 'var(--acc)' }}>{money(price)}</span>
                                   {was > price && <span className="block text-xs mt-1"><s className="c-mute">{money(was)}</s></span>}
                                 </span>
                               </div>
                               <span className="block text-sm mt-2 c-mute">{b}</span>
                             </div>
-                            {sv > 0 && <Badge className="mt-3 self-start c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 16%,transparent)' }}>{t('save')} {money(sv)}</Badge>}
+                            {sv > 0 && <Badge className="mt-3 self-start c-ok num" style={{ background: 'color-mix(in srgb,var(--ok) 16%,transparent)' }}>{t('save')} {money(sv)}</Badge>}
                           </Label>
                         ))}
                       </RadioGroup>
@@ -1762,16 +1763,16 @@ export default function App() {
                       <div className="space-y-8">
                         {nextFree && (
                           <div className="rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3" style={{ background: 'color-mix(in srgb,var(--ok) 12%,transparent)', border: '1px solid color-mix(in srgb,var(--ok) 35%,transparent)' }}>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
                               <span className="dot" aria-hidden="true" />
-                              <div>
+                              <div className="min-w-0">
                                 <p className="text-xs font-bold uppercase tracking-wider c-ok">{t('recSlotH')}</p>
-                                <p className="font-extrabold capitalize">{nextLabel}</p>
+                                <p className="font-extrabold capitalize num">{nextLabel}</p>
                               </div>
                             </div>
                             <Button
                               onClick={() => { vibrate(15); set({ date: nextFree.d, time: nextFree.t }); }}
-                              className="btn-ui btn-sm"
+                              className="btn-ui btn-sm shrink-0"
                               style={{ background: 'var(--ok)', color: 'var(--onacc)', minHeight: 42, padding: '8px 16px', fontSize: 14 }}
                             >
                               {t('recSlotBtn')}
@@ -1790,7 +1791,7 @@ export default function App() {
                             {days.map(({ d, i }) => {
                               const sel = sameDay(data.date, d);
                               return (
-                                <Label key={dateKey(d)} className={cn('chip-ui col shrink-0 snap-start', sel && 'on')} style={{ width: 80, minWidth: 80, padding: '12px 4px' }}>
+                                <Label key={dateKey(d)} className={cn('chip-ui col shrink-0 snap-start num', sel && 'on')} style={{ width: 80, minWidth: 80, padding: '12px 4px' }}>
                                   <RadioGroupItem value={dateKey(d)} aria-label={fmt(d, { weekday: 'long', day: 'numeric', month: 'long' })} />
                                   <span aria-hidden="true" className="text-xs font-bold capitalize">{dayName(d, i)}</span>
                                   <span aria-hidden="true" className="serif text-[28px] leading-tight">{d.getDate()}</span>
@@ -1806,7 +1807,7 @@ export default function App() {
                           <div className="rise" style={{ minWidth: 0 }}>
                             <div className="flex justify-between items-baseline flex-wrap gap-x-4 mb-3">
                               <p className="lbl-ui lbl-flat" id="time-lbl">{t('time')}</p>
-                              <span className="text-xs c-mute">{t('session')} {invoice.dur} {t('min')}</span>
+                              <span className="text-xs c-mute num">{t('session')} {invoice.dur} {t('min')}</span>
                             </div>
                             {availableCount > 0 && availableCount <= 2 && <p className="text-xs font-bold mb-3 c-warn">{t('lastSlots')}</p>}
                             <RadioGroup aria-labelledby="time-lbl" value={data.time} onValueChange={(v) => { vibrate(15); set({ time: v }); }} className="grid grid-cols-3 sm:grid-cols-4 gap-3">
@@ -1814,7 +1815,7 @@ export default function App() {
                                 const sel = data.time === tm;
                                 const peak = isHome && PEAK_HOURS.includes(tm);
                                 return (
-                                  <Label key={tm} className={cn('chip-ui col', sel && 'on', !ok && 'off')} style={{ padding: '12px 4px' }}>
+                                  <Label key={tm} className={cn('chip-ui col num', sel && 'on', !ok && 'off')} style={{ padding: '12px 4px' }}>
                                     <RadioGroupItem value={tm} disabled={!ok} aria-label={`${tm}${!ok ? ', ' + t('unavailable') : ''}${peak ? ', ' + t('peak') : ''}`} />
                                     <span aria-hidden="true">{tm}</span>
                                     {peak && ok && <span aria-hidden="true" className="text-[11px] font-bold" style={{ color: sel ? 'inherit' : 'var(--warn)' }}>{t('peak')} +{C.PEAK_FEE}</span>}
@@ -1823,7 +1824,7 @@ export default function App() {
                               })}
                             </RadioGroup>
                             {availableCount === 0 && <p className="text-sm text-center py-5 c-mute">{t('noSlots')}</p>}
-                            {data.time && <p className="text-[15.5px] font-semibold mt-4 flex items-center gap-2 c-ok"><Icon name="check" size={16} /> {t('from')} {data.time} {t('to')} {endTime}</p>}
+                            {data.time && <p className="text-[15.5px] font-semibold mt-4 flex items-center gap-2 c-ok num"><Icon name="check" size={16} /> {t('from')} {data.time} {t('to')} {endTime}</p>}
                             <p className="text-xs mt-3 c-mute">{t('demo')}</p>
                             {touched && errors.time && <p className="err" role="alert">{errors.time}</p>}
                           </div>
@@ -1916,7 +1917,7 @@ export default function App() {
                               <div className="flex items-center gap-3">
                                 <Checkbox id="add-time" checked={data.addTime} onCheckedChange={(c) => { vibrate(15); set({ addTime: c }); }} className="chk-mid" />
                                 <Label htmlFor="add-time" className="lbl-chk flex flex-1 justify-between gap-3 items-center" style={{ minHeight: 44, fontSize: 16 }}>
-                                  <span>{t('lTime')}</span><span className="font-bold">+ {money(C.TIME_ADD)}</span>
+                                  <span className="min-w-0 flex-1">{t('lTime')}</span><span className="font-bold num">+ {money(C.TIME_ADD)}</span>
                                 </Label>
                               </div>
                               {!hasPlan && (
@@ -1930,7 +1931,7 @@ export default function App() {
                                           key={code}
                                           type="button"
                                           onClick={() => (active ? clearCoupon() : selectCouponCode(code))}
-                                          className="coupon-pill"
+                                          className="coupon-pill num"
                                           style={active ? { background: 'var(--ok)', color: 'var(--onacc)', borderStyle: 'solid' } : undefined}
                                         >
                                           <Icon name={active ? 'check' : 'tag'} size={14} />
@@ -1948,7 +1949,7 @@ export default function App() {
                                     <>
                                       <div className="flex gap-2">
                                         <Input id="cp" type="text" autoCapitalize="characters" placeholder={t('couponPh')} value={coupon.input} onChange={(e) => setCoupon({ ...coupon, input: e.target.value, error: '' })} onKeyDown={(e) => e.key === 'Enter' && selectCouponCode(coupon.input)} className="uppercase flex-1" style={{ minWidth: 0 }} aria-describedby={coupon.error ? 'cp-err' : undefined} />
-                                        <Button onClick={() => selectCouponCode(coupon.input)} className="btn-ui btn-g">{t('apply')}</Button>
+                                        <Button onClick={() => selectCouponCode(coupon.input)} className="btn-ui btn-g shrink-0">{t('apply')}</Button>
                                       </div>
                                       {coupon.error && <p id="cp-err" className="err" role="alert">{coupon.error}</p>}
                                     </>
@@ -1983,19 +1984,19 @@ export default function App() {
                             {invoice.pixDiscount > 0 && <Row tone="ok" label={t('lPix')} value={`-${money(invoice.pixDiscount)}`} />}
                           </div>
                           <Separator />
-                          <div className="flex justify-between items-end gap-4 pt-5">
-                            <span className="c-mute">{t('total')}</span>
-                            <span className="serif text-[46px] leading-none font-light">{money(invoice.total)}</span>
+                          <div className="flex justify-between items-baseline gap-3 pt-5">
+                            <span className="c-mute min-w-0">{t('total')}</span>
+                            <span className="serif text-[34px] sm:text-[46px] leading-none font-light num">{money(invoice.total)}</span>
                           </div>
-                          {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold text-center py-2.5 rounded-2xl c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>{t('saved')}: -{money(invoice.saved)}</p>}
+                          {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold text-center py-2.5 rounded-2xl c-ok num" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>{t('saved')}: -{money(invoice.saved)}</p>}
                           <div className="grid grid-cols-2 gap-3 mt-4 text-center">
-                            <div className="rounded-2xl p-3 bg-s2"><p className="text-xs c-mute">{t('signal')}</p><p className="font-extrabold">-{money(invoice.sinal)}</p></div>
-                            <div className="rounded-2xl p-3 bg-s2"><p className="text-xs c-mute">{t('rest')}</p><p className="font-extrabold">{money(invoice.rest)}</p></div>
+                            <div className="rounded-2xl p-3 bg-s2 min-w-0"><p className="text-xs c-mute">{t('signal')}</p><p className="font-extrabold num">-{money(invoice.sinal)}</p></div>
+                            <div className="rounded-2xl p-3 bg-s2 min-w-0"><p className="text-xs c-mute">{t('rest')}</p><p className="font-extrabold num">{money(invoice.rest)}</p></div>
                           </div>
                         </Card>
 
                         <p className="text-[15.5px] leading-relaxed">
-                          {t('sigA')} <strong>{money(invoice.sinal)}</strong>. {t('sigB')} <strong>{money(invoice.rest)}</strong> {t('sigC')}{' '}
+                          {t('sigA')} <strong className="num">{money(invoice.sinal)}</strong>. {t('sigB')} <strong className="num">{money(invoice.rest)}</strong> {t('sigC')}{' '}
                           <Button onClick={copyPix} className="lnk-ui lnk-block lnk-left"><Icon name="copy" size={15} /> {t('copyPix')}</Button>
                         </p>
 
@@ -2138,9 +2139,9 @@ export default function App() {
       {showBar && !done && (
         <div className="bar">
           <div className="max-w-3xl mx-auto flex items-center gap-4">
-            <div className="flex-1" style={{ minWidth: 0 }}>
-              <p className="text-xs leading-tight c-mute">{chosen ? pt.title : t('fromM')}</p>
-              <p className="serif text-2xl leading-none">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs leading-tight c-mute truncate">{chosen ? pt.title : t('fromM')}</p>
+              <p className="serif text-xl sm:text-2xl leading-none num">
                 {money(chosen ? getVisualPrice(pkg.price).finalPrice : minVisual.finalPrice)}
               </p>
             </div>
