@@ -60,7 +60,7 @@ const CSS = `
 .aic-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
 .aic-chip{min-height:44px;display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);font-family:inherit;font-weight:600;font-size:14px;line-height:1.2;cursor:pointer;animation:aicMsg .3s both;transition:background .15s}
 .aic-chip:hover{background:var(--surf2)}
-.aic-card{align-self:stretch;border:1px solid var(--acc);border-radius:18px;padding:14px;background:var(--surf);animation:aicPop .4s both cubic-bezier(.2,1.4,.4,1)}
+.aic-card{align-self:stretch;border:1px solid var(--acc);border-radius:18px;padding:14px;background:var(--surf);animation:aicPop .4s both cubic-bezier(.2,.8,.2,1)}
 .aic-card p{margin:0 0 3px;font-size:12px;color:var(--mute);font-weight:700;letter-spacing:.04em}.aic-card strong{display:block;font:600 18px/1.3 'Fraunces',Georgia,serif;margin-bottom:10px}
 .aic-btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:999px;border:0;background:var(--acc);color:var(--onacc);font-family:inherit;font-weight:700;font-size:15px;line-height:1;cursor:pointer;width:100%}
 .aic-form{display:flex;gap:8px;padding:10px 12px 6px;border-top:1px solid var(--line);background:var(--surf)}
