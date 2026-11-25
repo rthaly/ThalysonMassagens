@@ -19,14 +19,14 @@ export function SeoIntro() {
         <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'grid', gap: 10 }}>
           {sessions.map((s, i) => (
             <li key={s.slug}>
-              <Link href={`/sessoes/${s.slug}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>{PUBLIC_BY_SLUG[s.slug].name}</Link>
+              <Link href={`/sessoes/${s.slug}`} style={{ color: 'var(--ink)', fontWeight: 600, display: 'inline-block', padding: '10px 0' }}>{PUBLIC_BY_SLUG[s.slug].name}</Link>
               <span style={{ color: 'var(--muted)' }}> · {PUBLIC_SERVICES[i].minutes} min · a partir de {money(PUBLIC_SERVICES[i].price)}. {PUBLIC_SERVICES[i].description}</span>
             </li>
           ))}
         </ul>
         <h3 style={{ fontSize: 18, margin: '0 0 10px', fontWeight: 600 }}>Onde atendo</h3>
         <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'grid', gap: 8 }}>
-          {LOCAIS.map((l) => (<li key={l.slug}><Link href={`/massagem/${l.slug}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>{l.h1}</Link></li>))}
+          {LOCAIS.map((l) => (<li key={l.slug}><Link href={`/massagem/${l.slug}`} style={{ color: 'var(--ink)', fontWeight: 600, display: 'inline-block', padding: '10px 0' }}>{l.h1}</Link></li>))}
         </ul>
         <h3 style={{ fontSize: 18, margin: '0 0 10px', fontWeight: 600 }}>Perguntas frequentes</h3>
         <dl style={{ margin: 0, display: 'grid', gap: 14 }}>

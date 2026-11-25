@@ -25,7 +25,7 @@ export const PUBLIC_FAQ = [
   { q: 'Como faço para reservar?', a: 'Escolha a sessão e o horário no site, envie o pedido pelo WhatsApp e faça o Pix do sinal de R$ 40, que é descontado do valor total.' },
   { q: 'E se eu precisar remarcar?', a: 'Avisando até 12 horas antes, devolvo o sinal no Pix ou troco o dia sem custo.' },
   { q: 'É minha primeira vez, tudo bem?', a: 'Sim. Antes de começar a gente alinha pressão, música e o que você prefere. Tudo acontece no seu ritmo.' },
-  { q: 'Preciso levar alguma coisa?', a: 'Não. Só venha já de banho tomado para aproveitar o tempo inteiro na maca.' },
+  { q: 'Preciso levar alguma coisa?', a: 'Só a sua toalha, porque eu não forneço toalhas. Venha também de banho tomado para aproveitar o tempo inteiro na maca.' },
 ]
 
 // Nome e texto públicos de cada página de sessão (títulos, meta descrições e H1 indexáveis).

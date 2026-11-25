@@ -73,7 +73,7 @@ const T: Record<Lang, Record<string, string>> = {
     enter: 'Ver sessões e horários', needAgeEnter: 'Confirme que tem 18 anos ou mais',
     h1: 'Tire o peso do corpo. Desligue a cabeça.',
     sub: 'Sessões individuais na Bela Vista ou no seu endereço em SP. Sem enrolação, sem pressa e com valores claros antes de você sair de casa.',
-    cta: 'Escolher sessão e horário', reviews: 'Ver avaliações no Google', nextFree: 'Próximo horário livre', today: 'hoje', tomorrow: 'amanhã', fromM: 'Sessões a partir de',
+    cta: 'Escolher sessão e horário', reviews: 'Avaliações no Google', nextFree: 'Próximo horário livre', today: 'hoje', tomorrow: 'amanhã', fromM: 'Sessões a partir de',
     t1: 'Sinal de R$ 40 para segurar o horário; o restante você paga só depois',
     t2: 'Remarcação ou devolução do sinal grátis avisando até 12h antes',
     t3: 'R$ 15 de desconto automático na sua primeira sessão',
@@ -139,7 +139,7 @@ const T: Record<Lang, Record<string, string>> = {
     pHours: 'Horários', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Pagamento', pPayV: 'Pix (3% de desconto), cartão até 12x ou dinheiro',
     pWhere: 'Local', pWhereV: 'Bela Vista (perto do Metrô Anhangabaú) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis avisando até 12h antes',
     pForget: 'Apagar meus dados deste aparelho', forgot: 'Pronto, dados apagados.',
-    recommended: 'Mais escolhida', smartSub: 'Que bom te ver de volta. Escolha o dia e o horário.', lastSlots: 'Últimos horários livres hoje', upTo: 'pode ir até',
+    recommended: 'Mais escolhida', smartSub: 'Que bom te ver de volta. Escolha o dia e o horário.', lastSlots: 'Últimos horários livres hoje', upTo: 'pode ir até', rulesH: 'Antes de vir', rulesS: 'Quatro combinados simples para a sessão começar no horário e do jeito que você gosta.', r1T: 'Banho tomado', r1D: 'Venha já de banho tomado, para aproveitar o tempo inteiro na maca.', r2T: 'Leve a sua toalha', r2D: 'Eu não forneço toalhas.', r3T: 'Incenso e música, se quiser', r3D: 'Você escolhe na hora de reservar. Se preferir sem incenso ou sem música, é só desmarcar.', r4T: 'Sinal de R$ 40, Pix com 3% de desconto', r4D: 'O sinal garante o horário e entra no valor total. Pagando o restante no Pix, você ganha 3% de desconto.',
     quizH: 'Não sabe qual escolher?', quizS: '3 toques e eu te indico a sessão certa para hoje.', quizStart: 'Descobrir minha sessão',
     quizQ1: 'O que você mais precisa hoje?', quizA1a: 'Soltar costas e ombros travados', quizA1b: 'Desligar a cabeça e relaxar o corpo todo', quizA1c: 'Algo mais intenso e com mais contato', quizA1d: 'Só aparar os pelos',
     quizQ2: 'Já fez uma sessão assim antes?', quizA2a: 'É minha primeira vez', quizA2b: 'Já fiz outras vezes',
@@ -229,7 +229,7 @@ const T: Record<Lang, Record<string, string>> = {
     pHours: 'Hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment', pPayV: 'Pix (3% off), card up to 12x or cash',
     pWhere: 'Location', pWhereV: 'Bela Vista (near Anhangabaú Metro) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12h in advance',
     pForget: 'Clear my data from this device', forgot: 'Done, data cleared.',
-    recommended: 'Most booked', smartSub: 'Good to see you back. Pick your day and time.', lastSlots: 'Last open slots today', upTo: 'may run until',
+    recommended: 'Most booked', smartSub: 'Good to see you back. Pick your day and time.', lastSlots: 'Last open slots today', upTo: 'may run until', rulesH: 'Before you come', rulesS: 'Four simple agreements so the session starts on time and the way you like it.', r1T: 'Freshly showered', r1D: 'Arrive already showered so you can enjoy the full time on the table.', r2T: 'Bring your own towel', r2D: 'I do not provide towels.', r3T: 'Incense and music, if you like', r3D: 'You choose when you book. If you prefer no incense or no music, just untick it.', r4T: 'R$ 40 deposit, Pix with 3% off', r4D: 'The deposit holds your time and counts toward the total. Paying the rest by Pix gets you 3% off.',
     quizH: 'Not sure which one?', quizS: '3 taps and I’ll point you to the right session for today.', quizStart: 'Find my session',
     quizQ1: 'What do you need most today?', quizA1a: 'Loosen a stiff back and shoulders', quizA1b: 'Switch off and relax the whole body', quizA1c: 'Something more intense, with more contact', quizA1d: 'Just a trim',
     quizQ2: 'Have you done a session like this before?', quizA2a: 'It’s my first time', quizA2b: 'I’ve done it before',
@@ -319,7 +319,7 @@ const T: Record<Lang, Record<string, string>> = {
     pHours: 'Horarios', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Pago', pPayV: 'Pix (3% de descuento), tarjeta hasta 12x o efectivo',
     pWhere: 'Lugar', pWhereV: 'Bela Vista (cerca del Metro Anhangabaú) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis avisando hasta 12h antes',
     pForget: 'Borrar mis datos de este dispositivo', forgot: 'Listo, datos borrados.',
-    recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy', upTo: 'puede llegar hasta',
+    recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy', upTo: 'puede llegar hasta', rulesH: 'Antes de venir', rulesS: 'Cuatro acuerdos simples para que la sesión empiece a tiempo y como te gusta.', r1T: 'Ya duchado', r1D: 'Ven ya duchado para aprovechar todo el tiempo en la camilla.', r2T: 'Trae tu toalla', r2D: 'No proporciono toallas.', r3T: 'Incienso y música, si quieres', r3D: 'Lo eliges al reservar. Si prefieres sin incienso o sin música, solo desmárcalo.', r4T: 'Señal de R$ 40, Pix con 3% de descuento', r4D: 'La señal asegura el horario y se descuenta del total. Pagando el resto por Pix tienes 3% de descuento.',
     quizH: '¿No sabes cuál elegir?', quizS: '3 toques y te indico la sesión ideal para hoy.', quizStart: 'Descubrir mi sesión',
     quizQ1: '¿Qué necesitas más hoy?', quizA1a: 'Soltar espalda y hombros trabados', quizA1b: 'Apagar la cabeza y relajar todo el cuerpo', quizA1c: 'Algo más intenso y con más contacto', quizA1d: 'Solo recortar el vello',
     quizQ2: '¿Ya hiciste una sesión así?', quizA2a: 'Es mi primera vez', quizA2b: 'Ya lo hice antes',
@@ -918,10 +918,10 @@ const Icon = memo(({ name, size = 20, className = '' }: { name: IconName; size?:
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`} aria-hidden="true"><path d={ICONS[name]} /></svg>
 ));
 
-function Avatar({ className, alt }: { className: string; alt: string }) {
+function Avatar({ className, alt, style }: { className: string; alt: string; style?: CSSProperties }) {
   const [failed, setFailed] = useState(false);
   if (failed) return <span role={alt ? 'img' : undefined} aria-label={alt || undefined} aria-hidden={alt ? undefined : true} className={`${className} serif inline-flex items-center justify-center`} style={{ background: 'var(--acc)', color: 'var(--onacc)' }}>T</span>;
-  return <img src={C.AVATAR} alt={alt} onError={() => setFailed(true)} className={`${className} object-cover`} />;
+  return <img src={C.AVATAR} alt={alt} onError={() => setFailed(true)} style={style} className={`${className} object-cover`} />;
 }
 
 function useSeen<E extends HTMLElement>() {
@@ -1059,10 +1059,10 @@ const SocialButtons = ({ reviewsLabel, grid = false }: { reviewsLabel: string; g
 );
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Manrope:wght@400..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Poppins:wght@400;500;600;700&display=swap');
 .app{--bg:#F9F8F6;--surf:#FFFFFF;--surf2:#EFECE6;--ink:#161412;--mute:#57524A;--line:rgba(22,20,18,.15);--acc:#161412;--onacc:#FFFFFF;--rg:rgba(22,20,18,.24);--ok:#145A3E;--warn:#8A4B08;--err:#B81D3A}
 .app[data-theme=dark]{--bg:#121110;--surf:#1C1A19;--surf2:#282523;--ink:#F5F2EE;--mute:#B0A99E;--line:rgba(245,242,238,.15);--acc:#F5F2EE;--onacc:#121110;--rg:rgba(245,242,238,.3);--ok:#5EC49B;--warn:#F0AA5E;--err:#FF8A9B}
-.app{background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;font-size:17px;line-height:1.55;min-height:100vh;min-height:100dvh;overflow-x:clip;transition:background .3s,color .3s;overflow-wrap:break-word;word-break:normal;hyphens:manual;text-wrap:pretty;-webkit-text-size-adjust:100%}
+.app{background:var(--bg);color:var(--ink);font-family:'Poppins',system-ui,sans-serif;font-size:16px;line-height:1.6;min-height:100vh;min-height:100dvh;overflow-x:clip;transition:background .3s,color .3s;overflow-wrap:break-word;word-break:normal;hyphens:manual;text-wrap:pretty;-webkit-text-size-adjust:100%}
 .app h1,.app h2,.app h3{text-wrap:balance;word-break:normal;hyphens:manual}
 .app .text-sm{font-size:15.5px}.app .text-xs{font-size:13.5px}
 .app button,.app input,.app label{font-family:inherit}
@@ -1082,6 +1082,7 @@ const CSS = `
 
 .glass-stage{position:relative;border-radius:32px;padding:24px;background:radial-gradient(120% 100% at 10% 0%,rgba(22,20,18,.06),transparent 60%),radial-gradient(100% 100% at 90% 100%,rgba(20,90,62,.07),transparent 60%),var(--surf2);border:1px solid var(--line)}
 .app[data-theme=dark] .glass-stage{background:radial-gradient(120% 100% at 10% 0%,rgba(245,242,238,.07),transparent 60%),radial-gradient(100% 100% at 90% 100%,rgba(94,196,155,.08),transparent 60%),#171615}
+.glass-ui{background:color-mix(in srgb,var(--surf) 64%,transparent);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border:1px solid var(--line);border-radius:22px;box-shadow:0 14px 34px -16px rgba(0,0,0,.45)}
 .glass-rev{position:relative;border-radius:26px;padding:22px;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.46));backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.85);box-shadow:0 16px 36px -12px rgba(22,20,18,.12),inset 0 1px 0 rgba(255,255,255,.95);transition:transform .25s ease,box-shadow .25s ease}
 .app[data-theme=dark] .glass-rev{background:linear-gradient(145deg,rgba(44,41,39,.72),rgba(26,24,23,.52));border:1px solid rgba(245,242,238,.14);box-shadow:0 18px 40px -12px rgba(0,0,0,.55),inset 0 1px 0 rgba(245,242,238,.16)}
 @media(hover:hover){.glass-rev:hover{transform:translateY(-3px)}}
@@ -1127,6 +1128,7 @@ const CSS = `
 .chk-ui{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0;margin-top:2px;padding:0;border:2px solid var(--mute);border-radius:6px;background:var(--surf);color:var(--onacc);cursor:pointer;transition:background .15s,border-color .15s}
 .chk-ui[aria-checked=true]{background:var(--acc);border-color:var(--acc)}
 .chk-mid{margin-top:0}
+.chk-ui{position:relative}.chk-ui::after{content:'';position:absolute;inset:-12px}
 .chk-ui:focus-visible,.btn-ui:focus-visible,.coupon-pill:focus-visible,.lnk-ui:focus-visible,.app a:focus-visible,.app button:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 
 .chip-ui{position:relative;display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px 12px;border:1.5px solid var(--line);border-radius:18px;background:var(--surf);color:var(--ink);text-align:center;cursor:pointer;transition:background .2s,color .2s,border-color .2s;font-weight:700;font-size:16px;line-height:1.2;text-wrap:balance}
@@ -1145,7 +1147,7 @@ const CSS = `
 .sep-ui{height:1px;background:var(--line);width:100%}
 
 .seg{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;padding:3px;background:var(--surf)}
-.seg button{min-height:40px;min-width:44px;padding:0 8px;border-radius:999px;font-size:12.5px;font-weight:800;color:var(--mute)}
+.seg button{min-height:44px;min-width:44px;padding:0 8px;border-radius:999px;font-size:13px;font-weight:700;color:var(--mute)}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
 .brand{display:none}
 @media(min-width:430px){.brand{display:inline}}
@@ -1765,7 +1767,7 @@ export default function App() {
           <section className="relative pt-14 pb-16 flex flex-col justify-center" style={{ minHeight: 'calc(100svh - 76px)' }}>
             <div className="glow" aria-hidden="true" />
             <div className="relative">
-              <Reveal><p className="inline-flex items-center gap-2 text-sm font-semibold mb-6 c-mute"><Icon name="map" size={16} /> {t('badge')}</p></Reveal>
+              <Reveal><div className="glass-ui inline-flex items-center gap-3 max-w-full pl-1.5 pr-4 py-1.5 mb-6"><Avatar className="w-11 h-11 rounded-full shrink-0" alt="" /><p className="min-w-0 text-sm font-semibold leading-snug">Thalyson<span className="block text-[13px] font-medium c-mute">{t('badge')}</span></p></div></Reveal>
               <Title as="h1" className="mb-4" style={{ fontSize: 'clamp(48px,12vw,86px)' }}>{t('h1')}</Title>
               <Reveal delay={250}><p className="text-lg leading-relaxed mb-8 max-w-md c-mute">{isReturning ? t('smartSub') : t('sub')}</p></Reveal>
               <Reveal delay={380}>
@@ -1873,6 +1875,22 @@ export default function App() {
             </Reveal>
           </section>
 
+          <section className="mb-24" aria-labelledby="rules-h">
+            <Title id="rules-h" className="text-[30px] md:text-[38px] mb-2">{t('rulesH')}</Title>
+            <Reveal delay={100}><p className="mb-7 c-mute">{t('rulesS')}</p></Reveal>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {([['r1', 'check'], ['r2', 'tag'], ['r3', 'sparkle'], ['r4', 'lock']] as [string, IconName][]).map(([k, ic], i) => (
+                <Reveal key={k} delay={i * 70} className="h-full">
+                  <div className="glass-ui h-full p-5">
+                    <Icon name={ic} size={22} />
+                    <p className="serif text-[21px] leading-tight mt-3 mb-1">{t(`${k}T`)}</p>
+                    <p className="text-sm leading-relaxed c-mute">{t(`${k}D`)}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </section>
+
           <section className="mb-24" aria-labelledby="off">
             <Title id="off" className="text-[34px] md:text-[44px] mb-3">{t('offH')}</Title>
             <Reveal delay={100}><p className="mb-7 c-mute">{t('offS')}</p></Reveal>
@@ -1959,7 +1977,7 @@ export default function App() {
                                   <span className="serif text-[22px] sm:text-[25px] leading-none block font-semibold" style={{ color: on || isRec ? `rgb(${rgb})` : 'var(--acc)' }}>
                                     {money(vp.finalPrice)}
                                   </span>
-                                  <span className="block text-[11px] font-bold mt-1 c-ok">{money(vp.pixPrice)} {t('pixHint')}</span>
+                                  <span className="block text-xs font-bold mt-1 c-ok">{money(vp.pixPrice)} {t('pixHint')}</span>
                                 </div>
                               </div>
                             </Label>
@@ -2045,7 +2063,7 @@ export default function App() {
                             <Button
                               onClick={() => { vibrate(15); set({ date: nextFree.d, time: nextFree.t }); }}
                               className="btn-ui btn-sm shrink-0"
-                              style={{ background: 'var(--ok)', color: 'var(--onacc)', minHeight: 42, padding: '8px 16px', fontSize: 14 }}
+                              style={{ background: 'var(--ok)', color: 'var(--onacc)', minHeight: 44, padding: '8px 16px', fontSize: 14 }}
                             >
                               {t('recSlotBtn')}
                             </Button>
@@ -2090,7 +2108,7 @@ export default function App() {
                                   <Label key={tm} className={cn('chip-ui col num', sel && 'on', !ok && 'off')} style={{ padding: '12px 4px' }}>
                                     <RadioGroupItem value={tm} disabled={!ok} aria-label={`${tm}${!ok ? ', ' + t('unavailable') : ''}${peak ? ', ' + t('peak') : ''}`} />
                                     <span aria-hidden="true">{tm}</span>
-                                    {peak && ok && <span aria-hidden="true" className="text-[11px] font-bold" style={{ color: sel ? 'inherit' : 'var(--warn)' }}>{t('peak')} +{C.PEAK_FEE}</span>}
+                                    {peak && ok && <span aria-hidden="true" className="text-xs font-bold" style={{ color: sel ? 'inherit' : 'var(--warn)' }}>{t('peak')} +{C.PEAK_FEE}</span>}
                                   </Label>
                                 );
                               })}
@@ -2148,7 +2166,7 @@ export default function App() {
 
                         <div>
                           <Button className="btn-ui btn-p btn-lg w-full" onClick={goReview}>{t('cont')}</Button>
-                          <p className="text-sm text-center mt-4 c-mute">{t('chatQ')} <a href={chatLink} onClick={onChat} target="_blank" rel="noopener noreferrer" className="lnk-ui">{t('chatBtn')}</a></p>
+                          <p className="text-sm text-center mt-4 c-mute">{t('chatQ')} <a href={chatLink} onClick={onChat} target="_blank" rel="noopener noreferrer" className="lnk-ui" style={{ display: 'inline-flex', alignItems: 'center', minHeight: 44 }}>{t('chatBtn')}</a></p>
                         </div>
                       </div>
                     </Reveal>
@@ -2321,7 +2339,7 @@ export default function App() {
                               </span>
                             ))}
                           </div>
-                          <span className="text-[11px] font-bold c-mute">{r.when}</span>
+                          <span className="text-xs font-bold c-mute">{r.when}</span>
                         </div>
                         <p className="text-[15px] leading-relaxed mb-5 c-ink">“{r.text}”</p>
                       </div>
@@ -2351,15 +2369,16 @@ export default function App() {
 
           <section className="mb-24" aria-labelledby="ab">
             <Reveal>
-              <div className="flex items-center gap-5 mb-5 flex-col sm:flex-row text-center sm:text-left">
-                <Avatar className="w-20 h-20 rounded-full" alt="Thalyson" />
-                <div>
-                  <Title id="ab" className="text-[26px] md:text-[32px]">{t('aboutH')}</Title>
-                  <p className="text-sm font-bold">{t('aboutR')}</p>
-                </div>
+              <div className="relative overflow-hidden mb-6" style={{ borderRadius: 28, aspectRatio: '4 / 3' }}>
+                <Avatar className="w-full h-full" alt="Thalyson" style={{ objectPosition: '50% 28%' }} />
+                <div className="glass-ui absolute left-4 bottom-4 px-4 py-2 text-[13px] font-semibold max-w-[calc(100%-2rem)]">{t('badge')}</div>
               </div>
-              <p className="leading-relaxed mb-3 max-w-xl mx-auto sm:mx-0 text-center sm:text-left c-mute">{t('about1')}</p>
-              <p className="flex items-start justify-center sm:justify-start gap-3 text-[15.5px] leading-relaxed mb-6 max-w-xl mx-auto sm:mx-0 text-left"><Icon name="map" size={18} className="mt-1" />{t('about2')}</p>
+              <div className="mb-5">
+                <Title id="ab" className="text-[26px] md:text-[32px]">{t('aboutH')}</Title>
+                <p className="text-sm font-bold">{t('aboutR')}</p>
+              </div>
+              <p className="leading-relaxed mb-3 max-w-xl c-mute">{t('about1')}</p>
+              <p className="flex items-start gap-3 text-[15.5px] leading-relaxed mb-6 max-w-xl text-left"><Icon name="map" size={18} className="mt-1" />{t('about2')}</p>
               <div className="flex flex-wrap justify-center sm:justify-start gap-3">
                 <Button onClick={() => setProfileOpen(true)} className="btn-ui btn-p btn-md">{t('seeProfile')}</Button>
                 <SocialButtons reviewsLabel={t('reviews')} />
@@ -2402,7 +2421,7 @@ export default function App() {
         <p className="mt-2 font-semibold">{t('adults')}</p>
         <p className="mt-5 pt-4" style={{ borderTop: '1px solid var(--line)' }}>
           {t('builtBy')}{' '}
-          <a href={C.PORTFOLIO} target="_blank" rel="noopener noreferrer" className="lnk-ui c-ink">
+          <a href={C.PORTFOLIO} target="_blank" rel="noopener noreferrer" className="lnk-ui c-ink" style={{ display: 'inline-block', padding: '13px 6px' }}>
             Thalyson Design
           </a>
         </p>

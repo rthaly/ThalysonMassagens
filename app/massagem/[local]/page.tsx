@@ -40,7 +40,7 @@ export default async function Page({ params }: { params: Promise<{ local: string
             <h2 style={{ fontSize: 26, margin: '0 0 12px' }}>Sessões</h2>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
               {sessions.map((s) => (
-                <li key={s.slug}><Link href={`/sessoes/${s.slug}`} style={{ fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: 3 }}>{PUBLIC_BY_SLUG[s.slug].name}</Link><span style={{ color: 'var(--muted)' }}> · {s.durationLabel} min · a partir de R$ {s.price}</span></li>
+                <li key={s.slug}><Link href={`/sessoes/${s.slug}`} style={{ fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: 3, display: 'inline-block', padding: '10px 0' }}>{PUBLIC_BY_SLUG[s.slug].name}</Link><span style={{ color: 'var(--muted)' }}> · {s.durationLabel} min · a partir de R$ {s.price}</span></li>
               ))}
             </ul>
           </section>

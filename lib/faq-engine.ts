@@ -157,8 +157,8 @@ export function answer(messages: Msg[], lang: Lang, busy: Busy[], now = new Date
   if (ask(/(banho|higiene|limpo|shower|ducha)/))
     return { reply: L(lang, 'Peço que você venha já de banho tomado, para aproveitar o tempo inteiro na maca.', 'I ask that you arrive freshly showered, so you can enjoy the full time on the table.', 'Te pido que vengas ya duchado, para aprovechar todo el tiempo en la camilla.') }
 
-  if (ask(/(levar|trazer|preciso de algo|bring)/))
-    return { reply: L(lang, 'Não precisa levar nada. Só venha de banho tomado.', 'You do not need to bring anything. Just arrive freshly showered.', 'No necesitas llevar nada. Solo ven duchado.') }
+  if (ask(/(levar|trazer|preciso de algo|bring|toalha|towel|toalla)/))
+    return { reply: L(lang, 'Leve a sua toalha, porque eu não forneço toalhas. E venha de banho tomado.', 'Bring your own towel, because I do not provide towels. And arrive freshly showered.', 'Trae tu toalla, porque no proporciono toallas. Y ven ya duchado.') }
 
   if (ask(/(\bidade\b|menor de|18 anos|age limit|\bedad\b)/))
     return { reply: L(lang, 'O atendimento é só para maiores de 18 anos.', 'The service is only for people 18 or older.', 'La atención es solo para mayores de 18 años.') }
