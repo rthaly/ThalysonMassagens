@@ -25,7 +25,7 @@ export const LOCAIS: Local[] = [
     faq: [
       { q: 'A suíte fica em qual região da Bela Vista?', a: 'Na região da Avenida 9 de Julho, perto do Metrô Anhangabaú. O endereço exato eu mando pelo WhatsApp depois da reserva.' },
       { q: 'Posso remarcar se algo mudar?', a: 'Pode. Avisando até 12 horas antes, devolvo o sinal no Pix ou troco o dia sem custo.' },
-      { q: 'Preciso levar alguma coisa?', a: 'Só a sua toalha, porque eu não forneço toalhas. Venha também de banho tomado para aproveitar o tempo inteiro na maca.' },
+      { q: 'Preciso levar alguma coisa?', a: 'Só venha de banho tomado.' },
     ],
   },
   {

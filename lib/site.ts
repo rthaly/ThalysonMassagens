@@ -25,15 +25,15 @@ export const PUBLIC_FAQ = [
   { q: 'Como faço para reservar?', a: 'Escolha a sessão e o horário no site, envie o pedido pelo WhatsApp e faça o Pix do sinal de R$ 40, que é descontado do valor total.' },
   { q: 'E se eu precisar remarcar?', a: 'Avisando até 12 horas antes, devolvo o sinal no Pix ou troco o dia sem custo.' },
   { q: 'É minha primeira vez, tudo bem?', a: 'Sim. Antes de começar a gente alinha pressão, música e o que você prefere. Tudo acontece no seu ritmo.' },
-  { q: 'Preciso levar alguma coisa?', a: 'Só a sua toalha, porque eu não forneço toalhas. Venha também de banho tomado para aproveitar o tempo inteiro na maca.' },
+  { q: 'Preciso levar alguma coisa?', a: 'Só venha de banho tomado.' },
 ]
 
 // Nome e texto públicos de cada página de sessão (títulos, meta descrições e H1 indexáveis).
 // O texto detalhado de lib/content.ts só aparece depois que a pessoa clica em "Ver como funciona".
 export const PUBLIC_BY_SLUG: Record<string, { name: string; description: string }> = {
   'massagem-classica': { name: PUBLIC_SERVICES[0].name, description: PUBLIC_SERVICES[0].description },
-  'sensitiva-lingam': { name: PUBLIC_SERVICES[1].name, description: PUBLIC_SERVICES[1].description },
-  'sensacoes-barba-lingam': { name: PUBLIC_SERVICES[2].name, description: PUBLIC_SERVICES[2].description },
-  'corpo-a-corpo-lingam': { name: PUBLIC_SERVICES[3].name, description: PUBLIC_SERVICES[3].description },
-  'apenas-aparo': { name: PUBLIC_SERVICES[4].name, description: PUBLIC_SERVICES[4].description },
+  'massagem-sensitiva': { name: PUBLIC_SERVICES[1].name, description: PUBLIC_SERVICES[1].description },
+  'sessao-sensacoes': { name: PUBLIC_SERVICES[2].name, description: PUBLIC_SERVICES[2].description },
+  'sessao-completa': { name: PUBLIC_SERVICES[3].name, description: PUBLIC_SERVICES[3].description },
+  'aparo-masculino': { name: PUBLIC_SERVICES[4].name, description: PUBLIC_SERVICES[4].description },
 }

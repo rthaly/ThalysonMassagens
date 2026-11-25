@@ -3,6 +3,14 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async redirects() {
+    return [
+      { source: '/sessoes/sensitiva-lingam', destination: '/sessoes/massagem-sensitiva', permanent: true },
+      { source: '/sessoes/sensacoes-barba-lingam', destination: '/sessoes/sessao-sensacoes', permanent: true },
+      { source: '/sessoes/corpo-a-corpo-lingam', destination: '/sessoes/sessao-completa', permanent: true },
+      { source: '/sessoes/apenas-aparo', destination: '/sessoes/aparo-masculino', permanent: true },
+    ]
+  },
   async headers() {
     return [{
       source: '/:path*',

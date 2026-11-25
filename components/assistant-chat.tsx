@@ -50,7 +50,7 @@ const CSS = `
 .aic-panel{position:fixed;z-index:130;right:16px;bottom:16px;width:min(392px,calc(100vw - 24px));height:min(620px,calc(100dvh - 32px));display:flex;flex-direction:column;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.5);overflow:hidden;transform-origin:100% 100%;animation:aicOpen .32s cubic-bezier(.2,.8,.2,1) both}
 .aic-head{display:flex;align-items:center;gap:12px;padding:14px 14px 12px 16px;border-bottom:1px solid var(--line);background:var(--surf)}
 .aic-head strong{display:block;font:600 17px/1.2 'Fraunces',Georgia,serif}.aic-head small{display:block;color:var(--mute);font-size:12px;line-height:1.35;margin-top:2px}
-.aic-x{margin-left:auto;flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font-size:20px;line-height:1}
+.aic-x{margin-left:auto;flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font-size:20px;line-height:1}
 .aic-list{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
 .aic-msg{max-width:86%;padding:11px 14px;border-radius:18px;font-size:15px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;animation:aicMsg .28s both cubic-bezier(.2,.8,.2,1)}
 .aic-msg.a{align-self:flex-start;background:var(--surf);border:1px solid var(--line);border-bottom-left-radius:6px}
@@ -58,7 +58,7 @@ const CSS = `
 .aic-typing{align-self:flex-start;display:flex;gap:5px;padding:14px 16px;border-radius:18px;border-bottom-left-radius:6px;background:var(--surf);border:1px solid var(--line)}
 .aic-typing i{width:7px;height:7px;border-radius:50%;background:var(--mute);animation:aicDot 1.1s infinite}.aic-typing i:nth-child(2){animation-delay:.15s}.aic-typing i:nth-child(3){animation-delay:.3s}
 .aic-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
-.aic-chip{padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);font-family:inherit;font-weight:600;font-size:14px;line-height:1.2;cursor:pointer;animation:aicMsg .3s both;transition:background .15s}
+.aic-chip{min-height:44px;display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);font-family:inherit;font-weight:600;font-size:14px;line-height:1.2;cursor:pointer;animation:aicMsg .3s both;transition:background .15s}
 .aic-chip:hover{background:var(--surf2)}
 .aic-card{align-self:stretch;border:1px solid var(--acc);border-radius:18px;padding:14px;background:var(--surf);animation:aicPop .4s both cubic-bezier(.2,1.4,.4,1)}
 .aic-card p{margin:0 0 3px;font-size:12px;color:var(--mute);font-weight:700;letter-spacing:.04em}.aic-card strong{display:block;font:600 18px/1.3 'Fraunces',Georgia,serif;margin-bottom:10px}

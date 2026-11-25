@@ -157,8 +157,8 @@ export function answer(messages: Msg[], lang: Lang, busy: Busy[], now = new Date
   if (ask(/(banho|higiene|limpo|shower|ducha)/))
     return { reply: L(lang, 'Peço que você venha já de banho tomado, para aproveitar o tempo inteiro na maca.', 'I ask that you arrive freshly showered, so you can enjoy the full time on the table.', 'Te pido que vengas ya duchado, para aprovechar todo el tiempo en la camilla.') }
 
-  if (ask(/(levar|trazer|preciso de algo|bring|toalha|towel|toalla)/))
-    return { reply: L(lang, 'Leve a sua toalha, porque eu não forneço toalhas. E venha de banho tomado.', 'Bring your own towel, because I do not provide towels. And arrive freshly showered.', 'Trae tu toalla, porque no proporciono toallas. Y ven ya duchado.') }
+  if (ask(/(levar|trazer|preciso de algo|bring)/))
+    return { reply: L(lang, 'Só venha de banho tomado.', 'Just arrive freshly showered.', 'Solo ven ya duchado.') }
 
   if (ask(/(\bidade\b|menor de|18 anos|age limit|\bedad\b)/))
     return { reply: L(lang, 'O atendimento é só para maiores de 18 anos.', 'The service is only for people 18 or older.', 'La atención es solo para mayores de 18 años.') }
@@ -166,18 +166,18 @@ export function answer(messages: Msg[], lang: Lang, busy: Busy[], now = new Date
   // Descrição de uma sessão
   if (lastSession && ask(/(o que|como (e|funciona)|explica|detalh|fala|conta|incluso|inclui|what is|how does|que es|como funciona|tem )/)) {
     const s = byPkg(lastSession)
-    if (lang === 'pt') return { reply: `${s.name} (${s.durationLabel} min, ${money(s.price)}): ${s.description}` }
+    if (lang === 'pt') return { reply: `${s.name} (${s.durationLabel} min, ${money(s.price)}): ${s.summary} ${s.steps.join('. ')}.${s.note ? ' ' + s.note : ''}` }
     return { reply: L(lang, '', `${s.name}: ${money(s.price)}, ${s.durationLabel} minutes. The full description is in the session card on the page.`, `${s.name}: ${money(s.price)}, ${s.durationLabel} minutos. La descripción completa está en la tarjeta de la sesión en la página.`) }
   }
 
   // Recomendação: palavras-chave do que a pessoa precisa
   if (ask(/(qual (sessao|massagem)|recomend|indica|combina|which session|que sesion|nao sei|duvida entre)/) || /\b(dor|dores|travad\w*|costas|ombros?|pescoco|treino|stress|estresse|cansad\w*|relaxar|desligar|ansios\w*|barba|intens\w*)\b/.test(last)) {
     const pid = /(barba|naturista|nus)/.test(last) ? 'fusion' : /(intens|completa|mais contato|corpo a corpo)/.test(last) ? 'completa' : /(relaxar|desligar|estress|ansios|cabeca)/.test(last) ? 'sensitiva' : /\b(dor|dores|travad\w*|costas|ombros?|pescoco|treino|cansad\w*)\b/.test(last) ? 'classica' : null
-    if (pid) { const s = byPkg(pid); return { reply: L(lang, `Pelo que você contou, eu indicaria a ${s.name} (${s.durationLabel} min, ${money(s.price)}). ${s.subtitle}. Quer ver horários livres?`, `From what you told me, I would suggest ${s.name} (${s.durationLabel} min, ${money(s.price)}). Want to see free times?`, `Por lo que me cuentas, te sugeriría ${s.name} (${s.durationLabel} min, ${money(s.price)}). ¿Quieres ver horarios libres?`) } }
+    if (pid) { const s = byPkg(pid); return { reply: L(lang, `Pelo que você contou, eu indicaria a ${s.name} (${s.durationLabel} min, ${money(s.price)}). ${s.summary} Quer ver horários livres?`, `From what you told me, I would suggest ${s.name} (${s.durationLabel} min, ${money(s.price)}). Want to see free times?`, `Por lo que me cuentas, te sugeriría ${s.name} (${s.durationLabel} min, ${money(s.price)}). ¿Quieres ver horarios libres?`) } }
     return { reply: L(lang, 'Me conta o que você mais precisa hoje: soltar costas e ombros travados (Clássica), desligar a cabeça e relaxar o corpo todo (Sensitiva), algo mais intenso e com mais contato (Sensações ou Corpo a Corpo) ou só aparar os pelos?', 'Tell me what you need most today: loosen a stiff back and shoulders (Classic), switch off and relax the whole body (Sensitive), something more intense with more contact (Beard Sensations or Body to Body) or just a trim?', 'Cuéntame qué necesitas más hoy: soltar espalda y hombros trabados (Clásica), desconectar y relajar todo el cuerpo (Sensitiva), algo más intenso y con más contacto (Sensaciones o Cuerpo a Cuerpo) o solo recortar el vello?') }
   }
 
-  if (lastSession) { const s = byPkg(lastSession); return { reply: L(lang, `${s.name}: ${s.durationLabel} min, ${money(s.price)}. ${s.subtitle}. Quer ver os horários livres ou saber mais sobre ela?`, `${s.name}: ${s.durationLabel} min, ${money(s.price)}. Want to see free times?`, `${s.name}: ${s.durationLabel} min, ${money(s.price)}. ¿Quieres ver horarios libres?`) } }
+  if (lastSession) { const s = byPkg(lastSession); return { reply: L(lang, `${s.name}: ${s.durationLabel} min, ${money(s.price)}. ${s.summary} Quer ver os horários livres ou saber mais sobre ela?`, `${s.name}: ${s.durationLabel} min, ${money(s.price)}. Want to see free times?`, `${s.name}: ${s.durationLabel} min, ${money(s.price)}. ¿Quieres ver horarios libres?`) } }
 
   if (/^(oi|ola|opa|bom dia|boa tarde|boa noite|e ai|hey|hi|hello|hola|buenas)\b/.test(last))
     return { reply: L(lang, 'Oi! Posso falar de sessões, preços, horários livres, como funciona a reserva e o que mais você quiser saber. O que você procura?', 'Hi! I can talk about sessions, prices, free times, how booking works and more. What are you looking for?', '¡Hola! Puedo hablar de sesiones, precios, horarios libres, cómo funciona la reserva y más. ¿Qué buscas?') }
