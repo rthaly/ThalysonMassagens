@@ -40,7 +40,7 @@ const T: Record<Lang, Record<string, string>> = {
 }
 
 const CSS = `
-.aic-launch{position:fixed;right:16px;z-index:125;display:flex;align-items:center;gap:10px;padding:6px 18px 6px 6px;border-radius:999px;border:1px solid var(--line);background:var(--surf);color:var(--ink);box-shadow:0 10px 30px rgba(0,0,0,.35);cursor:pointer;font-family:inherit;font-weight:700;font-size:14px;line-height:1.2;transition:transform .2s,bottom .25s;animation:aicIn .5s .6s both cubic-bezier(.2,.8,.2,1)}
+.aic-launch{position:fixed;right:16px;z-index:125;display:flex;align-items:center;gap:10px;padding:6px 18px 6px 6px;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--surf) 68%,transparent);backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);color:var(--ink);box-shadow:inset 0 1px 0 var(--gl-hi),0 12px 30px -10px var(--gl-sh);cursor:pointer;font-family:inherit;font-weight:700;font-size:14px;line-height:1.2;transition:transform .2s,bottom .25s;animation:aicIn .5s .6s both cubic-bezier(.2,.8,.2,1)}
 .aic-launch:hover{transform:translateY(-2px)}
 .aic-launch:focus-visible,.aic-btn:focus-visible,.aic-chip:focus-visible,.aic-x:focus-visible,.aic-in:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 .aic-face{position:relative;width:44px;height:44px;border-radius:50%;flex:none}
@@ -75,6 +75,8 @@ const CSS = `
 @keyframes aicDot{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-5px);opacity:1}}
 @keyframes aicPulse{0%{transform:scale(.9);opacity:.7}70%,100%{transform:scale(1.35);opacity:0}}
 @media (max-width:520px){.aic-panel{right:0;bottom:0;width:100vw;height:min(86dvh,680px);border-radius:22px 22px 0 0}.aic-launch span.aic-lbl{display:none}.aic-launch{padding:5px}}
+@media (prefers-reduced-transparency:reduce){.aic-launch{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.aic-launch{background:var(--surf)}}
 @media (prefers-reduced-motion:reduce){.aic-launch,.aic-panel,.aic-msg,.aic-chip,.aic-card{animation:none!important}.aic-face:after,.aic-typing i{animation:none!important}.aic-typing i{opacity:.8}}
 `
 

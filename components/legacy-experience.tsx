@@ -701,7 +701,7 @@ export const REVIEWS: Record<Lang, ReviewItem[]> = {
   ],
 };
 
-const dr = (p: { min: number; max: number }) => (p.max > p.min ? `${p.min} a ${p.max}` : `${p.min}`);
+const dr = (p: { min: number; max: number }, l?: Lang) => (p.max > p.min ? `${p.min} ${l === 'en' ? 'to' : 'a'} ${p.max}` : `${p.min}`);
 const MASSAGES = PACKAGES.filter((p) => p.combo > 0);
 const PAY_PT: Record<string, string> = { pix: 'PIX (-3%)', card: 'CARTÃO', cash: 'DINHEIRO' };
 const THEME_RGB: Record<PkgTheme, { dark: string; light: string }> = {
@@ -1082,7 +1082,17 @@ const CSS = `
 
 .glass-stage{position:relative;border-radius:32px;padding:24px;background:radial-gradient(120% 100% at 10% 0%,rgba(22,20,18,.06),transparent 60%),radial-gradient(100% 100% at 90% 100%,rgba(20,90,62,.07),transparent 60%),var(--surf2);border:1px solid var(--line)}
 .app[data-theme=dark] .glass-stage{background:radial-gradient(120% 100% at 10% 0%,rgba(245,242,238,.07),transparent 60%),radial-gradient(100% 100% at 90% 100%,rgba(94,196,155,.08),transparent 60%),#171615}
-.glass-ui{background:color-mix(in srgb,var(--surf) 64%,transparent);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border:1px solid var(--line);border-radius:22px;box-shadow:0 14px 34px -16px rgba(0,0,0,.45)}
+.app{--gl-hi:rgba(255,255,255,.85);--gl-lo:rgba(22,20,18,.10);--gl-sh:rgba(22,20,18,.28)}
+.app[data-theme=dark]{--gl-hi:rgba(255,255,255,.22);--gl-lo:rgba(0,0,0,.35);--gl-sh:rgba(0,0,0,.6)}
+.glass-ui{position:relative;isolation:isolate;background:linear-gradient(165deg,color-mix(in srgb,var(--surf) 62%,transparent),color-mix(in srgb,var(--surf) 40%,transparent));backdrop-filter:blur(18px) saturate(170%) brightness(1.05);-webkit-backdrop-filter:blur(18px) saturate(170%) brightness(1.05);border:1px solid color-mix(in srgb,var(--ink) 12%,transparent);border-radius:22px;box-shadow:inset 0 1px 0 var(--gl-hi),inset 0 -1px 0 var(--gl-lo),0 1px 2px var(--gl-lo),0 20px 40px -20px var(--gl-sh)}
+.glass-ui::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:radial-gradient(110% 80% at 8% 0%,rgba(255,255,255,.16),transparent 55%)}
+.glass-photo{background:rgba(18,17,16,.6);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);border:1px solid rgba(255,255,255,.2);border-radius:18px;color:#F5F2EE;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 10px 24px -12px rgba(0,0,0,.6)}
+.hero-photo{position:absolute;left:-8px;right:-8px;top:-24px;height:460px;background:url(/thalyson.jpg) 50% 25%/cover no-repeat;filter:blur(34px) saturate(1.5);opacity:.2;pointer-events:none;-webkit-mask-image:linear-gradient(#000 35%,transparent);mask-image:linear-gradient(#000 35%,transparent)}
+.app[data-theme=dark] .hero-photo{opacity:.28}
+.glass-glow{position:absolute;inset:40px -4px -8px;z-index:-1;pointer-events:none;filter:blur(26px);background:radial-gradient(55% 45% at 15% 25%,color-mix(in srgb,var(--warn) 30%,transparent),transparent 70%),radial-gradient(50% 45% at 88% 78%,color-mix(in srgb,var(--ok) 26%,transparent),transparent 70%)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass-ui{background:var(--surf)}.glass-photo{background:rgba(18,17,16,.85)}}
+@media (prefers-reduced-transparency:reduce){.glass-ui{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}.glass-photo{background:rgba(18,17,16,.92);backdrop-filter:none;-webkit-backdrop-filter:none}.hero-photo,.glass-glow{display:none}}
+@media (prefers-contrast:more){.glass-ui{border-color:var(--ink)}.glass-photo{border-color:#F5F2EE}}
 .glass-rev{position:relative;border-radius:26px;padding:22px;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.46));backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.85);box-shadow:0 16px 36px -12px rgba(22,20,18,.12),inset 0 1px 0 rgba(255,255,255,.95);transition:transform .25s ease,box-shadow .25s ease}
 .app[data-theme=dark] .glass-rev{background:linear-gradient(145deg,rgba(44,41,39,.72),rgba(26,24,23,.52));border:1px solid rgba(245,242,238,.14);box-shadow:0 18px 40px -12px rgba(0,0,0,.55),inset 0 1px 0 rgba(245,242,238,.16)}
 @media(hover:hover){.glass-rev:hover{transform:translateY(-3px)}}
@@ -1190,15 +1200,21 @@ interface Booking {
 }
 
 export default function App() {
-  const [lang, setLang] = useState<Lang>(() => {
-    const s = store.get('thaly_lang');
-    return s === 'en' || s === 'es' ? s : 'pt';
-  });
-  const [theme, setTheme] = useState<Theme>(() => {
-    const s = store.get('thaly_theme');
-    if (s === 'dark' || s === 'light') return s;
-    try { return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; } catch { return 'dark'; }
-  });
+  // Idioma e tema começam iguais no servidor e no navegador (pt e escuro) e são lidos depois que a página
+  // monta. Ler o localStorage já no início deixava o HTML do servidor escuro e o React não corrigia.
+  const [lang, setLang] = useState<Lang>('pt');
+  const [theme, setTheme] = useState<Theme>('dark');
+  const [prefsReady, setPrefsReady] = useState(false);
+  useEffect(() => {
+    const l = store.get('thaly_lang');
+    if (l === 'en' || l === 'es') setLang(l);
+    const st = store.get('thaly_theme');
+    let th: Theme = 'dark';
+    if (st === 'dark' || st === 'light') th = st;
+    else { try { th = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; } catch { /* */ } }
+    setTheme(th);
+    setPrefsReady(true);
+  }, []);
   const t = (k: string) => T[lang][k] ?? T.pt[k] ?? k;
 
   const [phase, setPhase] = useState<Phase>('loading');
@@ -1282,9 +1298,9 @@ export default function App() {
     return () => { alive = false; clearInterval(i); };
   }, []);
   useEffect(() => { if (phase !== 'loading') window.scrollTo({ top: 0 }); }, [phase]);
-  useEffect(() => { store.set('thaly_lang', lang); document.documentElement.lang = LOCALE[lang]; }, [lang]);
+  useEffect(() => { if (!prefsReady) return; store.set('thaly_lang', lang); document.documentElement.lang = LOCALE[lang]; }, [lang, prefsReady]);
   useEffect(() => { document.title = SITE_NAME; }, []);
-  useEffect(() => { store.set('thaly_theme', theme); document.documentElement.dataset.theme = theme; }, [theme]);
+  useEffect(() => { if (!prefsReady) return; store.set('thaly_theme', theme); document.documentElement.dataset.theme = theme; }, [theme, prefsReady]);
   useEffect(() => { const i = setInterval(() => setNow(spNow()), 60000); return () => clearInterval(i); }, []);
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
   useEffect(() => { narr.stop(); }, [data.packageId, lang, narr.stop]);
@@ -1766,8 +1782,9 @@ export default function App() {
         {phase === 'site' && (<>
           <section className="relative pt-14 pb-16 flex flex-col justify-center" style={{ minHeight: 'calc(100svh - 76px)' }}>
             <div className="glow" aria-hidden="true" />
+            <div className="hero-photo" aria-hidden="true" />
             <div className="relative">
-              <Reveal><div className="glass-ui inline-flex items-center gap-3 max-w-full pl-1.5 pr-4 py-1.5 mb-6"><Avatar className="w-11 h-11 rounded-full shrink-0" alt="" /><p className="min-w-0 text-sm font-semibold leading-snug">Thalyson<span className="block text-[13px] font-medium c-mute">{t('badge')}</span></p></div></Reveal>
+              <Reveal><div className="glass-ui inline-flex items-center gap-3 max-w-full pl-1.5 pr-4 py-1.5 mb-6"><Avatar className="w-11 h-11 rounded-full shrink-0" alt="" /><p className="min-w-0 text-sm font-semibold leading-snug">Thalyson<span className="block text-[13px] font-medium" style={{ color: 'color-mix(in srgb,var(--ink) 80%,transparent)' }}>{t('badge')}</span></p></div></Reveal>
               <Title as="h1" className="mb-4" style={{ fontSize: 'clamp(48px,12vw,86px)' }}>{t('h1')}</Title>
               <Reveal delay={250}><p className="text-lg leading-relaxed mb-8 max-w-md c-mute">{isReturning ? t('smartSub') : t('sub')}</p></Reveal>
               <Reveal delay={380}>
@@ -1860,7 +1877,7 @@ export default function App() {
                     </div>
                     <p className="leading-relaxed mb-3">{t(`quizWhy_${quizResult.p.id}`)}</p>
                     <ul className="text-sm space-y-1 mb-6 c-mute">
-                      <li className="flex items-center gap-2"><Icon name="clock" size={15} /> <span className="num">{dr(quizResult.p)} {t('min')}</span></li>
+                      <li className="flex items-center gap-2"><Icon name="clock" size={15} /> <span className="num">{dr(quizResult.p, lang)} {t('min')}</span></li>
                       {quizResult.planSave > 0 && <li className="flex items-center gap-2 c-ok"><Icon name="check" size={15} /> {t('quizPlan').replace('{v}', money(quizResult.planSave))}</li>}
                       {quizResult.plan === 'single' && !isReturning && <li className="flex items-center gap-2 c-ok"><Icon name="check" size={15} /> {t('quizFirst')}</li>}
                       {nextFree && <li className="flex items-center gap-2"><span className="dot" aria-hidden="true" /> {t('nextFree')}: <strong className="c-ink num">{nextLabel}</strong></li>}
@@ -1875,7 +1892,8 @@ export default function App() {
             </Reveal>
           </section>
 
-          <section className="mb-24" aria-labelledby="rules-h">
+          <section className="relative isolate mb-24" aria-labelledby="rules-h">
+            <div className="glass-glow" aria-hidden="true" />
             <Title id="rules-h" className="text-[30px] md:text-[38px] mb-2">{t('rulesH')}</Title>
             <Reveal delay={100}><p className="mb-7 c-mute">{t('rulesS')}</p></Reveal>
             <div className="grid sm:grid-cols-2 gap-4">
@@ -1967,7 +1985,7 @@ export default function App() {
                                 <div className="min-w-0 flex-1">
                                   <div className="flex flex-wrap items-center gap-2 mb-1">
                                     <span className="serif text-[21px] sm:text-[23px] leading-tight">{L.title}</span>
-                                    <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-s2 num">{dr(p)} {t('min')}</span>
+                                    <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-s2 num">{dr(p, lang)} {t('min')}</span>
                                     {isRec && <span className="badge-rec"><Icon name="sparkle" size={11} /> {t('recommended')}</span>}
                                   </div>
                                   <span className="block text-sm c-mute">{L.subtitle}</span>
@@ -2097,7 +2115,7 @@ export default function App() {
                           <div className="rise" style={{ minWidth: 0 }}>
                             <div className="flex justify-between items-baseline flex-wrap gap-x-4 mb-3">
                               <p className="lbl-ui lbl-flat" id="time-lbl">{t('time')}</p>
-                              <span className="text-xs c-mute num">{t('session')} {ranged ? `${invoice.dur} a ${invoice.durMax}` : invoice.dur} {t('min')}</span>
+                              <span className="text-xs c-mute num">{t('session')} {ranged ? `${invoice.dur} ${lang === 'en' ? 'to' : 'a'} ${invoice.durMax}` : invoice.dur} {t('min')}</span>
                             </div>
                             {availableCount > 0 && availableCount <= 2 && <p className="text-xs font-bold mb-3 c-warn">{t('lastSlots')}</p>}
                             <RadioGroup aria-labelledby="time-lbl" value={data.time} onValueChange={(v) => { vibrate(15); set({ time: v }); }} className="grid grid-cols-3 sm:grid-cols-4 gap-3">
@@ -2371,7 +2389,7 @@ export default function App() {
             <Reveal>
               <div className="relative overflow-hidden mb-6" style={{ borderRadius: 28, aspectRatio: '4 / 3' }}>
                 <Avatar className="w-full h-full" alt="Thalyson" style={{ objectPosition: '50% 28%' }} />
-                <div className="glass-ui absolute left-4 bottom-4 px-4 py-2 text-[13px] font-semibold max-w-[calc(100%-2rem)]">{t('badge')}</div>
+                <div className="glass-photo absolute left-4 bottom-4 px-4 py-2 text-[13px] font-semibold max-w-[calc(100%-2rem)]">{t('badge')}</div>
               </div>
               <div className="mb-5">
                 <Title id="ab" className="text-[26px] md:text-[32px]">{t('aboutH')}</Title>
