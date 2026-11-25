@@ -16,7 +16,7 @@ export const PUBLIC_SERVICES = [
   { name: 'Massagem Clássica', description: 'Massagem terapêutica do corpo todo, com pressão firme e pistola massageadora nos pontos mais tensos.', minutes: '40 a 60', price: 180 },
   { name: 'Massagem Sensitiva', description: 'Começa com a massagem terapêutica e segue com toques leves pelo corpo todo.', minutes: '60 a 80', price: 220 },
   { name: 'Sessão Sensações', description: 'Sessão de relaxamento profundo, com massagem terapêutica e toques variados, no seu ritmo.', minutes: '60 a 80', price: 290 },
-  { name: 'Sessão Completa', description: 'A sessão mais completa do cardápio, no seu ritmo.', minutes: '60 a 80', price: 390 },
+  { name: 'Sessão Completa', description: 'A sessão mais completa, com massagem terapêutica e atenção ao corpo todo, no seu ritmo.', minutes: '60 a 80', price: 390 },
   { name: 'Aparo masculino', description: 'Aparo na máquina com pentes higienizados, sem lâmina, em até 3 regiões.', minutes: '40 a 60', price: 130 },
 ]
 

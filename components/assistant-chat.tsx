@@ -78,6 +78,16 @@ const CSS = `
 @media (prefers-reduced-transparency:reduce){.aic-launch{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.aic-launch{background:var(--surf)}}
 @media (prefers-reduced-motion:reduce){.aic-launch,.aic-panel,.aic-msg,.aic-chip,.aic-card{animation:none!important}.aic-face:after,.aic-typing i{animation:none!important}.aic-typing i{opacity:.8}}
+.aic-launch{--mx:18%;--my:0%;background:linear-gradient(135deg,var(--lg-a),var(--lg-b));backdrop-filter:blur(18px) saturate(190%) brightness(1.06);-webkit-backdrop-filter:blur(18px) saturate(190%) brightness(1.06);border-color:transparent;box-shadow:inset 1px 1px 0 var(--lg-hi),inset -1px -1px 0 var(--lg-lo),inset 0 0 16px -6px var(--lg-glow),0 14px 30px -12px var(--lg-sh)}
+.aic-launch::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:radial-gradient(130px 100px at var(--mx) var(--my),var(--lg-spec),transparent 70%)}
+.aic-launch::after,.aic-panel::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(135deg,var(--lg-rim1),transparent 36%,transparent 64%,var(--lg-rim2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+.aic-launch{isolation:isolate}
+.aic-panel{background:linear-gradient(160deg,color-mix(in srgb,var(--bg) 80%,transparent),color-mix(in srgb,var(--bg) 66%,transparent));backdrop-filter:blur(28px) saturate(190%);-webkit-backdrop-filter:blur(28px) saturate(190%);border-color:transparent;box-shadow:inset 1px 1px 0 var(--lg-hi),inset -1px -1px 0 var(--lg-lo),0 30px 80px -20px var(--lg-sh)}
+.aic-head,.aic-form{background:transparent}
+.aic-chip,.aic-x{background:linear-gradient(135deg,var(--lg-a),var(--lg-b));box-shadow:inset 1px 1px 0 var(--lg-hi),inset -1px -1px 0 var(--lg-lo)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.aic-launch{background:var(--surf)}.aic-panel{background:var(--bg)}}
+@media (prefers-reduced-transparency:reduce){.aic-launch{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}.aic-panel{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}.aic-launch::before{display:none}}
+@media (prefers-contrast:more){.aic-launch::after,.aic-panel::after{display:none}.aic-launch,.aic-panel{border:1px solid var(--ink)}}
 `
 
 /** Mostra a resposta palavra por palavra (sem animação se a pessoa reduz movimento). */

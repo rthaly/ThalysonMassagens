@@ -1188,6 +1188,26 @@ const CSS = `
 @keyframes sheen{to{transform:translateX(120%)}}
 @keyframes fadeOnly{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.glow,.dot,.core,.ring,.loadbar,.hero-pill::after{animation:none!important}.rise{animation:fadeOnly .6s both!important}.rv,.ttl .w>span{transform:none!important;transition:opacity .7s ease!important}.how-step::after{transform:scaleX(1);transition:none}.pkg-ui:hover,.how-step:hover{transform:none}*{scroll-behavior:auto!important}}
+/* ===== Liquid Glass (estilo Apple): material, aro de luz, brilho que segue o dedo ===== */
+.app{--lg-a:rgba(255,255,255,.64);--lg-b:rgba(255,255,255,.30);--lg-hi:rgba(255,255,255,.95);--lg-lo:rgba(22,20,18,.10);--lg-glow:rgba(255,255,255,.55);--lg-sh:rgba(22,20,18,.24);--lg-rim1:rgba(255,255,255,.95);--lg-rim2:rgba(255,255,255,.55);--lg-spec:rgba(255,255,255,.6)}
+.app[data-theme=dark]{--lg-a:rgba(255,255,255,.14);--lg-b:rgba(255,255,255,.045);--lg-hi:rgba(255,255,255,.4);--lg-lo:rgba(0,0,0,.45);--lg-glow:rgba(255,255,255,.10);--lg-sh:rgba(0,0,0,.65);--lg-rim1:rgba(255,255,255,.62);--lg-rim2:rgba(255,255,255,.22);--lg-spec:rgba(255,255,255,.24)}
+.app{background-image:radial-gradient(60% 38% at 8% 0%,color-mix(in srgb,var(--warn) 14%,transparent),transparent 70%),radial-gradient(55% 40% at 100% 55%,color-mix(in srgb,var(--ok) 12%,transparent),transparent 70%),radial-gradient(50% 35% at 0% 100%,color-mix(in srgb,var(--ink) 7%,transparent),transparent 70%);background-attachment:fixed}
+.glass-ui,.btn-g,.btn-icon,.btn-round,.bar{background:linear-gradient(135deg,var(--lg-a),var(--lg-b));backdrop-filter:blur(16px) saturate(190%) brightness(1.06);-webkit-backdrop-filter:blur(16px) saturate(190%) brightness(1.06);box-shadow:inset 1px 1px 0 var(--lg-hi),inset -1px -1px 0 var(--lg-lo),inset 0 0 16px -6px var(--lg-glow),0 12px 28px -14px var(--lg-sh),0 2px 5px -2px var(--lg-lo)}
+.btn-g,.btn-icon,.btn-round{position:relative;isolation:isolate;border-color:transparent}
+.btn-g:hover:not(:disabled){background:linear-gradient(135deg,var(--lg-a),var(--lg-b));filter:brightness(1.04)}
+.glass-ui,.btn-g,.btn-icon,.btn-round,.bar{--mx:18%;--my:0%}
+.glass-ui::before,.btn-g::before,.btn-icon::before,.btn-round::before,.bar::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:radial-gradient(150px 110px at var(--mx) var(--my),var(--lg-spec),transparent 70%)}
+.glass-ui::after,.btn-g::after,.btn-icon::after,.btn-round::after,.bar::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(135deg,var(--lg-rim1),transparent 36%,transparent 64%,var(--lg-rim2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+.btn-p{position:relative;background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 86%,#fff),var(--acc));box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -10px 18px -10px rgba(0,0,0,.35),0 10px 22px -10px var(--rg)}
+.btn-p:disabled{background:var(--surf2);box-shadow:none}
+.chip-ui{background:linear-gradient(135deg,var(--lg-a),var(--lg-b));box-shadow:inset 1px 1px 0 var(--lg-hi),inset -1px -1px 0 var(--lg-lo),0 6px 14px -10px var(--lg-sh)}
+.chip-ui.on{background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 86%,#fff),var(--acc));box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 18px -10px var(--rg)}
+.bar{left:12px;right:12px;margin-inline:auto;max-width:720px;bottom:calc(10px + env(safe-area-inset-bottom));padding:10px 10px 10px 20px;border:0;border-radius:30px}
+.btn-ui:active,.chip-ui:active{transform:scale(.97);transition-duration:.12s}
+.bar .flex-1{flex:0 0 auto;max-width:42%}.bar .flex-1 p.truncate{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.15}.bar .btn-ui{flex:1 1 0;min-width:0;min-height:52px;padding:8px 16px;font-size:15px}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass-ui,.btn-g,.btn-icon,.btn-round,.bar{background:var(--surf)}}
+@media (prefers-reduced-transparency:reduce){.glass-ui,.btn-g,.btn-icon,.btn-round,.bar,.chip-ui{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}.chip-ui.on{background:var(--acc)}.glass-ui::before,.btn-g::before,.btn-icon::before,.btn-round::before,.bar::before{display:none}}
+@media (prefers-contrast:more){.glass-ui::after,.btn-g::after,.btn-icon::after,.btn-round::after,.bar::after{display:none}.btn-g,.bar,.btn-icon,.btn-round{border:1px solid var(--ink)}}
 `;
 
 interface Booking {
@@ -1219,6 +1239,24 @@ export default function App() {
   const [extrasOpen, setExtrasOpen] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [ask, setAsk] = useState<{ q: string; k: number } | null>(null);
+  // Liquid Glass: o brilho do vidro acompanha o dedo ou o mouse (sem movimento se a pessoa pediu menos animação)
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    let raf = 0;
+    const move = (e: PointerEvent) => {
+      const el = (e.target as Element | null)?.closest?.('.glass-ui,.btn-g,.btn-icon,.btn-round,.bar,.aic-launch') as HTMLElement | null;
+      if (!el) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', `${Math.round(e.clientX - r.left)}px`);
+        el.style.setProperty('--my', `${Math.round(e.clientY - r.top)}px`);
+      });
+    };
+    document.addEventListener('pointermove', move, { passive: true });
+    document.addEventListener('pointerdown', move, { passive: true });
+    return () => { document.removeEventListener('pointermove', move); document.removeEventListener('pointerdown', move); cancelAnimationFrame(raf); };
+  }, []);
   const [offer, setOffer] = useState<Offer>('single');
   const [reviewed, setReviewed] = useState(false);
   const [done, setDone] = useState(false);
