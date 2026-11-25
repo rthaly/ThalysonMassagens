@@ -42,7 +42,7 @@ export const LOCAIS: Local[] = [
     faq: [
       { q: 'Você atende em hotel ou escritório perto da Paulista?', a: 'Atendo no endereço do cliente em São Paulo. Combinamos os detalhes pelo WhatsApp antes de confirmar.' },
       { q: 'Quanto custa a primeira sessão?', a: 'A Massagem Clássica começa em R$ 180 e a primeira sessão tem R$ 15 de desconto automático. Os valores de cada sessão aparecem antes de você enviar o pedido.' },
-      { q: 'Dá para fazer uma sessão curta?', a: 'A Massagem Clássica dura de 40 a 60 minutos e o aparo masculino, 40. As demais sessões duram de 60 a 80 minutos, e o tempo exato varia de acordo com o ritmo da sessão.' },
+      { q: 'Dá para fazer uma sessão curta?', a: 'A Massagem Clássica dura de 40 a 60 minutos e o aparo masculino, de 40 a 60. As demais sessões duram de 60 a 80 minutos, e o tempo exato varia de acordo com o ritmo da sessão.' },
     ],
   },
   {
@@ -54,7 +54,7 @@ export const LOCAIS: Local[] = [
     blocos: [
       { h2: 'Chegando de metrô', p: 'A suíte fica perto do Metrô Anhangabaú. Depois da reserva eu mando o endereço exato e a orientação de como chegar pelo WhatsApp, para você não se perder na região.' },
       { h2: 'Um horário só seu', p: 'Atendo uma pessoa por vez, sem sala de espera e sem cruzar com ninguém na entrada ou na saída. O espaço é simples e reservado, com maca de madeira, música e incenso se você quiser. Se preferir sem incenso, é só pedir.' },
-      { h2: 'Valores sem surpresa', p: 'Você vê o valor total, o sinal de R$ 40 e o que sobra para pagar depois da sessão antes de enviar o pedido. O restante pode ser no Pix, com 3% de desconto, no cartão em até 12 vezes ou em dinheiro.' },
+      { h2: 'Valores sem surpresa', p: 'Você vê o valor total, o sinal de R$ 40 e o que sobra para pagar depois da sessão antes de enviar o pedido. O restante pode ser no Pix, com 3% de desconto (exceto no aparo avulso), no cartão em até 12 vezes ou em dinheiro.' },
     ],
     faq: [
       { q: 'Qual estação de metrô fica mais perto?', a: 'O Metrô Anhangabaú. Passo o endereço exato pelo WhatsApp depois da reserva.' },

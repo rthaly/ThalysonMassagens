@@ -17,7 +17,7 @@ export const PUBLIC_SERVICES = [
   { name: 'Massagem Sensitiva', description: 'Começa com a massagem terapêutica e segue com toques leves pelo corpo todo para relaxar de verdade.', minutes: '60 a 80', price: 220 },
   { name: 'Sessão Sensações', description: 'Sessão de relaxamento profundo, com massagem terapêutica e toques variados, no seu ritmo.', minutes: '60 a 80', price: 290 },
   { name: 'Sessão Completa', description: 'A sessão mais completa do cardápio, no seu ritmo.', minutes: '60 a 80', price: 390 },
-  { name: 'Aparo masculino', description: 'Aparo na máquina com pentes higienizados, sem lâmina, em até 3 regiões.', minutes: '40', price: 130 },
+  { name: 'Aparo masculino', description: 'Aparo na máquina com pentes higienizados, sem lâmina, em até 3 regiões.', minutes: '40 a 60', price: 130 },
 ]
 
 export const PUBLIC_FAQ = [

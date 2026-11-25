@@ -94,7 +94,7 @@ function Typed({ text, animate, onTick }: { text: string; animate: boolean; onTi
   return <>{words.slice(0, n).join('')}</>
 }
 
-export function AssistantChat({ lang, bottom, avatar, whatsappUrl, labelFor, dateLabel, onApply, onEvent }: {
+export function AssistantChat({ lang, bottom, avatar, whatsappUrl, labelFor, dateLabel, onApply, onEvent, ask }: {
   lang: Lang
   bottom: number
   avatar: string
@@ -103,6 +103,8 @@ export function AssistantChat({ lang, bottom, avatar, whatsappUrl, labelFor, dat
   dateLabel: (isoDate: string) => string
   onApply: (b: ChatBooking) => void
   onEvent: (name: string, props?: Record<string, string | number | boolean>) => void
+  // pergunta vinda da página (q vazio só abre o chat); k muda a cada toque
+  ask?: { q: string; k: number } | null
 }) {
   const t = T[lang]
   const [enabled, setEnabled] = useState(false)
@@ -154,6 +156,13 @@ export function AssistantChat({ lang, bottom, avatar, whatsappUrl, labelFor, dat
       if (j.booking) { setDraft(j.booking); onEvent('chat_pedido_pronto', { sessao: j.booking.packageId }) }
     } catch { setFail('err') } finally { setBusy(false) }
   }
+
+  useEffect(() => {
+    if (!ask || !enabled) return
+    setOpen(true); onEvent('chat_aberto')
+    if (ask.q) void send(ask.q)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ask?.k, enabled])
 
   if (!enabled) return null
   const face = imgOk ? <img src={avatar} alt="" onError={() => setImgOk(false)} /> : <span aria-hidden="true">T</span>

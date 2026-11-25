@@ -15,12 +15,12 @@ export const sessions: Session[] = [
   { slug: 'sessao-sensacoes', pkgId: 'fusion', name: 'Sensações com a Barba + Lingam', summary: 'Nós dois nus, com o toque da barba e lingam no final.',
     steps: ['Massagem terapêutica', 'Toques leves e a minha barba em alguns pontos do corpo', 'Lingam no final, com gel e sem pressa'],
     note: 'Sessão naturista: nós dois sem roupa.', duration: 60, durationLabel: '60 a 80', price: 290, accent: 'clay' },
-  { slug: 'sessao-completa', pkgId: 'completa', name: 'Corpo a Corpo + Lingam', summary: 'Nós dois nus, pele com pele, e você também me massageia.',
+  { slug: 'sessao-completa', pkgId: 'completa', name: 'Corpo a Corpo + Lingam', summary: 'Nós dois nus, pele com pele, você também me massageia e lingam no final.',
     steps: ['Massagem terapêutica', 'Toques leves, barba e contato corpo a corpo', 'Você também pode me tocar e massagear', 'Lingam no final'],
     note: 'Nós dois sem roupa.', duration: 60, durationLabel: '60 a 80', price: 390, accent: 'blue' },
   { slug: 'aparo-masculino', pkgId: 'aparo_solo', name: 'Apenas Aparo de Pelos', summary: 'Aparo na máquina em até 3 regiões, sem lâmina.',
     steps: ['Você escolhe as áreas e a altura do pente', 'Máquina com pentes higienizados', 'Acabamento limpo'],
-    note: '', duration: 40, durationLabel: '40', price: 130, accent: 'slate' },
+    note: '', duration: 40, durationLabel: '40 a 60', price: 130, accent: 'slate' },
 ]
 
 export type Review = { initials: string; name: string; session: string; stars: number; text: string; when: string }
