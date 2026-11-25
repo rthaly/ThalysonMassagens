@@ -1,0 +1,30 @@
+export type Session = {
+  slug: string; name: string; subtitle: string; description: string; duration: number; durationLabel: string; price: number; flow: string[]; accent: string;
+}
+
+export const sessions: Session[] = [
+  { slug: 'massagem-classica', name: 'Massagem Clássica', subtitle: 'Massagem terapêutica do corpo todo, sem toques íntimos', description: 'Massagem terapêutica para quem chega com o corpo pesado de trabalho ou treino. Trabalho o corpo todo: pés, panturrilhas, pernas, bumbum, costas, pescoço, braços e mãos, com pressão firme e creme hidratante, e termino com a pistola massageadora nos pontos mais duros. Não tem toques íntimos nem finalização. Você pode ficar sem roupa.', duration: 40, durationLabel: '40 a 60', price: 180, accent: 'sage', flow: ['Você me mostra onde dói ou está mais travado e a gente alinha a pressão.', 'Pés, panturrilhas, pernas, bumbum, costas, pescoço, braços e mãos, com creme hidratante e manobras firmes.', 'Pistola massageadora nos nós mais profundos. Sem toques íntimos.'] },
+  { slug: 'sensitiva-lingam', name: 'Sensitiva + Lingam', subtitle: 'Massagem terapêutica, toques leves que parecem plumas e lingam no final', description: 'A mais pedida. Começo com a massagem terapêutica da Clássica para soltar o corpo. Depois passo toques tão leves que parecem plumas pelo corpo todo, que arrepiam e ajudam você a desligar da rotina. No final tem a massagem lingam: toques lentos no pênis, com gel lubrificante, para você relaxar por completo. Você pode ficar sem roupa. Nesta sessão só você fica sem roupa, se quiser.', duration: 60, durationLabel: '60 a 80', price: 220, accent: 'amber', flow: ['Alinhamento rápido de pressão, música e incenso.', 'Massagem terapêutica no corpo todo, como na Clássica.', 'Toques leves que parecem plumas, da cabeça aos pés, que arrepiam.', 'Lingam no final: massagem lenta no pênis, com gel lubrificante, até você relaxar por completo.'] },
+  { slug: 'sensacoes-barba-lingam', name: 'Sensações com a Barba + Lingam', subtitle: 'Sessão naturista: nós dois nus, com o toque da barba e lingam no final', description: 'Nós dois ficamos sem roupa, para o contato ser direto. Começo com a massagem terapêutica, passo para os toques leves que parecem plumas e uso a minha barba em alguns pontos do corpo. No final tem a massagem lingam: toques lentos no pênis, com gel lubrificante.', duration: 60, durationLabel: '60 a 80', price: 290, accent: 'clay', flow: ['Sessão naturista: nós dois sem roupa, clima tranquilo e respeitoso.', 'Primeiro a massagem terapêutica, depois os toques leves que parecem plumas.', 'Toque da barba em alguns pontos do corpo, alternando com as mãos.', 'Lingam no final, com gel lubrificante e sem pressa.'] },
+  { slug: 'corpo-a-corpo-lingam', name: 'Corpo a Corpo + Lingam', subtitle: 'Nós dois nus, contato pele com pele, e você também pode me massagear', description: 'A sessão mais completa. Nós dois ficamos sem roupa. Começo com a massagem terapêutica, depois os toques leves que parecem plumas e a barba, e passo para o contato corpo a corpo, pele com pele, com gel e creme. Você pode me tocar e fazer massagem em mim, no ritmo que a gente combinar. No final tem a massagem lingam.', duration: 60, durationLabel: '60 a 80', price: 390, accent: 'blue', flow: ['Alinhamento rápido para você ficar totalmente à vontade.', 'Massagem terapêutica, depois os toques leves e o toque da barba.', 'Contato corpo a corpo, pele com pele, e você também pode me massagear.', 'Lingam no final, com gel lubrificante.'] },
+  { slug: 'apenas-aparo', name: 'Apenas Aparo de Pelos', subtitle: 'Higiene e visual alinhado na máquina em até 3 regiões', description: 'Atendimento rápido e discreto para deixar o corpo alinhado. Faço o aparo na máquina com pentes higienizados em até 3 regiões à sua escolha, sem lâmina para não irritar.', duration: 40, durationLabel: '40', price: 130, accent: 'slate', flow: ['Você escolhe as áreas e a altura do pente.', 'Aparo cuidadoso na máquina higienizada.', 'Acabamento limpo e rápido.'] },
+]
+
+export type Review = { initials: string; name: string; session: string; stars: number; text: string; when: string }
+export const reviews: Review[] = [
+  { initials: 'RM', name: 'Rafael M.', session: 'Sensitiva + Lingam', stars: 5, when: 'há 3 dias', text: 'Fazia tempo que eu não desligava assim. Começou tirando a tensão das costas e saí leve demais.' },
+  { initials: 'LT', name: 'Lucas T.', session: 'Massagem Clássica', stars: 5, when: 'há 1 semana', text: 'Peguei só a clássica porque estava com a lombar travada de treino. A mão é firme na medida certa.' },
+  { initials: 'BS', name: 'Bruno S.', session: 'Corpo a Corpo + Lingam', stars: 5, when: 'há 2 semanas', text: 'Contato direto sem frescura e mão muito boa. Atendimento muito tranquilo e acolhedor.' },
+  { initials: 'DG', name: 'Diego G.', session: 'Sensações com a Barba + Lingam', stars: 4, when: 'há 2 semanas', text: 'Pedi para apagar o incenso e ele tirou na hora, sem problema. A barba passando no pescoço e nas costas me arrepiou inteiro.' },
+  { initials: 'FA', name: 'Felipe A.', session: 'Sensitiva + Lingam', stars: 5, when: 'há 3 semanas', text: 'Fui meio travado por ser a primeira vez, mas o Thalyson deixa tudo muito natural. Clima reservado e sem pressa.' },
+  { initials: 'MC', name: 'Matheus C.', session: 'Massagem Clássica', stars: 5, when: 'há 1 mês', text: 'Trabalho o dia inteiro sentado e estava com o pescoço duro. A mão dele é firme na medida certa.' },
+]
+
+export const offers = [
+  { name: 'Sessão Avulsa', detail: 'Uma sessão, sem compromisso.', discount: 'R$ 15 off na primeira visita' },
+  { name: 'Sessão + Aparo', detail: 'Massagem e aparo em até 3 regiões.', discount: 'Até R$ 70 de economia' },
+  { name: 'Plano Quinzenal', detail: 'Duas sessões para usar em até 30 dias.', discount: '10% de desconto' },
+  { name: 'Pacote 5 Sessões', detail: 'Pague 4 sessões e use em até 60 dias.', discount: '1 sessão grátis' },
+]
+export const whatsapp = '5517991360413'
+export const reviewUrl = 'https://g.page/r/Cd1aEwEt0R1QEAE/review'
