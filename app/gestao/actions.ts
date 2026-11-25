@@ -82,3 +82,36 @@ export async function createCalendarEvent(input: { name: string; phone: string; 
   const event = await response.json()
   return { id: typeof event.id === 'string' ? event.id : null }
 }
+
+
+type GoogleEvent = { id?: unknown; summary?: unknown; start?: { dateTime?: unknown }; end?: { dateTime?: unknown } }
+
+// Próximos 30 dias da agenda principal, para a lista "Próximos atendimentos" da gestão.
+export async function listUpcomingEvents() {
+  const user = await getOwner()
+  const token = await getToken(CONNECTOR_UID, { subject: { type: 'user', id: user.id }, scopes: CALENDAR_SCOPES })
+  const now = new Date()
+  const end = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+  const query = new URLSearchParams({ timeMin: now.toISOString(), timeMax: end.toISOString(), singleEvents: 'true', orderBy: 'startTime', maxResults: '50' })
+  const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?${query}`, { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' })
+  if (!response.ok) throw new Error('Não foi possível ler a agenda.')
+  const data = (await response.json()) as { items?: GoogleEvent[] }
+  return (data.items ?? [])
+    .filter((e) => typeof e.id === 'string' && typeof e.start?.dateTime === 'string')
+    .map((e) => ({
+      id: e.id as string,
+      summary: typeof e.summary === 'string' ? e.summary.slice(0, 120) : '(sem título)',
+      start: e.start?.dateTime as string,
+      end: typeof e.end?.dateTime === 'string' ? e.end.dateTime : '',
+    }))
+}
+
+// Cancela um atendimento: apaga o evento da agenda. O site volta a mostrar o horário livre.
+export async function cancelCalendarEvent(id: string) {
+  const user = await getOwner()
+  if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{5,1024}$/.test(id)) throw new Error('Evento inválido.')
+  const token = await getToken(CONNECTOR_UID, { subject: { type: 'user', id: user.id }, scopes: CALENDAR_SCOPES })
+  const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' })
+  if (!response.ok && response.status !== 404 && response.status !== 410) throw new Error('Não foi possível cancelar o evento.')
+  return { ok: true }
+}

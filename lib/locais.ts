@@ -65,7 +65,7 @@ export const LOCAIS: Local[] = [
   {
     slug: 'domicilio-sao-paulo',
     title: 'Massagem em domicílio em São Paulo',
-    description: 'Massagem individual no seu endereço em São Paulo. Eu levo tudo, com hora marcada e valores claros. Atendimento direto com Thalyson.',
+    description: 'Massagem individual no seu endereço em São Paulo. Eu levo os cremes, com hora marcada e valores claros. Atendimento direto com Thalyson.',
     h1: 'Massagem em domicílio em São Paulo',
     intro: 'Se você prefere ficar em casa, eu vou até você. Levo os cremes; só peço que você já esteja de banho tomado na hora combinada.',
     blocos: [

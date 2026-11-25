@@ -6,7 +6,7 @@ import {
   type ButtonHTMLAttributes, type InputHTMLAttributes, type LabelHTMLAttributes, type HTMLAttributes,
 } from 'react';
 import { track } from '@vercel/analytics';
-import { sessions } from '@/lib/content';
+import { sessions, reviews as REVIEWS_PT } from '@/lib/content';
 import { AssistantChat, type ChatBooking } from '@/components/assistant-chat';
 
 const SITE_NAME = 'Relaxar hoje com Thalyson';
@@ -68,7 +68,7 @@ const LANG_NAME: Record<Lang, string> = { pt: 'Português', en: 'English', es: '
 
 const T: Record<Lang, Record<string, string>> = {
   pt: {
-    loadMsg: 'Preparando seu horário reservado', badge: 'Bela Vista • Perto do Metrô Anhangabaú',
+    loadMsg: 'Preparando seu horário reservado', badge: 'Bela Vista, perto do Metrô Anhangabaú',
     wSub: 'Atendimento individual em São Paulo. Você escolhe a sessão, marca o horário em 1 minuto e confirma direto comigo no WhatsApp.',
     
     enter: 'Ver sessões e horários', needAgeEnter: 'Confirme que tem 18 anos ou mais',
@@ -82,7 +82,7 @@ const T: Record<Lang, Record<string, string>> = {
     
     
     
-    s1: '1. Escolha a sessão', s2: '2. Formato ou plano', s3: '3. Dia, horário e local', s4: '4. Conferir e mandar no WhatsApp',
+    s1: 'Escolha a sessão', s2: 'Avulsa, combo ou plano', s3: 'Onde, dia e horário', s4: 'Confira e envie',
     min: 'min', flowH: 'O que acontece', firstBadge: '1ª vez: R$ 15 off', firstShort: '1ª vez', pixHint: 'no Pix',
     oSingle: 'Sessão avulsa', oSingleD: 'Sem compromisso. Já entra com R$ 15 de desconto na primeira vez.',
     oCombo: 'Sessão + aparo de pelos', oComboD: 'Faço o aparo na máquina em até 3 regiões no mesmo atendimento.',
@@ -96,14 +96,14 @@ const T: Record<Lang, Record<string, string>> = {
     name: 'Como você quer ser chamado?', namePh: 'Seu nome ou apelido', nameErr: 'Digite pelo menos 3 letras.',
     place: 'Onde vai ser?', studio: 'Na minha suíte (Bela Vista)', home: 'No seu endereço (SP)',
     homeInfo: 'Vou até o seu endereço levando os cremes. Esteja de banho tomado na hora combinada. Nos horários de trânsito pesado há taxa de deslocamento de R$ 18.',
-    studioInfo: 'Atendo em uma suíte simples e reservada na Bela Vista (pertinho do Metrô Anhangabaú). Venha já de banho tomado para aproveitar o tempo inteiro na maca. Mando a localização exata assim que confirmar.',
+    studioInfo: 'Suíte simples e reservada na Bela Vista, perto do Metrô Anhangabaú. Venha de banho tomado. Mando a localização exata quando confirmar.',
     cep: 'CEP', street: 'Rua ou Avenida', number: 'Nº', comp: 'Apto / Bloco', bairro: 'Bairro', addrErr: 'Preencha rua, número e bairro.', cepFail: 'CEP não encontrado. Preencha manualmente.',
     date: 'Dia', time: 'Horário de início', session: 'Duração:', peak: 'Trânsito', noSlots: 'Agenda cheia neste dia. Escolha outra data acima.',
     demo: 'Horários sujeitos a confirmação rápida no WhatsApp.', dateErr: 'Escolha um dia.', timeErr: 'Escolha um horário.', from: 'Das', to: 'às', unavailable: 'ocupado',
-    cont: 'Revisar valores e confirmar', fill: 'Preencha os campos destacados acima', change: 'Alterar dados', sPack: 'Sessão', sWhen: 'Data e horário', sLoc: 'Local', sLocStudio: 'Suíte Bela Vista (próximo ao Metrô Anhangabaú)',
+    cont: 'Ver resumo e valores', fill: 'Preencha os campos destacados acima', change: 'Alterar dados', sPack: 'Sessão', sWhen: 'Data e horário', sLoc: 'Local', sLocStudio: 'Suíte Bela Vista (próximo ao Metrô Anhangabaú)',
     lPack: 'Sessão escolhida', lPack2: 'Plano 2x no mês (2 sessões)', lPack5: 'Pacote 5 sessões (4 pagas)', lCombo: 'Aparo de pelos (combo)', lTime: '+30 minutos extras', lReq: 'Pedido específico', lSubtotal: 'Subtotal sem descontos', lPlanDisc: 'Desconto do plano/pacote', lFirst: 'Desconto 1ª sessão', lCoupon: 'Cupom aplicado', lPeak: 'Deslocamento / trânsito', lPix: 'Desconto Pix (3%)',
     saved: 'Total economizado', total: 'Valor total final', signal: 'Sinal da reserva (Pix agora)', rest: 'Restante após a sessão',
-    prefsH: 'Preferências do clima na sessão',
+    prefsH: 'Clima da sessão (opcional)', prefIncenseS: 'Incenso aceso', prefMusicS: 'Música ambiente', seeReviews: 'Ver avaliações', aboutN: 'Thalyson, na Bela Vista (SP)',
     prefIncense: 'Gosto de incenso aceso',
     prefMusic: 'Quero música ambiente tocando',
     extras: 'Adicionar +30 min, cupom ou pedido', couponQ: 'Cupons disponíveis (clique para aplicar)', couponPh: 'Ou digite outro código', apply: 'Aplicar', couponOk: 'Cupom aplicado!', couponBad: 'Cupom inválido.', couponRemove: 'Remover',
@@ -119,9 +119,9 @@ const T: Record<Lang, Record<string, string>> = {
     send: 'Mandar pedido no WhatsApp', needPay: 'Escolha como vai pagar o restante', needHealth: 'Confirme saúde em dia e banho tomado', needAge: 'Confirme que tem 18 anos ou mais',
     doneH: 'Resumo pronto', doneP: 'Agora é só enviar a mensagem que abriu no seu WhatsApp junto com o comprovante do sinal de R$ 40 para eu travar seu horário.',
     doneSig: 'Chave Pix (e-mail):', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na agenda', restart: 'Fazer outro agendamento',
-    chatQ: 'Ficou com alguma dúvida antes de marcar?', chatBtn: 'Me chama direto no WhatsApp', chatMsg: 'Oi Thalyson! Vi seu site e queria tirar uma dúvida sobre a massagem.',
+    chatQ: 'Ficou com alguma dúvida antes de marcar?', chatBtn: 'Falar no WhatsApp', chatMsg: 'Oi Thalyson! Vi seu site e queria tirar uma dúvida sobre a massagem.',
     revH: 'Quem já passou por aqui', revS: 'Comentários enviados via WhatsApp de quem já relaxou comigo.', revMore: 'Ver mais avaliações ({n})', revLess: 'Mostrar menos', revBtn: 'Avaliar no Google',
-    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atendimento direto comigo, sem intermediários',
+    aboutH: 'Quem vai te atender', aboutR: 'Atendimento direto comigo, sem intermediários',
     about1: 'Tenho 30 anos, sou do interior de SP e cheguei em São Paulo há menos de 1 ano. Ainda estou me instalando e conhecendo a cidade, então meu atendimento é bem direto e sem luxo de clínica: uma suíte residencial simples e reservada na Bela Vista para você desligar da correria.',
     about2: 'Suíte simples e reservada, perto do Metrô Anhangabaú, com maca de madeira e horário só seu.', seeProfile: 'Ver detalhes do espaço',
     faqH: 'Dúvidas diretas', faqS: 'Toque em uma pergunta ou escreva a sua. O assistente responde na hora, com os avisos do dia.', faqOwn: 'Escrever minha dúvida',
@@ -140,7 +140,7 @@ const T: Record<Lang, Record<string, string>> = {
     pHours: 'Horários', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Pagamento', pPayV: 'Pix (3% de desconto), cartão até 12x ou dinheiro',
     pWhere: 'Local', pWhereV: 'Bela Vista (perto do Metrô Anhangabaú) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis avisando até 12h antes',
     pForget: 'Apagar meus dados deste aparelho', forgot: 'Pronto, dados apagados.',
-    recommended: 'Mais escolhida', smartSub: 'Que bom te ver de volta. Escolha o dia e o horário.', lastSlots: 'Últimos horários livres hoje', upTo: 'pode ir até', howH: 'Como funciona', howS: 'Três passos, do pedido até a sessão.', how1T: 'Escolha a sessão', how1D: 'Veja duração, valor e os horários livres.', how2T: 'Mande o pedido', how2D: 'O resumo vai pronto para o meu WhatsApp.', how3T: 'Confirme com o sinal', how3D: 'R$ 40 no Pix seguram o horário e entram no total. O restante no Pix tem 3% de desconto, menos no aparo avulso.', howNote: 'Venha de banho tomado. Incenso e música ficam por sua escolha, na hora do pedido.', endH: 'Vamos marcar?', endP: 'Leva um minuto. O pedido vai pronto para o meu WhatsApp.', q6: 'Atende no meu endereço?', sessS: 'Primeira sessão: R$ 15 de desconto já aplicado nos valores (o aparo avulso não tem desconto).', 
+    recommended: 'Mais escolhida', smartSub: 'Que bom te ver de volta. Escolha o dia e o horário.', lastSlots: 'Últimos horários livres hoje', upTo: 'pode ir até', howH: 'Como funciona', howS: 'Sem cadastro e sem pagar nada no site.', how1T: 'Escolha a sessão', how1D: 'Veja duração, valor e os horários livres.', how2T: 'Mande o pedido', how2D: 'O resumo vai pronto para o meu WhatsApp.', how3T: 'Confirme com o sinal', how3D: 'R$ 40 no Pix seguram o horário e entram no total. O restante no Pix tem 3% de desconto, menos no aparo avulso.', howNote: 'Venha de banho tomado. Incenso e música ficam por sua escolha, na hora do pedido.', endH: 'Vamos marcar?', endP: 'Leva um minuto. O pedido vai pronto para o meu WhatsApp.', q6: 'Atende no meu endereço?', sessS: 'Primeira sessão: R$ 15 de desconto já aplicado nos valores (o aparo avulso não tem desconto).', 
     quizH: 'Não sabe qual escolher?', quizS: '3 toques e eu te indico a sessão certa para hoje.', quizStart: 'Descobrir minha sessão',
     quizQ1: 'O que você mais precisa hoje?', quizA1a: 'Soltar costas e ombros travados', quizA1b: 'Desligar a cabeça e relaxar o corpo todo', quizA1c: 'Algo mais intenso e com mais contato', quizA1d: 'Só aparar os pelos',
     quizQ2: 'Já fez uma sessão assim antes?', quizA2a: 'É minha primeira vez', quizA2b: 'Já fiz outras vezes',
@@ -158,7 +158,7 @@ const T: Record<Lang, Record<string, string>> = {
     liveCal: 'Horários conferidos agora na agenda do Thalyson.',
   },
   en: {
-    loadMsg: 'Preparing your private slot', badge: 'Bela Vista • Near Anhangabaú Metro',
+    loadMsg: 'Preparing your private slot', badge: 'Bela Vista, near Anhangabaú Metro',
     wSub: 'One-on-one men’s massage in São Paulo. Pick your session, book in 1 minute and confirm directly with me on WhatsApp.',
     
     enter: 'See sessions and times', needAgeEnter: 'Confirm you are 18 or older',
@@ -172,7 +172,7 @@ const T: Record<Lang, Record<string, string>> = {
     
     
     
-    s1: '1. Choose your session', s2: '2. Format or plan', s3: '3. Day, time and location', s4: '4. Review and send on WhatsApp',
+    s1: 'Choose your session', s2: 'Single, combo or plan', s3: 'Where, day and time', s4: 'Review and send',
     min: 'min', flowH: 'What happens', firstBadge: '1st visit: R$ 15 off', firstShort: '1st visit', pixHint: 'on Pix',
     oSingle: 'Single session', oSingleD: 'No commitment. Includes R$ 15 off your first visit.',
     oCombo: 'Session + body trimming', oComboD: 'Clipper trimming on up to 3 areas in the same appointment.',
@@ -185,15 +185,15 @@ const T: Record<Lang, Record<string, string>> = {
     recSlotH: 'Next open recommended slot', recSlotBtn: 'Use this time',
     name: 'What should I call you?', namePh: 'Your first name or nickname', nameErr: 'Enter at least 3 letters.',
     place: 'Where will it be?', studio: 'At my suite (Bela Vista)', home: 'At your address (SP)',
-    homeInfo: 'I come to your address bringing a folding table and supplies. Have space ready for the table and be freshly showered by the scheduled time. Heavy traffic hours carry an R$ 18 travel fee.',
-    studioInfo: 'I work solo in a simple, private residential suite in Bela Vista (near Anhangabaú Metro). Being downtown, it is not dead silent outside, but the private setup makes it easy to switch off and deeply relax. Please arrive freshly showered. Exact location sent upon confirmation.',
+    homeInfo: 'I come to your address bringing the creams. Be freshly showered by the scheduled time. Heavy traffic hours carry an R$ 18 travel fee.',
+    studioInfo: 'A simple, private suite in Bela Vista, near Anhangabaú Metro. Arrive freshly showered. I send the exact location once confirmed.',
     cep: 'ZIP code', street: 'Street or Avenue', number: 'No.', comp: 'Apt / Unit', bairro: 'Neighborhood', addrErr: 'Fill in street, number and neighborhood.', cepFail: 'ZIP code not found. Fill in manually.',
     date: 'Day', time: 'Start time', session: 'Duration:', peak: 'Traffic', noSlots: 'Fully booked on this day. Pick another date above.',
     demo: 'Times subject to quick confirmation on WhatsApp.', dateErr: 'Choose a day.', timeErr: 'Choose a time.', from: 'From', to: 'to', unavailable: 'booked',
-    cont: 'Review prices and confirm', fill: 'Fill in the highlighted fields above', change: 'Edit details', sPack: 'Session', sWhen: 'Date & time', sLoc: 'Location', sLocStudio: 'Bela Vista Suite (near Anhangabaú Metro)',
+    cont: 'See summary and prices', fill: 'Fill in the highlighted fields above', change: 'Edit details', sPack: 'Session', sWhen: 'Date & time', sLoc: 'Location', sLocStudio: 'Bela Vista Suite (near Anhangabaú Metro)',
     lPack: 'Chosen session', lPack2: '2x a month plan (2 sessions)', lPack5: '5-session pack (4 paid)', lCombo: 'Body trimming (combo)', lTime: '+30 extra minutes', lReq: 'Specific request', lSubtotal: 'Subtotal before discounts', lPlanDisc: 'Plan/pack discount', lFirst: '1st session discount', lCoupon: 'Coupon applied', lPeak: 'Travel / traffic', lPix: 'Pix discount (3%)',
     saved: 'Total saved', total: 'Final total', signal: 'Booking deposit (Pix now)', rest: 'Balance after session',
-    prefsH: 'Session atmosphere preferences',
+    prefsH: 'Session atmosphere (optional)', prefIncenseS: 'Incense on', prefMusicS: 'Background music', seeReviews: 'See reviews', aboutN: 'Thalyson, in Bela Vista (SP)',
     prefIncense: 'I like incense burning',
     prefMusic: 'I want background music playing',
     extras: 'Add +30 min, coupon or request', couponQ: 'Available coupons (tap to apply)', couponPh: 'Or type another code', apply: 'Apply', couponOk: 'Coupon applied!', couponBad: 'Invalid coupon.', couponRemove: 'Remove',
@@ -209,9 +209,9 @@ const T: Record<Lang, Record<string, string>> = {
     send: 'Send request on WhatsApp', needPay: 'Choose how you will pay the rest', needHealth: 'Confirm good health & freshly showered', needAge: 'Confirm you are 18 or older',
     doneH: 'Summary ready', doneP: 'Just send the message that opened in WhatsApp along with your R$ 40 deposit receipt so I can lock your slot.',
     doneSig: 'Pix Key (email):', resend: 'Open WhatsApp again', addCal: 'Save to calendar', restart: 'Make another booking',
-    chatQ: 'Have a question before booking?', chatBtn: 'Message me on WhatsApp', chatMsg: 'Hi Thalyson! I saw your site and have a quick question about the massage.',
-    revH: 'Client feedback', revS: 'Unfiltered notes from guys who visited Bela Vista.', revMore: 'See more reviews ({n})', revLess: 'Show less', revBtn: 'Review on Google',
-    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Direct service with me, no middlemen',
+    chatQ: 'Have a question before booking?', chatBtn: 'Chat on WhatsApp', chatMsg: 'Hi Thalyson! I saw your site and have a quick question about the massage.',
+    revH: 'Client feedback', revS: 'Notes sent on WhatsApp by people who came for a session.', revMore: 'See more reviews ({n})', revLess: 'Show less', revBtn: 'Review on Google',
+    aboutH: 'Who will see you', aboutR: 'Direct service with me, no middlemen',
     about1: 'I’m 30, from upstate SP, and moved to São Paulo less than a year ago. I’m still settling in and getting to know the city, so my service is straightforward without fake clinic luxury—a simple, private suite in Bela Vista for you to unplug.',
     about2: 'A simple, private suite near Anhangabaú Metro, with a wooden table and a time slot just for you.', seeProfile: 'See space details',
     faqH: 'Straight answers', faqS: 'Tap a question or write your own. The assistant answers right away, with today\'s notices.', faqOwn: 'Write my question',
@@ -230,7 +230,7 @@ const T: Record<Lang, Record<string, string>> = {
     pHours: 'Hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment', pPayV: 'Pix (3% off), card up to 12x or cash',
     pWhere: 'Location', pWhereV: 'Bela Vista (near Anhangabaú Metro) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12h in advance',
     pForget: 'Clear my data from this device', forgot: 'Done, data cleared.',
-    recommended: 'Most booked', smartSub: 'Good to see you back. Pick your day and time.', lastSlots: 'Last open slots today', upTo: 'may run until', howH: 'How it works', howS: 'Three steps, from request to session.', how1T: 'Pick a session', how1D: 'See length, price and free times.', how2T: 'Send the request', how2D: 'The summary arrives ready on my WhatsApp.', how3T: 'Confirm with the deposit', how3D: 'R$ 40 by Pix holds the time and counts toward the total. Paying the rest by Pix gets 3% off, except for the trim alone.', howNote: 'Arrive freshly showered. Incense and music are your choice when you book.', endH: 'Ready to book?', endP: 'It takes a minute. The request arrives ready on my WhatsApp.', q6: 'Do you come to my address?', sessS: 'First session: R$ 15 off already applied to the prices (the trim alone has no discount).', 
+    recommended: 'Most booked', smartSub: 'Good to see you back. Pick your day and time.', lastSlots: 'Last open slots today', upTo: 'may run until', howH: 'How it works', howS: 'No sign-up and nothing to pay on the site.', how1T: 'Pick a session', how1D: 'See length, price and free times.', how2T: 'Send the request', how2D: 'The summary arrives ready on my WhatsApp.', how3T: 'Confirm with the deposit', how3D: 'R$ 40 by Pix holds the time and counts toward the total. Paying the rest by Pix gets 3% off, except for the trim alone.', howNote: 'Arrive freshly showered. Incense and music are your choice when you book.', endH: 'Ready to book?', endP: 'It takes a minute. The request arrives ready on my WhatsApp.', q6: 'Do you come to my address?', sessS: 'First session: R$ 15 off already applied to the prices (the trim alone has no discount).', 
     quizH: 'Not sure which one?', quizS: '3 taps and I’ll point you to the right session for today.', quizStart: 'Find my session',
     quizQ1: 'What do you need most today?', quizA1a: 'Loosen a stiff back and shoulders', quizA1b: 'Switch off and relax the whole body', quizA1c: 'Something more intense, with more contact', quizA1d: 'Just a trim',
     quizQ2: 'Have you done a session like this before?', quizA2a: 'It’s my first time', quizA2b: 'I’ve done it before',
@@ -248,7 +248,7 @@ const T: Record<Lang, Record<string, string>> = {
     liveCal: 'Times checked live on Thalyson’s calendar.',
   },
   es: {
-    loadMsg: 'Preparando tu horario reservado', badge: 'Bela Vista • Cerca del Metro Anhangabaú',
+    loadMsg: 'Preparando tu horario reservado', badge: 'Bela Vista, cerca del Metro Anhangabaú',
     wSub: 'Atención individual en São Paulo. Eliges la sesión, agendas en 1 minuto y confirmas directo conmigo por WhatsApp.',
     
     enter: 'Ver sesiones y horarios', needAgeEnter: 'Confirma que tienes 18 años o más',
@@ -262,7 +262,7 @@ const T: Record<Lang, Record<string, string>> = {
     
     
     
-    s1: '1. Elige la sesión', s2: '2. Formato o plan', s3: '3. Día, horario y lugar', s4: '4. Revisar y mandar por WhatsApp',
+    s1: 'Elige la sesión', s2: 'Individual, combo o plan', s3: 'Dónde, día y horario', s4: 'Revisa y envía',
     min: 'min', flowH: 'Qué pasa', firstBadge: '1ª vez: R$ 15 off', firstShort: '1ª vez', pixHint: 'en Pix',
     oSingle: 'Sesión individual', oSingleD: 'Sin compromiso. Ya entra con R$ 15 de descuento la primera vez.',
     oCombo: 'Sesión + recorte de vello', oComboD: 'Recorte a máquina en hasta 3 zonas en la misma atención.',
@@ -275,15 +275,15 @@ const T: Record<Lang, Record<string, string>> = {
     recSlotH: 'Horario recomendado libre ahora', recSlotBtn: 'Usar este horario',
     name: '¿Cómo quieres que te llame?', namePh: 'Tu nombre o apodo', nameErr: 'Escribe al menos 3 letras.',
     place: '¿Dónde será?', studio: 'En mi suite (Bela Vista)', home: 'En tu dirección (SP)',
-    homeInfo: 'Voy hasta tu dirección llevando camilla plegable e insumos. Ten un espacio libre para armar la camilla y ya estate recién duchado a la hora acordada. En horarios de tráfico intenso hay tasa de traslado de R$ 18.',
-    studioInfo: 'Atiendo solo en una suite residencial simple y reservada en Bela Vista (cerca del Metro Anhangabaú). Al ser zona céntrica no hay silencio absoluto afuera, pero el clima reservado hace que la gente se relaje mucho. Ven ya recién duchado para aprovechar todo el tiempo. Envío la ubicación exacta al confirmar.',
+    homeInfo: 'Voy hasta tu dirección llevando las cremas. Ten la ducha hecha a la hora acordada. En horarios de tráfico intenso hay tasa de traslado de R$ 18.',
+    studioInfo: 'Suite simple y reservada en Bela Vista, cerca del Metro Anhangabaú. Ven recién duchado. Envío la ubicación exacta al confirmar.',
     cep: 'CEP', street: 'Calle o Avenida', number: 'Nº', comp: 'Depto / Bloque', bairro: 'Barrio', addrErr: 'Completa calle, número y barrio.', cepFail: 'CEP no encontrado. Completa manualmente.',
     date: 'Día', time: 'Hora de inicio', session: 'Duración:', peak: 'Tráfico', noSlots: 'Agenda llena este día. Elige otra fecha arriba.',
     demo: 'Horarios sujetos a confirmación rápida en WhatsApp.', dateErr: 'Elige un día.', timeErr: 'Elige un horario.', from: 'De', to: 'a', unavailable: 'ocupado',
-    cont: 'Revisar valores y confirmar', fill: 'Completa los campos marcados arriba', change: 'Cambiar datos', sPack: 'Sesión', sWhen: 'Fecha y horario', sLoc: 'Lugar', sLocStudio: 'Suite Bela Vista (cerca del Metro Anhangabaú)',
+    cont: 'Ver resumen y valores', fill: 'Completa los campos marcados arriba', change: 'Cambiar datos', sPack: 'Sesión', sWhen: 'Fecha y horario', sLoc: 'Lugar', sLocStudio: 'Suite Bela Vista (cerca del Metro Anhangabaú)',
     lPack: 'Sesión elegida', lPack2: 'Plan 2x al mes (2 sesiones)', lPack5: 'Paquete 5 sesiones (4 pagas)', lCombo: 'Recorte de vello (combo)', lTime: '+30 minutos extra', lReq: 'Pedido específico', lSubtotal: 'Subtotal sin descuentos', lPlanDisc: 'Descuento plan/paquete', lFirst: 'Descuento 1ª sesión', lCoupon: 'Cupón aplicado', lPeak: 'Traslado / tráfico', lPix: 'Descuento Pix (3%)',
     saved: 'Total ahorrado', total: 'Valor total final', signal: 'Señal de reserva (Pix ahora)', rest: 'Restante después de la sesión',
-    prefsH: 'Preferencias del ambiente en la sesión',
+    prefsH: 'Ambiente de la sesión (opcional)', prefIncenseS: 'Incienso encendido', prefMusicS: 'Música ambiente', seeReviews: 'Ver reseñas', aboutN: 'Thalyson, en Bela Vista (SP)',
     prefIncense: 'Me gusta con incienso encendido',
     prefMusic: 'Quiero música ambiental sonando',
     extras: 'Sumar +30 min, cupón o pedido', couponQ: 'Cupones disponibles (clic para aplicar)', couponPh: 'O escribe otro código', apply: 'Aplicar', couponOk: '¡Cupón aplicado!', couponBad: 'Cupón inválido.', couponRemove: 'Quitar',
@@ -299,9 +299,9 @@ const T: Record<Lang, Record<string, string>> = {
     send: 'Mandar pedido por WhatsApp', needPay: 'Elige cómo pagarás el resto', needHealth: 'Confirma salud al día y estar duchado', needAge: 'Confirma que tienes 18 años o más',
     doneH: 'Resumen listo', doneP: 'Ahora solo envía el mensaje que se abrió en tu WhatsApp junto con el comprobante de los R$ 40 para bloquear tu horario.',
     doneSig: 'Clave Pix (e-mail):', resend: 'Abrir WhatsApp nuevamente', addCal: 'Guardar en agenda', restart: 'Hacer otra reserva',
-    chatQ: '¿Te quedó alguna duda antes de reservar?', chatBtn: 'Escríbeme directo al WhatsApp', chatMsg: '¡Hola Thalyson! Vi tu sitio y quería hacerte una consulta sobre el masaje.',
-    revH: 'Quienes ya pasaron por aquí', revS: 'Relatos reales y sin filtro de quienes ya vinieron a Bela Vista.', revMore: 'Ver más reseñas ({n})', revLess: 'Mostrar menos', revBtn: 'Reseñar en Google',
-    aboutH: 'Thalyson • Bela Vista, SP', aboutR: 'Atención directa conmigo, sin intermediarios',
+    chatQ: '¿Te quedó alguna duda antes de reservar?', chatBtn: 'Hablar por WhatsApp', chatMsg: '¡Hola Thalyson! Vi tu sitio y quería hacerte una consulta sobre el masaje.',
+    revH: 'Quienes ya pasaron por aquí', revS: 'Comentarios enviados por WhatsApp de quienes ya vinieron a una sesión.', revMore: 'Ver más reseñas ({n})', revLess: 'Mostrar menos', revBtn: 'Reseñar en Google',
+    aboutH: 'Quién te atiende', aboutR: 'Atención directa conmigo, sin intermediarios',
     about1: 'Tengo 30 años, soy del interior de SP y llegué a São Paulo hace menos de 1 año. Todavía me estoy instalando y conociendo la ciudad, así que mi atención es directa y sin lujo falso de clínica: una suite residencial simple y reservada en Bela Vista para desconectar.',
     about2: 'Suite simple y reservada, cerca del Metro Anhangabaú, con camilla de madera y horario solo para ti.', seeProfile: 'Ver detalles del espacio',
     faqH: 'Dudas directas', faqS: 'Toca una pregunta o escribe la tuya. El asistente responde al instante, con los avisos del día.', faqOwn: 'Escribir mi duda',
@@ -320,7 +320,7 @@ const T: Record<Lang, Record<string, string>> = {
     pHours: 'Horarios', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Pago', pPayV: 'Pix (3% de descuento), tarjeta hasta 12x o efectivo',
     pWhere: 'Lugar', pWhereV: 'Bela Vista (cerca del Metro Anhangabaú) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis avisando hasta 12h antes',
     pForget: 'Borrar mis datos de este dispositivo', forgot: 'Listo, datos borrados.',
-    recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy', upTo: 'puede llegar hasta', howH: 'Cómo funciona', howS: 'Tres pasos, del pedido a la sesión.', how1T: 'Elige la sesión', how1D: 'Mira duración, precio y horarios libres.', how2T: 'Envía el pedido', how2D: 'El resumen llega listo a mi WhatsApp.', how3T: 'Confirma con la señal', how3D: 'R$ 40 por Pix aseguran el horario y se descuentan del total. Pagando el resto por Pix tienes 3% de descuento, menos en el recorte solo.', howNote: 'Ven ya duchado. El incienso y la música los eliges al pedir.', endH: '¿Reservamos?', endP: 'Toma un minuto. El pedido llega listo a mi WhatsApp.', q6: '¿Atiendes en mi dirección?', sessS: 'Primera sesión: R$ 15 de descuento ya aplicado en los precios (el recorte solo no tiene descuento).', 
+    recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy', upTo: 'puede llegar hasta', howH: 'Cómo funciona', howS: 'Sin registro y sin pagar nada en el sitio.', how1T: 'Elige la sesión', how1D: 'Mira duración, precio y horarios libres.', how2T: 'Envía el pedido', how2D: 'El resumen llega listo a mi WhatsApp.', how3T: 'Confirma con la señal', how3D: 'R$ 40 por Pix aseguran el horario y se descuentan del total. Pagando el resto por Pix tienes 3% de descuento, menos en el recorte solo.', howNote: 'Ven ya duchado. El incienso y la música los eliges al pedir.', endH: '¿Reservamos?', endP: 'Toma un minuto. El pedido llega listo a mi WhatsApp.', q6: '¿Atiendes en mi dirección?', sessS: 'Primera sesión: R$ 15 de descuento ya aplicado en los precios (el recorte solo no tiene descuento).', 
     quizH: '¿No sabes cuál elegir?', quizS: '3 toques y te indico la sesión ideal para hoy.', quizStart: 'Descubrir mi sesión',
     quizQ1: '¿Qué necesitas más hoy?', quizA1a: 'Soltar espalda y hombros trabados', quizA1b: 'Apagar la cabeza y relajar todo el cuerpo', quizA1c: 'Algo más intenso y con más contacto', quizA1d: 'Solo recortar el vello',
     quizQ2: '¿Ya hiciste una sesión así?', quizA2a: 'Es mi primera vez', quizA2b: 'Ya lo hice antes',
@@ -420,6 +420,34 @@ const PACKAGES: { id: string; price: number; min: number; max: number; combo: nu
 ];
 
 type ReviewItem = { initials: string; name: string; tag: string; when: string; stars: number; text: string };
+
+
+// Avaliações da Home: as mesmas de lib/content.ts (texto moderado). As completas ficam em /avaliacoes (noindex).
+const REV_EN: Record<string, [string, string]> = {
+  'Rafael M.': ['It had been a while since I switched off like that. He started on the tension in my back and I left feeling light.', '3 days ago'],
+  'Lucas T.': ['I only booked the classic because my lower back was locked up from training. Firm hands, just right.', '1 week ago'],
+  'Bruno S.': ['Direct contact, no fuss, and really good hands. Calm, welcoming service.', '2 weeks ago'],
+  'Diego G.': ['I asked him to put out the incense and he did it right away. The beard on my neck and back gave me goosebumps.', '2 weeks ago'],
+  'Felipe A.': ['I was a bit tense since it was my first time, but Thalyson makes everything feel natural. Private and unhurried.', '3 weeks ago'],
+  'Matheus C.': ['I sit at a desk all day and my neck was stiff. His hands are firm, just right.', '1 month ago'],
+};
+const REV_ES: Record<string, [string, string]> = {
+  'Rafael M.': ['Hacía tiempo que no me desconectaba así. Empezó quitando la tensión de la espalda y salí liviano.', 'hace 3 días'],
+  'Lucas T.': ['Tomé solo la clásica porque tenía la zona lumbar trabada por el entrenamiento. Mano firme, en su justa medida.', 'hace 1 semana'],
+  'Bruno S.': ['Contacto directo, sin vueltas, y muy buenas manos. Atención tranquila y acogedora.', 'hace 2 semanas'],
+  'Diego G.': ['Le pedí que apagara el incienso y lo quitó al momento. La barba por el cuello y la espalda me erizó entero.', 'hace 2 semanas'],
+  'Felipe A.': ['Fui algo tenso por ser la primera vez, pero Thalyson hace que todo sea natural. Reservado y sin prisa.', 'hace 3 semanas'],
+  'Matheus C.': ['Trabajo sentado todo el día y tenía el cuello rígido. Su mano es firme en su justa medida.', 'hace 1 mes'],
+};
+const pkgTitle = (sessionName: string, l: Lang) => {
+  const id = sessions.find((x) => x.name === sessionName)?.pkgId;
+  return (PACKAGES.find((p) => p.id === id)?.L[l].title) || sessionName;
+};
+const HOME_REVIEWS: Record<Lang, ReviewItem[]> = {
+  pt: REVIEWS_PT.map((r) => ({ initials: r.initials, name: r.name, tag: r.session, when: r.when, stars: r.stars, text: r.text })),
+  en: REVIEWS_PT.map((r) => ({ initials: r.initials, name: r.name, tag: pkgTitle(r.session, 'en'), when: REV_EN[r.name]?.[1] || r.when, stars: r.stars, text: REV_EN[r.name]?.[0] || r.text })),
+  es: REVIEWS_PT.map((r) => ({ initials: r.initials, name: r.name, tag: pkgTitle(r.session, 'es'), when: REV_ES[r.name]?.[1] || r.when, stars: r.stars, text: REV_ES[r.name]?.[0] || r.text })),
+};
 
 export const REVIEWS: Record<Lang, ReviewItem[]> = {
   pt: [
@@ -1002,7 +1030,7 @@ function Modal({ title, onClose, closeLabel, children }: { title: string; onClos
 const Row = ({ label, value, tone }: { label: string; value: ReactNode; tone?: 'ok' }) => (
   <div className={cn('flex justify-between items-baseline gap-3 text-[15.5px]', tone && 'c-ok font-bold')}>
     <span className={cn('min-w-0 flex-1', !tone && 'c-mute')}>{label}</span>
-    <span className="font-semibold text-right num">{value}</span>
+    <span className="font-semibold text-right row-v">{value}</span>
   </div>
 );
 
@@ -1088,7 +1116,7 @@ const CSS = `
 .btn-icon{min-height:44px;min-width:44px;width:44px;padding:0;border:none}
 .btn-ghost{background:transparent;border:none;min-height:auto;padding:4px;justify-content:flex-start;border-radius:14px;font-weight:500}
 
-.coupon-pill{display:inline-flex;align-items:center;gap:6px;min-height:42px;padding:6px 14px;border-radius:999px;border:1.5px dashed var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok);font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s,background .2s}
+.coupon-pill{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:6px 14px;border-radius:999px;border:1.5px dashed var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok);font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s,background .2s}
 .coupon-pill:hover{background:color-mix(in srgb,var(--ok) 20%,transparent)}
 .coupon-pill:active{transform:scale(.97)}
 
@@ -1208,6 +1236,50 @@ const CSS = `
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass-ui,.btn-g,.btn-icon,.btn-round,.bar{background:var(--surf)}}
 @media (prefers-reduced-transparency:reduce){.glass-ui,.btn-g,.btn-icon,.btn-round,.bar,.chip-ui{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}.chip-ui.on{background:var(--acc)}.glass-ui::before,.btn-g::before,.btn-icon::before,.btn-round::before,.bar::before{display:none}}
 @media (prefers-contrast:more){.glass-ui::after,.btn-g::after,.btn-icon::after,.btn-round::after,.bar::after{display:none}.btn-g,.bar,.btn-icon,.btn-round{border:1px solid var(--ink)}}
+/* ===== Layout das seções (leitura da esquerda para a direita, botões alinhados) ===== */
+.btn-row{display:grid;gap:12px;align-items:stretch}
+.btn-row>.btn-ui{width:100%}
+@media(min-width:640px){.btn-row{display:flex;flex-wrap:wrap}.btn-row>.btn-ui{width:auto}}
+.btn-col{display:grid;gap:12px}.btn-col>.btn-ui{width:100%}
+.hero-facts{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);margin:0;padding:14px 18px;border-radius:22px;max-width:460px}
+.hero-facts>div{min-width:0;padding-right:12px}
+.hero-facts>div+div{padding:0 0 0 16px;border-left:1px solid var(--line)}
+.hero-facts dt{font-size:13px;line-height:1.3;color:var(--mute)}
+.hero-facts dd{margin:4px 0 0;display:flex;flex-wrap:wrap;align-items:center;column-gap:8px;font:500 20px/1.2 'Fraunces',Georgia,serif;color:var(--ink);white-space:normal}
+.hero-facts .dot{flex:none}
+.hero-facts-sub{display:block;width:100%;margin-top:4px;font:600 12px/1.2 'Poppins',sans-serif;color:var(--ok)}
+.how-line{list-style:none;margin:0;padding:0;display:grid}
+.how-line>li{position:relative;padding-bottom:28px}
+.how-line>li:last-child{padding-bottom:0}
+.how-line>li:not(:last-child)::before{content:'';position:absolute;left:17px;top:42px;bottom:6px;width:1.5px;background:var(--line)}
+.how-row{display:grid;grid-template-columns:36px minmax(0,1fr);gap:16px;align-items:start}
+.how-line .how-n{width:36px;height:36px;margin:0}
+@media(min-width:768px){.how-line{grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}.how-line>li{padding:0}.how-line>li::before{display:none}.how-row{grid-template-columns:1fr;gap:14px}}
+.how-note{display:flex;align-items:flex-start;gap:12px;margin-top:28px;padding:14px 16px;border-radius:18px;font-size:15px;line-height:1.5}
+.how-note svg{margin-top:2px;color:var(--ok)}
+.quiz-inline{display:grid;gap:12px;padding:16px 18px;border-radius:22px;margin-bottom:20px}
+.quiz-inline .btn-ui{width:100%}
+@media(min-width:640px){.quiz-inline{grid-template-columns:minmax(0,1fr) auto;align-items:center}.quiz-inline .btn-ui{width:auto}}
+.rec-slot{display:grid;gap:12px;padding:16px;border-radius:20px}
+.rec-slot .btn-ui{width:100%}
+@media(min-width:480px){.rec-slot{grid-template-columns:minmax(0,1fr) auto;align-items:center}.rec-slot .btn-ui{width:auto}}
+.rev-grid{display:grid;gap:14px}
+@media(min-width:768px){.rev-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.rev-card{display:flex;flex-direction:column;gap:14px;margin:0}
+.rev-card blockquote{margin:0;flex:1}
+.rev-stars{display:flex;gap:3px;color:var(--warn)}
+.rev-by{display:flex;align-items:center;gap:12px;padding-top:14px;border-top:1px solid var(--line)}
+.about{display:grid;gap:24px}
+.about-photo{border-radius:28px;overflow:hidden;aspect-ratio:4/3}
+@media(min-width:768px){.about{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:start;gap:36px}.about-photo{aspect-ratio:4/5}}
+.about-facts{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.about-facts li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:12px;align-items:start;font-size:15px;line-height:1.5}
+.about-facts svg{margin-top:2px;color:var(--mute)}
+.ask-ui{min-height:56px}
+.ask-own{border-style:dashed}
+.end-card{padding:28px 22px;border-radius:28px}
+.row-v{min-width:0;max-width:64%;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+@media(min-width:640px){.end-card{padding:40px}}
 `;
 
 interface Booking {
@@ -1666,7 +1738,7 @@ export default function App() {
   const nextLabel = nextFree ? `${nextFree.k === 0 ? t('today') : nextFree.k === 1 ? t('tomorrow') : fmt(nextFree.d, { weekday: 'long' })} ${nextFree.t}` : '';
   const minMassagePrice = useMemo(() => Math.min(...MASSAGES.map((p) => p.price)), []);
   const minVisual = getVisualPrice(minMassagePrice);
-  const allReviews = REVIEWS[lang];
+  const allReviews = HOME_REVIEWS[lang];
   const visibleReviews = showAllReviews ? allReviews : allReviews.slice(0, 3);
 
   // ---- Deep links (?sessao=, ?cupom=, ?agendar) aplicados quando o site abre ----
@@ -1820,51 +1892,45 @@ export default function App() {
         )}
 
         {phase === 'site' && (<>
-          <section className="relative pt-14 pb-16 flex flex-col justify-center" style={{ minHeight: 'calc(100svh - 76px)' }}>
+          <section className="relative pt-12 pb-14 flex flex-col justify-center" style={{ minHeight: 'calc(100svh - 76px)' }}>
             <div className="glow" aria-hidden="true" />
             <div className="hero-photo" aria-hidden="true" />
             <div className="relative">
               <Reveal><div className="glass-ui hero-pill inline-flex items-center gap-3 max-w-full pl-1.5 pr-4 py-1.5 mb-6"><Avatar className="w-11 h-11 rounded-full shrink-0" alt="" /><p className="min-w-0 text-sm font-semibold leading-snug">Thalyson<span className="block text-[13px] font-medium" style={{ color: 'color-mix(in srgb,var(--ink) 80%,transparent)' }}>{t('badge')}</span></p></div></Reveal>
-              <Title as="h1" className="mb-4" style={{ fontSize: 'clamp(48px,12vw,86px)' }}>{t('h1')}</Title>
+              <Title as="h1" className="mb-4" style={{ fontSize: 'clamp(44px,11.5vw,84px)' }}>{t('h1')}</Title>
               <Reveal delay={250}><p className="text-lg leading-relaxed mb-8 max-w-md c-mute">{isReturning ? t('smartSub') : t('sub')}</p></Reveal>
               <Reveal delay={380}>
-                <div className="flex flex-wrap gap-3 mb-8">
+                <div className="btn-row mb-6">
                   <Button onClick={goBook} className="btn-ui btn-p btn-lg">{t('cta')}</Button>
-                  <Button asChild className="btn-ui btn-g btn-lg">
-                    <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {t('reviews')}</a>
-                  </Button>
+                  <Button onClick={() => document.getElementById('avaliacoes')?.scrollIntoView({ block: 'start' })} className="btn-ui btn-g btn-lg"><Icon name="star" size={18} /> {t('seeReviews')}</Button>
                 </div>
               </Reveal>
               <Reveal delay={500}>
-                {nextFree && (
-                  <p className="flex items-center gap-3 text-sm c-mute"><span className="dot" aria-hidden="true" /><span>{t('nextFree')}: <strong className="c-ink num">{nextLabel}</strong></span></p>
-                )}
-                <p className="text-sm mt-1 c-mute">
-                  {t('fromM')}{' '}
-                  {minVisual.disc > 0 ? (
-                    <><s className="opacity-70 num">{money(minMassagePrice)}</s> <strong className="c-ok num">{money(minVisual.finalPrice)}</strong></>
-                  ) : (
-                    <strong className="c-ink num">{money(minMassagePrice)}</strong>
-                  )}
-                </p>
+                <dl className="hero-facts glass-ui">
+                  {nextFree && <div><dt>{t('nextFree')}</dt><dd className="num"><span className="dot" aria-hidden="true" /> {nextLabel}</dd></div>}
+                  <div><dt>{t('fromM')}</dt><dd className="num">{money(minVisual.disc > 0 ? minVisual.finalPrice : minMassagePrice)}{minVisual.disc > 0 && <span className="hero-facts-sub"> {t('firstShort')}</span>}</dd></div>
+                </dl>
               </Reveal>
             </div>
           </section>
+
           <section id="como-funciona" className="mb-24 scroll-mt-20" aria-labelledby="how-h">
             <Title id="how-h" className="text-[30px] md:text-[38px] mb-2">{t('howH')}</Title>
-            <Reveal delay={100}><p className="mb-7 c-mute">{t('howS')}</p></Reveal>
-            <div className="grid sm:grid-cols-3 gap-4" role="list">
+            <Reveal delay={100}><p className="mb-8 c-mute">{t('howS')}</p></Reveal>
+            <ol className="how-line">
               {(['1', '2', '3'] as const).map((n, i) => (
-                <Reveal key={n} delay={i * 90} className="h-full">
-                  <div role="listitem" className="glass-ui how-step h-full p-5">
+                <li key={n}>
+                  <Reveal delay={i * 90} className="how-row">
                     <span className="how-n" aria-hidden="true">{n}</span>
-                    <p className="serif text-[21px] leading-tight mb-1">{t(`how${n}T`)}</p>
-                    <p className="text-sm leading-relaxed c-mute">{t(`how${n}D`)}</p>
-                  </div>
-                </Reveal>
+                    <div className="min-w-0">
+                      <p className="serif text-[21px] leading-tight mb-1">{t(`how${n}T`)}</p>
+                      <p className="text-sm leading-relaxed c-mute">{t(`how${n}D`)}</p>
+                    </div>
+                  </Reveal>
+                </li>
               ))}
-            </div>
-            <Reveal delay={200}><p className="text-sm mt-5 c-mute">{t('howNote')}</p></Reveal>
+            </ol>
+            <Reveal delay={200}><p className="how-note glass-ui"><Icon name="check" size={18} /><span>{t('howNote')}</span></p></Reveal>
           </section>
 
           {draft && !chosen && (
@@ -1882,18 +1948,43 @@ export default function App() {
             </Reveal>
           )}
 
-          <section className="mb-24" aria-labelledby="quiz-h">
-            <Reveal>
-              <Card className="p-6 sm:p-8">
-                {quiz.step === 0 && (
-                  <div className="flex flex-wrap items-center justify-between gap-5">
-                    <div className="min-w-0 flex-1">
-                      <h2 id="quiz-h" className="serif text-[28px] md:text-[34px] leading-tight mb-1">{t('quizH')}</h2>
-                      <p className="c-mute">{t('quizS')}</p>
-                    </div>
-                    <Button onClick={() => { vibrate(10); setQuiz({ step: 1, need: '', first: '', freq: '' }); safeTrack('quiz_iniciado'); }} className="btn-ui btn-p btn-lg w-full sm:w-auto"><Icon name="sparkle" size={18} /> {t('quizStart')}</Button>
+          <section id="sessoes" ref={bookRef} className="scroll-mt-20 mb-24" aria-label={t('cta')}>
+            {done ? (
+              <Reveal>
+                <Card className="card-flat p-6 sm:p-8">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mb-6 c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 18%,transparent)' }}><Icon name="check" size={32} /></div>
+                  <h2 className="serif text-4xl font-light mb-4">{t('doneH')}</h2>
+                  <p className="leading-relaxed mb-4 c-mute">{t('doneP')}</p>
+                  <p className="font-bold mb-8">{t('doneSig')} {C.PIX_KEY} • <span className="num">{money(invoice.sinal)}</span></p>
+                  <div className="btn-col max-w-sm">
+                    <Button asChild className="btn-ui btn-p w-full">
+                      <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer">{t('resend')}</a>
+                    </Button>
+                    <Button onClick={copyPix} className="btn-ui btn-g w-full"><Icon name="copy" size={16} /> {t('copyPix')}</Button>
+                    {googleCalendarLink() && (
+                      <Button asChild className="btn-ui btn-g w-full">
+                        <a href={googleCalendarLink()} target="_blank" rel="noopener noreferrer"><Icon name="cal" size={16} /> {t('addCal')}</a>
+                      </Button>
+                    )}
+                    <Button onClick={restart} className="lnk-ui lnk-block lnk-mute lnk-full">{t('restart')}</Button>
                   </div>
-                )}
+                </Card>
+              </Reveal>
+            ) : (
+              <div className="space-y-20">
+                <div>
+                  <StepHead n={1} title={t('s1')} done={chosen} />
+                  <p className="text-sm mb-5 -mt-3 c-mute">{t('sessS')}</p>
+                  {quiz.step === 0 ? (
+                    <div className="quiz-inline glass-ui">
+                      <div className="min-w-0">
+                        <p className="font-semibold leading-snug">{t('quizH')}</p>
+                        <p className="text-sm c-mute">{t('quizS')}</p>
+                      </div>
+                      <Button onClick={() => { vibrate(10); setQuiz({ step: 1, need: '', first: '', freq: '' }); safeTrack('quiz_iniciado'); }} className="btn-ui btn-g btn-sm"><Icon name="sparkle" size={16} /> {t('quizStart')}</Button>
+                    </div>
+                  ) : (
+                    <Card className="p-5 sm:p-7 mb-5">
                 {quiz.step >= 1 && quiz.step <= 3 && (
                   <div className="rise" key={quiz.step} aria-live="polite">
                     <p className="text-xs font-bold uppercase tracking-wider c-mute mb-2 num">{t('quizStep').replace('{a}', String(quiz.step)).replace('{b}', '3')}</p>
@@ -1930,43 +2021,14 @@ export default function App() {
                       {quizResult.plan === 'single' && !isReturning && quizResult.p.id !== 'aparo_solo' && <li className="flex items-center gap-2 c-ok"><Icon name="check" size={15} /> {t('quizFirst')}</li>}
                       {nextFree && <li className="flex items-center gap-2"><span className="dot" aria-hidden="true" /> {t('nextFree')}: <strong className="c-ink num">{nextLabel}</strong></li>}
                     </ul>
-                    <div className="flex flex-wrap gap-3">
-                      <Button onClick={applyQuiz} className="btn-ui btn-p btn-lg">{t('quizGo')}</Button>
-                      <Button onClick={() => setQuiz({ step: 1, need: '', first: '', freq: '' })} className="btn-ui btn-g btn-lg">{t('quizRedo')}</Button>
+                    <div className="btn-row">
+                      <Button onClick={applyQuiz} className="btn-ui btn-p btn-md">{t('quizGo')}</Button>
+                      <Button onClick={() => setQuiz({ step: 0, need: '', first: '', freq: '' })} className="btn-ui btn-g btn-md">{t('close')}</Button>
                     </div>
                   </div>
                 )}
-              </Card>
-            </Reveal>
-          </section>
-
-          <section id="sessoes" ref={bookRef} className="scroll-mt-20 mb-24" aria-label={t('cta')}>
-            {done ? (
-              <Reveal>
-                <Card className="card-flat p-8 text-center">
-                  <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 c-ok" style={{ background: 'color-mix(in srgb,var(--ok) 18%,transparent)' }}><Icon name="check" size={32} /></div>
-                  <h2 className="serif text-4xl font-light mb-4">{t('doneH')}</h2>
-                  <p className="leading-relaxed mb-4 c-mute">{t('doneP')}</p>
-                  <p className="font-bold mb-8">{t('doneSig')} {C.PIX_KEY} • <span className="num">{money(invoice.sinal)}</span></p>
-                  <div className="space-y-3 max-w-xs mx-auto">
-                    <Button asChild className="btn-ui btn-p w-full">
-                      <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer">{t('resend')}</a>
-                    </Button>
-                    <Button onClick={copyPix} className="btn-ui btn-g w-full"><Icon name="copy" size={16} /> {t('copyPix')}</Button>
-                    {googleCalendarLink() && (
-                      <Button asChild className="btn-ui btn-g w-full">
-                        <a href={googleCalendarLink()} target="_blank" rel="noopener noreferrer"><Icon name="cal" size={16} /> {t('addCal')}</a>
-                      </Button>
-                    )}
-                    <Button onClick={restart} className="lnk-ui lnk-block lnk-mute lnk-full">{t('restart')}</Button>
-                  </div>
-                </Card>
-              </Reveal>
-            ) : (
-              <div className="space-y-20">
-                <div>
-                  <StepHead n={1} title={t('s1')} done={chosen} />
-                  <p className="text-sm mb-5 -mt-3 c-mute">{t('sessS')}</p>
+                    </Card>
+                  )}
                   <RadioGroup value={data.packageId} onValueChange={pickPkg} aria-label={t('s1')} className="grid gap-3">
                     {PACKAGES.map((p, i) => {
                       const on = data.packageId === p.id;
@@ -2076,8 +2138,33 @@ export default function App() {
                     <Reveal>
                       <StepHead n={isSolo ? 2 : 3} title={t('s3')} done={step3Valid} />
                       <div className="space-y-8">
+                        <div style={{ minWidth: 0 }}>
+                          <p className="lbl-ui" id="loc-lbl">{t('place')}</p>
+                          <RadioGroup aria-labelledby="loc-lbl" value={data.locType} onValueChange={(v) => set({ locType: v as 'studio' | 'home' })} className="g-2">
+                            {([['studio', t('studio')], ['home', t('home')]] as const).map(([id, label]) => (
+                              <Label key={id} className={cn('chip-ui', data.locType === id && 'on')}>
+                                <RadioGroupItem value={id} />{label}
+                              </Label>
+                            ))}
+                          </RadioGroup>
+                          <p className="text-sm mt-3 leading-relaxed c-mute">{isHome ? t('homeInfo') : t('studioInfo')}</p>
+                        </div>
+
+                        {isHome && (
+                          <div className="space-y-3 rise">
+                            <Input type="tel" inputMode="numeric" autoComplete="postal-code" maxLength={9} placeholder={t('cep')} aria-label="CEP" value={data.cep} onChange={(e) => handleCep(e.target.value)} />
+                            <Input type="text" autoComplete="street-address" placeholder={t('street')} aria-label={t('street')} maxLength={100} value={data.street} onChange={(e) => set({ street: e.target.value })} />
+                            <div className="flex gap-3">
+                              <Input ref={numberRef} type="text" inputMode="numeric" placeholder={t('number')} aria-label={t('number')} maxLength={10} value={data.number} onChange={(e) => set({ number: e.target.value })} style={{ flex: '0 0 34%', minWidth: 0 }} />
+                              <Input type="text" placeholder={t('comp')} aria-label={t('comp')} maxLength={40} value={data.comp} onChange={(e) => set({ comp: e.target.value })} style={{ flex: '1 1 0', minWidth: 0 }} />
+                            </div>
+                            <Input type="text" placeholder={t('bairro')} aria-label={t('bairro')} maxLength={60} value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} />
+                            {touched && errors.address && <p className="err" role="alert">{errors.address}</p>}
+                          </div>
+                        )}
+
                         {nextFree && (
-                          <div className="rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3" style={{ background: 'color-mix(in srgb,var(--ok) 12%,transparent)', border: '1px solid color-mix(in srgb,var(--ok) 35%,transparent)' }}>
+                          <div className="rec-slot" style={{ background: 'color-mix(in srgb,var(--ok) 12%,transparent)', border: '1px solid color-mix(in srgb,var(--ok) 35%,transparent)' }}>
                             <div className="flex items-center gap-3 min-w-0 flex-1">
                               <span className="dot" aria-hidden="true" />
                               <div className="min-w-0">
@@ -2087,7 +2174,7 @@ export default function App() {
                             </div>
                             <Button
                               onClick={() => { vibrate(15); set({ date: nextFree.d, time: nextFree.t }); }}
-                              className="btn-ui btn-sm shrink-0"
+                              className="btn-ui btn-sm"
                               style={{ background: 'var(--ok)', color: 'var(--onacc)', minHeight: 44, padding: '8px 16px', fontSize: 14 }}
                             >
                               {t('recSlotBtn')}
@@ -2138,7 +2225,7 @@ export default function App() {
                                 );
                               })}
                             </RadioGroup>
-                            {availableCount === 0 && <p className="text-sm text-center py-5 c-mute">{t('noSlots')}</p>}
+                            {availableCount === 0 && <p className="text-sm py-5 c-mute">{t('noSlots')}</p>}
                             {data.time && <p className="text-[15.5px] font-semibold mt-4 flex items-center gap-2 c-ok num"><Icon name="check" size={16} /> {t('from')} {data.time} {t('to')} {endTime}{ranged ? ` (${t('upTo')} ${endMax})` : ''}</p>}
                             <p className="text-xs mt-3 c-mute">{liveCal ? <><span className="dot" aria-hidden="true" style={{ display: 'inline-block', width: 8, height: 8, marginRight: 6, verticalAlign: 'middle' }} />{t('liveCal')}</> : t('demo')}</p>
                             {touched && errors.time && <p className="err" role="alert">{errors.time}</p>}
@@ -2152,46 +2239,17 @@ export default function App() {
                           <input type="text" name="website" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
                         </div>
 
-                        <div style={{ minWidth: 0 }}>
-                          <p className="lbl-ui" id="loc-lbl">{t('place')}</p>
-                          <RadioGroup aria-labelledby="loc-lbl" value={data.locType} onValueChange={(v) => set({ locType: v as 'studio' | 'home' })} className="g-2">
-                            {([['studio', t('studio')], ['home', t('home')]] as const).map(([id, label]) => (
-                              <Label key={id} className={cn('chip-ui', data.locType === id && 'on')}>
-                                <RadioGroupItem value={id} />{label}
-                              </Label>
-                            ))}
-                          </RadioGroup>
-                          <p className="text-sm mt-3 leading-relaxed c-mute">{isHome ? t('homeInfo') : t('studioInfo')}</p>
+                        <div>
+                          <p className="lbl-ui" id="prefs-lbl">{t('prefsH')}</p>
+                          <div className="g-2" role="group" aria-labelledby="prefs-lbl">
+                            <button type="button" aria-pressed={data.incense} className={cn('chip-ui', data.incense && 'on')} onClick={() => { vibrate(10); set({ incense: !data.incense }); }}>{data.incense && <Icon name="check" size={16} />} {t('prefIncenseS')}</button>
+                            <button type="button" aria-pressed={data.music} className={cn('chip-ui', data.music && 'on')} onClick={() => { vibrate(10); set({ music: !data.music }); }}>{data.music && <Icon name="check" size={16} />} {t('prefMusicS')}</button>
+                          </div>
                         </div>
-
-                        {isHome && (
-                          <div className="space-y-3 rise">
-                            <Input type="tel" inputMode="numeric" autoComplete="postal-code" maxLength={9} placeholder={t('cep')} aria-label="CEP" value={data.cep} onChange={(e) => handleCep(e.target.value)} />
-                            <Input type="text" autoComplete="street-address" placeholder={t('street')} aria-label={t('street')} maxLength={100} value={data.street} onChange={(e) => set({ street: e.target.value })} />
-                            <div className="flex gap-3">
-                              <Input ref={numberRef} type="text" inputMode="numeric" placeholder={t('number')} aria-label={t('number')} maxLength={10} value={data.number} onChange={(e) => set({ number: e.target.value })} style={{ flex: '0 0 34%', minWidth: 0 }} />
-                              <Input type="text" placeholder={t('comp')} aria-label={t('comp')} maxLength={40} value={data.comp} onChange={(e) => set({ comp: e.target.value })} style={{ flex: '1 1 0', minWidth: 0 }} />
-                            </div>
-                            <Input type="text" placeholder={t('bairro')} aria-label={t('bairro')} maxLength={60} value={data.bairro} onChange={(e) => set({ bairro: e.target.value })} />
-                            {touched && errors.address && <p className="err" role="alert">{errors.address}</p>}
-                          </div>
-                        )}
-
-                        <Card className="p-5 space-y-3">
-                          <p className="lbl-ui lbl-flat">{t('prefsH')}</p>
-                          <div className="flex items-center gap-3">
-                            <Checkbox id="pref-incense" checked={data.incense} onCheckedChange={(c) => { vibrate(10); set({ incense: c }); }} className="chk-mid" />
-                            <Label htmlFor="pref-incense" className="lbl-chk flex-1" style={{ fontSize: 15.5 }}>{t('prefIncense')}</Label>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <Checkbox id="pref-music" checked={data.music} onCheckedChange={(c) => { vibrate(10); set({ music: c }); }} className="chk-mid" />
-                            <Label htmlFor="pref-music" className="lbl-chk flex-1" style={{ fontSize: 15.5 }}>{t('prefMusic')}</Label>
-                          </div>
-                        </Card>
 
                         <div>
                           <Button className="btn-ui btn-p btn-lg w-full" onClick={goReview}>{t('cont')}</Button>
-                          <p className="text-sm text-center mt-4 c-mute">{t('chatQ')} <a href={chatLink} onClick={onChat} target="_blank" rel="noopener noreferrer" className="lnk-ui" style={{ display: 'inline-flex', alignItems: 'center', minHeight: 44 }}>{t('chatBtn')}</a></p>
+                          <p className="text-sm mt-4 c-mute">{t('chatQ')} <a href={chatLink} onClick={onChat} target="_blank" rel="noopener noreferrer" className="lnk-ui" style={{ display: 'inline-flex', alignItems: 'center', minHeight: 44 }}>{t('chatBtn')}</a></p>
                         </div>
                       </div>
                     </Reveal>
@@ -2303,8 +2361,8 @@ export default function App() {
                             <span className="c-mute min-w-0">{t('total')}</span>
                             <span className="serif text-[34px] sm:text-[46px] leading-none font-light num">{money(invoice.total)}</span>
                           </div>
-                          {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold text-center py-2.5 rounded-2xl c-ok num" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>{t('saved')}: -{money(invoice.saved)}</p>}
-                          <div className="grid grid-cols-2 gap-3 mt-4 text-center">
+                          {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold px-4 py-2.5 rounded-2xl c-ok num" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>{t('saved')}: -{money(invoice.saved)}</p>}
+                          <div className="grid grid-cols-2 gap-3 mt-4">
                             <div className="rounded-2xl p-3 bg-s2 min-w-0"><p className="text-xs c-mute">{t('signal')}</p><p className="font-extrabold num">-{money(invoice.sinal)}</p></div>
                             <div className="rounded-2xl p-3 bg-s2 min-w-0"><p className="text-xs c-mute">{t('rest')}</p><p className="font-extrabold num">{money(invoice.rest)}</p></div>
                           </div>
@@ -2341,77 +2399,62 @@ export default function App() {
           </section>
 
           <section id="avaliacoes" className="mb-24 scroll-mt-20" aria-labelledby="rv-sec">
-            <div className="glass-stage">
-              <div className="flex flex-wrap justify-between items-end gap-4 mb-6">
-                <div>
-                  <Title id="rv-sec" className="text-[30px] md:text-[38px] mb-1">{t('revH')}</Title>
-                  <p className="text-sm c-mute">{t('revS')}</p>
-                </div>
-                <Button asChild className="btn-ui btn-g btn-sm">
-                  <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={16} /> {t('revBtn')}</a>
-                </Button>
-              </div>
-              <div className="grid md:grid-cols-3 gap-4">
-                {visibleReviews.map((r, i) => (
-                  <Reveal key={`${r.name}-${i}`} delay={(i % 3) * 80} className="h-full">
-                    <article className="glass-rev flex flex-col justify-between h-full">
-                      <div>
-                        <div className="flex items-center justify-between gap-2 mb-4">
-                          <div className="flex items-center gap-1" style={{ color: 'var(--warn)' }} aria-label={`${r.stars} de 5 estrelas`}>
-                            {[1, 2, 3, 4, 5].map((s) => (
-                              <span key={s} style={{ opacity: s <= r.stars ? 1 : 0.25 }}>
-                                <Icon name="star" size={14} />
-                              </span>
-                            ))}
-                          </div>
-                          <span className="text-xs font-bold c-mute">{r.when}</span>
-                        </div>
-                        <p className="text-[15px] leading-relaxed mb-5 c-ink">“{r.text}”</p>
-                      </div>
-                      <div className="pt-3.5 flex items-center gap-3" style={{ borderTop: '1px solid var(--line)' }}>
-                        <span className="glass-avatar" aria-hidden="true">{r.initials}</span>
-                        <div className="min-w-0">
-                          <strong className="block text-sm leading-tight c-ink">{r.name}</strong>
-                          <span className="block text-xs c-mute truncate">{r.tag}</span>
-                        </div>
-                      </div>
-                    </article>
-                  </Reveal>
-                ))}
-              </div>
+            <Title id="rv-sec" className="text-[30px] md:text-[38px] mb-1">{t('revH')}</Title>
+            <Reveal delay={100}><p className="text-sm mb-6 c-mute">{t('revS')}</p></Reveal>
+            <div className="rev-grid">
+              {visibleReviews.map((r, i) => (
+                <Reveal key={`${r.name}-${i}`} delay={(i % 3) * 80} className="h-full">
+                  <figure className="glass-rev rev-card h-full">
+                    <div className="rev-stars" role="img" aria-label={`${r.stars}/5`}>
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <svg key={n} width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ opacity: n <= r.stars ? 1 : 0.25 }}><path d={ICONS.star} /></svg>
+                      ))}
+                    </div>
+                    <blockquote className="text-[15px] leading-relaxed c-ink">{r.text}</blockquote>
+                    <figcaption className="rev-by">
+                      <span className="glass-avatar" aria-hidden="true">{r.initials}</span>
+                      <span className="min-w-0"><strong className="block text-sm leading-tight c-ink">{r.name}</strong><span className="block text-xs c-mute">{r.tag}, {r.when}</span></span>
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              ))}
+            </div>
+            <div className="btn-row mt-6">
               {allReviews.length > 3 && (
-                <div className="mt-6 text-center">
-                  <Button
-                    onClick={() => { vibrate(10); setShowAllReviews((v) => !v); }}
-                    className="btn-ui btn-g btn-sm"
-                  >
-                    {showAllReviews ? t('revLess') : t('revMore').replace('{n}', String(allReviews.length))}
-                  </Button>
-                </div>
+                <Button onClick={() => { vibrate(10); setShowAllReviews((v) => !v); }} className="btn-ui btn-g btn-md">
+                  {showAllReviews ? t('revLess') : t('revMore').replace('{n}', String(allReviews.length))}
+                </Button>
               )}
+              <Button asChild className="btn-ui btn-g btn-md">
+                <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={16} /> {t('revBtn')}</a>
+              </Button>
             </div>
           </section>
 
           <section id="sobre" className="mb-24 scroll-mt-20" aria-labelledby="ab">
             <Reveal>
-              <div className="relative overflow-hidden mb-6" style={{ borderRadius: 28, aspectRatio: '4 / 3' }}>
-                <Avatar className="w-full h-full" alt="Thalyson" style={{ objectPosition: '50% 28%' }} />
-              </div>
-              <div className="mb-5">
-                <Title id="ab" className="text-[26px] md:text-[32px]">{t('aboutH')}</Title>
-                <p className="text-sm font-bold">{t('aboutR')}</p>
-              </div>
-              <p className="leading-relaxed mb-3 max-w-xl c-mute">{t('about1')}</p>
-              <p className="flex items-start gap-3 text-[15.5px] leading-relaxed mb-6 max-w-xl text-left"><Icon name="map" size={18} className="mt-1" />{t('about2')}</p>
-              <div className="flex flex-wrap justify-center sm:justify-start gap-3">
-                <Button onClick={() => setProfileOpen(true)} className="btn-ui btn-p btn-md">{t('seeProfile')}</Button>
-                <SocialButtons reviewsLabel={t('reviews')} />
+              <div className="about">
+                <div className="about-photo"><Avatar className="w-full h-full" alt="Thalyson" style={{ objectPosition: '50% 28%' }} /></div>
+                <div className="min-w-0">
+                  <Title id="ab" className="text-[30px] md:text-[38px] mb-1">{t('aboutH')}</Title>
+                  <p className="text-sm font-semibold mb-4">{t('aboutN')}</p>
+                  <p className="leading-relaxed mb-5 c-mute">{t('about1')}</p>
+                  <ul className="about-facts">
+                    <li><Icon name="map" size={18} /><span>{t('about2')}</span></li>
+                    <li><Icon name="check" size={18} /><span>{t('pBul1')}</span></li>
+                    <li><Icon name="lock" size={18} /><span>{t('pBul2')}</span></li>
+                  </ul>
+                  <div className="btn-row mt-6">
+                    <Button onClick={() => setProfileOpen(true)} className="btn-ui btn-p btn-md">{t('seeProfile')}</Button>
+                    <Button asChild className="btn-ui btn-g btn-md"><a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} /> Instagram</a></Button>
+                  </div>
+                </div>
               </div>
             </Reveal>
           </section>
 
-          <section className="mb-16" aria-labelledby="fq">
-            <Title id="fq" className="text-[32px] md:text-[40px] mb-2">{t('faqH')}</Title>
+          <section className="mb-20" aria-labelledby="fq">
+            <Title id="fq" className="text-[30px] md:text-[38px] mb-2">{t('faqH')}</Title>
             <Reveal delay={100}><p className="mb-5 c-mute">{t('faqS')}</p></Reveal>
             <Reveal>
               <div className="ask-list">
@@ -2421,26 +2464,31 @@ export default function App() {
                     <Icon name="chat" size={16} />
                   </button>
                 ))}
-                <button type="button" className="btn-ui btn-g btn-md ask-own" onClick={() => { vibrate(10); setAsk({ q: '', k: Date.now() }); }}>{t('faqOwn')}</button>
+                <button type="button" className="ask-ui ask-own" onClick={() => { vibrate(10); setAsk({ q: '', k: Date.now() }); }}>
+                  <span className="min-w-0 font-semibold">{t('faqOwn')}</span>
+                  <Icon name="chat" size={16} />
+                </button>
               </div>
             </Reveal>
           </section>
 
-          <section className="mb-8 text-center" aria-labelledby="end-h">
-            <Title id="end-h" className="text-[30px] md:text-[40px] mb-3">{t('endH')}</Title>
-            <Reveal delay={100}><p className="mb-7 c-mute">{t('endP')}</p></Reveal>
-            <Reveal delay={200}>
-              <div className="flex flex-wrap justify-center gap-3">
-                <Button onClick={goBook} className="btn-ui btn-p btn-lg">{t('cta')}</Button>
-                <Button asChild className="btn-ui btn-g btn-lg"><a href={chatLink} onClick={onChat} target="_blank" rel="noopener noreferrer"><Icon name="chat" size={18} /> {t('chatBtn')}</a></Button>
+          <section className="mb-8" aria-labelledby="end-h">
+            <Reveal>
+              <div className="glass-ui end-card">
+                <Title id="end-h" className="text-[30px] md:text-[40px] mb-2">{t('endH')}</Title>
+                <p className="mb-6 c-mute">{t('endP')}</p>
+                <div className="btn-row">
+                  <Button onClick={goBook} className="btn-ui btn-p btn-lg">{t('cta')}</Button>
+                  <Button asChild className="btn-ui btn-g btn-lg"><a href={chatLink} onClick={onChat} target="_blank" rel="noopener noreferrer"><Icon name="chat" size={18} /> {t('chatBtn')}</a></Button>
+                </div>
               </div>
             </Reveal>
           </section>
         </>)}
       </main>
 
-      <footer className="max-w-xl mx-auto px-6 mt-16 pt-6 text-xs leading-relaxed text-center c-mute" style={{ borderTop: '1px solid var(--line)' }}>
-        <nav aria-label={t('legalNav')} className="flex flex-wrap justify-center gap-x-2">
+      <footer className="max-w-3xl mx-auto px-5 mt-16 pt-6 text-xs leading-relaxed c-mute" style={{ borderTop: '1px solid var(--line)' }}>
+        <nav aria-label={t('legalNav')} className="flex flex-wrap gap-x-2 -mx-2">
           {([['privacy', 'footPrivacy'], ['terms', 'footTerms'], ['refund', 'footRefund'], ['cookies', 'footCookies']] as [DocId, string][]).map(([id, k]) => (
             <Button key={id} onClick={() => setDoc(id)} className="lnk-ui lnk-block lnk-mute">{t(k)}</Button>
           ))}
@@ -2509,10 +2557,10 @@ export default function App() {
       {profileOpen && (
         <Modal title={t('profile')} onClose={() => setProfileOpen(false)} closeLabel={t('close')}>
           <div className="p-6">
-            <div className="flex items-center gap-5 mb-5 flex-col sm:flex-row text-center sm:text-left">
-              <Avatar className="w-24 h-24 rounded-full" alt="Thalyson" />
-              <div>
-                <h3 className="serif text-2xl leading-tight">{t('aboutH')}</h3>
+            <div className="flex items-center gap-4 mb-5">
+              <Avatar className="w-20 h-20 rounded-full shrink-0" alt="Thalyson" />
+              <div className="min-w-0">
+                <h3 className="serif text-2xl leading-tight">{t('aboutN')}</h3>
                 <p className="text-sm font-bold">{t('aboutR')}</p>
               </div>
             </div>
