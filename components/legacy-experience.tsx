@@ -1066,6 +1066,8 @@ const CSS = `
 .app button,.app input,.app label{font-family:inherit}
 .serif{font-family:'Fraunces',Georgia,serif;font-optical-sizing:auto}
 .num{font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0}
+.numw{font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.cap1::first-letter{text-transform:uppercase}
 .c-mute{color:var(--mute)}.c-ink{color:var(--ink)}.c-ok{color:var(--ok)}.c-warn{color:var(--warn)}
 .bg-s2{background:var(--surf2)}.bd-line{border-color:var(--line)}
 .err{font-size:14px;color:var(--err);margin-top:8px;font-weight:600}
@@ -1270,8 +1272,9 @@ const CSS = `
 .rev-stars{display:flex;gap:3px;color:var(--warn)}
 .rev-by{display:flex;align-items:center;gap:12px;padding-top:14px;border-top:1px solid var(--line)}
 .about{display:grid;gap:24px}
-.about-photo{border-radius:28px;overflow:hidden;aspect-ratio:4/3}
-@media(min-width:768px){.about{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:start;gap:36px}.about-photo{aspect-ratio:4/5}}
+.about-photo{border-radius:28px;overflow:hidden;aspect-ratio:1/1;width:100%;max-width:520px}
+.about-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
+@media(min-width:768px){.about{gap:32px}}
 .about-facts{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .about-facts li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:12px;align-items:start;font-size:15px;line-height:1.5}
 .about-facts svg{margin-top:2px;color:var(--mute)}
@@ -1938,7 +1941,8 @@ export default function App() {
               <Card className="draft-card p-5" style={{ borderColor: 'var(--acc)' }}>
                 <div className="min-w-0">
                   <p className="text-xs font-bold uppercase tracking-wider c-mute">{t('draftH')}</p>
-                  <p className="font-extrabold num">{t('draftP').replace('{s}', (PACKAGES.find((p) => p.id === draft.packageId) || PACKAGES[1]).L[lang].title).replace('{d}', draft.date ? `${fmt(new Date(`${draft.date}T12:00:00`), { weekday: 'short', day: '2-digit', month: 'short' })}${draft.time ? ' ' + draft.time : ''}` : '—')}</p>
+                  <p className="font-extrabold numw leading-snug">{(PACKAGES.find((p) => p.id === draft.packageId) || PACKAGES[1]).L[lang].title}</p>
+                  {draft.date && <p className="text-sm font-semibold numw c-mute cap1">{fmt(new Date(`${draft.date}T12:00:00`), { weekday: 'long', day: 'numeric', month: 'long' })}{draft.time ? `, ${draft.time}` : ''}</p>}
                 </div>
                 <div className="draft-actions">
                   <Button onClick={dropDraft} className="btn-ui btn-g btn-sm">{t('draftNo')}</Button>
@@ -1987,7 +1991,7 @@ export default function App() {
                     <Card className="p-5 sm:p-7 mb-5">
                 {quiz.step >= 1 && quiz.step <= 3 && (
                   <div className="rise" key={quiz.step} aria-live="polite">
-                    <p className="text-xs font-bold uppercase tracking-wider c-mute mb-2 num">{t('quizStep').replace('{a}', String(quiz.step)).replace('{b}', '3')}</p>
+                    <p className="text-xs font-bold uppercase tracking-wider c-mute mb-2 numw">{t('quizStep').replace('{a}', String(quiz.step)).replace('{b}', '3')}</p>
                     <div className="h-1 rounded-full mb-5 overflow-hidden" style={{ background: 'var(--line)' }}><div className="h-full" style={{ width: `${(quiz.step / 3) * 100}%`, background: 'var(--acc)', transition: 'width .3s' }} /></div>
                     <h2 id="quiz-h" className="serif text-[24px] md:text-[30px] leading-tight mb-5">{t(`quizQ${quiz.step}`)}</h2>
                     <div className="grid sm:grid-cols-2 gap-3">
@@ -2169,7 +2173,7 @@ export default function App() {
                               <span className="dot" aria-hidden="true" />
                               <div className="min-w-0">
                                 <p className="text-xs font-bold uppercase tracking-wider c-ok">{t('recSlotH')}</p>
-                                <p className="font-extrabold capitalize num">{nextLabel}</p>
+                                <p className="font-extrabold capitalize numw">{nextLabel}</p>
                               </div>
                             </div>
                             <Button
@@ -2226,7 +2230,7 @@ export default function App() {
                               })}
                             </RadioGroup>
                             {availableCount === 0 && <p className="text-sm py-5 c-mute">{t('noSlots')}</p>}
-                            {data.time && <p className="text-[15.5px] font-semibold mt-4 flex items-center gap-2 c-ok num"><Icon name="check" size={16} /> {t('from')} {data.time} {t('to')} {endTime}{ranged ? ` (${t('upTo')} ${endMax})` : ''}</p>}
+                            {data.time && <p className="text-[15.5px] font-semibold mt-4 flex items-start gap-2 c-ok numw"><Icon name="check" size={16} className="mt-1" /> {t('from')} {data.time} {t('to')} {endTime}{ranged ? ` (${t('upTo')} ${endMax})` : ''}</p>}
                             <p className="text-xs mt-3 c-mute">{liveCal ? <><span className="dot" aria-hidden="true" style={{ display: 'inline-block', width: 8, height: 8, marginRight: 6, verticalAlign: 'middle' }} />{t('liveCal')}</> : t('demo')}</p>
                             {touched && errors.time && <p className="err" role="alert">{errors.time}</p>}
                           </div>
@@ -2361,7 +2365,7 @@ export default function App() {
                             <span className="c-mute min-w-0">{t('total')}</span>
                             <span className="serif text-[34px] sm:text-[46px] leading-none font-light num">{money(invoice.total)}</span>
                           </div>
-                          {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold px-4 py-2.5 rounded-2xl c-ok num" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>{t('saved')}: -{money(invoice.saved)}</p>}
+                          {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold px-4 py-2.5 rounded-2xl c-ok numw" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>{t('saved')}: -{money(invoice.saved)}</p>}
                           <div className="grid grid-cols-2 gap-3 mt-4">
                             <div className="rounded-2xl p-3 bg-s2 min-w-0"><p className="text-xs c-mute">{t('signal')}</p><p className="font-extrabold num">-{money(invoice.sinal)}</p></div>
                             <div className="rounded-2xl p-3 bg-s2 min-w-0"><p className="text-xs c-mute">{t('rest')}</p><p className="font-extrabold num">{money(invoice.rest)}</p></div>
@@ -2434,7 +2438,7 @@ export default function App() {
           <section id="sobre" className="mb-24 scroll-mt-20" aria-labelledby="ab">
             <Reveal>
               <div className="about">
-                <div className="about-photo"><Avatar className="w-full h-full" alt="Thalyson" style={{ objectPosition: '50% 28%' }} /></div>
+                <div className="about-photo"><Avatar className="w-full h-full" alt="Thalyson" /></div>
                 <div className="min-w-0">
                   <Title id="ab" className="text-[30px] md:text-[38px] mb-1">{t('aboutH')}</Title>
                   <p className="text-sm font-semibold mb-4">{t('aboutN')}</p>
