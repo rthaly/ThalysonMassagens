@@ -6,7 +6,7 @@ import {
   type ButtonHTMLAttributes, type InputHTMLAttributes, type LabelHTMLAttributes, type HTMLAttributes,
 } from 'react';
 import { track } from '@vercel/analytics';
-import { sessions, reviews as REVIEWS_PT } from '@/lib/content';
+import { sessions } from '@/lib/content';
 import { AssistantChat, type ChatBooking } from '@/components/assistant-chat';
 
 const SITE_NAME = 'Relaxar hoje com Thalyson';
@@ -103,7 +103,7 @@ const T: Record<Lang, Record<string, string>> = {
     cont: 'Ver resumo e valores', fill: 'Preencha os campos destacados acima', change: 'Alterar dados', sPack: 'Sessão', sWhen: 'Data e horário', sLoc: 'Local', sLocStudio: 'Suíte Bela Vista (próximo ao Metrô Anhangabaú)',
     lPack: 'Sessão escolhida', lPack2: 'Plano 2x no mês (2 sessões)', lPack5: 'Pacote 5 sessões (4 pagas)', lCombo: 'Aparo de pelos (combo)', lTime: '+30 minutos extras', lReq: 'Pedido específico', lSubtotal: 'Subtotal sem descontos', lPlanDisc: 'Desconto do plano/pacote', lFirst: 'Desconto 1ª sessão', lCoupon: 'Cupom aplicado', lPeak: 'Deslocamento / trânsito', lPix: 'Desconto Pix (3%)',
     saved: 'Total economizado', total: 'Valor total final', signal: 'Sinal da reserva (Pix agora)', rest: 'Restante após a sessão',
-    prefsH: 'Clima da sessão (opcional)', prefIncenseS: 'Incenso aceso', prefMusicS: 'Música ambiente', seeReviews: 'Ver avaliações', aboutN: 'Thalyson, na Bela Vista (SP)',
+    prefsH: 'Clima da sessão (opcional)', prefIncenseS: 'Incenso aceso', prefMusicS: 'Música ambiente', aboutN: 'Thalyson, na Bela Vista (SP)',
     prefIncense: 'Gosto de incenso aceso',
     prefMusic: 'Quero música ambiente tocando',
     extras: 'Adicionar +30 min, cupom ou pedido', couponQ: 'Cupons disponíveis (clique para aplicar)', couponPh: 'Ou digite outro código', apply: 'Aplicar', couponOk: 'Cupom aplicado!', couponBad: 'Cupom inválido.', couponRemove: 'Remover',
@@ -120,7 +120,7 @@ const T: Record<Lang, Record<string, string>> = {
     doneH: 'Resumo pronto', doneP: 'Agora é só enviar a mensagem que abriu no seu WhatsApp junto com o comprovante do sinal de R$ 40 para eu travar seu horário.',
     doneSig: 'Chave Pix (e-mail):', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na agenda', restart: 'Fazer outro agendamento',
     chatQ: 'Ficou com alguma dúvida antes de marcar?', chatBtn: 'Falar no WhatsApp', chatMsg: 'Oi Thalyson! Vi seu site e queria tirar uma dúvida sobre a massagem.',
-    revH: 'Quem já passou por aqui', revS: 'Comentários enviados via WhatsApp de quem já relaxou comigo.', revMore: 'Ver mais avaliações ({n})', revLess: 'Mostrar menos', revBtn: 'Avaliar no Google',
+    revH: 'Avaliações no Google', revS: 'Já fez uma sessão? Sua avaliação no Google ajuda outras pessoas a decidir.', revBtn: 'Avaliar no Google',
     aboutH: 'Quem vai te atender', aboutR: 'Atendimento direto comigo, sem intermediários',
     about1: 'Tenho 30 anos, sou do interior de SP e cheguei em São Paulo há menos de 1 ano. Ainda estou me instalando e conhecendo a cidade, então meu atendimento é bem direto e sem luxo de clínica: uma suíte residencial simples e reservada na Bela Vista para você desligar da correria.',
     about2: 'Suíte simples e reservada, perto do Metrô Anhangabaú, com maca de madeira e horário só seu.', seeProfile: 'Ver detalhes do espaço',
@@ -193,7 +193,7 @@ const T: Record<Lang, Record<string, string>> = {
     cont: 'See summary and prices', fill: 'Fill in the highlighted fields above', change: 'Edit details', sPack: 'Session', sWhen: 'Date & time', sLoc: 'Location', sLocStudio: 'Bela Vista Suite (near Anhangabaú Metro)',
     lPack: 'Chosen session', lPack2: '2x a month plan (2 sessions)', lPack5: '5-session pack (4 paid)', lCombo: 'Body trimming (combo)', lTime: '+30 extra minutes', lReq: 'Specific request', lSubtotal: 'Subtotal before discounts', lPlanDisc: 'Plan/pack discount', lFirst: '1st session discount', lCoupon: 'Coupon applied', lPeak: 'Travel / traffic', lPix: 'Pix discount (3%)',
     saved: 'Total saved', total: 'Final total', signal: 'Booking deposit (Pix now)', rest: 'Balance after session',
-    prefsH: 'Session atmosphere (optional)', prefIncenseS: 'Incense on', prefMusicS: 'Background music', seeReviews: 'See reviews', aboutN: 'Thalyson, in Bela Vista (SP)',
+    prefsH: 'Session atmosphere (optional)', prefIncenseS: 'Incense on', prefMusicS: 'Background music', aboutN: 'Thalyson, in Bela Vista (SP)',
     prefIncense: 'I like incense burning',
     prefMusic: 'I want background music playing',
     extras: 'Add +30 min, coupon or request', couponQ: 'Available coupons (tap to apply)', couponPh: 'Or type another code', apply: 'Apply', couponOk: 'Coupon applied!', couponBad: 'Invalid coupon.', couponRemove: 'Remove',
@@ -210,7 +210,7 @@ const T: Record<Lang, Record<string, string>> = {
     doneH: 'Summary ready', doneP: 'Just send the message that opened in WhatsApp along with your R$ 40 deposit receipt so I can lock your slot.',
     doneSig: 'Pix Key (email):', resend: 'Open WhatsApp again', addCal: 'Save to calendar', restart: 'Make another booking',
     chatQ: 'Have a question before booking?', chatBtn: 'Chat on WhatsApp', chatMsg: 'Hi Thalyson! I saw your site and have a quick question about the massage.',
-    revH: 'Client feedback', revS: 'Notes sent on WhatsApp by people who came for a session.', revMore: 'See more reviews ({n})', revLess: 'Show less', revBtn: 'Review on Google',
+    revH: 'Google reviews', revS: 'Already had a session? Your Google review helps other people decide.', revBtn: 'Review on Google',
     aboutH: 'Who will see you', aboutR: 'Direct service with me, no middlemen',
     about1: 'I’m 30, from upstate SP, and moved to São Paulo less than a year ago. I’m still settling in and getting to know the city, so my service is straightforward without fake clinic luxury—a simple, private suite in Bela Vista for you to unplug.',
     about2: 'A simple, private suite near Anhangabaú Metro, with a wooden table and a time slot just for you.', seeProfile: 'See space details',
@@ -283,7 +283,7 @@ const T: Record<Lang, Record<string, string>> = {
     cont: 'Ver resumen y valores', fill: 'Completa los campos marcados arriba', change: 'Cambiar datos', sPack: 'Sesión', sWhen: 'Fecha y horario', sLoc: 'Lugar', sLocStudio: 'Suite Bela Vista (cerca del Metro Anhangabaú)',
     lPack: 'Sesión elegida', lPack2: 'Plan 2x al mes (2 sesiones)', lPack5: 'Paquete 5 sesiones (4 pagas)', lCombo: 'Recorte de vello (combo)', lTime: '+30 minutos extra', lReq: 'Pedido específico', lSubtotal: 'Subtotal sin descuentos', lPlanDisc: 'Descuento plan/paquete', lFirst: 'Descuento 1ª sesión', lCoupon: 'Cupón aplicado', lPeak: 'Traslado / tráfico', lPix: 'Descuento Pix (3%)',
     saved: 'Total ahorrado', total: 'Valor total final', signal: 'Señal de reserva (Pix ahora)', rest: 'Restante después de la sesión',
-    prefsH: 'Ambiente de la sesión (opcional)', prefIncenseS: 'Incienso encendido', prefMusicS: 'Música ambiente', seeReviews: 'Ver reseñas', aboutN: 'Thalyson, en Bela Vista (SP)',
+    prefsH: 'Ambiente de la sesión (opcional)', prefIncenseS: 'Incienso encendido', prefMusicS: 'Música ambiente', aboutN: 'Thalyson, en Bela Vista (SP)',
     prefIncense: 'Me gusta con incienso encendido',
     prefMusic: 'Quiero música ambiental sonando',
     extras: 'Sumar +30 min, cupón o pedido', couponQ: 'Cupones disponibles (clic para aplicar)', couponPh: 'O escribe otro código', apply: 'Aplicar', couponOk: '¡Cupón aplicado!', couponBad: 'Cupón inválido.', couponRemove: 'Quitar',
@@ -300,7 +300,7 @@ const T: Record<Lang, Record<string, string>> = {
     doneH: 'Resumen listo', doneP: 'Ahora solo envía el mensaje que se abrió en tu WhatsApp junto con el comprobante de los R$ 40 para bloquear tu horario.',
     doneSig: 'Clave Pix (e-mail):', resend: 'Abrir WhatsApp nuevamente', addCal: 'Guardar en agenda', restart: 'Hacer otra reserva',
     chatQ: '¿Te quedó alguna duda antes de reservar?', chatBtn: 'Hablar por WhatsApp', chatMsg: '¡Hola Thalyson! Vi tu sitio y quería hacerte una consulta sobre el masaje.',
-    revH: 'Quienes ya pasaron por aquí', revS: 'Comentarios enviados por WhatsApp de quienes ya vinieron a una sesión.', revMore: 'Ver más reseñas ({n})', revLess: 'Mostrar menos', revBtn: 'Reseñar en Google',
+    revH: 'Reseñas en Google', revS: '¿Ya tuviste una sesión? Tu reseña en Google ayuda a otras personas a decidir.', revBtn: 'Reseñar en Google',
     aboutH: 'Quién te atiende', aboutR: 'Atención directa conmigo, sin intermediarios',
     about1: 'Tengo 30 años, soy del interior de SP y llegué a São Paulo hace menos de 1 año. Todavía me estoy instalando y conociendo la ciudad, así que mi atención es directa y sin lujo falso de clínica: una suite residencial simple y reservada en Bela Vista para desconectar.',
     about2: 'Suite simple y reservada, cerca del Metro Anhangabaú, con camilla de madera y horario solo para ti.', seeProfile: 'Ver detalles del espacio',
@@ -419,224 +419,6 @@ const PACKAGES: { id: string; price: number; min: number; max: number; combo: nu
   } },
 ];
 
-type ReviewItem = { initials: string; name: string; tag: string; when: string; stars: number; text: string };
-
-
-// Avaliações da Home: as mesmas de lib/content.ts (texto moderado). As completas ficam em /avaliacoes (noindex).
-const REV_EN: Record<string, [string, string]> = {
-  'Rafael M.': ['It had been a while since I switched off like that. He started on the tension in my back and I left feeling light.', '3 days ago'],
-  'Lucas T.': ['I only booked the classic because my lower back was locked up from training. Firm hands, just right.', '1 week ago'],
-  'Bruno S.': ['Direct contact, no fuss, and really good hands. Calm, welcoming service.', '2 weeks ago'],
-  'Diego G.': ['I asked him to put out the incense and he did it right away. The beard on my neck and back gave me goosebumps.', '2 weeks ago'],
-  'Felipe A.': ['I was a bit tense since it was my first time, but Thalyson makes everything feel natural. Private and unhurried.', '3 weeks ago'],
-  'Matheus C.': ['I sit at a desk all day and my neck was stiff. His hands are firm, just right.', '1 month ago'],
-};
-const REV_ES: Record<string, [string, string]> = {
-  'Rafael M.': ['Hacía tiempo que no me desconectaba así. Empezó quitando la tensión de la espalda y salí liviano.', 'hace 3 días'],
-  'Lucas T.': ['Tomé solo la clásica porque tenía la zona lumbar trabada por el entrenamiento. Mano firme, en su justa medida.', 'hace 1 semana'],
-  'Bruno S.': ['Contacto directo, sin vueltas, y muy buenas manos. Atención tranquila y acogedora.', 'hace 2 semanas'],
-  'Diego G.': ['Le pedí que apagara el incienso y lo quitó al momento. La barba por el cuello y la espalda me erizó entero.', 'hace 2 semanas'],
-  'Felipe A.': ['Fui algo tenso por ser la primera vez, pero Thalyson hace que todo sea natural. Reservado y sin prisa.', 'hace 3 semanas'],
-  'Matheus C.': ['Trabajo sentado todo el día y tenía el cuello rígido. Su mano es firme en su justa medida.', 'hace 1 mes'],
-};
-const pkgTitle = (sessionName: string, l: Lang) => {
-  const id = sessions.find((x) => x.name === sessionName)?.pkgId;
-  return (PACKAGES.find((p) => p.id === id)?.L[l].title) || sessionName;
-};
-const HOME_REVIEWS: Record<Lang, ReviewItem[]> = {
-  pt: REVIEWS_PT.map((r) => ({ initials: r.initials, name: r.name, tag: r.session, when: r.when, stars: r.stars, text: r.text })),
-  en: REVIEWS_PT.map((r) => ({ initials: r.initials, name: r.name, tag: pkgTitle(r.session, 'en'), when: REV_EN[r.name]?.[1] || r.when, stars: r.stars, text: REV_EN[r.name]?.[0] || r.text })),
-  es: REVIEWS_PT.map((r) => ({ initials: r.initials, name: r.name, tag: pkgTitle(r.session, 'es'), when: REV_ES[r.name]?.[1] || r.when, stars: r.stars, text: REV_ES[r.name]?.[0] || r.text })),
-};
-
-export const REVIEWS: Record<Lang, ReviewItem[]> = {
-  pt: [
-    {
-      initials: 'RM', name: 'Rafael M.', tag: 'Sensitiva + Lingam', when: 'há 3 dias', stars: 5,
-      text: 'Cara, fazia tempo que eu não desligava assim. Começou tirando a tensão das costas e quando foi pra parte sensitiva fiquei muito excitado, gozei bastante e saí leve demais.',
-    },
-    {
-      initials: 'LT', name: 'Lucas T.', tag: 'Massagem Clássica', when: 'há 1 semana', stars: 5,
-      text: 'Peguei só a clássica porque tava com a lombar travada de treino. Relaxouuuu muito! A pistola no final pegou bem forte no nó do ombro, deu até uma ardida na hora mas depois soltou tudo.',
-    },
-    {
-      initials: 'BS', name: 'Bruno S.', tag: 'Corpo a Corpo + Lingam', when: 'há 2 semanas', stars: 5,
-      text: 'O corpo peludo dele deslizando com gel dá um tesão absurdo, ainda mais podendo tocar de volta. Não consegui segurar muito não, gozei muito mesmo. Volto mês que vem.',
-    },
-    {
-      initials: 'DG', name: 'Diego G.', tag: 'Sensações com a Barba', when: 'há 2 semanas', stars: 4,
-      text: 'Achei o incenso um pouco forte logo que entrei, pedi pra apagar e ele tirou na hora sem problema. Depois a barba passando no pescoço e nas costas me arrepiou inteiro, muito bom.',
-    },
-    {
-      initials: 'FA', name: 'Felipe A.', tag: 'Sensitiva + Lingam', when: 'há 3 semanas', stars: 5,
-      text: 'Fui meio travado por ser a primeira vez, mas o Thalyson deixa tudo muito natural. Fui já de banho tomado como combinado, clima reservado e sem pressa nenhuma.',
-    },
-    {
-      initials: 'MC', name: 'Matheus C.', tag: 'Massagem Clássica', when: 'há 1 mês', stars: 5,
-      text: 'Trabalho o dia inteiro sentado e estava com o pescoço duro. A mão dele é firme na medida certa e com o creme hidratante não fica aquela meleca depois.',
-    },
-    {
-      initials: 'GV', name: 'Gabriel V.', tag: 'Corpo a Corpo + Lingam', when: 'há 1 mês', stars: 5,
-      text: 'Sou fã de cara peludo e o Thalyson tem presença demais. Pele quente, contato direto sem frescura e mão muito boa no lingam. Saí com as pernas bambas.',
-    },
-    {
-      initials: 'HN', name: 'Henrique N.', tag: 'Sensitiva + Lingam', when: 'há 1 mês', stars: 4,
-      text: 'Por ser perto do Anhangabaú dá pra ouvir um pouco de barulho de rua lá fora, mas a música ambiente abafa bem e a massagem faz você esquecer do mundo. Gozei demais.',
-    },
-    {
-      initials: 'PR', name: 'Pedro R.', tag: 'Clássica + Aparo', when: 'há 1 mês', stars: 5,
-      text: 'Fiz o combo de aparo e massagem clássica. Aparo bem feito na máquina sem irritar e a massagem relaxou muito as costas. Preço justo pelo tempo.',
-    },
-    {
-      initials: 'AL', name: 'André L.', tag: 'Sensações com a Barba', when: 'há 2 meses', stars: 5,
-      text: 'Nunca tinha feito sessão naturista. O jeito tranquilo dele quebra o gelo rápido e o contraste da barba com a mão deixou tudo bem intenso.',
-    },
-    {
-      initials: 'CS', name: 'Caio S.', tag: 'Massagem Clássica', when: 'há 2 meses', stars: 4,
-      text: 'A pistola massageadora é meio agressiva pra quem tem cócegas ou sensibilidade, pedi pra pegar mais leve na panturrilha e ele ajustou na hora. Relaxou bastante.',
-    },
-    {
-      initials: 'RO', name: 'Rodrigo O.', tag: 'Sensitiva + Lingam', when: 'há 2 meses', stars: 5,
-      text: 'Já fechei o plano de 2x no mês porque virou meu escape da rotina de SP. Atendimento direto, sem papo furado e sempre saio renovado.',
-    },
-    {
-      initials: 'VK', name: 'Vinícius K.', tag: 'Corpo a Corpo + Lingam', when: 'há 2 meses', stars: 5,
-      text: 'Espaço simples, limpo e bem reservado, você não cruza com ninguém. O contato corpo a corpo é surreal de bom, me excitou do começo ao fim.',
-    },
-    {
-      initials: 'JM', name: 'João M.', tag: 'Massagem Clássica', when: 'há 3 meses', stars: 5,
-      text: 'Cheguei moído de viagem, peguei 40 min de clássica e parecia que tinha dormido 8 horas. Recomendo demais pra quem precisa soltar o corpo.',
-    },
-    {
-      initials: 'TS', name: 'Tiago S.', tag: 'Sensitiva + Lingam', when: 'há 3 meses', stars: 5,
-      text: 'Sem luxo de clínica cara, mas com uma entrega que dá de 10 a 0 em muito lugar por aí. Mão firme nas costas e toque muito bom na finalização.',
-    },
-  ],
-  en: [
-    {
-      initials: 'RM', name: 'Rafael M.', tag: 'Sensitive + Lingam', when: '3 days ago', stars: 5,
-      text: 'Honestly hadn’t switched off like that in ages. Started by releasing back tension and once the sensitive part kicked in I got super turned on, came hard and walked out light.',
-    },
-    {
-      initials: 'LT', name: 'Lucas T.', tag: 'Classic Massage', when: '1 week ago', stars: 5,
-      text: 'Booked just the classic because my lower back was locked from lifting. Relaxed me so much! The massage gun at the end hit a deep shoulder knot pretty hard at first, then released everything.',
-    },
-    {
-      initials: 'BS', name: 'Bruno S.', tag: 'Body to Body + Lingam', when: '2 weeks ago', stars: 5,
-      text: 'His hairy body gliding with gel is crazy hot, especially being able to touch back. Couldn’t hold back for long, came a lot. Coming back next month.',
-    },
-    {
-      initials: 'DG', name: 'Diego G.', tag: 'Beard Sensations', when: '2 weeks ago', stars: 4,
-      text: 'Thought the incense was a bit strong when I walked in, asked to put it out and he did right away. His beard brushing down my neck and back gave me chills, really good.',
-    },
-    {
-      initials: 'FA', name: 'Felipe A.', tag: 'Sensitive + Lingam', when: '3 weeks ago', stars: 5,
-      text: 'Went in a bit stiff for my first time, but Thalyson keeps everything natural. Arrived freshly showered as arranged, private vibe and zero rush.',
-    },
-    {
-      initials: 'MC', name: 'Matheus C.', tag: 'Classic Massage', when: '1 month ago', stars: 5,
-      text: 'I sit at a desk all day and my neck was tight. Firm pressure in the right spots and the moisturizing cream doesn’t leave you sticky afterward.',
-    },
-    {
-      initials: 'GV', name: 'Gabriel V.', tag: 'Body to Body + Lingam', when: '1 month ago', stars: 5,
-      text: 'Big fan of hairy guys and Thalyson has great presence. Warm skin, direct contact without pretension and great hands on the lingam. Left weak in the knees.',
-    },
-    {
-      initials: 'HN', name: 'Henrique N.', tag: 'Sensitive + Lingam', when: '1 month ago', stars: 4,
-      text: 'Being near Anhangabaú you hear a bit of street noise outside, but the background music covers it well and the massage makes you forget everything. Finished big.',
-    },
-    {
-      initials: 'PR', name: 'Pedro R.', tag: 'Classic + Trimming', when: '1 month ago', stars: 5,
-      text: 'Got the trimming + classic combo. Clean clipper trim without irritation and the massage loosened up my back. Fair price for the time.',
-    },
-    {
-      initials: 'AL', name: 'André L.', tag: 'Beard Sensations', when: '2 months ago', stars: 5,
-      text: 'Never tried a naturist session before. His calm vibe breaks the ice fast and the contrast of beard and hands felt intense.',
-    },
-    {
-      initials: 'CS', name: 'Caio S.', tag: 'Classic Massage', when: '2 months ago', stars: 4,
-      text: 'The massage gun feels a bit intense if you’re sensitive, asked him to go lighter on my calves and he adjusted right away. Very relaxing.',
-    },
-    {
-      initials: 'RO', name: 'Rodrigo O.', tag: 'Sensitive + Lingam', when: '2 months ago', stars: 5,
-      text: 'Already grabbed the 2x a month plan because it became my escape from SP rush. Straightforward service and always leave recharged.',
-    },
-    {
-      initials: 'VK', name: 'Vinícius K.', tag: 'Body to Body + Lingam', when: '2 months ago', stars: 5,
-      text: 'Simple, clean and discreet space, never bump into anyone. Body-to-body contact is unreal, had me turned on from start to finish.',
-    },
-    {
-      initials: 'JM', name: 'João M.', tag: 'Classic Massage', when: '3 months ago', stars: 5,
-      text: 'Arrived wrecked from a trip, booked 40 min classic and felt like I slept 8 hours. Highly recommend to unwind your body.',
-    },
-    {
-      initials: 'TS', name: 'Tiago S.', tag: 'Sensitive + Lingam', when: '3 months ago', stars: 5,
-      text: 'No fake luxury clinic vibe, just genuine skill that beats plenty of pricey places. Firm on the back and great touch at the end.',
-    },
-  ],
-  es: [
-    {
-      initials: 'RM', name: 'Rafael M.', tag: 'Sensitiva + Lingam', when: 'hace 3 días', stars: 5,
-      text: 'Hacía tiempo que no desconectaba así. Empezó soltando la espalda y cuando pasó a la sensitiva me excité muchísimo, acabé bastante y salí liviano.',
-    },
-    {
-      initials: 'LT', name: 'Lucas T.', tag: 'Masaje Clásico', when: 'hace 1 semana', stars: 5,
-      text: 'Pedí solo el clásico porque tenía la lumbar trabada de entrenar. ¡Relajó muchísimo! La pistola al final pegó fuerte en el nudo del hombro pero soltó todo.',
-    },
-    {
-      initials: 'BS', name: 'Bruno S.', tag: 'Cuerpo a Cuerpo + Lingam', when: 'hace 2 semanas', stars: 5,
-      text: 'Su cuerpo peludo deslizando con gel calienta muchísimo, más aún pudiendo tocar de vuelta. No aguanté mucho y acabé un montón. Vuelvo el mes que viene.',
-    },
-    {
-      initials: 'DG', name: 'Diego G.', tag: 'Sensaciones con Barba', when: 'hace 2 semanas', stars: 4,
-      text: 'Sentí el incienso un poco fuerte al entrar, pedí apagarlo y lo sacó al toque. Después la barba pasando por cuello y espalda me erizó entero, muy bueno.',
-    },
-    {
-      initials: 'FA', name: 'Felipe A.', tag: 'Sensitiva + Lingam', when: 'hace 3 semanas', stars: 5,
-      text: 'Fui algo nervioso por ser la primera vez, pero Thalyson hace todo muy natural. Fui recién duchado como acordamos, clima reservado y sin prisa.',
-    },
-    {
-      initials: 'MC', name: 'Matheus C.', tag: 'Masaje Clásico', when: 'hace 1 mes', stars: 5,
-      text: 'Trabajo todo el día sentado y tenía el cuello duro. Presión firme justa y con la crema hidratante no quedas pegajoso después.',
-    },
-    {
-      initials: 'GV', name: 'Gabriel V.', tag: 'Cuerpo a Cuerpo + Lingam', when: 'hace 1 mes', stars: 5,
-      text: 'Me encantan los tipos peludos y Thalyson tiene mucha presencia. Piel caliente, contacto directo sin vueltas y muy buena mano en el lingam.',
-    },
-    {
-      initials: 'HN', name: 'Henrique N.', tag: 'Sensitiva + Lingam', when: 'hace 1 mes', stars: 4,
-      text: 'Al estar cerca de Anhangabaú se escucha algo de ruido de calle afuera, pero la música tapa bien y el masaje te hace olvidar todo. Acabé muchísimo.',
-    },
-    {
-      initials: 'PR', name: 'Pedro R.', tag: 'Clásico + Recorte', when: 'hace 1 mes', stars: 5,
-      text: 'Hice el combo de recorte y masaje clásico. Prolijo a máquina sin irritar y el masaje soltó la espalda. Buen precio por el tiempo.',
-    },
-    {
-      initials: 'AL', name: 'André L.', tag: 'Sensaciones con Barba', when: 'hace 2 meses', stars: 5,
-      text: 'Nunca había probado sesión naturista. Su onda tranquila rompe el hielo rápido y el contraste de la barba con la mano estuvo muy intenso.',
-    },
-    {
-      initials: 'CS', name: 'Caio S.', tag: 'Masaje Clásico', when: 'hace 2 meses', stars: 4,
-      text: 'La pistola masajeadora es un poco intensa si tienes sensibilidad, le pedí más suave en los gemelos y ajustó al instante. Relajó bastante.',
-    },
-    {
-      initials: 'RO', name: 'Rodrigo O.', tag: 'Sensitiva + Lingam', when: 'hace 2 meses', stars: 5,
-      text: 'Ya tomé el plan 2x al mes porque se volvió mi cable a tierra en SP. Atención directa, sin vueltas y salgo renovado.',
-    },
-    {
-      initials: 'VK', name: 'Vinícius K.', tag: 'Cuerpo a Cuerpo + Lingam', when: 'hace 2 meses', stars: 5,
-      text: 'Espacio simple, limpio y discreto, no te cruzas con nadie. El contacto cuerpo a cuerpo es increíble, me excitó de principio a fin.',
-    },
-    {
-      initials: 'JM', name: 'João M.', tag: 'Masaje Clásico', when: 'hace 3 meses', stars: 5,
-      text: 'Llegué molido de viaje, tomé 40 min de clásico y parecía que había dormido 8 horas. Muy recomendable.',
-    },
-    {
-      initials: 'TS', name: 'Tiago S.', tag: 'Sensitiva + Lingam', when: 'hace 3 meses', stars: 5,
-      text: 'Sin lujo de clínica cara, pero con una entrega que supera a muchos lugares. Firme en la espalda y muy buen toque al final.',
-    },
-  ],
-};
 
 const dr = (p: { min: number; max: number }, l?: Lang) => (p.max > p.min ? `${p.min} ${l === 'en' ? 'to' : 'a'} ${p.max}` : `${p.min}`);
 const MASSAGES = PACKAGES.filter((p) => p.combo > 0);
@@ -1328,7 +1110,6 @@ export default function App() {
   const [phase, setPhase] = useState<Phase>('loading');
   const [profileOpen, setProfileOpen] = useState(false);
   const [extrasOpen, setExtrasOpen] = useState(false);
-  const [showAllReviews, setShowAllReviews] = useState(false);
   const [ask, setAsk] = useState<{ q: string; k: number } | null>(null);
   // Liquid Glass: o brilho do vidro acompanha o dedo ou o mouse (sem movimento se a pessoa pediu menos animação)
   useEffect(() => {
@@ -1758,8 +1539,6 @@ export default function App() {
   const nextLabel = nextFree ? `${nextFree.k === 0 ? t('today') : nextFree.k === 1 ? t('tomorrow') : fmt(nextFree.d, { weekday: 'long' })} ${nextFree.t}` : '';
   const minMassagePrice = useMemo(() => Math.min(...MASSAGES.map((p) => p.price)), []);
   const minVisual = getVisualPrice(minMassagePrice);
-  const allReviews = HOME_REVIEWS[lang];
-  const visibleReviews = showAllReviews ? allReviews : allReviews.slice(0, 3);
 
   // ---- Deep links (?sessao=, ?cupom=, ?agendar) aplicados quando o site abre ----
   useEffect(() => {
@@ -1922,7 +1701,7 @@ export default function App() {
               <Reveal delay={380}>
                 <div className="btn-row mb-6">
                   <Button onClick={goBook} className="btn-ui btn-p btn-lg">{t('cta')}</Button>
-                  <Button onClick={() => document.getElementById('avaliacoes')?.scrollIntoView({ block: 'start' })} className="btn-ui btn-g btn-lg"><Icon name="star" size={18} /> {t('seeReviews')}</Button>
+                  <Button asChild className="btn-ui btn-g btn-lg"><a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {t('reviews')}</a></Button>
                 </div>
               </Reveal>
               <Reveal delay={500}>
@@ -2422,30 +2201,7 @@ export default function App() {
           <section id="avaliacoes" className="mb-24 scroll-mt-20" aria-labelledby="rv-sec">
             <Title id="rv-sec" className="text-[30px] md:text-[38px] mb-1">{t('revH')}</Title>
             <Reveal delay={100}><p className="text-sm mb-6 c-mute">{t('revS')}</p></Reveal>
-            <div className="rev-grid">
-              {visibleReviews.map((r, i) => (
-                <Reveal key={`${r.name}-${i}`} delay={(i % 3) * 80} className="h-full">
-                  <figure className="glass-rev rev-card h-full">
-                    <div className="rev-stars" role="img" aria-label={`${r.stars}/5`}>
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <svg key={n} width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ opacity: n <= r.stars ? 1 : 0.25 }}><path d={ICONS.star} /></svg>
-                      ))}
-                    </div>
-                    <blockquote className="text-[15px] leading-relaxed c-ink">{r.text}</blockquote>
-                    <figcaption className="rev-by">
-                      <span className="glass-avatar" aria-hidden="true">{r.initials}</span>
-                      <span className="min-w-0"><strong className="block text-sm leading-tight c-ink">{r.name}</strong><span className="block text-xs c-mute">{r.tag}, {r.when}</span></span>
-                    </figcaption>
-                  </figure>
-                </Reveal>
-              ))}
-            </div>
-            <div className="btn-row mt-6">
-              {allReviews.length > 3 && (
-                <Button onClick={() => { vibrate(10); setShowAllReviews((v) => !v); }} className="btn-ui btn-g btn-md">
-                  {showAllReviews ? t('revLess') : t('revMore').replace('{n}', String(allReviews.length))}
-                </Button>
-              )}
+            <div className="btn-row">
               <Button asChild className="btn-ui btn-g btn-md">
                 <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={16} /> {t('revBtn')}</a>
               </Button>
