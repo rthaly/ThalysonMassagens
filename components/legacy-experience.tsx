@@ -847,7 +847,7 @@ const SocialButtons = ({ reviewsLabel, grid = false }: { reviewsLabel: string; g
       <a href={C.INSTAGRAM} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} /> Instagram</a>
     </Button>
     <Button asChild className="btn-ui btn-g btn-md">
-      <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {reviewsLabel}</a>
+      <a href={C.REVIEW_READ_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {reviewsLabel}</a>
     </Button>
   </div>
 );
