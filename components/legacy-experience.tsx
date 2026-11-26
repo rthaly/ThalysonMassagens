@@ -24,6 +24,7 @@ const C = {
   PHONE: '5517991360413',
   PIX_KEY: 'relaxecomthalyson@gmail.com',
   PIX_LABEL: 'E-mail',
+  PAY_LINK: 'https://link.mercadopago.com.br/thalysonm', // link de pagamento do Mercado Pago (a pessoa digita o valor)
   INSTAGRAM: 'https://www.instagram.com/relaxecomthalyson',
   PORTFOLIO: 'https://thalysondesigner.vercel.app/',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
@@ -115,7 +116,7 @@ const T: Record<Lang, Record<string, string>> = {
     healthHome: 'Declaro que estou com a saúde em dia (sem febre, sintomas gripais ou irritações na pele) e que já estarei de banho tomado quando você chegar.',
     optIn: 'Pode me avisar no WhatsApp quando abrir horário livre ou promoção.',
     ageA: 'Confirmo ter 18 anos ou mais e concordo com a', privacy: 'Política de Privacidade', terms: 'Termos', and: 'e', refund: 'Regras de Cancelamento',
-    sigA: 'Para travar esse horário só para você, faça o Pix do sinal de', sigB: 'Esse valor já é abatido e você paga o restante de', sigC: 'só depois da sessão.', copyPix: 'Copiar chave Pix (e-mail)', pixCopied: 'Chave Pix copiada!',
+    sigA: 'Para travar esse horário só para você, faça o Pix do sinal de', sigB: 'Esse valor já é abatido e você paga o restante de', sigC: 'só depois da sessão.', copyPix: 'Copiar chave Pix (e-mail)', pixCopied: 'Chave Pix copiada!', payLink: 'Pagar {v} no Mercado Pago', payHint: 'Na página do Mercado Pago, digite {v} e conclua. Depois me mande o comprovante no WhatsApp.',
     send: 'Mandar pedido no WhatsApp', needPay: 'Escolha como vai pagar o restante', needHealth: 'Confirme saúde em dia e banho tomado', needAge: 'Confirme que tem 18 anos ou mais',
     doneH: 'Resumo pronto', doneP: 'Agora é só enviar a mensagem que abriu no seu WhatsApp junto com o comprovante do sinal de R$ 40 para eu travar seu horário.',
     doneSig: 'Chave Pix (e-mail):', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na agenda', restart: 'Fazer outro agendamento',
@@ -205,7 +206,7 @@ const T: Record<Lang, Record<string, string>> = {
     healthHome: 'I declare I am in good health (no fever, flu symptoms or skin irritations) and will already be freshly showered when you arrive.',
     optIn: 'Notify me on WhatsApp when open slots or promos come up.',
     ageA: 'I confirm I am 18 or older and agree to the', privacy: 'Privacy Policy', terms: 'Terms', and: 'and', refund: 'Cancellation Rules',
-    sigA: 'To lock this time exclusively for you, send the Pix deposit of', sigB: 'This amount is deducted and you pay the remaining', sigC: 'only after the session.', copyPix: 'Copy Pix key (email)', pixCopied: 'Pix key copied!',
+    sigA: 'To lock this time exclusively for you, send the Pix deposit of', sigB: 'This amount is deducted and you pay the remaining', sigC: 'only after the session.', copyPix: 'Copy Pix key (email)', pixCopied: 'Pix key copied!', payLink: 'Pay {v} on Mercado Pago', payHint: 'On the Mercado Pago page, enter {v} and finish. Then send me the receipt on WhatsApp.',
     send: 'Send request on WhatsApp', needPay: 'Choose how you will pay the rest', needHealth: 'Confirm good health & freshly showered', needAge: 'Confirm you are 18 or older',
     doneH: 'Summary ready', doneP: 'Just send the message that opened in WhatsApp along with your R$ 40 deposit receipt so I can lock your slot.',
     doneSig: 'Pix Key (email):', resend: 'Open WhatsApp again', addCal: 'Save to calendar', restart: 'Make another booking',
@@ -295,7 +296,7 @@ const T: Record<Lang, Record<string, string>> = {
     healthHome: 'Declaro que estoy bien de salud (sin fiebre, síntomas gripales ni irritaciones en la piel) y que ya estaré duchado cuando llegues.',
     optIn: 'Avísame por WhatsApp cuando se libere un horario o promoción.',
     ageA: 'Confirmo tener 18 años o más y acepto la', privacy: 'Política de Privacidad', terms: 'Términos', and: 'y', refund: 'Reglas de Cancelación',
-    sigA: 'Para bloquear este horario solo para ti, haz el Pix de señal de', sigB: 'Ese valor ya se descuenta y pagas el resto de', sigC: 'solo después de la sesión.', copyPix: 'Copiar clave Pix (e-mail)', pixCopied: '¡Clave Pix copiada!',
+    sigA: 'Para bloquear este horario solo para ti, haz el Pix de señal de', sigB: 'Ese valor ya se descuenta y pagas el resto de', sigC: 'solo después de la sesión.', copyPix: 'Copiar clave Pix (e-mail)', pixCopied: '¡Clave Pix copiada!', payLink: 'Pagar {v} en Mercado Pago', payHint: 'En la página de Mercado Pago, escribe {v} y finaliza. Luego mándame el comprobante por WhatsApp.',
     send: 'Mandar pedido por WhatsApp', needPay: 'Elige cómo pagarás el resto', needHealth: 'Confirma salud al día y estar duchado', needAge: 'Confirma que tienes 18 años o más',
     doneH: 'Resumen listo', doneP: 'Ahora solo envía el mensaje que se abrió en tu WhatsApp junto con el comprobante de los R$ 40 para bloquear tu horario.',
     doneSig: 'Clave Pix (e-mail):', resend: 'Abrir WhatsApp nuevamente', addCal: 'Guardar en agenda', restart: 'Hacer otra reserva',
@@ -909,6 +910,7 @@ const ICONS = {
   play: 'M5 3l14 9-14 9V3z',
   pause: 'M6 4h4v16H6z M14 4h4v16h-4z',
   stop: 'M6 6h12v12H6z',
+  card: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M2 10h20',
   tag: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z M7 7h.01',
 };
 type IconName = keyof typeof ICONS;
@@ -1967,7 +1969,11 @@ export default function App() {
                     <Button asChild className="btn-ui btn-p w-full">
                       <a href={sentLink && sentLink !== '#' ? sentLink : whatsappLink()} target="_blank" rel="noopener noreferrer">{t('resend')}</a>
                     </Button>
+                    <Button asChild className="btn-ui btn-g w-full">
+                      <a href={C.PAY_LINK} target="_blank" rel="noopener noreferrer" onClick={() => safeTrack('sinal_mercadopago', { tela: 'final' })}><Icon name="card" size={16} /> {t('payLink').replace('{v}', money(invoice.sinal))}</a>
+                    </Button>
                     <Button onClick={copyPix} className="btn-ui btn-g w-full"><Icon name="copy" size={16} /> {t('copyPix')}</Button>
+                    <p className="text-xs c-mute">{t('payHint').replace('{v}', money(invoice.sinal))}</p>
                     {googleCalendarLink() && (
                       <Button asChild className="btn-ui btn-g w-full">
                         <a href={googleCalendarLink()} target="_blank" rel="noopener noreferrer"><Icon name="cal" size={16} /> {t('addCal')}</a>
@@ -2379,6 +2385,12 @@ export default function App() {
                           {t('sigA')} <strong className="num">{money(invoice.sinal)}</strong>. {t('sigB')} <strong className="num">{money(invoice.rest)}</strong> {t('sigC')}{' '}
                           <Button onClick={copyPix} className="lnk-ui lnk-block lnk-left"><Icon name="copy" size={15} /> {t('copyPix')}</Button>
                         </p>
+                        <div>
+                          <Button asChild className="btn-ui btn-g btn-md w-full">
+                            <a href={C.PAY_LINK} target="_blank" rel="noopener noreferrer" onClick={() => safeTrack('sinal_mercadopago', { tela: 'resumo' })}><Icon name="card" size={17} /> {t('payLink').replace('{v}', money(invoice.sinal))}</a>
+                          </Button>
+                          <p className="text-xs mt-2 c-mute">{t('payHint').replace('{v}', money(invoice.sinal))}</p>
+                        </div>
 
                         <div className="space-y-4">
                           <div className="flex items-start gap-3 text-sm leading-relaxed">
