@@ -38,7 +38,7 @@ const C = {
   FIRST: 15,
   REQ_FEE: 140,
   PEAK_FEE: 18,
-  PIX_DISC: 0.03,
+  PIX_DISC: 0, // sem desconto por forma de pagamento: preço único e redondo
   TIME_ADD: 75,
   APARO_FULL: 130,
   BIWEEKLY_DISC: 0.10,
@@ -111,7 +111,7 @@ const T: Record<Lang, Record<string, string>> = {
     reqQ: 'Tem algum pedido específico? (+ R$ 140)', learn: 'Saiba mais',
     reqConsent: 'Autorizo enviar este pedido apenas para avaliação no WhatsApp. Não fica salvo no site.',
     reqPh: 'Escreva o que gostaria de incluir', reqNote: 'Avalio antes de confirmar; se não der para fazer, não cobro nada a mais.',
-    pay: 'Como prefere pagar?', sinalH: 'Agora: sinal de {v}', sinalP: 'Segura o horário só para você e já sai do total.', restH: 'Depois da sessão: {v}', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'Levo a maquininha; as taxas de parcelamento te passo antes no WhatsApp.',
+    pay: 'Como prefere pagar?', sinalH: 'Agora: sinal de {v}', restP: 'No Pix, no cartão por aproximação no meu celular ou em dinheiro, como preferir.', wizStep: 'Passo {a} de {b}', wizBack: 'Voltar', wizNext: 'Continuar', wizPkg: 'Continuar com esta sessão', sinalP: 'Segura o horário só para você e já sai do total.', restH: 'Depois da sessão: {v}', pix: 'Pix', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'Cartão por aproximação direto no meu celular, é só encostar.',
     healthStudio: 'Declaro que estou com a saúde em dia (sem febre, sintomas gripais ou irritações na pele) e que irei já de banho tomado.',
     healthHome: 'Declaro que estou com a saúde em dia (sem febre, sintomas gripais ou irritações na pele) e que já estarei de banho tomado quando você chegar.',
     optIn: 'Pode me avisar no WhatsApp quando abrir horário livre ou promoção.',
@@ -138,10 +138,10 @@ const T: Record<Lang, Record<string, string>> = {
     pBul1: 'Conversa rápida antes de começar para alinhar pressão, música e incenso',
     pBul2: 'Horário exclusivo: você não cruza com ninguém na entrada ou saída',
     pBul3: 'Suíte residencial reservada na Bela Vista ou no seu endereço em SP (esteja já de banho tomado)',
-    pHours: 'Horários', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Pagamento', pPayV: 'Pix (3% de desconto), cartão até 12x ou dinheiro',
+    pHours: 'Horários', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Pagamento', pPayV: 'Pix, cartão por aproximação no celular ou dinheiro',
     pWhere: 'Local', pWhereV: 'Bela Vista (perto do Metrô Anhangabaú) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis avisando até 12h antes',
     pForget: 'Apagar meus dados deste aparelho', forgot: 'Pronto, dados apagados.',
-    recommended: 'Mais escolhida', smartSub: 'Que bom te ver de volta. Escolha o dia e o horário.', lastSlots: 'Últimos horários livres hoje', upTo: 'pode ir até', howH: 'Como funciona', howS: 'Sem cadastro e sem pagar nada no site.', how1T: 'Escolha a sessão', how1D: 'Veja duração, valor e os horários livres.', how2T: 'Mande o pedido', how2D: 'O resumo vai pronto para o meu WhatsApp.', how3T: 'Confirme com o sinal', how3D: 'R$ 40 no Pix seguram o horário e entram no total. O restante no Pix tem 3% de desconto, menos no aparo avulso.', howNote: 'Venha de banho tomado. Incenso e música ficam por sua escolha, na hora do pedido.', endH: 'Vamos marcar?', endP: 'Leva um minuto. O pedido vai pronto para o meu WhatsApp.', q6: 'Atende no meu endereço?', sessS: 'Primeira sessão: R$ 15 de desconto já aplicado nos valores (o aparo avulso não tem desconto).', 
+    recommended: 'Mais escolhida', smartSub: 'Que bom te ver de volta. Escolha o dia e o horário.', lastSlots: 'Últimos horários livres hoje', upTo: 'pode ir até', howH: 'Como funciona', howS: 'Sem cadastro e sem pagar nada no site.', how1T: 'Escolha a sessão', how1D: 'Veja duração, valor e os horários livres.', how2T: 'Mande o pedido', how2D: 'O resumo vai pronto para o meu WhatsApp.', how3T: 'Confirme com o sinal', how3D: 'O sinal de R$ 40 segura o horário e sai do total. O restante você paga depois da sessão.', howNote: 'Venha de banho tomado. Incenso e música ficam por sua escolha, na hora do pedido.', endH: 'Vamos marcar?', endP: 'Leva um minuto. O pedido vai pronto para o meu WhatsApp.', q6: 'Atende no meu endereço?', sessS: 'Primeira sessão: R$ 15 de desconto já aplicado nos valores (o aparo avulso não tem desconto).', 
     quizH: 'Não sabe qual escolher?', quizS: '3 toques e eu te indico a sessão certa para hoje.', quizStart: 'Descobrir minha sessão',
     quizQ1: 'O que você mais precisa hoje?', quizA1a: 'Soltar costas e ombros travados', quizA1b: 'Desligar a cabeça e relaxar o corpo todo', quizA1c: 'Algo mais intenso e com mais contato', quizA1d: 'Só aparar os pelos',
     quizQ2: 'Já fez uma sessão assim antes?', quizA2a: 'É minha primeira vez', quizA2b: 'Já fiz outras vezes',
@@ -201,7 +201,7 @@ const T: Record<Lang, Record<string, string>> = {
     reqQ: 'Any specific request? (+ R$ 140)', learn: 'Learn more',
     reqConsent: 'I consent to sending this request for evaluation on WhatsApp only. Not saved on the site.',
     reqPh: 'Write what you would like to include', reqNote: 'Evaluated before confirming; if not feasible, nothing extra is charged.',
-    pay: 'How would you like to pay?', sinalH: 'Now: {v} deposit', sinalP: 'It holds the time just for you and comes off the total.', restH: 'After the session: {v}', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card reader available; installment rates shared beforehand on WhatsApp.',
+    pay: 'How would you like to pay?', sinalH: 'Now: {v} deposit', restP: 'By Pix, card by tap on my phone, or cash, whatever you prefer.', wizStep: 'Step {a} of {b}', wizBack: 'Back', wizNext: 'Continue', wizPkg: 'Continue with this session', sinalP: 'It holds the time just for you and comes off the total.', restH: 'After the session: {v}', pix: 'Pix', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card by tap, right on my phone.',
     healthStudio: 'I declare I am in good health (no fever, flu symptoms or skin irritations) and will arrive freshly showered.',
     healthHome: 'I declare I am in good health (no fever, flu symptoms or skin irritations) and will already be freshly showered when you arrive.',
     optIn: 'Notify me on WhatsApp when open slots or promos come up.',
@@ -228,10 +228,10 @@ const T: Record<Lang, Record<string, string>> = {
     pBul1: 'Quick chat before starting to align pressure, music and incense',
     pBul2: 'Exclusive slot: you never cross paths with anyone entering or leaving',
     pBul3: 'Private residential suite in Bela Vista or at your SP address (please be freshly showered)',
-    pHours: 'Hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment', pPayV: 'Pix (3% off), card up to 12x or cash',
+    pHours: 'Hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment', pPayV: 'Pix, card by tap on my phone, or cash',
     pWhere: 'Location', pWhereV: 'Bela Vista (near Anhangabaú Metro) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12h in advance',
     pForget: 'Clear my data from this device', forgot: 'Done, data cleared.',
-    recommended: 'Most booked', smartSub: 'Good to see you back. Pick your day and time.', lastSlots: 'Last open slots today', upTo: 'may run until', howH: 'How it works', howS: 'No sign-up and nothing to pay on the site.', how1T: 'Pick a session', how1D: 'See length, price and free times.', how2T: 'Send the request', how2D: 'The summary arrives ready on my WhatsApp.', how3T: 'Confirm with the deposit', how3D: 'R$ 40 by Pix holds the time and counts toward the total. Paying the rest by Pix gets 3% off, except for the trim alone.', howNote: 'Arrive freshly showered. Incense and music are your choice when you book.', endH: 'Ready to book?', endP: 'It takes a minute. The request arrives ready on my WhatsApp.', q6: 'Do you come to my address?', sessS: 'First session: R$ 15 off already applied to the prices (the trim alone has no discount).', 
+    recommended: 'Most booked', smartSub: 'Good to see you back. Pick your day and time.', lastSlots: 'Last open slots today', upTo: 'may run until', howH: 'How it works', howS: 'No sign-up and nothing to pay on the site.', how1T: 'Pick a session', how1D: 'See length, price and free times.', how2T: 'Send the request', how2D: 'The summary arrives ready on my WhatsApp.', how3T: 'Confirm with the deposit', how3D: 'The R$ 40 deposit holds the time and comes off the total. You pay the rest after the session.', howNote: 'Arrive freshly showered. Incense and music are your choice when you book.', endH: 'Ready to book?', endP: 'It takes a minute. The request arrives ready on my WhatsApp.', q6: 'Do you come to my address?', sessS: 'First session: R$ 15 off already applied to the prices (the trim alone has no discount).', 
     quizH: 'Not sure which one?', quizS: '3 taps and I’ll point you to the right session for today.', quizStart: 'Find my session',
     quizQ1: 'What do you need most today?', quizA1a: 'Loosen a stiff back and shoulders', quizA1b: 'Switch off and relax the whole body', quizA1c: 'Something more intense, with more contact', quizA1d: 'Just a trim',
     quizQ2: 'Have you done a session like this before?', quizA2a: 'It’s my first time', quizA2b: 'I’ve done it before',
@@ -291,7 +291,7 @@ const T: Record<Lang, Record<string, string>> = {
     reqQ: '¿Algún pedido específico? (+ R$ 140)', learn: 'Más info',
     reqConsent: 'Autorizo enviar este pedido solo para evaluación en WhatsApp. No queda guardado en el sitio.',
     reqPh: 'Escribe qué te gustaría incluir', reqNote: 'Evalúo antes de confirmar; si no es posible hacerlo, no cobro nada extra.',
-    pay: '¿Cómo prefieres pagar?', sinalH: 'Ahora: seña de {v}', sinalP: 'Asegura el horario solo para ti y se descuenta del total.', restH: 'Después de la sesión: {v}', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Llevo terminal de cobro; las tasas de cuotas te las paso antes por WhatsApp.',
+    pay: '¿Cómo prefieres pagar?', sinalH: 'Ahora: seña de {v}', restP: 'Por Pix, tarjeta por aproximación en mi celular o efectivo, como prefieras.', wizStep: 'Paso {a} de {b}', wizBack: 'Volver', wizNext: 'Continuar', wizPkg: 'Continuar con esta sesión', sinalP: 'Asegura el horario solo para ti y se descuenta del total.', restH: 'Después de la sesión: {v}', pix: 'Pix', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Tarjeta por aproximación directo en mi celular.',
     healthStudio: 'Declaro que estoy bien de salud (sin fiebre, síntomas gripales ni irritaciones en la piel) y que iré ya duchado.',
     healthHome: 'Declaro que estoy bien de salud (sin fiebre, síntomas gripales ni irritaciones en la piel) y que ya estaré duchado cuando llegues.',
     optIn: 'Avísame por WhatsApp cuando se libere un horario o promoción.',
@@ -318,10 +318,10 @@ const T: Record<Lang, Record<string, string>> = {
     pBul1: 'Charla rápida antes de empezar para alinear presión, música e incienso',
     pBul2: 'Horario exclusivo: no te cruzas con nadie al entrar ni al salir',
     pBul3: 'Suite residencial reservada en Bela Vista o en tu dirección en SP (estate ya duchado)',
-    pHours: 'Horarios', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Pago', pPayV: 'Pix (3% de descuento), tarjeta hasta 12x o efectivo',
+    pHours: 'Horarios', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Pago', pPayV: 'Pix, tarjeta por aproximación en el celular o efectivo',
     pWhere: 'Lugar', pWhereV: 'Bela Vista (cerca del Metro Anhangabaú) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis avisando hasta 12h antes',
     pForget: 'Borrar mis datos de este dispositivo', forgot: 'Listo, datos borrados.',
-    recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy', upTo: 'puede llegar hasta', howH: 'Cómo funciona', howS: 'Sin registro y sin pagar nada en el sitio.', how1T: 'Elige la sesión', how1D: 'Mira duración, precio y horarios libres.', how2T: 'Envía el pedido', how2D: 'El resumen llega listo a mi WhatsApp.', how3T: 'Confirma con la señal', how3D: 'R$ 40 por Pix aseguran el horario y se descuentan del total. Pagando el resto por Pix tienes 3% de descuento, menos en el recorte solo.', howNote: 'Ven ya duchado. El incienso y la música los eliges al pedir.', endH: '¿Reservamos?', endP: 'Toma un minuto. El pedido llega listo a mi WhatsApp.', q6: '¿Atiendes en mi dirección?', sessS: 'Primera sesión: R$ 15 de descuento ya aplicado en los precios (el recorte solo no tiene descuento).', 
+    recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy', upTo: 'puede llegar hasta', howH: 'Cómo funciona', howS: 'Sin registro y sin pagar nada en el sitio.', how1T: 'Elige la sesión', how1D: 'Mira duración, precio y horarios libres.', how2T: 'Envía el pedido', how2D: 'El resumen llega listo a mi WhatsApp.', how3T: 'Confirma con la señal', how3D: 'La seña de R$ 40 asegura el horario y se descuenta del total. El resto lo pagas después de la sesión.', howNote: 'Ven ya duchado. El incienso y la música los eliges al pedir.', endH: '¿Reservamos?', endP: 'Toma un minuto. El pedido llega listo a mi WhatsApp.', q6: '¿Atiendes en mi dirección?', sessS: 'Primera sesión: R$ 15 de descuento ya aplicado en los precios (el recorte solo no tiene descuento).', 
     quizH: '¿No sabes cuál elegir?', quizS: '3 toques y te indico la sesión ideal para hoy.', quizStart: 'Descubrir mi sesión',
     quizQ1: '¿Qué necesitas más hoy?', quizA1a: 'Soltar espalda y hombros trabados', quizA1b: 'Apagar la cabeza y relajar todo el cuerpo', quizA1c: 'Algo más intenso y con más contacto', quizA1d: 'Solo recortar el vello',
     quizQ2: '¿Ya hiciste una sesión así?', quizA2a: 'Es mi primera vez', quizA2b: 'Ya lo hice antes',
@@ -641,7 +641,7 @@ export const REVIEWS: Record<Lang, ReviewItem[]> = {
 
 const dr = (p: { min: number; max: number }, l?: Lang) => (p.max > p.min ? `${p.min} ${l === 'en' ? 'to' : 'a'} ${p.max}` : `${p.min}`);
 const MASSAGES = PACKAGES.filter((p) => p.combo > 0);
-const PAY_PT: Record<string, string> = { pix: 'PIX (-3%)', card: 'CARTÃO', cash: 'DINHEIRO' };
+const PAY_PT: Record<string, string> = { pix: 'PIX', card: 'CARTÃO', cash: 'DINHEIRO' };
 const THEME_RGB: Record<PkgTheme, { dark: string; light: string }> = {
   sage: { dark: '94, 184, 140', light: '30, 83, 63' },
   amber: { dark: '235, 157, 75', light: '143, 90, 26' },
@@ -1287,6 +1287,11 @@ const CSS = `
 .ask-own{border-style:dashed}
 .end-card{padding:28px 22px;border-radius:28px}
 .pay-step{padding:20px;border-radius:22px}
+.wiz-top{display:grid;gap:8px}
+.wiz-bar{height:4px;border-radius:99px;background:var(--line);overflow:hidden}
+.wiz-bar span{display:block;height:100%;border-radius:inherit;background:var(--acc);transition:width .35s ease}
+.wiz-nav{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;margin-top:24px}
+.wiz-nav .btn-ui{width:100%}
 .pay-h{font:500 21px/1.25 var(--f-serif),'Fraunces',Georgia,serif;margin:0 0 4px}
 .row-v{min-width:0;max-width:64%;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 @media(min-width:640px){.end-card{padding:40px}}
@@ -1341,6 +1346,8 @@ export default function App() {
   }, []);
   const [offer, setOffer] = useState<Offer>('single');
   const [reviewed, setReviewed] = useState(false);
+  // Reserva em telas: 1 sessão, 2 formato, 3 onde e quando, 4 conferir e enviar
+  const [view, setView] = useState<1 | 2 | 3 | 4>(1);
   const [done, setDone] = useState(false);
   const [sentLink, setSentLink] = useState('');
   const [isReturning, setIsReturning] = useState(() => store.get('thaly_returning_final') === 'yes');
@@ -1383,6 +1390,8 @@ export default function App() {
   };
   const scrollToRef = (r: Ref<HTMLDivElement>, ms = 140) => setTimeout(() => r.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), ms);
   const goBook = () => scrollToRef(bookRef, 30);
+  const firstView = useRef(true);
+  useEffect(() => { if (firstView.current) { firstView.current = false; return; } scrollToRef(bookRef, 30); }, [view]);
 
   useEffect(() => {
     let reduce = false;
@@ -1674,7 +1683,7 @@ export default function App() {
     }
     m += `• *Valor Total:* *${money(invoice.total)}*\n`;
     m += `• Sinal da reserva (Pix agora): *-${money(invoice.sinal)}*\n`;
-    m += `• *Restante após a sessão:* *${money(invoice.rest)}* (${isSolo && data.payment === 'pix' ? 'PIX' : PAY_PT[data.payment] || data.payment})\n\n`;
+    m += `• *Restante após a sessão:* *${money(invoice.rest)}*\n\n`;
     m += `Já vou fazer o Pix do sinal de *${money(invoice.sinal)}* na chave *${C.PIX_KEY}* e te mando o comprovante aqui.`;
     return waLink(m);
   };
@@ -1694,13 +1703,12 @@ export default function App() {
   const goReview = () => {
     if (!chosen) { showToast(t('s1')); goBook(); return; }
     if (!step3Valid) { vibrate(50); setTouched(true); showToast(t('fill')); return; }
-    vibrate(30); setReviewed(true); scrollToRef(s4Ref, 160);
+    vibrate(30); setReviewed(true); setView(4);
     safeTrack('revisar_valores', { sessao: pkg.id, plano: offerEff, local: data.locType });
   };
 
   const finish = () => {
-    if (!step3Valid) { setTouched(true); showToast(t('fill')); scrollToRef(s3Ref, 30); return; }
-    if (!data.payment) { vibrate(50); showToast(t('needPay')); return; }
+    if (!step3Valid) { setTouched(true); showToast(t('fill')); setView(3); return; }
     if (!healthOk) { vibrate(50); showToast(t('needHealth')); return; }
     if (!ageOk) { vibrate(50); showToast(t('needAge')); return; }
     if (!data.date || !data.time) return;
@@ -1718,7 +1726,7 @@ export default function App() {
   };
 
   const resetBooking = () => {
-    setTouched(false); setReqOk(false); setHealthOk(false); setDone(false); setReviewed(false); setExtrasOpen(false); setOffer('single');
+    setTouched(false); setReqOk(false); setHealthOk(false); setDone(false); setReviewed(false); setExtrasOpen(false); setOffer('single'); setView(1);
     setData((p) => ({ ...p, locType: 'studio', cep: '', street: '', number: '', comp: '', bairro: '', date: null, time: '', req: '', payment: '', packageId: '', addTime: false, incense: true, music: true }));
   };
   const restart = () => {
@@ -1784,7 +1792,7 @@ export default function App() {
     const day = draft.date ? days.find((x) => dateKey(x.d) === draft.date)?.d ?? null : null;
     setOffer(draft.offer);
     set({ packageId: draft.packageId, date: day, time: day ? draft.time : '', locType: draft.locType });
-    setDraft(null); safeTrack('rascunho_retomado', { sessao: draft.packageId }); scrollToRef(bookRef, 120);
+    setDraft(null); safeTrack('rascunho_retomado', { sessao: draft.packageId }); setView(3);
   };
   const dropDraft = () => { store.del(DRAFT_KEY); setDraft(null); };
   // Pedido proposto pelo assistente de IA: preenche sessão, plano, dia e horário e leva a pessoa para o passo seguinte
@@ -1794,7 +1802,7 @@ export default function App() {
     setDraft(null);
     setOffer(b.packageId === 'aparo_solo' ? 'single' : (['single', 'combo', 'biweekly', 'pack'].includes(b.offer) ? (b.offer as Offer) : 'single'));
     set({ packageId: b.packageId, date: day, time: b.time, locType: b.locType });
-    scrollToRef(s3Ref.current ? s3Ref : bookRef, 220);
+    setView(3);
   };
 
   // ---- Quiz "qual sessão é pra você" ----
@@ -1819,7 +1827,7 @@ export default function App() {
   const applyQuiz = () => {
     if (!quizResult) return;
     safeTrack('quiz_concluido', { sessao: quizResult.p.id, plano: quizResult.plan });
-    pickPkg(quizResult.p.id); setOffer(quizResult.plan); goBook();
+    pickPkg(quizResult.p.id); setOffer(quizResult.plan); setView(quizResult.p.id === 'aparo_solo' ? 3 : 2);
   };
 
   // ---- Ajuda na hora certa: quem escolheu e parou, ou vai sair, recebe um convite para tirar dúvida ----
@@ -1986,8 +1994,12 @@ export default function App() {
                 </Card>
               </Reveal>
             ) : (
-              <div className="space-y-20">
-                <div>
+              <div className="space-y-10">
+                <div className="wiz-top" aria-live="polite">
+                  <p className="text-sm font-semibold numw">{t('wizStep').replace('{a}', String(view === 1 ? 1 : view === 2 ? 2 : isSolo ? view - 1 : view)).replace('{b}', String(isSolo ? 3 : 4))}</p>
+                  <div className="wiz-bar" aria-hidden="true"><span style={{ width: `${((view === 1 ? 1 : view === 2 ? 2 : isSolo ? view - 1 : view) / (isSolo ? 3 : 4)) * 100}%` }} /></div>
+                </div>
+                {view === 1 && (<div>
                   <StepHead n={1} title={t('s1')} done={chosen} />
                   <p className="text-sm mb-5 -mt-3 c-mute">{t('sessS')}</p>
                   {quiz.step === 0 ? (
@@ -2106,6 +2118,7 @@ export default function App() {
                                   )}
                                 </div>
                                 {!narr.supported && <p className="text-xs mt-2 c-mute" role="status">{t('noTts')}</p>}
+                                <Button onClick={() => { vibrate(15); setView(p.id === 'aparo_solo' ? 3 : 2); }} className="btn-ui btn-p btn-md w-full mt-5">{t('wizPkg')}</Button>
                                 {mine && narr.supported && !narr.male && <p className="text-xs mt-2 c-mute" role="status">{t('voiceLow')}</p>}
                               </div>
                             )}
@@ -2114,9 +2127,9 @@ export default function App() {
                       );
                     })}
                   </RadioGroup>
-                </div>
+                </div>)}
 
-                {chosen && !isSolo && (
+                {chosen && !isSolo && view === 2 && (
                   <div className="scroll-mt-24">
                     <Reveal>
                       <StepHead n={2} title={t('s2')} done={true} />
@@ -2144,11 +2157,15 @@ export default function App() {
                         ))}
                       </RadioGroup>
                       {hasPlan && <p className="text-sm leading-relaxed mt-3 c-mute">{t('packNote')}</p>}
+                      <div className="wiz-nav">
+                        <Button onClick={() => setView(1)} className="btn-ui btn-g btn-md">{t('wizBack')}</Button>
+                        <Button onClick={() => { vibrate(15); setView(3); }} className="btn-ui btn-p btn-md">{t('wizNext')}</Button>
+                      </div>
                     </Reveal>
                   </div>
                 )}
 
-                {chosen && (
+                {chosen && view === 3 && (
                   <div ref={s3Ref} className="scroll-mt-24">
                     <Reveal>
                       <StepHead n={isSolo ? 2 : 3} title={t('s3')} done={step3Valid} />
@@ -2263,7 +2280,10 @@ export default function App() {
                         </div>
 
                         <div>
-                          <Button className="btn-ui btn-p btn-lg w-full" onClick={goReview}>{t('cont')}</Button>
+                          <div className="wiz-nav">
+                            <Button onClick={() => setView(isSolo ? 1 : 2)} className="btn-ui btn-g btn-md">{t('wizBack')}</Button>
+                            <Button className="btn-ui btn-p btn-md" onClick={goReview}>{t('cont')}</Button>
+                          </div>
                           <p className="text-sm mt-4 c-mute">{t('chatQ')} <a href={chatLink} onClick={onChat} target="_blank" rel="noopener noreferrer" className="lnk-ui" style={{ display: 'inline-flex', alignItems: 'center', minHeight: 44 }}>{t('chatBtn')}</a></p>
                         </div>
                       </div>
@@ -2271,7 +2291,7 @@ export default function App() {
                   </div>
                 )}
 
-                {chosen && reviewed && (
+                {chosen && reviewed && view === 4 && (
                   <div ref={s4Ref} className="scroll-mt-24">
                     <Reveal>
                       <StepHead n={isSolo ? 3 : 4} title={t('s4')} done={false} />
@@ -2280,7 +2300,7 @@ export default function App() {
                           <Row label={t('sPack')} value={pt.title} />
                           <Row label={t('sWhen')} value={data.date ? `${fmt(data.date, { weekday: 'short', day: '2-digit', month: 'short' })}, ${data.time} – ${endTime}${ranged ? ` (${t('upTo')} ${endMax})` : ''}` : ''} />
                           <Row label={t('sLoc')} value={isHome ? `${data.street}, ${data.number} - ${data.bairro}` : t('sLocStudio')} />
-                          <Button onClick={() => scrollToRef(s3Ref, 30)} className="lnk-ui lnk-block lnk-left text-sm">{t('change')}</Button>
+                          <Button onClick={() => setView(3)} className="lnk-ui lnk-block lnk-left text-sm">{t('change')}</Button>
                         </Card>
 
                         <Card className="px-6">
@@ -2364,15 +2384,7 @@ export default function App() {
 
                         <div className="pay-step card-ui" role="group" aria-labelledby="rest-h">
                           <p id="rest-h" className="pay-h numw">{t('restH').replace('{v}', money(invoice.rest))}</p>
-                          <p className="lbl-ui" id="pay-lbl">{t('pay')}</p>
-                          <RadioGroup aria-labelledby="pay-lbl" value={data.payment} onValueChange={(v) => { vibrate(15); set({ payment: v }); }} className="g-3">
-                            {(['pix', 'card', 'cash'] as const).map((p) => (
-                              <Label key={p} className={cn('chip-ui', data.payment === p && 'on')} style={{ fontSize: 15, padding: '8px' }}>
-                                <RadioGroupItem value={p} />{p === 'pix' && isSolo ? 'Pix' : t(p)}
-                              </Label>
-                            ))}
-                          </RadioGroup>
-                          {data.payment === 'card' && <p className="text-sm mt-3 c-mute">{t('cardNote')}</p>}
+                          <p className="text-sm c-mute">{t('restP')}</p>
                         </div>
 
                         <div className="space-y-4">
@@ -2386,12 +2398,13 @@ export default function App() {
                             <Label htmlFor="opt-in" className="lbl-chk">{t('optIn')}</Label>
                           </div>
 
-                          {renderAge('age-ok')}
+                          {!ageOk && renderAge('age-ok')}
                         </div>
 
-                        <Button onClick={finish} disabled={!data.payment || !healthOk || !ageOk} className="btn-ui btn-p btn-xl w-full">
-                          {!data.payment ? t('needPay') : !healthOk ? t('needHealth') : !ageOk ? t('needAge') : t('send')}
+                        <Button onClick={finish} disabled={!healthOk || !ageOk} className="btn-ui btn-p btn-xl w-full">
+                          {!healthOk ? t('needHealth') : !ageOk ? t('needAge') : t('send')}
                         </Button>
+                        <Button onClick={() => setView(3)} className="lnk-ui lnk-block lnk-left lnk-mute">{t('wizBack')}</Button>
                       </div>
                     </Reveal>
                   </div>

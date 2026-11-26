@@ -54,7 +54,7 @@ export const LOCAIS: Local[] = [
     blocos: [
       { h2: 'Chegando de metrô', p: 'A suíte fica perto do Metrô Anhangabaú. Depois da reserva eu mando o endereço exato e a orientação de como chegar pelo WhatsApp, para você não se perder na região.' },
       { h2: 'Um horário só seu', p: 'Atendo uma pessoa por vez, sem sala de espera e sem cruzar com ninguém na entrada ou na saída. O espaço é simples e reservado, com maca de madeira, música e incenso se você quiser. Se preferir sem incenso, é só pedir.' },
-      { h2: 'Valores sem surpresa', p: 'Você vê o valor total, o sinal de R$ 40 e o que sobra para pagar depois da sessão antes de enviar o pedido. O restante pode ser no Pix, com 3% de desconto (exceto no aparo avulso), no cartão em até 12 vezes ou em dinheiro.' },
+      { h2: 'Valores sem surpresa', p: 'Você vê o valor total, o sinal de R$ 40 e o que sobra para pagar depois da sessão antes de enviar o pedido. O restante pode ser no Pix, no cartão por aproximação ou em dinheiro.' },
     ],
     faq: [
       { q: 'Qual estação de metrô fica mais perto?', a: 'O Metrô Anhangabaú. Passo o endereço exato pelo WhatsApp depois da reserva.' },
