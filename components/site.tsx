@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowDown, ArrowRight, ArrowUpRight, Clock3, MapPin, Menu, Moon, Sun, X } from 'lucide-react'
-import { reviewUrl, sessions, whatsapp } from '@/lib/content'
+import { reviewReadUrl, sessions, whatsapp } from '@/lib/content'
 import { PUBLIC_BY_SLUG } from '@/lib/site'
 
 type Lang = 'pt' | 'en' | 'es'
@@ -41,7 +41,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <Link href="/" className="brand" aria-label="Relaxar hoje com Thalyson"><span className="brand-mark">T</span><span><strong>Relaxar hoje</strong><small>com Thalyson · Bela Vista, SP</small></span></Link>
       <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="Principal">
         <Link href="/#sessoes" onClick={close}>{t.sessions}</Link>
-        <a href={reviewUrl} target="_blank" rel="noopener noreferrer" onClick={close}>{t.reviews}</a>
+        <a href={reviewReadUrl} target="_blank" rel="noopener noreferrer" onClick={close}>{t.reviews}</a>
         <Link href="/#sobre" onClick={close}>{t.about}</Link>
       </nav>
       <div className="tools">

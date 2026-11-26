@@ -24,4 +24,6 @@ export const sessions: Session[] = [
 ]
 
 export const whatsapp = '5517991360413'
+// Perfil no Google (mostra as avaliações). Sem parâmetros de sessão, que expiram.
+export const reviewReadUrl = 'https://www.google.com/search?q=Massagens+com+Thalyson&hl=pt-BR'
 export const reviewUrl = 'https://g.page/r/Cd1aEwEt0R1QEAE/review'

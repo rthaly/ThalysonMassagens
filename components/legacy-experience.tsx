@@ -27,6 +27,7 @@ const C = {
   INSTAGRAM: 'https://www.instagram.com/relaxecomthalyson',
   PORTFOLIO: 'https://thalysondesigner.vercel.app/',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
+  REVIEW_READ_LINK: 'https://www.google.com/search?q=Massagens+com+Thalyson&hl=pt-BR',
   AVATAR: '/thalyson.jpg',
   COUPONS: { RELAXAR13: 0.13, SESSAO2: 0.08 } as Record<string, number>,
   PUBLIC_COUPONS: [
@@ -120,7 +121,7 @@ const T: Record<Lang, Record<string, string>> = {
     doneH: 'Resumo pronto', doneP: 'Agora é só enviar a mensagem que abriu no seu WhatsApp junto com o comprovante do sinal de R$ 40 para eu travar seu horário.',
     doneSig: 'Chave Pix (e-mail):', resend: 'Abrir WhatsApp novamente', addCal: 'Salvar na agenda', restart: 'Fazer outro agendamento',
     chatQ: 'Ficou com alguma dúvida antes de marcar?', chatBtn: 'Falar no WhatsApp', chatMsg: 'Oi Thalyson! Vi seu site e queria tirar uma dúvida sobre a massagem.',
-    revH: 'Avaliações no Google', revS: 'Já fez uma sessão? Sua avaliação no Google ajuda outras pessoas a decidir.', revBtn: 'Avaliar no Google',
+    revH: 'Avaliações no Google', revS: 'Já fez uma sessão? Sua avaliação no Google ajuda outras pessoas a decidir.', revBtn: 'Avaliar no Google', revSee: 'Ver avaliações no Google',
     aboutH: 'Quem vai te atender', aboutR: 'Atendimento direto comigo, sem intermediários',
     about1: 'Tenho 30 anos, sou do interior de SP e cheguei em São Paulo há menos de 1 ano. Ainda estou me instalando e conhecendo a cidade, então meu atendimento é bem direto e sem luxo de clínica: uma suíte residencial simples e reservada na Bela Vista para você desligar da correria.',
     about2: 'Suíte simples e reservada, perto do Metrô Anhangabaú, com maca de madeira e horário só seu.', seeProfile: 'Ver detalhes do espaço',
@@ -210,7 +211,7 @@ const T: Record<Lang, Record<string, string>> = {
     doneH: 'Summary ready', doneP: 'Just send the message that opened in WhatsApp along with your R$ 40 deposit receipt so I can lock your slot.',
     doneSig: 'Pix Key (email):', resend: 'Open WhatsApp again', addCal: 'Save to calendar', restart: 'Make another booking',
     chatQ: 'Have a question before booking?', chatBtn: 'Chat on WhatsApp', chatMsg: 'Hi Thalyson! I saw your site and have a quick question about the massage.',
-    revH: 'Google reviews', revS: 'Already had a session? Your Google review helps other people decide.', revBtn: 'Review on Google',
+    revH: 'Google reviews', revS: 'Already had a session? Your Google review helps other people decide.', revBtn: 'Review on Google', revSee: 'See Google reviews',
     aboutH: 'Who will see you', aboutR: 'Direct service with me, no middlemen',
     about1: 'I’m 30, from upstate SP, and moved to São Paulo less than a year ago. I’m still settling in and getting to know the city, so my service is straightforward without fake clinic luxury—a simple, private suite in Bela Vista for you to unplug.',
     about2: 'A simple, private suite near Anhangabaú Metro, with a wooden table and a time slot just for you.', seeProfile: 'See space details',
@@ -300,7 +301,7 @@ const T: Record<Lang, Record<string, string>> = {
     doneH: 'Resumen listo', doneP: 'Ahora solo envía el mensaje que se abrió en tu WhatsApp junto con el comprobante de los R$ 40 para bloquear tu horario.',
     doneSig: 'Clave Pix (e-mail):', resend: 'Abrir WhatsApp nuevamente', addCal: 'Guardar en agenda', restart: 'Hacer otra reserva',
     chatQ: '¿Te quedó alguna duda antes de reservar?', chatBtn: 'Hablar por WhatsApp', chatMsg: '¡Hola Thalyson! Vi tu sitio y quería hacerte una consulta sobre el masaje.',
-    revH: 'Reseñas en Google', revS: '¿Ya tuviste una sesión? Tu reseña en Google ayuda a otras personas a decidir.', revBtn: 'Reseñar en Google',
+    revH: 'Reseñas en Google', revS: '¿Ya tuviste una sesión? Tu reseña en Google ayuda a otras personas a decidir.', revBtn: 'Reseñar en Google', revSee: 'Ver reseñas en Google',
     aboutH: 'Quién te atiende', aboutR: 'Atención directa conmigo, sin intermediarios',
     about1: 'Tengo 30 años, soy del interior de SP y llegué a São Paulo hace menos de 1 año. Todavía me estoy instalando y conociendo la ciudad, así que mi atención es directa y sin lujo falso de clínica: una suite residencial simple y reservada en Bela Vista para desconectar.',
     about2: 'Suite simple y reservada, cerca del Metro Anhangabaú, con camilla de madera y horario solo para ti.', seeProfile: 'Ver detalles del espacio',
@@ -1701,7 +1702,7 @@ export default function App() {
               <Reveal delay={380}>
                 <div className="btn-row mb-6">
                   <Button onClick={goBook} className="btn-ui btn-p btn-lg">{t('cta')}</Button>
-                  <Button asChild className="btn-ui btn-g btn-lg"><a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {t('reviews')}</a></Button>
+                  <Button asChild className="btn-ui btn-g btn-lg"><a href={C.REVIEW_READ_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={18} /> {t('reviews')}</a></Button>
                 </div>
               </Reveal>
               <Reveal delay={500}>
@@ -2202,6 +2203,9 @@ export default function App() {
             <Title id="rv-sec" className="text-[30px] md:text-[38px] mb-1">{t('revH')}</Title>
             <Reveal delay={100}><p className="text-sm mb-6 c-mute">{t('revS')}</p></Reveal>
             <div className="btn-row">
+              <Button asChild className="btn-ui btn-p btn-md">
+                <a href={C.REVIEW_READ_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={16} /> {t('revSee')}</a>
+              </Button>
               <Button asChild className="btn-ui btn-g btn-md">
                 <a href={C.REVIEW_LINK} target="_blank" rel="noopener noreferrer"><Icon name="star" size={16} /> {t('revBtn')}</a>
               </Button>
