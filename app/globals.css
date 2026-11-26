@@ -50,3 +50,29 @@ body{font-size:16px}
 .how-list li{counter-increment:st;position:relative;padding:3px 0 0 42px;font-size:16px;line-height:1.5;min-height:30px}
 .how-list li::before{content:counter(st);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:600 13px/1 var(--sans);background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
 .detail-sub{font:500 20px/1.35 var(--serif);margin:22px 0 16px}
+
+/* Gestão: abas, cartões de resumo e listas */
+.admin-areas,.admin-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.admin-areas button,.admin-tabs button,.adm-filtros button{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+.admin-areas button.on,.admin-tabs button.on,.adm-filtros button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.adm-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0 8px}
+@media(min-width:720px){.adm-cards{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.adm-cards>div{display:grid;gap:2px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}
+.adm-cards span{font-size:13px;color:var(--muted)}
+.adm-cards strong{font:500 24px/1.2 var(--serif)}
+.adm-cards small{font-size:12px;color:var(--muted)}
+.adm-h3{margin:24px 0 8px;font:500 18px var(--serif)}
+.adm-li{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px}
+.adm-item{display:grid;gap:6px}
+.adm-item-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px}
+.adm-item-sub{font-size:14px;color:var(--muted)}
+.adm-item-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.adm-item-acoes .admin-primary,.adm-item-acoes .admin-secondary{min-height:44px}
+.adm-item-acoes a.admin-secondary{text-decoration:none;display:inline-flex;align-items:center}
+.adm-badge{padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid var(--line)}
+.adm-badge.realizado{color:var(--ok)}.adm-badge.faltou,.adm-badge.cancelado{color:var(--warn)}
+.adm-filtros{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.adm-busca{display:grid;gap:6px;margin:12px 0}
+.adm-url{word-break:break-all;padding:12px;border:1px dashed var(--line);border-radius:12px;font-size:14px;user-select:all}
+.adm-texto{margin:12px 0;padding:14px;border:1px solid var(--line);border-radius:14px;display:grid;gap:8px}
+.admin-event-form select{min-height:44px;width:100%;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit}
