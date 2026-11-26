@@ -29,10 +29,10 @@ const C = {
   PORTFOLIO: 'https://thalysondesigner.vercel.app/',
   REVIEW_LINK: 'https://g.page/r/Cd1aEwEt0R1QEAE/review',
   AVATAR: '/thalyson.jpg',
-  // Um único cupom ativo: 15%, sempre em reais inteiros (o desconto é arredondado para baixo)
-  COUPONS: { RELAXAR15: 0.15 } as Record<string, number>,
+  // Um único cupom ativo: R$ 25 de desconto fixo (valor >= 1 = reais), para os preços ficarem redondos
+  COUPONS: { RELAX25: 25 } as Record<string, number>,
   PUBLIC_COUPONS: [
-    { code: 'RELAXAR15', pct: 15 },
+    { code: 'RELAX25', pct: 0 },
   ],
   SIGNAL: 40,
   FIRST: 15,

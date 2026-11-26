@@ -45,8 +45,8 @@ Em planos gratuitos da Vercel, eventos personalizados podem exigir o plano Pro; 
 ## 5. Links prontos para Instagram, Google e anúncios
 - Reserva direta: `https://SEU-SITE/?agendar`
 - Sessão já escolhida: `https://SEU-SITE/?sessao=classica` (também `sensitiva`, `fusion`, `completa`, `aparo`)
-- Com cupom aplicado: `https://SEU-SITE/?cupom=RELAXAR15`
-- Juntos: `https://SEU-SITE/?sessao=classica&cupom=RELAXAR15`
+- Com cupom aplicado: `https://SEU-SITE/?cupom=RELAX25`
+- Juntos: `https://SEU-SITE/?sessao=classica&cupom=RELAX25`
 
 Dica: na bio do Instagram use o link com `?sessao=classica`, porque é a sessão que pode ser divulgada em público.
 
