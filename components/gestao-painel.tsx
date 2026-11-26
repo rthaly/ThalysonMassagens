@@ -14,7 +14,7 @@ const SESSOES = [
   { nome: 'Corpo a Corpo + Lingam', slug: 'completa', valor: 390 },
   { nome: 'Apenas Aparo de Pelos', slug: 'aparo_solo', valor: 130 },
 ]
-const CUPONS = ['RELAXAR13', 'SESSAO2']
+const CUPONS = ['RELAXAR15']
 const STATUS_TXT: Record<Status, string> = { marcado: 'Marcado', realizado: 'Realizado', faltou: 'Faltou', cancelado: 'Cancelado' }
 
 const money = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
@@ -244,6 +244,6 @@ function Links({ setAviso }: { setAviso: (s: string) => void }) {
     </div>
     <h3 className="adm-h3">Textos prontos com o link</h3>
     {textos.map(([k, t]) => <div key={k} className="adm-texto"><p><strong>{k}</strong></p><p style={{ whiteSpace: 'pre-wrap' }}>{t}</p><button className="admin-secondary" onClick={() => copiar1(k, t)}>{copiado === k ? 'Copiado!' : 'Copiar texto'}</button></div>)}
-    <p className="admin-note">Cupons ativos hoje: RELAXAR13 (13%) e SESSAO2 (8%). Para criar ou mudar um cupom, peça para eu ajustar no código.</p>
+    <p className="admin-note">Cupom ativo: RELAXAR15 (15% de desconto, em reais inteiros, no lugar dos R$ 15 da primeira vez). Para trocar o código ou o desconto, peça para eu ajustar.</p>
   </section>
 }
