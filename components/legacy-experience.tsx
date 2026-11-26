@@ -107,11 +107,11 @@ const T: Record<Lang, Record<string, string>> = {
     prefsH: 'Clima da sessão (opcional)', prefIncenseS: 'Incenso aceso', prefMusicS: 'Música ambiente', seeReviews: 'Ver avaliações', aboutN: 'Thalyson, na Bela Vista (SP)',
     prefIncense: 'Gosto de incenso aceso',
     prefMusic: 'Quero música ambiente tocando',
-    extras: 'Adicionar +30 min, cupom ou pedido', couponQ: 'Cupons disponíveis (clique para aplicar)', couponPh: 'Ou digite outro código', apply: 'Aplicar', couponOk: 'Cupom aplicado!', couponBad: 'Cupom inválido.', couponRemove: 'Remover',
+    extras: 'Adicionar +30 min, cupom ou pedido', couponQ: 'Tem um cupom?', couponPh: 'Digite o código', apply: 'Aplicar', couponOk: 'Cupom aplicado!', couponBad: 'Cupom inválido.', couponRemove: 'Remover',
     reqQ: 'Tem algum pedido específico? (+ R$ 140)', learn: 'Saiba mais',
     reqConsent: 'Autorizo enviar este pedido apenas para avaliação no WhatsApp. Não fica salvo no site.',
     reqPh: 'Escreva o que gostaria de incluir', reqNote: 'Avalio antes de confirmar; se não der para fazer, não cobro nada a mais.',
-    pay: 'Como vai pagar o restante depois?', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'Levo a maquininha; as taxas de parcelamento te passo antes no WhatsApp.',
+    pay: 'Como prefere pagar?', sinalH: 'Agora: sinal de {v}', sinalP: 'Segura o horário só para você e já sai do total.', restH: 'Depois da sessão: {v}', pix: 'Pix (-3%)', card: 'Cartão até 12x', cash: 'Dinheiro', cardNote: 'Levo a maquininha; as taxas de parcelamento te passo antes no WhatsApp.',
     healthStudio: 'Declaro que estou com a saúde em dia (sem febre, sintomas gripais ou irritações na pele) e que irei já de banho tomado.',
     healthHome: 'Declaro que estou com a saúde em dia (sem febre, sintomas gripais ou irritações na pele) e que já estarei de banho tomado quando você chegar.',
     optIn: 'Pode me avisar no WhatsApp quando abrir horário livre ou promoção.',
@@ -197,11 +197,11 @@ const T: Record<Lang, Record<string, string>> = {
     prefsH: 'Session atmosphere (optional)', prefIncenseS: 'Incense on', prefMusicS: 'Background music', seeReviews: 'See reviews', aboutN: 'Thalyson, in Bela Vista (SP)',
     prefIncense: 'I like incense burning',
     prefMusic: 'I want background music playing',
-    extras: 'Add +30 min, coupon or request', couponQ: 'Available coupons (tap to apply)', couponPh: 'Or type another code', apply: 'Apply', couponOk: 'Coupon applied!', couponBad: 'Invalid coupon.', couponRemove: 'Remove',
+    extras: 'Add +30 min, coupon or request', couponQ: 'Have a coupon?', couponPh: 'Type the code', apply: 'Apply', couponOk: 'Coupon applied!', couponBad: 'Invalid coupon.', couponRemove: 'Remove',
     reqQ: 'Any specific request? (+ R$ 140)', learn: 'Learn more',
     reqConsent: 'I consent to sending this request for evaluation on WhatsApp only. Not saved on the site.',
     reqPh: 'Write what you would like to include', reqNote: 'Evaluated before confirming; if not feasible, nothing extra is charged.',
-    pay: 'How will you pay the rest after?', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card reader available; installment rates shared beforehand on WhatsApp.',
+    pay: 'How would you like to pay?', sinalH: 'Now: {v} deposit', sinalP: 'It holds the time just for you and comes off the total.', restH: 'After the session: {v}', pix: 'Pix (-3%)', card: 'Card up to 12x', cash: 'Cash', cardNote: 'Card reader available; installment rates shared beforehand on WhatsApp.',
     healthStudio: 'I declare I am in good health (no fever, flu symptoms or skin irritations) and will arrive freshly showered.',
     healthHome: 'I declare I am in good health (no fever, flu symptoms or skin irritations) and will already be freshly showered when you arrive.',
     optIn: 'Notify me on WhatsApp when open slots or promos come up.',
@@ -287,11 +287,11 @@ const T: Record<Lang, Record<string, string>> = {
     prefsH: 'Ambiente de la sesión (opcional)', prefIncenseS: 'Incienso encendido', prefMusicS: 'Música ambiente', seeReviews: 'Ver reseñas', aboutN: 'Thalyson, en Bela Vista (SP)',
     prefIncense: 'Me gusta con incienso encendido',
     prefMusic: 'Quiero música ambiental sonando',
-    extras: 'Sumar +30 min, cupón o pedido', couponQ: 'Cupones disponibles (clic para aplicar)', couponPh: 'O escribe otro código', apply: 'Aplicar', couponOk: '¡Cupón aplicado!', couponBad: 'Cupón inválido.', couponRemove: 'Quitar',
+    extras: 'Sumar +30 min, cupón o pedido', couponQ: '¿Tienes un cupón?', couponPh: 'Escribe el código', apply: 'Aplicar', couponOk: '¡Cupón aplicado!', couponBad: 'Cupón inválido.', couponRemove: 'Quitar',
     reqQ: '¿Algún pedido específico? (+ R$ 140)', learn: 'Más info',
     reqConsent: 'Autorizo enviar este pedido solo para evaluación en WhatsApp. No queda guardado en el sitio.',
     reqPh: 'Escribe qué te gustaría incluir', reqNote: 'Evalúo antes de confirmar; si no es posible hacerlo, no cobro nada extra.',
-    pay: '¿Cómo pagarás el resto después?', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Llevo terminal de cobro; las tasas de cuotas te las paso antes por WhatsApp.',
+    pay: '¿Cómo prefieres pagar?', sinalH: 'Ahora: seña de {v}', sinalP: 'Asegura el horario solo para ti y se descuenta del total.', restH: 'Después de la sesión: {v}', pix: 'Pix (-3%)', card: 'Tarjeta hasta 12x', cash: 'Efectivo', cardNote: 'Llevo terminal de cobro; las tasas de cuotas te las paso antes por WhatsApp.',
     healthStudio: 'Declaro que estoy bien de salud (sin fiebre, síntomas gripales ni irritaciones en la piel) y que iré ya duchado.',
     healthHome: 'Declaro que estoy bien de salud (sin fiebre, síntomas gripales ni irritaciones en la piel) y que ya estaré duchado cuando llegues.',
     optIn: 'Avísame por WhatsApp cuando se libere un horario o promoción.',
@@ -1286,6 +1286,8 @@ const CSS = `
 .ask-ui{min-height:56px}
 .ask-own{border-style:dashed}
 .end-card{padding:28px 22px;border-radius:28px}
+.pay-step{padding:20px;border-radius:22px}
+.pay-h{font:500 21px/1.25 var(--f-serif),'Fraunces',Georgia,serif;margin:0 0 4px}
 .row-v{min-width:0;max-width:64%;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 @media(min-width:640px){.end-card{padding:40px}}
 `;
@@ -2281,18 +2283,6 @@ export default function App() {
                           <Button onClick={() => scrollToRef(s3Ref, 30)} className="lnk-ui lnk-block lnk-left text-sm">{t('change')}</Button>
                         </Card>
 
-                        <div style={{ minWidth: 0 }}>
-                          <p className="lbl-ui" id="pay-lbl">{t('pay')}</p>
-                          <RadioGroup aria-labelledby="pay-lbl" value={data.payment} onValueChange={(v) => { vibrate(15); set({ payment: v }); }} className="g-3">
-                            {(['pix', 'card', 'cash'] as const).map((p) => (
-                              <Label key={p} className={cn('chip-ui', data.payment === p && 'on')} style={{ fontSize: 15, padding: '8px' }}>
-                                <RadioGroupItem value={p} />{p === 'pix' && isSolo ? 'Pix' : t(p)}
-                              </Label>
-                            ))}
-                          </RadioGroup>
-                          {data.payment === 'card' && <p className="text-sm mt-3 c-mute">{t('cardNote')}</p>}
-                        </div>
-
                         <Card className="px-6">
                           <button type="button" aria-expanded={extrasOpen} onClick={() => setExtrasOpen((v) => !v)} className="faq-btn">
                             <span>{t('extras')}</span>
@@ -2309,23 +2299,6 @@ export default function App() {
                               {!hasPlan && (
                                 <div>
                                   <Label htmlFor="cp" className="lbl-ui">{t('couponQ')}</Label>
-                                  <div className="flex flex-wrap gap-2 mb-3">
-                                    {C.PUBLIC_COUPONS.map(({ code, pct }) => {
-                                      const active = coupon.applied === code;
-                                      return (
-                                        <button
-                                          key={code}
-                                          type="button"
-                                          onClick={() => (active ? clearCoupon() : selectCouponCode(code))}
-                                          className="coupon-pill num"
-                                          style={active ? { background: 'var(--ok)', color: 'var(--onacc)', borderStyle: 'solid' } : undefined}
-                                        >
-                                          <Icon name={active ? 'check' : 'tag'} size={14} />
-                                          {code} (-{pct}%)
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
                                   {coupon.applied ? (
                                     <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-s2 text-sm">
                                       <span className="font-bold c-ok">{t('lCoupon')}: {coupon.applied}</span>
@@ -2375,21 +2348,31 @@ export default function App() {
                             <span className="serif text-[34px] sm:text-[46px] leading-none font-light num">{money(invoice.total)}</span>
                           </div>
                           {invoice.saved > 0 && <p className="mt-4 text-[15px] font-extrabold px-4 py-2.5 rounded-2xl c-ok numw" style={{ background: 'color-mix(in srgb,var(--ok) 15%,transparent)' }}>{t('saved')}: -{money(invoice.saved)}</p>}
-                          <div className="grid grid-cols-2 gap-3 mt-4">
-                            <div className="rounded-2xl p-3 bg-s2 min-w-0"><p className="text-xs c-mute">{t('signal')}</p><p className="font-extrabold num">-{money(invoice.sinal)}</p></div>
-                            <div className="rounded-2xl p-3 bg-s2 min-w-0"><p className="text-xs c-mute">{t('rest')}</p><p className="font-extrabold num">{money(invoice.rest)}</p></div>
-                          </div>
                         </Card>
 
-                        <p className="text-[15.5px] leading-relaxed">
-                          {t('sigA')} <strong className="num">{money(invoice.sinal)}</strong>. {t('sigB')} <strong className="num">{money(invoice.rest)}</strong> {t('sigC')}{' '}
-                          <Button onClick={copyPix} className="lnk-ui lnk-block lnk-left"><Icon name="copy" size={15} /> {t('copyPix')}</Button>
-                        </p>
-                        <div>
-                          <Button asChild className="btn-ui btn-g btn-md w-full">
-                            <a href={C.PAY_LINK} target="_blank" rel="noopener noreferrer" onClick={() => safeTrack('sinal_mercadopago', { tela: 'resumo' })}><Icon name="card" size={17} /> {t('payLink').replace('{v}', money(invoice.sinal))}</a>
-                          </Button>
-                          <p className="text-xs mt-2 c-mute">{t('payHint').replace('{v}', money(invoice.sinal))}</p>
+                        <div className="pay-step glass-ui" role="group" aria-labelledby="sinal-h">
+                          <p id="sinal-h" className="pay-h numw">{t('sinalH').replace('{v}', money(invoice.sinal))}</p>
+                          <p className="text-sm mb-4 c-mute">{t('sinalP')}</p>
+                          <div className="btn-col">
+                            <Button asChild className="btn-ui btn-g btn-md">
+                              <a href={C.PAY_LINK} target="_blank" rel="noopener noreferrer" onClick={() => safeTrack('sinal_mercadopago', { tela: 'resumo' })}><Icon name="card" size={17} /> {t('payLink').replace('{v}', money(invoice.sinal))}</a>
+                            </Button>
+                            <Button onClick={copyPix} className="btn-ui btn-g btn-md"><Icon name="copy" size={16} /> {t('copyPix')}</Button>
+                          </div>
+                          <p className="text-xs mt-3 c-mute">{t('payHint').replace('{v}', money(invoice.sinal))}</p>
+                        </div>
+
+                        <div className="pay-step card-ui" role="group" aria-labelledby="rest-h">
+                          <p id="rest-h" className="pay-h numw">{t('restH').replace('{v}', money(invoice.rest))}</p>
+                          <p className="lbl-ui" id="pay-lbl">{t('pay')}</p>
+                          <RadioGroup aria-labelledby="pay-lbl" value={data.payment} onValueChange={(v) => { vibrate(15); set({ payment: v }); }} className="g-3">
+                            {(['pix', 'card', 'cash'] as const).map((p) => (
+                              <Label key={p} className={cn('chip-ui', data.payment === p && 'on')} style={{ fontSize: 15, padding: '8px' }}>
+                                <RadioGroupItem value={p} />{p === 'pix' && isSolo ? 'Pix' : t(p)}
+                              </Label>
+                            ))}
+                          </RadioGroup>
+                          {data.payment === 'card' && <p className="text-sm mt-3 c-mute">{t('cardNote')}</p>}
                         </div>
 
                         <div className="space-y-4">
