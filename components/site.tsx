@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowDown, ArrowRight, ArrowUpRight, Clock3, MapPin, Menu, Moon, Sun, X } from 'lucide-react'
-import { reviews, sessions, whatsapp } from '@/lib/content'
+import { reviewReadUrl, sessions, whatsapp } from '@/lib/content'
 import { PUBLIC_BY_SLUG } from '@/lib/site'
 
 type Lang = 'pt' | 'en' | 'es'
@@ -41,7 +41,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <Link href="/" className="brand" aria-label="Relaxar hoje com Thalyson"><span className="brand-mark">T</span><span><strong>Relaxar hoje</strong><small>com Thalyson · Bela Vista, SP</small></span></Link>
       <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="Principal">
         <Link href="/#sessoes" onClick={close}>{t.sessions}</Link>
-        <Link href="/avaliacoes" onClick={close}>{t.reviews}</Link>
+        <a href={reviewReadUrl} target="_blank" rel="noopener noreferrer" onClick={close}>{t.reviews}</a>
         <Link href="/#sobre" onClick={close}>{t.about}</Link>
       </nav>
       <div className="tools">
@@ -64,7 +64,6 @@ export function SessionDetail({ slug }: { slug: string }) {
   const session = sessions.find((item) => item.slug === slug)
   const pub = PUBLIC_BY_SLUG[slug]
   if (!session || !pub) return null
-  const own = reviews.filter((r) => r.session === session.name)
   return <main id="conteudo" className="section-wrap detail-page">
     <Link href="/#sessoes" className="back-link">← Todas as sessões</Link>
     <article className={`detail-card ${session.accent}`}>
@@ -78,9 +77,5 @@ export function SessionDetail({ slug }: { slug: string }) {
       <div className="detail-price"><span>Valor da sessão</span><strong>{money(session.price)}</strong></div>
       <Link className="button" href={`/?sessao=${session.slug}`}>Escolher horário <ArrowRight size={17}/></Link>
     </article>
-    {own.length > 0 && <section className="content-section">
-      <div className="section-heading"><div><h2>Quem já veio</h2></div><Link href="/avaliacoes" className="text-link">Todas as avaliações <ArrowRight size={15}/></Link></div>
-      <div className="review-grid">{own.map((r) => <article key={r.initials} className="review-card"><div className="review-meta"><span className="review-avatar">{r.initials}</span><div><strong>{r.name}</strong><small>{pub.name}</small></div><span className="review-stars">{'★'.repeat(r.stars)}</span></div><p>“{r.text}”</p><small className="review-date">{r.when}</small></article>)}</div>
-    </section>}
   </main>
 }

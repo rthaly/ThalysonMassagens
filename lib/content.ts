@@ -23,15 +23,7 @@ export const sessions: Session[] = [
     note: '', duration: 40, durationLabel: '40 a 60', price: 130, accent: 'slate' },
 ]
 
-export type Review = { initials: string; name: string; session: string; stars: number; text: string; when: string }
-export const reviews: Review[] = [
-  { initials: 'RM', name: 'Rafael M.', session: 'Sensitiva + Lingam', stars: 5, when: 'há 3 dias', text: 'Fazia tempo que eu não desligava assim. Começou tirando a tensão das costas e saí leve demais.' },
-  { initials: 'LT', name: 'Lucas T.', session: 'Massagem Clássica', stars: 5, when: 'há 1 semana', text: 'Peguei só a clássica porque estava com a lombar travada de treino. A mão é firme na medida certa.' },
-  { initials: 'BS', name: 'Bruno S.', session: 'Corpo a Corpo + Lingam', stars: 5, when: 'há 2 semanas', text: 'Contato direto sem frescura e mão muito boa. Atendimento muito tranquilo e acolhedor.' },
-  { initials: 'DG', name: 'Diego G.', session: 'Sensações com a Barba + Lingam', stars: 4, when: 'há 2 semanas', text: 'Pedi para apagar o incenso e ele tirou na hora, sem problema. A barba passando no pescoço e nas costas me arrepiou inteiro.' },
-  { initials: 'FA', name: 'Felipe A.', session: 'Sensitiva + Lingam', stars: 5, when: 'há 3 semanas', text: 'Fui meio travado por ser a primeira vez, mas o Thalyson deixa tudo muito natural. Clima reservado e sem pressa.' },
-  { initials: 'MC', name: 'Matheus C.', session: 'Massagem Clássica', stars: 5, when: 'há 1 mês', text: 'Trabalho o dia inteiro sentado e estava com o pescoço duro. A mão dele é firme na medida certa.' },
-]
-
 export const whatsapp = '5517991360413'
+// Perfil no Google (mostra as avaliações). Sem parâmetros de sessão, que expiram.
+export const reviewReadUrl = 'https://www.google.com/search?q=Massagens+com+Thalyson&hl=pt-BR'
 export const reviewUrl = 'https://g.page/r/Cd1aEwEt0R1QEAE/review'
