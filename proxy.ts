@@ -6,5 +6,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  // Só a área privada precisa da sessão. As páginas públicas saem direto do cache da Vercel, sem passar por aqui.
+  matcher: ['/gestao/:path*', '/auth/:path*'],
 }

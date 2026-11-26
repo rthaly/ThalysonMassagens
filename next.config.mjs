@@ -21,6 +21,10 @@ const nextConfig = {
         { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
         { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
       ],
+    }, {
+      // Áudios das sessões: o navegador guarda por 1 dia e não baixa de novo a cada toque
+      source: '/voz/:path*',
+      headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
     }]
   },
 }
