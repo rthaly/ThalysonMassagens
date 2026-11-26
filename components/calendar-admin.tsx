@@ -20,17 +20,35 @@ export function AdminAccess() {
     setMessage('')
     if (email.trim().toLowerCase() !== 'relaxecomthalyson@gmail.com') { setMessage('Este acesso está reservado ao responsável pelo atendimento.'); return }
     setBusy(true)
-    const result = isSignUp
+    let result
+    try {
+      result = isSignUp
       ? await supabase.auth.signUp({ email: email.trim().toLowerCase(), password, options: { emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ?? `${window.location.origin}/auth/callback` } })
       : await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password })
+    } catch {
+      setBusy(false); setMessage('O servidor de login não respondeu. Tente de novo em alguns minutos.'); return
+    }
     setBusy(false)
     if (result.error) {
-      setMessage(isSignUp ? (result.error.status === 429 ? 'Muitas tentativas. Aguarde e tente novamente.' : 'Não foi possível criar o acesso. Confira os dados e tente novamente.') : (result.error.status === 429 ? 'Muitas tentativas. Aguarde e tente novamente.' : 'E-mail ou senha inválidos.'))
+      const err = result.error as { status?: number; code?: string; name?: string }
+      if (err.status === 429) setMessage('Muitas tentativas. Aguarde alguns minutos e tente de novo.')
+      else if (!err.status || err.status >= 500 || err.name === 'AuthRetryableFetchError') setMessage('O servidor de login não respondeu. Tente de novo em alguns minutos.')
+      else if (err.code === 'email_not_confirmed') setMessage('Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link.')
+      else if (isSignUp && err.code === 'user_already_exists') setMessage('Esse acesso já existe. Volte e entre com a sua senha, ou use "Esqueci a senha".')
+      else setMessage(isSignUp ? 'Não foi possível criar o acesso. Confira os dados e tente novamente.' : 'E-mail ou senha incorretos. Se não lembrar a senha, use "Esqueci a senha".')
       return
     }
     if (isSignUp && !result.data.session) { setMessage('Confira o e-mail e confirme o endereço antes de entrar.'); return }
     router.replace('/gestao')
     router.refresh()
+  }
+  async function forgot() {
+    setMessage(''); setBusy(true)
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail('relaxecomthalyson@gmail.com', { redirectTo: `${window.location.origin}/auth/callback?next=/gestao/nova-senha` })
+      setMessage(error ? (error.status === 429 ? 'Muitas tentativas. Aguarde alguns minutos e tente de novo.' : 'Não foi possível enviar o e-mail agora. Tente de novo em alguns minutos.') : 'Enviei um link para relaxecomthalyson@gmail.com. Abra o e-mail e toque no link para criar uma senha nova.')
+    } catch { setMessage('O servidor de login não respondeu. Tente de novo em alguns minutos.') }
+    finally { setBusy(false) }
   }
   return <form className="admin-auth-card" onSubmit={submit}>
     <p className="admin-eyebrow">ÁREA PRIVADA</p><h1>{isSignUp ? 'Criar acesso do responsável' : 'Entrar na gestão'}</h1><p>Esta área é exclusiva de Thalyson e protegida por autenticação.</p>
@@ -38,6 +56,7 @@ export function AdminAccess() {
     <label htmlFor="admin-password">Senha</label><input id="admin-password" type="password" autoComplete={isSignUp ? 'new-password' : 'current-password'} minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} />
     {message && <p className="admin-message" role="status">{message}</p>}
     <button className="admin-primary" disabled={busy}>{busy ? 'Aguarde…' : isSignUp ? 'Criar acesso' : 'Entrar'}</button>
+    {!isSignUp && <button type="button" className="admin-secondary" disabled={busy} onClick={forgot}>Esqueci a senha</button>}
     <button type="button" className="admin-secondary" onClick={() => { setIsSignUp(!isSignUp); setMessage('') }}>{isSignUp ? 'Já tenho acesso' : 'Primeiro acesso? Criar conta'}</button>
   </form>
 }
@@ -107,4 +126,30 @@ export function CalendarAdmin({ email }: { email: string }) {
       {status && <p className="admin-message" role="status">{status}</p>}
       <p className="admin-note">A autorização permite consultar horários ocupados e criar eventos. Os detalhes da agenda não são enviados ao navegador público.</p>
     </div></main>
+}
+
+// Tela "nova senha": aberta pelo link do e-mail de "Esqueci a senha"
+export function NewPassword() {
+  const [password, setPassword] = useState('')
+  const [again, setAgain] = useState('')
+  const [message, setMessage] = useState('')
+  const [busy, setBusy] = useState(false)
+  const router = useRouter()
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setMessage('')
+    if (password.length < 8) { setMessage('A senha precisa ter pelo menos 8 caracteres.'); return }
+    if (password !== again) { setMessage('As duas senhas não são iguais.'); return }
+    setBusy(true)
+    const { error } = await createClient().auth.updateUser({ password })
+    setBusy(false)
+    if (error) { setMessage('Não foi possível salvar a senha. Peça um novo link em "Esqueci a senha".'); return }
+    router.replace('/gestao'); router.refresh()
+  }
+  return <form className="admin-auth-card" onSubmit={submit}>
+    <p className="admin-eyebrow">ÁREA PRIVADA</p><h1>Criar senha nova</h1><p>Escolha uma senha com pelo menos 8 caracteres.</p>
+    <label htmlFor="np1">Senha nova</label><input id="np1" type="password" autoComplete="new-password" minLength={8} required value={password} onChange={(e) => setPassword(e.target.value)} />
+    <label htmlFor="np2">Repita a senha</label><input id="np2" type="password" autoComplete="new-password" minLength={8} required value={again} onChange={(e) => setAgain(e.target.value)} />
+    {message && <p className="admin-message" role="status">{message}</p>}
+    <button className="admin-primary" disabled={busy}>{busy ? 'Aguarde…' : 'Salvar senha e entrar'}</button>
+  </form>
 }
