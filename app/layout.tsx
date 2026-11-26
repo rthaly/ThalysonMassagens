@@ -1,7 +1,12 @@
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
+import { Fraunces, Poppins } from 'next/font/google'
 import { PUBLIC_FAQ, PUBLIC_SERVICES, SITE_NAME, SITE_URL } from '@/lib/site'
 import './globals.css'
+
+// Fontes servidas pelo próprio site: sem pedir ao Google na hora de abrir a página
+const fraunces = Fraunces({ subsets: ['latin'], axes: ['opsz'], display: 'swap', variable: '--f-serif' })
+const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700'], display: 'swap', variable: '--f-sans' })
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -43,5 +48,5 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     },
   }
   const faq = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: PUBLIC_FAQ.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }
-  return <html lang="pt-BR" data-theme="dark"><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([business, faq]) }}/>{children}{process.env.NODE_ENV === 'production' && <Analytics/>}</body></html>
+  return <html lang="pt-BR" data-theme="dark" className={`${fraunces.variable} ${poppins.variable}`}><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([business, faq]) }}/>{children}{process.env.NODE_ENV === 'production' && <Analytics/>}</body></html>
 }

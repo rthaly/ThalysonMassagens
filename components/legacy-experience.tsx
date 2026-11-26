@@ -1057,14 +1057,13 @@ const SocialButtons = ({ reviewsLabel, grid = false }: { reviewsLabel: string; g
 );
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Poppins:wght@400;500;600;700&display=swap');
 .app{--bg:#F9F8F6;--surf:#FFFFFF;--surf2:#EFECE6;--ink:#161412;--mute:#57524A;--line:rgba(22,20,18,.15);--acc:#161412;--onacc:#FFFFFF;--rg:rgba(22,20,18,.24);--ok:#145A3E;--warn:#8A4B08;--err:#B81D3A}
 .app[data-theme=dark]{--bg:#121110;--surf:#1C1A19;--surf2:#282523;--ink:#F5F2EE;--mute:#B0A99E;--line:rgba(245,242,238,.15);--acc:#F5F2EE;--onacc:#121110;--rg:rgba(245,242,238,.3);--ok:#5EC49B;--warn:#F0AA5E;--err:#FF8A9B}
-.app{background:var(--bg);color:var(--ink);font-family:'Poppins',system-ui,sans-serif;font-size:16px;line-height:1.6;min-height:100vh;min-height:100dvh;overflow-x:clip;transition:background .3s,color .3s;overflow-wrap:break-word;word-break:normal;hyphens:manual;text-wrap:pretty;-webkit-text-size-adjust:100%}
+.app{background:var(--bg);color:var(--ink);font-family:var(--f-sans),'Poppins',system-ui,sans-serif;font-size:16px;line-height:1.6;min-height:100vh;min-height:100dvh;overflow-x:clip;transition:background .3s,color .3s;overflow-wrap:break-word;word-break:normal;hyphens:manual;text-wrap:pretty;-webkit-text-size-adjust:100%}
 .app h1,.app h2,.app h3{text-wrap:balance;word-break:normal;hyphens:manual}
 .app .text-sm{font-size:15.5px}.app .text-xs{font-size:13.5px}
 .app button,.app input,.app label{font-family:inherit}
-.serif{font-family:'Fraunces',Georgia,serif;font-optical-sizing:auto}
+.serif{font-family:var(--f-serif),'Fraunces',Georgia,serif;font-optical-sizing:auto}
 .num{font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0}
 .numw{font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
 .cap1::first-letter{text-transform:uppercase}
@@ -1166,8 +1165,8 @@ const CSS = `
 .g-2,.g-3{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:420px){.g-2{grid-template-columns:1fr 1fr}.g-3{grid-template-columns:repeat(3,1fr)}}
 
-.glow{position:absolute;top:-6%;right:0;max-width:100%;width:min(95vw,640px);aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 14%,transparent),transparent 66%);animation:drift 14s ease-in-out infinite}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:pulse 2.6s ease-out infinite}
+.glow{position:absolute;top:-6%;right:0;max-width:100%;width:min(95vw,640px);aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 14%,transparent),transparent 66%)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:pulse 2.6s ease-out 3}
 .stepn{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;border:1.5px solid var(--line);color:var(--mute);transition:all .3s}
 .stepn.ok{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
 .core{position:absolute;inset:0;margin:auto;width:96px;height:96px;border-radius:50%;overflow:hidden;animation:breathe 6s ease-in-out infinite}
@@ -1204,10 +1203,10 @@ const CSS = `
 @media (min-width:640px){.draft-card{grid-template-columns:minmax(0,1fr) auto;align-items:center}.draft-actions{grid-template-columns:auto auto}}
 .how-list{list-style:none;margin:0 0 14px;padding:0;counter-reset:st;display:grid;gap:12px}
 .how-list li{counter-increment:st;position:relative;padding:3px 0 0 42px;font-size:15px;line-height:1.5;min-height:30px}
-.how-list li::before{content:counter(st);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:600 13px/1 'Poppins',sans-serif;background:var(--surf2);color:var(--ink);border:1px solid var(--line)}
+.how-list li::before{content:counter(st);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:600 13px/1 var(--f-sans),'Poppins',sans-serif;background:var(--surf2);color:var(--ink);border:1px solid var(--line)}
 .how-step{position:relative;overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
 .how-step:hover{transform:translateY(-2px)}
-.how-n{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;margin-bottom:14px;font:600 16px/1 'Fraunces',serif;background:var(--acc);color:var(--onacc)}
+.how-n{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;margin-bottom:14px;font:600 16px/1 var(--f-serif),'Fraunces',serif;background:var(--acc);color:var(--onacc)}
 .how-step::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--acc),transparent);transform:scaleX(0);transform-origin:left;transition:transform .9s cubic-bezier(.2,.7,.2,1) .4s}
 .rv.in .how-step::after{transform:scaleX(1)}
 .pkg-ui{transition:border-color .2s,background .2s,transform .25s ease}
@@ -1221,8 +1220,9 @@ const CSS = `
 /* ===== Liquid Glass (estilo Apple): material, aro de luz, brilho que segue o dedo ===== */
 .app{--lg-a:rgba(255,255,255,.64);--lg-b:rgba(255,255,255,.30);--lg-hi:rgba(255,255,255,.95);--lg-lo:rgba(22,20,18,.10);--lg-glow:rgba(255,255,255,.55);--lg-sh:rgba(22,20,18,.24);--lg-rim1:rgba(255,255,255,.95);--lg-rim2:rgba(255,255,255,.55);--lg-spec:rgba(255,255,255,.6)}
 .app[data-theme=dark]{--lg-a:rgba(255,255,255,.14);--lg-b:rgba(255,255,255,.045);--lg-hi:rgba(255,255,255,.4);--lg-lo:rgba(0,0,0,.45);--lg-glow:rgba(255,255,255,.10);--lg-sh:rgba(0,0,0,.65);--lg-rim1:rgba(255,255,255,.62);--lg-rim2:rgba(255,255,255,.22);--lg-spec:rgba(255,255,255,.24)}
-.app{background-image:radial-gradient(60% 38% at 8% 0%,color-mix(in srgb,var(--warn) 14%,transparent),transparent 70%),radial-gradient(55% 40% at 100% 55%,color-mix(in srgb,var(--ok) 12%,transparent),transparent 70%),radial-gradient(50% 35% at 0% 100%,color-mix(in srgb,var(--ink) 7%,transparent),transparent 70%);background-attachment:fixed}
-.glass-ui,.btn-g,.btn-icon,.btn-round,.bar{background:linear-gradient(135deg,var(--lg-a),var(--lg-b));backdrop-filter:blur(16px) saturate(190%) brightness(1.06);-webkit-backdrop-filter:blur(16px) saturate(190%) brightness(1.06);box-shadow:inset 1px 1px 0 var(--lg-hi),inset -1px -1px 0 var(--lg-lo),inset 0 0 16px -6px var(--lg-glow),0 12px 28px -14px var(--lg-sh),0 2px 5px -2px var(--lg-lo)}
+.app{position:relative;isolation:isolate}
+.app::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;transform:translateZ(0);background-image:radial-gradient(60% 38% at 8% 0%,color-mix(in srgb,var(--warn) 14%,transparent),transparent 70%),radial-gradient(55% 40% at 100% 55%,color-mix(in srgb,var(--ok) 12%,transparent),transparent 70%),radial-gradient(50% 35% at 0% 100%,color-mix(in srgb,var(--ink) 7%,transparent),transparent 70%)}
+.glass-ui,.btn-g,.btn-icon,.btn-round,.bar{background:linear-gradient(135deg,var(--lg-a),var(--lg-b));backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:inset 1px 1px 0 var(--lg-hi),inset -1px -1px 0 var(--lg-lo),inset 0 0 16px -6px var(--lg-glow),0 12px 28px -14px var(--lg-sh),0 2px 5px -2px var(--lg-lo)}
 .btn-g,.btn-icon,.btn-round{position:relative;isolation:isolate;border-color:transparent}
 .btn-g:hover:not(:disabled){background:linear-gradient(135deg,var(--lg-a),var(--lg-b));filter:brightness(1.04)}
 .glass-ui,.btn-g,.btn-icon,.btn-round,.bar{--mx:18%;--my:0%}
@@ -1238,6 +1238,9 @@ const CSS = `
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass-ui,.btn-g,.btn-icon,.btn-round,.bar{background:var(--surf)}}
 @media (prefers-reduced-transparency:reduce){.glass-ui,.btn-g,.btn-icon,.btn-round,.bar,.chip-ui{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}.chip-ui.on{background:var(--acc)}.glass-ui::before,.btn-g::before,.btn-icon::before,.btn-round::before,.bar::before{display:none}}
 @media (prefers-contrast:more){.glass-ui::after,.btn-g::after,.btn-icon::after,.btn-round::after,.bar::after{display:none}.btn-g,.bar,.btn-icon,.btn-round{border:1px solid var(--ink)}}
+.bar,.hero-pill,.hero-facts{backdrop-filter:blur(14px) saturate(180%);-webkit-backdrop-filter:blur(14px) saturate(180%)}
+.glass-rev{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+@media (prefers-reduced-transparency:reduce){.bar,.hero-pill,.hero-facts{backdrop-filter:none;-webkit-backdrop-filter:none}}
 /* ===== Layout das seções (leitura da esquerda para a direita, botões alinhados) ===== */
 .btn-row{display:grid;gap:12px;align-items:stretch}
 .btn-row>.btn-ui{width:100%}
@@ -1247,9 +1250,9 @@ const CSS = `
 .hero-facts>div{min-width:0;padding-right:12px}
 .hero-facts>div+div{padding:0 0 0 16px;border-left:1px solid var(--line)}
 .hero-facts dt{font-size:13px;line-height:1.3;color:var(--mute)}
-.hero-facts dd{margin:4px 0 0;display:flex;flex-wrap:wrap;align-items:center;column-gap:8px;font:500 20px/1.2 'Fraunces',Georgia,serif;color:var(--ink);white-space:normal}
+.hero-facts dd{margin:4px 0 0;display:flex;flex-wrap:wrap;align-items:center;column-gap:8px;font:500 20px/1.2 var(--f-serif),'Fraunces',Georgia,serif;color:var(--ink);white-space:normal}
 .hero-facts .dot{flex:none}
-.hero-facts-sub{display:block;width:100%;margin-top:4px;font:600 12px/1.2 'Poppins',sans-serif;color:var(--ok)}
+.hero-facts-sub{display:block;width:100%;margin-top:4px;font:600 12px/1.2 var(--f-sans),'Poppins',sans-serif;color:var(--ok)}
 .how-line{list-style:none;margin:0;padding:0;display:grid}
 .how-line>li{position:relative;padding-bottom:28px}
 .how-line>li:last-child{padding-bottom:0}
@@ -1387,10 +1390,10 @@ export default function App() {
       if (pkgQ || couponQ || q.has('agendar')) deepLink.current = { pkg: pkgQ, coupon: couponQ, book: true };
     } catch { /* */ }
     const onboarded = store.get('thaly_onboard_final') === 'yes';
-    // Carregamento curto: quem já entrou antes vai direto; quem chega pela 1ª vez vê a marca por menos de 1s.
+    // Sem espera artificial: abre assim que o navegador terminou de montar a página.
     const id = setTimeout(() => {
       if (onboarded) { setAgeOk(true); setPhase('site'); } else setPhase('welcome');
-    }, onboarded || reduce ? 250 : 900);
+    }, 0);
     return () => clearTimeout(id);
   }, []);
   useEffect(() => {

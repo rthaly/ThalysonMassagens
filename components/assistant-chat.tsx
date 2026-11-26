@@ -44,12 +44,12 @@ const CSS = `
 .aic-launch:hover{transform:translateY(-2px)}
 .aic-launch:focus-visible,.aic-btn:focus-visible,.aic-chip:focus-visible,.aic-x:focus-visible,.aic-in:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 .aic-face{position:relative;width:44px;height:44px;border-radius:50%;flex:none}
-.aic-face img,.aic-face span{width:100%;height:100%;border-radius:50%;object-fit:cover;display:flex;align-items:center;justify-content:center;background:var(--acc);color:var(--onacc);font:600 20px 'Fraunces',Georgia,serif}
+.aic-face img,.aic-face span{width:100%;height:100%;border-radius:50%;object-fit:cover;display:flex;align-items:center;justify-content:center;background:var(--acc);color:var(--onacc);font:600 20px var(--f-serif),'Fraunces',Georgia,serif}
 .aic-face:after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--ok);opacity:0;animation:aicPulse 2.6s 1.4s infinite}
 .aic-dot{position:absolute;right:0;bottom:0;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid var(--surf)}
 .aic-panel{position:fixed;z-index:130;right:16px;bottom:16px;width:min(392px,calc(100vw - 24px));height:min(620px,calc(100dvh - 32px));display:flex;flex-direction:column;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.5);overflow:hidden;transform-origin:100% 100%;animation:aicOpen .32s cubic-bezier(.2,.8,.2,1) both}
 .aic-head{display:flex;align-items:center;gap:12px;padding:14px 14px 12px 16px;border-bottom:1px solid var(--line);background:var(--surf)}
-.aic-head strong{display:block;font:600 17px/1.2 'Fraunces',Georgia,serif}.aic-head small{display:block;color:var(--mute);font-size:12px;line-height:1.35;margin-top:2px}
+.aic-head strong{display:block;font:600 17px/1.2 var(--f-serif),'Fraunces',Georgia,serif}.aic-head small{display:block;color:var(--mute);font-size:12px;line-height:1.35;margin-top:2px}
 .aic-x{margin-left:auto;flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font-size:20px;line-height:1}
 .aic-list{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
 .aic-msg{max-width:86%;padding:11px 14px;border-radius:18px;font-size:15px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;animation:aicMsg .28s both cubic-bezier(.2,.8,.2,1)}
@@ -61,7 +61,7 @@ const CSS = `
 .aic-chip{min-height:44px;display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);font-family:inherit;font-weight:600;font-size:14px;line-height:1.2;cursor:pointer;animation:aicMsg .3s both;transition:background .15s}
 .aic-chip:hover{background:var(--surf2)}
 .aic-card{align-self:stretch;border:1px solid var(--acc);border-radius:18px;padding:14px;background:var(--surf);animation:aicPop .4s both cubic-bezier(.2,.8,.2,1)}
-.aic-card p{margin:0 0 3px;font-size:12px;color:var(--mute);font-weight:700;letter-spacing:.04em}.aic-card strong{display:block;font:600 18px/1.3 'Fraunces',Georgia,serif;margin-bottom:10px}
+.aic-card p{margin:0 0 3px;font-size:12px;color:var(--mute);font-weight:700;letter-spacing:.04em}.aic-card strong{display:block;font:600 18px/1.3 var(--f-serif),'Fraunces',Georgia,serif;margin-bottom:10px}
 .aic-btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:999px;border:0;background:var(--acc);color:var(--onacc);font-family:inherit;font-weight:700;font-size:15px;line-height:1;cursor:pointer;width:100%}
 .aic-form{display:flex;gap:8px;padding:10px 12px 6px;border-top:1px solid var(--line);background:var(--surf)}
 .aic-in{flex:1;min-width:0;min-height:46px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-family:inherit;font-weight:400;font-size:16px;line-height:1}
