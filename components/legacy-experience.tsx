@@ -730,7 +730,20 @@ const SLUG_TO_PKG: Record<string, string> = {
 type Draft = { packageId: string; offer: Offer; date: string; time: string; locType: 'studio' | 'home'; at: number };
 const DRAFT_KEY = 'thaly_draft';
 const DRAFT_TTL = 3 * 24 * 60 * 60 * 1000;
-const safeTrack = (name: string, props?: Record<string, string | number | boolean>) => { try { track(name, props); } catch { /* */ } };
+// De onde a pessoa veio (?utm_source=, ?ref= ou o site de origem). Fica só em memória, sem guardar nada no aparelho.
+let ORIGEM = 'direto';
+const lerOrigem = () => {
+  try {
+    const q = new URLSearchParams(window.location.search);
+    const tag = (q.get('utm_source') || q.get('ref') || '').trim().toLowerCase();
+    let host = '';
+    try { host = new URL(document.referrer).hostname.replace(/^www\./, ''); } catch { /* */ }
+    if (host && host === window.location.hostname.replace(/^www\./, '')) host = '';
+    const bruto = tag || host || 'direto';
+    ORIGEM = bruto.replace(/[^a-z0-9._-]/g, '').slice(0, 40) || 'direto';
+  } catch { /* */ }
+};
+const safeTrack = (name: string, props?: Record<string, string | number | boolean>) => { try { track(name, { ...props, origem: ORIGEM }); } catch { /* */ } };
 
 type NarrState = 'idle' | 'playing' | 'paused';
 // Prioridade: voz masculina em pt-BR (Daniel, Antonio, Felipe, Ricardo...). A voz "Google português do Brasil" é feminina.
@@ -1383,6 +1396,7 @@ export default function App() {
   useEffect(() => {
     let reduce = false;
     try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* */ }
+    lerOrigem();
     try {
       const q = new URLSearchParams(window.location.search);
       const pkgQ = SLUG_TO_PKG[(q.get('sessao') || '').toLowerCase()] || '';

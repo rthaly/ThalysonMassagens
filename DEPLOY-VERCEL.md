@@ -39,6 +39,7 @@ Vercel → seu projeto → **Analytics → Events**. Eventos (anônimos, sem coo
 | `ajuda_exibida` / `ajuda_clicada` | Convite de ajuda para quem parou no meio |
 | `rascunho_retomado` | Voltou e continuou uma reserva |
 | `link_direto` | Chegou por um link com `?sessao=` ou `?cupom=` |
+| propriedade `origem` | Todos os eventos acima levam de onde a pessoa veio: `utm_source`, `ref` ou o site de origem (`direto` se não houver) |
 
 Em planos gratuitos da Vercel, eventos personalizados podem exigir o plano Pro; as visitas normais continuam aparecendo.
 
@@ -47,6 +48,8 @@ Em planos gratuitos da Vercel, eventos personalizados podem exigir o plano Pro; 
 - Sessão já escolhida: `https://SEU-SITE/?sessao=classica` (também `sensitiva`, `fusion`, `completa`, `aparo`)
 - Com cupom aplicado: `https://SEU-SITE/?cupom=RELAXAR13`
 - Juntos: `https://SEU-SITE/?sessao=classica&cupom=RELAXAR13`
+
+Para saber qual canal traz reservas, acrescente a origem ao link: `?sessao=classica&utm_source=instagram` (ou `google`, `indicacao`, `cartao`). Ela aparece no filtro `origem` dos eventos.
 
 Dica: na bio do Instagram use o link com `?sessao=classica`, porque é a sessão que pode ser divulgada em público.
 

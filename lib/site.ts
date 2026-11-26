@@ -1,11 +1,12 @@
-// Endereço público do site. Defina NEXT_PUBLIC_SITE_URL na Vercel quando ligar um domínio próprio
-// (ex.: https://relaxarhoje.com.br). Sem ela, usa o domínio de produção que a própria Vercel informa.
+// Endereço público do site. Defina NEXT_PUBLIC_SITE_URL na Vercel (ex.: https://relaxarhoje.com.br).
+// Sem ela, usa o domínio de produção que a própria Vercel informa; fora da Vercel, cai no domínio oficial
+// (antes caía num endereço antigo, o que deixava canonical e sitemap apontando para o lugar errado).
 function resolveSiteUrl() {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim()
   if (explicit) return explicit.replace(/\/+$/, '')
   const vercelProd = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim()
   if (vercelProd) return `https://${vercelProd}`
-  return 'https://thalysondesigner.vercel.app'
+  return 'https://relaxarhoje.com.br'
 }
 
 export const SITE_URL = resolveSiteUrl()
