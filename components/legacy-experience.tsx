@@ -8,6 +8,7 @@ import {
 import { track } from '@vercel/analytics';
 import { sessions, reviews as REVIEWS_PT } from '@/lib/content';
 import { AssistantChat, type ChatBooking } from '@/components/assistant-chat';
+import { LiquidLens } from '@/components/liquid-lens';
 
 const SITE_NAME = 'Relaxar hoje com Thalyson';
 const LEGAL = {
@@ -1243,6 +1244,8 @@ const CSS = `
 .bar,.hero-pill,.hero-facts{backdrop-filter:blur(14px) saturate(180%);-webkit-backdrop-filter:blur(14px) saturate(180%)}
 .glass-rev{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 @media (prefers-reduced-transparency:reduce){.bar,.hero-pill,.hero-facts{backdrop-filter:none;-webkit-backdrop-filter:none}}
+/* Refração real nas bordas (só Chrome e Edge; o filtro #lg-refract é criado por LiquidLens) */
+@media (prefers-reduced-transparency:no-preference){.lg-refract .bar,.lg-refract .hero-facts,.lg-refract .hero-pill{backdrop-filter:url(#lg-refract) blur(3px) saturate(185%) brightness(1.06);-webkit-backdrop-filter:url(#lg-refract) blur(3px) saturate(185%) brightness(1.06)}}
 /* ===== Layout das seções (leitura da esquerda para a direita, botões alinhados) ===== */
 .btn-row{display:grid;gap:12px;align-items:stretch}
 .btn-row>.btn-ui{width:100%}
@@ -1307,15 +1310,14 @@ export default function App() {
   // Idioma e tema começam iguais no servidor e no navegador (pt e escuro) e são lidos depois que a página
   // monta. Ler o localStorage já no início deixava o HTML do servidor escuro e o React não corrigia.
   const [lang, setLang] = useState<Lang>('pt');
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('light');
   const [prefsReady, setPrefsReady] = useState(false);
   useEffect(() => {
     const l = store.get('thaly_lang');
     if (l === 'en' || l === 'es') setLang(l);
-    const st = store.get('thaly_theme');
-    let th: Theme = 'dark';
-    if (st === 'dark' || st === 'light') th = st;
-    else { try { th = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; } catch { /* */ } }
+    // O site abre no modo claro. Só quem trocou de tema depois disso (chave nova) mantém a escolha.
+    const st = store.get('thaly_theme2');
+    const th: Theme = st === 'dark' ? 'dark' : 'light';
     setTheme(th);
     setPrefsReady(true);
   }, []);
@@ -1433,7 +1435,7 @@ export default function App() {
   }, [phase]);
   useEffect(() => { if (!prefsReady) return; store.set('thaly_lang', lang); document.documentElement.lang = LOCALE[lang]; }, [lang, prefsReady]);
   useEffect(() => { document.title = SITE_NAME; }, []);
-  useEffect(() => { if (!prefsReady) return; store.set('thaly_theme', theme); document.documentElement.dataset.theme = theme; }, [theme, prefsReady]);
+  useEffect(() => { if (!prefsReady) return; store.set('thaly_theme2', theme); document.documentElement.dataset.theme = theme; }, [theme, prefsReady]);
   useEffect(() => { const i = setInterval(() => setNow(spNow()), 60000); return () => clearInterval(i); }, []);
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
   useEffect(() => { narr.stop(); }, [data.packageId, lang, narr.stop]);
@@ -2534,6 +2536,8 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {phase === 'site' && <LiquidLens />}
 
       {phase === 'site' && !done && (
         <AssistantChat

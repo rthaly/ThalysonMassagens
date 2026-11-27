@@ -19,20 +19,20 @@ function money(value: number) { return new Intl.NumberFormat('pt-BR', { style: '
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Lang>('pt')
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [theme, setTheme] = useState<'dark' | 'light'>('light')
   const [menuOpen, setMenuOpen] = useState(false)
   const t = NAV[lang]
   useEffect(() => {
     try {
       const savedLang = localStorage.getItem('thaly_lang') as Lang | null
-      const savedTheme = (localStorage.getItem('thaly_theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) as 'dark' | 'light'
+      const savedTheme: 'dark' | 'light' = localStorage.getItem('thaly_theme2') === 'dark' ? 'dark' : 'light'
       if (savedLang && savedLang in NAV) setLang(savedLang)
       setTheme(savedTheme)
     } catch { /* o armazenamento pode estar bloqueado em aba privada */ }
   }, [])
   useEffect(() => { document.documentElement.dataset.theme = theme }, [theme])
   function changeLang(value: Lang) { setLang(value); try { localStorage.setItem('thaly_lang', value) } catch {} }
-  function toggleTheme() { const next = theme === 'dark' ? 'light' : 'dark'; setTheme(next); try { localStorage.setItem('thaly_theme', next) } catch {} }
+  function toggleTheme() { const next = theme === 'dark' ? 'light' : 'dark'; setTheme(next); try { localStorage.setItem('thaly_theme2', next) } catch {} }
   const link = `https://wa.me/${whatsapp}?text=${encodeURIComponent(t.waMsg)}`
   const close = () => setMenuOpen(false)
   return <div className="site-shell">

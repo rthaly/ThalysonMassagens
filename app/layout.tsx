@@ -48,5 +48,5 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     },
   }
   const faq = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: PUBLIC_FAQ.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }
-  return <html lang="pt-BR" data-theme="dark" className={`${fraunces.variable} ${poppins.variable}`}><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([business, faq]) }}/>{children}{process.env.NODE_ENV === 'production' && <Analytics/>}</body></html>
+  return <html lang="pt-BR" data-theme="light" className={`${fraunces.variable} ${poppins.variable}`}><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([business, faq]) }}/>{children}{process.env.NODE_ENV === 'production' && <Analytics/>}</body></html>
 }
