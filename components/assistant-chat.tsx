@@ -75,7 +75,6 @@ const CSS = `
 @keyframes aicDot{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-5px);opacity:1}}
 @keyframes aicPulse{0%{transform:scale(.9);opacity:.7}70%,100%{transform:scale(1.35);opacity:0}}
 @media (max-width:520px){.aic-panel{right:0;bottom:0;width:100vw;height:min(86dvh,680px);border-radius:22px 22px 0 0}.aic-launch span.aic-lbl{display:none}.aic-launch{padding:5px}}
-@media (prefers-reduced-transparency:reduce){.aic-launch{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.aic-launch{background:var(--surf)}}
 @media (prefers-reduced-motion:reduce){.aic-launch,.aic-panel,.aic-msg,.aic-chip,.aic-card{animation:none!important}.aic-face:after,.aic-typing i{animation:none!important}.aic-typing i{opacity:.8}}
 .aic-launch{--mx:18%;--my:0%;background:linear-gradient(135deg,var(--lg-a),var(--lg-b));backdrop-filter:blur(18px) saturate(190%) brightness(1.06);-webkit-backdrop-filter:blur(18px) saturate(190%) brightness(1.06);border-color:transparent;box-shadow:inset 1px 1px 0 var(--lg-hi),inset -1px -1px 0 var(--lg-lo),inset 0 0 16px -6px var(--lg-glow),0 14px 30px -12px var(--lg-sh)}
@@ -86,7 +85,6 @@ const CSS = `
 .aic-head,.aic-form{background:transparent}
 .aic-chip,.aic-x{background:linear-gradient(135deg,var(--lg-a),var(--lg-b));box-shadow:inset 1px 1px 0 var(--lg-hi),inset -1px -1px 0 var(--lg-lo)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.aic-launch{background:var(--surf)}.aic-panel{background:var(--bg)}}
-@media (prefers-reduced-transparency:reduce){.aic-launch{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}.aic-panel{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}.aic-launch::before{display:none}}
 @media (prefers-contrast:more){.aic-launch::after,.aic-panel::after{display:none}.aic-launch,.aic-panel{border:1px solid var(--ink)}}
 `
 
@@ -175,7 +173,7 @@ export function AssistantChat({ lang, bottom, avatar, whatsappUrl, labelFor, dat
   }, [ask?.k, enabled])
 
   if (!enabled) return null
-  const face = imgOk ? <img src={avatar} alt="" onError={() => setImgOk(false)} /> : <span aria-hidden="true">T</span>
+  const face = <span aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg></span>
 
   return (
     <>

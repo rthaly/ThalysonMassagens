@@ -12,8 +12,7 @@ function suportaRefracao() {
     const chromium = !!nav.userAgentData?.brands?.some((b) => /Chromium/.test(b.brand))
     const ios = /iPhone|iPad|iPod/.test(navigator.userAgent)
     const fraco = typeof nav.deviceMemory === 'number' && nav.deviceMemory < 4
-    const reduz = window.matchMedia('(prefers-reduced-transparency: reduce)').matches
-    return chromium && !ios && !fraco && !reduz && CSS.supports('backdrop-filter', 'url(#a) blur(1px)')
+    return chromium && !ios && !fraco && CSS.supports('backdrop-filter', 'url(#a) blur(1px)')
   } catch { return false }
 }
 
@@ -46,13 +45,13 @@ function mapaDaLente(w: number, h: number, bisel: number) {
 export function LiquidLens() {
   useEffect(() => {
     if (!suportaRefracao()) return undefined
-    const url = mapaDaLente(640, 128, 44)
+    const url = mapaDaLente(640, 128, 30)
     if (!url) return undefined
     const ns = 'http://www.w3.org/2000/svg'
     const svg = document.createElementNS(ns, 'svg')
     svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true')
     svg.style.cssText = 'position:absolute;pointer-events:none'
-    svg.innerHTML = `<filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage href="${url}" preserveAspectRatio="none" result="mapa"/><feDisplacementMap in="SourceGraphic" in2="mapa" scale="34" xChannelSelector="R" yChannelSelector="G"/></filter>`
+    svg.innerHTML = `<filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage href="${url}" preserveAspectRatio="none" result="mapa"/><feDisplacementMap in="SourceGraphic" in2="mapa" scale="26" xChannelSelector="R" yChannelSelector="G"/></filter>`
     document.body.appendChild(svg)
     document.documentElement.classList.add('lg-refract')
     return () => { svg.remove(); document.documentElement.classList.remove('lg-refract') }

@@ -91,7 +91,7 @@ const T: Record<Lang, Record<string, string>> = {
     oBiweekly: '2x no mês (Quinzenal • 10% off)', oBiweeklyD: '2 sessões para usar em até {n} dias. Você marca a 1ª agora e combina a 2ª direto comigo.',
     oPack: 'Pacote 5 sessões (1 grátis)', oPackD: 'Pague 4 e ganhe a 5ª. Validade de {n} dias para agendar pelo WhatsApp.',
     save: 'Economia de', was: 'De', listen: 'Ouvir descrição', pause: 'Pausar', resume: 'Continuar', stopA: 'Parar',
-    voiceLow: 'Áudio adaptado para este aparelho', noTts: 'Seu navegador não tem suporte para áudio.',
+    noTts: 'Seu navegador não tem suporte para áudio.',
     skip: 'Ir para o conteúdo', legalNav: 'Documentos legais',
     packNote: 'Planos e pacotes já têm desconto, então não acumulam com cupons. Você marca a 1ª data aqui e combina as próximas direto comigo.',
     recSlotH: 'Horário recomendado livre agora', recSlotBtn: 'Usar este horário',
@@ -135,14 +135,14 @@ const T: Record<Lang, Record<string, string>> = {
     footPrivacy: 'Privacidade', footTerms: 'Termos', footRefund: 'Cancelamento', footCookies: 'Cookies', adults: 'Atendimento exclusivo para maiores de 18 anos.',
     builtBy: 'Site desenvolvido por',
     close: 'Fechar', theme: 'Mudar cor da tela', lang: 'Idioma', srLight: 'Mudar para tema claro', srDark: 'Mudar para tema escuro', legalNote: '',
-    profile: 'Sobre o atendimento', openProfile: 'Ver perfil de Thalyson', gm: 'Bom dia', ga: 'Boa tarde', gn: 'Boa noite',
+    profile: 'Sobre o atendimento', openProfile: 'Ver perfil de Thalyson', gd: 'Boa madrugada', gm: 'Bom dia', ga: 'Boa tarde', gn: 'Boa noite',
     pBul1: 'Conversa rápida antes de começar para alinhar pressão, música e incenso',
     pBul2: 'Horário exclusivo: você não cruza com ninguém na entrada ou saída',
     pBul3: 'Suíte residencial reservada na Bela Vista ou no seu endereço em SP (esteja já de banho tomado)',
     pHours: 'Horários', pHoursV: 'Todos os dias, das {a} às {b}', pPay: 'Pagamento', pPayV: 'Pix, cartão por aproximação no celular ou dinheiro',
     pWhere: 'Local', pWhereV: 'Bela Vista (perto do Metrô Anhangabaú) ou no seu endereço', pCancel: 'Cancelamento', pCancelV: 'Grátis avisando até 12h antes',
     pForget: 'Apagar meus dados deste aparelho', forgot: 'Pronto, dados apagados.',
-    recommended: 'Mais escolhida', smartSub: 'Que bom te ver de volta. Escolha o dia e o horário.', lastSlots: 'Últimos horários livres hoje', upTo: 'pode ir até', howH: 'Como funciona', howS: 'Sem cadastro e sem pagar nada no site.', how1T: 'Escolha a sessão', how1D: 'Veja duração, valor e os horários livres.', how2T: 'Mande o pedido', how2D: 'O resumo vai pronto para o meu WhatsApp.', how3T: 'Confirme com o sinal', how3D: 'O sinal de R$ 40 segura o horário e sai do total. O restante você paga depois da sessão.', howNote: 'Venha de banho tomado. Incenso e música ficam por sua escolha, na hora do pedido.', endH: 'Vamos marcar?', endP: 'Leva um minuto. O pedido vai pronto para o meu WhatsApp.', q6: 'Atende no meu endereço?', sessS: 'Primeira sessão: R$ 15 de desconto já aplicado nos valores (o aparo avulso não tem desconto).', 
+    recommended: 'Mais escolhida', smartSub: 'Que bom te ver de volta. Escolha o dia e o horário.', lastSlots: 'Últimos horários livres hoje', upTo: 'pode ir até', howH: 'Como funciona', howS: 'Sem cadastro e sem pagar nada no site.', how1T: 'Escolha a sessão', how1D: 'Veja duração, valor e os horários livres.', how2T: 'Mande o pedido', how2D: 'O resumo vai pronto para o meu WhatsApp.', how3T: 'Confirme com o sinal', how3D: 'O sinal de R$ 40 segura o horário e sai do total. O restante você paga depois da sessão.', howNote: 'Venha de banho tomado. Incenso e música ficam por sua escolha, na hora do pedido.', endH: 'Vamos marcar?', endP: 'Leva um minuto. O pedido vai pronto para o meu WhatsApp.', q6: 'Atende no meu endereço?', sessS: 'Na primeira vez você paga R$ 15 a menos. O aparo avulso não tem desconto.', 
     quizH: 'Não sabe qual escolher?', quizS: '3 toques e eu te indico a sessão certa para hoje.', quizStart: 'Descobrir minha sessão',
     quizQ1: 'O que você mais precisa hoje?', quizA1a: 'Soltar costas e ombros travados', quizA1b: 'Desligar a cabeça e relaxar o corpo todo', quizA1c: 'Algo mais intenso e com mais contato', quizA1d: 'Só aparar os pelos',
     quizQ2: 'Já fez uma sessão assim antes?', quizA2a: 'É minha primeira vez', quizA2b: 'Já fiz outras vezes',
@@ -225,14 +225,14 @@ const T: Record<Lang, Record<string, string>> = {
     footPrivacy: 'Privacy', footTerms: 'Terms', footRefund: 'Cancellation', footCookies: 'Cookies', adults: 'Service strictly for adults 18 and older.',
     builtBy: 'Website built by',
     close: 'Close', theme: 'Switch screen theme', lang: 'Language', srLight: 'Switch to light theme', srDark: 'Switch to dark theme', legalNote: 'Legal documents are provided in Portuguese, which is the binding version.',
-    profile: 'About the session', openProfile: 'Open Thalyson’s profile', gm: 'Good morning', ga: 'Good afternoon', gn: 'Good evening',
+    profile: 'About the session', openProfile: 'Open Thalyson’s profile', gd: 'Good night', gm: 'Good morning', ga: 'Good afternoon', gn: 'Good evening',
     pBul1: 'Quick chat before starting to align pressure, music and incense',
     pBul2: 'Exclusive slot: you never cross paths with anyone entering or leaving',
     pBul3: 'Private residential suite in Bela Vista or at your SP address (please be freshly showered)',
     pHours: 'Hours', pHoursV: 'Every day, from {a} to {b}', pPay: 'Payment', pPayV: 'Pix, card by tap on my phone, or cash',
     pWhere: 'Location', pWhereV: 'Bela Vista (near Anhangabaú Metro) or at your address', pCancel: 'Cancellation', pCancelV: 'Free up to 12h in advance',
     pForget: 'Clear my data from this device', forgot: 'Done, data cleared.',
-    recommended: 'Most booked', smartSub: 'Good to see you back. Pick your day and time.', lastSlots: 'Last open slots today', upTo: 'may run until', howH: 'How it works', howS: 'No sign-up and nothing to pay on the site.', how1T: 'Pick a session', how1D: 'See length, price and free times.', how2T: 'Send the request', how2D: 'The summary arrives ready on my WhatsApp.', how3T: 'Confirm with the deposit', how3D: 'The R$ 40 deposit holds the time and comes off the total. You pay the rest after the session.', howNote: 'Arrive freshly showered. Incense and music are your choice when you book.', endH: 'Ready to book?', endP: 'It takes a minute. The request arrives ready on my WhatsApp.', q6: 'Do you come to my address?', sessS: 'First session: R$ 15 off already applied to the prices (the trim alone has no discount).', 
+    recommended: 'Most booked', smartSub: 'Good to see you back. Pick your day and time.', lastSlots: 'Last open slots today', upTo: 'may run until', howH: 'How it works', howS: 'No sign-up and nothing to pay on the site.', how1T: 'Pick a session', how1D: 'See length, price and free times.', how2T: 'Send the request', how2D: 'The summary arrives ready on my WhatsApp.', how3T: 'Confirm with the deposit', how3D: 'The R$ 40 deposit holds the time and comes off the total. You pay the rest after the session.', howNote: 'Arrive freshly showered. Incense and music are your choice when you book.', endH: 'Ready to book?', endP: 'It takes a minute. The request arrives ready on my WhatsApp.', q6: 'Do you come to my address?', sessS: 'On your first visit you pay R$ 15 less. The trim alone has no discount.', 
     quizH: 'Not sure which one?', quizS: '3 taps and I’ll point you to the right session for today.', quizStart: 'Find my session',
     quizQ1: 'What do you need most today?', quizA1a: 'Loosen a stiff back and shoulders', quizA1b: 'Switch off and relax the whole body', quizA1c: 'Something more intense, with more contact', quizA1d: 'Just a trim',
     quizQ2: 'Have you done a session like this before?', quizA2a: 'It’s my first time', quizA2b: 'I’ve done it before',
@@ -315,14 +315,14 @@ const T: Record<Lang, Record<string, string>> = {
     footPrivacy: 'Privacidad', footTerms: 'Términos', footRefund: 'Cancelación', footCookies: 'Cookies', adults: 'Servicio exclusivo para mayores de 18 años.',
     builtBy: 'Sitio desarrollado por',
     close: 'Cerrar', theme: 'Cambiar color de pantalla', lang: 'Idioma', srLight: 'Cambiar a tema claro', srDark: 'Cambiar a tema oscuro', legalNote: 'Los documentos legales están en portugués, que es la versión vinculante.',
-    profile: 'Sobre la atención', openProfile: 'Ver perfil de Thalyson', gm: 'Buenos días', ga: 'Buenas tardes', gn: 'Buenas noches',
+    profile: 'Sobre la atención', openProfile: 'Ver perfil de Thalyson', gd: 'Buenas noches', gm: 'Buenos días', ga: 'Buenas tardes', gn: 'Buenas noches',
     pBul1: 'Charla rápida antes de empezar para alinear presión, música e incienso',
     pBul2: 'Horario exclusivo: no te cruzas con nadie al entrar ni al salir',
     pBul3: 'Suite residencial reservada en Bela Vista o en tu dirección en SP (estate ya duchado)',
     pHours: 'Horarios', pHoursV: 'Todos los días, de {a} a {b}', pPay: 'Pago', pPayV: 'Pix, tarjeta por aproximación en el celular o efectivo',
     pWhere: 'Lugar', pWhereV: 'Bela Vista (cerca del Metro Anhangabaú) o en tu dirección', pCancel: 'Cancelación', pCancelV: 'Gratis avisando hasta 12h antes',
     pForget: 'Borrar mis datos de este dispositivo', forgot: 'Listo, datos borrados.',
-    recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy', upTo: 'puede llegar hasta', howH: 'Cómo funciona', howS: 'Sin registro y sin pagar nada en el sitio.', how1T: 'Elige la sesión', how1D: 'Mira duración, precio y horarios libres.', how2T: 'Envía el pedido', how2D: 'El resumen llega listo a mi WhatsApp.', how3T: 'Confirma con la señal', how3D: 'La seña de R$ 40 asegura el horario y se descuenta del total. El resto lo pagas después de la sesión.', howNote: 'Ven ya duchado. El incienso y la música los eliges al pedir.', endH: '¿Reservamos?', endP: 'Toma un minuto. El pedido llega listo a mi WhatsApp.', q6: '¿Atiendes en mi dirección?', sessS: 'Primera sesión: R$ 15 de descuento ya aplicado en los precios (el recorte solo no tiene descuento).', 
+    recommended: 'Más elegida', smartSub: 'Qué bueno verte de nuevo. Elige el día y el horario.', lastSlots: 'Últimos horarios libres hoy', upTo: 'puede llegar hasta', howH: 'Cómo funciona', howS: 'Sin registro y sin pagar nada en el sitio.', how1T: 'Elige la sesión', how1D: 'Mira duración, precio y horarios libres.', how2T: 'Envía el pedido', how2D: 'El resumen llega listo a mi WhatsApp.', how3T: 'Confirma con la señal', how3D: 'La seña de R$ 40 asegura el horario y se descuenta del total. El resto lo pagas después de la sesión.', howNote: 'Ven ya duchado. El incienso y la música los eliges al pedir.', endH: '¿Reservamos?', endP: 'Toma un minuto. El pedido llega listo a mi WhatsApp.', q6: '¿Atiendes en mi dirección?', sessS: 'En tu primera vez pagas R$ 15 menos. El recorte solo no tiene descuento.', 
     quizH: '¿No sabes cuál elegir?', quizS: '3 toques y te indico la sesión ideal para hoy.', quizStart: 'Descubrir mi sesión',
     quizQ1: '¿Qué necesitas más hoy?', quizA1a: 'Soltar espalda y hombros trabados', quizA1b: 'Apagar la cabeza y relajar todo el cuerpo', quizA1c: 'Algo más intenso y con más contacto', quizA1d: 'Solo recortar el vello',
     quizQ2: '¿Ya hiciste una sesión así?', quizA2a: 'Es mi primera vez', quizA2b: 'Ya lo hice antes',
@@ -1042,9 +1042,9 @@ const LinkBtn = ({ onClick, children }: { onClick: () => void; children: ReactNo
 );
 
 const StepHead = ({ n, title, done }: { n: number; title: string; done: boolean }) => (
-  <div className="flex items-center gap-4 mb-6">
-    <span className={`stepn ${done ? 'ok' : ''}`}>{done ? <Icon name="check" size={16} /> : n}</span>
-    <Title as="h2" className="text-[28px] md:text-[34px]">{title}</Title>
+  <div className="flex items-center gap-3 mb-6" data-step={n}>
+    {done && <span className="stepn ok" aria-hidden="true"><Icon name="check" size={16} /></span>}
+    <Title as="h2" className="text-[30px] md:text-[38px]">{title}</Title>
   </div>
 );
 
@@ -1093,7 +1093,6 @@ const CSS = `
 .app[data-theme=dark] .hero-photo{opacity:.28}
 .glass-glow{position:absolute;inset:40px -4px -8px;z-index:-1;pointer-events:none;filter:blur(26px);background:radial-gradient(55% 45% at 15% 25%,color-mix(in srgb,var(--warn) 30%,transparent),transparent 70%),radial-gradient(50% 45% at 88% 78%,color-mix(in srgb,var(--ok) 26%,transparent),transparent 70%)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass-ui{background:var(--surf)}.glass-photo{background:rgba(18,17,16,.85)}}
-@media (prefers-reduced-transparency:reduce){.glass-ui{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}.glass-photo{background:rgba(18,17,16,.92);backdrop-filter:none;-webkit-backdrop-filter:none}.hero-photo,.glass-glow{display:none}}
 @media (prefers-contrast:more){.glass-ui{border-color:var(--ink)}.glass-photo{border-color:#F5F2EE}}
 .glass-rev{position:relative;border-radius:26px;padding:22px;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.46));backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.85);box-shadow:0 16px 36px -12px rgba(22,20,18,.12),inset 0 1px 0 rgba(255,255,255,.95);transition:transform .25s ease,box-shadow .25s ease}
 .app[data-theme=dark] .glass-rev{background:linear-gradient(145deg,rgba(44,41,39,.72),rgba(26,24,23,.52));border:1px solid rgba(245,242,238,.14);box-shadow:0 18px 40px -12px rgba(0,0,0,.55),inset 0 1px 0 rgba(245,242,238,.16)}
@@ -1110,12 +1109,12 @@ const CSS = `
 .btn-g{border:1px solid var(--line);color:var(--ink);background:transparent}
 .btn-g:hover:not(:disabled){background:var(--surf2)}
 .btn-g:disabled{opacity:.5}
-.btn-sm{min-height:48px;font-size:15px}
-.btn-md{min-height:50px}
-.btn-lg{min-height:60px;font-size:17px;padding:12px 36px}
+.btn-sm{min-height:52px;font-size:16px}
+.btn-md{min-height:52px}
+.btn-lg{min-height:60px;font-size:17px;padding:12px 32px}
 .btn-ui{max-width:100%}
 @media (max-width:480px){.btn-lg{padding:12px 24px}}
-.btn-xl{min-height:64px;font-size:17px}
+.btn-xl{min-height:60px;font-size:17px}
 .btn-ui:disabled{opacity:.55}
 .btn-ui:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 .btn-round{min-height:46px;min-width:46px;width:46px;padding:0;border:none}
@@ -1241,13 +1240,26 @@ const CSS = `
 .btn-ui:active,.chip-ui:active{transform:scale(.97);transition-duration:.12s}
 .bar .flex-1{flex:0 0 auto;max-width:42%}.bar .flex-1 p.truncate{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.15}.bar .btn-ui{flex:1 1 0;min-width:0;min-height:52px;padding:8px 16px;font-size:15px}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass-ui,.btn-g,.btn-icon,.btn-round,.bar{background:var(--surf)}}
-@media (prefers-reduced-transparency:reduce){.glass-ui,.btn-g,.btn-icon,.btn-round,.bar,.chip-ui{background:var(--surf);backdrop-filter:none;-webkit-backdrop-filter:none}.chip-ui.on{background:var(--acc)}.glass-ui::before,.btn-g::before,.btn-icon::before,.btn-round::before,.bar::before{display:none}}
 @media (prefers-contrast:more){.glass-ui::after,.btn-g::after,.btn-icon::after,.btn-round::after,.bar::after{display:none}.btn-g,.bar,.btn-icon,.btn-round{border:1px solid var(--ink)}}
 .bar,.hero-pill,.hero-facts{backdrop-filter:blur(14px) saturate(180%);-webkit-backdrop-filter:blur(14px) saturate(180%)}
 .glass-rev{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-@media (prefers-reduced-transparency:reduce){.bar,.hero-pill,.hero-facts{backdrop-filter:none;-webkit-backdrop-filter:none}}
 /* Refração real nas bordas (só Chrome e Edge; o filtro #lg-refract é criado por LiquidLens) */
-@media (prefers-reduced-transparency:no-preference){.lg-refract .bar,.lg-refract .hero-facts,.lg-refract .hero-pill{backdrop-filter:url(#lg-refract) blur(3px) saturate(185%) brightness(1.06);-webkit-backdrop-filter:url(#lg-refract) blur(3px) saturate(185%) brightness(1.06)}}
+.lg-refract .bar,.lg-refract .hero-facts,.lg-refract .aic-launch{backdrop-filter:url(#lg-refract) blur(3px) saturate(185%) brightness(1.06);-webkit-backdrop-filter:url(#lg-refract) blur(3px) saturate(185%) brightness(1.06)}
+/* ===== Padrão único de botões: principal (preenchido) e secundário (vidro). Tamanhos: md 52 px, lg 60 px ===== */
+.btn-ui{padding:12px 24px;font-size:16px;font-weight:600;letter-spacing:0}
+.btn-sm,.btn-md,.btn-ui:not(.btn-lg):not(.btn-xl):not(.btn-icon):not(.btn-round):not(.btn-ghost){min-height:52px;font-size:16px;padding:12px 24px}
+.btn-lg,.btn-xl{min-height:60px;font-size:17px;padding:12px 28px}
+.btn-p{color:var(--onacc)}.btn-g{color:var(--ink)}
+/* ===== Harmonia: um raio para cartões (24), um para itens menores (18) ===== */
+.glass-ui,.pkg-ui,.opt-ui,.pay-step,.hero-facts,.quiz-inline,.rec-slot,.how-note,.end-card,.glass-rev{border-radius:24px}
+.chip-ui,.ask-ui,.inp-ui{border-radius:18px}
+/* A barra de preço fica por cima de texto: preenchimento mais forte para o rótulo e o preço sempre se lerem */
+.bar{background:linear-gradient(135deg,color-mix(in srgb,var(--surf) 84%,transparent),color-mix(in srgb,var(--surf) 70%,transparent))}
+.hero-facts{background:linear-gradient(135deg,color-mix(in srgb,var(--surf) 78%,transparent),color-mix(in srgb,var(--surf) 60%,transparent))}
+/* ===== Topo: saudação e hierarquia ===== */
+.greet{margin:0 0 4px;font-size:clamp(22px,5.5vw,30px);line-height:1.2;color:var(--ink);font-weight:400}
+.greet-sub{display:flex;align-items:center;gap:8px;margin:0 0 22px;font-size:14px;color:var(--mute)}
+.nudge-ico{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;background:var(--acc);color:var(--onacc)}
 /* ===== Layout das seções (leitura da esquerda para a direita, botões alinhados) ===== */
 .btn-row{display:grid;gap:12px;align-items:stretch;justify-items:stretch}
 .btn-row>.btn-ui{width:100%}
@@ -1759,6 +1771,10 @@ export default function App() {
 
   const dayName = (d: Date, i: number) => (i === 0 ? t('today') : i === 1 ? t('tomorrow') : fmt(d, { weekday: 'short' }).replace('.', ''));
   const greeting = now.getHours() < 12 ? t('gm') : now.getHours() < 18 ? t('ga') : t('gn');
+  // Saudação do topo: usa a hora do aparelho de quem está vendo (madrugada 0h-4h59, dia 5h-11h59, tarde 12h-17h59, noite 18h-23h59)
+  const [hora, setHora] = useState<number | null>(null);
+  useEffect(() => { const f = () => setHora(new Date().getHours()); f(); const id = setInterval(f, 60000); return () => clearInterval(id); }, []);
+  const saudacao = hora === null ? '' : hora < 5 ? t('gd') : hora < 12 ? t('gm') : hora < 18 ? t('ga') : t('gn');
   const chatLink = chosen ? waLink(t('nudgeMsg').replace('{s}', pt.title)) : waLink(t('chatMsg'));
   const onChat = () => safeTrack('duvida_whatsapp', { sessao: chosen ? pkg.id : 'nenhuma' });
   const nextLabel = nextFree ? `${nextFree.k === 0 ? t('today') : nextFree.k === 1 ? t('tomorrow') : fmt(nextFree.d, { weekday: 'long' })} ${nextFree.t}` : '';
@@ -1866,7 +1882,7 @@ export default function App() {
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
         <div className="relative" style={{ width: 176, height: 176 }}>
           <span className="ring" /><span className="ring" style={{ animationDelay: '1.2s' }} /><span className="ring" style={{ animationDelay: '2.4s' }} />
-          <div className="core"><Avatar className="w-full h-full rounded-full text-4xl" alt="" /></div>
+          <div className="core" style={{ display: 'grid', placeItems: 'center', background: 'var(--acc)', color: 'var(--onacc)' }}><span className="serif" style={{ fontSize: 64, lineHeight: 1 }}>T</span></div>
         </div>
         <h1 className="serif font-light mt-10 rise" style={{ fontSize: 'clamp(30px,7vw,44px)', letterSpacing: '-0.01em', animationDelay: '.3s' }}>{SITE_NAME}</h1>
         <p className="mt-3 rise text-sm c-mute" style={{ animationDelay: '.7s' }}>{t('loadMsg')}</p>
@@ -1921,9 +1937,11 @@ export default function App() {
         {phase === 'site' && (<>
           <section className="relative pt-12 pb-14 flex flex-col justify-center" style={{ minHeight: 'calc(100svh - 76px)' }}>
             <div className="glow" aria-hidden="true" />
-            <div className="hero-photo" aria-hidden="true" />
             <div className="relative">
-              <Reveal><div className="glass-ui hero-pill inline-flex items-center gap-3 max-w-full pl-1.5 pr-4 py-1.5 mb-6"><Avatar className="w-11 h-11 rounded-full shrink-0" alt="" /><p className="min-w-0 text-sm font-semibold leading-snug">Thalyson<span className="block text-[13px] font-medium" style={{ color: 'color-mix(in srgb,var(--ink) 80%,transparent)' }}>{t('badge')}</span></p></div></Reveal>
+              <Reveal>
+                <p className="greet serif" aria-live="polite">{saudacao || '\u00A0'}</p>
+                <p className="greet-sub"><Icon name="map" size={16} /> {t('badge')}</p>
+              </Reveal>
               <Title as="h1" className="mb-4" style={{ fontSize: 'clamp(44px,11.5vw,84px)' }}>{t('h1')}</Title>
               <Reveal delay={250}><p className="text-lg leading-relaxed mb-8 max-w-md c-mute">{isReturning ? t('smartSub') : t('sub')}</p></Reveal>
               <Reveal delay={380}>
@@ -2128,7 +2146,7 @@ export default function App() {
                                 </div>
                                 {!narr.supported && <p className="text-xs mt-2 c-mute" role="status">{t('noTts')}</p>}
                                 <Button onClick={() => { vibrate(15); setView(p.id === 'aparo_solo' ? 3 : 2); }} className="btn-ui btn-p btn-md w-full mt-5">{t('wizPkg')}</Button>
-                                {mine && narr.supported && !narr.male && <p className="text-xs mt-2 c-mute" role="status">{t('voiceLow')}</p>}
+                                
                               </div>
                             )}
                           </div>
@@ -2565,7 +2583,7 @@ export default function App() {
         <div role="dialog" aria-labelledby="nudge-h" className="fixed left-1/2 -translate-x-1/2 rise" style={{ bottom: showBar ? 104 : 20, zIndex: 120, width: 'min(560px, calc(100vw - 24px))' }}>
           <Card className="p-5 shadow-xl" style={{ background: 'var(--bg)', borderColor: 'var(--acc)' }}>
             <div className="flex items-start gap-3">
-              <Avatar className="w-12 h-12 rounded-full shrink-0" alt="" />
+              <span className="nudge-ico" aria-hidden="true"><Icon name="chat" size={22} /></span>
               <div className="min-w-0 flex-1">
                 <p id="nudge-h" className="font-extrabold">{t('nudgeH')}</p>
                 <p className="text-sm leading-relaxed c-mute mb-4">{t('nudgeP')}</p>
