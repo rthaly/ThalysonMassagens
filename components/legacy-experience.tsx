@@ -1116,6 +1116,8 @@ const CSS = `
 .btn-ui{max-width:100%}
 @media (max-width:480px){.btn-lg{padding:12px 24px}}
 .btn-xl{min-height:64px;font-size:17px}
+.btn-ui:disabled{opacity:.55}
+.btn-ui:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 .btn-round{min-height:46px;min-width:46px;width:46px;padding:0;border:none}
 .btn-icon{min-height:44px;min-width:44px;width:44px;padding:0;border:none}
 .btn-ghost{background:transparent;border:none;min-height:auto;padding:4px;justify-content:flex-start;border-radius:14px;font-weight:500}
@@ -1247,10 +1249,10 @@ const CSS = `
 /* Refração real nas bordas (só Chrome e Edge; o filtro #lg-refract é criado por LiquidLens) */
 @media (prefers-reduced-transparency:no-preference){.lg-refract .bar,.lg-refract .hero-facts,.lg-refract .hero-pill{backdrop-filter:url(#lg-refract) blur(3px) saturate(185%) brightness(1.06);-webkit-backdrop-filter:url(#lg-refract) blur(3px) saturate(185%) brightness(1.06)}}
 /* ===== Layout das seções (leitura da esquerda para a direita, botões alinhados) ===== */
-.btn-row{display:grid;gap:12px;align-items:stretch}
+.btn-row{display:grid;gap:12px;align-items:stretch;justify-items:stretch}
 .btn-row>.btn-ui{width:100%}
-@media(min-width:640px){.btn-row{display:flex;flex-wrap:wrap}.btn-row>.btn-ui{width:auto}}
-.btn-col{display:grid;gap:12px}.btn-col>.btn-ui{width:100%}
+@media(min-width:640px){.btn-row{grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);width:fit-content;max-width:100%}}
+.btn-col{display:grid;gap:12px;max-width:520px}.btn-col>.btn-ui{width:100%}
 .hero-facts{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);margin:0;padding:14px 18px;border-radius:22px;max-width:460px}
 .hero-facts>div{min-width:0;padding-right:12px}
 .hero-facts>div+div{padding:0 0 0 16px;border-left:1px solid var(--line)}
@@ -1293,7 +1295,8 @@ const CSS = `
 .wiz-top{display:grid;gap:8px}
 .wiz-bar{height:4px;border-radius:99px;background:var(--line);overflow:hidden}
 .wiz-bar span{display:block;height:100%;border-radius:inherit;background:var(--acc);transition:width .35s ease}
-.wiz-nav{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;margin-top:24px}
+.wiz-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:24px}
+@media(min-width:640px){.wiz-nav{max-width:520px}}
 .wiz-nav .btn-ui{width:100%}
 .pay-h{font:500 21px/1.25 var(--f-serif),'Fraunces',Georgia,serif;margin:0 0 4px}
 .row-v{min-width:0;max-width:64%;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
@@ -1361,6 +1364,8 @@ export default function App() {
   const [coupon, setCoupon] = useState({ input: '', applied: '', value: 0, error: '' });
   const [ageOk, setAgeOk] = useState(false);
   const [healthOk, setHealthOk] = useState(false);
+  const [sendErr, setSendErr] = useState('');
+  const [gateErr, setGateErr] = useState('');
   const [reqOk, setReqOk] = useState(false);
   const [optIn, setOptIn] = useState(false);
   const [hp, setHp] = useState('');
@@ -1711,8 +1716,9 @@ export default function App() {
 
   const finish = () => {
     if (!step3Valid) { setTouched(true); showToast(t('fill')); setView(3); return; }
-    if (!healthOk) { vibrate(50); showToast(t('needHealth')); return; }
-    if (!ageOk) { vibrate(50); showToast(t('needAge')); return; }
+    if (!healthOk) { vibrate(50); setSendErr(t('needHealth')); document.getElementById('health-ok')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    if (!ageOk) { vibrate(50); setSendErr(t('needAge')); return; }
+    setSendErr('');
     if (!data.date || !data.time) return;
     if (hp) { setDone(true); setSentLink('#'); return; }
     const link = whatsappLink();
@@ -1747,7 +1753,7 @@ export default function App() {
   };
 
   const enter = () => {
-    if (!ageOk) { vibrate(50); showToast(t('needAgeEnter')); return; }
+    if (!ageOk) { vibrate(50); setGateErr(t('needAgeEnter')); return; }
     vibrate(30); store.set('thaly_onboard_final', 'yes'); setPhase('site');
   };
 
@@ -1907,7 +1913,8 @@ export default function App() {
             <h1 id="wt" className="serif font-light leading-[1.02] mb-5 rise" style={{ fontSize: 'clamp(46px,12vw,78px)', letterSpacing: '-0.02em', animationDelay: '.2s' }}>Relaxar hoje<br />com Thalyson</h1>
             <p className="text-lg leading-relaxed mb-8 rise c-mute" style={{ animationDelay: '.35s' }}>{t('wSub')}</p>
             <div className="rise mb-6" style={{ animationDelay: '.6s' }}>{renderAge('age-w')}</div>
-            <Button onClick={enter} disabled={!ageOk} className="btn-ui btn-p btn-xl w-full rise" style={{ animationDelay: '.7s' }}>{ageOk ? t('enter') : t('needAgeEnter')}</Button>
+            <Button onClick={enter} className="btn-ui btn-p btn-xl w-full rise" style={{ animationDelay: '.7s' }}>{t('enter')}</Button>
+            {gateErr && !ageOk && <p className="err" role="alert">{gateErr}</p>}
           </section>
         )}
 
@@ -2391,7 +2398,7 @@ export default function App() {
 
                         <div className="space-y-4">
                           <div className="flex items-start gap-3 text-sm leading-relaxed">
-                            <Checkbox id="health-ok" checked={healthOk} onCheckedChange={setHealthOk} />
+                            <Checkbox id="health-ok" checked={healthOk} onCheckedChange={(c) => { setHealthOk(c); if (c) setSendErr(''); }} />
                             <Label htmlFor="health-ok" className="lbl-chk font-semibold">{isHome ? t('healthHome') : t('healthStudio')}</Label>
                           </div>
 
@@ -2403,10 +2410,11 @@ export default function App() {
                           {!ageOk && renderAge('age-ok')}
                         </div>
 
-                        <Button onClick={finish} disabled={!healthOk || !ageOk} className="btn-ui btn-p btn-xl w-full">
-                          {!healthOk ? t('needHealth') : !ageOk ? t('needAge') : t('send')}
-                        </Button>
-                        <Button onClick={() => setView(3)} className="lnk-ui lnk-block lnk-left lnk-mute">{t('wizBack')}</Button>
+                        <div className="btn-col">
+                          <Button onClick={finish} className="btn-ui btn-p btn-xl">{t('send')}</Button>
+                          {sendErr && <p className="err" role="alert">{sendErr}</p>}
+                          <Button onClick={() => setView(3)} className="btn-ui btn-g btn-md">{t('wizBack')}</Button>
+                        </div>
                       </div>
                     </Reveal>
                   </div>
